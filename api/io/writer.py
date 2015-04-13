@@ -2,7 +2,7 @@ __author__ = 'Alfie Abdul-Rahman'
 
 import json, glob, os, ntpath
 
-from bcbio import isatab
+from api.io.model import io
 
 class IsatabToJsonWriter():
     def __init__(self):
@@ -20,7 +20,7 @@ class IsatabToJsonWriter():
         self.json_dir = os.path.join(os.getcwd(), 'json', work_dir + '_json')
 
     def parsingIsatab(self):
-        rec = isatab.parse(self._dir)
+        rec = io.parse(self._dir)
         # process the investigation files
         fnames = glob.glob(os.path.join(self._dir, "i_*.txt")) + \
                  glob.glob(os.path.join(self._dir, "*.idf.txt"))
