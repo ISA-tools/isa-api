@@ -1,0 +1,772 @@
+{
+    "assayNodes": [
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255770"
+            ], 
+            "Raw Data File": [
+                "EVHINN104.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255773"
+            ], 
+            "Raw Data File": [
+                "EVHINN115.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255771"
+            ], 
+            "Raw Data File": [
+                "EVHINN105.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255772"
+            ], 
+            "Raw Data File": [
+                "EVNG8PH03.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255770"
+            ], 
+            "Raw Data File": [
+                "EVUSNDQ01.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255770"
+            ], 
+            "Raw Data File": [
+                "EVHINN101.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255771"
+            ], 
+            "Raw Data File": [
+                "EVHINN108.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255770"
+            ], 
+            "Raw Data File": [
+                "EVHINN103.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255771"
+            ], 
+            "Raw Data File": [
+                "EVNG8PH02.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255772"
+            ], 
+            "Raw Data File": [
+                "EVHINN111.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255770"
+            ], 
+            "Raw Data File": [
+                "EVNG8PH01.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255772"
+            ], 
+            "Raw Data File": [
+                "EVHINN110.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255773"
+            ], 
+            "Raw Data File": [
+                "EVUSNDQ04.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255773"
+            ], 
+            "Raw Data File": [
+                "EVHINN113.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255771"
+            ], 
+            "Raw Data File": [
+                "EVHINN106.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255772"
+            ], 
+            "Raw Data File": [
+                "EVHINN109.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255770"
+            ], 
+            "Raw Data File": [
+                "EVHINN102.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255772"
+            ], 
+            "Raw Data File": [
+                "EVHINN112.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255773"
+            ], 
+            "Raw Data File": [
+                "EVHINN116.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255773"
+            ], 
+            "Raw Data File": [
+                "EVHINN114.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255771"
+            ], 
+            "Raw Data File": [
+                "EVHINN107.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255772"
+            ], 
+            "Raw Data File": [
+                "EVUSNDQ03.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255773"
+            ], 
+            "Raw Data File": [
+                "EVNG8PH04.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }, 
+        {
+            "Material Type": [
+                [
+                    "mRNA", 
+                    "CHEBI", 
+                    "16991"
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255771"
+            ], 
+            "Raw Data File": [
+                "EVUSNDQ02.sff"
+            ], 
+            "Derived Data File": [
+                "GSE10119_series_matrix.txt"
+            ], 
+            "Protocol REF": [
+                [
+                    "sequence analysis - standard procedure 7"
+                ], 
+                [
+                    "mRNA extraction - standard procedure 3"
+                ], 
+                [
+                    "pyrosequencing - standard procedure 6"
+                ], 
+                [
+                    "nucleic acid extraction - standard procedure 2"
+                ]
+            ]
+        }
+    ]
+}

@@ -1,0 +1,1348 @@
+{
+    "studyNodes": [
+        {
+            "hexfucoxanthin concentration": [
+                [
+                    "0.82", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "nanoflagellates count": [
+                [
+                    "2851", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chlorophyll": [
+                [
+                    "9.23", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "prasinoxanthin concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Material Type": [
+                [
+                    "water column", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "part_org_carb": [
+                [
+                    "844", 
+                    " ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "fucoxanthin concentration": [
+                [
+                    "0.54", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "alloxanthin concentration": [
+                [
+                    "0.36", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "butfucoxanthin concentration": [
+                [
+                    "0.14", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "diadinoxanthin concentration": [
+                [
+                    "0.46", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "salinity": [
+                [
+                    "31.3", 
+                    "PSU", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chl-c3 concentration": [
+                [
+                    "0.29", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "lat_lon": [
+                [
+                    "+60.269444+5.222222"
+                ]
+            ], 
+            "water temperature at 3 meter depth": [
+                [
+                    "9.7", 
+                    "degree celsius", 
+                    "UO", 
+                    "27"
+                ]
+            ], 
+            "biome": [
+                [
+                    "sea water", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "matter": [
+                [
+                    "coastal water", 
+                    "ENVO", 
+                    "2150"
+                ]
+            ], 
+            "collection_date": [
+                [
+                    "2006-05-13"
+                ]
+            ], 
+            "divinyl-chl-b concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "feature": [
+                [
+                    "fjord;coast", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "BB carotene concentration": [
+                [
+                    "0.72", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "lutein concentration": [
+                [
+                    "0.37", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "geo_loc_name": [
+                [
+                    "Norway, fjord, coastal", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "part_org_nitro": [
+                [
+                    "143", 
+                    " ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "nitrate": [
+                [
+                    "7.53", 
+                    " umol/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255770"
+            ], 
+            "neoxanthin concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chl-b concentration": [
+                [
+                    "5.25", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "synechococcus count": [
+                [
+                    "7064", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "violaxanthin concentration": [
+                [
+                    "0.64", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chl-c2 concentration": [
+                [
+                    "0.59", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "diatoxanthin concentration": [
+                [
+                    "0.1", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "cryptophytes count": [
+                [
+                    "660", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Protocol REF": [
+                [
+                    "sample collection - standard procedure 1"
+                ]
+            ], 
+            "primary production depth integrated production to 3 m expressed_in mgC m-2 d-1": [
+                [
+                    "591.4", 
+                    "mg/m2/d", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "small picoeukaryotes count": [
+                [
+                    "36257", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "fluorescence": [
+                [
+                    "17.6", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "bacteria count": [
+                [
+                    "4666004", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Source Name": [
+                "GSM255770"
+            ], 
+            "chl-a concentration": [
+                [
+                    "9.23", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "divinyl-chl-a concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "phosphate": [
+                [
+                    "0.23", 
+                    " umol/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "large picoeukaryotes count": [
+                [
+                    "5450", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "zeaxanthin concentration": [
+                [
+                    "0.35", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "organism": [
+                [
+                    "marine metagenome", 
+                    "NCBITax", 
+                    "408172"
+                ]
+            ], 
+            "peridinin concentration": [
+                [
+                    "0.18", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ]
+        }, 
+        {
+            "hexfucoxanthin concentration": [
+                [
+                    "1.15", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "nanoflagellates count": [
+                [
+                    "4390", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chlorophyll": [
+                [
+                    "11.22", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "prasinoxanthin concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Material Type": [
+                [
+                    "water column", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "part_org_carb": [
+                [
+                    "561", 
+                    " ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "fucoxanthin concentration": [
+                [
+                    "1.43", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "alloxanthin concentration": [
+                [
+                    "0.33", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "butfucoxanthin concentration": [
+                [
+                    "0.17", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "diadinoxanthin concentration": [
+                [
+                    "0.64", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "salinity": [
+                [
+                    "31.4", 
+                    "PSU", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chl-c3 concentration": [
+                [
+                    "0.65", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "lat_lon": [
+                [
+                    "+60.269444+5.222222"
+                ]
+            ], 
+            "water temperature at 3 meter depth": [
+                [
+                    "9.6", 
+                    "degree celsius", 
+                    "UO", 
+                    "27"
+                ]
+            ], 
+            "biome": [
+                [
+                    "sea water", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "matter": [
+                [
+                    "coastal water", 
+                    "ENVO", 
+                    "2150"
+                ]
+            ], 
+            "collection_date": [
+                [
+                    "2006-05-13"
+                ]
+            ], 
+            "divinyl-chl-b concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "feature": [
+                [
+                    "fjord;coast", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "BB carotene concentration": [
+                [
+                    "0.83", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "lutein concentration": [
+                [
+                    "0.41", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "geo_loc_name": [
+                [
+                    "Norway, fjord, coastal", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "part_org_nitro": [
+                [
+                    "104", 
+                    " ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "nitrate": [
+                [
+                    "3.84", 
+                    " umol/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255771"
+            ], 
+            "neoxanthin concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chl-b concentration": [
+                [
+                    "5.97", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "synechococcus count": [
+                [
+                    "13867", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "violaxanthin concentration": [
+                [
+                    "0.99", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chl-c2 concentration": [
+                [
+                    "0.87", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "diatoxanthin concentration": [
+                [
+                    "0.11", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "cryptophytes count": [
+                [
+                    "1702", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Protocol REF": [
+                [
+                    "sample collection - standard procedure 1"
+                ]
+            ], 
+            "primary production depth integrated production to 3 m expressed_in mgC m-2 d-1": [
+                [
+                    "938.1", 
+                    "mg/m2/d", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "small picoeukaryotes count": [
+                [
+                    "38513", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "fluorescence": [
+                [
+                    "23.6", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "bacteria count": [
+                [
+                    "4862861", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Source Name": [
+                "GSM255771"
+            ], 
+            "chl-a concentration": [
+                [
+                    "11.22", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "divinyl-chl-a concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "phosphate": [
+                [
+                    "0.19", 
+                    " umol/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "large picoeukaryotes count": [
+                [
+                    "12035", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "zeaxanthin concentration": [
+                [
+                    "0.23", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "organism": [
+                [
+                    "marine metagenome", 
+                    "NCBITax", 
+                    "408172"
+                ]
+            ], 
+            "peridinin concentration": [
+                [
+                    "0.14", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ]
+        }, 
+        {
+            "hexfucoxanthin concentration": [
+                [
+                    "0.15", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "nanoflagellates count": [
+                [
+                    "138", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chlorophyll": [
+                [
+                    "1.6", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "prasinoxanthin concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Material Type": [
+                [
+                    "water column", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "part_org_carb": [
+                [
+                    "783", 
+                    " ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "fucoxanthin concentration": [
+                [
+                    "0.21", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "alloxanthin concentration": [
+                [
+                    "0.03", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "butfucoxanthin concentration": [
+                [
+                    "0.06", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "diadinoxanthin concentration": [
+                [
+                    "0.2", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "salinity": [
+                [
+                    "31.5", 
+                    "PSU", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chl-c3 concentration": [
+                [
+                    "0.05", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "lat_lon": [
+                [
+                    "+60.269444+5.222222"
+                ]
+            ], 
+            "water temperature at 3 meter depth": [
+                [
+                    "9", 
+                    "degree celsius", 
+                    "UO", 
+                    "27"
+                ]
+            ], 
+            "biome": [
+                [
+                    "sea water", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "matter": [
+                [
+                    "coastal water", 
+                    "ENVO", 
+                    "2150"
+                ]
+            ], 
+            "collection_date": [
+                [
+                    "2006-05-19"
+                ]
+            ], 
+            "divinyl-chl-b concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "feature": [
+                [
+                    "fjord;coast", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "BB carotene concentration": [
+                [
+                    "0.06", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "lutein concentration": [
+                [
+                    "0.02", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "geo_loc_name": [
+                [
+                    "Norway, fjord, coastal", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "part_org_nitro": [
+                [
+                    "128", 
+                    " ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "nitrate": [
+                [
+                    "3.94", 
+                    " umol/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255772"
+            ], 
+            "neoxanthin concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chl-b concentration": [
+                [
+                    "0.21", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "synechococcus count": [
+                [
+                    "16465", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "violaxanthin concentration": [
+                [
+                    "0.05", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chl-c2 concentration": [
+                [
+                    "0.31", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "diatoxanthin concentration": [
+                [
+                    "0.04", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "cryptophytes count": [
+                [
+                    "75", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Protocol REF": [
+                [
+                    "sample collection - standard procedure 1"
+                ]
+            ], 
+            "primary production depth integrated production to 3 m expressed_in mgC m-2 d-1": [
+                [
+                    "118", 
+                    "mg/m2/d", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "small picoeukaryotes count": [
+                [
+                    "21435", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "fluorescence": [
+                [
+                    "4.5", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "bacteria count": [
+                [
+                    "9516120", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Source Name": [
+                "GSM255772"
+            ], 
+            "chl-a concentration": [
+                [
+                    "1.6", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "divinyl-chl-a concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "phosphate": [
+                [
+                    "0.2", 
+                    " umol/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "large picoeukaryotes count": [
+                [
+                    "878", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "zeaxanthin concentration": [
+                [
+                    "0.13", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "organism": [
+                [
+                    "marine metagenome", 
+                    "NCBITax", 
+                    "408172"
+                ]
+            ], 
+            "peridinin concentration": [
+                [
+                    "0.41", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ]
+        }, 
+        {
+            "hexfucoxanthin concentration": [
+                [
+                    "0.27", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "nanoflagellates count": [
+                [
+                    "283", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chlorophyll": [
+                [
+                    "1.77", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "prasinoxanthin concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Material Type": [
+                [
+                    "water column", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "part_org_carb": [
+                [
+                    "945", 
+                    " ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "fucoxanthin concentration": [
+                [
+                    "0.19", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "alloxanthin concentration": [
+                [
+                    "0.05", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "butfucoxanthin concentration": [
+                [
+                    "0.03", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "diadinoxanthin concentration": [
+                [
+                    "0.21", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "salinity": [
+                [
+                    "31.5", 
+                    "PSU", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chl-c3 concentration": [
+                [
+                    "0.07", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "lat_lon": [
+                [
+                    "+60.269444+5.222222"
+                ]
+            ], 
+            "water temperature at 3 meter depth": [
+                [
+                    "8.9", 
+                    "degree celsius", 
+                    "UO", 
+                    "27"
+                ]
+            ], 
+            "biome": [
+                [
+                    "sea water", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "matter": [
+                [
+                    "coastal water", 
+                    "ENVO", 
+                    "2150"
+                ]
+            ], 
+            "collection_date": [
+                [
+                    "2006-05-19"
+                ]
+            ], 
+            "divinyl-chl-b concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "feature": [
+                [
+                    "fjord;coast", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "BB carotene concentration": [
+                [
+                    "0.12", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "lutein concentration": [
+                [
+                    "0.02", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "geo_loc_name": [
+                [
+                    "Norway, fjord, coastal", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "part_org_nitro": [
+                [
+                    "166", 
+                    " ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "nitrate": [
+                [
+                    "0.59", 
+                    " umol/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Sample Name": [
+                "GSM255773"
+            ], 
+            "neoxanthin concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chl-b concentration": [
+                [
+                    "0.43", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "synechococcus count": [
+                [
+                    "22049", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "violaxanthin concentration": [
+                [
+                    "0.1", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "chl-c2 concentration": [
+                [
+                    "0.3", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "diatoxanthin concentration": [
+                [
+                    "0.05", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "cryptophytes count": [
+                [
+                    "216", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Protocol REF": [
+                [
+                    "sample collection - standard procedure 1"
+                ]
+            ], 
+            "primary production depth integrated production to 3 m expressed_in mgC m-2 d-1": [
+                [
+                    "129.9", 
+                    "mg/m2/d", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "small picoeukaryotes count": [
+                [
+                    "42927", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "fluorescence": [
+                [
+                    "4.1", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "bacteria count": [
+                [
+                    "6143892", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Source Name": [
+                "GSM255773"
+            ], 
+            "chl-a concentration": [
+                [
+                    "1.77", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "divinyl-chl-a concentration": [
+                [
+                    "0", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "phosphate": [
+                [
+                    "0.25", 
+                    " umol/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "large picoeukaryotes count": [
+                [
+                    "2916", 
+                    "number/ml", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "zeaxanthin concentration": [
+                [
+                    "0.13", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "organism": [
+                [
+                    "marine metagenome", 
+                    "NCBITax", 
+                    "408172"
+                ]
+            ], 
+            "peridinin concentration": [
+                [
+                    "0.26", 
+                    "ug/l", 
+                    "", 
+                    ""
+                ]
+            ]
+        }
+    ]
+}

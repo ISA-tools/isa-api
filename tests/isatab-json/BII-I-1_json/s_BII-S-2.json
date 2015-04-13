@@ -1,0 +1,86 @@
+{
+    "studyNodes": [
+        {
+            "genotype": [
+                [
+                    "KanMx4 MATa/MATalpha ura3-52/ura3-52 leu2-1/+trp1-63/+his3-D200/+ hoD KanMx4/hoD", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "organism": [
+                [
+                    "Saccharomyces cerevisiae (Baker's yeast)", 
+                    "NEWT", 
+                    "4932"
+                ]
+            ], 
+            "Source Name": [
+                "Saccharomyces cerevisiae FY1679 "
+            ], 
+            "strain": [
+                [
+                    "FY1679", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Protocol REF": [
+                [
+                    "growth"
+                ]
+            ], 
+            "Sample Name": [
+                "NZ_0hrs_Grow_2"
+            ], 
+            "mating type": [
+                [
+                    "mating_type_alpha", 
+                    "", 
+                    ""
+                ]
+            ]
+        }, 
+        {
+            "genotype": [
+                [
+                    "KanMx4 MATa/MATalpha ura3-52/ura3-52 leu2-1/+trp1-63/+his3-D200/+ hoD KanMx4/hoD", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "organism": [
+                [
+                    "Saccharomyces cerevisiae (Baker's yeast)", 
+                    "NEWT", 
+                    "4932"
+                ]
+            ], 
+            "Source Name": [
+                "Saccharomyces cerevisiae FY1679 "
+            ], 
+            "strain": [
+                [
+                    "FY1679", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "Protocol REF": [
+                [
+                    "growth"
+                ]
+            ], 
+            "Sample Name": [
+                "NZ_0hrs_Grow_1"
+            ], 
+            "mating type": [
+                [
+                    "mating_type_alpha", 
+                    "", 
+                    ""
+                ]
+            ]
+        }
+    ]
+}

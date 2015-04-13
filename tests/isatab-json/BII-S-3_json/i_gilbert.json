@@ -1,0 +1,364 @@
+{
+    "investigationContacts": [], 
+    "investigationPublications": [], 
+    "investigation": {}, 
+    "ontologySourceReference": [
+        {
+            "termSourceName": "UO", 
+            "termSourceVersion": "v 1.26", 
+            "termSourceDescription": "Unit Ontology", 
+            "termSourceFile": ""
+        }, 
+        {
+            "termSourceName": "OBI", 
+            "termSourceVersion": "beta", 
+            "termSourceDescription": "Ontology of Biomedical Investigation", 
+            "termSourceFile": ""
+        }, 
+        {
+            "termSourceName": "CHEBI", 
+            "termSourceVersion": "v 1.26", 
+            "termSourceDescription": "Chemical Entities of Biological Interest", 
+            "termSourceFile": ""
+        }, 
+        {
+            "termSourceName": "PATO", 
+            "termSourceVersion": "v 1.26", 
+            "termSourceDescription": "Phenotypic qualities (properties)", 
+            "termSourceFile": ""
+        }, 
+        {
+            "termSourceName": "NCBITax", 
+            "termSourceVersion": "v 1.26", 
+            "termSourceDescription": "NCBI Taxonomy Database", 
+            "termSourceFile": ""
+        }, 
+        {
+            "termSourceName": "", 
+            "termSourceVersion": "", 
+            "termSourceDescription": "", 
+            "termSourceFile": ""
+        }, 
+        {
+            "termSourceName": "ENVO", 
+            "termSourceVersion": "v 1.26", 
+            "termSourceDescription": "Environment Ontology", 
+            "termSourceFile": ""
+        }
+    ], 
+    "studies": [
+        {
+            "studyTitle": "Metagenomes and Metatranscriptomes of phytoplankton blooms from an ocean acidification mesocosm experiment", 
+            "studyPublicReleaseDate": "15/08/2008", 
+            "studyAssays": [
+                {
+                    "studyAssayFileName": "a_gilbert-assay-Gx.txt", 
+                    "studyAssayTechnologyTypeTermAccessionNumber": "", 
+                    "studyAssayTechnologyType": "nucleotide sequencing", 
+                    "studyAssayMeasurementType": "metagenome sequencing", 
+                    "studyAssayMeasurementTypeTermSourceREF": "OBI", 
+                    "studyAssayTechnologyTypeTermSourceREF": "OBI", 
+                    "studyAssayMeasurementTypeTermAccessionNumber": "", 
+                    "studyAssayTechnologyPlatform": "454 Genome Sequencer FLX"
+                }, 
+                {
+                    "studyAssayFileName": "a_gilbert-assay-Tx.txt", 
+                    "studyAssayTechnologyTypeTermAccessionNumber": "", 
+                    "studyAssayTechnologyType": "nucleotide sequencing", 
+                    "studyAssayMeasurementType": "transcription profiling", 
+                    "studyAssayMeasurementTypeTermSourceREF": "OBI", 
+                    "studyAssayTechnologyTypeTermSourceREF": "OBI", 
+                    "studyAssayMeasurementTypeTermAccessionNumber": "424", 
+                    "studyAssayTechnologyPlatform": "454 Genome Sequencer FS"
+                }
+            ], 
+            "studyDescription": "Sequencing the metatranscriptome can provide information about the response of organisms to varying environmental conditions. We present a methodology for obtaining random whole-community mRNA from a complex microbial assemblage using Pyrosequencing. The metatranscriptome had, with minimum contamination by ribosomal RNA, significant coverage of abundant transcripts, and included significantly more potentially novel proteins than in the metagenome. This experiment is part of a much larger experiment. We have produced 4 454 metatranscriptomic datasets and 6 454 metagenomic datasets. These were derived from 4 samples.", 
+            "studySubmissionDate": "15/08/2008", 
+            "studyIdentifier": "BII-S-3", 
+            "studyProtocols": [
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11,000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom.", 
+                    "studyProtocolParametersName": "filter pore size", 
+                    "studyProtocolType": "environmental material collection", 
+                    "studyProtocolTypeTermSourceREF": "OBI", 
+                    "studyProtocolName": "sample collection - standard procedure 1", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "600012", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "Total nucleic acid extraction was done as quickly as possible using the method of Neufeld et al. 2007.", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "nucleic acid extraction", 
+                    "studyProtocolTypeTermSourceREF": "OBI", 
+                    "studyProtocolName": "nucleic acid extraction - standard procedure 2", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "666667", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "RNA MinElute + substrative Hybridization + MEGAclear For transcriptomics, total RNA was separated from the columns using the RNA MinEluteTM clean-up kit (Qiagen) and checked for integrity of rRNA using an Agilent bioanalyser (RNA nano6000 chip). High integrity rRNA is essential for subtractive hybridization. Samples were treated with Turbo DNA-free enzyme (Ambion) to remove contaminating DNA. The rRNA was removed from mRNA by subtractive hybridization (Microbe Express Kit, Ambion), and absence of rRNA and DNA contamination was confirmed using the Agilent bioanalyser. The mRNA was further purified with the MEGAclearTM kit (Ambion). Reverse transcription of mRNA was performed using the SuperScript III enzyme (Invitrogen) with random hexamer primers (Promega). The cDNA was treated with RiboShredderTM RNase Blend (Epicentre) to remove trace RNA contaminants. To improve the yield of cDNA, samples were subjected to random amplification using the GenomiPhi V2 method (GE Healthcare). GenomiPhi technology produces branched DNA molecules that are recalcitrant to the pyrosequencing methodology. Therefore amplified samples were treated with S1 nuclease using the method of Zhang et al.2006.", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "RNA extraction", 
+                    "studyProtocolTypeTermSourceREF": "OBI", 
+                    "studyProtocolName": "mRNA extraction - standard procedure 3", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "666666", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "DNA extraction", 
+                    "studyProtocolTypeTermSourceREF": "OBI", 
+                    "studyProtocolName": "genomic DNA extraction - standard procedure 4", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "257", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "superscript+random hexamer primer", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "reverse transcription", 
+                    "studyProtocolTypeTermSourceREF": "", 
+                    "studyProtocolName": "reverse transcription - standard procedure 5", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "library construction", 
+                    "studyProtocolTypeTermSourceREF": "", 
+                    "studyProtocolName": "library construction", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "1. Sample Input and Fragmentation: The Genome Sequencer FLX System supports the sequencing of samples from a wide variety of starting materials including genomic DNA, PCR products, BACs, and cDNA. Samples such as genomic DNA and BACs are fractionated into small, 300- to 800-base pair fragments. For smaller samples, such as small non-coding RNA or PCR amplicons, fragmentation is not required. Instead, short PCR products amplified using Genome Sequencer fusion primers can be used for immobilization onto DNA capture beads as shown below under Emulsion Making, 2. Library Preparation: Using a series of standard molecular biology techniques, short adaptors (A and B), specific for both the 3' and 5' ends,  are added to each fragment. The adaptors are used for purification, amplification, and sequencing steps. Single-stranded fragments with A and B adaptors compose the sample library used for subsequent workflow steps. 3. Emulsion Making: The single-stranded DNA library is immobilized onto specifically designed DNA Capture Beads. Each bead carries a unique single-stranded DNA library fragment. The bead-bound library is emulsified with amplification reagents in a water-in-oil mixture resulting in microreactors containing just one bead with one unique sample-library fragment.4. emPCR (Emulsion PCR) Clonal Amplification: Each unique sample-library fragment is amplified within its own microreactor, excluding competing or contaminating sequences. Amplification of the entire fragment collection is done in parallel; for each fragment, this results in several million identical copies per bead. Subsequently, the emulsion mixture is broken while the amplified fragments remain bound to their specific beads. 5.Sequencing by Synthesis:The DNA-carrying Capture Beads are loaded onto the PicoTiterPlate device for sequencing. The diameter of the PicoTiterPlate wells allows for only one bead per well. After the PicoTiterPlate has been loaded into the Genome Sequencer FLX Instrument, individual nucleotides are flowed in a fixed order across the open wells and DNA Capture Beads. Addition of one (or more) nucleotide(s) complementary to the template strand results in a chemiluminescent signal recorded by the CCD camera of the Genome Sequencer FLX Instrument.\"\"", 
+                    "studyProtocolParametersName": "sequencing instrument", 
+                    "studyProtocolType": "nucleic acid sequencing", 
+                    "studyProtocolTypeTermSourceREF": "OBI", 
+                    "studyProtocolName": "pyrosequencing - standard procedure 6", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "DNA sequencer", 
+                    "studyProtocolTypeTermAccessionNumber": "626", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": "454 GS-FLX"
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "SEED-MG-RAST: The combination of signal intensity and positional information generated across the PicoTiterPlate device allows the software to determine the sequence of more than 400,000 individual reads per 7.5-hour instrument run simultaneously. For sequencing-data analysis, three different bioinformatics tools are available supporting the following applications: de novo assembly up to 120 megabases; resequencing up to 3 gigabases; and amplicon variant detection by comparison with a known reference sequence.", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "nucleic acid sequencing", 
+                    "studyProtocolTypeTermSourceREF": "OBI", 
+                    "studyProtocolName": "sequence analysis - standard procedure 7", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "626", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }
+            ], 
+            "studyFactors": [
+                {
+                    "studyFactorName": "dose", 
+                    "studyFactorTypeTermAccessionNumber": "", 
+                    "studyFactorType": "dose", 
+                    "studyFactorTypeTermSourceREF": ""
+                }, 
+                {
+                    "studyFactorName": "compound", 
+                    "studyFactorTypeTermAccessionNumber": "37577", 
+                    "studyFactorType": "chemical compound", 
+                    "studyFactorTypeTermSourceREF": "CHEBI"
+                }, 
+                {
+                    "studyFactorName": "collection_date", 
+                    "studyFactorTypeTermAccessionNumber": "", 
+                    "studyFactorType": "time", 
+                    "studyFactorTypeTermSourceREF": ""
+                }
+            ], 
+            "studyDesignDescriptors": [
+                {
+                    "studyDesignTypeTermAccessionNumber": "500020", 
+                    "studyDesignType": "time series design", 
+                    "studyDesignTypeTermSourceREF": "OBI"
+                }
+            ], 
+            "studyContacts": [
+                {
+                    "studyPersonEmail": "jagi@pml.ac.uk", 
+                    "studyPersonMidInitials": "A", 
+                    "studyPersonRolesTermAccessionNumber": "103", 
+                    "studyPersonRolesTermSourceREF": "OBI", 
+                    "studyPersonAddress": "Prospect Place, Plymouth, United Kingdom", 
+                    "studyPersonFirstName": "Jack", 
+                    "studyPersonAffiliation": "Plymouth Marine Laboratory", 
+                    "studyPersonFax": "", 
+                    "studyPersonLastName": "Gilbert", 
+                    "studyPersonRoles": "principal investigator role", 
+                    "studyPersonPhone": ""
+                }, 
+                {
+                    "studyPersonEmail": "", 
+                    "studyPersonMidInitials": "", 
+                    "studyPersonRolesTermAccessionNumber": "103", 
+                    "studyPersonRolesTermSourceREF": "OBI", 
+                    "studyPersonAddress": "CEH Oxford, Oxford, United Kingdom", 
+                    "studyPersonFirstName": "Dawn", 
+                    "studyPersonAffiliation": "NERC Centre for Ecology and Hydrology", 
+                    "studyPersonFax": "", 
+                    "studyPersonLastName": "Field", 
+                    "studyPersonRoles": "principal investigator role", 
+                    "studyPersonPhone": ""
+                }, 
+                {
+                    "studyPersonEmail": "", 
+                    "studyPersonMidInitials": "", 
+                    "studyPersonRolesTermAccessionNumber": "103", 
+                    "studyPersonRolesTermSourceREF": "OBI", 
+                    "studyPersonAddress": "San Diego State University, San Diego, California, United States of America", 
+                    "studyPersonFirstName": "Ying", 
+                    "studyPersonAffiliation": "California Institute for Telecommunications and Information Technology", 
+                    "studyPersonFax": "", 
+                    "studyPersonLastName": "Huang", 
+                    "studyPersonRoles": "principal investigator role", 
+                    "studyPersonPhone": ""
+                }, 
+                {
+                    "studyPersonEmail": "", 
+                    "studyPersonMidInitials": "", 
+                    "studyPersonRolesTermAccessionNumber": "103", 
+                    "studyPersonRolesTermSourceREF": "OBI", 
+                    "studyPersonAddress": "Argonne National Laboratory, Argonne, Illinois, United States of America", 
+                    "studyPersonFirstName": "Rob", 
+                    "studyPersonAffiliation": "Department of Computer Science, Mathematics and Computer Science Division,", 
+                    "studyPersonFax": "", 
+                    "studyPersonLastName": "Edwards", 
+                    "studyPersonRoles": "principal investigator role", 
+                    "studyPersonPhone": ""
+                }, 
+                {
+                    "studyPersonEmail": "", 
+                    "studyPersonMidInitials": "", 
+                    "studyPersonRolesTermAccessionNumber": "103", 
+                    "studyPersonRolesTermSourceREF": "OBI", 
+                    "studyPersonAddress": "San Diego State University, San Diego, California, United States of America", 
+                    "studyPersonFirstName": "Weizhong", 
+                    "studyPersonAffiliation": "California Institute for Telecommunications and Information Technology", 
+                    "studyPersonFax": "", 
+                    "studyPersonLastName": "Li", 
+                    "studyPersonRoles": "principal investigator role", 
+                    "studyPersonPhone": ""
+                }, 
+                {
+                    "studyPersonEmail": "", 
+                    "studyPersonMidInitials": "", 
+                    "studyPersonRolesTermAccessionNumber": "", 
+                    "studyPersonRolesTermSourceREF": "", 
+                    "studyPersonAddress": "", 
+                    "studyPersonFirstName": "", 
+                    "studyPersonAffiliation": "", 
+                    "studyPersonFax": "", 
+                    "studyPersonLastName": "", 
+                    "studyPersonRoles": "", 
+                    "studyPersonPhone": ""
+                }, 
+                {
+                    "studyPersonEmail": "", 
+                    "studyPersonMidInitials": "", 
+                    "studyPersonRolesTermAccessionNumber": "103", 
+                    "studyPersonRolesTermSourceREF": "OBI", 
+                    "studyPersonAddress": "San Diego State University, San Diego, California, United States of America", 
+                    "studyPersonFirstName": "Paul", 
+                    "studyPersonAffiliation": "California Institute for Telecommunications and Information Technology", 
+                    "studyPersonFax": "", 
+                    "studyPersonLastName": "Gilna", 
+                    "studyPersonRoles": "principal investigator role", 
+                    "studyPersonPhone": ""
+                }, 
+                {
+                    "studyPersonEmail": "", 
+                    "studyPersonMidInitials": "", 
+                    "studyPersonRolesTermAccessionNumber": "103", 
+                    "studyPersonRolesTermSourceREF": "OBI", 
+                    "studyPersonAddress": "Prospect Place, Plymouth, United Kingdom", 
+                    "studyPersonFirstName": "Ian", 
+                    "studyPersonAffiliation": "Plymouth Marine Laboratory", 
+                    "studyPersonFax": "", 
+                    "studyPersonLastName": "Joint", 
+                    "studyPersonRoles": "principal investigator role", 
+                    "studyPersonPhone": ""
+                }
+            ], 
+            "studyPublications": [
+                {
+                    "studyPublicationStatusTermSourceREF": "", 
+                    "studyPublicationTitle": "Detection of large numbers of novel sequences in the metatranscriptomes of complex marine microbial communities.", 
+                    "studyPubMedID": "18725995", 
+                    "studyPublicationDOI": "10.1371/journal.pone.0003042", 
+                    "studyPublicationStatus": "indexed in PubMed", 
+                    "studyPublicationStatusTermAccessionNumber": "", 
+                    "studyPublicationAuthorlist": "Gilbert JA, Field D, Huang Y, Edwards R, Li W, Gilna P, Joint I."
+                }, 
+                {
+                    "studyPublicationStatusTermSourceREF": "", 
+                    "studyPublicationTitle": "Potential for phosphonoacetate utilization by marine bacteria in temperate coastal waters.", 
+                    "studyPubMedID": "18783384", 
+                    "studyPublicationDOI": "10.1111/j.1462-2920.2008.01745.x", 
+                    "studyPublicationStatus": "indexed in PubMed", 
+                    "studyPublicationStatusTermAccessionNumber": "", 
+                    "studyPublicationAuthorlist": "Gilbert JA, Thomas S, Cooley NA, Kulakova A, Field D, Booth T, McGrath JW, Quinn JP, Joint I."
+                }
+            ], 
+            "studyFileName": "s_BII-S-3.txt"
+        }
+    ]
+}

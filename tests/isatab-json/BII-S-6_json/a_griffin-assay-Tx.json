@@ -1,0 +1,118 @@
+{
+    "assayNodes": [
+        {
+            "ArrayExpress Accession": [
+                [
+                    "E-BIID-1"
+                ]
+            ], 
+            "Labeled Extract Name": [
+                [
+                    "ro.Group-12.Subject-1.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group-12.Subject-2.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group-10.Subject-2.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group-1.Subject-2.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group17.Subject-1.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group18.Subject-3.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group-3.Subject-1.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group-2.Subject-2.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group-2.Subject-1.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group-1.Subject-1.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group-8.Subject-2.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group-10.Subject-3.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group-10.Subject-1.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group18.Subject-1.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group-8.Subject-1.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group17.Subject-2.BTO:liver.E1.LE1"
+                ], 
+                [
+                    "ro.Group18.Subject-2.BTO:liver.E1.LE1"
+                ]
+            ], 
+            "Sample Name": [
+                "ro.Group18.Subject-3.BTO:liver", 
+                "ro.Group-12.Subject-1.BTO:liver", 
+                "ro.Group-12.Subject-2.BTO:liver", 
+                "ro.Group-8.Subject-2.BTO:liver", 
+                "ro.Group-1.Subject-1.BTO:liver", 
+                "ro.Group17.Subject-2.BTO:liver", 
+                "ro.Group-10.Subject-3.BTO:liver", 
+                "ro.Group-8.Subject-1.BTO:liver", 
+                "ro.Group17.Subject-1.BTO:liver", 
+                "ro.Group18.Subject-1.BTO:liver", 
+                "ro.Group-1.Subject-2.BTO:liver", 
+                "ro.Group-10.Subject-1.BTO:liver", 
+                "ro.Group-2.Subject-1.BTO:liver", 
+                "ro.Group18.Subject-2.BTO:liver", 
+                "ro.Group-2.Subject-2.BTO:liver", 
+                "ro.Group-10.Subject-2.BTO:liver", 
+                "ro.Group-3.Subject-1.BTO:liver"
+            ], 
+            "Label": [
+                [
+                    "biotin", 
+                    "CHEBI", 
+                    "15956"
+                ]
+            ], 
+            "ArrayExpress Processed Data URL": [
+                [
+                    "E-BIID-1"
+                ]
+            ], 
+            "Protocol REF": [
+                [
+                    "P-BMAP-4"
+                ], 
+                [
+                    "P-BMAP-3"
+                ], 
+                [
+                    "P-BMAP-6"
+                ], 
+                [
+                    "P-BMAP-5"
+                ], 
+                [
+                    "P-BMAP-2"
+                ]
+            ], 
+            "Derived Data File": [
+                "GSE665.txt"
+            ], 
+            "Raw Data File": [
+                ""
+            ]
+        }
+    ]
+}

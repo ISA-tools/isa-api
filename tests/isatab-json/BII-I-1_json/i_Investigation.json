@@ -1,0 +1,493 @@
+{
+    "investigationContacts": [
+        {
+            "investigationPersonAffiliation": "Faculty of Life Sciences, Michael Smith Building, University of Manchester", 
+            "investigationPersonFax": "", 
+            "investigationPersonEmail": "", 
+            "investigationPersonFirstName": "Stephen", 
+            "investigationPersonRolesTermSourceREF": "", 
+            "investigationPersonLastName": "Oliver", 
+            "investigationPersonRoles": "corresponding author", 
+            "investigationPersonMidInitials": "G", 
+            "investigationPersonAddress": "Oxford Road, Manchester M13 9PT, UK", 
+            "investigationPersonRolesTermAccessionNumber": "", 
+            "investigationPersonPhone": ""
+        }, 
+        {
+            "investigationPersonAffiliation": "Faculty of Life Sciences, Michael Smith Building, University of Manchester", 
+            "investigationPersonFax": "", 
+            "investigationPersonEmail": "", 
+            "investigationPersonFirstName": "Castrillo", 
+            "investigationPersonRolesTermSourceREF": "", 
+            "investigationPersonLastName": "Juan", 
+            "investigationPersonRoles": "author", 
+            "investigationPersonMidInitials": "I", 
+            "investigationPersonAddress": "Oxford Road, Manchester M13 9PT, UK", 
+            "investigationPersonRolesTermAccessionNumber": "", 
+            "investigationPersonPhone": ""
+        }, 
+        {
+            "investigationPersonAffiliation": "Faculty of Life Sciences, Michael Smith Building, University of Manchester", 
+            "investigationPersonFax": "", 
+            "investigationPersonEmail": "", 
+            "investigationPersonFirstName": "Zeef", 
+            "investigationPersonRolesTermSourceREF": "", 
+            "investigationPersonLastName": "Leo", 
+            "investigationPersonRoles": "author", 
+            "investigationPersonMidInitials": "A", 
+            "investigationPersonAddress": "Oxford Road, Manchester M13 9PT, UK", 
+            "investigationPersonRolesTermAccessionNumber": "", 
+            "investigationPersonPhone": ""
+        }
+    ], 
+    "investigationPublications": [
+        {
+            "investigationPublicationDOI": "doi:10.1186/jbiol54", 
+            "investigationPublicationTitle": "Growth control of the eukaryote cell: a systems biology study in yeast.", 
+            "investigationPubMedID": "17439666", 
+            "investigationPublicationStatusTermSourceREF": "", 
+            "investigationPublicationStatus": "indexed in Pubmed", 
+            "investigationPublicationAuthorlist": "Castrillo JI, Zeef LA, Hoyle DC, Zhang N, Hayes A, Gardner DC, Cornell MJ, Petty J, Hakes L, Wardleworth L, Rash B, Brown M, Dunn WB, Broadhurst D, O'Donoghue K, Hester SS, Dunkley TP, Hart SR, Swainston N, Li P, Gaskell SJ, Paton NW, Lilley KS, Kell DB, Oliver SG.", 
+            "investigationPublicationStatusTermAccessionNumber": ""
+        }
+    ], 
+    "investigation": {
+        "investigationIdentifier": "BII-I-1", 
+        "investigationPublicReleaseDate": "10/03/2009", 
+        "investigationDescription": "Background\nCell growth underlies many key cellular and developmental processes, yet a limited number of studies have been carried out on cell-growth regulation. Comprehensive studies at the transcriptional, proteomic and metabolic levels under defined controlled conditions are currently lacking.\nResults\nMetabolic control analysis is being exploited in a systems biology study of the eukaryotic cell. Using chemostat culture, we have measured the impact of changes in flux (growth rate) on the transcriptome, proteome, endometabolome and exometabolome of the yeast Saccharomyces cerevisiae. Each functional genomic level shows clear growth-rate-associated trends and discriminates between carbon-sufficient and carbon-limited conditions. Genes consistently and significantly upregulated with increasing growth rate are frequently essential and encode evolutionarily conserved proteins of known function that participate in many protein-protein interactions. In contrast, more unknown, and fewer essential, genes are downregulated with increasing growth rate; their protein products rarely interact with one another. A large proportion of yeast genes under positive growth-rate control share orthologs with other eukaryotes, including humans. Significantly, transcription of genes encoding components of the TOR complex (a major controller of eukaryotic cell growth) is not subject to growth-rate regulation. Moreover, integrative studies reveal the extent and importance of post-transcriptional control, patterns of control of metabolic fluxes at the level of enzyme synthesis, and the relevance of specific enzymatic reactions in the control of metabolic fluxes during cell growth.\nConclusion\nThis work constitutes a first comprehensive systems biology study on growth-rate control in the eukaryotic cell. The results have direct implications for advanced studies on cell growth, in vivo regulation of metabolic fluxes for comprehensive metabolic engineering, and for the design of genome-scale systems biology models of the eukaryotic cell.", 
+        "investigationSubmissionDate": "30/04/2007", 
+        "investigationTitle": "Growth control of the eukaryote cell: a systems biology study in yeast"
+    }, 
+    "ontologySourceReference": [
+        {
+            "termSourceName": "BTO", 
+            "termSourceVersion": "v 1.26", 
+            "termSourceDescription": "BRENDA tissue / enzyme source", 
+            "termSourceFile": "ArrayExpress Experimental Factor Ontology"
+        }, 
+        {
+            "termSourceName": "NEWT", 
+            "termSourceVersion": "v 1.26", 
+            "termSourceDescription": "NEWT UniProt Taxonomy Database", 
+            "termSourceFile": ""
+        }, 
+        {
+            "termSourceName": "UO", 
+            "termSourceVersion": "v 1.26", 
+            "termSourceDescription": "Unit Ontology", 
+            "termSourceFile": ""
+        }, 
+        {
+            "termSourceName": "OBI", 
+            "termSourceVersion": "beta", 
+            "termSourceDescription": "Ontology of Biomedical Investigation", 
+            "termSourceFile": ""
+        }, 
+        {
+            "termSourceName": "CHEBI", 
+            "termSourceVersion": "v 1.26", 
+            "termSourceDescription": "Chemical Entities of Biological Interest", 
+            "termSourceFile": ""
+        }, 
+        {
+            "termSourceName": "PATO", 
+            "termSourceVersion": "v 1.26", 
+            "termSourceDescription": "Phenotypic qualities (properties)", 
+            "termSourceFile": ""
+        }
+    ], 
+    "studies": [
+        {
+            "studyTitle": "Study of the impact of changes in flux on the transcriptome, proteome, endometabolome and exometabolome of the yeast Saccharomyces cerevisiae under different nutrient limitations", 
+            "studyPublicReleaseDate": "10/03/2009", 
+            "studyAssays": [
+                {
+                    "studyAssayFileName": "a_metabolome.txt", 
+                    "studyAssayTechnologyTypeTermAccessionNumber": "", 
+                    "studyAssayTechnologyType": "mass spectrometry", 
+                    "studyAssayMeasurementType": "metabolite profiling", 
+                    "studyAssayMeasurementTypeTermSourceREF": "OBI", 
+                    "studyAssayTechnologyTypeTermSourceREF": "OBI", 
+                    "studyAssayMeasurementTypeTermAccessionNumber": "366", 
+                    "studyAssayTechnologyPlatform": "LC-MS/MS"
+                }, 
+                {
+                    "studyAssayFileName": "a_proteome.txt", 
+                    "studyAssayTechnologyTypeTermAccessionNumber": "", 
+                    "studyAssayTechnologyType": "mass spectrometry", 
+                    "studyAssayMeasurementType": "protein expression profiling", 
+                    "studyAssayMeasurementTypeTermSourceREF": "OBI", 
+                    "studyAssayTechnologyTypeTermSourceREF": "OBI", 
+                    "studyAssayMeasurementTypeTermAccessionNumber": "", 
+                    "studyAssayTechnologyPlatform": "iTRAQ"
+                }, 
+                {
+                    "studyAssayFileName": "a_transcriptome.txt", 
+                    "studyAssayTechnologyTypeTermAccessionNumber": "400148", 
+                    "studyAssayTechnologyType": "DNA microarray", 
+                    "studyAssayMeasurementType": "transcription profiling", 
+                    "studyAssayMeasurementTypeTermSourceREF": "OBI", 
+                    "studyAssayTechnologyTypeTermSourceREF": "OBI", 
+                    "studyAssayMeasurementTypeTermAccessionNumber": "424", 
+                    "studyAssayTechnologyPlatform": "Affymetrix"
+                }
+            ], 
+            "studyDescription": "We wished to study the impact of growth rate on the total complement of mRNA molecules, proteins, and metabolites in S. cerevisiae, independent of any nutritional or other physiological effects. To achieve this, we carried out our analyses on yeast grown in steady-state chemostat culture under four different nutrient limitations (glucose, ammonium, phosphate, and sulfate) at three different dilution (that is, growth) rates (D = u = 0.07, 0.1, and 0.2/hour, equivalent to population doubling times (Td) of 10 hours, 7 hours, and 3.5 hours, respectively; u = specific growth rate defined as grams of biomass generated per gram of biomass present per unit time).", 
+            "studySubmissionDate": "30/04/2007", 
+            "studyIdentifier": "BII-S-1", 
+            "studyProtocols": [
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "1. Biomass samples (45 ml) were taken via the sample port of the Applikon fermenters. The cells were pelleted by centrifugation for 5 min at 5000 rpm. The supernatant was removed and the RNA pellet resuspended in the residual medium to form a slurry. This was added in a dropwise manner directly into a 5 ml Teflon flask (B. Braun Biotech, Germany) containing liquid nitrogen and a 7 mm-diameter tungsten carbide ball. After allowing evaporation of the liquid nitrogen the flask was reassembled and the cells disrupted by agitation at 1500 rpm for 2 min in a Microdismembranator U (B. Braun Biotech, Germany) \n\n2. The frozen powder was then dissolved in 1 ml of TriZol reagent (Sigma-Aldrich, UK), vortexed for 1 min, and then kept at room temperature for a further 5min. \n\n3. Chloroform extraction was performed by addition of 0.2 ml chloroform, shaking vigorously or 15 s, then 5min incubation at room temperature. \n\n4. Following centrifugation at 12,000 rpm for 5 min, the RNA (contained in the aqueous phase) was precipitated with 0.5 vol of 2-propanol at room temperature for 15 min. \n5. After further centrifugation (12,000 rpm for 10 min at 4 C) the RNA pellet was washed twice with 70 % (v/v) ethanol, briefly air-dried, and redissolved in 0.5 ml diethyl pyrocarbonate (DEPC)-treated water. \n\n6. The single-stranded RNA was precipitated once more by addition of 0.5 ml of LiCl buffer (4 M LiCl, 20 mM Tris-HCl, pH 7.5, 10 mM EDTA), thus removing tRNA and DNA from the sample. \n\n7. After precipitation (20 C for 1h) and centrifugation (12,000 rpm, 30 min, 4 C), the RNA was washed twice in 70 % (v/v) ethanol prior to being dissolved in a minimal volume of DEPC-treated water.\n\n 8. Total RNA quality was checked using the RNA 6000 Nano Assay, and analysed on an Agilent 2100 Bioanalyser (Agilent Technologies). RNA was quantified using the Nanodrop ultra low volume spectrophotometer (Nanodrop Technologies).", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "growth protocol type", 
+                    "studyProtocolTypeTermSourceREF": "OBI", 
+                    "studyProtocolName": "growth protocol", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "growth23", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "1. Biomass samples (45 ml) were taken via the sample port of the Applikon fermenters. The cells were pelleted by centrifugation for 5 min at 5000 rpm. The supernatant was removed and the RNA pellet resuspended in the residual medium to form a slurry. This was added in a dropwise manner directly into a 5 ml Teflon flask (B. Braun Biotech, Germany) containing liquid nitrogen and a 7 mm-diameter tungsten carbide ball. After allowing evaporation of the liquid nitrogen the flask was reassembled and the cells disrupted by agitation at 1500 rpm for 2 min in a Microdismembranator U (B. Braun Biotech, Germany) \n\n2. The frozen powder was then dissolved in 1 ml of TriZol reagent (Sigma-Aldrich, UK), vortexed for 1 min, and then kept at room temperature for a further 5min. \n\n3. Chloroform extraction was performed by addition of 0.2 ml chloroform, shaking vigorouslyor 15 s, then 5min incubation at room temperature. \n\n4. Following centrifugation at 12,000 rpm for 5 min, the RNA (contained in the aqueous phase) was precipitated with 0.5 vol of 2-propanol at room temperature for 15 min. \n5. After further centrifugation (12,000 rpm for 10 min at 4 C) the RNA pellet was washed twice with 70 % (v/v) ethanol, briefly air-dried, and redissolved in 0.5 ml diethyl pyrocarbonate (DEPC)-treated water. \n\n6. The single-stranded RNA was precipitated once more by addition of 0.5 ml of LiCl bffer (4 M LiCl, 20 mM Tris-HCl, pH 7.5, 10 mM EDTA), thus removing tRNA and DNA from the sample. \n\n7. After precipitation (20 C for 1 h) and centrifugation (12,000 rpm, 30 min, 4 C), the RNA was washed twice in 70 % (v/v) ethanol prior to being dissolved in a minimal volume of DEPC-treated water.\n\n 8. Total RNA quality was checked using the RNA 6000 Nano Assay, and analysed on an Agilent 2100 Bioanalyser (Agilent Technologies). RNA was quantified using the Nanodrop ultra low volume spectrophotometer (Nanodrop Technologies).", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "mRNA extraction", 
+                    "studyProtocolTypeTermSourceREF": "OBI", 
+                    "studyProtocolName": "mRNA extraction", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "mRNA extraction", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "protein extraction", 
+                    "studyProtocolTypeTermSourceREF": "OBI", 
+                    "studyProtocolName": "protein extraction", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "protein extraction", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "This was done using Enzo BioArrayTM HighYieldTM RNA transcript labelling kit (T7) with 5 ul cDNA. The resultant cRNA was again purified using the GeneChip _ Sample Clean Up Module. The column was eluted in the first instance using 10 _l RNase-free water, and for a second time using 11 ul RNase-free water. cRNA was quantified using the Nanodrop spectrophotometer. A total of 15 ug of cRNA (required for hybridisation) was fragmented. Fragmentation was carried out by using 2 ul of fragmentation buffer for every 8 ul cRNA.", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "labeling", 
+                    "studyProtocolTypeTermSourceREF": "OBI", 
+                    "studyProtocolName": "biotin labeling", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "labeling", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "labeling", 
+                    "studyProtocolTypeTermSourceREF": "OBI", 
+                    "studyProtocolName": "ITRAQ labeling", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "labeling", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "For each target, a hybridisation cocktail was made using the standard array recipe as described in the GeneChip _ Expression Analysis technical manual. GeneChip _ control oligonucleotide and 20x eukaryotic hybridisation controls were used. Hybridisation buffer was made as detailed in the GeneChip _ manual and the BSA and herring sperm DNA was purchased from Invitrogen. The cocktail was heated to 99 C for 5 min, transferred to 45 C for 5 min and then spun for 5 min to remove any insoluble material. Affymetrix Yeast Yg_s98 S. cerevisiae arrays were pre-hybridised with 200 ul 1x hybridisation buffer and incubated at 45 C for 10 min. 200 ul of the hybridisation cocktail was loaded onto the arrays. The probe array was incubated in a rotisserie at 45 C, rotating at 60 rpm. Following hybridisation, for 16 hr, chips were loaded onto a Fluidics station for washing and staining using the EukGe WS2v4 programme controlled using Microarray Suite 5 software.", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "hybridization", 
+                    "studyProtocolTypeTermSourceREF": "OBI", 
+                    "studyProtocolName": "EukGE-WS4", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "hybridization", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "", 
+                    "studyProtocolParametersName": "sample volume;standard volume", 
+                    "studyProtocolType": "extraction", 
+                    "studyProtocolTypeTermSourceREF": "OBI", 
+                    "studyProtocolName": "metabolite extraction", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "302884", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }
+            ], 
+            "studyFactors": [
+                {
+                    "studyFactorName": "limiting nutrient", 
+                    "studyFactorTypeTermAccessionNumber": "37577", 
+                    "studyFactorType": "chemical compound", 
+                    "studyFactorTypeTermSourceREF": "CHEBI"
+                }, 
+                {
+                    "studyFactorName": "rate", 
+                    "studyFactorTypeTermAccessionNumber": "161", 
+                    "studyFactorType": "rate", 
+                    "studyFactorTypeTermSourceREF": "PATO"
+                }
+            ], 
+            "studyDesignDescriptors": [
+                {
+                    "studyDesignTypeTermAccessionNumber": "115", 
+                    "studyDesignType": "intervention design", 
+                    "studyDesignTypeTermSourceREF": "OBI"
+                }
+            ], 
+            "studyContacts": [
+                {
+                    "studyPersonEmail": "", 
+                    "studyPersonMidInitials": "G", 
+                    "studyPersonRolesTermAccessionNumber": "", 
+                    "studyPersonRolesTermSourceREF": "", 
+                    "studyPersonAddress": "Oxford Road, Manchester M13 9PT, UK", 
+                    "studyPersonFirstName": "Stephen", 
+                    "studyPersonAffiliation": "Faculty of Life Sciences, Michael Smith Building, University of Manchester", 
+                    "studyPersonFax": "", 
+                    "studyPersonLastName": "Oliver", 
+                    "studyPersonRoles": "corresponding author", 
+                    "studyPersonPhone": ""
+                }, 
+                {
+                    "studyPersonEmail": "", 
+                    "studyPersonMidInitials": "I", 
+                    "studyPersonRolesTermAccessionNumber": "", 
+                    "studyPersonRolesTermSourceREF": "", 
+                    "studyPersonAddress": "Oxford Road, Manchester M13 9PT, UK", 
+                    "studyPersonFirstName": "Castrillo", 
+                    "studyPersonAffiliation": "Faculty of Life Sciences, Michael Smith Building, University of Manchester", 
+                    "studyPersonFax": "", 
+                    "studyPersonLastName": "Juan", 
+                    "studyPersonRoles": "author", 
+                    "studyPersonPhone": ""
+                }, 
+                {
+                    "studyPersonEmail": "", 
+                    "studyPersonMidInitials": "A", 
+                    "studyPersonRolesTermAccessionNumber": "", 
+                    "studyPersonRolesTermSourceREF": "", 
+                    "studyPersonAddress": "Oxford Road, Manchester M13 9PT, UK", 
+                    "studyPersonFirstName": "Zeef", 
+                    "studyPersonAffiliation": "Faculty of Life Sciences, Michael Smith Building, University of Manchester", 
+                    "studyPersonFax": "", 
+                    "studyPersonLastName": "Leo", 
+                    "studyPersonRoles": "author", 
+                    "studyPersonPhone": ""
+                }
+            ], 
+            "studyPublications": [
+                {
+                    "studyPublicationStatusTermSourceREF": "", 
+                    "studyPublicationTitle": "Growth control of the eukaryote cell: a systems biology study in yeast.", 
+                    "studyPubMedID": "17439666", 
+                    "studyPublicationDOI": "doi:10.1186/jbiol54", 
+                    "studyPublicationStatus": "published", 
+                    "studyPublicationStatusTermAccessionNumber": "", 
+                    "studyPublicationAuthorlist": "Castrillo JI, Zeef LA, Hoyle DC, Zhang N, Hayes A, Gardner DC, Cornell MJ, Petty J, Hakes L, Wardleworth L, Rash B, Brown M, Dunn WB, Broadhurst D, O'Donoghue K, Hester SS, Dunkley TP, Hart SR, Swainston N, Li P, Gaskell SJ, Paton NW, Lilley KS, Kell DB, Oliver SG."
+                }
+            ], 
+            "studyFileName": "s_BII-S-1.txt"
+        }, 
+        {
+            "studyTitle": "A time course analysis of  transcription response in yeast treated with rapamycin, a specific inhibitor of the TORC1 complex: impact on yeast growth", 
+            "studyPublicReleaseDate": "10/03/2009", 
+            "studyAssays": [
+                {
+                    "studyAssayFileName": "a_microarray.txt", 
+                    "studyAssayTechnologyTypeTermAccessionNumber": "400148", 
+                    "studyAssayTechnologyType": "DNA microarray", 
+                    "studyAssayMeasurementType": "transcription profiling", 
+                    "studyAssayMeasurementTypeTermSourceREF": "OBI", 
+                    "studyAssayTechnologyTypeTermSourceREF": "OBI", 
+                    "studyAssayMeasurementTypeTermAccessionNumber": "424", 
+                    "studyAssayTechnologyPlatform": "affymetrix"
+                }
+            ], 
+            "studyDescription": "Comprehensive high-throughput analyses at the levels of mRNAs, proteins, and metabolites, and studies on gene expression patterns are required for systems biology studies of cell growth [4,26-29]. Although such comprehensive data sets are lacking, many studies have pointed to a central role for the target-of-rapamycin (TOR) signal transduction pathway in growth control. TOR is a serine/threonine kinase that has been conserved from yeasts to mammals; it integrates signals from nutrients or growth factors to regulate cell growth and cell-cycle progression coordinately. Although such comprehensive data sets are lacking, many studies have pointed to a central role for the target-of-rapamycin (TOR) signal transduction pathway in growth control. TOR is a serine/threonine kinase that has been conserved from yeasts to mammals; it integrates signals from nutrients or growth factors to regulate cell growth and cell-cycle progression coordinately. The effect of rapamycin were studied as follows: a culture growing at mid-exponential phase was divided into two. Rapamycin (200 ng/ml) was added to one half, and the drug's solvent to the other, as the control. Samples were taken at 0, 1, 2 and 4 h after treatment. Gene expression at the mRNA level was investigated by transcriptome analysis using Affymetrix hybridization arrays.", 
+            "studySubmissionDate": "30/04/2007", 
+            "studyIdentifier": "BII-S-2", 
+            "studyProtocols": [
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "For each target, a hybridisation cocktail was made using the standard array recipe as described in the GeneChip _ Expression Analysis technical manual. GeneChip _ control oligonucleotide and 20x eukaryotic hybridisation controls were used. Hybridisation buffer was made as detailed in the GeneChip _ manual and the BSA and herring sperm DNA was purchased from Invitrogen. The cocktail was heated to 99 C for 5mins, transferred to 45 C for 5 min and then spun for 5 min to remove any insoluble material. Affymetrix Yeast Yg_s98 S. cerevisiae arrays were pre-hybridised with 200 _l 1x hybridisation buffer and incubated at 45 C for 10 min. 200 _l of the hybridisation cocktail was loaded onto the arrays. The probe array was incubated in a rotisserie at 45 C, rotating at 60 rpm. Following hybridisation, for 16hr, chips were loaded onto a Fluidics station for washing and staining using the EukGe WS2v4 programme controlled using Microarray Suite 5 software.", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "hybridization", 
+                    "studyProtocolTypeTermSourceREF": "OBI", 
+                    "studyProtocolName": "EukGE-WS4", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "hybridization", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "The culture was grown in YMB minimum media + 2% glucose + supplement to early exponential growth (OD ~0.32)", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "growth", 
+                    "studyProtocolTypeTermSourceREF": "", 
+                    "studyProtocolName": "growth", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "1. Biomass samples (45ml) were taken via the sample port of the Applikon fermenters. The cells were pelleted by centrifugation for 5min at 5000 rpm. The supernatant was removed and the RNA pellet resuspended in the residual medium to form a slurry. This was added in a dropwise manner directly into a 5ml Teflon flask (B. Braun Biotech, Germany) containing liquid nitrogen and a 7 mm-diameter tungsten carbide ball. After allowing evaporation of the liquid nitrogen the flask was reassembled and the cells disrupted by agitation at 1500 rpm for 2 min in a Microdismembranator U (B. Braun Biotech, Germany) \n\n2. The frozen powder was then dissolved in 1 ml of TriZol reagent (Sigma-Aldrich, UK), vortexed for 1 min, and then kept at room temperature for a further 5 min. \n\n3. Chloroform extraction was performed by addition of 0.2 ml chloroform, shaking vigorouslyor 15 s, then 5 min incubation at room temperature. \n\n4. Following centrifugation at 12,000 rpm for 5 min, the RNA (contained in the aqueous phase) was precipitated with 0.5 vol of 2-propanol at room temperature for 15 min. \n5. After further centrifugation (12,000 rpm for 10 min at 4 C) the RNA pellet was washed twice with 70 % (v/v) ethanol, briefly air-dried, and redissolved in 0.5 ml diethyl pyrocarbonate (DEPC)-treated water. \n\n6. The single-stranded RNA was precipitated once more by addition of 0.5 ml of LiCl bffer (4 M LiCl, 20 mM Tris-HCl, pH 7.5, 10 mM EDTA), thus removing tRNA and DNA from the sample. \n\n7. After precipitation (20 C for 1h) and centrifugation (12,000 rpm, 30 min, 4 C), the RNA was washed twice in 70 % (v/v) ethanol prior to being dissolved in a minimal volume of DEPC-treated water.\n\n 8. Total RNA quality was checked using the RNA 6000 Nano Assay, and analysed on an Agilent 2100 Bioanalyser (Agilent Technologies). RNA was quantified using the Nanodrop ultra low volume spectrophotometer (Nanodrop Technologies).", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "mRNA extraction", 
+                    "studyProtocolTypeTermSourceREF": "", 
+                    "studyProtocolName": "mRNA  extraction", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }, 
+                {
+                    "studyProtocolVersion": "", 
+                    "studyProtocolComponentsTypeTermAccessionNumber": "", 
+                    "studyProtocolDescription": "This was done using Enzo BioArrayTM HighYieldTM RNA transcript labelling kit (T7) with 5 ul cDNA. The resultant cRNA was again purified using the GeneChip _ Sample Clean Up Module. The column was eluted in the first instance using 10 _l RNase-free water, and for a second time using 11 _l RNase-free water. cRNA was quantified using the Nanodrop spectrophotometer. A total of 15 ug of cRNA (required for hybridisation) was fragmented. Fragmentation was carried out by using 2 ul of fragmentation buffer for every 8 ul cRNA.", 
+                    "studyProtocolParametersName": "", 
+                    "studyProtocolType": "labeling", 
+                    "studyProtocolTypeTermSourceREF": "", 
+                    "studyProtocolName": "biotin labeling", 
+                    "studyProtocolParametersNameTermAccessionNumber": "", 
+                    "studyProtocolComponentsTypeTermSourceREF": "", 
+                    "studyProtocolURI": "", 
+                    "studyProtocolComponentsType": "", 
+                    "studyProtocolTypeTermAccessionNumber": "", 
+                    "studyProtocolParametersNameTermSourceREF": "", 
+                    "studyProtocolComponentsName": ""
+                }
+            ], 
+            "studyFactors": [
+                {
+                    "studyFactorName": "compound", 
+                    "studyFactorTypeTermAccessionNumber": "", 
+                    "studyFactorType": "compound", 
+                    "studyFactorTypeTermSourceREF": ""
+                }, 
+                {
+                    "studyFactorName": "exposure time", 
+                    "studyFactorTypeTermAccessionNumber": "", 
+                    "studyFactorType": "time", 
+                    "studyFactorTypeTermSourceREF": ""
+                }, 
+                {
+                    "studyFactorName": "dose", 
+                    "studyFactorTypeTermAccessionNumber": "", 
+                    "studyFactorType": "dose", 
+                    "studyFactorTypeTermSourceREF": ""
+                }
+            ], 
+            "studyDesignDescriptors": [
+                {
+                    "studyDesignTypeTermAccessionNumber": "500020", 
+                    "studyDesignType": "time series design", 
+                    "studyDesignTypeTermSourceREF": "OBI"
+                }
+            ], 
+            "studyContacts": [
+                {
+                    "studyPersonEmail": "", 
+                    "studyPersonMidInitials": "G", 
+                    "studyPersonRolesTermAccessionNumber": "", 
+                    "studyPersonRolesTermSourceREF": "", 
+                    "studyPersonAddress": "Oxford Road, Manchester M13 9PT, UK", 
+                    "studyPersonFirstName": "Stephen", 
+                    "studyPersonAffiliation": "Faculty of Life Sciences, Michael Smith Building, University of Manchester", 
+                    "studyPersonFax": "", 
+                    "studyPersonLastName": "Oliver", 
+                    "studyPersonRoles": "corresponding author", 
+                    "studyPersonPhone": ""
+                }, 
+                {
+                    "studyPersonEmail": "", 
+                    "studyPersonMidInitials": "I", 
+                    "studyPersonRolesTermAccessionNumber": "", 
+                    "studyPersonRolesTermSourceREF": "", 
+                    "studyPersonAddress": "Oxford Road, Manchester M13 9PT, UK", 
+                    "studyPersonFirstName": "Castrillo", 
+                    "studyPersonAffiliation": "Faculty of Life Sciences, Michael Smith Building, University of Manchester", 
+                    "studyPersonFax": "", 
+                    "studyPersonLastName": "Juan", 
+                    "studyPersonRoles": "author", 
+                    "studyPersonPhone": ""
+                }, 
+                {
+                    "studyPersonEmail": "", 
+                    "studyPersonMidInitials": "A", 
+                    "studyPersonRolesTermAccessionNumber": "", 
+                    "studyPersonRolesTermSourceREF": "", 
+                    "studyPersonAddress": "Oxford Road, Manchester M13 9PT, UK", 
+                    "studyPersonFirstName": "Zeef", 
+                    "studyPersonAffiliation": "Faculty of Life Sciences, Michael Smith Building, University of Manchester", 
+                    "studyPersonFax": "", 
+                    "studyPersonLastName": "Leo", 
+                    "studyPersonRoles": "author", 
+                    "studyPersonPhone": ""
+                }
+            ], 
+            "studyPublications": [
+                {
+                    "studyPublicationStatusTermSourceREF": "", 
+                    "studyPublicationTitle": "Growth control of the eukaryote cell: a systems biology study in yeast.", 
+                    "studyPubMedID": "17439666", 
+                    "studyPublicationDOI": "", 
+                    "studyPublicationStatus": "indexed in Pubmed", 
+                    "studyPublicationStatusTermAccessionNumber": "", 
+                    "studyPublicationAuthorlist": ""
+                }
+            ], 
+            "studyFileName": "s_BII-S-2.txt"
+        }
+    ]
+}

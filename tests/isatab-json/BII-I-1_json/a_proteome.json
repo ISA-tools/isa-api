@@ -1,0 +1,111 @@
+{
+    "assayNodes": [
+        {
+            "Labeled Extract Name": [
+                [
+                    "JC_S-0.1"
+                ], 
+                [
+                    "Pool1"
+                ], 
+                [
+                    "JC_C-0.2"
+                ], 
+                [
+                    "JC_C-0.1"
+                ], 
+                [
+                    "JC_P-0.1"
+                ], 
+                [
+                    "JC_N-0.2"
+                ], 
+                [
+                    "JC_S-0.2"
+                ], 
+                [
+                    "JC_N-0.1"
+                ], 
+                [
+                    "Pool3"
+                ], 
+                [
+                    "JC_P-0.2"
+                ], 
+                [
+                    "Pool2"
+                ]
+            ], 
+            "Sample Name": [
+                "P-0.1-aliquot11", 
+                "N-0.1-aliquot11", 
+                "S-0.1-aliquot11", 
+                "C-0.2-aliquot11", 
+                "C-0.1-aliquot11", 
+                "N-0.2-aliquot11", 
+                "S-0.2-aliquot11", 
+                "P-0.2-aliquot11"
+            ], 
+            "Label": [
+                [
+                    "iTRAQ reagent 115", 
+                    "", 
+                    ""
+                ], 
+                [
+                    "iTRAQ reagent 117", 
+                    "", 
+                    ""
+                ], 
+                [
+                    "iTRAQ reagent 114", 
+                    "", 
+                    ""
+                ], 
+                [
+                    "iTRAQ reagent 116", 
+                    "", 
+                    ""
+                ]
+            ], 
+            "PRIDE Accession": [
+                [
+                    "8762"
+                ], 
+                [
+                    "8763"
+                ], 
+                [
+                    "8761"
+                ]
+            ], 
+            "Protocol REF": [
+                [
+                    "ITRAQ labeling"
+                ], 
+                [
+                    "protein extraction"
+                ]
+            ], 
+            "PRIDE Processed Data Accession": [
+                [
+                    "8762"
+                ], 
+                [
+                    "8763"
+                ], 
+                [
+                    "8761"
+                ]
+            ], 
+            "Derived Data File": [
+                "PRIDE_Exp_Complete_Ac_8762.xml", 
+                "PRIDE_Exp_Complete_Ac_8763.xml", 
+                "PRIDE_Exp_Complete_Ac_8761.xml"
+            ], 
+            "Raw Data File": [
+                "spectrum.mzdata"
+            ]
+        }
+    ]
+}
