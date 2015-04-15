@@ -1,10 +1,12 @@
+import api
+from io.reader import read
+
 __author__ = 'Alfie Abdul-Rahman'
 
 """Tests for writing and parsing ISA-Tab JSON format.
 """
 import os, unittest
 
-from bcbio import isatab
 
 class IsatabJsonTest(unittest.TestCase):
     def setUp(self):
@@ -15,7 +17,7 @@ class IsatabJsonTest(unittest.TestCase):
         """Test general parsing of an example ISA-Tab JSON directory.
         """
         work_dir = os.path.join(self._dir, "BII-I-1_json")
-        json_data = isatab.read(work_dir)
+        json_data = read(work_dir)
         assert json_data["investigation"]["investigationIdentifier"] == "BII-I-1"
         assert len(json_data["ontologySourceReference"]) == 6
         assert json_data["ontologySourceReference"][2]["termSourceName"] == "UO"

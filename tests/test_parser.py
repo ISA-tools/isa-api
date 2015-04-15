@@ -4,7 +4,7 @@ import unittest
 import os
 import json
 
-from api.io.parser import ISATabParser
+from api.io.agb_parser import ISATabParser
 
 
 class IsatabTest(unittest.TestCase):

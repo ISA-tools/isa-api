@@ -1,43 +1,66 @@
-__author__ = 'agbeltran'
+"""Parse ISA-Tab structured metadata describing experimental data.
 
-import os;
-import glob;
-import csv;
-import collections;
+Works with ISA-Tab (http://isatab.sourceforge.net), which provides a structured
+format for describing experimental metdata.
 
-#regular expressions
-import re;
+The entry point for the module is the parse function, which takes an ISA-Tab
+directory (or investigator file) to parse. It returns a ISATabRecord object
+which contains details about the investigation. This is top level information
+like associated publications and contacts.
 
-from api.io.model import InvestigationClass;
-from api.io.model import AssayTabClass;
-from api.io.model import StudyAssayTabClass;
-from api.io.model import NodeRecord;
+This record contains a list of associated studies (ISATabStudyRecord objects).
+Each study contains a metadata attribute, which has the key/value pairs
+associated with the study in the investigation file. It also contains other
+high level data like publications, contacts, and details about the experimental
+design.
 
+The nodes attribute of each record captures the information from the Study file.
+This is a dictionary, where the keys are sample names and the values are
+NodeRecord objects. This collapses the study information on samples, and
+contains the associated information of each sample as key/value pairs in the
+metadata attribute.
 
-def ISATabParser(path):
+Finally, each study contains a list of assays, as ISATabAssayRecord objects.
+Similar to the study objects, these have a metadata attribute with key/value
+information about the assay. They also have a dictionary of nodes with data from
+the Assay file; in assays the keys are raw data files.
+
+This is a biased representation of the Study and Assay files which focuses on
+collapsing the data across the samples and raw data.
+"""
+from __future__ import with_statement
+
+import os
+import re
+import csv
+import glob
+import collections
+import pprint
+
+def parse(isatab_ref):
+    """Entry point to parse an ISA-Tab directory.
+
+    isatab_ref can point to a directory of ISA-Tab data, in which case we
+    search for the investigator file, or be a reference to the high level
+    investigation file.
     """
-    Parser for ISA-Tab files, the parameter is the path to the ISA-Tab folder.
-    """
-    if os.path.isdir(path):
-        i_filename = glob.glob(os.path.join(path, InvestigationClass.investigation_file_pattern))
-        assert len(i_filename) == 1
-        path = i_filename[0]
-    assert os.path.exists(path), "Did not find investigation file: %s" % path
-    investigation_parser = InvestigationParser()
-    with open(path, "rU") as in_handle:
-        rec = investigation_parser.parse(in_handle)
-    #s_parser = AssayParser(isatab_path)
-    #rec = s_parser.parse(rec)
+    if os.path.isdir(isatab_ref):
+        fnames = glob.glob(os.path.join(isatab_ref, "i_*.txt")) + \
+                 glob.glob(os.path.join(isatab_ref, "*.idf.txt"))
+        assert len(fnames) == 1
+        isatab_ref = fnames[0]
+    assert os.path.exists(isatab_ref), "Did not find investigation file: %s" % isatab_ref
+    i_parser = InvestigationParser()
+    with open(isatab_ref, "rU") as in_handle:
+        rec = i_parser.parse(in_handle)
+    s_parser = StudyAssayParser(isatab_ref)
+    rec = s_parser.parse(rec)
     return rec
 
-
 class InvestigationParser:
+    """Parse top level investigation files into ISATabRecord objects.
     """
-    Parse top level investigation files into ISATabClass objects.
-    """
-
     def __init__(self):
-        """section headers"""
         self._sections = {
             "ONTOLOGY SOURCE REFERENCE": "ontology_refs",
             "INVESTIGATION": "metadata",
@@ -52,31 +75,35 @@ class InvestigationParser:
         self._nolist = ["metadata"]
 
     def parse(self, in_handle):
-        line_iterator = self._line_iterator(in_handle)
+        line_iter = self._line_iter(in_handle)
         # parse top level investigation details
-        rec = ISATabClass()
-        rec, _ = self._parse_section(rec, line_iterator)
+        rec = ISATabRecord()
+        rec, _ = self._parse_region(rec, line_iter)
         # parse study information
         while 1:
-            study = StudyAssayTabClass()
-            study, had_info = self._parse_section(study, line_iterator)
+            study = ISATabStudyRecord()
+            study, had_info = self._parse_region(study, line_iter)
             if had_info:
                 rec.studies.append(study)
             else:
                 break
+        # handle SDRF files for MAGE compliant ISATab
+        if rec.metadata.has_key("SDRF File"):
+            study = ISATabStudyRecord()
+            study.metadata["Study File Name"] = rec.metadata["SDRF File"]
+            rec.studies.append(study)
         return rec
 
-    def _parse_section(self, rec, line_iterator):
-        """
-        Parse a section of an ISA-Tab, assigning information to a supplied record.
+    def _parse_region(self, rec, line_iter):
+        """Parse a section of an ISA-Tab, assigning information to a supplied record.
         """
         had_info = False
-        keyvals, section = self._parse_keyvals(line_iterator)
+        keyvals, section = self._parse_keyvals(line_iter)
         if keyvals:
             rec.metadata = keyvals[0]
         while section and section[0] != "STUDY":
             had_info = True
-            keyvals, next_section = self._parse_keyvals(line_iterator)
+            keyvals, next_section = self._parse_keyvals(line_iter)
             attr_name = self._sections[section[0]]
             if attr_name in self._nolist:
                 try:
@@ -87,9 +114,8 @@ class InvestigationParser:
             section = next_section
         return rec, had_info
 
-    def _line_iterator(self, in_handle):
-        """
-        Read tab delimited file, handling ISA-Tab special case headers.
+    def _line_iter(self, in_handle):
+        """Read tab delimited file, handling ISA-Tab special case headers.
         """
         reader = csv.reader(in_handle, dialect="excel-tab")
         for line in reader:
@@ -100,8 +126,7 @@ class InvestigationParser:
                 yield line
 
     def _parse_keyvals(self, line_iter):
-        """
-        Generates a dictionary of key/value pairs from a line with key and values.
+        """Generate dictionary from key/value pairs.
         """
         out = None
         line = None
@@ -122,10 +147,7 @@ class InvestigationParser:
                 line = None
         return out, line
 
-
-
-
-class AssayParser:
+class StudyAssayParser:
     """Parse row oriented metadata associated with study and assay samples.
 
     This currently does not attempt to be complete, but rather to extract the
@@ -165,7 +187,7 @@ class AssayParser:
                 study.nodes = source_data
                 final_assays = []
                 for assay in study.assays:
-                    cur_assay = AssayTabClass(assay)
+                    cur_assay = ISATabAssayRecord(assay)
                     assay_data = self._parse_study(assay["Study Assay File Name"],
                                                    ["Raw Data File", "Derived Data File",
                                                     "Image File"])
@@ -295,3 +317,98 @@ class AssayParser:
     def _swap_synonyms(self, header):
         return [self._synonyms.get(h, h) for h in header]
 
+_record_str = \
+"""* ISATab Record
+ metadata: {md}
+ studies:
+{studies}
+"""
+
+_study_str = \
+"""  * Study
+   metadata: {md}
+   nodes:
+{nodes}
+   assays:
+{assays}
+"""
+
+_assay_str = \
+"""    * Assay
+     metadata: {md}
+     nodes:
+{nodes}
+"""
+
+_node_str = \
+"""       * Node {name} {type}
+         metadata: {md}"""
+
+class ISATabRecord:
+    """Represent ISA-Tab metadata in structured format.
+
+    High level key/value data.
+      - metadata -- dictionary
+      - ontology_refs -- list of dictionaries
+      - contacts -- list of dictionaries
+      - publications -- list of dictionaries
+
+    Sub-elements:
+      - studies: List of ISATabStudyRecord objects.
+    """
+    def __init__(self):
+        self.metadata = {}
+        self.ontology_refs = []
+        self.publications = []
+        self.contacts = []
+        self.studies = []
+
+    def __str__(self):
+        return _record_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 3),
+                                  ont=self.ontology_refs,
+                                  pub=self.publications,
+                                  contact=self.contacts,
+                                  studies="\n".join(str(x) for x in self.studies))
+
+class ISATabStudyRecord:
+    """Represent a study within an ISA-Tab record.
+    """
+    def __init__(self):
+        self.metadata = {}
+        self.design_descriptors = []
+        self.publications = []
+        self.factors = []
+        self.assays = []
+        self.protocols = []
+        self.contacts = []
+        self.nodes = {}
+
+    def __str__(self):
+        return _study_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 5),
+                                 assays="\n".join(str(x) for x in self.assays),
+                                 nodes="\n".join(str(x) for x in self.nodes.values()))
+
+class ISATabAssayRecord:
+    """Represent an assay within an ISA-Tab record.
+    """
+    def __init__(self, metadata=None):
+        if metadata is None: metadata = {}
+        self.metadata = metadata
+        self.nodes = {}
+
+    def __str__(self):
+        return _assay_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 7),
+                                 nodes="\n".join(str(x) for x in self.nodes.values()))
+
+class NodeRecord:
+    """Represent a data node within an ISA-Tab Study/Assay file.
+    """
+    def __init__(self, name="", ntype=""):
+        self.ntype = ntype
+        self.name = name
+        self.metadata = {}
+
+    def __str__(self):
+        return _node_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 9),
+                                name=self.name,
+                                type=self.ntype)

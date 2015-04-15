@@ -1,16 +1,15 @@
 __author__ = 'Alfie Abdul-Rahman'
 
 import json, glob, os, ntpath
-
-from api.io.model import io
+from io import parser
 
 class IsatabToJsonWriter():
     def __init__(self):
-        work_dir = "BII-S-6"
+        work_dir = "BII-I-1"
         # not a good way of going to the path that we want
         os.chdir('..')
         os.chdir('..')
-        self._dir = "test/isatab/" + work_dir
+        self._dir = "tests/data/" + work_dir
         if not os.path.exists(os.path.join(os.getcwd(), 'json')):
             os.makedirs(os.path.join(os.getcwd(), 'json'))
 
@@ -20,11 +19,12 @@ class IsatabToJsonWriter():
         self.json_dir = os.path.join(os.getcwd(), 'json', work_dir + '_json')
 
     def parsingIsatab(self):
-        rec = io.parse(self._dir)
+        rec = parser.parse(self._dir)
         # process the investigation files
         fnames = glob.glob(os.path.join(self._dir, "i_*.txt")) + \
                  glob.glob(os.path.join(self._dir, "*.idf.txt"))
         investigationFilename = ntpath.basename(str(fnames[0])).split(".")
+        print "investigation file name: "+investigationFilename[0];
         self.parseInvestigationToJson(rec, os.path.join(self.json_dir, investigationFilename[0] + ".json"))
         # process the study files
         self.parseStudyToJson(rec)
