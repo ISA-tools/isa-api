@@ -47,10 +47,19 @@ class IsatabToJsonWriter():
         else:
             return s[0].lower() + s[1:]
 
+    def makeUppercaseFirstCharInStringArray(self, s):
+        myStr = ""
+        for i in s.split(' '):
+            if len(i) == 0:
+                myStr = myStr + i
+            else:
+                myStr = myStr + i[0].upper() + i[1:]
+        return myStr
+
     def makeAttributeName(self, tag):
         table = string.maketrans("","")
         stripTag = tag.translate(table, string.punctuation)
-        return self.makeLowercaseFirstChar(stripTag.split(' ',1)[0]) + stripTag.split(' ',1)[1].title().replace(" ", "")
+        return self.makeLowercaseFirstChar(stripTag.split(' ',1)[0]) + self.makeUppercaseFirstCharInStringArray(stripTag.split(' ',1)[1])
 
     def createAttributes(self, json_structures, metadata, tagName):
         json_inner_struct = {}
