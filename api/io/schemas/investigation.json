@@ -67,6 +67,12 @@
                 },
                 "investigationPublicationStatus": {
                     "type": "string"
+                },
+                "investigationPublicationStatusTermAccessionNumber": {
+                    "type": "@id"
+                },
+                "investigationPublicationStatusTermSourceREF": {
+                    "type": "string"
                 }
             }
         },
@@ -98,6 +104,12 @@
                     "type": "string"
                 },
                 "investigationPersonRoles": {
+                    "type": "string"
+                },
+                "investigationPersonRolesTermAccessionNumber": {
+                    "type": "@id"
+                },
+                "investigationPersonRolesTermSourceREF": {
                     "type": "string"
                 },
                 "commentInvestigationPersonREF": {
@@ -167,6 +179,12 @@
             },
             "studyPublicationStatus": {
                 "type": "string"
+            },
+            "studyPublicationStatusTermAccessionNumber": {
+                "type": "@id"
+            },
+            "studyPublicationStatusTermSourceREF": {
+                "type": "string"
             }
         }
     },
@@ -206,7 +224,7 @@
                 "type": "string"
             },
             "studyAssayTechnologyTypeTermAccessionNumber": {
-                "type": "string"
+                "type": "@id"
             },
             "studyAssayTechnologyTypeTermSourceREF": {
                 "type": "string"
