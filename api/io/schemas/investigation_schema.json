@@ -1,0 +1,356 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "ISA JSON Schema",
+    "description": "JSON Schema describing an ISA experimental descriptions",
+    "@context": {
+        "@base": "http://purl.org/isaterms/",
+        "xsd": "http://www.w3.org/2001/XMLSchema#"
+    },
+    "definitions": {
+        "ontologySourceReferenceSection": {
+            "type": "array",
+            "items": {
+                "termSourceName": {
+                    "type": "string"
+                },
+                "termSourceFile": {
+                    "type": "string"
+                },
+                "termSourceVersion": {
+                    "type": "string"
+                },
+                "termSourceDescription": {
+                    "type": "string"
+                }
+            }
+        },
+        "investigationSection": {
+            "type": "array",
+            "properties": {
+                "investigationIdentifier": {
+                    "type": "string"
+                },
+                "investigationTitle": {
+                    "type": "string"
+                },
+                "investigationDescription": {
+                    "type": "string"
+                },
+                "investigationSubmissionDate": {
+                    "type": "string"
+                },
+                "investigationPublicReleaseDate": {
+                    "type": "string"
+                },
+                "commentCreatedWithConfiguration": {
+                    "type": "string"
+                },
+                "commentLastOpenedWithConfiguration": {
+                    "type": "string"
+                }
+            }
+        },
+        "investigationPublicationsSection": {
+            "type": "array",
+            "items": {
+                "investigationPubMedID": {
+                    "type": "string"
+                },
+                "investigationPublicationDOI": {
+                    "type": "string"
+                },
+                "investigationPublicationAuthorList": {
+                    "type": "string"
+                },
+                "investigationPublicationTitle": {
+                    "type": "string"
+                },
+                "investigationPublicationStatus": {
+                    "type": "string"
+                },
+                "investigationPublicationStatusTermAccessionNumber": {
+                    "type": "@id"
+                },
+                "investigationPublicationStatusTermSourceREF": {
+                    "type": "string"
+                }
+            }
+        },
+        "investigationContactsSection": {
+            "type": "array",
+            "items": {
+                "investigationPersonLastName": {
+                    "type": "string"
+                },
+                "investigationPersonFirstName": {
+                    "type": "string"
+                },
+                "investigationPersonMidInitials": {
+                    "type": "string"
+                },
+                "investigationPersonEmail": {
+                    "type": "string"
+                },
+                "investigationPersonPhone": {
+                    "type": "string"
+                },
+                "investigationPersonFax": {
+                    "type": "string"
+                },
+                "investigationPersonAddress": {
+                    "type": "string"
+                },
+                "investigationPersonAffiliation": {
+                    "type": "string"
+                },
+                "investigationPersonRoles": {
+                    "type": "string"
+                },
+                "investigationPersonRolesTermAccessionNumber": {
+                    "type": "@id"
+                },
+                "investigationPersonRolesTermSourceREF": {
+                    "type": "string"
+                },
+                "commentInvestigationPersonREF": {
+                    "type": "@id"
+                }
+            }
+        },
+        "studySection": {
+            "type": "array",
+            "items": {
+                "studyIdentifier": {
+                    "type": "string"
+                },
+                "studyTitle": {
+                    "type": "string"
+                },
+                "studyDescription": {
+                    "type": "string"
+                },
+                "commentStudyGrantNumber": {
+                    "type": "string"
+                },
+                "commentStudyFundingAgency": {
+                    "type": "string"
+                },
+                "studySubmissionDate": {
+                    "type": "string"
+                },
+                "studyPublicReleaseDate": {
+                    "type": "string"
+                },
+                "studyFileName": {
+                    "type": "string"
+                }
+
+            }
+        },
+        "studyDesignDescriptorsSection": {
+            "type": "array",
+            "items": {
+                "studyDesignType": {
+                    "type": "string"
+                },
+                "studyDesignTypeTermAccessionNumber": {
+                    "type": "@id"
+                },
+                "studyDesignTypeTermSourceREF": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "studyPublicationsSection": {
+        "type": "array",
+        "items": {
+            "studyPubMedID": {
+                "type": "string"
+            },
+            "studyPublicationDOI": {
+                "type": "string"
+            },
+            "studyPublicationAuthorList": {
+                "type": "string"
+            },
+            "studyPublicationTitle": {
+                "type": "string"
+            },
+            "studyPublicationStatus": {
+                "type": "string"
+            },
+            "studyPublicationStatusTermAccessionNumber": {
+                "type": "@id"
+            },
+            "studyPublicationStatusTermSourceREF": {
+                "type": "string"
+            }
+        }
+    },
+    "studyFactorsSection": {
+        "type": "array",
+        "items": {
+            "studyFactorName": {
+                "type": "string"
+            },
+            "studyFactorType": {
+                "type": "string"
+            },
+            "studyFactorTermAccessionNumber": {
+                "type": "@id"
+            },
+            "studyFactorTypeTermSourceREF": {
+                "type": "string"
+            }
+        }
+    },
+     "studyAssaysSection": {
+        "type": "array",
+        "items": {
+            "studyAssayFileName": {
+                "type": "string"
+            },
+            "studyAssayMeasurementType": {
+                "type": "string"
+            },
+            "studyAssayMeasurementTypeTermAccessionNumber": {
+                "type": "@id"
+            },
+            "studyAssayMeasurementTypeTermSourceREF": {
+                "type": "string"
+            },
+            "studyAssayTechnologyType": {
+                "type": "string"
+            },
+            "studyAssayTechnologyTypeTermAccessionNumber": {
+                "type": "@id"
+            },
+            "studyAssayTechnologyTypeTermSourceREF": {
+                "type": "string"
+            },
+            "studyAssayTechnologyPlatform": {
+                "type": "string"
+            }
+        }
+    },
+    "studyProtocolsSection": {
+        "type": "array",
+        "items": {
+            "studyProtocolName": {
+                "type": "string"
+            },
+            "studyProtocolType": {
+                "type": "string"
+            },
+            "studyProtocolTypeTermAccessionNumber": {
+                "type": "@id"
+            },
+            "studyProtocolTypeTermSourceREF": {
+                "type": "string"
+            },
+            "studyProtocolDescription": {
+                "type": "string"
+            },
+            "studyProtocolURI": {
+                "type": "string"
+            },
+            "studyProtocolVersion": {
+                "type": "string"
+            },
+            "studyProtocolParametersName": {
+                "type": "string"
+            },
+            "studyProtocolParametersNameTermAccessionNumber": {
+                "type": "@id"
+            },
+            "studyProtocolParametersNameTermSourceREF": {
+                "type": "string"
+            },
+            "studyProtocolComponentsName": {
+                "type": "string"
+            },
+            "studyProtocolComponentsType": {
+                "type": "string"
+            },
+            "studyProtocolComponentsTypeTermAccessionNumber": {
+                "type": "@id"
+            },
+            "studyProtocolComponentsTypeTermSourceREF": {
+                "type": "@string"
+            }
+        }
+    },
+    "type": "object",
+
+    "properties": {
+        "ONTOLOGY SOURCE REFERENCE": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ontologySourceReferenceSection"
+            }
+        },
+        "INVESTIGATION": {
+                "$ref": "#/definitions/investigationSection"
+        },
+        "INVESTIGATION PUBLICATIONS": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/investigationPublicationsSection"
+            },
+            "INVESTIGATION CONTACTS": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/investigationContactsSection"
+                }
+            },
+            "studies": {
+                "type": "array",
+                "items": {
+                    "STUDY": {
+                        "$ref": "#/definitions/studySection"
+                        }
+                    },
+                    "STUDY DESIGN DESCRIPTORS": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/studyDesignDescriptorsSection"
+                        }
+                    }
+                    },
+                    "STUDY PUBLICATIONS": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/studyPublicationsSection"
+                        }
+                    }
+                    },
+                    "STUDY FACTORS": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/studyFactorsSection"
+                        }
+                    },
+                    "assays": {
+                        "type": "array",
+                        "items": {
+                            "STUDY ASSAYS": {
+                                "$ref": "#/definitions/studyAssaysSection"
+                            },
+                            "assay file":{
+                                    "$ref": "#/definitions/assay"
+                            }
+                        }
+                    },
+                    "STUDY PROTOCOLS": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/studyProtocolsSection"
+                    }
+                    }
+                }
+    }
+
+
+
+
