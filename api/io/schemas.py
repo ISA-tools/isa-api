@@ -1,9 +1,11 @@
 
 import json
 from jsonschema import Draft4Validator
-from jsonschema import FormatChecker
-from jsonschema import validate
+#from jsonschema import FormatChecker
 
+
+#from jsonschema import validate
+import validictory
 
 investigationSchema = json.load(open("schemas/investigation_schema.json"))
 Draft4Validator.check_schema(investigationSchema)
@@ -15,5 +17,7 @@ Draft4Validator.check_schema(investigationSchema)
 #Draft4Validator.check_schema(assay_transcription_micro)
 
 
-validate(json.load(open("../../json/BII-I-1_json/i_Investigation.json")), investigationSchema, format_checker=FormatChecker())
+#validate(json.load(open("../../json/BII-I-1_json/i_Investigation.json")), investigationSchema, format_checker=FormatChecker())
+
+validictory.validate(json.load(open("../../json/BII-I-1_json/i_Investigation.json")), investigationSchema)
 

@@ -65,7 +65,7 @@ class IsatabToJsonWriter():
         json_inner_struct = {}
         for meta in metadata:
             json_inner_struct[self.makeAttributeName(meta)] = metadata[meta]
-        json_structures[tagName + "Section"] = json_inner_struct
+        json_structures[tagName] = json_inner_struct
         return json_structures
 
     def createListOfAttributes(self, json_structures, properties, tagName):
@@ -75,7 +75,7 @@ class IsatabToJsonWriter():
             for item in onto:
                 json_item_struct[self.makeAttributeName(item)] = onto[item]
             json_list_struct.append(json_item_struct)
-        json_structures[tagName + "Section"] = json_list_struct
+        json_structures[tagName] = json_list_struct
         return json_structures
 
     def studies(self, json_structures, studies):
@@ -99,7 +99,7 @@ class IsatabToJsonWriter():
                 for i_sp in sp:
                     json_sp[self.makeAttributeName(i_sp)] = sp[i_sp].decode('ascii', errors='ignore')
                 json_study_protocol.append(json_sp)
-            json_study_structure["studyProtocolsSection"] = json_study_protocol
+            json_study_structure["studyProtocols"] = json_study_protocol
             # write out the "Study Contacts"
             self.createListOfAttributes(json_study_structure, _study.contacts, "studyContacts")
             myassay = []
@@ -108,9 +108,9 @@ class IsatabToJsonWriter():
                 for assay_meta in assay.metadata:
                     json_assay_structure[self.makeAttributeName(assay_meta)] = assay.metadata[assay_meta]
                 myassay.append(json_assay_structure)
-            json_study_structure["studyAssaysSection"] = myassay
+            json_study_structure["studyAssays"] = myassay
             mystudies.append(json_study_structure)
-            json_structures["studySection"] = mystudies
+            json_structures["study"] = mystudies
 
     def parseStudyToJson(self, rec):
         for study in rec.studies:
