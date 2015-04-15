@@ -14,5 +14,5 @@ Draft4Validator.check_schema(investigationSchema)
 #Draft4Validator.check_schema(assay_transcription_micro)
 
 
-#validate( {"name" : "Eggs", "price" : "Invalid"}, isa_schema)
+validate( json.load(open("../../json/BII-I-1_json/i_Investigation.json")), investigationSchema)
 
