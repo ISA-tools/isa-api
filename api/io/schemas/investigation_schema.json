@@ -284,21 +284,21 @@
     "type": "object",
 
     "properties": {
-        "ONTOLOGY SOURCE REFERENCE": {
+        "ontologySourceReference": {
             "type": "array",
             "items": {
                 "$ref": "#/definitions/ontologySourceReferenceSection"
             }
         },
-        "INVESTIGATION": {
+        "investigation": {
                 "$ref": "#/definitions/investigationSection"
         },
-        "INVESTIGATION PUBLICATIONS": {
+        "investigationPublications": {
             "type": "array",
             "items": {
                 "$ref": "#/definitions/investigationPublicationsSection"
             },
-            "INVESTIGATION CONTACTS": {
+            "investigationContacts": {
                 "type": "array",
                 "items": {
                     "$ref": "#/definitions/investigationContactsSection"
@@ -311,21 +311,21 @@
                         "$ref": "#/definitions/studySection"
                         }
                     },
-                    "STUDY DESIGN DESCRIPTORS": {
+                    "studyDesignDescriptors": {
                         "type": "array",
                         "items": {
                             "$ref": "#/definitions/studyDesignDescriptorsSection"
                         }
                     }
                     },
-                    "STUDY PUBLICATIONS": {
+                    "studyPublications": {
                         "type": "array",
                         "items": {
                             "$ref": "#/definitions/studyPublicationsSection"
                         }
                     }
                     },
-                    "STUDY FACTORS": {
+                    "studyFactors": {
                         "type": "array",
                         "items": {
                             "$ref": "#/definitions/studyFactorsSection"
@@ -334,7 +334,7 @@
                     "assays": {
                         "type": "array",
                         "items": {
-                            "STUDY ASSAYS": {
+                            "studyAssays": {
                                 "$ref": "#/definitions/studyAssaysSection"
                             },
                             "assay file":{
@@ -342,7 +342,7 @@
                             }
                         }
                     },
-                    "STUDY PROTOCOLS": {
+                    "studyProtocols": {
                         "type": "array",
                         "items": {
                             "$ref": "#/definitions/studyProtocolsSection"
