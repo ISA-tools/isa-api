@@ -1,7 +1,9 @@
 __author__ = 'Alfie Abdul-Rahman'
 
 import json, glob, os, ntpath
-from io import parser
+import re, string
+
+from api.io import parser
 
 class IsatabToJsonWriter():
     def __init__(self):
@@ -24,7 +26,6 @@ class IsatabToJsonWriter():
         fnames = glob.glob(os.path.join(self._dir, "i_*.txt")) + \
                  glob.glob(os.path.join(self._dir, "*.idf.txt"))
         investigationFilename = ntpath.basename(str(fnames[0])).split(".")
-        print "investigation file name: "+investigationFilename[0];
         self.parseInvestigationToJson(rec, os.path.join(self.json_dir, investigationFilename[0] + ".json"))
         # process the study files
         self.parseStudyToJson(rec)
@@ -40,14 +41,22 @@ class IsatabToJsonWriter():
             json.dump(json_structures, outfile, indent=4)
         outfile.close()
 
+    def makeLowercaseFirstChar(self, s):
+        if len(s) == 0:
+            return s
+        else:
+            return s[0].lower() + s[1:]
+
     def makeAttributeName(self, tag):
-        return tag.split(' ',1)[0].lower() + tag.split(' ',1)[1].replace(" ", "")
+        table = string.maketrans("","")
+        stripTag = tag.translate(table, string.punctuation)
+        return self.makeLowercaseFirstChar(stripTag.split(' ',1)[0]) + stripTag.split(' ',1)[1].title().replace(" ", "")
 
     def createAttributes(self, json_structures, metadata, tagName):
         json_inner_struct = {}
         for meta in metadata:
             json_inner_struct[self.makeAttributeName(meta)] = metadata[meta]
-        json_structures[tagName] = json_inner_struct
+        json_structures[tagName + "Section"] = json_inner_struct
         return json_structures
 
     def createListOfAttributes(self, json_structures, properties, tagName):
@@ -57,7 +66,7 @@ class IsatabToJsonWriter():
             for item in onto:
                 json_item_struct[self.makeAttributeName(item)] = onto[item]
             json_list_struct.append(json_item_struct)
-        json_structures[tagName] = json_list_struct
+        json_structures[tagName + "Section"] = json_list_struct
         return json_structures
 
     def studies(self, json_structures, studies):
@@ -81,7 +90,7 @@ class IsatabToJsonWriter():
                 for i_sp in sp:
                     json_sp[self.makeAttributeName(i_sp)] = sp[i_sp].decode('ascii', errors='ignore')
                 json_study_protocol.append(json_sp)
-            json_study_structure["studyProtocols"] = json_study_protocol
+            json_study_structure["studyProtocolsSection"] = json_study_protocol
             # write out the "Study Contacts"
             self.createListOfAttributes(json_study_structure, _study.contacts, "studyContacts")
             myassay = []
@@ -90,9 +99,9 @@ class IsatabToJsonWriter():
                 for assay_meta in assay.metadata:
                     json_assay_structure[self.makeAttributeName(assay_meta)] = assay.metadata[assay_meta]
                 myassay.append(json_assay_structure)
-            json_study_structure["studyAssays"] = myassay
+            json_study_structure["studyAssaysSection"] = myassay
             mystudies.append(json_study_structure)
-            json_structures["studies"] = mystudies
+            json_structures["studySection"] = mystudies
 
     def parseStudyToJson(self, rec):
         for study in rec.studies:
