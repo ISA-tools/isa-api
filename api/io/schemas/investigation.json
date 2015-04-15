@@ -45,7 +45,7 @@
                 "commentCreatedWithConfiguration": {
                     "type": "string"
                 },
-                "commentLastOpenedWithConfiguration]": {
+                "commentLastOpenedWithConfiguration": {
                     "type": "string"
                 }
             }
@@ -100,7 +100,7 @@
                 "investigationPersonRoles": {
                     "type": "string"
                 },
-                "commentInvestigationPersonREF]": {
+                "commentInvestigationPersonREF": {
                     "type": "@id"
                 }
             }
@@ -120,7 +120,7 @@
                 "commentStudyGrantNumber": {
                     "type": "string"
                 },
-                "commentStudyFundingAgency]": {
+                "commentStudyFundingAgency": {
                     "type": "string"
                 },
                 "studySubmissionDate": {
