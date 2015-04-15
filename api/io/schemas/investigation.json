@@ -7,258 +7,258 @@
         "xsd": "http://www.w3.org/2001/XMLSchema#"
     },
     "definitions": {
-        "ontologies_section": {
+        "ontologySourceReferenceSection": {
             "type": "array",
             "items": {
-                "Term Source Name": {
+                "termSourceName": {
                     "type": "string"
                 },
-                "Term Source File": {
+                "termSourceFile": {
                     "type": "string"
                 },
-                "Term Source Version": {
+                "termSourceVersion": {
                     "type": "string"
                 },
-                "Term Source Description": {
+                "termSourceDescription": {
                     "type": "string"
                 }
             }
         },
-        "investigation_section": {
+        "investigationSection": {
             "type": "array",
             "properties": {
-                "Investigation Identifier": {
+                "investigationIdentifier": {
                     "type": "string"
                 },
-                "Investigation Title": {
+                "investigationTitle": {
                     "type": "string"
                 },
-                "Investigation Description": {
+                "investigationDescription": {
                     "type": "string"
                 },
-                "Investigation Submission Date": {
+                "investigationSubmissionDate": {
                     "type": "string"
                 },
-                "Investigation Public Release Date": {
+                "investigationPublicReleaseDate": {
                     "type": "string"
                 },
-                "Comment [Created with configuration]": {
+                "commentCreatedWithConfiguration": {
                     "type": "string"
                 },
-                "Comment [Last Opened With Configuration]": {
+                "commentLastOpenedWithConfiguration]": {
                     "type": "string"
                 }
             }
         },
-        "investigation_publications_section": {
+        "investigationPublicationsSection": {
             "type": "array",
             "items": {
-                "Investigation PubMed ID": {
+                "investigationPubMedID": {
                     "type": "string"
                 },
-                "Investigation Publication DOI": {
+                "investigationPublicationDOI": {
                     "type": "string"
                 },
-                "Investigation Publication Author List": {
+                "investigationPublicationAuthorList": {
                     "type": "string"
                 },
-                "Investigation Publication Title": {
+                "investigationPublicationTitle": {
                     "type": "string"
                 },
-                "Investigation Publication Status": {
+                "investigationPublicationStatus": {
                     "type": "string"
                 }
             }
         },
-        "investigation_contacts_section": {
+        "investigationContactsSection": {
             "type": "array",
             "items": {
-                "Investigation Person Last Name": {
+                "investigationPersonLastName": {
                     "type": "string"
                 },
-                "Investigation Person First Name": {
+                "investigationPersonFirstName": {
                     "type": "string"
                 },
-                "Investigation Person Mid Initials": {
+                "investigationPersonMidInitials": {
                     "type": "string"
                 },
-                "Investigation Person Email": {
+                "investigationPersonEmail": {
                     "type": "string"
                 },
-                "Investigation Person Phone": {
+                "investigationPersonPhone": {
                     "type": "string"
                 },
-                "Investigation Person Fax": {
+                "investigationPersonFax": {
                     "type": "string"
                 },
-                "Investigation Person Address": {
+                "investigationPersonAddress": {
                     "type": "string"
                 },
-                "Investigation Person Affiliation": {
+                "investigationPersonAffiliation": {
                     "type": "string"
                 },
-                "Investigation Person Roles": {
+                "investigationPersonRoles": {
                     "type": "string"
                 },
-                "Comment[Investigation Person REF]": {
+                "commentInvestigationPersonREF]": {
                     "type": "@id"
                 }
             }
         },
-        "study_section": {
+        "studySection": {
             "type": "array",
             "items": {
-                "Study Identifier": {
+                "studyIdentifier": {
                     "type": "string"
                 },
-                "Study Title": {
+                "studyTitle": {
                     "type": "string"
                 },
-                "Study Description": {
+                "studyDescription": {
                     "type": "string"
                 },
-                "Comment[Study Grant Number]": {
+                "commentStudyGrantNumber": {
                     "type": "string"
                 },
-                "Comment[Study Funding Agency]": {
+                "commentStudyFundingAgency]": {
                     "type": "string"
                 },
-                "Study Submission Date": {
+                "studySubmissionDate": {
                     "type": "string"
                 },
-                "Study Public Release Date": {
+                "studyPublicReleaseDate": {
                     "type": "string"
                 },
-                "Study File Name": {
+                "studyFileName": {
                     "type": "string"
                 }
 
             }
         },
-        "study_design_descriptors_section": {
+        "studyDesignDescriptorsSection": {
             "type": "array",
             "items": {
-                "Study Design Type": {
+                "studyDesignType": {
                     "type": "string"
                 },
-                "Study Design Type Term Accession Number": {
+                "studyDesignTypeTermAccessionNumber": {
                     "type": "@id"
                 },
-                "Study Design Type Term Source REF": {
+                "studyDesignTypeTermSourceREF": {
                     "type": "string"
                 }
             }
         }
     },
-    "study_publications_section": {
+    "studyPublicationsSection": {
         "type": "array",
         "items": {
-            "Study PubMed ID": {
+            "studyPubMedID": {
                 "type": "string"
             },
-            "Study Publication DOI": {
+            "studyPublicationDOI": {
                 "type": "string"
             },
-            "Study Publication Author List": {
+            "studyPublicationAuthorList": {
                 "type": "string"
             },
-            "Study Publication Title": {
+            "studyPublicationTitle": {
                 "type": "string"
             },
-            "Study Publication Status": {
+            "studyPublicationStatus": {
                 "type": "string"
             }
         }
     },
-    "study_factors_section": {
+    "studyFactorsSection": {
         "type": "array",
         "items": {
-            "Study Factor Name": {
+            "studyFactorName": {
                 "type": "string"
             },
-            "Study Factor Type": {
+            "studyFactorType": {
                 "type": "string"
             },
-            "Study Factor Term Accession Number": {
+            "studyFactorTermAccessionNumber": {
                 "type": "@id"
             },
-            "Study Factor Type Term Source REF": {
+            "studyFactorTypeTermSourceREF": {
                 "type": "string"
             }
         }
     },
-     "study_assays_section": {
+     "studyAssaysSection": {
         "type": "array",
         "items": {
-            "Study Assay File Name": {
+            "studyAssayFileName": {
                 "type": "string"
             },
-            "Study Assay Measurement Type": {
+            "studyAssayMeasurementType": {
                 "type": "string"
             },
-            "Study Assay Measurement Type Term Accession Number": {
+            "studyAssayMeasurementTypeTermAccessionNumber": {
                 "type": "@id"
             },
-            "Study Assay Measurement Type Term Source REF": {
+            "studyAssayMeasurementTypeTermSourceREF": {
                 "type": "string"
             },
-            "Study Assay Technology Type": {
+            "studyAssayTechnologyType": {
                 "type": "string"
             },
-            "Study Assay Technology Type Term Accession Number": {
+            "studyAssayTechnologyTypeTermAccessionNumber": {
                 "type": "string"
             },
-            "Study Assay Technology Type Term Source REF": {
+            "studyAssayTechnologyTypeTermSourceREF": {
                 "type": "string"
             },
-            "Study Assay Technology Platform": {
+            "studyAssayTechnologyPlatform": {
                 "type": "string"
             }
         }
     },
-    "study_protocols_section": {
+    "studyProtocolsSection": {
         "type": "array",
         "items": {
-            "Study Protocol Name": {
+            "studyProtocolName": {
                 "type": "string"
             },
-            "Study Protocol Type": {
+            "studyProtocolType": {
                 "type": "string"
             },
-            "Study Protocol Type Term Accession Number": {
+            "studyProtocolTypeTermAccessionNumber": {
                 "type": "@id"
             },
-            "Study Protocol Type Term Source REF": {
+            "studyProtocolTypeTermSourceREF": {
                 "type": "string"
             },
-            "Study Protocol Description": {
+            "studyProtocolDescription": {
                 "type": "string"
             },
-            "Study Protocol URI": {
+            "studyProtocolURI": {
                 "type": "string"
             },
-            "Study Protocol Version": {
+            "studyProtocolVersion": {
                 "type": "string"
             },
-            "Study Protocol Parameters Name": {
+            "studyProtocolParametersName": {
                 "type": "string"
             },
-            "Study Protocol Parameters Name Term Accession Number": {
+            "studyProtocolParametersNameTermAccessionNumber": {
                 "type": "@id"
             },
-            "Study Protocol Parameters Name Term Source REF": {
+            "studyProtocolParametersNameTermSourceREF": {
                 "type": "string"
             },
-            "Study Protocol Components Name": {
+            "studyProtocolComponentsName": {
                 "type": "string"
             },
-            "Study Protocol Components Type": {
+            "studyProtocolComponentsType": {
                 "type": "string"
             },
-            "Study Protocol Components Type Term Accession Number": {
+            "studyProtocolComponentsTypeTermAccessionNumber": {
                 "type": "@id"
             },
-            "Study Protocol Components Type Term Source REF": {
+            "studyProtocolComponentsTypeTermSourceREF": {
                 "type": "@string"
             }
         }
@@ -269,57 +269,55 @@
         "ONTOLOGY SOURCE REFERENCE": {
             "type": "array",
             "items": {
-                "$ref": "#/definitions/ontologies_section"
+                "$ref": "#/definitions/ontologySourceReferenceSection"
             }
         },
         "INVESTIGATION": {
-
-                "$ref": "#/definitions/investigation_section"
-
+                "$ref": "#/definitions/investigationSection"
         },
         "INVESTIGATION PUBLICATIONS": {
             "type": "array",
             "items": {
-                "$ref": "#/definitions/investigation_publications_section"
+                "$ref": "#/definitions/investigationPublicationsSection"
             },
             "INVESTIGATION CONTACTS": {
                 "type": "array",
                 "items": {
-                    "$ref": "#/definitions/investigation_contacts_section"
+                    "$ref": "#/definitions/investigationContactsSection"
                 }
             },
             "studies": {
                 "type": "array",
                 "items": {
                     "STUDY": {
-                        "$ref": "#/definitions/study_section"
+                        "$ref": "#/definitions/studySection"
                         }
                     },
                     "STUDY DESIGN DESCRIPTORS": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/definitions/study_design_descriptors_section"
+                            "$ref": "#/definitions/studyDesignDescriptorsSection"
                         }
                     }
                     },
                     "STUDY PUBLICATIONS": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/definitions/study_publications_section"
+                            "$ref": "#/definitions/studyPublicationsSection"
                         }
                     }
                     },
                     "STUDY FACTORS": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/definitions/study_factors_section"
+                            "$ref": "#/definitions/studyFactorsSection"
                         }
                     },
                     "assays": {
                         "type": "array",
                         "items": {
                             "STUDY ASSAYS": {
-                                "$ref": "#/definitions/study_assays_section"
+                                "$ref": "#/definitions/studyAssaysSection"
                             },
                             "assay file":{
                                     "$ref": "#/definitions/assay"
@@ -329,7 +327,7 @@
                     "STUDY PROTOCOLS": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/definitions/study_protocols_section"
+                            "$ref": "#/definitions/studyProtocolsSection"
                     }
                     }
                 }
