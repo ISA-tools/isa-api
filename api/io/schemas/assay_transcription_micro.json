@@ -12,7 +12,7 @@
          "transcription_micro_assay": {
 
             "allOf": [
-                { "$ref": "#investigation.json/study_assays_section" },
+                { "$ref": "#investigation_schema.json/study_assays_section" },
                 { "$ref": "#/definitions/assay" },
                 {
                     "properties": {
