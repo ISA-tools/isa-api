@@ -15,51 +15,91 @@
                 },
                 "index": {
                     "type": "integer"
-                 }
+                }
             }
         },
-        "isaMaterialAttribute" : {
-            "allOf" : [
-                { "$ref": "#/definitions/isaNode"}
+        "isaMaterialAttribute": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/isaNode"
+                },
+                {
+                    "namePattern": "(Characteristics.*)"
+                }
             ]
         },
-        "isaMaterialNode" : {
-            "type" : "object",
-            "allOf" : [
-                { "$ref": "#/definitions/isaNode"},
-                { "properties" : {
-                    "nodeType" : { "enum": ["source", "sample"]},
-                    "attributes" : {
-                        "type" : "array",
-                        "items" : {
-                            "$ref": "#/definitions/isaMaterialAttribute"
+        "isaMaterialNode": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/isaNode"
+                },
+                {
+                    "properties": {
+                        "namePattern": "(Source.*)|(Sample.*)|(Extract.*)|(Labeled Extract.*)",
+                        "attributes": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/isaMaterialAttribute"
+                            }
                         }
                     }
                 }
+            ]
+        },
+        "isaProcessNode": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/isaNode"
+                },
+                {
+                    "namePattern": "(.*Assay Name)|(Normalization.*)|(Data Transformation.*)"
+                }
+            ]
+        },
+        "isaProtocolExecutionNode": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/isaNode"
+                },
+                {
+                    "namePattern": "((?i)Protocol REF)"
                 }
             ]
         }
     },
-    "type" : "object",
-    "properties" : {
+    "type": "object",
+    "properties": {
+        "studySampleTable": {
+            "studyTableHeaders": {
+                "type": "array",
+                "items": {
+                    "source": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/isaMaterialNode"
+                            },
+                            {
+                                "namePattern": "(Source.*)"
+                            }
+                        ]
+                    },
+                    "sample": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/isaMaterialNode"
+                            },
+                            {
+                                "namePattern": "(Sample.*)"
+                            }
+                        ]
+                    }
 
-        "studyTable" : {
-            "source" : {
-                "allOf" : [
-                     { "$ref": "#/definitions/isaMaterialNode"},
-                     { "nodeType" : "source" }
-                ]
+                }
             },
-            "sample" : {
-                "allOf" : [
-                     { "$ref": "#/definitions/isaMaterialNode"},
-                     { "nodeType" : "sample" }
-                ]
+            "studyTableData": {
+                "type" : "array"
             }
-
-
         }
-
     }
-
 }
