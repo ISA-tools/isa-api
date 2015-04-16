@@ -307,7 +307,7 @@
             "studies": {
                 "type": "array",
                 "items": {
-                    "STUDY": {
+                    "study": {
                         "$ref": "#/definitions/studySection"
                         }
                     },
