@@ -26,7 +26,7 @@
         },
         "investigationSection": {
             "type": "array",
-            "properties": {
+            "items": {
                 "investigationIdentifier": {
                     "type": "string"
                 },

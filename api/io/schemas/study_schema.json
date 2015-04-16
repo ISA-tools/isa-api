@@ -1,0 +1,52 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Study JSON Schema",
+    "description": "JSON Schema describing an Study table",
+    "@context": {
+        "@base": "http://purl.org/isaterms/",
+        "xsd": "http://www.w3.org/2001/XMLSchema#"
+    },
+    "definitions": {
+        "isaNode": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "index": {
+                    "type": "integer"
+                 }
+            }
+        },
+        "isaMaterialAttribute" : { //these correspond to the Characteristics
+            "allOf" : [
+                { "$ref": "#/definitions/isaNode"}
+            ]
+        },
+        "isaMaterialNode" : {
+            "type" : "object",
+            "allOf" : [
+                { "$ref": "#/definitions/isaNode"},
+                { "properties" : {
+                    "nodeType" : { "enum": ["source", "sample"]},
+                    "attributes" : {
+                        "type" : "array",
+                        "items" : {
+                            "$ref": "#/definitions/isaMaterialAttribute"
+                        }
+                    }
+                }
+                }
+            ]
+        }
+    },
+    "type" : "object",
+    "properties" : {
+
+        "studyTable" : {
+
+        }
+
+    }
+
+}
