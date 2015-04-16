@@ -205,7 +205,7 @@
             }
         }
     },
-     "studyAssaysSection": {
+    "studyAssaysSection": {
         "type": "array",
         "items": {
             "studyAssayFileName": {
@@ -291,65 +291,65 @@
             }
         },
         "investigation": {
-                "$ref": "#/definitions/investigationSection"
+            "$ref": "#/definitions/investigationSection"
         },
         "investigationPublications": {
             "type": "array",
             "items": {
                 "$ref": "#/definitions/investigationPublicationsSection"
-            },
-            "investigationContacts": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/investigationContactsSection"
+            }
+        },
+        "investigationContacts": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/investigationContactsSection"
+            }
+        },
+        "studies": {
+            "type": "array",
+            "items": {
+                "study": {
+                    "$ref": "#/definitions/studySection"
                 }
             },
-            "studies": {
+            "studyDesignDescriptors": {
                 "type": "array",
                 "items": {
-                    "study": {
-                        "$ref": "#/definitions/studySection"
-                        }
-                    },
-                    "studyDesignDescriptors": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/definitions/studyDesignDescriptorsSection"
-                        }
-                    }
-                    },
-                    "studyPublications": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/definitions/studyPublicationsSection"
-                        }
-                    }
-                    },
-                    "studyFactors": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/definitions/studyFactorsSection"
-                        }
-                    },
-                    "assays": {
-                        "type": "array",
-                        "items": {
-                            "studyAssays": {
-                                "$ref": "#/definitions/studyAssaysSection"
-                            },
-                            "assay file":{
-                                    "$ref": "#/definitions/assay"
-                            }
-                        }
-                    },
-                    "studyProtocols": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/definitions/studyProtocolsSection"
-                    }
-                    }
+                    "$ref": "#/definitions/studyDesignDescriptorsSection"
                 }
+            }
+        },
+        "studyPublications": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/studyPublicationsSection"
+            }
+        },
+        "studyFactors": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/studyFactorsSection"
+            }
+        },
+        "assays": {
+            "type": "array",
+            "items": {
+                "studyAssays": {
+                    "$ref": "#/definitions/studyAssaysSection"
+                },
+                "assay file":{
+                    "$ref": "#/definitions/assay"
+                }
+            }
+        },
+        "studyProtocols": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/studyProtocolsSection"
+            }
+        }
     }
+}
 
 
 
