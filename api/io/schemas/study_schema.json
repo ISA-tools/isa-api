@@ -113,32 +113,38 @@
             "studyTableHeaders": {
                 "type": "array",
                 "items": {
-                    "source": {
-                        "allOf": [
-                            {
-                                "$ref": "#/definitions/isaMaterialNode"
-                            },
-                            {
-                                "name" : {
-                                    "type": "string",
-                                    "pattern": "(Source.*)"
-                                }
+                    "oneOf" : [
+                        { "type": "object",
+                            "properties" : {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/isaMaterialNode"
+                                    },
+                                    {
+                                        "name": {
+                                            "type": "string",
+                                            "pattern": "(Source.*)"
+                                        }
+                                    }
+                                ]
+                            }},
+                        { "protocolExecutionNode": "ref:#definitions/isaProtocolExecutionNode" },
+                        { "type": "object",
+                            "properties": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/isaMaterialNode"
+                                    },
+                                    {
+                                        "name": {
+                                            "type": "string",
+                                            "pattern": "(Sample.*)"
+                                        }
+                                    }
+                                ]
                             }
-                        ]
-                    },
-                    "sample": {
-                        "allOf": [
-                            {
-                                "$ref": "#/definitions/isaMaterialNode"
-                            },
-                            {
-                                 "name" : {
-                                    "type": "string",
-                                    "pattern": "(Sample.*)"
-                                }
-                            }
-                        ]
-                    }
+                        }
+                    ]
 
                 }
             },
