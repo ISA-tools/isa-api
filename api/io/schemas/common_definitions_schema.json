@@ -1,0 +1,123 @@
+{  "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "ISA graph common definitions JSON Schema",
+    "description": "JSON Schema describing an Study table",
+    "@context": {
+        "@base": "http://purl.org/isaterms/",
+        "xsd": "http://www.w3.org/2001/XMLSchema#"
+    },
+    "definitions": {
+        "isaNode": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "index": {
+                    "type": "integer"
+                }
+            }
+        },
+        "isaMaterialAttribute": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/isaNode"
+                },
+                {
+                    "name": {
+                        "type": "string",
+                        "pattern": "(Characteristics.*)"
+                    }
+                }
+            ]
+        },
+        "isaMaterialNode": {
+            "type": "object",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/isaNode"
+                },
+                {
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "pattern": "(Source.*)|(Sample.*)|(Extract.*)|(Labeled Extract.*)"
+                        },
+                        "attributes": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/isaMaterialAttribute"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "isaProcessNode": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/isaNode"
+                },
+                {
+
+                    "name": {
+                        "type": "string",
+                        "pattern": "(.*Assay Name)|(Normalization.*)|(Data Transformation.*)"
+                    }
+
+                }
+            ]
+        },
+        "isaProtocolExecutionNode": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/isaNode"
+                },
+                {
+                    "name": {
+                        "type": "string",
+                        "pattern": "((?i)Protocol REF)"
+                    }
+
+                }
+            ]
+        },
+        "isaDataNode": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/isaNode"
+                },
+                {
+                    "name": {
+                        "type": "string",
+                        "pattern": "*File*"
+                    }
+
+                }
+            ]
+        },
+        "isaFactorValue": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/isaNode"
+                },
+                {
+                    "name": {
+                        "type": "string",
+                        "pattern": "(Factor Value.*)"
+                    }
+                }
+
+            ]
+        },
+        "isaUnit": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/isaNode"
+                },
+                {
+                    "pattern": "(Unit)"
+                }
+            ]
+        }
+    }
+}

@@ -9,8 +9,8 @@
     "commonDefinitions" : {"$ref":"url://common_definitions_schema.json"},
     "type": "object",
     "properties": {
-        "studySampleTable": {
-            "studyTableHeaders": {
+        "assayTable": {
+            "assayTableHeaders": {
                 "type": "array",
                 "items": {
                     "oneOf" : [
@@ -23,34 +23,20 @@
                                     {
                                         "name": {
                                             "type": "string",
-                                            "pattern": "(Source.*)"
+                                            "pattern": "(Sample.*)"
                                         }
                                     }
                                 ]
                             }},
                         { "protocolExecutionNode": "ref:#definitions/isaProtocolExecutionNode" },
                         { "processNode": "ref:#definitions/isaProcessNode" },
-                        { "type": "object",
-                            "properties": {
-                                "allOf": [
-                                    {
-                                        "$ref": "#/definitions/isaMaterialNode"
-                                    },
-                                    {
-                                        "name": {
-                                            "type": "string",
-                                            "pattern": "(Sample.*)"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
+                        { "dataNode": "ref:#definitions/isaDataNode" },
                         { "factorValue": "ref:#definitions/isaFactorValue" }
                     ]
 
                 }
             },
-            "studyTableData": {
+            "assayTableData": {
                 "type" : "array"
             }
         }
