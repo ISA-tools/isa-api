@@ -281,6 +281,48 @@
             }
         }
     },
+    "studyContactsSection": {
+        "type": "array",
+        "items": {
+            "studyPersonLastName": {
+                "type": "string"
+            },
+            "studyPersonFirstName": {
+                "type": "string"
+            },
+            "studyPersonMidInitials": {
+                "type": "string"
+            },
+            "studyPersonEmail": {
+                "type": "string"
+            },
+            "studyPersonPhone": {
+                "type": "string"
+            },
+            "studyPersonFax": {
+                "type": "string"
+            },
+            "studyPersonAddress": {
+                "type": "string"
+            },
+            "studyPersonAffiliation": {
+                "type": "string"
+            },
+            "studyPersonRoles": {
+                "type": "string"
+            },
+            "studyPersonRolesTermAccessionNumber": {
+                "type": "@id"
+            },
+            "studyPersonRolesTermSourceREF": {
+                "type": "string"
+            },
+            "commentStudyPersonREF": {
+                "type": "@id"
+            }
+        }
+    },
+
     "type": "object",
 
     "properties": {
@@ -345,6 +387,12 @@
                 "type": "array",
                 "items": {
                     "$ref": "#/definitions/studyProtocolsSection"
+                }
+            },
+            "studyContacts": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/studyContactsSection"
                 }
             }
         }
