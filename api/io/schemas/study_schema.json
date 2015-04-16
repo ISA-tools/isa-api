@@ -24,7 +24,10 @@
                     "$ref": "#/definitions/isaNode"
                 },
                 {
-                    "namePattern": "(Characteristics.*)"
+                    "name": {
+                        "type": "string",
+                        "pattern": "(Characteristics.*)"
+                    }
                 }
             ]
         },
@@ -36,7 +39,10 @@
                 },
                 {
                     "properties": {
-                        "namePattern": "(Source.*)|(Sample.*)|(Extract.*)|(Labeled Extract.*)",
+                        "name": {
+                            "type": "string",
+                            "pattern": "(Source.*)|(Sample.*)|(Extract.*)|(Labeled Extract.*)"
+                        },
                         "attributes": {
                             "type": "array",
                             "items": {
@@ -53,7 +59,12 @@
                     "$ref": "#/definitions/isaNode"
                 },
                 {
-                    "namePattern": "(.*Assay Name)|(Normalization.*)|(Data Transformation.*)"
+
+                    "name": {
+                        "type": "string",
+                        "pattern": "(.*Assay Name)|(Normalization.*)|(Data Transformation.*)"
+                    }
+
                 }
             ]
         },
@@ -63,7 +74,35 @@
                     "$ref": "#/definitions/isaNode"
                 },
                 {
-                    "namePattern": "((?i)Protocol REF)"
+                    "name": {
+                        "type": "string",
+                        "pattern": "((?i)Protocol REF)"
+                    }
+
+                }
+            ]
+        },
+        "isaFactorValue": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/isaNode"
+                },
+                {
+                    "name": {
+                        "type": "string",
+                        "pattern": "(Factor Value.*)"
+                    }
+                }
+
+            ]
+        },
+        "isaUnit": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/isaNode"
+                },
+                {
+                    "pattern": "(Unit)"
                 }
             ]
         }
@@ -80,7 +119,10 @@
                                 "$ref": "#/definitions/isaMaterialNode"
                             },
                             {
-                                "namePattern": "(Source.*)"
+                                "name" : {
+                                    "type": "string",
+                                    "pattern": "(Source.*)"
+                                }
                             }
                         ]
                     },
@@ -90,7 +132,10 @@
                                 "$ref": "#/definitions/isaMaterialNode"
                             },
                             {
-                                "namePattern": "(Sample.*)"
+                                 "name" : {
+                                    "type": "string",
+                                    "pattern": "(Sample.*)"
+                                }
                             }
                         ]
                     }
