@@ -10,6 +10,9 @@ import validictory
 investigationSchema = json.load(open("schemas/investigation_schema.json"))
 Draft4Validator.check_schema(investigationSchema)
 
+studySchema = json.load(open("schemas/study_schema.json"))
+Draft4Validator.check_schema(studySchema)
+
 #assay_schema = json.load(open("schemas/isa_table_schema.json"))
 #Draft4Validator.check_schema(assay_schema)
 
