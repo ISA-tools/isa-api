@@ -83,8 +83,6 @@ class IsatabToJsonWriter():
         for _study in studies:
             json_study_structure = {}
             # write out the metadata information
-            #for meta in _study.metadata:
-            #    json_study_structure[self.makeAttributeName(meta)] = _study.metadata[meta]
             self.createAttributes(json_study_structure, _study.metadata, "study")
             # write out the "Study Design Descriptors"
             self.createListOfAttributes(json_study_structure, _study.design_descriptors, "studyDesignDescriptors")
@@ -102,7 +100,7 @@ class IsatabToJsonWriter():
                 json_study_protocol.append(json_sp)
             json_study_structure["studyProtocols"] = json_study_protocol
             # write out the "Study Contacts"
-            #self.createListOfAttributes(json_study_structure, _study.contacts, "studyContacts")
+            self.createListOfAttributes(json_study_structure, _study.contacts, "studyContacts")
             myassay = []
             for assay in _study.assays:
                 json_assay_structure = {}
