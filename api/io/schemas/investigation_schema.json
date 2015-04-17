@@ -349,6 +349,7 @@
         },
         "studies": {
             "type": "array",
+            "minItems": "1",
             "items": {
                 "study": {
                     "$ref": "#/definitions/studySection"
@@ -374,6 +375,7 @@
             },
             "assays": {
                 "type": "array",
+                "minItems": "1",
                 "items": {
                     "studyAssays": {
                         "$ref": "#/definitions/studyAssaysSection"
