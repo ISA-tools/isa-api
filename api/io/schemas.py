@@ -1,6 +1,7 @@
 
-import json
+import json, os
 from jsonschema import Draft4Validator
+from api.io.writer import IsatabToJsonWriter
 #from jsonschema import FormatChecker
 
 
@@ -29,16 +30,26 @@ Draft4Validator.check_schema(assaySchema)
 
 #validate(json.load(open("../../json/BII-I-1_json/i_Investigation.json")), investigationSchema, format_checker=FormatChecker())
 
-validictory.validate(json.load(open("../../json/BII-I-1_json/i_Investigation.json")), investigationSchema)
+folder_name = "BII-I-1"
+work_dir = os.path.join("../../tests/data", folder_name)
+json_dir = os.path.join("../../tests/data", folder_name + "-json")
 
-validictory.validate(json.load(open("../../json/BII-I-1_json/s_BII-S-1.json")), studySchema)
+if not os.path.exists(json_dir):
+    os.makedirs(json_dir)
+# write out the json files for the isa-tab
+writer = IsatabToJsonWriter()
+writer.parsingIsatab(work_dir, json_dir)
 
-validictory.validate(json.load(open("../../json/BII-I-1_json/s_BII-S-2.json")), studySchema)
+validictory.validate(json.load(open(json_dir + "/i_Investigation.json")), investigationSchema)
 
-validictory.validate(json.load(open("../../json/BII-I-1_json/a_metabolome.json")), assaySchema)
+validictory.validate(json.load(open(json_dir + "/s_BII-S-1.json")), studySchema)
 
-validictory.validate(json.load(open("../../json/BII-I-1_json/a_microarray.json")), assaySchema)
+validictory.validate(json.load(open(json_dir + "/s_BII-S-2.json")), studySchema)
 
-validictory.validate(json.load(open("../../json/BII-I-1_json/a_proteome.json")), assaySchema)
+validictory.validate(json.load(open(json_dir + "/a_metabolome.json")), assaySchema)
 
-validictory.validate(json.load(open("../../json/BII-I-1_json/a_transcriptome.json")), assaySchema)
+validictory.validate(json.load(open(json_dir + "/a_microarray.json")), assaySchema)
+
+validictory.validate(json.load(open(json_dir + "/a_proteome.json")), assaySchema)
+
+validictory.validate(json.load(open(json_dir + "/a_transcriptome.json")), assaySchema)

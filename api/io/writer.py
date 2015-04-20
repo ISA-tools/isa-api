@@ -14,28 +14,15 @@ class IsatabToJsonWriter():
         self._col_isaUnit = ("Unit")
         self._col_isaDataNode = ("File")
 
-        work_dir = "BII-I-1"
-        # not a good way of going to the path that we want
-        os.chdir('..')
-        os.chdir('..')
-        self._dir = "tests/data/" + work_dir
-        if not os.path.exists(os.path.join(os.getcwd(), 'json')):
-            os.makedirs(os.path.join(os.getcwd(), 'json'))
-
-        # create the folder where we want to put the json files
-        if not os.path.exists(os.path.join(os.getcwd(), 'json', work_dir + '_json')):
-            os.makedirs(os.path.join(os.getcwd(), 'json', work_dir + '_json'))
-        self.json_dir = os.path.join(os.getcwd(), 'json', work_dir + '_json')
-
-    def parsingIsatab(self):
-        rec = parser.parse(self._dir)
+    def parsingIsatab(self, work_dir, json_dir):
+        rec = parser.parse(work_dir)
         # process the investigation files
-        fnames = glob.glob(os.path.join(self._dir, "i_*.txt")) + \
-                 glob.glob(os.path.join(self._dir, "*.idf.txt"))
+        fnames = glob.glob(os.path.join(work_dir, "i_*.txt")) + \
+                 glob.glob(os.path.join(work_dir, "*.idf.txt"))
         investigationFilename = ntpath.basename(str(fnames[0])).split(".")
-        self.parseInvestigationToJson(rec, os.path.join(self.json_dir, investigationFilename[0] + ".json"))
+        self.parseInvestigationToJson(rec, os.path.join(json_dir, investigationFilename[0] + ".json"))
         # process the study files
-        self.parseStudyToJson(rec)
+        self.parseStudyToJson(rec, work_dir, json_dir)
 
     def parseInvestigationToJson(self, rec, filename):
         json_structures = {}
@@ -118,16 +105,16 @@ class IsatabToJsonWriter():
             mystudies.append(json_study_structure)
             json_structures["studies"] = mystudies
 
-    def parseStudyToJson(self, rec):
+    def parseStudyToJson(self, rec, work_dir, json_dir):
         for study in rec.studies:
             filename = (study.metadata["Study File Name"]).split(".")[0]
-            header, nodes = self.readIsatabStudy(os.path.join(self._dir, filename + ".txt"))
-            self.makeStudyAssayJson(header, nodes, os.path.join(self.json_dir, filename + ".json"), "studySampleTable", "studyTableHeaders", "studyTableData")
+            header, nodes = self.readIsatabStudy(os.path.join(work_dir, filename + ".txt"))
+            self.makeStudyAssayJson(header, nodes, os.path.join(json_dir, filename + ".json"), "studySampleTable", "studyTableHeaders", "studyTableData")
 
             for assay in study.assays:
                 filename = (assay["Study Assay File Name"]).split(".")[0]
-                header, nodes = self.readIsatabStudy(os.path.join(self._dir, filename + ".txt"))
-                self.makeStudyAssayJson(header, nodes, os.path.join(self.json_dir, filename + ".json"), "assayTable", "assayTableHeaders", "assayTableData")
+                header, nodes = self.readIsatabStudy(os.path.join(work_dir, filename + ".txt"))
+                self.makeStudyAssayJson(header, nodes, os.path.join(json_dir, filename + ".json"), "assayTable", "assayTableHeaders", "assayTableData")
 
     def readIsatabStudy(self, studyfilepath):
         if os.path.isfile(studyfilepath):
@@ -178,6 +165,3 @@ class IsatabToJsonWriter():
         with open(filename, "w") as outfile:
             json.dump(top, outfile, indent=4)
         outfile.close()
-
-my_foo = IsatabToJsonWriter()
-my_foo.parsingIsatab()

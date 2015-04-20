@@ -1,10 +1,7 @@
+import unittest, os, json, glob
 
-
-import unittest
-import os
-import json
-
-from api.io.agb_parser import ISATabParser
+from api.io.parser import parse
+from api.io.writer import IsatabToJsonWriter
 
 
 class IsatabTest(unittest.TestCase):
@@ -13,7 +10,7 @@ class IsatabTest(unittest.TestCase):
 
     def write_json(self):
         work_dir = os.path.join(self._dir, "BII-I-1")
-        rec = ISATabParser(work_dir)
+        rec = parse(work_dir)
         print "here"
         with open("example.json", "w") as outfile:
             json.dump({'Investigation Identifier':rec.metadata["Investigation Identifier"]}, outfile)
@@ -24,7 +21,7 @@ class IsatabTest(unittest.TestCase):
         """Test general parsing of an example ISA directory.
         """
         work_dir = os.path.join(self._dir, "BII-I-1")
-        rec = ISATabParser(work_dir)
+        rec = parse(work_dir)
         assert rec.metadata["Investigation Identifier"] == "BII-I-1"
         assert len(rec.ontology_refs) == 7
         assert rec.ontology_refs[2]["Term Source Name"] == "NEWT"
@@ -34,14 +31,63 @@ class IsatabTest(unittest.TestCase):
         assert len(rec.studies) == 2
         study = rec.studies[0]
         assert study.metadata["Study File Name"] == "s_BII-S-1.txt"
-        #assert len(study.assays) == 3
-        #assert study.assays[0].metadata["Study Assay File Name"] == "a_metabolome.txt"
-        #study = rec.studies[1]
-        #assert study.nodes['NZ_0hrs_Grow_1'].metadata["organism"][0].organism == \
-        #       "Saccharomyces cerevisiae (Baker's yeast)"
-        #assert study.assays[0].nodes['E-MAXD-4-raw-data-426648783.txt'
-        #                             ].metadata["ArrayExpress Accession"][0][0] == \
-        #                             "E-MAXD-4"
+
+        assert len(study.assays) == 3
+        assert study.assays[0]["Study Assay File Name"] == "a_proteome.txt"
+
+    def test_isatab_json_writer(self):
+        """Test general parsing of an example ISA-Tab JSON directory.
+        """
+        work_dir = os.path.join(self._dir, "BII-I-1")
+        json_dir = os.path.join(os.getcwd(), 'json', work_dir + "-json")
+        if not os.path.exists(json_dir):
+            os.makedirs(json_dir)
+        # write out the json files for the isa-tab
+        writer = IsatabToJsonWriter()
+        writer.parsingIsatab(work_dir, json_dir)
+        if os.path.isdir(json_dir):
+            fnames = glob.glob(os.path.join(json_dir, "i_*.json"))
+            assert len(fnames) == 1
+            investigation_json_ref = fnames[0]
+
+        assert os.path.exists(investigation_json_ref), "Did not find investigation json file: %s" % investigation_json_ref
+        # load up the investigation json file and check whether it matches up with the investigation tabular format
+        with open(investigation_json_ref, "rU") as in_handle:
+            json_investigation_rec = json.load(in_handle)
+            assert json_investigation_rec["investigation"]["investigationIdentifier"] == "BII-I-1"
+            assert len(json_investigation_rec["ontologySourceReference"]) == 7
+            assert json_investigation_rec["ontologySourceReference"][2]["termSourceName"] == "NEWT"
+            assert len(json_investigation_rec["investigationPublications"]) == 1
+            assert json_investigation_rec["investigationPublications"][0]["investigationPublicationDOI"] == "doi:10.1186/jbiol54"
+
+            assert len(json_investigation_rec["studies"]) == 2
+            study = json_investigation_rec["studies"][0]
+            exampleStudyJsonFile = study["study"]["studyFileName"]
+            assert exampleStudyJsonFile == "s_BII-S-1.txt"
+            assert len(study["assays"]) == 3
+            exampleAssayJsonFile = study["assays"][0]["studyAssayFileName"]
+            assert exampleAssayJsonFile == "a_proteome.txt"
+
+        # check if the study file exists
+        study_json_ref = os.path.join(json_dir, (str(exampleStudyJsonFile)).split(".")[0] + ".json")
+        assert os.path.exists(study_json_ref), "Did not find study json file: %s" % study_json_ref
+
+        # load up one of the study json file and check whether it matches up with the data in the study tabular format
+        with open(study_json_ref, "rU") as in_handle:
+            json_study_rec = json.load(in_handle)
+            assert len(json_study_rec["studySampleTable"]["studyTableData"][0]) == 19
+            assert len(json_study_rec["studySampleTable"]["studyTableHeaders"]) == 5
+
+        # check if the assay file exists
+        assay_json_ref = os.path.join(json_dir, (str(exampleAssayJsonFile)).split(".")[0] + ".json")
+        assert os.path.exists(assay_json_ref), "Did not find assay json file: %s" % assay_json_ref
+
+        # load up one of the assay json file and check whether it matches up with the data in the assay tabular format
+        with open(assay_json_ref, "rU") as in_handle:
+            json_assay_rec = json.load(in_handle)
+            assert len(json_assay_rec["assayTable"]["assayTableData"][0]) == 25
+            assert len(json_assay_rec["assayTable"]["assayTableHeaders"]) == 18
+
 
     # def test_minimal_parsing(self):
     #     """Parse a minimal ISA-Tab file without some field values filled in.
