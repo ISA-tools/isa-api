@@ -31,3 +31,14 @@ Draft4Validator.check_schema(assaySchema)
 
 validictory.validate(json.load(open("../../json/BII-I-1_json/i_Investigation.json")), investigationSchema)
 
+validictory.validate(json.load(open("../../json/BII-I-1_json/s_BII-S-1.json")), studySchema)
+
+validictory.validate(json.load(open("../../json/BII-I-1_json/s_BII-S-2.json")), studySchema)
+
+validictory.validate(json.load(open("../../json/BII-I-1_json/a_metabolome.json")), assaySchema)
+
+validictory.validate(json.load(open("../../json/BII-I-1_json/a_microarray.json")), assaySchema)
+
+validictory.validate(json.load(open("../../json/BII-I-1_json/a_proteome.json")), assaySchema)
+
+validictory.validate(json.load(open("../../json/BII-I-1_json/a_transcriptome.json")), assaySchema)

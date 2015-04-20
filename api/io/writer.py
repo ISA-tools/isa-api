@@ -120,9 +120,14 @@ class IsatabToJsonWriter():
 
     def parseStudyToJson(self, rec):
         for study in rec.studies:
-            studyFilename = (study.metadata["Study File Name"]).split(".")[0]
-            header, nodes = self.readIsatabStudy(os.path.join(self._dir, studyFilename + ".txt"))
-            self.makeStudyJson(header, nodes, os.path.join(self.json_dir, studyFilename + ".json"))
+            filename = (study.metadata["Study File Name"]).split(".")[0]
+            header, nodes = self.readIsatabStudy(os.path.join(self._dir, filename + ".txt"))
+            self.makeStudyAssayJson(header, nodes, os.path.join(self.json_dir, filename + ".json"), "studySampleTable", "studyTableHeaders", "studyTableData")
+
+            for assay in study.assays:
+                filename = (assay["Study Assay File Name"]).split(".")[0]
+                header, nodes = self.readIsatabStudy(os.path.join(self._dir, filename + ".txt"))
+                self.makeStudyAssayJson(header, nodes, os.path.join(self.json_dir, filename + ".json"), "assayTable", "assayTableHeaders", "assayTableData")
 
     def readIsatabStudy(self, studyfilepath):
         if os.path.isfile(studyfilepath):
@@ -140,16 +145,16 @@ class IsatabToJsonWriter():
                 return True
         return False
 
-    def makeStudyJson(self, header, nodes, filename):
+    def makeStudyAssayJson(self, header, nodes, filename, tableNameTitle, tableHeaderTitle, tableDataTitle):
         json_structures = {}
-        studyTableHeaders = []
+        tableHeaders = []
         headerIndex = 0
         attributes = []
         heading = {}
         for h in header:
             if not (self.checkIfMaterialAttribute(h)):
                 if headerIndex > 0:
-                    studyTableHeaders.append(heading)
+                    tableHeaders.append(heading)
                     attributes = []
                 heading = {}
                 heading.clear()
@@ -164,25 +169,15 @@ class IsatabToJsonWriter():
             headerIndex = headerIndex + 1
 
         # to add the last item
-        studyTableHeaders.append(heading)
+        tableHeaders.append(heading)
 
-        json_structures["studyTableHeaders"] = studyTableHeaders
-        json_structures["studyTableData"] = nodes
+        json_structures[tableHeaderTitle] = tableHeaders
+        json_structures[tableDataTitle] = nodes
         top = {}
-        top["studySampleTable"] = json_structures
+        top[tableNameTitle] = json_structures
         with open(filename, "w") as outfile:
             json.dump(top, outfile, indent=4)
         outfile.close()
-
-    def parseAssayToJson(self, assays):
-        for assay in assays:
-            assayFilename = (assay.metadata["Study Assay File Name"]).split(".")[0]
-            assayJsonStructures = []
-            for n in assay.nodes:
-                assayJsonStructures.append(assay.nodes[n].metadata)
-            with open(os.path.join(self.json_dir, assayFilename + ".json"), "w") as outfile:
-                json.dump({"assayNodes": assayJsonStructures}, outfile, indent=4)
-            outfile.close()
 
 my_foo = IsatabToJsonWriter()
 my_foo.parsingIsatab()
