@@ -53,8 +53,6 @@ def parse(isatab_ref):
     i_parser = InvestigationParser()
     with open(isatab_ref, "rU") as in_handle:
         rec = i_parser.parse(in_handle)
-    s_parser = StudyAssayParser(isatab_ref)
-    rec = s_parser.parse(rec)
     return rec
 
 class InvestigationParser:
