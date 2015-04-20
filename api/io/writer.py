@@ -1,12 +1,19 @@
 __author__ = 'Alfie Abdul-Rahman'
 
-import json, glob, os, ntpath
-import re, string
+import json, glob, os, ntpath, csv, string
 
 from api.io import parser
 
 class IsatabToJsonWriter():
     def __init__(self):
+        self._col_isaMaterialAttribute = ("Characteristics", "Material Type", "Term Source REF", "Term Accession Number", "Unit")
+        self._col_isaMaterialNode = ("Source Name", "Sample Name", "Extract Name", "Labeled Extract Name")
+        self._col_isaProcessNode = ("Assay Name", "Normalization Name", "Data Transformation Name")
+        self._col_isaProtocolExecutionNode = ("Protocol REF")
+        self._col_isaFactorValue = ("Factor Value")
+        self._col_isaUnit = ("Unit")
+        self._col_isaDataNode = ("File")
+
         work_dir = "BII-I-1"
         # not a good way of going to the path that we want
         os.chdir('..')
@@ -104,8 +111,8 @@ class IsatabToJsonWriter():
             myassay = []
             for assay in _study.assays:
                 json_assay_structure = {}
-                for assay_meta in assay.metadata:
-                    json_assay_structure[self.makeAttributeName(assay_meta)] = assay.metadata[assay_meta]
+                for i_assay in assay:
+                    json_assay_structure[self.makeAttributeName(i_assay)] = assay[i_assay]
                 myassay.append(json_assay_structure)
             json_study_structure["assays"] = myassay
             mystudies.append(json_study_structure)
@@ -114,14 +121,58 @@ class IsatabToJsonWriter():
     def parseStudyToJson(self, rec):
         for study in rec.studies:
             studyFilename = (study.metadata["Study File Name"]).split(".")[0]
-            studyJsonStructures = []
-            for n in study.nodes:
-                studyJsonStructures.append(study.nodes[n].metadata)
-            # process the assay files
-            self.parseAssayToJson(study.assays)
-            with open(os.path.join(self.json_dir, studyFilename + ".json"), "w") as outfile:
-                json.dump({"studyNodes": studyJsonStructures}, outfile, indent=4)
-            outfile.close()
+            header, nodes = self.readIsatabStudy(os.path.join(self._dir, studyFilename + ".txt"))
+            self.makeStudyJson(header, nodes, os.path.join(self.json_dir, studyFilename + ".json"))
+
+    def readIsatabStudy(self, studyfilepath):
+        if os.path.isfile(studyfilepath):
+            nodes = []
+            with open(studyfilepath, "rU") as in_handle:
+                reader = csv.reader(in_handle, dialect="excel-tab")
+                header = reader.next()
+                for line in reader:
+                    nodes.append(line)
+            return header, nodes
+
+    def checkIfMaterialAttribute(self, header):
+        for isaMA in self._col_isaMaterialAttribute:
+            if isaMA in header:
+                return True
+        return False
+
+    def makeStudyJson(self, header, nodes, filename):
+        json_structures = {}
+        studyTableHeaders = []
+        headerIndex = 0
+        attributes = []
+        heading = {}
+        for h in header:
+            if not (self.checkIfMaterialAttribute(h)):
+                if headerIndex > 0:
+                    studyTableHeaders.append(heading)
+                    attributes = []
+                heading = {}
+                heading.clear()
+                heading["name"] = h
+                heading["index"] = headerIndex
+            else:
+                attr = {}
+                attr["name"] = h
+                attr["index"] = headerIndex
+                attributes.append(attr)
+                heading["attributes"] = attributes
+            headerIndex = headerIndex + 1
+
+        # to add the last item
+        studyTableHeaders.append(heading)
+
+        json_structures["studyTableHeaders"] = studyTableHeaders
+        json_structures["studyTableData"] = nodes
+        top = {}
+        top["studySampleTable"] = json_structures
+        with open(filename, "w") as outfile:
+            json.dump(top, outfile, indent=4)
+        outfile.close()
 
     def parseAssayToJson(self, assays):
         for assay in assays:
