@@ -1,10 +1,13 @@
 __author__ = 'Alfie Abdul-Rahman'
 
-import json, glob, os, ntpath, csv, string
+import json, glob, os, ntpath, csv
 
 from api.io import parser
+from api.io.common_functions import CommonFunctions
 
 class IsatabToJsonWriter():
+    commonFunctions = CommonFunctions()
+
     def __init__(self):
         self._col_isaMaterialAttribute = ("Characteristics", "Material Type", "Term Source REF", "Term Accession Number", "Unit")
         self._col_isaMaterialNode = ("Source Name", "Sample Name", "Extract Name", "Labeled Extract Name")
@@ -35,30 +38,10 @@ class IsatabToJsonWriter():
             json.dump(json_structures, outfile, indent=4)
         outfile.close()
 
-    def makeLowercaseFirstChar(self, s):
-        if len(s) == 0:
-            return s
-        else:
-            return s[0].lower() + s[1:]
-
-    def makeUppercaseFirstCharInStringArray(self, s):
-        myStr = ""
-        for i in s.split(' '):
-            if len(i) == 0:
-                myStr = myStr + i
-            else:
-                myStr = myStr + i[0].upper() + i[1:]
-        return myStr
-
-    def makeAttributeName(self, tag):
-        table = string.maketrans("","")
-        stripTag = tag.translate(table, string.punctuation)
-        return self.makeLowercaseFirstChar(stripTag.split(' ',1)[0]) + self.makeUppercaseFirstCharInStringArray(stripTag.split(' ',1)[1])
-
     def createAttributes(self, json_structures, metadata, tagName):
         json_inner_struct = {}
         for meta in metadata:
-            json_inner_struct[self.makeAttributeName(meta)] = metadata[meta]
+            json_inner_struct[self.commonFunctions.makeAttributeName(meta)] = metadata[meta]
         json_structures[tagName] = json_inner_struct
         return json_structures
 
@@ -67,7 +50,7 @@ class IsatabToJsonWriter():
         for onto in properties:
             json_item_struct = {}
             for item in onto:
-                json_item_struct[self.makeAttributeName(item)] = onto[item]
+                json_item_struct[self.commonFunctions.makeAttributeName(item)] = onto[item]
             json_list_struct.append(json_item_struct)
         json_structures[tagName] = json_list_struct
         return json_structures
@@ -90,7 +73,7 @@ class IsatabToJsonWriter():
             for sp in _study.protocols:
                 json_sp = {}
                 for i_sp in sp:
-                    json_sp[self.makeAttributeName(i_sp)] = sp[i_sp].decode('ascii', errors='ignore')
+                    json_sp[self.commonFunctions.makeAttributeName(i_sp)] = sp[i_sp].decode('ascii', errors='ignore')
                 json_study_protocol.append(json_sp)
             json_study_structure["studyProtocols"] = json_study_protocol
             # write out the "Study Contacts"
@@ -99,7 +82,7 @@ class IsatabToJsonWriter():
             for assay in _study.assays:
                 json_assay_structure = {}
                 for i_assay in assay:
-                    json_assay_structure[self.makeAttributeName(i_assay)] = assay[i_assay]
+                    json_assay_structure[self.commonFunctions.makeAttributeName(i_assay)] = assay[i_assay]
                 myassay.append(json_assay_structure)
             json_study_structure["assays"] = myassay
             mystudies.append(json_study_structure)
