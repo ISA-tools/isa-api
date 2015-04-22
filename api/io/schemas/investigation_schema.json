@@ -8,8 +8,8 @@
     },
     "definitions": {
         "ontologySourceReferenceSection": {
-            "type": "array",
-            "items": {
+            "type": "object",
+            "properties": {
                 "termSourceName": {
                     "type": "string"
                 },
@@ -22,11 +22,13 @@
                 "termSourceDescription": {
                     "type": "string"
                 }
-            }
+            },
+            "required": ["termSourceName", "termSourceFile", "termSourceVersion", "termSourceDescription"],
+            "additionalProperties": false
         },
         "investigationSection": {
-            "type": "array",
-            "items": {
+            "type": "object",
+            "properties": {
                 "investigationIdentifier": {
                     "type": "string"
                 },
@@ -48,11 +50,15 @@
                 "commentLastOpenedWithConfiguration": {
                     "type": "string"
                 }
-            }
+            },
+            "required": ["investigationIdentifier", "investigationTitle", "investigationDescription",
+              "investigationSubmissionDate", "investigationPublicReleaseDate", "commentCreatedWithConfiguration",
+              "commentLastOpenedWithConfiguration"],
+            "additionalProperties": false
         },
         "investigationPublicationsSection": {
-            "type": "array",
-            "items": {
+            "type": "object",
+            "properties": {
                 "investigationPubMedID": {
                     "type": "string"
                 },
@@ -69,16 +75,20 @@
                     "type": "string"
                 },
                 "investigationPublicationStatusTermAccessionNumber": {
-                    "type": "@id"
+                    "type": "string"
                 },
                 "investigationPublicationStatusTermSourceREF": {
                     "type": "string"
                 }
-            }
+            },
+            "required": ["investigationPubMedID", "investigationPublicationDOI", "investigationPublicationAuthorList",
+              "investigationPublicationTitle", "investigationPublicationStatus", "investigationPublicationStatusTermAccessionNumber",
+              "investigationPublicationStatusTermSourceREF"],
+            "additionalProperties": false
         },
         "investigationContactsSection": {
-            "type": "array",
-            "items": {
+            "type": "object",
+            "properties": {
                 "investigationPersonLastName": {
                     "type": "string"
                 },
@@ -107,21 +117,24 @@
                     "type": "string"
                 },
                 "investigationPersonRolesTermAccessionNumber": {
-                    "type": "@id"
+                    "type": "string"
                 },
                 "investigationPersonRolesTermSourceREF": {
                     "type": "string"
                 },
                 "commentInvestigationPersonREF": {
-                    "type": "@id"
+                    "type": "string"
                 }
-            }
+            },
+          "required": ["investigationPersonLastName", "investigationPersonFirstName", "investigationPersonMidInitials",
+            "investigationPersonEmail", "investigationPersonPhone", "investigationPersonFax", "investigationPersonAddress",
+            "investigationPersonAffiliation", "investigationPersonRoles", "investigationPersonRolesTermAccessionNumber",
+            "investigationPersonRolesTermSourceREF", "commentInvestigationPersonREF"],
+          "additionalProperties": false
         },
         "studySection": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 1,
-            "items": {
+            "type": "object",
+            "properties": {
                 "studyIdentifier": {
                     "type": "string"
                 },
@@ -146,27 +159,31 @@
                 "studyFileName": {
                     "type": "string"
                 }
-
-            }
+            },
+            "required": ["studyIdentifier", "studyTitle", "studyDescription", "commentStudyGrantNumber",
+              "commentStudyFundingAgency", "studySubmissionDate", "studyPublicReleaseDate", "studyFileName"],
+            "additionalProperties": false
         },
         "studyDesignDescriptorsSection": {
-            "type": "array",
-            "items": {
+            "type": "object",
+            "properties": {
                 "studyDesignType": {
                     "type": "string"
                 },
                 "studyDesignTypeTermAccessionNumber": {
-                    "type": "@id"
+                    "type": "string"
                 },
                 "studyDesignTypeTermSourceREF": {
                     "type": "string"
                 }
-            }
+            },
+            "required": ["studyDesignType", "studyDesignTypeTermAccessionNumber", "studyDesignTypeTermSourceREF"],
+            "additionalProperties": false
         }
     },
     "studyPublicationsSection": {
-        "type": "array",
-        "items": {
+        "type": "object",
+        "properties": {
             "studyPubMedID": {
                 "type": "string"
             },
@@ -183,16 +200,19 @@
                 "type": "string"
             },
             "studyPublicationStatusTermAccessionNumber": {
-                "type": "@id"
+                "type": "string"
             },
             "studyPublicationStatusTermSourceREF": {
                 "type": "string"
             }
-        }
+        },
+        "required": ["studyPubMedID", "studyPublicationDOI", "studyPublicationAuthorList", "studyPublicationTitle",
+          "studyPublicationStatus", "studyPublicationStatusTermAccessionNumber", "studyPublicationStatusTermSourceREF"],
+        "additionalProperties": false
     },
     "studyFactorsSection": {
-        "type": "array",
-        "items": {
+        "type": "object",
+        "properties": {
             "studyFactorName": {
                 "type": "string"
             },
@@ -200,16 +220,19 @@
                 "type": "string"
             },
             "studyFactorTermAccessionNumber": {
-                "type": "@id"
+                "type": "string"
             },
             "studyFactorTypeTermSourceREF": {
                 "type": "string"
             }
-        }
+        },
+        "required": ["studyFactorName", "studyFactorType", "studyFactorTermAccessionNumber",
+          "studyFactorTypeTermSourceREF"],
+        "additionalProperties": false
     },
     "studyAssaysSection": {
-        "type": "array",
-        "items": {
+        "type": "object",
+        "properties": {
             "studyAssayFileName": {
                 "type": "string"
             },
@@ -217,7 +240,7 @@
                 "type": "string"
             },
             "studyAssayMeasurementTypeTermAccessionNumber": {
-                "type": "@id"
+                "type": "string"
             },
             "studyAssayMeasurementTypeTermSourceREF": {
                 "type": "string"
@@ -226,7 +249,7 @@
                 "type": "string"
             },
             "studyAssayTechnologyTypeTermAccessionNumber": {
-                "type": "@id"
+                "type": "string"
             },
             "studyAssayTechnologyTypeTermSourceREF": {
                 "type": "string"
@@ -234,11 +257,15 @@
             "studyAssayTechnologyPlatform": {
                 "type": "string"
             }
-        }
+        },
+        "required": ["studyAssayFileName", "studyAssayMeasurementType", "studyAssayMeasurementTypeTermAccessionNumber",
+          "studyAssayMeasurementTypeTermSourceREF", "studyAssayTechnologyType", "studyAssayTechnologyTypeTermAccessionNumber",
+          "studyAssayTechnologyTypeTermSourceREF", "studyAssayTechnologyPlatform"],
+        "additionalProperties": false
     },
     "studyProtocolsSection": {
-        "type": "array",
-        "items": {
+        "type": "object",
+        "properties": {
             "studyProtocolName": {
                 "type": "string"
             },
@@ -246,7 +273,7 @@
                 "type": "string"
             },
             "studyProtocolTypeTermAccessionNumber": {
-                "type": "@id"
+                "type": "string"
             },
             "studyProtocolTypeTermSourceREF": {
                 "type": "string"
@@ -264,7 +291,7 @@
                 "type": "string"
             },
             "studyProtocolParametersNameTermAccessionNumber": {
-                "type": "@id"
+                "type": "string"
             },
             "studyProtocolParametersNameTermSourceREF": {
                 "type": "string"
@@ -276,16 +303,22 @@
                 "type": "string"
             },
             "studyProtocolComponentsTypeTermAccessionNumber": {
-                "type": "@id"
+                "type": "string"
             },
             "studyProtocolComponentsTypeTermSourceREF": {
-                "type": "@string"
+                "type": "string"
             }
-        }
+        },
+        "required": ["studyProtocolName", "studyProtocolType", "studyProtocolTypeTermAccessionNumber",
+          "studyProtocolTypeTermSourceREF", "studyProtocolDescription", "studyProtocolURI",
+          "studyProtocolVersion", "studyProtocolParametersName", "studyProtocolParametersNameTermAccessionNumber",
+          "studyProtocolParametersNameTermSourceREF", "studyProtocolComponentsName", "studyProtocolComponentsType",
+          "studyProtocolComponentsTypeTermAccessionNumber", "studyProtocolComponentsTypeTermSourceREF"],
+        "additionalProperties": false
     },
     "studyContactsSection": {
-        "type": "array",
-        "items": {
+        "type": "object",
+        "properties": {
             "studyPersonLastName": {
                 "type": "string"
             },
@@ -314,15 +347,20 @@
                 "type": "string"
             },
             "studyPersonRolesTermAccessionNumber": {
-                "type": "@id"
+                "type": "string"
             },
             "studyPersonRolesTermSourceREF": {
                 "type": "string"
             },
             "commentStudyPersonREF": {
-                "type": "@id"
+                "type": "string"
             }
-        }
+        },
+        "required": ["studyPersonLastName", "studyPersonFirstName", "studyPersonMidInitials",
+            "studyPersonEmail", "studyPersonPhone", "studyPersonFax",
+            "studyPersonAddress", "studyPersonAffiliation", "studyPersonRoles",
+            "studyPersonRolesTermAccessionNumber", "studyPersonRolesTermSourceREF", "commentStudyPersonREF"],
+        "additionalProperties": false
     },
 
     "type": "object",
@@ -400,7 +438,12 @@
                 }
             }
         }
-    }
+    },
+
+    "required": ["ontologySourceReference", "investigation", "investigationPublications",
+        "investigationContacts", "studies"],
+
+    "additionalProperties": false
 }
 
 

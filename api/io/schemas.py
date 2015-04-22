@@ -1,12 +1,7 @@
 
 import json, os
-from jsonschema import Draft4Validator
+from jsonschema import Draft4Validator, validate, FormatChecker
 from api.io.writer import IsatabToJsonWriter
-#from jsonschema import FormatChecker
-
-
-#from jsonschema import validate
-import validictory
 
 investigationSchema = json.load(open("schemas/investigation_schema.json"))
 Draft4Validator.check_schema(investigationSchema)
@@ -20,13 +15,11 @@ Draft4Validator.check_schema(studySchema)
 assaySchema = json.load(open("schemas/assay_schema.json"))
 Draft4Validator.check_schema(assaySchema)
 
-
 #assay_schema = json.load(open("schemas/isa_table_schema.json"))
 #Draft4Validator.check_schema(assay_schema)
 
 #assay_transcription_micro = json.load(open("schemas/assay_transcription_micro.json"))
 #Draft4Validator.check_schema(assay_transcription_micro)
-
 
 #validate(json.load(open("../../json/BII-I-1_json/i_Investigation.json")), investigationSchema, format_checker=FormatChecker())
 
@@ -40,16 +33,16 @@ if not os.path.exists(json_dir):
 writer = IsatabToJsonWriter()
 writer.parsingIsatab(work_dir, json_dir)
 
-validictory.validate(json.load(open(json_dir + "/i_Investigation.json")), investigationSchema)
+validate(json.load(open(json_dir + "/i_Investigation.json")), investigationSchema, format_checker=FormatChecker())
 
-validictory.validate(json.load(open(json_dir + "/s_BII-S-1.json")), studySchema)
+validate(json.load(open(json_dir + "/s_BII-S-1.json")), studySchema, format_checker=FormatChecker())
 
-validictory.validate(json.load(open(json_dir + "/s_BII-S-2.json")), studySchema)
+validate(json.load(open(json_dir + "/s_BII-S-2.json")), studySchema, format_checker=FormatChecker())
 
-validictory.validate(json.load(open(json_dir + "/a_metabolome.json")), assaySchema)
+validate(json.load(open(json_dir + "/a_metabolome.json")), assaySchema, format_checker=FormatChecker())
 
-validictory.validate(json.load(open(json_dir + "/a_microarray.json")), assaySchema)
+validate(json.load(open(json_dir + "/a_microarray.json")), assaySchema, format_checker=FormatChecker())
 
-validictory.validate(json.load(open(json_dir + "/a_proteome.json")), assaySchema)
+validate(json.load(open(json_dir + "/a_proteome.json")), assaySchema, format_checker=FormatChecker())
 
-validictory.validate(json.load(open(json_dir + "/a_transcriptome.json")), assaySchema)
+validate(json.load(open(json_dir + "/a_transcriptome.json")), assaySchema, format_checker=FormatChecker())
