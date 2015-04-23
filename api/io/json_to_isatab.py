@@ -129,10 +129,10 @@ class JsonToIsatabWriter():
         return my_str
 
     def writeJsonStudyAssayToIsatab(self, filenames, output_dir, tableNameTitle, tableHeaderTitle, tableDataTitle):
-        my_str = ""
         assert len(filenames) > 0
         for each_file in filenames:
             assert os.path.exists(each_file), "Did not find study / assay file: %s" % each_file
+            my_str = ""
             with open(each_file) as in_handle:
                 json_each_s = json.load(in_handle)
                 # the study headers
