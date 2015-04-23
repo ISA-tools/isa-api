@@ -1,7 +1,8 @@
-import unittest, os, json, glob
+import unittest, os, json, glob, filecmp, difflib
 
 from api.io.parser import parse
 from api.io.writer import IsatabToJsonWriter
+from api.io.json_to_isatab import JsonToIsatabWriter
 
 
 class IsatabTest(unittest.TestCase):
@@ -88,6 +89,30 @@ class IsatabTest(unittest.TestCase):
             assert len(json_assay_rec["assayTable"]["assayTableData"][0]) == 25
             assert len(json_assay_rec["assayTable"]["assayTableHeaders"]) == 18
 
+    def test_jsonToIsatab_writer(self):
+        mywriter = JsonToIsatabWriter()
+        folder_name = "BII-I-1"
+        json_dir = os.path.join("data", folder_name + "-json")
+        output_dir = os.path.join("data", folder_name + "-generatedIsatab")
+        original_dir = os.path.join("data", folder_name)
+        mywriter.parsingJson(json_dir, output_dir)
+
+        for iFile in os.listdir(output_dir):
+            # check if file size the same
+            assert os.path.getsize(os.path.join(original_dir, iFile)) == os.path.getsize(os.path.join(output_dir, iFile)), \
+                "File size does not match: " + os.path.join(original_dir, iFile) + ", " + os.path.join(output_dir, iFile)
+
+            assert filecmp.cmp(os.path.join(original_dir, iFile), os.path.join(output_dir, iFile), shallow=False), \
+                "File compare failed: " + os.path.join(original_dir, iFile) + ", " + os.path.join(output_dir, iFile)
+
+            # to print out the difference in the files
+            # with open(os.path.join(output_dir, iFile),'r') as f1, open(os.path.join(original_dir, iFile),'r') as f2:
+            #     diff = difflib.ndiff(f1.readlines(),f2.readlines())
+            #     for line in diff:
+            #         if line.startswith('-'):
+            #             print line
+            #         elif line.startswith('+'):
+            #             print '\t\t'+line
 
     # def test_minimal_parsing(self):
     #     """Parse a minimal ISA-Tab file without some field values filled in.

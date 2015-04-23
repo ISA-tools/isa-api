@@ -1,6 +1,6 @@
 __author__ = 'alfie'
 
-import os, glob, json, ntpath, string
+import os, glob, json, ntpath
 
 from api.io.common_functions import CommonFunctions
 
@@ -17,8 +17,8 @@ class JsonToIsatabWriter():
 
         self._isatab_i_investigation_sec = ["Investigation Identifier", "Investigation Title",
                                             "Investigation Description", "Investigation Submission Date",
-                                            "Investigation Public Release Date", "Comment [Created With Configuration]",
-                                            "Comment [Last Opened With Configuration]"]
+                                            "Investigation Public Release Date", "Comment[Created With Configuration]",
+                                            "Comment[Last Opened With Configuration]"]
 
         self._isatab_i_investigation_publications_sec = ["Investigation PubMed ID", "Investigation Publication DOI",
                                                         "Investigation Publication Author List", "Investigation Publication Title",
@@ -30,11 +30,11 @@ class JsonToIsatabWriter():
                                                     "Investigation Person Phone", "Investigation Person Fax",
                                                     "Investigation Person Address", "Investigation Person Affiliation",
                                                     "Investigation Person Roles", "Investigation Person Roles Term Accession Number",
-                                                    "Investigation Person Roles Term Source REF", "Comment [Investigation Person REF]"]
+                                                    "Investigation Person Roles Term Source REF", "Comment[Investigation Person REF]"]
 
         self._isatab_i_study_sec = ["Study Identifier", "Study Title",
-                                    "Study Description", "Comment [Study Grant Number]",
-                                    "Comment [Study Funding Agency]", "Study Submission Date",
+                                    "Study Description", "Comment[Study Grant Number]",
+                                    "Comment[Study Funding Agency]", "Study Submission Date",
                                     "Study Public Release Date", "Study File Name"]
 
         self._isatab_i_study_design_descriptors_sec = ["Study Design Type", "Study Design Type Term Accession Number",
@@ -66,7 +66,7 @@ class JsonToIsatabWriter():
                                             "Study Person Phone", "Study Person Fax",
                                             "Study Person Address", "Study Person Affiliation",
                                             "Study Person Roles", "Study Person Roles Term Accession Number",
-                                            "Study Person Roles Term Source REF", "Comment [Study Person REF]"]
+                                            "Study Person Roles Term Source REF", "Comment[Study Person REF]"]
 
     def parsingJson(self, json_dir, output_dir):
         if os.path.isdir(json_dir):
@@ -123,8 +123,12 @@ class JsonToIsatabWriter():
         my_str = my_str + sec_header + "\n"
         for i in sec_header_group:
             my_str = my_str + i + "\t"
-            for b in study:
-                my_str = my_str + "\"" + b[self.commonFunctions.makeAttributeName(i)] + "\"" + "\t"
+            last = len(study) - 1
+            for ib, b in enumerate(study):
+                if ib == last:
+                    my_str = my_str + "\"" + b[self.commonFunctions.makeAttributeName(i)] + "\""
+                else:
+                    my_str = my_str + "\"" + b[self.commonFunctions.makeAttributeName(i)] + "\"" + "\t"
             my_str = my_str + "\n"
         return my_str
 
@@ -136,16 +140,32 @@ class JsonToIsatabWriter():
             with open(each_file) as in_handle:
                 json_each_s = json.load(in_handle)
                 # the study headers
-                for node_h in json_each_s[tableNameTitle][tableHeaderTitle]:
-                    my_str = my_str + "\"" + node_h["name"] + "\"" + "\t"
+                hlast = len(json_each_s[tableNameTitle][tableHeaderTitle]) - 1
+                for hi, node_h in enumerate(json_each_s[tableNameTitle][tableHeaderTitle]):
+                    if hi == hlast and "attributes" in node_h and len(node_h["attributes"]) == 0:
+                        my_str = my_str + "\"" + node_h["name"] + "\""
+                    elif hi == hlast and not("attributes" in node_h):
+                            my_str = my_str + "\"" + node_h["name"] + "\""
+                    else:
+                        my_str = my_str + "\"" + node_h["name"] + "\"" + "\t"
+
                     if "attributes" in node_h:
-                        for n_h in node_h["attributes"]:
-                            my_str = my_str + "\"" + n_h["name"] + "\"" + "\t"
+                        last = len(node_h["attributes"]) - 1
+                        for i, n_h in enumerate(node_h["attributes"]):
+                            if i == last and hi == hlast:
+                                my_str = my_str + "\"" + n_h["name"] + "\""
+                            else:
+                                my_str = my_str + "\"" + n_h["name"] + "\"" + "\t"
                 my_str = my_str + "\n"
+
                 # now for each of the rows
                 for node_r in json_each_s[tableNameTitle][tableDataTitle]:
-                    for n_r in node_r:
-                        my_str = my_str + "\"" + n_r + "\"" + "\t"
+                    last = len(node_r) - 1
+                    for i, n_r in enumerate(node_r):
+                        if i == last:
+                            my_str = my_str + "\"" + n_r + "\""
+                        else:
+                            my_str = my_str + "\"" + n_r + "\"" + "\t"
                     my_str = my_str + "\n"
                 # now we write out each of the study files
                 with open(os.path.join(output_dir, ntpath.basename(str(each_file)).split(".")[0] + ".txt"), "w") as file_isatab:
