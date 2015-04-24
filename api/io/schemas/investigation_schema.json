@@ -432,13 +432,13 @@
                     "studyAssays": {
                         "$ref": "#/definitions/studyAssaysSection"
                     },
-                    "assay file":{
+                    "assayTable":{
                         "$ref": "#/assay_schema.json"
                     }
                 }
             },
 
-            "required": ["ontologySourceReference", "investigation", "studies"],
+            "required": ["ontologySourceReference", "investigation", "studies"]
         }
     },
 
