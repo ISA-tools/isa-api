@@ -52,8 +52,8 @@
                 }
             },
             "required": ["investigationIdentifier", "investigationTitle", "investigationDescription",
-              "investigationSubmissionDate", "investigationPublicReleaseDate", "commentCreatedWithConfiguration",
-              "commentLastOpenedWithConfiguration"],
+                "investigationSubmissionDate", "investigationPublicReleaseDate", "commentCreatedWithConfiguration",
+                "commentLastOpenedWithConfiguration"],
             "additionalProperties": false
         },
         "investigationPublicationsSection": {
@@ -82,8 +82,8 @@
                 }
             },
             "required": ["investigationPubMedID", "investigationPublicationDOI", "investigationPublicationAuthorList",
-              "investigationPublicationTitle", "investigationPublicationStatus", "investigationPublicationStatusTermAccessionNumber",
-              "investigationPublicationStatusTermSourceREF"],
+                "investigationPublicationTitle", "investigationPublicationStatus", "investigationPublicationStatusTermAccessionNumber",
+                "investigationPublicationStatusTermSourceREF"],
             "additionalProperties": false
         },
         "investigationContactsSection": {
@@ -126,11 +126,11 @@
                     "type": "string"
                 }
             },
-          "required": ["investigationPersonLastName", "investigationPersonFirstName", "investigationPersonMidInitials",
-            "investigationPersonEmail", "investigationPersonPhone", "investigationPersonFax", "investigationPersonAddress",
-            "investigationPersonAffiliation", "investigationPersonRoles", "investigationPersonRolesTermAccessionNumber",
-            "investigationPersonRolesTermSourceREF", "commentInvestigationPersonREF"],
-          "additionalProperties": false
+            "required": ["investigationPersonLastName", "investigationPersonFirstName", "investigationPersonMidInitials",
+                "investigationPersonEmail", "investigationPersonPhone", "investigationPersonFax", "investigationPersonAddress",
+                "investigationPersonAffiliation", "investigationPersonRoles", "investigationPersonRolesTermAccessionNumber",
+                "investigationPersonRolesTermSourceREF", "commentInvestigationPersonREF"],
+            "additionalProperties": false
         },
         "studySection": {
             "type": "object",
@@ -161,7 +161,7 @@
                 }
             },
             "required": ["studyIdentifier", "studyTitle", "studyDescription", "commentStudyGrantNumber",
-              "commentStudyFundingAgency", "studySubmissionDate", "studyPublicReleaseDate", "studyFileName"],
+                "commentStudyFundingAgency", "studySubmissionDate", "studyPublicReleaseDate", "studyFileName"],
             "additionalProperties": false
         },
         "studyDesignDescriptorsSection": {
@@ -207,7 +207,7 @@
             }
         },
         "required": ["studyPubMedID", "studyPublicationDOI", "studyPublicationAuthorList", "studyPublicationTitle",
-          "studyPublicationStatus", "studyPublicationStatusTermAccessionNumber", "studyPublicationStatusTermSourceREF"],
+            "studyPublicationStatus", "studyPublicationStatusTermAccessionNumber", "studyPublicationStatusTermSourceREF"],
         "additionalProperties": false
     },
     "studyFactorsSection": {
@@ -227,7 +227,7 @@
             }
         },
         "required": ["studyFactorName", "studyFactorType", "studyFactorTermAccessionNumber",
-          "studyFactorTypeTermSourceREF"],
+            "studyFactorTypeTermSourceREF"],
         "additionalProperties": false
     },
     "studyAssaysSection": {
@@ -259,8 +259,8 @@
             }
         },
         "required": ["studyAssayFileName", "studyAssayMeasurementType", "studyAssayMeasurementTypeTermAccessionNumber",
-          "studyAssayMeasurementTypeTermSourceREF", "studyAssayTechnologyType", "studyAssayTechnologyTypeTermAccessionNumber",
-          "studyAssayTechnologyTypeTermSourceREF", "studyAssayTechnologyPlatform"],
+            "studyAssayMeasurementTypeTermSourceREF", "studyAssayTechnologyType", "studyAssayTechnologyTypeTermAccessionNumber",
+            "studyAssayTechnologyTypeTermSourceREF", "studyAssayTechnologyPlatform"],
         "additionalProperties": false
     },
     "studyProtocolsSection": {
@@ -310,10 +310,10 @@
             }
         },
         "required": ["studyProtocolName", "studyProtocolType", "studyProtocolTypeTermAccessionNumber",
-          "studyProtocolTypeTermSourceREF", "studyProtocolDescription", "studyProtocolURI",
-          "studyProtocolVersion", "studyProtocolParametersName", "studyProtocolParametersNameTermAccessionNumber",
-          "studyProtocolParametersNameTermSourceREF", "studyProtocolComponentsName", "studyProtocolComponentsType",
-          "studyProtocolComponentsTypeTermAccessionNumber", "studyProtocolComponentsTypeTermSourceREF"],
+            "studyProtocolTypeTermSourceREF", "studyProtocolDescription", "studyProtocolURI",
+            "studyProtocolVersion", "studyProtocolParametersName", "studyProtocolParametersNameTermAccessionNumber",
+            "studyProtocolParametersNameTermSourceREF", "studyProtocolComponentsName", "studyProtocolComponentsType",
+            "studyProtocolComponentsTypeTermAccessionNumber", "studyProtocolComponentsTypeTermSourceREF"],
         "additionalProperties": false
     },
     "studyContactsSection": {
@@ -373,18 +373,18 @@
             }
         },
         "investigation": {
-            "$ref": "#/definitions/investigationSection"
-        },
-        "investigationPublications": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/investigationPublicationsSection"
-            }
-        },
-        "investigationContacts": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/investigationContactsSection"
+            "$ref": "#/definitions/investigationSection",
+            "investigationPublications": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/investigationPublicationsSection"
+                }
+            },
+            "investigationContacts": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/investigationContactsSection"
+                }
             }
         },
         "studies": {
@@ -392,25 +392,37 @@
             "minItems": 1,
             "items": {
                 "study": {
-                    "$ref": "#/definitions/studySection"
-                }
-            },
-            "studyDesignDescriptors": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/studyDesignDescriptorsSection"
-                }
-            },
-            "studyPublications": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/studyPublicationsSection"
-                }
-            },
-            "studyFactors": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/studyFactorsSection"
+                    "$ref": "#/definitions/studySection",
+                    "studyDesignDescriptors": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/studyDesignDescriptorsSection"
+                        }
+                    },
+                    "studyPublications": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/studyPublicationsSection"
+                        }
+                    },
+                    "studyFactors": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/studyFactorsSection"
+                        }
+                    },
+                    "studyProtocols": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/studyProtocolsSection"
+                        }
+                    },
+                    "studyContacts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/studyContactsSection"
+                        }
+                    }
                 }
             },
             "assays": {
@@ -425,23 +437,12 @@
                     }
                 }
             },
-            "studyProtocols": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/studyProtocolsSection"
-                }
-            },
-            "studyContacts": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/definitions/studyContactsSection"
-                }
-            }
+
+            "required": ["ontologySourceReference", "investigation", "studies"],
         }
     },
 
-    "required": ["ontologySourceReference", "investigation", "investigationPublications",
-        "investigationContacts", "studies"],
+    "required": ["ontologySourceReference", "investigation", "studies"],
 
     "additionalProperties": false
 }
