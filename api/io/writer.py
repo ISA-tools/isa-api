@@ -25,18 +25,25 @@ class IsatabToJsonWriter():
         investigationFilename = ntpath.basename(str(fnames[0])).split(".")
         self.parseInvestigationToJson(rec, os.path.join(json_dir, investigationFilename[0] + ".json"))
         # process the study files
-        self.parseStudyToJson(rec, work_dir, json_dir)
+        self.parseStudyAssayToJson(rec, work_dir, json_dir)
 
     def parseInvestigationToJson(self, rec, filename):
         json_structures = {}
-        self.createAttributes(json_structures, rec.metadata, "investigation")
         self.createListOfAttributes(json_structures, rec.ontology_refs, "ontologySourceReference")
-        self.createListOfAttributes(json_structures, rec.publications, "investigationPublications")
-        self.createListOfAttributes(json_structures, rec.contacts, "investigationContacts")
+        self.createInvestigationNode(json_structures, rec)
         self.studies(json_structures, rec.studies)
         with open(filename, "w") as outfile:
             json.dump(json_structures, outfile, indent=4)
         outfile.close()
+
+    def createInvestigationNode(self, json_structures, rec):
+        json_inner_struct = {}
+        for meta in rec.metadata:
+            json_inner_struct[self.commonFunctions.makeAttributeName(meta)] = rec.metadata[meta]
+        json_inner_struct["investigationPublications"] = self.createListOfAttributesArray(rec.publications)
+        json_inner_struct["investigationContacts"] = self.createListOfAttributesArray(rec.contacts)
+        json_structures["investigation"] = json_inner_struct
+        return json_structures
 
     def createAttributes(self, json_structures, metadata, tagName):
         json_inner_struct = {}
@@ -44,6 +51,15 @@ class IsatabToJsonWriter():
             json_inner_struct[self.commonFunctions.makeAttributeName(meta)] = metadata[meta]
         json_structures[tagName] = json_inner_struct
         return json_structures
+
+    def createListOfAttributesArray(self, properties):
+        json_list_struct = []
+        for onto in properties:
+            json_item_struct = {}
+            for item in onto:
+                json_item_struct[self.commonFunctions.makeAttributeName(item)] = onto[item]
+            json_list_struct.append(json_item_struct)
+        return json_list_struct
 
     def createListOfAttributes(self, json_structures, properties, tagName):
         json_list_struct = []
@@ -88,18 +104,18 @@ class IsatabToJsonWriter():
             mystudies.append(json_study_structure)
             json_structures["studies"] = mystudies
 
-    def parseStudyToJson(self, rec, work_dir, json_dir):
+    def parseStudyAssayToJson(self, rec, work_dir, json_dir):
         for study in rec.studies:
             filename = (study.metadata["Study File Name"]).split(".")[0]
-            header, nodes = self.readIsatabStudy(os.path.join(work_dir, filename + ".txt"))
+            header, nodes = self.readIsatabStudyAssay(os.path.join(work_dir, filename + ".txt"))
             self.makeStudyAssayJson(header, nodes, os.path.join(json_dir, filename + ".json"), "studySampleTable", "studyTableHeaders", "studyTableData")
 
             for assay in study.assays:
                 filename = (assay["Study Assay File Name"]).split(".")[0]
-                header, nodes = self.readIsatabStudy(os.path.join(work_dir, filename + ".txt"))
+                header, nodes = self.readIsatabStudyAssay(os.path.join(work_dir, filename + ".txt"))
                 self.makeStudyAssayJson(header, nodes, os.path.join(json_dir, filename + ".json"), "assayTable", "assayTableHeaders", "assayTableData")
 
-    def readIsatabStudy(self, studyfilepath):
+    def readIsatabStudyAssay(self, studyfilepath):
         if os.path.isfile(studyfilepath):
             nodes = []
             with open(studyfilepath, "rU") as in_handle:

@@ -53,8 +53,7 @@
       },
       "required": ["investigationIdentifier", "investigationTitle", "investigationDescription",
         "investigationSubmissionDate", "investigationPublicReleaseDate", "commentCreatedWithConfiguration",
-        "commentLastOpenedWithConfiguration"],
-      "additionalProperties": false
+        "commentLastOpenedWithConfiguration"]
     },
     "investigationPublicationsSection": {
       "type": "object",
