@@ -32,6 +32,21 @@
                 }
             ]
         },
+        "isaLabel": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/isaNode"
+                },
+                {
+                    "name": {
+                        "type": "string",
+                        "pattern": "(Label)"
+                    },
+                    "ontologyTermAccessionNumber": "string",
+                    "ontologyTermSourceRef" : "@id"
+                }
+            ]
+        },
         "isaMaterialNode": {
             "type": "object",
             "allOf": [

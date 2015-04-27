@@ -14,6 +14,7 @@ class IsatabToJsonWriter():
         self._col_isaProcessNode = ("Assay Name", "Normalization Name", "Data Transformation Name")
         self._col_isaProtocolExecutionNode = ("Protocol REF")
         self._col_isaFactorValue = ("Factor Value")
+        self._col_isaParameterValue = ("Parameter Value")
         self._col_isaUnit = ("Unit")
         self._col_isaDataNode = ("File")
 
@@ -115,6 +116,7 @@ class IsatabToJsonWriter():
                 filename = (assay["Study Assay File Name"]).split(".")[0]
                 header, nodes = self.readIsatabStudyAssay(os.path.join(work_dir, filename + ".txt"))
                 self.makeStudyAssayJson(header, nodes, os.path.join(json_dir, filename + ".json"), "assayTable", "assayTableHeaders", "assayTableData")
+                self.readIsatabStudyAssayExtend("assaySamples", os.path.join(work_dir, filename + ".txt"), os.path.join(json_dir, filename + "_expanded.json"))
 
     def readIsatabStudyAssayExtend(self, type, studyfilepath, outputFilename):
         if os.path.isfile(studyfilepath):
@@ -124,16 +126,30 @@ class IsatabToJsonWriter():
                 header = reader.next()
                 hGroupings = self.createHeaderGrouping(header)
 
+                # if ("assay" in type):
+                #     print studyfilepath
+                #     print hGroupings
+                #     print header
+
                 for line in reader:
                     studySample = {}
                     characteristicsArray = []
                     factorsArray = []
+                    parametersArray = []
+                    labelsArray = []
+                    commentsArray = []
                     for i in hGroupings:
                         for p in i:
+                            attrDict = {}
                             if not (isinstance(p, list)):
-                                studySample[self.commonFunctions.makeAttributeName(header[p])] = line[p]
+                                if "Comment" in header[p]:
+                                    st = header[p]
+                                    attrDict["commentValue"] = line[t]
+                                    attrDict["commentTerm"] = st[st.index("[") + 1:st.rindex("]")]
+                                    commentsArray.append(attrDict)
+                                else:
+                                    studySample[self.commonFunctions.makeAttributeName(header[p])] = line[p]
                             else:
-                                attrDict = {}
                                 for b, t in enumerate(p):
                                     str = header[t]
                                     if "Characteristics" in header[t]:
@@ -144,16 +160,34 @@ class IsatabToJsonWriter():
                                             attrDict["factorValue"] = line[t]
                                             attrDict["factorName"] = str[str.index("[") + 1:str.rindex("]")]
                                         else:
-                                            attrDict[self.commonFunctions.makeAttributeName(header[t])] = line[t]
+                                            if "Parameter" in header[t]:
+                                                attrDict["parameterValue"] = line[t]
+                                                attrDict["parameterTerm"] = str[str.index("[") + 1:str.rindex("]")]
+                                            else:
+                                                if "Material" in header[t]:
+                                                    attrDict["characteristics"] = line[t]
+                                                    attrDict["categoryTerm"] = "Material Type"
+                                                else:
+                                                    attrDict[self.commonFunctions.makeAttributeName(header[t])] = line[t]
 
-                                if "Characteristics" in header[p[0]]:
+                                if "Characteristics" in header[p[0]] or "Material" in header[p[0]]:
                                     characteristicsArray.append(attrDict)
                                 if "Factor" in header[p[0]]:
                                     factorsArray.append(attrDict)
+                                if "Parameter" in header[p[0]]:
+                                    parametersArray.append(attrDict)
+                                if "Label" in header[p[0]]:
+                                    labelsArray.append(attrDict)
                             if len(characteristicsArray) > 0:
                                 studySample["characteristics"] = characteristicsArray
                             if len(factorsArray) > 0:
                                 studySample["factors"] = factorsArray
+                            if len(parametersArray) > 0:
+                                studySample["parameters"] = parametersArray
+                            if len(labelsArray) > 0:
+                                studySample["labels"] = labelsArray
+                            if len(commentsArray) > 0:
+                                studySample["comments"] = commentsArray
                     studySamples.append(studySample)
 
             outputJson = {}
@@ -168,14 +202,14 @@ class IsatabToJsonWriter():
         attributes = []
         miniAttr = []
         for i, h in enumerate(header):
-            if (self.checkIfMaterialNode(h)) or (h in self._col_isaProtocolExecutionNode):
+            if (self.checkIfMaterialNode(h)) or (h in self._col_isaProtocolExecutionNode) or (self.checkIfProcessNode(h)) or ("file" in h.lower()) or ("comment" in h.lower()):
                 if (i > 0):
                     if len(attributes) > 0:
                         out.append(attributes)
                     attributes = []
                 out.append([i])
             else:
-                if ("Characteristics" in h) or ("Factor" in h):
+                if ("Characteristics" in h) or ("Factor" in h) or ("Parameter" in h) or ("Label" in h):
                     miniAttr = []
                 miniAttr.append(i)
                 if ("Term Accession Number" in h):
@@ -197,6 +231,12 @@ class IsatabToJsonWriter():
     def checkIfMaterialNode(self, header):
         for isaMN in self._col_isaMaterialNode:
             if isaMN in header:
+                return True
+        return False
+
+    def checkIfProcessNode(self, header):
+        for isaPN in self._col_isaProcessNode:
+            if isaPN in header:
                 return True
         return False
 
