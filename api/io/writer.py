@@ -131,19 +131,29 @@ class IsatabToJsonWriter():
                     for i in hGroupings:
                         for p in i:
                             if not (isinstance(p, list)):
-                                studySample[header[p]] = line[p]
+                                studySample[self.commonFunctions.makeAttributeName(header[p])] = line[p]
                             else:
                                 attrDict = {}
                                 for b, t in enumerate(p):
-                                    attrDict[header[t]] = line[t]
+                                    str = header[t]
+                                    if "Characteristics" in header[t]:
+                                        attrDict["characteristics"] = line[t]
+                                        attrDict["categoryTerm"] = str[str.index("[") + 1:str.rindex("]")]
+                                    else:
+                                        if "Factor" in header[t]:
+                                            attrDict["factorValue"] = line[t]
+                                            attrDict["factorName"] = str[str.index("[") + 1:str.rindex("]")]
+                                        else:
+                                            attrDict[self.commonFunctions.makeAttributeName(header[t])] = line[t]
+
                                 if "Characteristics" in header[p[0]]:
                                     characteristicsArray.append(attrDict)
                                 if "Factor" in header[p[0]]:
                                     factorsArray.append(attrDict)
                             if len(characteristicsArray) > 0:
-                                studySample["Characteristics"] = characteristicsArray
+                                studySample["characteristics"] = characteristicsArray
                             if len(factorsArray) > 0:
-                                studySample["Factors"] = factorsArray
+                                studySample["factors"] = factorsArray
                     studySamples.append(studySample)
 
             outputJson = {}
