@@ -109,11 +109,70 @@ class IsatabToJsonWriter():
             filename = (study.metadata["Study File Name"]).split(".")[0]
             header, nodes = self.readIsatabStudyAssay(os.path.join(work_dir, filename + ".txt"))
             self.makeStudyAssayJson(header, nodes, os.path.join(json_dir, filename + ".json"), "studySampleTable", "studyTableHeaders", "studyTableData")
+            self.readIsatabStudyAssayExtend("studySamples", os.path.join(work_dir, filename + ".txt"), os.path.join(json_dir, filename + "_expanded.json"))
 
             for assay in study.assays:
                 filename = (assay["Study Assay File Name"]).split(".")[0]
                 header, nodes = self.readIsatabStudyAssay(os.path.join(work_dir, filename + ".txt"))
                 self.makeStudyAssayJson(header, nodes, os.path.join(json_dir, filename + ".json"), "assayTable", "assayTableHeaders", "assayTableData")
+
+    def readIsatabStudyAssayExtend(self, type, studyfilepath, outputFilename):
+        if os.path.isfile(studyfilepath):
+            studySamples = []
+            with open(studyfilepath, "rU") as in_handle:
+                reader = csv.reader(in_handle, dialect="excel-tab")
+                header = reader.next()
+                hGroupings = self.createHeaderGrouping(header)
+
+                for line in reader:
+                    studySample = {}
+                    characteristicsArray = []
+                    factorsArray = []
+                    for i in hGroupings:
+                        for p in i:
+                            if not (isinstance(p, list)):
+                                studySample[header[p]] = line[p]
+                            else:
+                                attrDict = {}
+                                for b, t in enumerate(p):
+                                    attrDict[header[t]] = line[t]
+                                if "Characteristics" in header[p[0]]:
+                                    characteristicsArray.append(attrDict)
+                                if "Factor" in header[p[0]]:
+                                    factorsArray.append(attrDict)
+                            if len(characteristicsArray) > 0:
+                                studySample["Characteristics"] = characteristicsArray
+                            if len(factorsArray) > 0:
+                                studySample["Factors"] = factorsArray
+                    studySamples.append(studySample)
+
+            outputJson = {}
+            outputJson[type] = studySamples
+
+            with open(outputFilename, "w") as outfile:
+                json.dump(outputJson, outfile, indent=4)
+            outfile.close()
+
+    def createHeaderGrouping(self, header):
+        out = []
+        attributes = []
+        miniAttr = []
+        for i, h in enumerate(header):
+            if (self.checkIfMaterialNode(h)) or (h in self._col_isaProtocolExecutionNode):
+                if (i > 0):
+                    if len(attributes) > 0:
+                        out.append(attributes)
+                    attributes = []
+                out.append([i])
+            else:
+                if ("Characteristics" in h) or ("Factor" in h):
+                    miniAttr = []
+                miniAttr.append(i)
+                if ("Term Accession Number" in h):
+                    attributes.append(miniAttr)
+        if len(attributes) > 0:
+            out.append(attributes)
+        return out
 
     def readIsatabStudyAssay(self, studyfilepath):
         if os.path.isfile(studyfilepath):
@@ -124,6 +183,12 @@ class IsatabToJsonWriter():
                 for line in reader:
                     nodes.append(line)
             return header, nodes
+
+    def checkIfMaterialNode(self, header):
+        for isaMN in self._col_isaMaterialNode:
+            if isaMN in header:
+                return True
+        return False
 
     def checkIfMaterialAttribute(self, header):
         for isaMA in self._col_isaMaterialAttribute:
