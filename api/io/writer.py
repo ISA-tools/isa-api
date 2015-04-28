@@ -1,6 +1,6 @@
 __author__ = 'Alfie Abdul-Rahman'
 
-import json, glob, os, ntpath, csv
+import json, glob, os, ntpath, csv, re
 
 from api.io import parser
 from api.io.common_functions import CommonFunctions
@@ -281,7 +281,7 @@ class IsatabToJsonWriter():
 
     def checkIfMaterialLabel(self, header):
         for isaML in self._col_isaMaterialLabel:
-            if isaML in header:
+            if header in isaML:
                 return True
         return False
 
