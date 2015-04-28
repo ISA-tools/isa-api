@@ -58,8 +58,8 @@ class IsatabTest(unittest.TestCase):
             assert json_investigation_rec["investigation"]["investigationIdentifier"] == "BII-I-1"
             assert len(json_investigation_rec["ontologySourceReference"]) == 7
             assert json_investigation_rec["ontologySourceReference"][2]["termSourceName"] == "NEWT"
-            assert len(json_investigation_rec["investigationPublications"]) == 1
-            assert json_investigation_rec["investigationPublications"][0]["investigationPublicationDOI"] == "doi:10.1186/jbiol54"
+            assert len(json_investigation_rec["investigation"]["investigationPublications"]) == 1
+            assert json_investigation_rec["investigation"]["investigationPublications"][0]["investigationPublicationDOI"] == "doi:10.1186/jbiol54"
 
             assert len(json_investigation_rec["studies"]) == 2
             study = json_investigation_rec["studies"][0]

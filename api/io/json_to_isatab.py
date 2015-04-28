@@ -95,9 +95,9 @@ class JsonToIsatabWriter():
             for i in self._isatab_i_investigation_sec:
                 my_str = my_str + i + "\t\"" + jsonData["investigation"][self.commonFunctions.makeAttributeName(i)] + "\"" + "\n"
             # INVESTIGATION PUBLICATIONS
-            my_str = self.writeSectionInvestigation(my_str, "INVESTIGATION PUBLICATIONS", jsonData["investigationPublications"], self._isatab_i_investigation_publications_sec)
+            my_str = self.writeSectionInvestigation(my_str, "INVESTIGATION PUBLICATIONS", jsonData["investigation"]["investigationPublications"], self._isatab_i_investigation_publications_sec)
             # INVESTIGATION CONTACTS
-            my_str = self.writeSectionInvestigation(my_str, "INVESTIGATION CONTACTS", jsonData["investigationContacts"], self._isatab_i_investigation_contacts_sec)
+            my_str = self.writeSectionInvestigation(my_str, "INVESTIGATION CONTACTS", jsonData["investigation"]["investigationContacts"], self._isatab_i_investigation_contacts_sec)
             for study in jsonData["studies"]:
                 # STUDY
                 my_str = my_str + "STUDY" + "\n"
@@ -136,40 +136,41 @@ class JsonToIsatabWriter():
         assert len(filenames) > 0
         for each_file in filenames:
             assert os.path.exists(each_file), "Did not find study / assay file: %s" % each_file
-            my_str = ""
-            with open(each_file) as in_handle:
-                json_each_s = json.load(in_handle)
-                # the study headers
-                hlast = len(json_each_s[tableNameTitle][tableHeaderTitle]) - 1
-                for hi, node_h in enumerate(json_each_s[tableNameTitle][tableHeaderTitle]):
-                    if hi == hlast and "attributes" in node_h and len(node_h["attributes"]) == 0:
-                        my_str = my_str + "\"" + node_h["name"] + "\""
-                    elif hi == hlast and not("attributes" in node_h):
+            if not "expanded" in each_file:
+                my_str = ""
+                with open(each_file) as in_handle:
+                    json_each_s = json.load(in_handle)
+                    # the study headers
+                    hlast = len(json_each_s[tableNameTitle][tableHeaderTitle]) - 1
+                    for hi, node_h in enumerate(json_each_s[tableNameTitle][tableHeaderTitle]):
+                        if hi == hlast and "attributes" in node_h and len(node_h["attributes"]) == 0:
                             my_str = my_str + "\"" + node_h["name"] + "\""
-                    else:
-                        my_str = my_str + "\"" + node_h["name"] + "\"" + "\t"
-
-                    if "attributes" in node_h:
-                        last = len(node_h["attributes"]) - 1
-                        for i, n_h in enumerate(node_h["attributes"]):
-                            if i == last and hi == hlast:
-                                my_str = my_str + "\"" + n_h["name"] + "\""
-                            else:
-                                my_str = my_str + "\"" + n_h["name"] + "\"" + "\t"
-                my_str = my_str + "\n"
-
-                # now for each of the rows
-                for node_r in json_each_s[tableNameTitle][tableDataTitle]:
-                    last = len(node_r) - 1
-                    for i, n_r in enumerate(node_r):
-                        if i == last:
-                            my_str = my_str + "\"" + n_r + "\""
+                        elif hi == hlast and not("attributes" in node_h):
+                                my_str = my_str + "\"" + node_h["name"] + "\""
                         else:
-                            my_str = my_str + "\"" + n_r + "\"" + "\t"
+                            my_str = my_str + "\"" + node_h["name"] + "\"" + "\t"
+
+                        if "attributes" in node_h:
+                            last = len(node_h["attributes"]) - 1
+                            for i, n_h in enumerate(node_h["attributes"]):
+                                if i == last and hi == hlast:
+                                    my_str = my_str + "\"" + n_h["name"] + "\""
+                                else:
+                                    my_str = my_str + "\"" + n_h["name"] + "\"" + "\t"
                     my_str = my_str + "\n"
-                # now we write out each of the study files
-                with open(os.path.join(output_dir, ntpath.basename(str(each_file)).split(".")[0] + ".txt"), "w") as file_isatab:
-                    file_isatab.write(my_str)
+
+                    # now for each of the rows
+                    for node_r in json_each_s[tableNameTitle][tableDataTitle]:
+                        last = len(node_r) - 1
+                        for i, n_r in enumerate(node_r):
+                            if i == last:
+                                my_str = my_str + "\"" + n_r + "\""
+                            else:
+                                my_str = my_str + "\"" + n_r + "\"" + "\t"
+                        my_str = my_str + "\n"
+                    # now we write out each of the study files
+                    with open(os.path.join(output_dir, ntpath.basename(str(each_file)).split(".")[0] + ".txt"), "w") as file_isatab:
+                        file_isatab.write(my_str)
 
 ########
 

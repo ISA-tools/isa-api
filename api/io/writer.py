@@ -34,7 +34,7 @@ class IsatabToJsonWriter():
         self.createInvestigationNode(json_structures, rec)
         self.studies(json_structures, rec.studies)
         with open(filename, "w") as outfile:
-            json.dump(json_structures, outfile, indent=4)
+            json.dump(json_structures, outfile, indent=4, sort_keys=True)
         outfile.close()
 
     def createInvestigationNode(self, json_structures, rec):
@@ -194,7 +194,7 @@ class IsatabToJsonWriter():
             outputJson[type] = studySamples
 
             with open(outputFilename, "w") as outfile:
-                json.dump(outputJson, outfile, indent=4)
+                json.dump(outputJson, outfile, indent=4, sort_keys=True)
             outfile.close()
 
     def createHeaderGrouping(self, header):
@@ -277,5 +277,5 @@ class IsatabToJsonWriter():
         top = {}
         top[tableNameTitle] = json_structures
         with open(filename, "w") as outfile:
-            json.dump(top, outfile, indent=4)
+            json.dump(top, outfile, indent=4, sort_keys=True)
         outfile.close()
