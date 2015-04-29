@@ -175,26 +175,29 @@ class JsonToIsatabWriter():
                     with open(os.path.join(output_dir, ntpath.basename(str(each_file)).split(".")[0] + ".txt"), "w") as file_isatab:
                         file_isatab.write(my_str)
 
-    # TODO: Remove the last tab on each row
     # TODO: Update unit test
     def writeJsonStudyAssayExpandedToIsatab(self, filenames, output_dir, mainHeader):
         assert len(filenames) > 0
         for each_file in filenames:
             assert os.path.exists(each_file), "Did not find study / assay file: %s" % each_file
             if "expanded" in each_file:
-                print (each_file)
                 my_str = ""
                 with open(each_file) as in_handle:
                     json_each_s = json.load(in_handle)
                     # first we create the header first
-                    for item in json_each_s[mainHeader][0]:
+                    hlast = len(json_each_s[mainHeader][0]) - 1
+                    for hi, item in enumerate(json_each_s[mainHeader][0]):
                         nodeType = item["type"]
                         if not nodeType in ("isaMaterialType", "isaMaterialAttribute", "isaMaterialLabel", "isaFactorValue", "isaParameterValue", "isaComment"):
-                            my_str = my_str + "\"" + item["name"] + "\"" + "\t"
+                            if hi == hlast:
+                                my_str = my_str + "\"" + item["name"] + "\""
+                            else:
+                                my_str = my_str + "\"" + item["name"] + "\"" + "\t"
                         else:
                             if nodeType in ("isaMaterialType", "isaMaterialAttribute", "isaMaterialLabel", "isaFactorValue", "isaParameterValue"):
                                 assert len(item["items"]) > 0
-                                for eItem in item["items"]:
+                                hEItemLast = len(item["items"]) - 1
+                                for hei, eItem in enumerate(item["items"]):
                                     if nodeType in "isaMaterialType":
                                         my_str = my_str + "\"" + "Material Type" + "\"" + "\t"
                                     if nodeType in "isaMaterialAttribute":
@@ -208,7 +211,9 @@ class JsonToIsatabWriter():
                                     if "unit" in eItem:
                                         my_str = my_str + "\"" + "Unit" + "\"" + "\t"
                                     my_str = my_str + "\"" + "Term Source REF" + "\"" + "\t"
-                                    my_str = my_str + "\"" + "Term Accession Number" + "\"" + "\t"
+                                    my_str = my_str + "\"" + "Term Accession Number" + "\""
+                                    if hei != hEItemLast:
+                                        my_str = my_str + "\t"
                             else:
                                 my_str = my_str + "\"" + "Comment[" + item["commentTerm"] + "]\"" + "\t"
 
@@ -216,12 +221,17 @@ class JsonToIsatabWriter():
 
                     # then we create the rows below the header
                     for items in json_each_s[mainHeader]:
-                        for item in items:
+                        hlastRow = len(items) - 1
+                        for hiItem, item in enumerate(items):
                             nodeType = item["type"]
                             if not nodeType in ("isaMaterialType", "isaMaterialAttribute", "isaMaterialLabel", "isaFactorValue", "isaParameterValue"):
-                                my_str = my_str + "\"" + item["value"] + "\"" + "\t"
+                                if hiItem == hlastRow:
+                                    my_str = my_str + "\"" + item["value"] + "\""
+                                else:
+                                    my_str = my_str + "\"" + item["value"] + "\"" + "\t"
                             else:
-                                for eItem in item["items"]:
+                                hEItemLastRow = len(item["items"]) - 1
+                                for heirow, eItem in enumerate(item["items"]):
                                     if nodeType in "isaMaterialType":
                                         my_str = my_str + "\"" + eItem["characteristics"] + "\"" + "\t"
                                     if nodeType in "isaMaterialAttribute":
@@ -235,12 +245,14 @@ class JsonToIsatabWriter():
                                     if "unit" in eItem:
                                         my_str = my_str + "\"" + eItem["unit"] + "\"" + "\t"
                                     my_str = my_str + "\"" + eItem["termSourceREF"] + "\"" + "\t"
-                                    my_str = my_str + "\"" + eItem["termAccessionNumber"] + "\"" + "\t"
+                                    my_str = my_str + "\"" + eItem["termAccessionNumber"] + "\""
+                                    if heirow != hEItemLastRow:
+                                        my_str = my_str + "\t"
 
                         my_str = my_str + "\n"
 
                     # now we write out each of the study files
-                    with open(os.path.join(output_dir, ntpath.basename(str(each_file)).split(".")[0] + "_expanded.txt"), "w") as file_isatab:
+                    with open(os.path.join(output_dir, ntpath.basename(str(each_file)).split(".")[0] + ".txt"), "w") as file_isatab:
                         file_isatab.write(my_str)
 
 

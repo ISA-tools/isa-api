@@ -1,6 +1,6 @@
 __author__ = 'Alfie Abdul-Rahman'
 
-import json, glob, os, ntpath, csv, re
+import json, glob, os, ntpath, csv
 
 from api.io import parser
 from api.io.common_functions import CommonFunctions
@@ -112,7 +112,6 @@ class IsatabToJsonWriter():
             header, nodes = self.readIsatabStudyAssay(os.path.join(work_dir, filename + ".txt"))
             self.makeStudyAssayJson(header, nodes, os.path.join(json_dir, filename + ".json"), "studySampleTable", "studyTableHeaders", "studyTableData")
             self.readIsatabStudyAssayExtend("studySamples", os.path.join(work_dir, filename + ".txt"), os.path.join(json_dir, filename + "_expanded.json"))
-
             for assay in study.assays:
                 filename = (assay["Study Assay File Name"]).split(".")[0]
                 header, nodes = self.readIsatabStudyAssay(os.path.join(work_dir, filename + ".txt"))
@@ -126,7 +125,6 @@ class IsatabToJsonWriter():
                 reader = csv.reader(in_handle, dialect="excel-tab")
                 header = reader.next()
                 hGroupings = self.createHeaderGrouping(header)
-
                 for line in reader:
                     studySample = []
                     characteristicsArray = []
@@ -137,10 +135,8 @@ class IsatabToJsonWriter():
                         obj = {}
                         for p in i:
                             attrDict = {}
-
                             if not (isinstance(p, list)):
                                 obj["type"] = self.typeValue(header[p])
-
                                 obj["value"] = line[p]
                                 if "Comment" in header[p]:
                                     obj["name"] = header[p].split("[")[0]
@@ -167,7 +163,6 @@ class IsatabToJsonWriter():
                                                     attrDict["categoryTerm"] = "Material Type"
                                                 else:
                                                     attrDict[self.commonFunctions.makeAttributeName(header[t])] = line[t]
-
                                     obj["type"] = self.typeValue(header[p[0]])
                                 if "Characteristics" in header[p[0]] or "Material" in header[p[0]]:
                                     characteristicsArray.append(attrDict)
@@ -177,7 +172,6 @@ class IsatabToJsonWriter():
                                     parametersArray.append(attrDict)
                                 if "Label" in header[p[0]]:
                                     labelsArray.append(attrDict)
-
                         if (isinstance(p, list)):
                             if len(characteristicsArray) > 0:
                                 obj["items"] = characteristicsArray
@@ -193,10 +187,8 @@ class IsatabToJsonWriter():
                                 labelsArray = []
                         studySample.append(obj)
                     studySamples.append(studySample)
-
             outputJson = {}
             outputJson[type] = studySamples
-
             with open(outputFilename, "w") as outfile:
                 json.dump(outputJson, outfile, indent=4, sort_keys=True)
             outfile.close()

@@ -9,15 +9,6 @@ class IsatabTest(unittest.TestCase):
     def setUp(self):
         self._dir = os.path.join(os.path.dirname(__file__), "data")
 
-    def write_json(self):
-        work_dir = os.path.join(self._dir, "BII-I-1")
-        rec = parse(work_dir)
-        print "here"
-        with open("example.json", "w") as outfile:
-            json.dump({'Investigation Identifier':rec.metadata["Investigation Identifier"]}, outfile)
-        outfile.close()
-
-
     def test_basic_parsing(self):
         """Test general parsing of an example ISA directory.
         """
@@ -79,6 +70,17 @@ class IsatabTest(unittest.TestCase):
             assert len(json_study_rec["studySampleTable"]["studyTableData"][0]) == 19
             assert len(json_study_rec["studySampleTable"]["studyTableHeaders"]) == 5
 
+        # check if the expanded study file exists
+        study_expanded_json_ref = os.path.join(json_dir, (str(exampleStudyJsonFile)).split(".")[0] + "_expanded.json")
+        assert os.path.exists(study_expanded_json_ref), "Did not find study json file: %s" % study_expanded_json_ref
+
+        # load up one of the expanded study json file and check whether it matches up with the data in the study tabular format
+        with open(study_expanded_json_ref, "rU") as in_handle:
+            json_expanded_study_rec = json.load(in_handle)
+            assert len(json_expanded_study_rec["studySamples"]) == 164
+            assert json_expanded_study_rec["studySamples"][0][0]["name"] == "Source Name"
+            assert json_expanded_study_rec["studySamples"][0][4]["type"] == "isaFactorValue"
+
         # check if the assay file exists
         assay_json_ref = os.path.join(json_dir, (str(exampleAssayJsonFile)).split(".")[0] + ".json")
         assert os.path.exists(assay_json_ref), "Did not find assay json file: %s" % assay_json_ref
@@ -89,6 +91,17 @@ class IsatabTest(unittest.TestCase):
             assert len(json_assay_rec["assayTable"]["assayTableData"][0]) == 25
             assert len(json_assay_rec["assayTable"]["assayTableHeaders"]) == 18
 
+        # check if the expanded assay file exists
+        assay_expanded_json_ref = os.path.join(json_dir, (str(exampleAssayJsonFile)).split(".")[0] + "_expanded.json")
+        assert os.path.exists(assay_expanded_json_ref), "Did not find assay json file: %s" % assay_expanded_json_ref
+
+        # load up one of the expanded assay json file and check whether it matches up with the data in the assay tabular format
+        with open(assay_expanded_json_ref, "rU") as in_handle:
+            json_expanded_assay_rec = json.load(in_handle)
+            assert len(json_expanded_assay_rec["assaySamples"]) == 18
+            assert json_expanded_assay_rec["assaySamples"][0][0]["name"] == "Sample Name"
+            assert json_expanded_assay_rec["assaySamples"][0][5]["type"] == "isaMaterialLabel"
+
     def test_jsonToIsatab_writer(self):
         mywriter = JsonToIsatabWriter()
         folder_name = "BII-I-1"
@@ -98,6 +111,9 @@ class IsatabTest(unittest.TestCase):
         mywriter.parsingJson(json_dir, output_dir)
 
         for iFile in os.listdir(output_dir):
+            if "_expanded" in iFile:
+                iFile = iFile.replace("_expanded", "")
+
             # check if file size the same
             assert os.path.getsize(os.path.join(original_dir, iFile)) == os.path.getsize(os.path.join(output_dir, iFile)), \
                 "File size does not match: " + os.path.join(original_dir, iFile) + ", " + os.path.join(output_dir, iFile)
@@ -113,6 +129,7 @@ class IsatabTest(unittest.TestCase):
             #             print line
             #         elif line.startswith('+'):
             #             print '\t\t'+line
+
 
     # def test_minimal_parsing(self):
     #     """Parse a minimal ISA-Tab file without some field values filled in.
