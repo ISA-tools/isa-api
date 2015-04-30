@@ -107,17 +107,17 @@ class JsonToIsatabWriter():
                 for i in self._isatab_i_study_sec:
                     my_str = my_str + i + "\t\"" + study["study"][self.commonFunctions.makeAttributeName(i)] + "\"" + "\n"
                 # STUDY DESIGN DESCRIPTORS
-                my_str = self.writeSectionInvestigation(my_str, "STUDY DESIGN DESCRIPTORS", study["studyDesignDescriptors"], self._isatab_i_study_design_descriptors_sec)
+                my_str = self.writeSectionInvestigation(my_str, "STUDY DESIGN DESCRIPTORS", study["study"]["studyDesignDescriptors"], self._isatab_i_study_design_descriptors_sec)
                 # STUDY PUBLICATIONS
-                my_str = self.writeSectionInvestigation(my_str, "STUDY PUBLICATIONS", study["studyPublications"], self._isatab_i_study_publications_sec)
+                my_str = self.writeSectionInvestigation(my_str, "STUDY PUBLICATIONS", study["study"]["studyPublications"], self._isatab_i_study_publications_sec)
                 # STUDY FACTORS
-                my_str = self.writeSectionInvestigation(my_str, "STUDY FACTORS", study["studyFactors"], self._isatab_i_study_factors_sec)
+                my_str = self.writeSectionInvestigation(my_str, "STUDY FACTORS", study["study"]["studyFactors"], self._isatab_i_study_factors_sec)
                 # STUDY ASSAYS
-                my_str = self.writeSectionInvestigation(my_str, "STUDY ASSAYS", study["assays"], self._isatab_i_study_assays_sec)
+                my_str = self.writeSectionInvestigation(my_str, "STUDY ASSAYS", study["study"]["assays"], self._isatab_i_study_assays_sec)
                 # STUDY PROTOCOLS
-                my_str = self.writeSectionInvestigation(my_str, "STUDY PROTOCOLS", study["studyProtocols"], self._isatab_i_study_protocols_sec)
+                my_str = self.writeSectionInvestigation(my_str, "STUDY PROTOCOLS", study["study"]["studyProtocols"], self._isatab_i_study_protocols_sec)
                 # STUDY CONTACTS
-                my_str = self.writeSectionInvestigation(my_str, "STUDY CONTACTS", study["studyContacts"], self._isatab_i_study_contacts_sec)
+                my_str = self.writeSectionInvestigation(my_str, "STUDY CONTACTS", study["study"]["studyContacts"], self._isatab_i_study_contacts_sec)
         # now we write out each of the study files
         with open(os.path.join(output_dir, ntpath.basename(str(json_investigation)).split(".")[0] + ".txt"), "w") as file_isatab:
             file_isatab.write(my_str)

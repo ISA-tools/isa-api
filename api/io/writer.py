@@ -73,36 +73,37 @@ class IsatabToJsonWriter():
         json_structures[tagName] = json_list_struct
         return json_structures
 
+    def createStudyNode(self, json_structures, rec):
+        json_inner_struct = {}
+        for meta in rec.metadata:
+            json_inner_struct[self.commonFunctions.makeAttributeName(meta)] = rec.metadata[meta]
+        json_inner_struct["studyDesignDescriptors"] = self.createListOfAttributesArray(rec.design_descriptors)
+        json_inner_struct["studyPublications"] = self.createListOfAttributesArray(rec.publications)
+        json_inner_struct["studyFactors"] = self.createListOfAttributesArray(rec.factors)
+        # this is a very silly way of doing extracting the study protocol but needed because of the error in encoding
+        # need to think of a better way
+        json_study_protocol = []
+        for sp in rec.protocols:
+            json_sp = {}
+            for i_sp in sp:
+                json_sp[self.commonFunctions.makeAttributeName(i_sp)] = sp[i_sp].decode('ascii', errors='ignore')
+            json_study_protocol.append(json_sp)
+        json_inner_struct["studyProtocols"] = json_study_protocol
+        json_inner_struct["studyContacts"] = self.createListOfAttributesArray(rec.contacts)
+        myassay = []
+        for assay in rec.assays:
+            json_assay_structure = {}
+            for i_assay in assay:
+                json_assay_structure[self.commonFunctions.makeAttributeName(i_assay)] = assay[i_assay]
+            myassay.append(json_assay_structure)
+        json_inner_struct["assays"] = myassay
+        json_structures["study"] = json_inner_struct
+
     def studies(self, json_structures, studies):
         mystudies = []
         for _study in studies:
             json_study_structure = {}
-            # write out the metadata information
-            self.createAttributes(json_study_structure, _study.metadata, "study")
-            # write out the "Study Design Descriptors"
-            self.createListOfAttributes(json_study_structure, _study.design_descriptors, "studyDesignDescriptors")
-            # write out the "Study Publications"
-            self.createListOfAttributes(json_study_structure, _study.publications, "studyPublications")
-            # write out the "Study Factors"
-            self.createListOfAttributes(json_study_structure, _study.factors, "studyFactors")
-            # this is a very silly way of doing extracting the study protocol but needed because of the error in encoding
-            # need to think of a better way
-            json_study_protocol = []
-            for sp in _study.protocols:
-                json_sp = {}
-                for i_sp in sp:
-                    json_sp[self.commonFunctions.makeAttributeName(i_sp)] = sp[i_sp].decode('ascii', errors='ignore')
-                json_study_protocol.append(json_sp)
-            json_study_structure["studyProtocols"] = json_study_protocol
-            # write out the "Study Contacts"
-            self.createListOfAttributes(json_study_structure, _study.contacts, "studyContacts")
-            myassay = []
-            for assay in _study.assays:
-                json_assay_structure = {}
-                for i_assay in assay:
-                    json_assay_structure[self.commonFunctions.makeAttributeName(i_assay)] = assay[i_assay]
-                myassay.append(json_assay_structure)
-            json_study_structure["assays"] = myassay
+            self.createStudyNode(json_study_structure, _study)
             mystudies.append(json_study_structure)
             json_structures["studies"] = mystudies
 

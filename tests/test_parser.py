@@ -56,8 +56,8 @@ class IsatabTest(unittest.TestCase):
             study = json_investigation_rec["studies"][0]
             exampleStudyJsonFile = study["study"]["studyFileName"]
             assert exampleStudyJsonFile == "s_BII-S-1.txt"
-            assert len(study["assays"]) == 3
-            exampleAssayJsonFile = study["assays"][0]["studyAssayFileName"]
+            assert len(study["study"]["assays"]) == 3
+            exampleAssayJsonFile = study["study"]["assays"][0]["studyAssayFileName"]
             assert exampleAssayJsonFile == "a_proteome.txt"
 
         # check if the study file exists
