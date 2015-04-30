@@ -80,7 +80,7 @@ class JsonToIsatabWriter():
             self.writeJsonStudyAssayToIsatab(a_filenames, output_dir, "assayTable", "assayTableHeaders", "assayTableData")
 
             self.writeJsonStudyAssayExpandedToIsatab(s_filenames, output_dir, "studySamples")
-            self.writeJsonStudyAssayExpandedToIsatab(a_filenames, output_dir, "assaySamples")
+            self.writeJsonStudyAssayExpandedToIsatab(a_filenames, output_dir, "assays")
 
     def writeJsonInvestigationToIsatab(self, filenames, output_dir):
         my_str = ""

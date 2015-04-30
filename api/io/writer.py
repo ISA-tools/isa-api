@@ -116,7 +116,7 @@ class IsatabToJsonWriter():
                 filename = (assay["Study Assay File Name"]).split(".")[0]
                 header, nodes = self.readIsatabStudyAssay(os.path.join(work_dir, filename + ".txt"))
                 self.makeStudyAssayJson(header, nodes, os.path.join(json_dir, filename + ".json"), "assayTable", "assayTableHeaders", "assayTableData")
-                self.readIsatabStudyAssayExtend("assaySamples", os.path.join(work_dir, filename + ".txt"), os.path.join(json_dir, filename + "_expanded.json"))
+                self.readIsatabStudyAssayExtend("assays", os.path.join(work_dir, filename + ".txt"), os.path.join(json_dir, filename + "_expanded.json"))
 
     def readIsatabStudyAssayExtend(self, type, studyfilepath, outputFilename):
         if os.path.isfile(studyfilepath):

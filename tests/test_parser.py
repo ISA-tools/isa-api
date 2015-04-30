@@ -98,9 +98,9 @@ class IsatabTest(unittest.TestCase):
         # load up one of the expanded assay json file and check whether it matches up with the data in the assay tabular format
         with open(assay_expanded_json_ref, "rU") as in_handle:
             json_expanded_assay_rec = json.load(in_handle)
-            assert len(json_expanded_assay_rec["assaySamples"]) == 18
-            assert json_expanded_assay_rec["assaySamples"][0][0]["name"] == "Sample Name"
-            assert json_expanded_assay_rec["assaySamples"][0][5]["type"] == "isaMaterialLabel"
+            assert len(json_expanded_assay_rec["assays"]) == 18
+            assert json_expanded_assay_rec["assays"][0][0]["name"] == "Sample Name"
+            assert json_expanded_assay_rec["assays"][0][5]["type"] == "isaMaterialLabel"
 
     def test_jsonToIsatab_writer(self):
         mywriter = JsonToIsatabWriter()
