@@ -25,17 +25,22 @@ class IsatabToJsonWriter():
         fnames = glob.glob(os.path.join(work_dir, "i_*.txt")) + \
                  glob.glob(os.path.join(work_dir, "*.idf.txt"))
         investigationFilename = ntpath.basename(str(fnames[0])).split(".")
-        self.parseInvestigationToJson(rec, os.path.join(json_dir, investigationFilename[0] + ".json"))
-        # process the study files
-        self.parseStudyAssayToJson(rec, work_dir, json_dir)
+        self.parseInvestigationToJson(rec, os.path.join(json_dir, investigationFilename[0] + ".json"), os.path.join(json_dir, os.path.basename(work_dir) + ".json"), work_dir, json_dir)
 
-    def parseInvestigationToJson(self, rec, filename):
+    def parseInvestigationToJson(self, rec, i_File, single_file, work_dir, json_dir):
         json_structures = {}
         self.createListOfAttributes(json_structures, rec.ontology_refs, "ontologySourceReference")
         self.createInvestigationNode(json_structures, rec)
-        self.studies(json_structures, rec.studies)
-        with open(filename, "w") as outfile:
+        single_json_structures = json_structures.copy()
+        #  multiple json structure
+        self.studies(json_structures, rec.studies, work_dir, json_dir, False)
+        with open(i_File, "w") as outfile:
             json.dump(json_structures, outfile, indent=4, sort_keys=True)
+        outfile.close()
+        # single json structure
+        self.studies(single_json_structures, rec.studies, work_dir, json_dir, True)
+        with open(single_file, "w") as outfile:
+            json.dump(single_json_structures, outfile, indent=4, sort_keys=True)
         outfile.close()
 
     def createInvestigationNode(self, json_structures, rec):
@@ -73,7 +78,7 @@ class IsatabToJsonWriter():
         json_structures[tagName] = json_list_struct
         return json_structures
 
-    def createStudyNode(self, json_structures, rec):
+    def createStudyNode(self, json_structures, rec, work_dir, json_dir, isSingleStructure):
         json_inner_struct = {}
         for meta in rec.metadata:
             json_inner_struct[self.commonFunctions.makeAttributeName(meta)] = rec.metadata[meta]
@@ -90,20 +95,44 @@ class IsatabToJsonWriter():
             json_study_protocol.append(json_sp)
         json_inner_struct["studyProtocols"] = json_study_protocol
         json_inner_struct["studyContacts"] = self.createListOfAttributesArray(rec.contacts)
+        filename = (rec.metadata["Study File Name"]).split(".")[0]
+        studySamples = self.readIsatabStudyAssayExtend(os.path.join(work_dir, filename + ".txt"))
+        if (isSingleStructure):
+            json_inner_struct["studySamples"] = studySamples
+        else:
+            header, nodes = self.readIsatabStudyAssay(os.path.join(work_dir, filename + ".txt"))
+            self.makeStudyAssayJson(header, nodes, os.path.join(json_dir, filename + ".json"), "studySampleTable", "studyTableHeaders", "studyTableData")
+            outputJson = {}
+            outputJson["studySamples"] = studySamples
+            with open(os.path.join(json_dir, filename + "_expanded.json"), "w") as outfile:
+                json.dump(outputJson, outfile, indent=4, sort_keys=True)
+            outfile.close()
         myassay = []
         for assay in rec.assays:
             json_assay_structure = {}
             for i_assay in assay:
                 json_assay_structure[self.commonFunctions.makeAttributeName(i_assay)] = assay[i_assay]
+                filename = (assay["Study Assay File Name"]).split(".")[0]
+                assaysTable = self.readIsatabStudyAssayExtend(os.path.join(work_dir, filename + ".txt"))
+                if (isSingleStructure):
+                    json_assay_structure["assaysTable"] = assaysTable
+                else:
+                    header, nodes = self.readIsatabStudyAssay(os.path.join(work_dir, filename + ".txt"))
+                    self.makeStudyAssayJson(header, nodes, os.path.join(json_dir, filename + ".json"), "assayTable", "assayTableHeaders", "assayTableData")
+                    outputJson = {}
+                    outputJson["assayTable"] = assaysTable
+                    with open(os.path.join(json_dir, filename + "_expanded.json"), "w") as outfile:
+                        json.dump(outputJson, outfile, indent=4, sort_keys=True)
+                    outfile.close()
             myassay.append(json_assay_structure)
         json_inner_struct["assays"] = myassay
         json_structures["study"] = json_inner_struct
 
-    def studies(self, json_structures, studies):
+    def studies(self, json_structures, studies, work_dir, json_dir, isSingleStructure):
         mystudies = []
         for _study in studies:
             json_study_structure = {}
-            self.createStudyNode(json_study_structure, _study)
+            self.createStudyNode(json_study_structure, _study, work_dir, json_dir, isSingleStructure)
             mystudies.append(json_study_structure)
             json_structures["studies"] = mystudies
 
@@ -112,14 +141,12 @@ class IsatabToJsonWriter():
             filename = (study.metadata["Study File Name"]).split(".")[0]
             header, nodes = self.readIsatabStudyAssay(os.path.join(work_dir, filename + ".txt"))
             self.makeStudyAssayJson(header, nodes, os.path.join(json_dir, filename + ".json"), "studySampleTable", "studyTableHeaders", "studyTableData")
-            self.readIsatabStudyAssayExtend("studySamples", os.path.join(work_dir, filename + ".txt"), os.path.join(json_dir, filename + "_expanded.json"))
             for assay in study.assays:
                 filename = (assay["Study Assay File Name"]).split(".")[0]
                 header, nodes = self.readIsatabStudyAssay(os.path.join(work_dir, filename + ".txt"))
                 self.makeStudyAssayJson(header, nodes, os.path.join(json_dir, filename + ".json"), "assayTable", "assayTableHeaders", "assayTableData")
-                self.readIsatabStudyAssayExtend("assays", os.path.join(work_dir, filename + ".txt"), os.path.join(json_dir, filename + "_expanded.json"))
 
-    def readIsatabStudyAssayExtend(self, type, studyfilepath, outputFilename):
+    def readIsatabStudyAssayExtend(self, studyfilepath):
         if os.path.isfile(studyfilepath):
             studySamples = []
             with open(studyfilepath, "rU") as in_handle:
@@ -188,11 +215,7 @@ class IsatabToJsonWriter():
                                 labelsArray = []
                         studySample.append(obj)
                     studySamples.append(studySample)
-            outputJson = {}
-            outputJson[type] = studySamples
-            with open(outputFilename, "w") as outfile:
-                json.dump(outputJson, outfile, indent=4, sort_keys=True)
-            outfile.close()
+            return studySamples
 
     def createHeaderGrouping(self, header):
         out = []

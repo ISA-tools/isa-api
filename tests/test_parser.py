@@ -98,9 +98,50 @@ class IsatabTest(unittest.TestCase):
         # load up one of the expanded assay json file and check whether it matches up with the data in the assay tabular format
         with open(assay_expanded_json_ref, "rU") as in_handle:
             json_expanded_assay_rec = json.load(in_handle)
-            assert len(json_expanded_assay_rec["assays"]) == 18
-            assert json_expanded_assay_rec["assays"][0][0]["name"] == "Sample Name"
-            assert json_expanded_assay_rec["assays"][0][5]["type"] == "isaMaterialLabel"
+            assert len(json_expanded_assay_rec["assayTable"]) == 18
+            assert json_expanded_assay_rec["assayTable"][0][0]["name"] == "Sample Name"
+            assert json_expanded_assay_rec["assayTable"][0][5]["type"] == "isaMaterialLabel"
+
+    def test_isatab_json_writer_single(self):
+        """Test general parsing of a single combined JSON ISA-Tab file
+        """
+        work_dir = os.path.join(self._dir, "BII-I-1")
+        json_dir = os.path.join(os.getcwd(), 'json', work_dir + "-json")
+        if not os.path.exists(json_dir):
+            os.makedirs(json_dir)
+        # write out the json files for the isa-tab
+        writer = IsatabToJsonWriter()
+        writer.parsingIsatab(work_dir, json_dir)
+        if os.path.isdir(json_dir):
+            investigation_json_ref = os.path.join(json_dir, os.path.basename(work_dir) + ".json")
+            assert os.path.exists(investigation_json_ref)
+
+        assert os.path.exists(investigation_json_ref), "Did not find investigation json file: %s" % investigation_json_ref
+        # load up the investigation json file and check whether it matches up with the investigation tabular format
+        with open(investigation_json_ref, "rU") as in_handle:
+            json_investigation_rec = json.load(in_handle)
+            assert json_investigation_rec["investigation"]["investigationIdentifier"] == "BII-I-1"
+            assert len(json_investigation_rec["ontologySourceReference"]) == 7
+            assert json_investigation_rec["ontologySourceReference"][2]["termSourceName"] == "NEWT"
+            assert len(json_investigation_rec["investigation"]["investigationPublications"]) == 1
+            assert json_investigation_rec["investigation"]["investigationPublications"][0]["investigationPublicationDOI"] == "doi:10.1186/jbiol54"
+
+            assert len(json_investigation_rec["studies"]) == 2
+            study = json_investigation_rec["studies"][0]
+            exampleStudyJsonFile = study["study"]["studyFileName"]
+            assert exampleStudyJsonFile == "s_BII-S-1.txt"
+            assert len(study["study"]["assays"]) == 3
+            exampleAssayJsonFile = study["study"]["assays"][0]["studyAssayFileName"]
+            assert exampleAssayJsonFile == "a_proteome.txt"
+
+            assert len(study["study"]["assays"][0]["assaysTable"]) == 18
+            assert study["study"]["assays"][0]["assaysTable"][0][0]["name"] == "Sample Name"
+            assert study["study"]["assays"][0]["assaysTable"][4][0]["type"] == "isaMaterialNode"
+
+            assert len(study["study"]["studySamples"]) == 164
+            assert len(study["study"]["studySamples"][0]) == 5
+            assert study["study"]["studySamples"][0][0]["name"] == "Source Name"
+            assert study["study"]["studySamples"][0][4]["type"] == "isaFactorValue"
 
     def test_jsonToIsatab_writer(self):
         mywriter = JsonToIsatabWriter()

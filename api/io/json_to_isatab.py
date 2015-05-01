@@ -80,7 +80,7 @@ class JsonToIsatabWriter():
             self.writeJsonStudyAssayToIsatab(a_filenames, output_dir, "assayTable", "assayTableHeaders", "assayTableData")
 
             self.writeJsonStudyAssayExpandedToIsatab(s_filenames, output_dir, "studySamples")
-            self.writeJsonStudyAssayExpandedToIsatab(a_filenames, output_dir, "assays")
+            self.writeJsonStudyAssayExpandedToIsatab(a_filenames, output_dir, "assayTable")
 
     def writeJsonInvestigationToIsatab(self, filenames, output_dir):
         my_str = ""
@@ -175,7 +175,6 @@ class JsonToIsatabWriter():
                     with open(os.path.join(output_dir, ntpath.basename(str(each_file)).split(".")[0] + ".txt"), "w") as file_isatab:
                         file_isatab.write(my_str)
 
-    # TODO: Update unit test
     def writeJsonStudyAssayExpandedToIsatab(self, filenames, output_dir, mainHeader):
         assert len(filenames) > 0
         for each_file in filenames:
