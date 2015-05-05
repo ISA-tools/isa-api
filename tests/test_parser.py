@@ -88,8 +88,8 @@ class IsatabTest(unittest.TestCase):
         # load up one of the assay json file and check whether it matches up with the data in the assay tabular format
         with open(assay_json_ref, "rU") as in_handle:
             json_assay_rec = json.load(in_handle)
-            assert len(json_assay_rec["assayTable"]["assayTableData"][0]) == 25
-            assert len(json_assay_rec["assayTable"]["assayTableHeaders"]) == 18
+            assert len(json_assay_rec["assaysTable"]["assayTableData"][0]) == 25
+            assert len(json_assay_rec["assaysTable"]["assayTableHeaders"]) == 18
 
         # check if the expanded assay file exists
         assay_expanded_json_ref = os.path.join(json_dir, (str(exampleAssayJsonFile)).split(".")[0] + "_expanded.json")
@@ -98,9 +98,9 @@ class IsatabTest(unittest.TestCase):
         # load up one of the expanded assay json file and check whether it matches up with the data in the assay tabular format
         with open(assay_expanded_json_ref, "rU") as in_handle:
             json_expanded_assay_rec = json.load(in_handle)
-            assert len(json_expanded_assay_rec["assayTable"]) == 18
-            assert json_expanded_assay_rec["assayTable"][0][0]["name"] == "Sample Name"
-            assert json_expanded_assay_rec["assayTable"][0][5]["type"] == "isaMaterialLabel"
+            assert len(json_expanded_assay_rec["assaysTable"]) == 18
+            assert json_expanded_assay_rec["assaysTable"][0][0]["name"] == "Sample Name"
+            assert json_expanded_assay_rec["assaysTable"][0][5]["type"] == "isaMaterialLabel"
 
     def test_isatab_json_writer_single(self):
         """Test general parsing of a single combined JSON ISA-Tab file
@@ -154,14 +154,11 @@ class IsatabTest(unittest.TestCase):
         for iFile in os.listdir(output_dir):
             if "_expanded" in iFile:
                 iFile = iFile.replace("_expanded", "")
-
             # check if file size the same
             assert os.path.getsize(os.path.join(original_dir, iFile)) == os.path.getsize(os.path.join(output_dir, iFile)), \
                 "File size does not match: " + os.path.join(original_dir, iFile) + ", " + os.path.join(output_dir, iFile)
-
             assert filecmp.cmp(os.path.join(original_dir, iFile), os.path.join(output_dir, iFile), shallow=False), \
                 "File compare failed: " + os.path.join(original_dir, iFile) + ", " + os.path.join(output_dir, iFile)
-
             # to print out the difference in the files
             # with open(os.path.join(output_dir, iFile),'r') as f1, open(os.path.join(original_dir, iFile),'r') as f2:
             #     diff = difflib.ndiff(f1.readlines(),f2.readlines())
@@ -171,6 +168,14 @@ class IsatabTest(unittest.TestCase):
             #         elif line.startswith('+'):
             #             print '\t\t'+line
 
+        # test against the json single combined file
+        outputCombinedIsatab_dir = os.path.join("data", folder_name + "-generatedCombinedIsatab")
+        for aFile in os.listdir(outputCombinedIsatab_dir):
+            # check if file size the same
+            assert os.path.getsize(os.path.join(original_dir, aFile)) == os.path.getsize(os.path.join(outputCombinedIsatab_dir, aFile)), \
+                "File size does not match: " + os.path.join(original_dir, aFile) + ", " + os.path.join(outputCombinedIsatab_dir, aFile)
+            assert filecmp.cmp(os.path.join(original_dir, aFile), os.path.join(outputCombinedIsatab_dir, aFile), shallow=False), \
+                "File compare failed: " + os.path.join(original_dir, aFile) + ", " + os.path.join(outputCombinedIsatab_dir, aFile)
 
     # def test_minimal_parsing(self):
     #     """Parse a minimal ISA-Tab file without some field values filled in.
