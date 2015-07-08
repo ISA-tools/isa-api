@@ -6,13 +6,7 @@
     "properties" : {
         "pubmedId" : { "type" : "string" },
         "doi" : { "type" : "string"},
-        "authors" : {
-            "type" : "array",
-            "items" : {
-                 "$ref": "person_schema.json#"
-
-            }
-        },
+        "authorList" : { "type" : "string" }
         "title" : { "type" : "string" },
         "status" : { "type" : "string" }
     }
