@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title" : "ISA investigation schema",
+    "description" : "JSON-schema representing an investigation in the ISA model",
+    "type" : "object",
+    "properties" : {
+        "pubmedId" : { "type" : "string" },
+        "doi" : { "type" : "string"},
+        "authors" : {
+            "type" : "array",
+            "items" : {
+                 "$ref": "person_schema.json#"
+
+            }
+        },
+        "title" : { "type" : "string" },
+        "status" : { "type" : "string" }
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "ISA factor schema",
+    "description": "JSON-schema representing a factor value in the ISA model",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "ontologyReference": {
+            "$ref": "ontology_reference_schema.json#"
+        }
+    }
+}

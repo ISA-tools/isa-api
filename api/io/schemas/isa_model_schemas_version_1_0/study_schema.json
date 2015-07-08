@@ -6,9 +6,30 @@
         "@base": "http://purl.org/isaterms/",
         "xsd": "http://www.w3.org/2001/XMLSchema#"
     },
-    "commonDefinitions" : {"$ref":"url://common_definitions_schema.json"},
+    "commonDefinitions" : {"$ref":"url://assay_definitions_schema.json"},
     "type": "object",
     "properties": {
+        "identifier" : { "type" : "string" },
+        "title" : { "type" : "string"},
+        "description" : { "type" : "string"},
+        "submissionDate" : { "type" : "string", "format" : "date-time"},
+        "publicReleaseDate" : { "type" : "string", "format" : "date-time"},
+        "createdWithConfiguration" : { "type": "string"},
+        "lastOpenedWithConfiguration" : { "type" : "string" },
+        "publications" : {
+            "type" : "array",
+            "items" : {
+                 "$ref": "publication_schema.json#"
+
+            }
+        },
+        "people" : {
+            "type" : "array",
+            "items" : {
+                 "$ref": "person_schema.json#"
+
+            }
+        },
         "studySampleTable": {
             "studyTableHeaders": {
                 "type": "array",
