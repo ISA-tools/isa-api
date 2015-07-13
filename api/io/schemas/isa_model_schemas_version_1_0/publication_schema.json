@@ -6,7 +6,7 @@
     "properties" : {
         "pubmedId" : { "type" : "string" },
         "doi" : { "type" : "string"},
-        "authorList" : { "type" : "string" }
+        "authorList" : { "type" : "string" },
         "title" : { "type" : "string" },
         "status" : { "type" : "string" }
     }
