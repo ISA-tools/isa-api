@@ -11,6 +11,9 @@
         "publicReleaseDate" : { "type" : "string", "format" : "date-time"},
         "commentCreatedWithConfiguration" : { "type": "string"},
         "commentLastOpenedWithConfiguration" : { "type" : "string" },
+        "ontologySourceReference" : {
+                 "$ref": "ontology_source_reference_schema.json#"
+        },
         "publications" : {
             "type" : "array",
             "items" : {
