@@ -4,7 +4,7 @@
     "description" : "JSON-schema representing an investigation in the ISA model",
     "type" : "object",
     "properties" : {
-        "pubMedId" : { "type" : "string" },
+        "pubMedID" : { "type" : "string" },
         "doi" : { "type" : "string"},
         "authorList" : { "type" : "string" },
         "title" : { "type" : "string" },
