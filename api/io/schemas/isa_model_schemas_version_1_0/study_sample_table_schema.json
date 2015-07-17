@@ -8,6 +8,18 @@
     },
     "type": "array",
     "items": {
-
+         "type" : [
+             {
+                  "ref": "source_schema.json#"
+             },
+             {
+                "name": "Protocol REF",
+                "type": "isaProtocolExecutionNode",
+                "value": "Sample collection"
+             },
+             {
+                 "$ref": "sample_schema.json#"
+             }
+         ]
     }
 }
