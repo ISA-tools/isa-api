@@ -1,0 +1,13 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title" : "ISA labeled extract schema",
+    "description" : "JSON-schema representing a labeled extract in the ISA model.",
+    "type" : "object",
+     "properties" : {
+         "material" : {"$ref": "material_schema.json#/"},
+         "label" : {
+                 "type" : "string",
+                 "format" : "uri"
+                }
+     }
+}

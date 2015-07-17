@@ -1,0 +1,61 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "ISA Assay Workflow for Transcription Profiling with DNA Microarray JSON Schema",
+    "description": "JSON Schema describing an ISA Assay Workflow for Transcription Profiling with DNA Microarray",
+    "type": "object",
+
+    "properties": {
+        "nodes": {
+            "type": [
+                "array",
+                "null"
+            ],
+            "items": {
+                "type" : "object",
+                "anyOf" : [
+                    {"$ref": "sample_schema.json#/"},
+                    {"$ref": "extract_schema.json#/"},
+                    {"$ref": "labeled_extract_schema.json#/"}
+                ]
+            },
+            "edges": {
+                "type": [
+                    "array",
+                    "null"
+                ],
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "rnaExtraction" : {
+                            "source": {
+                                "$ref": "sample_schema.json#/"
+                            },
+                            "target": {
+                              "$ref": "extract_schema.json#/"
+                            }
+
+                    },
+                    "labeling" : {
+                            "source": {
+                                "$ref": "extract_schema.json#/"
+                            },
+                            "target": {
+                              "$ref": "labeled_extract_schema.json#/"
+                            }
+
+                    },
+                    "nucleicAcidHybridization" : {
+                          "source": {
+                              "$ref": "labeled_extract_schema.json#/"
+                            },
+                            "target": {
+                              "$ref": "scan_schema.json#/"
+                            }
+                    }
+                }
+            }
+        }
+
+}
+}
+}

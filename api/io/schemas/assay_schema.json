@@ -6,7 +6,7 @@
         "@base": "http://purl.org/isaterms/",
         "xsd": "http://www.w3.org/2001/XMLSchema#"
     },
-    "commonDefinitions" : {"$ref":"url://common_definitions_schema.json"},
+    "commonDefinitions" : {"$ref":"url://assay_definitions_schema.json"},
     "type": "object",
     "properties": {
         "assayTable": {

@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "ISA Assay Table Transcription Profiling with DNA Microarray JSON Schema",
+  "description": "JSON Schema describing an ISA Assay Table for Transcription Profiling with DNA Microarray",
+  "@context": {
+        "@base": "http://purl.org/isaterms/",
+        "xsd": "http://www.w3.org/2001/XMLSchema#"
+    },
+  "@type": "assayTable",
+  "type": "object",
+  "required": [
+    "sampleName"
+  ],
+  "properties": {
+    "samples": {
+        "type" : "array",
+        "items" : {
+             "$ref": "sample_schema.json#sample"
+        }
+    },
+    "protocolREFrnaExtraction": {"type": "string", "maxLength": 2000, "@type": "process"},
+    "extractName": {"type": "string", "maxLength": 500},
+    "protocolREFlabeling": {"type": "string", "@type": "ARM_ACCESSION", "maxLength": 15},
+    "labelExtractName": {"type": "string"},
+    "label": {"type": "string" },
+    "protocolREFnucleicAcidHybridization": {"type": "string", "@type": "assay", "maxLength": 15},
+    "hybridizationAssayName": {"type": "string" },
+    "arrayDesignREF" : {"type": "string"},
+    "protocolREFdataCollection" : {}
+  }
+}
+
+
+{
+    "graph": {
+        "directed": false,
+        "type": "graph type",
+        "label": "graph label",
+        "metadata": {
+            "user-defined": "values"
+        },
+        "nodes": [
+            {
+                "id": "0",
+                "type": "node type",
+                "label": "node label(0)",
+                "metadata": {
+                    "user-defined": "values"
+                }
+            },
+            {
+                "id": "1",
+                "type": "node type",
+                "label": "node label(1)",
+                "metadata": {
+                    "user-defined": "values"
+                }
+            }
+        ],
+        "edges": [
+            {
+                "source": "0",
+                "relation": "edge relationship",
+                "target": "1",
+                "directed": false,
+                "label": "edge label",
+                "metadata": {
+                    "user-defined": "values"
+                }
+            }
+        ]
+    }
+}
