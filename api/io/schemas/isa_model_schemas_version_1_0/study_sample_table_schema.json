@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "Assay Table JSON Schema",
-    "description": "JSON Schema describing an Assay table",
+    "title": "Study Table JSON Schema",
+    "description": "JSON Schema describing an Study table",
     "@context": {
         "@base": "http://purl.org/isaterms/",
         "xsd": "http://www.w3.org/2001/XMLSchema#"
