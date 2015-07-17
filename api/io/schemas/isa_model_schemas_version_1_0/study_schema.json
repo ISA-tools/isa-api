@@ -31,49 +31,16 @@
             }
         },
         "studySampleTable": {
-            "studyTableHeaders": {
-                "type": "array",
-                "items": {
-                    "oneOf" : [
-                        { "type": "object",
-                            "properties" : {
-                                "allOf": [
-                                    {
-                                        "$ref": "#/definitions/isaMaterialNode"
-                                    },
-                                    {
-                                        "name": {
-                                            "type": "string",
-                                            "pattern": "(Source.*)"
-                                        }
-                                    }
-                                ]
-                            }},
-                        { "protocolExecutionNode": "ref:#definitions/isaProtocolExecutionNode" },
-                        { "processNode": "ref:#definitions/isaProcessNode" },
-                        { "type": "object",
-                            "properties": {
-                                "allOf": [
-                                    {
-                                        "$ref": "#/definitions/isaMaterialNode"
-                                    },
-                                    {
-                                        "name": {
-                                            "type": "string",
-                                            "pattern": "(Sample.*)"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        { "factorValue": "ref:#definitions/isaFactorValue" }
-                    ]
-
-                }
-            },
-            "studyTableData": {
-                "type" : "array"
-            }
+              "type": "object",
+              "properties" : {
+                "$ref": "study_sample_table_schema.json#"
+              }
+        },
+        "assays" : {
+              "type": "array",
+              "items" : {
+                "$ref": "assay_schema.json#"
+              }
         }
     }
 }

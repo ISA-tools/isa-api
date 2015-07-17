@@ -1,0 +1,60 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Assay Collection JSON Schema",
+    "description": "JSON Schema describing an Assay table",
+    "@context": {
+        "@base": "http://purl.org/isaterms/",
+        "xsd": "http://www.w3.org/2001/XMLSchema#"
+    },
+    "commonDefinitions" : {"$ref":"url://assay_definitions_schema.json"},
+    "type": "object",
+    "properties": {
+        "measurement" : {
+            "type" : "object",
+            "properties" : {
+                "name" : { "type" : "string" },
+                "ontologyReference": {
+                    "$ref": "ontology_reference_schema.json#"
+                }
+    }
+        },
+        "technology" : {
+            "type" : "object",
+            "properties" : {
+                "name" : { "type" : "string" },
+                "ontologyReference": {
+                    "$ref": "ontology_reference_schema.json#"
+                }
+        }
+        },
+        "assayTable": {
+            "assayTableHeaders": {
+                "type": "array",
+                "items": {
+                    "oneOf" : [
+                        { "type": "object",
+                            "properties" : {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/isaMaterialNode"
+                                    },
+                                    {
+                                        "name": {
+                                            "type": "string",
+                                            "pattern": "(Sample.*)"
+                                        }
+                                    }
+                                ]
+                            }},
+                        { "protocolExecutionNode": "ref:#definitions/isaProtocolExecutionNode" },
+                        { "processNode": "ref:#definitions/isaProcessNode" },
+                        { "dataNode": "ref:#definitions/isaDataNode" },
+                        { "factorValue": "ref:#definitions/isaFactorValue" }
+                    ]
+
+                }
+            },
+
+        }
+    }
+}
