@@ -29,7 +29,15 @@
         "parameters": {
             "type": "array",
             "items": {
-                "$ref": "parameter_schema.json#"
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "parameterType": {
+                        "$ref": "ontology_source_reference_schema.json#"
+                    }
+                }
 
             }
         },
