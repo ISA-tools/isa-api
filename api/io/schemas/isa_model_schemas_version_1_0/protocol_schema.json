@@ -1,20 +1,50 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema",
-    "title" : "ISA protocol schema",
-    "description" : "JSON-schema representing a protocol in the ISA model",
-    "type" : "object",
-    "properties" : {
-        "name" : { "type" : "string" },
-        "type" : { "type" : "#ontology_reference_schema.json#"},
-        "description" : { "type" : "string"},
-        "uri" : { "type" : "string" , "format" : "uri" },
-        "version" : { "type" : "string" },
-        "phone" : { "type": "string"},
-        "parameters" : {
-            "type" : "array",
-            "items" : {
-                 "$ref": "parameter_schema.json#"
+    "title": "ISA protocol schema",
+    "description": "JSON-schema representing a protocol in the ISA model",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "protocolType": {
+            "type": "object",
+            "properties": {
+                "$ref": "ontology_reference_schema.json#"
+            }
+        },
+        "description": {
+            "type": "string"
+        },
+        "uri": {
+            "type": "string",
+            "format": "uri"
+        },
+        "version": {
+            "type": "string"
+        },
+        "phone": {
+            "type": "string"
+        },
+        "parameters": {
+            "type": "array",
+            "items": {
+                "$ref": "parameter_schema.json#"
 
+            }
+        },
+        "components": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "componentType": {
+                        "$ref": "ontology_source_reference_schema.json#"
+                    }
+                }
             }
         }
     }

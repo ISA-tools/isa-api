@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "Study JSON Schema",
-    "description": "JSON Schema describing an Study table",
+    "description": "JSON Schema describing an Study",
     "@context": {
         "@base": "http://purl.org/isaterms/",
         "xsd": "http://www.w3.org/2001/XMLSchema#"
@@ -30,10 +30,22 @@
 
             }
         },
+        "studyDesignDescriptors":{
+              "type": "array",
+              "items" : {
+                "$ref": "ontology_reference_schema.json#"
+              }
+        },
         "studySampleTable": {
               "type": "object",
               "properties" : {
                 "$ref": "study_sample_table_schema.json#"
+              }
+        },
+        "protocols" : {
+              "type": "array",
+              "items" : {
+                "$ref": "protocol_schema.json#"
               }
         },
         "assays" : {
