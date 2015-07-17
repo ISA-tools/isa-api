@@ -8,6 +8,10 @@
     },
     "type": "array",
     "items": {
-
+         "type" : [
+             {
+                  "ref": "sample_schema.json#"
+             }
+         ]
     }
 }
