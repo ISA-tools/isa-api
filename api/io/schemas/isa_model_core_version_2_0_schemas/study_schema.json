@@ -1,0 +1,99 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Study JSON Schema",
+    "description": "JSON Schema describing an Study in ISA model v2.0",
+    "@context": {
+        "@base": "http://purl.org/isaterms/",
+        "xsd": "http://www.w3.org/2001/XMLSchema#"
+    },
+    "type": "object",
+    "properties": {
+        "allOf": {
+            "$ref" : "protocol_application_schema.json#",
+            "identifierInfo" : {
+                "type" : "array",
+                "items" : {
+                    "$ref": "identifier_info_schema.json#"
+                }
+            },
+            "title": {
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            },
+            "submissionDate": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "publicReleaseDate": {
+                "type": "string",
+                "format": "date-time"
+            },
+            "hypothesesMotivations": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "conclusions": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "repository" : {
+                "type" : "array",
+                "items" : {
+                    "$ref": "resource_reference_schema.json#"
+                }
+            },
+            "funders" : {
+                "type" : "array",
+                "items" : {
+                    "$ref": "organization_schema.json#"
+                }
+            },
+            "publications": {
+                "type": "array",
+                "items": {
+                    "$ref": "publication_schema.json#"
+                }
+            },
+            "people": {
+                "type": "array",
+                "items": {
+                    "$ref": "person_schema.json#"
+
+                }
+            },
+            "studyType" : {
+                "enum": [ "observational study", "intervention study"]
+            },
+            "studyDesignType": {
+                "type": "array",
+                "items": {
+                    "$ref": "resource_annotation_schema.json#"
+                }
+            },
+            "studySampleTable": {
+                "type": "object",
+                "properties": {
+                    "$ref": "study_sample_table_schema.json#"
+                }
+            },
+            "protocols": {
+                "type": "array",
+                "items": {
+                    "$ref": "protocol_schema.json#"
+                }
+            },
+            "protocolApplications": {
+                "type": "array",
+                "items": {
+                    "$ref": "protocol_application_schema.json#"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title" : "ISA protocol application (or process) schema",
+    "description" : "JSON-schema representing a protocol application in the ISA model v2.0",
+    "type" : "object",
+    "properties" : {
+        "startDate" : { "type" : "date-time"},
+        "endDate" : { "type" : "date-time"},
+        "performer" : {
+            "oneOf" : {
+                "$ref": "person_schema.json#",
+                "$ref": "organization_schema.json#"
+            }
+        },
+        "runOrder" : { "type": "integer"},
+        "cost" : {
+            "type" : "object",
+            "properties" : {
+                "value" : { "type" : "number"},
+                "currency" : { "type" : "string"},
+                "description" : { "type" : "string"}
+            }
+        }
+    }
+}
