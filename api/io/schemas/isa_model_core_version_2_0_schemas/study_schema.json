@@ -64,7 +64,6 @@
                 "type": "array",
                 "items": {
                     "$ref": "person_schema.json#"
-
                 }
             },
             "studyType" : {
