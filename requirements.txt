@@ -1,0 +1,15 @@
+beautifulsoup4==4.3.2
+Flask==0.10.1
+Flask-Bootstrap==3.3.4.1
+Flask-Script==2.0.5
+Flask-Views==0.2.1
+Flask-WTF==0.11
+#functools32==3.2.3.post1
+itsdangerous==0.24
+Jinja2==2.7.3
+jsonschema==2.5.1
+lxml==3.4.4
+MarkupSafe==0.23
+requests==2.7.0
+Werkzeug==0.10.4
+WTForms==2.0.2
