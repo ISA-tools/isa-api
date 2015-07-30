@@ -1,11 +1,11 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema",
-    "title": "ISA file schema",
-    "description": "JSON-schema representing file in the ISA model v2.0.",
+    "title": "ISA digital object schema",
+    "description": "JSON-schema representing a digital object (e.g. a file) in the ISA model v2.0.",
     "type": "object",
     "properties": {
         "allOf": {
-            "$ref": "protocol_application_schema.json#",
+            "$ref": "node_schema.json#",
             "file_type": {
                 "enum": ["image file", "raw data file", "derived data file"]
             },
