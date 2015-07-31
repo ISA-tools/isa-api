@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}ISA-API - ISA-JSON to ISA-TAB Conversion{% endblock %}
+
+{% block page_content %}
+    <div class="col-sm-offset-2 col-sm-8 col-sm-offset-2" style="margin-top: 30px;">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">ISA-JSON to ISA-TAB Conversion</h3>
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal" id="isajsonToIsatabForm" method="post" enctype="multipart/form-data" action="uploadIsajson">
+                    <div class="form-group">
+                        <label for="inputIsajsonFile" class="col-sm-5 control-label">Please enter an ISA-JSON file
+                            (.zip):</label>
+
+                        <div class="col-sm-7">
+                            <input type="file" class="form-control" id="inputIsajsonFile" name="inputIsajsonFile">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputIsajsonFileFormat" class="col-sm-5 control-label">Is the ISA-JSON chunked or not:</label>
+
+                        <div class="col-sm-7">
+                            <select class="form-control" id="inputIsajsonFileFormat" name="inputIsajsonFileFormat">
+                                <option selected="selected" value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-5 col-sm-7">
+                            <button type="submit" class="btn btn-primary btn-lg" id="btnSubmitIsajsonToIsatabForm">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/isa-api.js') }}"></script>
+{% endblock %}

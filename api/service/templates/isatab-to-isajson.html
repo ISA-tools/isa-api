@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}ISA-API - ISA-Tab to ISA-JSON Conversion{% endblock %}
+
+{% block page_content %}
+    <div class="col-sm-offset-2 col-sm-8 col-sm-offset-2" style="margin-top: 30px;">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">ISA-Tab to ISA-JSON Conversion (by file)</h3>
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal" id="isatabToIsajsonByFileForm" method="post" enctype="multipart/form-data" action="uploadIsatabByFile">
+                    <div class="form-group">
+                        <label for="inputIsatabFile" class="col-sm-5 control-label">Please enter an ISA-Tab file
+                            (.zip):</label>
+
+                        <div class="col-sm-7">
+                            <input type="file" class="form-control" id="inputIsatabFile" name="inputIsatabFile">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputIsajsonFileOption" class="col-sm-5 control-label">Chunked ISA-JSON:</label>
+
+                        <div class="col-sm-7">
+                            <select class="form-control" id="inputIsajsonFileOption" name="inputIsajsonFileOption">
+                                <option selected="selected" value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-5 col-sm-7">
+                            <button type="submit" class="btn btn-primary btn-lg" id="btnSubmitIsatabToIsajsonByFile">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">ISA-Tab to ISA-JSON Conversion (by accession number)</h3>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" id="isatabToIsajsonByAccessionNumberForm" method="post" enctype="multipart/form-data" action="uploadIsatabByAccessionNumber">
+                        <div class="form-group">
+                            <label for="inputIsatabRepositoryOption" class="col-sm-5 control-label">Repository:</label>
+
+                            <div class="col-sm-7">
+                                <select class="form-control" id="inputIsatabRepositoryOption" name="inputIsatabRepositoryOption">
+                                    <option selected="selected" value="metabolights">Metabolights</option>
+                                    <option value="ena">ENA</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputIsatabAccessionNumber" class="col-sm-5 control-label">Or please enter an
+                                accession number:</label>
+
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="inputIsatabAccessionNumber"
+                                       placeholder="MTBLS146" name="inputIsatabAccessionNumber">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputIsajsonAccessionOption" class="col-sm-5 control-label">Chunked ISA-JSON:</label>
+
+                            <div class="col-sm-7">
+                                <select class="form-control" id="inputIsajsonAccessionOption" name="inputIsajsonAccessionOption">
+                                    <option selected="selected" value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-5 col-sm-7">
+                                <button type="submit" class="btn btn-primary btn-lg" id="btnSubmitIsatabToIsajsonByAccessionNumber">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/isa-api.js') }}"></script>
+{% endblock %}
