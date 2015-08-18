@@ -29,7 +29,7 @@ To run the ISA-API Flask, you must first create your own virtual environment.
 
 ###Running Isa-Api service
 
-**Instructions (for  Mac OS X Yosemite)**
+**Instructions (for Mac OS X Yosemite)**
 
 1. Activate the virtual environment:
 > source venv/bin/activate
