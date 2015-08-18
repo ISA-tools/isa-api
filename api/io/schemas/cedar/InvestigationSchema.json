@@ -1,0 +1,836 @@
+{
+    "valueElementContext": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "title": "Value Element Context Description",
+        "description": "JSON Schema description of Value Element Context. Used when describing @context fields for value elements",
+        "properties": {
+            "value": { "type": "string" },
+            "info": {
+                "title": "Investigation Title",
+                "description": "Enter a title for the investigation",
+                "input_type": "textfield"
+            }
+        },
+        "required": ["value"],
+        "additionalProperties": false
+    },
+    
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "investigation": {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "@id": "https://repo.metadatacenter.org/UUID",
+            "title": "Investigation Template",
+            "description": "JSON-LD/Schema Investigation Template",
+            "properties": {
+                "schemaID": { "type": "string", "enum": ["https://repo.metadatacenter.org/UUID"] },
+                "@context": {
+                    "model": "http://repo.metadatacenter.org/model/",
+                    "xsd": "http://www.w3.org/2001/XMLSchema",
+                    "schema": "https://schema.org/",
+                    "title": "schema:title",
+                    "description": "schema:description"
+                },
+                "@id": { "type": "string", "format": "uri" },
+                "@type": { "type": "string", "enum": ["https://repo.metadatacenter.org/model/Investigation"] },
+                "title": {
+                    "$schema": "http://json-schema.org/draft-04/schema#",
+                    "@id": "https://repo.metadatacenter.org/UUID",
+                    "title": "Auto-generated JSON Schema title for 'title' field",
+                    "description": "Auto-generated JSON Schema description for 'title' field",
+                    "properties": {
+                        "@context":  { "$ref": "#/valueElementContext" },
+                        "info": {
+                            "title": "Investigation Title",
+                            "description": "Enter a title for the investigation",
+                            "input_type": "textfield"
+                        },
+                        "value": { "type": "string" }
+                    },
+                    "required": [ "value" ],
+                    "additionalProperties": false
+                },
+                "description": {
+                    "$schema": "http://json-schema.org/draft-04/schema#",
+                    "@id": "https://repo.metadatacenter.org/UUID",
+                    "title": "Auto-generated JSON Schema title for 'description' field",
+                    "description": "Auto-generated JSON Schema description for 'description' field",
+                    "properties": {
+                        "@context":  { "$ref": "#/valueElementContext" },
+                        "info": {
+                            "title": "Investigation Description",
+                            "description": "Enter a description of the investigation",
+                            "input_type": "textfield"
+                        },
+                        "value": { "type": "string" }
+                    },
+                    "required": [ "value" ],
+                    "additionalProperties": false
+                },
+                "identifier": {
+                    "$schema": "http://json-schema.org/draft-04/schema#",
+                    "@id": "https://repo.metadatacenter.org/UUID",
+                    "title": "Auto-generated JSON Schema title for 'identifier' field",
+                    "description": "Auto-generated JSON Schema description for 'identifier' field",
+                    "properties": {
+                        "@context":  { "$ref": "#/valueElementContext" },
+                        "info": {
+                            "title": "Investigation Identifier",
+                            "description": "Enter a unique identifier for the investigation",
+                            "input_type": "textfield"
+                        },
+                        "value": { "type": "string" }
+                    },
+                    "required": [ "value" ],
+                    "additionalProperties": false
+                },
+                "submissionDate": {
+                    "$schema": "http://json-schema.org/draft-04/schema#",
+                    "@id": "https://repo.metadatacenter.org/UUID",
+                    "title": "Auto-generated JSON Schema title for 'submissionDate' field",
+                    "description": "Auto-generated JSON Schema description for 'submissionDate' field",
+                    "properties": {
+                        "@context":  { "$ref": "#/valueElementContext" },
+                        "info": {
+                            "title": "Investigation Submission Date",
+                            "description": "Enter a submission date for the investigation",
+                            "input_type": "date-field"
+                        },
+                        "value": { "type": "string" }
+                    },
+                    "required": [ "value" ],
+                    "additionalProperties": false
+                },
+                "publicReleaseDate": {
+                    "$schema": "http://json-schema.org/draft-04/schema#",
+                    "@id": "https://repo.metadatacenter.org/UUID",
+                    "title": "Auto-generated JSON Schema title for 'publicReleaseDate' field",
+                    "description": "Auto-generated JSON Schema description for 'publicReleaseDate' field",
+                    "properties": {
+                        "@context":  { "$ref": "#/valueElementContext" },
+                        "info": {
+                            "title": "Investigation Public Release Date",
+                            "description": "Enter a public release date for the investigation",
+                            "input_type": "date-field"
+                        },
+                        "value": { "type": "string" }
+                    },
+                    "required": [ "value" ],
+                    "additionalProperties": false
+                },
+                "hasStudy": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "$ref": "#/study"
+                    }
+                },
+                "hasContact": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "$ref": "#/contact"
+                    }
+                },
+                "hasPublication": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "$ref": "#/publication"
+                    }
+                }
+            },
+            "required": [
+                "schemaID", "@context", "@id", "@type", "title", "description", "identifier",  "submissionDate", "publicReleaseDate",
+                "hasStudy", "hasContact", "hasPublication"
+            ],
+            "additionalProperties": true
+        },
+        "studyGroupPopulation": {},
+        "studySubject": {}
+    },
+    "required": ["investigation"],
+    "additionalProperties": false,
+
+
+    "study": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "@id": "https://repo.metadatacenter.org/UUID",
+        "title": "Study",
+        "description": "JSON-LD/Schema Study Template Element",
+        "properties": {
+            "@context": {
+                "model": "https://repo.metadatacenter.org/model/",
+                "xsd": "http://www.w3.org/2001/XMLSchema",
+                "schema": "https://schema.org/",
+                "title": "schema:title"
+            },
+            "@id": {
+                "type": "string",
+                "format": "uri"
+            },
+            "@type": {
+                "type": "string", "enum": ["https://repo.metadatacenter.org/model/Study"]
+            },
+	    "title": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'title' field",
+	        "description": "Auto-generated JSON Schema description for 'title' field",
+	        "properties": {
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Study Title",
+		        "description": "Enter a title for the study",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "description": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'description' field",
+	        "description": "Auto-generated JSON Schema description for 'description' field",
+	        "properties": {
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Study Description",
+		        "description": "Enter a description of the study",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "identifier": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'identifier' field",
+	        "description": "Auto-generated JSON Schema description for 'identifier' field",
+	        "properties": {
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Study Identifier",
+		        "description": "Enter a unique identifier for the study",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "submissionDate": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'submissionDate' field",
+	        "description": "Auto-generated JSON Schema description for 'submissionDate' field",
+	        "properties": {
+		    "@type":  { "type": "string", "enum": [ "http://bioportal/ontology/StudySubmissionDate" ] },
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Study Submission Date",
+		        "description": "Enter a submission date for the study",
+		        "input_type": "date-field"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "publicReleaseDate": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'publicReleaseDate' field",
+	        "description": "Auto-generated JSON Schema description for 'publicReleaseDate' field",
+	        "properties": {
+		    "@type":  { "type": "string", "enum": [ "http://bioportal/ontology/StudyReleaseDate" ] },
+		    "@context":  { "$ref": "#valueElementContext" },
+		    "info": {
+		        "title": "Study Public Release Date",
+		        "description": "Enter a public release date for the study",
+		        "input_type": "date-field"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "studyDesignType":{
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'studyDesignType' field",
+	        "description": "Auto-generated JSON Schema description for 'studyDesignType' field",
+	        "properties": {
+		    "@context":  { "$ref": "#/valueElementContext",
+			           "ocre": "http://purl.org/net/OCRe/study_design.owl#"
+                                 },
+		    "info": {
+		        "title": "Study Design",
+		        "description": "Select a study design",
+		        "input_type": "textfield",
+		        "value_constraint": {
+			    "branches": [
+			        {"@type": "http://purl.obolibrary.org/obo/OBI_0500000", "includes_root": false}
+			    ]				
+		        }
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "hasPublication": {
+	        "type": "array",
+	        "items": {
+		    "type": "object",
+		    "$ref": "#/publication"
+	        }
+	    },
+	    "hasContact": {
+	        "type": "array",
+	        "items": {
+		    "type": "object",
+		    "$ref": "#/contact"
+	        }
+	    },
+	    "hasStudyProtocol": {
+	        "type": "array",
+	        "items": {
+		    "type": "object",
+		    "$ref": "#/studyProtocol"
+	        }
+	    },
+	    "hasExperiment": {
+	        "type": "array",
+	        "items": {
+		    "type": "object",
+		    "$ref": "#/experiment"
+	        }
+	    },
+	    "hasStudyAssay": {
+	        "type": "array",
+	        "items": {
+		    "type": "object",
+		    "$ref": "#/studyAssay"
+	        }
+	    },
+	    "hasStudyFactor": {
+	        "type": "array",
+	        "items": {
+		    "type": "object",
+		    "$ref": "#/studyFactor"
+	        }
+	    },
+	    "hasStudyGroupPopulation": {
+	        "type": "array",
+	        "items": {
+		    "type": "object",
+		    "$ref": "#/studyGroupPopulation"
+	        }
+	    },
+	    "hasStudySubject": {
+	        "type": "array",
+	        "items": {
+		    "type": "object",
+		    "$ref": "#/studySubject"
+	        }
+	    }
+        },
+        "required": ["@id", "@type", "title", "identifier",   "description", "submissionDate", "publicReleaseDate",
+                     "studyDesignType", "hasPublication", "hasContact", "hasStudyProtocol", "hasStudyFactor",
+                     "hasExperiment", "hasStudyAssay", "hasStudyGroupPopulation", "hasStudySubject" ],
+        "additionalProperties": false
+    },
+    "contact": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "@id": "https://repo.metadatacenter.org/UUID",
+        "title": "Contact",
+        "description": "JSON-LD/Schema Study Template Element",
+        "properties": {
+            "@context": {
+                "model": "https://repo.metadatacenter.org/model/",
+                "xsd": "http://www.w3.org/2001/XMLSchema",
+                "schema": "https://schema.org/",
+                "title": "schema:title"
+            },
+            "@id": {
+                "type": "string",
+                "format": "uri"
+            },
+            "@type": {
+                "type": "string", "enum": ["https://repo.metadatacenter.org/model/Contact"]
+            },
+	    "lastName": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'lastname' field",
+	        "description": "Auto-generated JSON Schema description for 'lastName' field",
+	        "properties": {
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Last Name",
+		        "description": "Enter a last name for the contact",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "firstName": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'firstName' field",
+	        "description": "Auto-generated JSON Schema description for 'firstName' field",
+	        "properties": {
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "First Name",
+		        "description": "Enter a first name for the contact",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "middleInitial": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'middleInitial' field",
+	        "description": "Auto-generated JSON Schema description for 'middleInitial' field",
+	        "properties": {
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Middle Initial",
+		        "description": "Enter a middle initial for the contact",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "email": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'email' field",
+	        "description": "Auto-generated JSON Schema description for 'email' field",
+	        "properties": {
+		    "@type":  { "type": "string",  "enum": [ "http://bioportal/ontology/Email" ] },
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Email",
+		        "description": "Enter an email for the contact",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "phone": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'phone' field",
+	        "description": "Auto-generated JSON Schema description for 'phone' field",
+	        "properties": {
+		    "@type":  { "type": "string", "enum": [ "http://bioportal/ontology/Email" ] },
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Phone",
+		        "description": "Enter an phone for the contact",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "fax": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'fax' field",
+	        "description": "Auto-generated JSON Schema description for 'fax' field",
+	        "properties": {
+		    "@type":  { "type": "string", "enum": [  "http://bioportal/ontology/Fax" ] },
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Fax",
+		        "description": "Enter a fax for the contact",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "address": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'address' field",
+	        "description": "Auto-generated JSON Schema description for 'address' field",
+	        "properties": {
+		    "@type":  { "type": "string", "enum": [ "http://bioportal/ontology/Address" ] },
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Address",
+		        "description": "Enter an address for the contact",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "role":{ 
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'role' field",
+	        "description": "Auto-generated JSON Schema description for 'role' field",
+	        "properties": {
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Role of Contact",
+		        "description": "Select a role for contact",
+		        "input_type": "textfield",
+		        "value_constraint": {
+			    "branches": [
+			        {"@type": "http://purl.obolibrary.org/obo/OBI_0000202",  "includes_root": false}
+			    ]				
+		        }
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	        
+	    },
+	    "hasAffiliation": {
+	        "type": "array",
+	        "items": {
+		    "type": "object",
+		    "$ref": "#/organization"
+	        }
+	    }
+        },
+        "required": ["@id", "@type", "lastName","firstName", "middleInitial", "email", "phone", "fax", "address", "role", "hasAffiliation"],
+        "additionalProperties": false
+    },
+    "organization": {},
+    "publication": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "@id": "https://repo.metadatacenter.org/UUID",
+        "title": "Publication",
+        "description": "JSON-LD/Schema Publication Template Element",
+        "properties": {
+            "@context": {
+                "model": "https://repo.metadatacenter.org/model/",
+                "xsd": "http://www.w3.org/2001/XMLSchema",
+                "schema": "https://schema.org/",
+                "title": "schema:title"
+            },
+            "@id": { "type": "string", "format": "uri" },
+            "@type": { "type": "string", "enum": ["https://repo.metadatacenter.org/model/Publication"] },
+            "title": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "@id": "https://repo.metadatacenter.org/UUID",
+                "title": "Auto-generated JSON Schema title for 'title' field",
+                "description": "Auto-generated JSON Schema description for 'title' field",
+                "properties": {
+                    "@type":  { "type": "string", "enum": [ "" ] },
+                    "@context":  { "$ref": "#/valueElementContext" },
+                    "info": {
+                        "title": "Publication Title",
+                        "description": "Enter a title for the publication",
+                        "input_type": "textfield"
+                    },
+                    "value": { "type": "string" }
+                },
+                "required": [ "value" ],
+                "additionalProperties": false
+            },
+            "description": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "@id": "https://repo.metadatacenter.org/UUID",
+                "title": "Auto-generated JSON Schema title for 'desription' field",
+                "description": "Auto-generated JSON Schema description for 'description' field",
+                "properties": {
+                    "@type":  { "type": "string" },
+                    "@context":  { "$ref": "#/valueElementContext" },
+                    "info": {
+                        "title": "Description",
+                        "description": "Enter a description for the publication",
+                        "input_type": "textfield"
+                    },
+                    "value": { "type": "string" }
+                },
+                "required": [ "value" ],
+                "additionalProperties": false
+            },
+            "pubMedID": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "@id": "https://repo.metadatacenter.org/UUID",
+                "title": "Auto-generated JSON Schema title for 'pubMedID' field",
+                "description": "Auto-generated JSON Schema description for 'pubMedID' field",
+                "properties": {
+                    "@type":  { "type": "string" },
+                    "@context":  { "$ref": "#/valueElementContext" },
+                    "info": {
+                        "title": "PubMedID",
+                        "description": "Enter a PubMedID for the publication",
+                        "input_type": "textfield"
+                    },
+                    "value": { "type": "string" }
+                },
+                "required": [ "value" ],
+                "additionalProperties": false
+            },
+            "doi": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "@id": "https://repo.metadatacenter.org/UUID",
+                "title": "Auto-generated JSON Schema title for 'doi' field",
+                "description": "Auto-generated JSON Schema description for 'doi' field",
+                "properties": {
+                    "@type":  { "type": "string", "enum": [ "" ] },
+                    "@context":  { "$ref": "#/valueElementContext" },
+                    "info": {
+                        "title": "DOI",
+                        "description": "Enter a DOI for the publication",
+                        "input_type": "textfield"
+                    },
+                    "value": { "type": "string" }
+                },
+                "required": [ "value" ],
+                "additionalProperties": false
+            },
+            "authorList": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "$schema": "http://json-schema.org/draft-04/schema#",
+                    "@id": "https://repo.metadatacenter.org/UUID",
+                    "title": "Auto-generated JSON Schema title for 'authorList' field",
+                    "description": "Auto-generated JSON Schema description for 'authorList' field",
+                    "properties": {
+                        "@type":  { "type": "string", "enum": [ "" ] },
+                        "@context":  { "$ref": "#/valueElementContext" },
+                        "info": {
+                            "title": "Author List",
+                            "description": "Enter a list of authors",
+                            "input_type": "multiple-instance-textfield"
+                        },
+                        "value": { "type": "string" }
+                    },
+                    "required": [ "value" ],
+                    "additionalProperties": false
+                }
+            },
+            "status": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "@id": "https://repo.metadatacenter.org/UUID",
+                "title": "Auto-generated JSON Schema title for 'status' field",
+                "description": "Auto-generated JSON Schema description for 'status' field",
+                "properties": {
+                    "@type":  { "type": "string", "enum": [ "http://example.org/status1", "http://example.org/status2" ] },
+                    "@context":  { "$ref": "#/valueElementContext" },
+                    "info": {
+                        "title": "Status",
+                        "description": "Enter a status",
+                        "input_type": "pick_from_list_field"
+                    },
+                    "value": { "type": "string" }
+                },
+                "required": [ "value" ],
+                "additionalProperties": false
+            }
+        },
+        "required": [ "@id", "@type", "title", "pubMedID", "doi", "authorList", "status" ],
+        "additionalProperties": true
+    },
+    "studyProtocol": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "@id": "https://repo.metadatacenter.org/UUID",
+        "title": "Study Protocol",
+        "description": "JSON-LD/Schema Study Protocol Template Element",
+        "properties": {
+            "@context": {
+                "model": "https://repo.metadatacenter.org/model/",
+                "xsd": "http://www.w3.org/2001/XMLSchema",
+                "schema": "https://schema.org/",
+                "title": "schema:title"
+            },
+            "@id": {
+                "type": "string",
+                "format": "uri"
+            },
+            "@type": {
+                "type": "string", "enum": ["https://repo.metadatacenter.org/model/StudyProtocol"]
+            },
+	    "description": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'description' field",
+	        "description": "Auto-generated JSON Schema description for 'description' field",
+	        "properties": {
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Study Protocol Description",
+		        "description": "Enter a description of the study protocol",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "name": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'name' field",
+	        "description": "Auto-generated JSON Schema description for 'name' field",
+	        "properties": {
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Name",
+		        "description": "Enter a name for the study protocol",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "type":{ 
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for study protocol'type' field",
+	        "description": "Auto-generated JSON Schema description for study protocol'type' field",
+	        "properties": {
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Type of Protocol",
+		        "description": "Select a type for the protocol",
+		        "input_type": "textfield",
+		        "value_constraint": {
+			    "branches": [
+			        { "@type": "http://purl.obolibrary.org/obo/OBI_0000272",  "includes_root": false }
+			    ]				
+		        }
+		    },
+		    "value": { "type": "string" }
+	        }
+	    },
+	    "version": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'version' field",
+	        "description": "Auto-generated JSON Schema description for 'version' field",
+	        "properties": {
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Version",
+		        "description": "Enter a version for the study protocol",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "uri": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'uri' field",
+	        "description": "Auto-generated JSON Schema description for 'uri' field",
+	        "properties": {
+		    "@type":  { "type": "string"},
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "URI",
+		        "description": "Enter an URI for the study protocol",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string", "format": "uri" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "hasParameterValue": {
+	        "type": "array",
+	        "items": {
+		    "type": "object",
+		    "$ref": "#/parameterValue"
+	        }
+	    }
+        },
+        "required": ["@id", "@type", "name", "description", "type", "version", "uri",  "hasParameterValue"],
+        "additionalProperties": false
+    },
+    "studyFactor": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "@id": "https://repo.metadatacenter.org/UUID",
+        "title": "Study Factor",
+        "description": "JSON-LD/Schema Study Factor Template Element",
+        "properties": {
+            "@context": {
+                "model": "https://repo.metadatacenter.org/model/",
+                "xsd": "http://www.w3.org/2001/XMLSchema",
+                "schema": "https://schema.org/",
+                "title": "schema:title"
+            },
+            "@id": {
+                "type": "string",
+                "format": "uri"
+            },
+            "@type": {
+                "type": "string", "enum": ["https://repo.metadatacenter.org/model/StudyFactor"]
+            },
+	    "name": {
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for 'name' field",
+	        "description": "Auto-generated JSON Schema description for 'name' field",
+	        "properties": {
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Study Factor Name",
+		        "description": "Enter a name of the study factor",
+		        "input_type": "textfield"
+		    },
+		    "value": { "type": "string" }
+	        },
+	        "required": [ "value" ],
+	        "additionalProperties": false
+	    },
+	    "type":{ 
+	        "$schema": "http://json-schema.org/draft-04/schema#",
+	        "@id": "https://repo.metadatacenter.org/UUID",
+	        "title": "Auto-generated JSON Schema title for study factor's 'type' field",
+	        "description": "Auto-generated JSON Schema description for study factor's'type' field",
+	        "properties": {
+		    "@context":  { "$ref": "#/valueElementContext" },
+		    "info": {
+		        "title": "Type of Study Factor",
+		        "description": "Select a type for the study factor",
+		        "input_type": "textfield",
+		        "value_constraint": {
+			    "ontologies": [
+			        { "@type": "http://bioportal.bioontology.org/ontologies/EFO" }
+			    ]				
+		        }
+		    },
+		    "value": { "type": "string" }
+	        }
+	    }
+        }
+    },
+    "experiment": {},
+    "studyAssay": {},
+    "studyFactor": {}
+}
