@@ -19,13 +19,6 @@ class ISATab2CEDAR():
 
         #print isatab
 
-        # process the investigation file
-        fileNames = glob.glob(os.path.join(work_dir, "i_*.txt")) + \
-                    glob.glob(os.path.join(work_dir, "*.idf.txt"))
-        investigationFilename = ntpath.basename(str(fileNames[0])).split(".")
-        #self.convert_investigation(rec, os.path.join(json_dir, investigationFilename[0] + ".json"),
-        #                           os.path.join(json_dir, os.path.basename(work_dir) + ".json"), work_dir, json_dir)
-
         investigationObject = dict([
             ("schemaID", "https://repo.metadatacenter.org/UUID"),
             ("@id", "https://repo.metadatacenter.org/UUID"),
@@ -60,11 +53,28 @@ class ISATab2CEDAR():
             outfile.close()
 
     def createStudiesArray(self, studies):
-        array = []
+        json_list = []
         for study in studies:
             #print study
-            print ""
-        return array
+            json_item = dict([
+                ("@id", "https://repo.metadatacenter.org/UUID"),
+                ("@type", "https://repo.metadatacenter.org/model/Study"),
+                ("title", dict([("value", study.metadata['Study Title'])])),
+                ("description", dict([("value", study.metadata['Study Description'])])),
+                ("identifier", dict([("value", study.metadata['Study Identifier'])])),
+                ("submissionDate", dict([("value", study.metadata['Study Submission Date'])])),
+                ("publicReleaseDate", dict([("value", study.metadata['Study Public Release Date'])])),
+                ("studyDesignType", dict([("value", "")])),  #dict([("value", study.metadata['Study Public Design Type Accession Number'])]))
+                ("hasPublication", []),
+                ("hasContact", []),
+                ("hasStudyFactor", []),
+                ("hasExperiment", []),
+                ("hasStudyAssay", []),
+                ("hasStudyGroupPopulation", []),
+                ("hasStudySubject", [])
+            ])
+            json_list.append(json_item)
+        return json_list
 
     def createInvestigationContactsArray(self, contacts):
         json_list = []
