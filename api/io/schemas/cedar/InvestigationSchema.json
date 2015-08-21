@@ -450,7 +450,6 @@
             "hasContact",
             "hasStudyProtocol",
             "hasStudyFactor",
-            "hasExperiment",
             "hasStudyAssay",
             "hasStudyGroupPopulation",
             "hasStudySubject"
