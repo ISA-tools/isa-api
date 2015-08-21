@@ -17,7 +17,7 @@ class ISATab2CEDAR():
         #parse ISA tab
         isatab = parser.parse(work_dir)
 
-        print isatab
+        #print isatab
 
         investigationObject = dict([
             ("schemaID", "https://repo.metadatacenter.org/UUID"),
@@ -68,7 +68,6 @@ class ISATab2CEDAR():
                 ("hasPublication", []),
                 ("hasContact", []),
                 ("hasStudyFactor", []),
-                ("hasExperiment", []),
                 ("hasStudyAssay", self.createStudyAssaysArray(study.assays)),
                 ("hasStudyGroupPopulation", []),
                 ("hasStudySubject", []),
@@ -97,8 +96,20 @@ class ISATab2CEDAR():
         return json_list
 
     def createPublicationsArray(self, publications):
-        array = []
-        return array
+        json_list = []
+        for publication in publications:
+            print publication
+            json_item = dict([
+                ("@id", "https://repo.metadatacenter.org/UUID"),
+                ("@type", "https://repo.metadatacenter.org/model/Publication"),
+                ("title", dict([("value", publication['Investigation Publication Title'])])),
+                ("pubMedID", dict([("value", publication['Investigation PubMed ID'])])),
+                ("doi", dict([("value", publication['Investigation Publication DOI'])])),
+                ("authorList", [ { "value": "JJ Bob" }, { "value": "Billy Bob" } ]),#publication['Investigation Publication Author List'])])),
+                ("status", dict([("value", publication['Investigation Publication Status'])])),
+                ])
+            json_list.append(json_item)
+        return json_list
 
     def createAffiliationsArray(self, affiliations):
         array = []
@@ -106,9 +117,9 @@ class ISATab2CEDAR():
 
     def createStudyAssaysArray(self, assays):
         json_list = []
-        for assay in assays:
-            json_item = {}
-            json_list.append(json_item)
+        # for assay in assays:
+        #     json_item = {}
+        #     json_list.append(json_item)
         return json_list
 
 

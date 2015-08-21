@@ -101,7 +101,32 @@
                 }
             }
         ], 
-        "hasPublication": [], 
+        "hasPublication": [
+            {
+                "@id": "https://repo.metadatacenter.org/UUID", 
+                "@type": "https://repo.metadatacenter.org/model/Publication", 
+                "authorList": [
+                    {
+                        "value": "JJ Bob"
+                    }, 
+                    {
+                        "value": "Billy Bob"
+                    }
+                ], 
+                "doi": {
+                    "value": "doi:10.1186/jbiol54"
+                }, 
+                "pubMedID": {
+                    "value": "17439666"
+                }, 
+                "status": {
+                    "value": "indexed in Pubmed"
+                }, 
+                "title": {
+                    "value": "Growth control of the eukaryote cell: a systems biology study in yeast."
+                }
+            }
+        ], 
         "hasStudy": [
             {
                 "@id": "https://repo.metadatacenter.org/UUID", 
@@ -110,13 +135,8 @@
                     "value": "We wished to study the impact of growth rate on the total complement of mRNA molecules, proteins, and metabolites in S. cerevisiae, independent of any nutritional or other physiological effects. To achieve this, we carried out our analyses on yeast grown in steady-state chemostat culture under four different nutrient limitations (glucose, ammonium, phosphate, and sulfate) at three different dilution (that is, growth) rates (D = u = 0.07, 0.1, and 0.2/hour, equivalent to population doubling times (Td) of 10 hours, 7 hours, and 3.5 hours, respectively; u = specific growth rate defined as grams of biomass generated per gram of biomass present per unit time)."
                 }, 
                 "hasContact": [], 
-                "hasExperiment": [], 
                 "hasPublication": [], 
-                "hasStudyAssay": [
-                    {}, 
-                    {}, 
-                    {}
-                ], 
+                "hasStudyAssay": [], 
                 "hasStudyFactor": [], 
                 "hasStudyGroupPopulation": [], 
                 "hasStudyProtocol": [], 
@@ -144,11 +164,8 @@
                     "value": "Comprehensive high-throughput analyses at the levels of mRNAs, proteins, and metabolites, and studies on gene expression patterns are required for systems biology studies of cell growth [4,26-29]. Although such comprehensive data sets are lacking, many studies have pointed to a central role for the target-of-rapamycin (TOR) signal transduction pathway in growth control. TOR is a serine/threonine kinase that has been conserved from yeasts to mammals; it integrates signals from nutrients or growth factors to regulate cell growth and cell-cycle progression coordinately. Although such comprehensive data sets are lacking, many studies have pointed to a central role for the target-of-rapamycin (TOR) signal transduction pathway in growth control. TOR is a serine/threonine kinase that has been conserved from yeasts to mammals; it integrates signals from nutrients or growth factors to regulate cell growth and cell-cycle progression coordinately. The effect of rapamycin were studied as follows: a culture growing at mid-exponential phase was divided into two. Rapamycin (200 ng/ml) was added to one half, and the drug's solvent to the other, as the control. Samples were taken at 0, 1, 2 and 4 h after treatment. Gene expression at the mRNA level was investigated by transcriptome analysis using Affymetrix hybridization arrays."
                 }, 
                 "hasContact": [], 
-                "hasExperiment": [], 
                 "hasPublication": [], 
-                "hasStudyAssay": [
-                    {}
-                ], 
+                "hasStudyAssay": [], 
                 "hasStudyFactor": [], 
                 "hasStudyGroupPopulation": [], 
                 "hasStudyProtocol": [], 
