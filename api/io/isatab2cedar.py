@@ -67,7 +67,7 @@ class ISATab2CEDAR():
                 ("studyDesignType", dict([("value", "")])),  #dict([("value", study.metadata['Study Public Design Type Accession Number'])]))
                 ("hasPublication", []),
                 ("hasContact", []),
-                ("hasStudyFactor", []),
+                ("hasStudyFactor", self.createStudyFactorsList(study.factors)),
                 ("hasStudyAssay", self.createStudyAssaysList(study.assays)),
                 ("hasStudyGroupPopulation", []),
                 ("hasStudySubject", []),
@@ -98,7 +98,6 @@ class ISATab2CEDAR():
     def createPublicationsList(self, publications):
         json_list = []
         for publication in publications:
-            print publication
             json_item = dict([
                 ("@id", "https://repo.metadatacenter.org/UUID"),
                 ("@type", "https://repo.metadatacenter.org/model/Publication"),
@@ -112,14 +111,28 @@ class ISATab2CEDAR():
         return json_list
 
     def createAffiliationsList(self, affiliations):
-        array = []
-        return array
+        json_list = []
+        return json_list
 
     def createStudyAssaysList(self, assays):
         json_list = []
         # for assay in assays:
         #     json_item = {}
         #     json_list.append(json_item)
+        return json_list
+
+    def createStudyFactorsList(self, factors):
+        print factors
+        json_list = []
+        for factor in factors:
+             json_item = dict([
+                ("@id", "https://repo.metadatacenter.org/UUID"),
+                ("@context", ""),
+                ("@type", "https://repo.metadatacenter.org/model/StudyFactor"),
+                ("name", dict([("value", factor['Study Factor Name'])])),
+                ("type", dict([("value", factor['Study Factor Type'])]))
+            ])
+             json_list.append(json_item)
         return json_list
 
     def createAuthorList(self, authorListString):

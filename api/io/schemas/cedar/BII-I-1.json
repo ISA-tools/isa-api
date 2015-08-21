@@ -206,7 +206,30 @@
                 "hasContact": [], 
                 "hasPublication": [], 
                 "hasStudyAssay": [], 
-                "hasStudyFactor": [], 
+                "hasStudyFactor": [
+                    {
+                        "@context": "", 
+                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@type": "https://repo.metadatacenter.org/model/StudyFactor", 
+                        "name": {
+                            "value": "limiting nutrient"
+                        }, 
+                        "type": {
+                            "value": "chemical compound"
+                        }
+                    }, 
+                    {
+                        "@context": "", 
+                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@type": "https://repo.metadatacenter.org/model/StudyFactor", 
+                        "name": {
+                            "value": "rate"
+                        }, 
+                        "type": {
+                            "value": "rate"
+                        }
+                    }
+                ], 
                 "hasStudyGroupPopulation": [], 
                 "hasStudyProtocol": [], 
                 "hasStudySubject": [], 
@@ -235,7 +258,41 @@
                 "hasContact": [], 
                 "hasPublication": [], 
                 "hasStudyAssay": [], 
-                "hasStudyFactor": [], 
+                "hasStudyFactor": [
+                    {
+                        "@context": "", 
+                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@type": "https://repo.metadatacenter.org/model/StudyFactor", 
+                        "name": {
+                            "value": "compound"
+                        }, 
+                        "type": {
+                            "value": "compound"
+                        }
+                    }, 
+                    {
+                        "@context": "", 
+                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@type": "https://repo.metadatacenter.org/model/StudyFactor", 
+                        "name": {
+                            "value": "exposure time"
+                        }, 
+                        "type": {
+                            "value": "time"
+                        }
+                    }, 
+                    {
+                        "@context": "", 
+                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@type": "https://repo.metadatacenter.org/model/StudyFactor", 
+                        "name": {
+                            "value": "dose"
+                        }, 
+                        "type": {
+                            "value": "dose"
+                        }
+                    }
+                ], 
                 "hasStudyGroupPopulation": [], 
                 "hasStudyProtocol": [], 
                 "hasStudySubject": [], 
