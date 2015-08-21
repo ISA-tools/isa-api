@@ -67,12 +67,12 @@
                 "hasStudyFactor": [
                     {
                         "@id": "https://repo.metadatacenter.org/UUID",
+                        "@context": {},
                         "@type": "https://repo.metadatacenter.org/model/StudyFactor",
                         "name": { "value": "weight" },
                         "type": { "value": "http://bioportal.bioontology.org/ontologies/EFO/3232" }
                     }
                 ],
-                "hasExperiment": [ ],
                 "hasStudyAssay": [ ],
                 "hasStudyGroupPopulation": [ ],
                 "hasStudySubject": [ ]
