@@ -1,6 +1,6 @@
 __author__ = 'agbeltran'
 
-import json, glob, os, ntpath, warlock
+import json, glob, os, ntpath, warlock, string
 
 from os.path import join
 from api.io import parser
@@ -37,9 +37,9 @@ class ISATab2CEDAR():
             ("identifier", dict([ ("value", isatab.metadata['Investigation Identifier'])])),
             ("submissionDate", dict([ ("value", isatab.metadata['Investigation Submission Date'])])),
             ("publicReleaseDate", dict([ ("value", isatab.metadata['Investigation Public Release Date'])])),
-            ("hasStudy", self.createStudiesArray(isatab.studies)),
-            ("hasContact", self.createInvestigationContactsArray(isatab.contacts)),
-            ("hasPublication", self.createPublicationsArray(isatab.publications))
+            ("hasStudy", self.createStudiesList(isatab.studies)),
+            ("hasContact", self.createInvestigationContactsList(isatab.contacts)),
+            ("hasPublication", self.createPublicationsList(isatab.publications))
         ])
 
         cedar_json = CEDARSchema(
@@ -52,7 +52,7 @@ class ISATab2CEDAR():
             json.dump(cedar_json, outfile, indent=4, sort_keys=True)
             outfile.close()
 
-    def createStudiesArray(self, studies):
+    def createStudiesList(self, studies):
         json_list = []
         for study in studies:
             #print study
@@ -68,7 +68,7 @@ class ISATab2CEDAR():
                 ("hasPublication", []),
                 ("hasContact", []),
                 ("hasStudyFactor", []),
-                ("hasStudyAssay", self.createStudyAssaysArray(study.assays)),
+                ("hasStudyAssay", self.createStudyAssaysList(study.assays)),
                 ("hasStudyGroupPopulation", []),
                 ("hasStudySubject", []),
                 ("hasStudyProtocol", [])
@@ -76,7 +76,7 @@ class ISATab2CEDAR():
             json_list.append(json_item)
         return json_list
 
-    def createInvestigationContactsArray(self, contacts):
+    def createInvestigationContactsList(self, contacts):
         json_list = []
         for contact in contacts:
             json_item = dict([
@@ -90,12 +90,12 @@ class ISATab2CEDAR():
                 ("fax", dict([("value", contact['Investigation Person Fax'])])),
                 ("address", dict([("value", contact['Investigation Person Address'])])),
                 ("role", dict([("value", contact['Investigation Person Roles Term Accession Number'])])),
-                ("hasAffiliation", self.createAffiliationsArray(contact['Investigation Person Affiliation']))
+                ("hasAffiliation", self.createAffiliationsList(contact['Investigation Person Affiliation']))
                 ])
             json_list.append(json_item)
         return json_list
 
-    def createPublicationsArray(self, publications):
+    def createPublicationsList(self, publications):
         json_list = []
         for publication in publications:
             print publication
@@ -105,21 +105,31 @@ class ISATab2CEDAR():
                 ("title", dict([("value", publication['Investigation Publication Title'])])),
                 ("pubMedID", dict([("value", publication['Investigation PubMed ID'])])),
                 ("doi", dict([("value", publication['Investigation Publication DOI'])])),
-                ("authorList", [ { "value": "JJ Bob" }, { "value": "Billy Bob" } ]),#publication['Investigation Publication Author List'])])),
+                ("authorList", self.createAuthorList(publication['Investigation Publication Author List'])),
                 ("status", dict([("value", publication['Investigation Publication Status'])])),
                 ])
             json_list.append(json_item)
         return json_list
 
-    def createAffiliationsArray(self, affiliations):
+    def createAffiliationsList(self, affiliations):
         array = []
         return array
 
-    def createStudyAssaysArray(self, assays):
+    def createStudyAssaysList(self, assays):
         json_list = []
         # for assay in assays:
         #     json_item = {}
         #     json_list.append(json_item)
+        return json_list
+
+    def createAuthorList(self, authorListString):
+        json_list = []
+        elements = authorListString.split(',')
+        for element in elements:
+            json_item = dict([
+                ("value", element)
+            ])
+            json_list.append(json_item)
         return json_list
 
 

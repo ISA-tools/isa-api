@@ -107,10 +107,79 @@
                 "@type": "https://repo.metadatacenter.org/model/Publication", 
                 "authorList": [
                     {
-                        "value": "JJ Bob"
+                        "value": "Castrillo JI"
                     }, 
                     {
-                        "value": "Billy Bob"
+                        "value": " Zeef LA"
+                    }, 
+                    {
+                        "value": " Hoyle DC"
+                    }, 
+                    {
+                        "value": " Zhang N"
+                    }, 
+                    {
+                        "value": " Hayes A"
+                    }, 
+                    {
+                        "value": " Gardner DC"
+                    }, 
+                    {
+                        "value": " Cornell MJ"
+                    }, 
+                    {
+                        "value": " Petty J"
+                    }, 
+                    {
+                        "value": " Hakes L"
+                    }, 
+                    {
+                        "value": " Wardleworth L"
+                    }, 
+                    {
+                        "value": " Rash B"
+                    }, 
+                    {
+                        "value": " Brown M"
+                    }, 
+                    {
+                        "value": " Dunn WB"
+                    }, 
+                    {
+                        "value": " Broadhurst D"
+                    }, 
+                    {
+                        "value": " O'Donoghue K"
+                    }, 
+                    {
+                        "value": " Hester SS"
+                    }, 
+                    {
+                        "value": " Dunkley TP"
+                    }, 
+                    {
+                        "value": " Hart SR"
+                    }, 
+                    {
+                        "value": " Swainston N"
+                    }, 
+                    {
+                        "value": " Li P"
+                    }, 
+                    {
+                        "value": " Gaskell SJ"
+                    }, 
+                    {
+                        "value": " Paton NW"
+                    }, 
+                    {
+                        "value": " Lilley KS"
+                    }, 
+                    {
+                        "value": " Kell DB"
+                    }, 
+                    {
+                        "value": " Oliver SG."
                     }
                 ], 
                 "doi": {
