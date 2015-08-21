@@ -1,0 +1,187 @@
+{
+    "investigation": {
+        "@context": {
+            "description": "schema:description", 
+            "model": "https://repo.metadatacenter.org/model/", 
+            "schema": "https://schema.org/", 
+            "title": "schema:title", 
+            "xsd": "http://www.w3.org/2001/XMLSchema"
+        }, 
+        "@id": "https://repo.metadatacenter.org/UUID", 
+        "@type": "https://repo.metadatacenter.org/model/Investigation", 
+        "description": {
+            "value": "Background Cell growth underlies many key cellular and developmental processes, yet a limited number of studies have been carried out on cell-growth regulation. Comprehensive studies at the transcriptional, proteomic and metabolic levels under defined controlled conditions are currently lacking. Results Metabolic control analysis is being exploited in a systems biology study of the eukaryotic cell. Using chemostat culture, we have measured the impact of changes in flux (growth rate) on the transcriptome, proteome, endometabolome and exometabolome of the yeast Saccharomyces cerevisiae. Each functional genomic level shows clear growth-rate-associated trends and discriminates between carbon-sufficient and carbon-limited conditions. Genes consistently and significantly upregulated with increasing growth rate are frequently essential and encode evolutionarily conserved proteins of known function that participate in many protein-protein interactions. In contrast, more unknown, and fewer essential, genes are downregulated with increasing growth rate; their protein products rarely interact with one another. A large proportion of yeast genes under positive growth-rate control share orthologs with other eukaryotes, including humans. Significantly, transcription of genes encoding components of the TOR complex (a major controller of eukaryotic cell growth) is not subject to growth-rate regulation. Moreover, integrative studies reveal the extent and importance of post-transcriptional control, patterns of control of metabolic fluxes at the level of enzyme synthesis, and the relevance of specific enzymatic reactions in the control of metabolic fluxes during cell growth. Conclusion This work constitutes a first comprehensive systems biology study on growth-rate control in the eukaryotic cell. The results have direct implications for advanced studies on cell growth, in vivo regulation of metabolic fluxes for comprehensive metabolic engineering, and for the design of genome-scale systems biology models of the eukaryotic cell."
+        }, 
+        "hasContact": [
+            {
+                "@id": "https://repo.metadatacenter.org/UUID", 
+                "@type": "https://repo.metadatacenter.org/model/Contact", 
+                "address": {
+                    "value": "Oxford Road, Manchester M13 9PT, UK"
+                }, 
+                "email": {
+                    "value": ""
+                }, 
+                "fax": {
+                    "value": ""
+                }, 
+                "firstName": {
+                    "value": "Stephen"
+                }, 
+                "hasAffiliation": [], 
+                "lastName": {
+                    "value": "Oliver"
+                }, 
+                "middleInitial": {
+                    "value": "G"
+                }, 
+                "phone": {
+                    "value": ""
+                }, 
+                "role": {
+                    "value": ""
+                }
+            }, 
+            {
+                "@id": "https://repo.metadatacenter.org/UUID", 
+                "@type": "https://repo.metadatacenter.org/model/Contact", 
+                "address": {
+                    "value": "Oxford Road, Manchester M13 9PT, UK"
+                }, 
+                "email": {
+                    "value": ""
+                }, 
+                "fax": {
+                    "value": ""
+                }, 
+                "firstName": {
+                    "value": "Castrillo"
+                }, 
+                "hasAffiliation": [], 
+                "lastName": {
+                    "value": "Juan"
+                }, 
+                "middleInitial": {
+                    "value": "I"
+                }, 
+                "phone": {
+                    "value": ""
+                }, 
+                "role": {
+                    "value": ""
+                }
+            }, 
+            {
+                "@id": "https://repo.metadatacenter.org/UUID", 
+                "@type": "https://repo.metadatacenter.org/model/Contact", 
+                "address": {
+                    "value": "Oxford Road, Manchester M13 9PT, UK"
+                }, 
+                "email": {
+                    "value": ""
+                }, 
+                "fax": {
+                    "value": ""
+                }, 
+                "firstName": {
+                    "value": "Zeef"
+                }, 
+                "hasAffiliation": [], 
+                "lastName": {
+                    "value": "Leo"
+                }, 
+                "middleInitial": {
+                    "value": "A"
+                }, 
+                "phone": {
+                    "value": ""
+                }, 
+                "role": {
+                    "value": ""
+                }
+            }
+        ], 
+        "hasPublication": [], 
+        "hasStudy": [
+            {
+                "@id": "https://repo.metadatacenter.org/UUID", 
+                "@type": "https://repo.metadatacenter.org/model/Study", 
+                "description": {
+                    "value": "We wished to study the impact of growth rate on the total complement of mRNA molecules, proteins, and metabolites in S. cerevisiae, independent of any nutritional or other physiological effects. To achieve this, we carried out our analyses on yeast grown in steady-state chemostat culture under four different nutrient limitations (glucose, ammonium, phosphate, and sulfate) at three different dilution (that is, growth) rates (D = u = 0.07, 0.1, and 0.2/hour, equivalent to population doubling times (Td) of 10 hours, 7 hours, and 3.5 hours, respectively; u = specific growth rate defined as grams of biomass generated per gram of biomass present per unit time)."
+                }, 
+                "hasContact": [], 
+                "hasExperiment": [], 
+                "hasPublication": [], 
+                "hasStudyAssay": [
+                    {}, 
+                    {}, 
+                    {}
+                ], 
+                "hasStudyFactor": [], 
+                "hasStudyGroupPopulation": [], 
+                "hasStudyProtocol": [], 
+                "hasStudySubject": [], 
+                "identifier": {
+                    "value": "BII-S-1"
+                }, 
+                "publicReleaseDate": {
+                    "value": "2009-03-10"
+                }, 
+                "studyDesignType": {
+                    "value": ""
+                }, 
+                "submissionDate": {
+                    "value": "2007-04-30"
+                }, 
+                "title": {
+                    "value": "Study of the impact of changes in flux on the transcriptome, proteome, endometabolome and exometabolome of the yeast Saccharomyces cerevisiae under different nutrient limitations"
+                }
+            }, 
+            {
+                "@id": "https://repo.metadatacenter.org/UUID", 
+                "@type": "https://repo.metadatacenter.org/model/Study", 
+                "description": {
+                    "value": "Comprehensive high-throughput analyses at the levels of mRNAs, proteins, and metabolites, and studies on gene expression patterns are required for systems biology studies of cell growth [4,26-29]. Although such comprehensive data sets are lacking, many studies have pointed to a central role for the target-of-rapamycin (TOR) signal transduction pathway in growth control. TOR is a serine/threonine kinase that has been conserved from yeasts to mammals; it integrates signals from nutrients or growth factors to regulate cell growth and cell-cycle progression coordinately. Although such comprehensive data sets are lacking, many studies have pointed to a central role for the target-of-rapamycin (TOR) signal transduction pathway in growth control. TOR is a serine/threonine kinase that has been conserved from yeasts to mammals; it integrates signals from nutrients or growth factors to regulate cell growth and cell-cycle progression coordinately. The effect of rapamycin were studied as follows: a culture growing at mid-exponential phase was divided into two. Rapamycin (200 ng/ml) was added to one half, and the drug's solvent to the other, as the control. Samples were taken at 0, 1, 2 and 4 h after treatment. Gene expression at the mRNA level was investigated by transcriptome analysis using Affymetrix hybridization arrays."
+                }, 
+                "hasContact": [], 
+                "hasExperiment": [], 
+                "hasPublication": [], 
+                "hasStudyAssay": [
+                    {}
+                ], 
+                "hasStudyFactor": [], 
+                "hasStudyGroupPopulation": [], 
+                "hasStudyProtocol": [], 
+                "hasStudySubject": [], 
+                "identifier": {
+                    "value": "BII-S-2"
+                }, 
+                "publicReleaseDate": {
+                    "value": "2009-03-10"
+                }, 
+                "studyDesignType": {
+                    "value": ""
+                }, 
+                "submissionDate": {
+                    "value": "2007-04-30"
+                }, 
+                "title": {
+                    "value": "A time course analysis of transcription response in yeast treated with rapamycin, a specific inhibitor of the TORC1 complex: impact on yeast growth"
+                }
+            }
+        ], 
+        "identifier": {
+            "value": "BII-I-1"
+        }, 
+        "publicReleaseDate": {
+            "value": "2009-03-10"
+        }, 
+        "schemaID": "https://repo.metadatacenter.org/UUID", 
+        "submissionDate": {
+            "value": "2007-04-30"
+        }, 
+        "title": {
+            "value": "Growth control of the eukaryote cell: a systems biology study in yeast"
+        }
+    }
+}
