@@ -17,6 +17,8 @@ class ISATab2CEDAR():
         #parse ISA tab
         isatab = parser.parse(work_dir)
 
+        #print isatab
+
         # process the investigation file
         fileNames = glob.glob(os.path.join(work_dir, "i_*.txt")) + \
                     glob.glob(os.path.join(work_dir, "*.idf.txt"))
@@ -37,7 +39,14 @@ class ISATab2CEDAR():
                     ("description", "schema:description")
                 ]
             )),
-            ("title", dict([ ("value", isatab.metadata['Investigation Title'])]))
+            ("title", dict([ ("value", isatab.metadata['Investigation Title'])])),
+            ("description", dict([ ("value", isatab.metadata['Investigation Description'])])),
+            ("identifier", dict([ ("value", isatab.metadata['Investigation Identifier'])])),
+            ("submissionDate", dict([ ("value", isatab.metadata['Investigation Submission Date'])])),
+            ("publicReleaseDate", dict([ ("value", isatab.metadata['Investigation Public Release Date'])])),
+            ("hasStudy", self.createStudiesArray(isatab.studies)),
+            ("hasContact", self.createInvestigationContactsArray(isatab.contacts)),
+            ("hasPublication", self.createPublicationsArray(isatab.publications))
         ])
 
         cedar_json = CEDARSchema(
@@ -45,49 +54,47 @@ class ISATab2CEDAR():
         )
 
         #save output json
-        with open(investigationFilename, "w") as outfile:
+        file_name = os.path.join(json_dir,isatab.metadata['Investigation Identifier']+".json")
+        with open(file_name, "w") as outfile:
             json.dump(cedar_json, outfile, indent=4, sort_keys=True)
             outfile.close()
 
+    def createStudiesArray(self, studies):
+        array = []
+        for study in studies:
+            #print study
+            print ""
+        return array
 
-    # def convert_investigation(self, rec, i_file, single_file, work_dir, json_dir):
-    #     json_structures = {}
-    #     self.create_investigation_node(json_structures, rec)
-    #     # self.studies(json_structures, rec.studies, work_dir, json_dir, False)
-    #     with open(i_file, "w") as outfile:
-    #         json.dump(json_structures, outfile, indent=4, sort_keys=True)
-    #     outfile.close()
-    #
-    # def create_investigation_node(self, json_structures, rec):
-    #     # commonFunctions = CommonFunctions()
-    #     json_structures = {}
-    #     for meta in rec.metadata:
-    #         json_structures["investigation"] = self.create_list_of_attributes_array(rec.metadata, 'Investigation')
-    #         #json_structures[commonFunctions.getAttributeName(meta)] = rec.metadata[meta]
-    #         #json_structures["publications"] = self.createListOfAttributesArray(rec.publications, 'Investigation Publication')
-    #         #json_structures["people"] = self.createListOfAttributesArray(rec.contacts, 'Investigation Person')
-    #     return json_structures
-    #
-    #
-    # def create_list_of_attributes_array(self, properties, toBeRemovedTag):
-    #     json_list = []
-    #     for onto in properties:
-    #         json_item = {}
-    #         for item in onto:
-    #             json_item[self.commonFunctions.makeAttributeName(item, toBeRemovedTag)] = onto[item]
-    #         json_list.append(json_item)
-    #     return json_list
-    #
-    #
-    # def create_list_of_attributes(self, json_structure, properties, tagName):
-    #     json_list = []
-    #     for onto in properties:
-    #         json_item = {}
-    #         for item in onto:
-    #             json_item[self.commonFunctions.makeAttributeName(item, 'Term Source')] = onto[item]
-    #             json_list.append(json_item)
-    #         json_structure[tagName] = json_list
-    #     return json_structure
+    def createInvestigationContactsArray(self, contacts):
+        json_list = []
+        for contact in contacts:
+            json_item = dict([
+                ("@id", "https://repo.metadatacenter.org/UUID"),
+                ("@type", "https://repo.metadatacenter.org/model/Contact"),
+                ("lastName", dict([("value", contact['Investigation Person Last Name'])])),
+                ("firstName", dict([("value", contact['Investigation Person First Name'])])),
+                ("middleInitial", dict([("value", contact['Investigation Person Mid Initials'])])),
+                ("email", dict([("value", contact['Investigation Person Email'])])),
+                ("phone", dict([("value", contact['Investigation Person Phone'])])),
+                ("fax", dict([("value", contact['Investigation Person Fax'])])),
+                ("address", dict([("value", contact['Investigation Person Address'])])),
+                ("role", dict([("value", contact['Investigation Person Roles Term Accession Number'])])),
+                ("hasAffiliation", self.createAffiliationsArray(contact['Investigation Person Affiliation']))
+                ])
+            json_list.append(json_item)
+        return json_list
+
+    def createPublicationsArray(self, publications):
+        array = []
+        return array
+
+    def createAffiliationsArray(self, affiliations):
+        array = []
+        return array
+
+
+
 
 isa2cedar = ISATab2CEDAR()
 isa2cedar.createCEDARjson("../../tests/data/BII-I-1", "./schemas/cedar")
