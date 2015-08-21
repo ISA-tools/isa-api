@@ -17,7 +17,7 @@ class ISATab2CEDAR():
         #parse ISA tab
         isatab = parser.parse(work_dir)
 
-        #print isatab
+        print isatab
 
         investigationObject = dict([
             ("schemaID", "https://repo.metadatacenter.org/UUID"),
@@ -69,9 +69,10 @@ class ISATab2CEDAR():
                 ("hasContact", []),
                 ("hasStudyFactor", []),
                 ("hasExperiment", []),
-                ("hasStudyAssay", []),
+                ("hasStudyAssay", self.createStudyAssaysArray(study.assays)),
                 ("hasStudyGroupPopulation", []),
-                ("hasStudySubject", [])
+                ("hasStudySubject", []),
+                ("hasStudyProtocol", [])
             ])
             json_list.append(json_item)
         return json_list
@@ -103,6 +104,12 @@ class ISATab2CEDAR():
         array = []
         return array
 
+    def createStudyAssaysArray(self, assays):
+        json_list = []
+        for assay in assays:
+            json_item = {}
+            json_list.append(json_item)
+        return json_list
 
 
 

@@ -1,4 +1,5 @@
 {
+    "name": "CEDAR schema",
     "valueElementContext": {
         "$schema": "http://json-schema.org/draft-04/schema#",
         "title": "Value Element Context Description",
