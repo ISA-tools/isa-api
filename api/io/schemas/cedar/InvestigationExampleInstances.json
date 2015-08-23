@@ -75,7 +75,7 @@
                                 "@id": "https://repo.metadatacenter.org/UUID",
                                 "@type": "https://repo.metadatacenter.org/model/ParameterValue",
                                 "parameter": { "value": "p1" },
-                                "value": { "value": "v1" },
+                                "value": { "value": "v1" }
                             }
                         ]
                     }
@@ -154,7 +154,7 @@
                                     "@id": "https://repo.metadatacenter.org/UUID",
                                     "@type": "https://repo.metadatacenter.org/model/ParameterValue",
                                     "parameter": { "value": "p1" },
-                                    "value": { "value": "v1" },
+                                    "value": { "value": "v1" }
                                 }
                             ]
                         },
@@ -172,7 +172,7 @@
                                 "@id": "https://repo.metadatacenter.org/UUID",
                                 "@type": "https://repo.metadatacenter.org/model/ParameterValue",
                                 "parameter": { "value": "p1" },
-                                "value": { "value": "v1" },
+                                "value": { "value": "v1" }
                             }
                         ],
                         "hasReagent": [
@@ -198,7 +198,7 @@
                                 "@context": {},
                                 "@id": "https://repo.metadatacenter.org/UUID",
                                 "@type": "https://repo.metadatacenter.org/model/DataFile",
-                                "name": { "value": "a data file" },
+                                "name": { "value": "a data file" }
                             }
                         ],
                         "hasOutput": [
@@ -207,7 +207,7 @@
                                 "@id": "https://repo.metadatacenter.org/UUID",
                                 "@type": "https://repo.metadatacenter.org/model/ResultValue",
                                 "name": { "value": "a result value name" },
-                                "value": { "value": "a result value name" },
+                                "value": { "value": "a result value name" }
                             },
                             {
                                 "@context": {},
