@@ -19,4 +19,4 @@ def validateSchemasInFolder(folder):
 
 
 validateSchemasInFolder("cedar")
-validateSchemasInFolder("isa_model_version_1_0_schemas")
+#validateSchemasInFolder("isa_model_version_1_0_schemas")

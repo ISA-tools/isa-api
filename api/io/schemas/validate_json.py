@@ -14,6 +14,9 @@ resolver = RefResolver('file://'+path+'/'+"InvestigationSchema.json", investigat
 
 validator = Draft4Validator(investigationSchema, resolver=resolver)
 
-validator.validate(json.load(open(join(path,"ExampleInvestigationData.json"))), investigationSchema)
+#validator.validate(json.load(open(join(path,"ExampleInvestigationData.json"))), investigationSchema)
+validator.validate(json.load(open(join(path,"InvestigationExampleInstances.json"))), investigationSchema)
+
+validator.validate(json.load(open(join(path,"BII-I-1.json"))), investigationSchema)
 
 
