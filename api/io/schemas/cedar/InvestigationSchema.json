@@ -1,24 +1,4 @@
 {
-    "name": "CEDAR Schema",
-    "valueElementContext": {
-        "$schema": "http://json-schema.org/draft-04/schema#",
-        "additionalProperties": false,
-        "title": "Value Element Context Description",
-        "description": "JSON Schema description of Value Element Context. Used when describing @context fields for value elements",
-        "properties": {
-            "info": {
-                "description": "Enter a title for the investigation",
-                "input_type": "textfield",
-                "title": "Investigation Title"
-            },
-            "value": {
-                "type": "string"
-            }
-        },
-        "required": [
-            "value"
-        ]
-    },
     "$schema": "http://json-schema.org/draft-04/schema#",
     "properties": {
         "investigation": {
@@ -208,6 +188,19 @@
         "investigation"
     ],
     "additionalProperties": false,
+
+    "valueElementContext": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "additionalProperties": false,
+        "title": "Value Element Context Description",
+        "description": "JSON Schema description of Value Element Context. Used when describing @context fields for value elements",
+        "properties": {
+            "value": {
+                "type": "string"
+            }
+        }
+    },
+
     "study": {
         "$schema": "http://json-schema.org/draft-04/schema#",
         "@id": "https://repo.metadatacenter.org/UUID",
@@ -266,6 +259,13 @@
                     "type": "object"
                 },
                 "type": "array"
+            },
+            "hasProcess": {
+                "items": {
+                    "$ref": "#/process",
+                    "type": "object"
+                },
+                "type": "array"            
             },
             "hasStudyAssay": {
                 "items": {
@@ -453,7 +453,8 @@
             "hasStudyFactor",
             "hasStudyAssay",
             "hasStudyGroupPopulation",
-            "hasStudySubject"
+            "hasStudySubject", 
+            "hasProcess"
         ],
         "additionalProperties": false
     },
@@ -1181,7 +1182,7 @@
             "@type": {
             	"type": "string", 
                 "enum": [
-                    "model:StudyGroupPopulation"
+                    "https://repo.metadatacenter.org/model/StudyGroupPopulation"
                 ]
             },
             "hasStudySubject": {
@@ -1295,7 +1296,7 @@
             "@type": {
             	"type": "string", 
                 "enum": [
-                    "model:StudySubject"
+                    "https://repo.metadatacenter.org/model/StudySubject"
                 ]
             },
             "hasCharacteristicValue": {
@@ -1369,6 +1370,119 @@
         ],
         "additionalProperties": false
     },
+    "process": {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "@id": "https://repo.metadatacenter.org/UUID",
+        "title": "Process",
+        "description": "JSON-LD/Schema Process Template Element",
+        "properties": {
+            "@context": {
+                "model": "https://repo.metadatacenter.org/model/",
+                "schema": "https://schema.org/",
+                "type": "string", 
+                "xsd": "http://www.w3.org/2001/XMLSchema"
+            },
+            "@id": {
+                "format": "uri",
+                "type": "string"
+            },
+            "@type": {
+                "enum": [
+                    "https://repo.metadatacenter.org/model/Process"
+                ],
+                "type": "string"
+            },
+            "type": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "@id": "https://repo.metadatacenter.org/UUID",
+                "additionalProperties": false,
+                "title": "Auto-generated JSON Schema title for reagent's 'type' field",
+                "description": "Auto-generated JSON Schema description for process''type' field",
+                "properties": {
+                    "@context": {
+                        "$ref": "#/valueElementContext"
+                    },
+                    "info": {
+                        "description": "Select a type for the process",
+                        "input_type": "textfield",
+                        "title": "Type of Process",
+                        "value_constraint": {
+                            "ontologies": [
+                                {
+                                    
+                                }
+                            ]
+                        }
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "value"
+                ]
+            },
+            "hasReagent": {
+                "items": {
+                    "$ref": "#/reagent",
+                    "type": "object"
+                },
+                "type": "array"
+            },
+            "executeStudyProtocol": {
+                "$ref": "#/studyProtocol",
+                "type": "object"
+            },
+            "hasStudyAssay": {
+                "$ref": "#/studyAssay",
+                "type": "object"
+                },
+            "hasInput": {
+                "items": {
+                    "anyOf" : [
+                        { "type": "object",
+                          "$ref": "#/studySubject"},
+                        { "type": "object",
+                          "$ref": "#/sample"},
+                        { "type": "object",
+                          "$ref": "#/resultValue"},
+                        { "type": "object",
+                          "$ref": "#/dataFile"}
+                    ]
+                },
+                "type": "array"
+            },
+            "hasOutput": {
+                "items": {
+                    "anyOf" : [
+                        { "type": "object",
+                          "$ref": "#/sample"},
+                        { "type": "object",
+                          "$ref": "#/resultValue"},
+                        { "type": "object",
+                          "$ref": "#/dataFile"}
+                    ]
+                },
+                "type": "array"
+            },
+            "hasParameterValue": {
+                "items": {
+                    "$ref": "#/parameterValue",
+                    "type": "object"
+                },
+                "type": "array"
+            }
+        },
+        "required": [
+            "@id",
+            "@type",
+            "type",
+            "executeStudyProtocol",
+            "hasInput",
+            "hasOutput"
+        ],
+        "additionalProperties": false
+    },
     "sample": {
         "$schema": "http://json-schema.org/draft-04/schema#",
         "@id": "https://repo.metadatacenter.org/UUID",
@@ -1385,7 +1499,7 @@
             "@type": {
                 "type": "string", 
 		"enum": [
-                    "model:Sample"
+                    "https://repo.metadatacenter.org/model/Sample"
                 ]
             },
             "description": {
@@ -1420,7 +1534,7 @@
             },
             "hasCollectionStudyTime": {
                 "items": {
-                    "$ref": "#/collectionStudyTime",
+                    "$ref": "#/studyTime",
                     "type": "object"
                 },
                 "type": "array"
@@ -1539,7 +1653,7 @@
             "@type": {
                 "type": "string", 
                 "enum": [
-                    "model:Reagent"
+                    "https://repo.metadatacenter.org/model/Reagent"
                 ]
             },
             "hasCharacteristicValue": {
@@ -1629,7 +1743,7 @@
             "@type": {
                 "type": "string", 
 		"enum": [
-                    "model:StudyAssay"
+                    "https://repo.metadatacenter.org/model/StudyAssay"
                 ]
             },
             "measurementType": {
@@ -1751,10 +1865,9 @@
             },
             "@type": {
                 "type": "string", 
-		"enum": [
+				"enum": [
                     "https://repo.metadatacenter.org/model/StudyFactor"
-                ],
-                "type": "string"
+                ]
             },
             "name": {
                 "$schema": "http://json-schema.org/draft-04/schema#",
@@ -1832,7 +1945,7 @@
             "@type": {
                 "type": "string", 
 		"enum": [
-                    "model:ProtocolParameter"
+                    "https://repo.metadatacenter.org/model/ProtocolParameter"
                 ]
             },
             "name": {
@@ -1914,7 +2027,7 @@
             "@type": {
                 "type": "string", 
 		"enum": [
-                    "model:CharacteristicValue"
+                    "https://repo.metadatacenter.org/model/CharacteristicValue"
                 ]
             },
             "characteristic": {
@@ -1957,7 +2070,7 @@
                     "@context": {
                         "$ref": "#/valueElementContext"
                     },
-                    "@type": {},
+                    "@type": { "type": "string" },
                     "info": {
                         "description": "Enter a value for the characteristic",
                         "input_type": "textfield",
@@ -1997,7 +2110,7 @@
             "@type": {
                 "type": "string", 
 		"enum": [
-                    "model:FactorValue"
+                    "https://repo.metadatacenter.org/model/FactorValue"
                 ]
             },
             "factor": {
@@ -2034,7 +2147,7 @@
                     "@context": {
                         "$ref": "#/valueElementContext"
                     },
-                    "@type": {},
+                    "@type": { "type": "string"},
                     "info": {
                         "description": "Enter a value for the factor",
                         "input_type": "textfield",
@@ -2074,7 +2187,7 @@
             "@type": {
             	"type": "string",
                 "enum": [
-                    "model:ParameterValue"
+                    "https://repo.metadatacenter.org/model/ParameterValue"
                 ]
             },
             "parameter": {
@@ -2111,7 +2224,7 @@
                     "@context": {
                         "$ref": "#/valueElementContext"
                     },
-                    "@type": {},
+                    "@type": { "type": "string" },
                     "info": {
                         "description": "Enter a value for the parameter",
                         "input_type": "textfield",
@@ -2151,7 +2264,7 @@
             "@type": {
                 "type": "string", 
 		"enum": [
-                    "model:ResultValue"
+                    "https://repo.metadatacenter.org/model/ResultValue"
                 ]
             },
             "name": {
@@ -2188,7 +2301,7 @@
                     "@context": {
                         "$ref": "#/valueElementContext"
                     },
-                    "@type": {},
+                    "@type": { "type": "string" },
                     "info": {
                         "description": "Enter a value for the result",
                         "input_type": "textfield",
@@ -2228,7 +2341,7 @@
             "@type": {
                 "type": "string", 
 		"enum": [
-                    "model:DataFile"
+                    "https://repo.metadatacenter.org/model/DataFile"
                 ]
             },
             "description": {
@@ -2241,7 +2354,7 @@
                     "@context": {
                         "$ref": "#/valueElementContext"
                     },
-                    "@type": {},
+                    "@type": { "type": "string" },
                     "info": {
                         "description": "Enter a description for the file",
                         "input_type": "textfield",
@@ -2303,7 +2416,7 @@
             "@type": {
                 "type": "string", 
 		"enum": [
-                    "model:StudyTime"
+                    "https://repo.metadatacenter.org/model/StudyTime"
                 ]
             },
             "durationValue": {
@@ -2316,7 +2429,7 @@
                     "@context": {
                         "$ref": "#/valueElementContext"
                     },
-                    "@type": {},
+                    "@type": { "type": "string" },
                     "info": {
                         "description": "Enter a duration before or after the study event",
                         "input_type": "textfield",
@@ -2340,7 +2453,7 @@
                     "@context": {
                         "$ref": "#/valueElementContext"
                     },
-                    "@type": {},
+                    "@type": { "type": "string" },
                     "info": {
                         "description": "Enter whether the time is before or after the study event",
                         "input_type": "textfield",
