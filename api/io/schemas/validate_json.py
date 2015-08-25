@@ -8,7 +8,7 @@ from os.path import join
 path = os.path.abspath("cedar")
 
 
-investigationSchema = json.load(open(join(path,"InvestigationSchema.json")))
+investigationSchema = json.load(open(join(path,"*")))
 
 resolver = RefResolver('file://'+path+'/'+"InvestigationSchema.json", investigationSchema)
 
