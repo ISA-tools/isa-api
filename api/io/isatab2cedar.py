@@ -157,13 +157,23 @@ class ISATab2CEDAR():
 
     def createAffiliationsList(self, affiliations):
         json_list = []
+        for affiliation in affiliations:
+            print affiliation
         return json_list
 
     def createStudyAssaysList(self, assays):
         json_list = []
-        # for assay in assays:
-        #     json_item = {}
-        #     json_list.append(json_item)
+        for assay in assays:
+            #print assay
+            json_item = dict([
+                ("@id", "https://repo.metadatacenter.org/UUID"),
+                ("@type", "https://repo.metadatacenter.org/model/StudyAssay"),
+                ("@context", ""),
+                ("measurementType", dict([("value", assay['Study Assay Measurement Type Term Accession Number'])])),
+                ("platform", dict([("value", assay['Study Assay Technology Platform'])])),
+                ("technology", dict([("value", assay['Study Assay Technology Type'])]))
+                ])
+            json_list.append(json_item)
         return json_list
 
     def createStudyFactorsList(self, factors):

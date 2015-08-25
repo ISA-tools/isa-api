@@ -388,7 +388,50 @@
                         }
                     }
                 ], 
-                "hasStudyAssay": [], 
+                "hasStudyAssay": [
+                    {
+                        "@context": "", 
+                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@type": "https://repo.metadatacenter.org/model/StudyAssay", 
+                        "measurementType": {
+                            "value": "http://purl.obolibrary.org/obo/OBI_0000615"
+                        }, 
+                        "platform": {
+                            "value": "iTRAQ"
+                        }, 
+                        "technology": {
+                            "value": "mass spectrometry"
+                        }
+                    }, 
+                    {
+                        "@context": "", 
+                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@type": "https://repo.metadatacenter.org/model/StudyAssay", 
+                        "measurementType": {
+                            "value": "http://purl.obolibrary.org/obo/OBI_0000366"
+                        }, 
+                        "platform": {
+                            "value": "LC-MS/MS"
+                        }, 
+                        "technology": {
+                            "value": "mass spectrometry"
+                        }
+                    }, 
+                    {
+                        "@context": "", 
+                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@type": "https://repo.metadatacenter.org/model/StudyAssay", 
+                        "measurementType": {
+                            "value": "0000424"
+                        }, 
+                        "platform": {
+                            "value": "Affymetrix"
+                        }, 
+                        "technology": {
+                            "value": "DNA microarray"
+                        }
+                    }
+                ], 
                 "hasStudyFactor": [
                     {
                         "@context": "", 
@@ -551,7 +594,22 @@
                         }
                     }
                 ], 
-                "hasStudyAssay": [], 
+                "hasStudyAssay": [
+                    {
+                        "@context": "", 
+                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@type": "https://repo.metadatacenter.org/model/StudyAssay", 
+                        "measurementType": {
+                            "value": "0000424"
+                        }, 
+                        "platform": {
+                            "value": "Affymetrix"
+                        }, 
+                        "technology": {
+                            "value": "DNA microarray"
+                        }
+                    }
+                ], 
                 "hasStudyFactor": [
                     {
                         "@context": "", 
