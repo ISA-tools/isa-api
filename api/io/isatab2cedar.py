@@ -7,7 +7,6 @@ from os.path import join
 
 import warlock
 
-from api.io import parser
 from bcbio.isatab.parser import InvestigationParser
 
 
@@ -76,12 +75,13 @@ class ISATab2CEDAR():
                 ("publicReleaseDate", dict([("value", study.metadata['Study Public Release Date'])])),
                 ("studyDesignType", dict([("value", "")])),  #dict([("value", study.metadata['Study Public Design Type Accession Number'])]))
                 ("hasPublication", self.createStudyPublicationsList(study.publications)),
-                ("hasContact", []),
+                ("hasContact", self.createStudyContactsList(study.contacts)),
                 ("hasStudyFactor", self.createStudyFactorsList(study.factors)),
                 ("hasStudyAssay", self.createStudyAssaysList(study.assays)),
                 ("hasStudyGroupPopulation", []),
                 ("hasStudySubject", []),
-                ("hasStudyProtocol", [])
+                ("hasStudyProtocol", []),
+                ("hasProcess", [])
             ])
             json_list.append(json_item)
         return json_list
@@ -105,6 +105,25 @@ class ISATab2CEDAR():
             json_list.append(json_item)
         return json_list
 
+    def createStudyContactsList(self, contacts):
+        json_list = []
+        for contact in contacts:
+            json_item = dict([
+                ("@id", "https://repo.metadatacenter.org/UUID"),
+                ("@type", "https://repo.metadatacenter.org/model/Contact"),
+                ("lastName", dict([("value", contact['Study Person Last Name'])])),
+                ("firstName", dict([("value", contact['Study Person First Name'])])),
+                ("middleInitial", dict([("value", contact['Study Person Mid Initials'])])),
+                ("email", dict([("value", contact['Study Person Email'])])),
+                ("phone", dict([("value", contact['Study Person Phone'])])),
+                ("fax", dict([("value", contact['Study Person Fax'])])),
+                ("address", dict([("value", contact['Study Person Address'])])),
+                ("role", dict([("value", contact['Study Person Roles Term Accession Number'])])),
+                ("hasAffiliation", self.createAffiliationsList(contact['Study Person Affiliation']))
+                ])
+            json_list.append(json_item)
+        return json_list
+
     def createInvestigationPublicationsList(self, publications):
         json_list = []
         for publication in publications:
@@ -123,7 +142,7 @@ class ISATab2CEDAR():
     def createStudyPublicationsList(self, publications):
         json_list = []
         for publication in publications:
-            print publication
+            #print publication
             json_item = dict([
                 ("@id", "https://repo.metadatacenter.org/UUID"),
                 ("@type", "https://repo.metadatacenter.org/model/Publication"),
