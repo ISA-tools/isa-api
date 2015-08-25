@@ -12,6 +12,6 @@ directories = [ f for f in listdir(path) ]
 for directory in directories:
     print "Converting ", directory, " ..."
     isa2cedar = ISATab2CEDAR()
-    isa2cedar.createCEDARjson(join(path,directory), "./datasets/output", False)
+    isa2cedar.createCEDARjson(join(path,directory), "./datasets/metabolights", False)
     print "\t... done"
 
