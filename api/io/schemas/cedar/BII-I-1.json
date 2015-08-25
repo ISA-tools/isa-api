@@ -7,14 +7,14 @@
             "title": "schema:title", 
             "xsd": "http://www.w3.org/2001/XMLSchema"
         }, 
-        "@id": "https://repo.metadatacenter.org/UUID", 
+        "@id": "https://repo.metadatacenter.org/UUID/60d9f095-2a27-4d1e-aeef-c3c3b97b245f", 
         "@type": "https://repo.metadatacenter.org/model/Investigation", 
         "description": {
             "value": "Background Cell growth underlies many key cellular and developmental processes, yet a limited number of studies have been carried out on cell-growth regulation. Comprehensive studies at the transcriptional, proteomic and metabolic levels under defined controlled conditions are currently lacking. Results Metabolic control analysis is being exploited in a systems biology study of the eukaryotic cell. Using chemostat culture, we have measured the impact of changes in flux (growth rate) on the transcriptome, proteome, endometabolome and exometabolome of the yeast Saccharomyces cerevisiae. Each functional genomic level shows clear growth-rate-associated trends and discriminates between carbon-sufficient and carbon-limited conditions. Genes consistently and significantly upregulated with increasing growth rate are frequently essential and encode evolutionarily conserved proteins of known function that participate in many protein-protein interactions. In contrast, more unknown, and fewer essential, genes are downregulated with increasing growth rate; their protein products rarely interact with one another. A large proportion of yeast genes under positive growth-rate control share orthologs with other eukaryotes, including humans. Significantly, transcription of genes encoding components of the TOR complex (a major controller of eukaryotic cell growth) is not subject to growth-rate regulation. Moreover, integrative studies reveal the extent and importance of post-transcriptional control, patterns of control of metabolic fluxes at the level of enzyme synthesis, and the relevance of specific enzymatic reactions in the control of metabolic fluxes during cell growth. Conclusion This work constitutes a first comprehensive systems biology study on growth-rate control in the eukaryotic cell. The results have direct implications for advanced studies on cell growth, in vivo regulation of metabolic fluxes for comprehensive metabolic engineering, and for the design of genome-scale systems biology models of the eukaryotic cell."
         }, 
         "hasContact": [
             {
-                "@id": "https://repo.metadatacenter.org/UUID", 
+                "@id": "https://repo.metadatacenter.org/UUIDcea5a7ac-fadb-4201-a00f-7f16c2ad78eb", 
                 "@type": "https://repo.metadatacenter.org/model/Contact", 
                 "address": {
                     "value": "Oxford Road, Manchester M13 9PT, UK"
@@ -31,7 +31,7 @@
                 "hasAffiliation": [
                     {
                         "@context": "", 
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID2dfca689-6822-4440-ad3e-1334b31bd493", 
                         "@type": "https://repo.metadatacenter.org/model/Organization", 
                         "department": {
                             "value": ""
@@ -55,7 +55,7 @@
                 }
             }, 
             {
-                "@id": "https://repo.metadatacenter.org/UUID", 
+                "@id": "https://repo.metadatacenter.org/UUID12e56231-5a4c-4fb9-b17e-186756c0be13", 
                 "@type": "https://repo.metadatacenter.org/model/Contact", 
                 "address": {
                     "value": "Oxford Road, Manchester M13 9PT, UK"
@@ -72,7 +72,7 @@
                 "hasAffiliation": [
                     {
                         "@context": "", 
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUIDeb41e902-1a53-4b74-8d1c-8894bcb60784", 
                         "@type": "https://repo.metadatacenter.org/model/Organization", 
                         "department": {
                             "value": ""
@@ -96,7 +96,7 @@
                 }
             }, 
             {
-                "@id": "https://repo.metadatacenter.org/UUID", 
+                "@id": "https://repo.metadatacenter.org/UUID03f3cc17-dafe-4d83-b38f-3df1dd1e556d", 
                 "@type": "https://repo.metadatacenter.org/model/Contact", 
                 "address": {
                     "value": "Oxford Road, Manchester M13 9PT, UK"
@@ -113,7 +113,7 @@
                 "hasAffiliation": [
                     {
                         "@context": "", 
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUIDe5fab1a1-0835-480c-a83a-e73a5f7a72ed", 
                         "@type": "https://repo.metadatacenter.org/model/Organization", 
                         "department": {
                             "value": ""
@@ -139,7 +139,7 @@
         ], 
         "hasPublication": [
             {
-                "@id": "https://repo.metadatacenter.org/UUID", 
+                "@id": "https://repo.metadatacenter.org/UUID2082c382-d8a0-429f-8e29-0de9ab2e83cb", 
                 "@type": "https://repo.metadatacenter.org/model/Publication", 
                 "authorList": [
                     {
@@ -234,14 +234,14 @@
         ], 
         "hasStudy": [
             {
-                "@id": "https://repo.metadatacenter.org/UUID", 
+                "@id": "https://repo.metadatacenter.org/UUID793493e2-8f3e-4f5a-a4f5-cacf6f66df06", 
                 "@type": "https://repo.metadatacenter.org/model/Study", 
                 "description": {
                     "value": "We wished to study the impact of growth rate on the total complement of mRNA molecules, proteins, and metabolites in S. cerevisiae, independent of any nutritional or other physiological effects. To achieve this, we carried out our analyses on yeast grown in steady-state chemostat culture under four different nutrient limitations (glucose, ammonium, phosphate, and sulfate) at three different dilution (that is, growth) rates (D = u = 0.07, 0.1, and 0.2/hour, equivalent to population doubling times (Td) of 10 hours, 7 hours, and 3.5 hours, respectively; u = specific growth rate defined as grams of biomass generated per gram of biomass present per unit time)."
                 }, 
                 "hasContact": [
                     {
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID013cc36b-9ddf-4c7b-8c95-9a4e5929bd12", 
                         "@type": "https://repo.metadatacenter.org/model/Contact", 
                         "address": {
                             "value": "Oxford Road, Manchester M13 9PT, UK"
@@ -258,7 +258,7 @@
                         "hasAffiliation": [
                             {
                                 "@context": "", 
-                                "@id": "https://repo.metadatacenter.org/UUID", 
+                                "@id": "https://repo.metadatacenter.org/UUID6812753e-037c-4ac4-ac12-059b055801dd", 
                                 "@type": "https://repo.metadatacenter.org/model/Organization", 
                                 "department": {
                                     "value": ""
@@ -282,7 +282,7 @@
                         }
                     }, 
                     {
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUIDf51322d9-352c-4695-88a9-3922ef5826e9", 
                         "@type": "https://repo.metadatacenter.org/model/Contact", 
                         "address": {
                             "value": "Oxford Road, Manchester M13 9PT, UK"
@@ -299,7 +299,7 @@
                         "hasAffiliation": [
                             {
                                 "@context": "", 
-                                "@id": "https://repo.metadatacenter.org/UUID", 
+                                "@id": "https://repo.metadatacenter.org/UUIDd71dd5aa-1b8a-4cef-8cb6-91d1159531dd", 
                                 "@type": "https://repo.metadatacenter.org/model/Organization", 
                                 "department": {
                                     "value": ""
@@ -323,7 +323,7 @@
                         }
                     }, 
                     {
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID638dc569-ac93-4515-a99a-5e157b62a17e", 
                         "@type": "https://repo.metadatacenter.org/model/Contact", 
                         "address": {
                             "value": "Oxford Road, Manchester M13 9PT, UK"
@@ -340,7 +340,7 @@
                         "hasAffiliation": [
                             {
                                 "@context": "", 
-                                "@id": "https://repo.metadatacenter.org/UUID", 
+                                "@id": "https://repo.metadatacenter.org/UUID22a54ffd-1eaf-48ca-8790-f79f70916ff2", 
                                 "@type": "https://repo.metadatacenter.org/model/Organization", 
                                 "department": {
                                     "value": ""
@@ -367,7 +367,7 @@
                 "hasProcess": [], 
                 "hasPublication": [
                     {
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID74c3e2b9-94b9-4539-959d-78d2022b4e6c", 
                         "@type": "https://repo.metadatacenter.org/model/Publication", 
                         "authorList": [
                             {
@@ -463,7 +463,7 @@
                 "hasStudyAssay": [
                     {
                         "@context": "", 
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID0e63eee0-a6df-4ff2-aa1d-327126cd6797", 
                         "@type": "https://repo.metadatacenter.org/model/StudyAssay", 
                         "measurementType": {
                             "value": "http://purl.obolibrary.org/obo/OBI_0000615"
@@ -477,7 +477,7 @@
                     }, 
                     {
                         "@context": "", 
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID8e8220e1-356a-4c40-9587-68127af8342c", 
                         "@type": "https://repo.metadatacenter.org/model/StudyAssay", 
                         "measurementType": {
                             "value": "http://purl.obolibrary.org/obo/OBI_0000366"
@@ -491,7 +491,7 @@
                     }, 
                     {
                         "@context": "", 
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID420f7017-fbcb-4c67-afa6-2b8b17742fec", 
                         "@type": "https://repo.metadatacenter.org/model/StudyAssay", 
                         "measurementType": {
                             "value": "0000424"
@@ -507,7 +507,7 @@
                 "hasStudyFactor": [
                     {
                         "@context": "", 
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID186d8f5f-023f-4f48-bcc3-c24959392c87", 
                         "@type": "https://repo.metadatacenter.org/model/StudyFactor", 
                         "name": {
                             "value": "limiting nutrient"
@@ -518,7 +518,7 @@
                     }, 
                     {
                         "@context": "", 
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID38a2d0ad-d72e-4e3a-a3f0-798269e5e457", 
                         "@type": "https://repo.metadatacenter.org/model/StudyFactor", 
                         "name": {
                             "value": "rate"
@@ -548,14 +548,14 @@
                 }
             }, 
             {
-                "@id": "https://repo.metadatacenter.org/UUID", 
+                "@id": "https://repo.metadatacenter.org/UUID1cac0cfb-b9f8-4ea4-9714-3171de378e44", 
                 "@type": "https://repo.metadatacenter.org/model/Study", 
                 "description": {
                     "value": "Comprehensive high-throughput analyses at the levels of mRNAs, proteins, and metabolites, and studies on gene expression patterns are required for systems biology studies of cell growth [4,26-29]. Although such comprehensive data sets are lacking, many studies have pointed to a central role for the target-of-rapamycin (TOR) signal transduction pathway in growth control. TOR is a serine/threonine kinase that has been conserved from yeasts to mammals; it integrates signals from nutrients or growth factors to regulate cell growth and cell-cycle progression coordinately. Although such comprehensive data sets are lacking, many studies have pointed to a central role for the target-of-rapamycin (TOR) signal transduction pathway in growth control. TOR is a serine/threonine kinase that has been conserved from yeasts to mammals; it integrates signals from nutrients or growth factors to regulate cell growth and cell-cycle progression coordinately. The effect of rapamycin were studied as follows: a culture growing at mid-exponential phase was divided into two. Rapamycin (200 ng/ml) was added to one half, and the drug's solvent to the other, as the control. Samples were taken at 0, 1, 2 and 4 h after treatment. Gene expression at the mRNA level was investigated by transcriptome analysis using Affymetrix hybridization arrays."
                 }, 
                 "hasContact": [
                     {
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUIDc52dc186-f207-445e-b78e-e6c0c630e014", 
                         "@type": "https://repo.metadatacenter.org/model/Contact", 
                         "address": {
                             "value": "Oxford Road, Manchester M13 9PT, UK"
@@ -572,7 +572,7 @@
                         "hasAffiliation": [
                             {
                                 "@context": "", 
-                                "@id": "https://repo.metadatacenter.org/UUID", 
+                                "@id": "https://repo.metadatacenter.org/UUID6dac304c-d6e7-4aae-9483-38aef8a3e7a4", 
                                 "@type": "https://repo.metadatacenter.org/model/Organization", 
                                 "department": {
                                     "value": ""
@@ -596,7 +596,7 @@
                         }
                     }, 
                     {
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID954265cc-7ee7-450d-93c8-ab74481e809f", 
                         "@type": "https://repo.metadatacenter.org/model/Contact", 
                         "address": {
                             "value": "Oxford Road, Manchester M13 9PT, UK"
@@ -613,7 +613,7 @@
                         "hasAffiliation": [
                             {
                                 "@context": "", 
-                                "@id": "https://repo.metadatacenter.org/UUID", 
+                                "@id": "https://repo.metadatacenter.org/UUID386ae33e-4557-47fa-a286-bc62bb2e904c", 
                                 "@type": "https://repo.metadatacenter.org/model/Organization", 
                                 "department": {
                                     "value": ""
@@ -637,7 +637,7 @@
                         }
                     }, 
                     {
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUIDe10b38ee-8c4d-4d5e-b4f2-25c4f81bc40b", 
                         "@type": "https://repo.metadatacenter.org/model/Contact", 
                         "address": {
                             "value": "Oxford Road, Manchester M13 9PT, UK"
@@ -654,7 +654,7 @@
                         "hasAffiliation": [
                             {
                                 "@context": "", 
-                                "@id": "https://repo.metadatacenter.org/UUID", 
+                                "@id": "https://repo.metadatacenter.org/UUID38819d2b-a88e-4551-be0c-cac91e09a970", 
                                 "@type": "https://repo.metadatacenter.org/model/Organization", 
                                 "department": {
                                     "value": ""
@@ -681,7 +681,7 @@
                 "hasProcess": [], 
                 "hasPublication": [
                     {
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID7e34bd5d-5a36-46d7-9635-ec9c45509658", 
                         "@type": "https://repo.metadatacenter.org/model/Publication", 
                         "authorList": [
                             {
@@ -705,7 +705,7 @@
                 "hasStudyAssay": [
                     {
                         "@context": "", 
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID767c0042-e52b-4ea7-9a51-f2995a67cebe", 
                         "@type": "https://repo.metadatacenter.org/model/StudyAssay", 
                         "measurementType": {
                             "value": "0000424"
@@ -721,7 +721,7 @@
                 "hasStudyFactor": [
                     {
                         "@context": "", 
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID39b4cdcf-4b6d-4a03-b16f-ea96c2c7df94", 
                         "@type": "https://repo.metadatacenter.org/model/StudyFactor", 
                         "name": {
                             "value": "compound"
@@ -732,7 +732,7 @@
                     }, 
                     {
                         "@context": "", 
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID8edd3256-b4de-4100-9261-89500c5c58f3", 
                         "@type": "https://repo.metadatacenter.org/model/StudyFactor", 
                         "name": {
                             "value": "exposure time"
@@ -743,7 +743,7 @@
                     }, 
                     {
                         "@context": "", 
-                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@id": "https://repo.metadatacenter.org/UUID743dbd11-8757-4b28-b666-77ea2ed194ae", 
                         "@type": "https://repo.metadatacenter.org/model/StudyFactor", 
                         "name": {
                             "value": "dose"
