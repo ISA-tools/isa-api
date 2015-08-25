@@ -4,22 +4,13 @@
     "description" : "JSON-schema representing a treatment (aka an intervention or a perturbation) in the ISA model v2.0.",
     "type": "object",
     "properties" : {
-        "name": {
+        "value": {
             "type": "string"
-        },
-        "treatment_type" : {
-             "type" : "string"
-        },
-        "isConcomimant" : {
-          "type": "boolean"
-        },
-        "isSequential" : {
-          "type": "boolean"
         },
         "annotation": {
             "type": "array",
             "items": {
-                "$ref": "factor_schema.json#"
+                "$ref": "resource_annotation_schema.json#"
             }
         }
     }
