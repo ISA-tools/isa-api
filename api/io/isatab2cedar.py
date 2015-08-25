@@ -11,7 +11,7 @@ from bcbio.isatab.parser import InvestigationParser
 
 
 class ISATab2CEDAR():
-    def createCEDARjson(self, work_dir, json_dir):
+    def createCEDARjson(self, work_dir, json_dir, inv_identifier):
         path = "./schemas/cedar/"
         schema_file = "InvestigationSchema.json"
         schema = json.load(open(join(path,schema_file)))
@@ -27,38 +27,43 @@ class ISATab2CEDAR():
             with open(investigation_file[0], "rU") as in_handle:
                 isa_tab = inv_parser.parse(in_handle)
 
-            investigationObject = dict([
-                ("schemaID", "https://repo.metadatacenter.org/UUID"),
-                ("@id", "https://repo.metadatacenter.org/UUID"),
-                ("@type", "https://repo.metadatacenter.org/model/Investigation"),
-                ("@context", dict(
-                    [
-                        ("model", "https://repo.metadatacenter.org/model/"),
-                        ("xsd", "http://www.w3.org/2001/XMLSchema"),
-                        ("schema", "https://schema.org/"),
-                        ("title", "schema:title"),
-                        ("description", "schema:description")
-                    ]
-                )),
-                ("title", dict([ ("value", isa_tab.metadata['Investigation Title'])])),
-                ("description", dict([ ("value", isa_tab.metadata['Investigation Description'])])),
-                ("identifier", dict([ ("value", isa_tab.metadata['Investigation Identifier'])])),
-                ("submissionDate", dict([ ("value", isa_tab.metadata['Investigation Submission Date'])])),
-                ("publicReleaseDate", dict([ ("value", isa_tab.metadata['Investigation Public Release Date'])])),
-                ("hasStudy", self.createStudiesList(isa_tab.studies)),
-                ("hasContact", self.createInvestigationContactsList(isa_tab.contacts)),
-                ("hasPublication", self.createInvestigationPublicationsList(isa_tab.publications))
-            ])
+                print isa_tab
+                investigationObject = dict([
+                    ("schemaID", "https://repo.metadatacenter.org/UUID"),
+                    ("@id", "https://repo.metadatacenter.org/UUID"),
+                    ("@type", "https://repo.metadatacenter.org/model/Investigation"),
+                    ("@context", dict(
+                        [
+                            ("model", "https://repo.metadatacenter.org/model/"),
+                            ("xsd", "http://www.w3.org/2001/XMLSchema"),
+                            ("schema", "https://schema.org/"),
+                            ("title", "schema:title"),
+                            ("description", "schema:description")
+                        ]
+                    )),
+                    ("title", dict([ ("value", isa_tab.metadata['Investigation Title'])])),
+                    ("description", dict([ ("value", isa_tab.metadata['Investigation Description'])])),
+                    ("identifier", dict([ ("value", isa_tab.metadata['Investigation Identifier'])])),
+                    ("submissionDate", dict([ ("value", isa_tab.metadata['Investigation Submission Date'])])),
+                    ("publicReleaseDate", dict([ ("value", isa_tab.metadata['Investigation Public Release Date'])])),
+                    ("hasStudy", self.createStudiesList(isa_tab.studies)),
+                    ("hasContact", self.createInvestigationContactsList(isa_tab.contacts)),
+                    ("hasPublication", self.createInvestigationPublicationsList(isa_tab.publications))
+                ])
 
-            cedar_json = CEDARSchema(
-                investigation=investigationObject
-            )
+                cedar_json = CEDARSchema(
+                    investigation=investigationObject
+                )
 
-            #save output json
-            file_name = os.path.join(json_dir,isa_tab.metadata['Investigation Identifier']+".json")
-            with open(file_name, "w") as outfile:
-                json.dump(cedar_json, outfile, indent=4, sort_keys=True)
-                outfile.close()
+                #save output json
+                if (inv_identifier):
+                    file_name = os.path.join(json_dir,isa_tab.metadata['Investigation Identifier']+".json")
+                else:
+                    print isa_tab.studies[0]
+                    file_name = os.path.join(json_dir,isa_tab.studies[0].metadata['Study Identifier']+".json")
+                with open(file_name, "w") as outfile:
+                    json.dump(cedar_json, outfile, indent=4, sort_keys=True)
+                    outfile.close()
 
     def createStudiesList(self, studies):
         json_list = []
@@ -208,4 +213,4 @@ class ISATab2CEDAR():
 
 
 isa2cedar = ISATab2CEDAR()
-isa2cedar.createCEDARjson("../../tests/data/BII-I-1", "./schemas/cedar")
+isa2cedar.createCEDARjson("../../tests/data/BII-I-1", "./schemas/cedar", True)
