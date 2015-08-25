@@ -18,7 +18,6 @@ class ISATab2CEDAR():
         CEDARSchema = warlock.model_factory(schema)
 
         #parse ISA tab
-        #isatab = parser.parse(work_dir)
         inv_parser = InvestigationParser()
 
         investigation_file = glob.glob(os.path.join(work_dir, "i_*.txt"))
@@ -157,8 +156,14 @@ class ISATab2CEDAR():
 
     def createAffiliationsList(self, affiliations):
         json_list = []
-        for affiliation in affiliations:
-            print affiliation
+        json_item = dict([
+                ("@context", ""),
+                ("@id", "https://repo.metadatacenter.org/UUID"),
+                ("@type", "https://repo.metadatacenter.org/model/Organization"),
+                ("name", dict([("value", affiliations)])),
+                ("department", dict([("value", "")]))
+                ])
+        json_list.append(json_item)
         return json_list
 
     def createStudyAssaysList(self, assays):

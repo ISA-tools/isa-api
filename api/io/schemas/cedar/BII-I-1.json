@@ -28,7 +28,19 @@
                 "firstName": {
                     "value": "Stephen"
                 }, 
-                "hasAffiliation": [], 
+                "hasAffiliation": [
+                    {
+                        "@context": "", 
+                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@type": "https://repo.metadatacenter.org/model/Organization", 
+                        "department": {
+                            "value": ""
+                        }, 
+                        "name": {
+                            "value": "Faculty of Life Sciences, Michael Smith Building, University of Manchester"
+                        }
+                    }
+                ], 
                 "lastName": {
                     "value": "Oliver"
                 }, 
@@ -57,7 +69,19 @@
                 "firstName": {
                     "value": "Castrillo"
                 }, 
-                "hasAffiliation": [], 
+                "hasAffiliation": [
+                    {
+                        "@context": "", 
+                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@type": "https://repo.metadatacenter.org/model/Organization", 
+                        "department": {
+                            "value": ""
+                        }, 
+                        "name": {
+                            "value": "Faculty of Life Sciences, Michael Smith Building, University of Manchester"
+                        }
+                    }
+                ], 
                 "lastName": {
                     "value": "Juan"
                 }, 
@@ -86,7 +110,19 @@
                 "firstName": {
                     "value": "Zeef"
                 }, 
-                "hasAffiliation": [], 
+                "hasAffiliation": [
+                    {
+                        "@context": "", 
+                        "@id": "https://repo.metadatacenter.org/UUID", 
+                        "@type": "https://repo.metadatacenter.org/model/Organization", 
+                        "department": {
+                            "value": ""
+                        }, 
+                        "name": {
+                            "value": "Faculty of Life Sciences, Michael Smith Building, University of Manchester"
+                        }
+                    }
+                ], 
                 "lastName": {
                     "value": "Leo"
                 }, 
@@ -219,7 +255,19 @@
                         "firstName": {
                             "value": "Stephen"
                         }, 
-                        "hasAffiliation": [], 
+                        "hasAffiliation": [
+                            {
+                                "@context": "", 
+                                "@id": "https://repo.metadatacenter.org/UUID", 
+                                "@type": "https://repo.metadatacenter.org/model/Organization", 
+                                "department": {
+                                    "value": ""
+                                }, 
+                                "name": {
+                                    "value": "Faculty of Life Sciences, Michael Smith Building, University of Manchester"
+                                }
+                            }
+                        ], 
                         "lastName": {
                             "value": "Oliver"
                         }, 
@@ -248,7 +296,19 @@
                         "firstName": {
                             "value": "Castrillo"
                         }, 
-                        "hasAffiliation": [], 
+                        "hasAffiliation": [
+                            {
+                                "@context": "", 
+                                "@id": "https://repo.metadatacenter.org/UUID", 
+                                "@type": "https://repo.metadatacenter.org/model/Organization", 
+                                "department": {
+                                    "value": ""
+                                }, 
+                                "name": {
+                                    "value": "Faculty of Life Sciences, Michael Smith Building, University of Manchester"
+                                }
+                            }
+                        ], 
                         "lastName": {
                             "value": "Juan"
                         }, 
@@ -277,7 +337,19 @@
                         "firstName": {
                             "value": "Zeef"
                         }, 
-                        "hasAffiliation": [], 
+                        "hasAffiliation": [
+                            {
+                                "@context": "", 
+                                "@id": "https://repo.metadatacenter.org/UUID", 
+                                "@type": "https://repo.metadatacenter.org/model/Organization", 
+                                "department": {
+                                    "value": ""
+                                }, 
+                                "name": {
+                                    "value": "Faculty of Life Sciences, Michael Smith Building, University of Manchester"
+                                }
+                            }
+                        ], 
                         "lastName": {
                             "value": "Leo"
                         }, 
@@ -497,7 +569,19 @@
                         "firstName": {
                             "value": "Stephen"
                         }, 
-                        "hasAffiliation": [], 
+                        "hasAffiliation": [
+                            {
+                                "@context": "", 
+                                "@id": "https://repo.metadatacenter.org/UUID", 
+                                "@type": "https://repo.metadatacenter.org/model/Organization", 
+                                "department": {
+                                    "value": ""
+                                }, 
+                                "name": {
+                                    "value": "Faculty of Life Sciences, Michael Smith Building, University of Manchester"
+                                }
+                            }
+                        ], 
                         "lastName": {
                             "value": "Oliver"
                         }, 
@@ -526,7 +610,19 @@
                         "firstName": {
                             "value": "Castrillo"
                         }, 
-                        "hasAffiliation": [], 
+                        "hasAffiliation": [
+                            {
+                                "@context": "", 
+                                "@id": "https://repo.metadatacenter.org/UUID", 
+                                "@type": "https://repo.metadatacenter.org/model/Organization", 
+                                "department": {
+                                    "value": ""
+                                }, 
+                                "name": {
+                                    "value": "Faculty of Life Sciences, Michael Smith Building, University of Manchester"
+                                }
+                            }
+                        ], 
                         "lastName": {
                             "value": "Juan"
                         }, 
@@ -555,7 +651,19 @@
                         "firstName": {
                             "value": "Zeef"
                         }, 
-                        "hasAffiliation": [], 
+                        "hasAffiliation": [
+                            {
+                                "@context": "", 
+                                "@id": "https://repo.metadatacenter.org/UUID", 
+                                "@type": "https://repo.metadatacenter.org/model/Organization", 
+                                "department": {
+                                    "value": ""
+                                }, 
+                                "name": {
+                                    "value": "Faculty of Life Sciences, Michael Smith Building, University of Manchester"
+                                }
+                            }
+                        ], 
                         "lastName": {
                             "value": "Leo"
                         }, 
