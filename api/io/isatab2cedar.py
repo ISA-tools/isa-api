@@ -27,29 +27,52 @@ class ISATab2CEDAR():
             with open(investigation_file[0], "rU") as in_handle:
                 isa_tab = inv_parser.parse(in_handle)
 
-                print isa_tab
-                investigationObject = dict([
-                    ("schemaID", "https://repo.metadatacenter.org/UUID"),
-                    ("@id", "https://repo.metadatacenter.org/UUID"),
-                    ("@type", "https://repo.metadatacenter.org/model/Investigation"),
-                    ("@context", dict(
-                        [
-                            ("model", "https://repo.metadatacenter.org/model/"),
-                            ("xsd", "http://www.w3.org/2001/XMLSchema"),
-                            ("schema", "https://schema.org/"),
-                            ("title", "schema:title"),
-                            ("description", "schema:description")
-                        ]
-                    )),
-                    ("title", dict([ ("value", isa_tab.metadata['Investigation Title'])])),
-                    ("description", dict([ ("value", isa_tab.metadata['Investigation Description'])])),
-                    ("identifier", dict([ ("value", isa_tab.metadata['Investigation Identifier'])])),
-                    ("submissionDate", dict([ ("value", isa_tab.metadata['Investigation Submission Date'])])),
-                    ("publicReleaseDate", dict([ ("value", isa_tab.metadata['Investigation Public Release Date'])])),
-                    ("hasStudy", self.createStudiesList(isa_tab.studies)),
-                    ("hasContact", self.createInvestigationContactsList(isa_tab.contacts)),
-                    ("hasPublication", self.createInvestigationPublicationsList(isa_tab.publications))
-                ])
+                if isa_tab.metadata != {}:
+                    investigationObject = dict([
+                        ("schemaID", "https://repo.metadatacenter.org/UUID"),
+                        ("@id", "https://repo.metadatacenter.org/UUID"),
+                        ("@type", "https://repo.metadatacenter.org/model/Investigation"),
+                        ("@context", dict(
+                            [
+                                ("model", "https://repo.metadatacenter.org/model/"),
+                                ("xsd", "http://www.w3.org/2001/XMLSchema"),
+                                ("schema", "https://schema.org/"),
+                                ("title", "schema:title"),
+                                ("description", "schema:description")
+                            ]
+                        )),
+                        ("title", dict([ ("value", isa_tab.metadata['Investigation Title'])])),
+                        ("description", dict([ ("value", isa_tab.metadata['Investigation Description'])])),
+                        ("identifier", dict([ ("value", isa_tab.metadata['Investigation Identifier'])])),
+                        ("submissionDate", dict([ ("value", isa_tab.metadata['Investigation Submission Date'])])),
+                        ("publicReleaseDate", dict([ ("value", isa_tab.metadata['Investigation Public Release Date'])])),
+                        ("hasStudy", self.createStudiesList(isa_tab.studies)),
+                        ("hasContact", self.createInvestigationContactsList(isa_tab.contacts)),
+                        ("hasPublication", self.createInvestigationPublicationsList(isa_tab.publications))
+                    ])
+                else:
+                    investigationObject = dict([
+                        ("schemaID", "https://repo.metadatacenter.org/UUID"),
+                        ("@id", "https://repo.metadatacenter.org/UUID"),
+                        ("@type", "https://repo.metadatacenter.org/model/Investigation"),
+                        ("@context", dict(
+                            [
+                                ("model", "https://repo.metadatacenter.org/model/"),
+                                ("xsd", "http://www.w3.org/2001/XMLSchema"),
+                                ("schema", "https://schema.org/"),
+                                ("title", "schema:title"),
+                                ("description", "schema:description")
+                            ]
+                        )),
+                        ("title", dict([ ("value", "")])),
+                        ("description", dict([ ("value", "")])),
+                        ("identifier", dict([ ("value", "")])),
+                        ("submissionDate", dict([ ("value", "")])),
+                        ("publicReleaseDate", dict([ ("value", "")])),
+                        ("hasStudy", self.createStudiesList(isa_tab.studies)),
+                        ("hasContact", self.createInvestigationContactsList(isa_tab.contacts)),
+                        ("hasPublication", self.createInvestigationPublicationsList(isa_tab.publications))
+                    ])
 
                 cedar_json = CEDARSchema(
                     investigation=investigationObject
@@ -59,7 +82,7 @@ class ISATab2CEDAR():
                 if (inv_identifier):
                     file_name = os.path.join(json_dir,isa_tab.metadata['Investigation Identifier']+".json")
                 else:
-                    print isa_tab.studies[0]
+                    #print isa_tab.studies[0]
                     file_name = os.path.join(json_dir,isa_tab.studies[0].metadata['Study Identifier']+".json")
                 with open(file_name, "w") as outfile:
                     json.dump(cedar_json, outfile, indent=4, sort_keys=True)
@@ -213,4 +236,5 @@ class ISATab2CEDAR():
 
 
 isa2cedar = ISATab2CEDAR()
-isa2cedar.createCEDARjson("../../tests/data/BII-I-1", "./schemas/cedar", True)
+#isa2cedar.createCEDARjson("../../tests/data/BII-I-1", "./schemas/cedar", True)
+isa2cedar.createCEDARjson("./datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS10", "./datasets/output", False)
