@@ -1,19 +1,24 @@
-import unittest, os, json, glob, filecmp, difflib
+import unittest, os, json, glob, filecmp
 
-from api.io.parser import parse
-from api.io.writer import IsatabToJsonWriter
+from api.io.isatab_parser import parse
+from api.io.isatab_to_json import IsatabToJsonWriter
 from api.io.json_to_isatab import JsonToIsatabWriter
 
 
-class IsatabTest(unittest.TestCase):
+class ISATabTest(unittest.TestCase):
     def setUp(self):
+        """set up directories etc"""
         self._dir = os.path.join(os.path.dirname(__file__), "data")
+        self._work_dir = os.path.join(self._dir, "BII-I-1")
+
+    def tearDown(self):
+        """Clean up generated files from test"""
+        pass
 
     def test_basic_parsing(self):
         """Test general parsing of an example ISA directory.
         """
-        work_dir = os.path.join(self._dir, "BII-I-1")
-        rec = parse(work_dir)
+        rec = parse(self._work_dir)
         assert rec.metadata["Investigation Identifier"] == "BII-I-1"
         assert len(rec.ontology_refs) == 7
         assert rec.ontology_refs[2]["Term Source Name"] == "NEWT"
@@ -30,13 +35,12 @@ class IsatabTest(unittest.TestCase):
     def test_isatab_json_writer(self):
         """Test general parsing of an example ISA-Tab JSON directory.
         """
-        work_dir = os.path.join(self._dir, "BII-I-1")
-        json_dir = os.path.join(os.getcwd(), 'json', work_dir + "-json")
+        json_dir = os.path.join(os.getcwd(), 'json', self._work_dir + "-json")
         if not os.path.exists(json_dir):
             os.makedirs(json_dir)
         # write out the json files for the isa-tab
         writer = IsatabToJsonWriter()
-        writer.parsingIsatab(work_dir, json_dir)
+        writer.parsingIsatab(self._work_dir, json_dir)
         if os.path.isdir(json_dir):
             fnames = glob.glob(os.path.join(json_dir, "i_*.json"))
             assert len(fnames) == 1
@@ -105,15 +109,14 @@ class IsatabTest(unittest.TestCase):
     def test_isatab_json_writer_single(self):
         """Test general parsing of a single combined JSON ISA-Tab file
         """
-        work_dir = os.path.join(self._dir, "BII-I-1")
-        json_dir = os.path.join(os.getcwd(), 'json', work_dir + "-json")
+        json_dir = os.path.join(os.getcwd(), 'json', self._work_dir + "-json")
         if not os.path.exists(json_dir):
             os.makedirs(json_dir)
         # write out the json files for the isa-tab
         writer = IsatabToJsonWriter()
-        writer.parsingIsatab(work_dir, json_dir)
+        writer.parsingIsatab(self._work_dir, json_dir)
         if os.path.isdir(json_dir):
-            investigation_json_ref = os.path.join(json_dir, os.path.basename(work_dir) + ".json")
+            investigation_json_ref = os.path.join(json_dir, os.path.basename(self._work_dir) + ".json")
             assert os.path.exists(investigation_json_ref)
 
         assert os.path.exists(investigation_json_ref), "Did not find investigation json file: %s" % investigation_json_ref
@@ -169,7 +172,7 @@ class IsatabTest(unittest.TestCase):
             #             print '\t\t'+line
 
         # test against the json single combined file
-        outputCombinedIsatab_dir = os.path.join("data", folder_name + "-generatedCombinedIsatab")
+        outputCombinedIsatab_dir = os.path.join("data", folder_name + "-generatedIsatab")
         for aFile in os.listdir(outputCombinedIsatab_dir):
             # check if file size the same
             assert os.path.getsize(os.path.join(original_dir, aFile)) == os.path.getsize(os.path.join(outputCombinedIsatab_dir, aFile)), \

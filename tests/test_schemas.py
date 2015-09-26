@@ -1,7 +1,7 @@
 
 import json, os
 from jsonschema import Draft4Validator, validate, FormatChecker
-from api.io.writer import IsatabToJsonWriter
+from api.io.isatab_to_json import IsatabToJsonWriter
 
 investigationSchema = json.load(open("schemas/investigation_schema.json"))
 Draft4Validator.check_schema(investigationSchema)

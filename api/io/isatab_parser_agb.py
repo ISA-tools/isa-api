@@ -8,10 +8,10 @@ import collections;
 #regular expressions
 import re;
 
-from api.io.model import InvestigationClass;
-from api.io.model import AssayTabClass;
-from api.io.model import StudyAssayTabClass;
-from api.io.model import NodeRecord;
+from api.io.isa_model import InvestigationClass;
+from api.io.isa_model import AssayTabClass;
+from api.io.isa_model import StudyAssayTabClass;
+from api.io.isa_model import NodeRecord;
 
 
 def ISATabParser(path):
