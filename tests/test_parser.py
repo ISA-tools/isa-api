@@ -17,6 +17,7 @@ class ISATabTest(unittest.TestCase):
         """Remove temporary directories (generated JSON and Tab)?"""
         #shutil.rmtree(self._json_dir, ignore_errors=True)
         #shutil.rmtree(self._generated_isatab_dir, ignore_errors=True)
+        pass
 
     def test_basic_parsing(self):
         """Test general parsing of an example ISA directory.

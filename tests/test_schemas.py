@@ -4,7 +4,7 @@ from jsonschema import Draft4Validator, validate, FormatChecker
 from api.io.isatab_to_json import IsatabToJsonWriter
 
 class ISASchemasTest(unittest.TestCase):
-    # FIXME: What schemas exactly is this supposed to be testing? <DJ>
+
     def setUp(self):
         self._dir = os.path.join(os.path.dirname(__file__), "data")
         self._schema_dir = os.path.join(os.path.dirname(__file__) + "/../api/io", "schemas/isa_model_version_1_0_schemas")
@@ -16,15 +16,70 @@ class ISASchemasTest(unittest.TestCase):
         #shutil.rmtree(self._json_dir, ignore_errors=True)
         pass
 
+    def test_ontology_source_reference_schema(self):
+        schema = json.load(open(self._schema_dir + "/ontology_source_reference_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+    def test_factor_schema(self):
+        schema = json.load(open(self._schema_dir + "/factor_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+    def test_factor_value_schema(self):
+        schema = json.load(open(self._schema_dir + "/factor_value_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+    def test_material_attribute_schema(self):
+        schema = json.load(open(self._schema_dir + "/material_attribute_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+    def test_sample_schema(self):
+        schema = json.load(open(self._schema_dir + "/sample_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+    def test_assay_table_schema(self):
+        schema = json.load(open(self._schema_dir + "/assay_table_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+    def test_assay_schema(self):
+        schema = json.load(open(self._schema_dir + "/assay_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+    def test_publication_schema(self):
+        schema = json.load(open(self._schema_dir + "/publication_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+    def test_organization_schema(self):
+        schema = json.load(open(self._schema_dir + "/organization_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+    def test_person_schema(self):
+        schema = json.load(open(self._schema_dir + "/person_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+    def test_source_schema(self):
+        schema = json.load(open(self._schema_dir + "/source_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+    def test_study_sample_table_schema(self):
+        schema = json.load(open(self._schema_dir + "/study_sample_table_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+    def test_protocol_schema(self):
+        schema = json.load(open(self._schema_dir + "/protocol_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+    def test_study_schema(self):
+        schema = json.load(open(self._schema_dir + "/study_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+    def test_investigation_schema(self):
+        schema = json.load(open(self._schema_dir + "/investigation_schema.json"))
+        Draft4Validator.check_schema(schema)
+
+
+    """
     def test_json_schemas(self):
-        investigation_schema = json.load(open(self._schema_dir + "/investigation_schema.json"))
-        Draft4Validator.check_schema(investigation_schema)
-
-        study_schema = json.load(open("/study_schema.json"))
-        Draft4Validator.check_schema(study_schema)
-
-        assay_schema = json.load(open("/assay_schema.json"))
-        Draft4Validator.check_schema(assay_schema)
+        pass
 
         #common_definitions_schema = json.load(open("/isa_model_version_1_0_schemas/common_definitions_schema.json"))
         #Draft4Validator.check_schema(common_definitions_schema)
@@ -50,3 +105,4 @@ class ISASchemasTest(unittest.TestCase):
         validate(json.load(open(self._json_dir + "/a_microarray.json")), assay_schema, format_checker=FormatChecker())
         validate(json.load(open(self._json_dir + "/a_proteome.json")), assay_schema, format_checker=FormatChecker())
         validate(json.load(open(self._json_dir + "/a_transcriptome.json")), assay_schema, format_checker=FormatChecker())
+    """
