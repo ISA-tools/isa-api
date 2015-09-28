@@ -2,7 +2,7 @@ __author__ = 'Alfie Abdul-Rahman'
 
 import json, glob, os, ntpath, csv
 
-from api.io import parser
+from api.io import isatab_parser
 from api.io.common_functions import CommonFunctions
 
 class IsatabToJsonWriter():
@@ -20,7 +20,7 @@ class IsatabToJsonWriter():
         self._col_isaDataNode = ("File")
 
     def parsingIsatab(self, work_dir, json_dir):
-        rec = parser.parse(work_dir)
+        rec = isatab_parser.parse(work_dir)
         # process the investigation files
         fnames = glob.glob(os.path.join(work_dir, "i_*.txt")) + \
                  glob.glob(os.path.join(work_dir, "*.idf.txt"))
