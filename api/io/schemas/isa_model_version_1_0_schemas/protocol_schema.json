@@ -9,9 +9,7 @@
         },
         "protocolType": {
             "type": "object",
-            "properties": {
                 "$ref": "ontology_reference_schema.json#"
-            }
         },
         "description": {
             "type": "string"

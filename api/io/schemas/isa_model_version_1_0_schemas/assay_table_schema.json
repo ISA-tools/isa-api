@@ -7,11 +7,7 @@
         "xsd": "http://www.w3.org/2001/XMLSchema#"
     },
     "type": "array",
-    "items": {
-         "type" : [
-             {
-                  "ref": "sample_schema.json#"
-             }
-         ]
-    }
+      "items": {
+        "$ref": "sample_schema.json"
+      }
 }
