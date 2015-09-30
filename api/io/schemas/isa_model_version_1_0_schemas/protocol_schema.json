@@ -10,7 +10,7 @@
         "protocolType": {
             "type": "object",
             "properties": {
-                "$ref": "ontology_annotation_schema.json#"
+                "$ref": "ontology_reference_schema.json#"
             }
         },
         "description": {

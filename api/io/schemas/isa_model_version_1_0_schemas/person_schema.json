@@ -24,8 +24,8 @@
                 "type" : "object",
                 "properties" : {
                     "role": "string",
-                    "ontologyAnnotation" : {
-                        "#ref": "ontology_annotation_schema.json#"
+                    "ontologyReference" : {
+                        "#ref": "ontology_reference_schema.json#"
                     }
                 }
             }

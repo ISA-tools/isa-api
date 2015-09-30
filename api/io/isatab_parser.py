@@ -41,7 +41,7 @@ def parse(isatab_ref):
     """Entry point to parse an ISA-Tab directory.
 
     isatab_ref can point to a directory of ISA-Tab data, in which case we
-    search for the investigator file, or be a reference to the high level
+    search for the investigator file, or be a reference to the high levelcp
     investigation file.
     """
     if os.path.isdir(isatab_ref):

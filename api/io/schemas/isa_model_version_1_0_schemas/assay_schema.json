@@ -30,7 +30,7 @@
         "technologyPlatform" : { "type" : "string"},
         "assayTable": {
               "type": "object",
-              "properties" : {
+              "schema" : {
                 "$ref": "assay_table_schema.json#"
               }
         }

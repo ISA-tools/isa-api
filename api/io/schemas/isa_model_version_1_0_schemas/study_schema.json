@@ -38,9 +38,7 @@
         },
         "studySampleTable": {
               "type": "object",
-              "properties" : {
                 "$ref": "study_sample_table_schema.json#"
-              }
         },
         "protocols" : {
               "type": "array",
