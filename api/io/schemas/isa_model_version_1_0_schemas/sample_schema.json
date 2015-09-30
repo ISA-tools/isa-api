@@ -14,7 +14,7 @@
         "factors" : {
             "type" : "array",
             "items" : {
-               "$ref" : "factor_value.json#/"
+               "$ref" : "factor_value.json#"
             }
         }
     }

@@ -9,9 +9,7 @@
         },
         "protocolType": {
             "type": "object",
-            "properties": {
-                "$ref": "ontology_reference_schema.json#"
-            }
+                "$ref": "ontology_annotation_schema.json#"
         },
         "description": {
             "type": "string"
@@ -35,7 +33,7 @@
                         "type": "string"
                     },
                     "parameterType": {
-                        "$ref": "ontology_source_reference_schema.json#"
+                        "$ref": "ontology_annotation_schema.json#"
                     }
                 }
 
@@ -50,7 +48,7 @@
                         "type": "string"
                     },
                     "componentType": {
-                        "$ref": "ontology_source_reference_schema.json#"
+                        "$ref": "ontology_annotation_schema.json#"
                     }
                 }
             }
