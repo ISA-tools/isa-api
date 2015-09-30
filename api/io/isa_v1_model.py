@@ -7,15 +7,15 @@ class Investigation(object):
     more studies. Investigations has the following properties:
 
     Attributes:
-        Identifier: A locally unique identifier or an accession number provided by a repository.
-        Title: A concise name given to the investigation
-        Description: A textual description of the investigation
-        Submission Date: The date on which the investigation was reported to the repository.
-        Public Release Date: The date on which the investigation should be released publicly
-        Ontology Source References: This annotation section is identical to that in the MAGE-TAB format.
-        Publications: Publications associated with an Investigation.
-        Contacts: People/contacts associated with an Investigation.
-        Studies: Study is the central unit, containing information on the subject under study, its characteristics and
+        identifier: A locally unique identifier or an accession number provided by a repository.
+        title: A concise name given to the investigation
+        description: A textual description of the investigation
+        submissionDate: The date on which the investigation was reported to the repository.
+        publicReleaseDate: The date on which the investigation should be released publicly
+        ontologySourceReferences: This annotation section is identical to that in the MAGE-TAB format.
+        publications: Publications associated with an Investigation.
+        contacts: People/contacts associated with an Investigation.
+        studies: Study is the central unit, containing information on the subject under study, its characteristics and
         any treatments applied.
     """
 
@@ -36,10 +36,10 @@ class OntologySourceReference(object):
     """This annotation section is identical to that in the MAGE-TAB format.
 
     Attributes:
-        Name: The name of the source of a term; i.e. the source controlled vocabulary or ontology.
-        File: A file name or a URI of an official resource.
-        Version: The version number of the Term Source to support terms tracking.
-        Description: Use for disambiguating resources when homologous prefixes have been used.
+        name: The name of the source of a term; i.e. the source controlled vocabulary or ontology.
+        file: A file name or a URI of an official resource.
+        version: The version number of the Term Source to support terms tracking.
+        description: Use for disambiguating resources when homologous prefixes have been used.
     """
 
     def __init__(self):
@@ -49,16 +49,25 @@ class OntologySourceReference(object):
         self.version = ""
         self.description = ""
 
+class OntologyAnnotation(object):
+    """An ontology term annotation reference
+
+    Attributes:
+        termSource: The abbreviated ontology name. It should correspond to one of the sources as specified in the
+        ontologySourceReference section of the Investigation.
+        termAccession: URI
+    """
+
 
 class Publication(object):
     """A publication associated with an investigation or study.
 
     Attributes:
-        PubMed ID: The PubMed IDs of the described publication(s) associated with this investigation.
+        pubMedID: The PubMed IDs of the described publication(s) associated with this investigation.
         DOI: A Digital Object Identifier (DOI) for that publication (where available).
-        Author List: The list of authors associated with that publication.
-        Title: The title of publication associated with the investigation.
-        Status: A term describing the status of that publication (i.e. submitted, in preparation, published).
+        authorList: The list of authors associated with that publication.
+        title: The title of publication associated with the investigation.
+        status: A term describing the status of that publication (i.e. submitted, in preparation, published).
     """
 
     def __init__(self):
@@ -74,15 +83,15 @@ class Person(object):
     """A person/contact that can be attributed to an Investigation or Study.
 
     Attributes:
-        Last Name: The last name of a person associated with the investigation.
-        First Name: The first name of a person associated with the investigation.
-        Mid Initials: The middle initials of a person associated with the investigation.
-        Email: The email address of a person associated with the investigation.
-        Phone: The telephone number of a person associated with the investigation.
-        Fax: The fax number of a person associated with the investigation.
-        Address: The address of a person associated with the investigation.
-        Affiliation: The organization affiliation for a person associated with the investigation.
-        Roles: Term to classify the role(s) performed by this person in the context of the investigation,
+        lastName: The last name of a person associated with the investigation.
+        firstName: The first name of a person associated with the investigation.
+        midInitials: The middle initials of a person associated with the investigation.
+        email: The email address of a person associated with the investigation.
+        phone: The telephone number of a person associated with the investigation.
+        fax: The fax number of a person associated with the investigation.
+        address: The address of a person associated with the investigation.
+        affiliation: The organization affiliation for a person associated with the investigation.
+        roles: Term to classify the role(s) performed by this person in the context of the investigation,
         which means that the roles reported here need not correspond to roles held withing their
         affiliated organization.
     """
@@ -105,20 +114,20 @@ class Study(object):
     and any treatments applied.
 
     Attributes:
-        Identifier: A unique identifier: either a temporary identifier supplied by users or one generated by a
+        identifier: A unique identifier: either a temporary identifier supplied by users or one generated by a
         repository or other database.
-        Title: A concise phrase used to encapsulate the purpose and goal of the study.
-        Description: A textual description of the study, with components such as objective or goals.
-        Submission Date: The date on which the study is submitted to an archive.
-        Public Release Date: The date on which the study should be released publicly.
-        File Name: A field to specify the name of the Study file corresponding the definition of that Study.
-        Design Descriptors: Classifications of the study based on the overall experimental design.
-        Publications: Publications associated with a Study.
-        Contacts: People/contacts associated with a Study.
-        Factors: A factor corresponds to an independent variable manipulated by the experimentalist with the intention
+        title: A concise phrase used to encapsulate the purpose and goal of the study.
+        description: A textual description of the study, with components such as objective or goals.
+        submissionDate: The date on which the study is submitted to an archive.
+        publicReleaseDate: The date on which the study should be released publicly.
+        fileName: A field to specify the name of the Study file corresponding the definition of that Study.
+        designDescriptors: Classifications of the study based on the overall experimental design.
+        publications: Publications associated with a Study.
+        contacts: People/contacts associated with a Study.
+        factors: A factor corresponds to an independent variable manipulated by the experimentalist with the intention
         to affect biological systems in a way that can be measured by an assay.
-        Protocols: Protocols used within the ISA artifact.
-        Assays: An Assay represents a portion of the experimental design.
+        protocols: Protocols used within the ISA artifact.
+        assays: An Assay represents a portion of the experimental design.
     """
 
     def __init__(self):
@@ -139,19 +148,29 @@ class Study(object):
 class StudyDesignDescriptor(object):
     """A Study Design Descriptor provides a term allowing the classification of the study based on the overall
     experimental design. The term can be free text (Attribute: name) or from, for example, a controlled vocabulary or
-    an ontology (Attribute: ontologyReference)."""
+    an ontology (Attribute: ontologyReference).
+
+    Attributes:
+        name: Free text name for the term
+        ontologyAnnotation: A representation of an ontology annotation
+    """
 
     def __init__(self):
         self.name = ""
-        self.ontologyReference = OntologySourceReference()
+        self.ontologyAnnotation = OntologyAnnotation()
 
-class StudyFactor(OntologySourceReference):
+class StudyFactor(object):
     """A Study Factor corresponds to an independent variable manipulated by the experimentalist with the intention to
-    affect biological systems in a way that can be measured by an assay."""
+    affect biological systems in a way that can be measured by an assay.
+
+    Attributes:
+        name: Free text name for the term
+        ontologyReference: A representation of an ontology source reference
+    """
 
     def __init__(self):
         self.name = ""
-        self.ontologyReference = OntologySourceReference()
+        self.ontologyAnnotation = OntologyAnnotation()
 
 class Assay(object):
     """A Study Assay declares and describes each of the Assay files associated with the current Study.
@@ -164,3 +183,7 @@ spectrometry. The term can be free text or from, for example, a controlled vocab
     Technology Platform: Manufacturer and platform name, e.g. Bruker AVANCE
     File Name: A field to specify the name of the Assay file corresponding the definition of that assay.
     """
+    def __init__(self):
+        self.measurementType = OntologyAnnotation()
+        self.technologyType = OntologyAnnotation()
+        self.fileName = ""
