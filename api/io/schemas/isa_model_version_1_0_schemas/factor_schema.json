@@ -7,8 +7,8 @@
         "name": {
             "type": "string"
         },
-        "ontologyReference": {
-            "$ref": "ontology_reference_schema.json#"
+        "ontologyAnnotation": {
+            "$ref": "ontology_annotation_schema.json#"
         }
     }
 }

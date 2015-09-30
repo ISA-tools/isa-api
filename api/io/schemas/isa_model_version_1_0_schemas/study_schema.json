@@ -33,7 +33,7 @@
         "studyDesignDescriptors":{
               "type": "array",
               "items" : {
-                "$ref": "ontology_reference_schema.json#"
+                "$ref": "ontology_annotation_schema.json#"
               }
         },
         "studySampleTable": {

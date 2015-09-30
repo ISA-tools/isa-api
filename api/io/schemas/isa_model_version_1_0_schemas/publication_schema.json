@@ -9,8 +9,8 @@
         "authorList" : { "type" : "string" },
         "title" : { "type" : "string" },
         "status" : { "type" : "string" },
-        "ontologyReference" : {
-            "#ref": "ontology_reference_schema.json#"
+        "ontologyAnnotation" : {
+            "#ref": "ontology_annotation_schema.json#"
         }
     }
 }
