@@ -281,14 +281,3 @@ class JsonToIsatabWriter():
                     # now we write out each of the study or assay files
                     with open(os.path.join(output_dir, ntpath.basename(str(each_file)).split(".")[0] + ".txt"), "w") as file_isatab:
                         file_isatab.write(my_str)
-
-########
-
-mywriter = JsonToIsatabWriter()
-folder_name = "BII-I-1"
-json_dir = os.path.join("../../tests/data", folder_name + "-json")
-output_dir = os.path.join("../../tests/data", folder_name + "-generatedIsatab")
-mywriter.parsingJson(json_dir, output_dir)
-# writing out the combined json to isatab
-combined_output_dir = os.path.join("../../tests/data", folder_name + "-generatedCombinedIsatab")
-mywriter.parsingJsonCombinedFile(os.path.join(json_dir, folder_name + ".json"), combined_output_dir)
