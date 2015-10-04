@@ -109,8 +109,8 @@ class Person(object):
         self.phone = ""
         self.fax = ""
         self.address = ""
-        self.affiliation = []
-        self.roles = []
+        self.affiliation = ""
+        self.roles = ""
 
 
 class Study(object):
@@ -253,7 +253,75 @@ def from_isarchive(isatab_dir):
             public_release_date = datetime.date(row[1])
             i.publicReleaseDate = public_release_date
     row = next(rows)
-    return i
+    if row[0] == "INVESTIGATION PUBLICATIONS":
+        # Create Publication objects and add to Investigation object
+        row = next(rows)
+        cols = len(row)
+        last_col = cols -1
+        if row[0] == "Investigation PubMed ID":
+            for x in range(1, last_col):
+                p = Publication()
+                p.pubMedID = row[x]
+                i.publications.append(p)
+            row = next(rows)
+        if row[0] == "Investigation Publication DOI":
+            for x in range(1, last_col):
+                setattr(i.publications[x-1], "authorList", row[x])
+            row = next(rows)
+        if row[0] == "Investigation Publication Title":
+            for x in range(1, last_col):
+                setattr(i.publications[x-1], "title", row[x])
+            row = next(rows)
+        if row[0] == "Investigation Publication Status":
+            for x in range(1, last_col):
+                setattr(i.publications[x-1], "status", row[x])
+        # Currently missing OntologyAnnotation
+    row = next(rows)
+    if row[0] == "INVESTIGATION CONTACTS":
+        # Create Publication objects and add to Investigation object
+        row = next(rows)
+        cols = len(row)
+        last_col = cols -1
+        if row[0] == "Investigation Person Last Name":
+            for x in range(1, last_col):
+                c = Person()
+                c.lastName = row[x]
+                i.contacts.append(c)
+            row = next(rows)
+        if row[0] == "Investigation Person First Name":
+            for x in range(1, last_col):
+                setattr(i.publications[x-1], "firstName", row[x])
+            row = next(rows)
+        if row[0] == "Investigation Person Mid Initials":
+            for x in range(1, last_col):
+                setattr(i.publications[x-1], "midInitials", row[x])
+            row = next(rows)
+        if row[0] == "Investigation Person Email":
+            for x in range(1, last_col):
+                setattr(i.publications[x-1], "email", row[x])
+            row = next(rows)
+        if row[0] == "Investigation Person Phone":
+            for x in range(1, last_col):
+                setattr(i.publications[x-1], "phone", row[x])
+            row = next(rows)
+        if row[0] == "Investigation Person Fax":
+            for x in range(1, last_col):
+                setattr(i.publications[x-1], "fax", row[x])
+            row = next(rows)
+        if row[0] == "Investigation Person Address":
+            for x in range(1, last_col):
+                setattr(i.publications[x-1], "address", row[x])
+            row = next(rows)
+        if row[0] == "Investigation Person Affiliation":
+            for x in range(1, last_col):
+                setattr(i.publications[x-1], "affiliation", row[x])
+            row = next(rows)
+        if row[0] == "Investigation Person Roles":
+            for x in range(1, last_col):
+                setattr(i.publications[x-1], "roles", row[x])
+        # Currently missing OntologyAnnotation
+    row = next(rows)
+
 
 
 def write_isarchive(loc):
