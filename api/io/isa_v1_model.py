@@ -210,6 +210,7 @@ def from_isarchive(isatab_dir):
     rows = csv.reader(investigation_file, dialect="excel-tab")
     row = next(rows)
     # TODO Implement error checking to raise Exceptions when parsing picks up unexpected structure or content
+    # TODO Handle Comments row parsing
     if row[0] == "ONTOLOGY SOURCE REFERENCE":
         # Create OntologySourceReference objects and add to Investigation object
         row = next(rows)
@@ -275,7 +276,7 @@ def from_isarchive(isatab_dir):
         if row[0] == "Investigation Publication Status":
             for x in range(1, last_col):
                 setattr(i.publications[x-1], "status", row[x])
-        # Currently missing OntologyAnnotation
+        # TODO How to handle OntologyAnnotations?
     row = next(rows)
     if row[0] == "INVESTIGATION CONTACTS":
         # Create Publication objects and add to Investigation object
@@ -321,6 +322,61 @@ def from_isarchive(isatab_dir):
                 setattr(i.publications[x-1], "roles", row[x])
         # Currently missing OntologyAnnotation
     row = next(rows)
+    while row[0] == "STUDY":
+        row = next(rows)
+        s = Study()
+        if row[0] == "Study Identifier":
+            s.identifier = row[1]
+            row = next(rows)
+        if row[0] == "Study Title":
+            s.title = row[1]
+            row = next(rows)
+        if row[0] == "Study Description":
+            s.description = row[1]
+            row = next(rows)
+        if row[0] == "Study Submission Date":
+            s.submissionDate = datetime.date(row[1])
+            row = next(rows)
+        if row[0] == "Study Public Release Date":
+            s.publicReleaseDate = datetime.date(row[1])
+            row = next(rows)
+        if row[0] == "Study File Name":
+            s.fileName = datetime.date(row[1])
+            row = next(rows)
+        if row[0] == "STUDY DESIGN DESCRIPTORS":
+            row = next(rows)
+            cols = len(row)
+            last_col = cols -1
+            if row[0] == "Study Design Type":
+                for x in range(1, last_col):
+                    d = StudyDesignDescriptor
+                    d.name = row[x]
+                    s.designDescriptors.append(d)
+                row = next(rows)
+        if row[0] == "STUDY PUBLICATIONS":
+            # Create Publication objects and add to Investigation object
+            row = next(rows)
+            cols = len(row)
+            last_col = cols -1
+            if row[0] == "Study PubMed ID":
+                for x in range(1, last_col):
+                    p = Publication()
+                    p.pubMedID = row[x]
+                    s.publications.append(p)
+                row = next(rows)
+            if row[0] == "Study Publication DOI":
+                for x in range(1, last_col):
+                    setattr(s.publications[x-1], "authorList", row[x])
+                row = next(rows)
+            if row[0] == "Study Publication Title":
+                for x in range(1, last_col):
+                    setattr(s.publications[x-1], "title", row[x])
+                row = next(rows)
+            if row[0] == "Study Publication Status":
+                for x in range(1, last_col):
+                    setattr(s.publications[x-1], "status", row[x])
+
+        i.studies.append(s)
 
 
 
