@@ -1,19 +1,12 @@
 __author__ = 'dj'
 import unittest, os
-from api.io import isa_factory
+from api.io import isa_v1_model
 
 class TestISATabReader(unittest.TestCase):
 
     def setUp(self):
         self._dir = os.path.join(os.path.dirname(__file__), "data")
-        self._isa_tab_file = ""
-        self._isa_json = ""
+        self._work_dir = os.path.join(self._dir, "BII-I-1")
 
     def test_read_isa_tab(self):
-        isa_object = isa_factory(self._isa_tab_file)
-
-    def test_read_isa_json(self):
-        isa_object = isa_factory(self._isa_json)
-
-
-
+        model = isa_v1_model.fromISArchive(self._work_dir)

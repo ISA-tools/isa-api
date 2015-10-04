@@ -1,10 +1,10 @@
 __author__ = 'dj'
 
-import datetime
+import datetime, csv
 
 class Investigation(object):
-    """An investigation maintains metadata about the project context and links to one or
-    more studies. Investigations has the following properties:
+    """An investigation maintains metadata about the project context and links to one or more studies. There can only
+    be 1 Investigation in an ISA package. Investigations has the following properties:
 
     Attributes:
         identifier: A locally unique identifier or an accession number provided by a repository.
@@ -57,6 +57,10 @@ class OntologyAnnotation(object):
         ontologySourceReference section of the Investigation.
         termAccession: URI
     """
+
+    def __init__(self):
+        self.termSource = ""
+        self.ontologySourceReference = ""
 
 
 class Publication(object):
@@ -145,6 +149,7 @@ class Study(object):
         self.protocols = []
         self.assays = []
 
+
 class StudyDesignDescriptor(object):
     """A Study Design Descriptor provides a term allowing the classification of the study based on the overall
     experimental design. The term can be free text (Attribute: name) or from, for example, a controlled vocabulary or
@@ -159,6 +164,7 @@ class StudyDesignDescriptor(object):
         self.name = ""
         self.ontologyAnnotation = OntologyAnnotation()
 
+
 class StudyFactor(object):
     """A Study Factor corresponds to an independent variable manipulated by the experimentalist with the intention to
     affect biological systems in a way that can be measured by an assay.
@@ -172,14 +178,15 @@ class StudyFactor(object):
         self.name = ""
         self.ontologyAnnotation = OntologyAnnotation()
 
+
 class Assay(object):
     """A Study Assay declares and describes each of the Assay files associated with the current Study.
 
     Attributes:
-    Measurement Type: A term to qualify the endpoint, or what is being measured (e.g. gene expression profiling or protein
-identification). The term can be free text or from, for example, a controlled vocabulary or an ontology.
+    Measurement Type: A term to qualify the endpoint, or what is being measured (e.g. gene expression profiling or
+    protein identification). The term can be free text or from, for example, a controlled vocabulary or an ontology.
     Technology Type: Term to identify the technology used to perform the measurement, e.g. DNA microarray, mass
-spectrometry. The term can be free text or from, for example, a controlled vocabulary or an ontology.
+    spectrometry. The term can be free text or from, for example, a controlled vocabulary or an ontology.
     Technology Platform: Manufacturer and platform name, e.g. Bruker AVANCE
     File Name: A field to specify the name of the Assay file corresponding the definition of that assay.
     """
@@ -187,3 +194,68 @@ spectrometry. The term can be free text or from, for example, a controlled vocab
         self.measurementType = OntologyAnnotation()
         self.technologyType = OntologyAnnotation()
         self.fileName = ""
+
+
+def create():
+    return Investigation()
+
+
+def from_isarchive(isatab_dir):
+    # build ISA objects from ISA-Tab ISArchive (zipped or not zipped?)
+    print("Reading " + isatab_dir)
+    # check that an investigation file is present. If more than one is present, throw an exception
+    investigation_file = open(isatab_dir + "/i_investigation.txt")
+    i = Investigation()
+    # There is always everything in the Investigation file (for a valid ISATab), but portions can be empty
+    rows = csv.reader(investigation_file, dialect="excel-tab")
+    row = next(rows)
+    # TODO Implement error checking to raise Exceptions when parsing picks up unexpected structure or content
+    if row[0] == "ONTOLOGY SOURCE REFERENCE":
+        # Create OntologySourceReference objects and add to Investigation object
+        row = next(rows)
+        cols = len(row)
+        last_col = cols -1
+        if row[0] == "Term Source Name":
+            for x in range(1, last_col):
+                o = OntologySourceReference()
+                o.name = row[x]
+                i.ontologySourceReferences.append(o)
+            row = next(rows)
+        if row[0] == "Term Source File":
+            for x in range(1, last_col):
+                setattr(i.ontologySourceReferences[x-1], "file", row[x])
+            row = next(rows)
+        if row[0] == "Term Source Version":
+            for x in range(1, last_col):
+                setattr(i.ontologySourceReferences[x-1], "version", row[x])
+            row = next(rows)
+        if row[0] == "Term Source Description":
+            for x in range(1, last_col):
+                setattr(i.ontologySourceReferences[x-1], "description", row[x])
+    row = next(rows)
+    if row[0] != "INVESTIGATION":
+        # Populate Investigation object fields
+        row = next(rows)
+        if row[0] == "Investigation Identifier":
+            i.identifier = row[1]
+            row = next(rows)
+        if row[0] == "Investigation Title":
+            i.title = row[1]
+            row = next(rows)
+        if row[0] == "Investigation Description":
+            i.description = row[1]
+            row = next(rows)
+        if row[0] == "Investigation Submission Date":
+            submission_date = datetime.date(row[1])
+            i.submissionDate = submission_date
+            row = next(rows)
+        if row[0] == "Investigation Public Release Date":
+            public_release_date = datetime.date(row[1])
+            i.publicReleaseDate = public_release_date
+    row = next(rows)
+    return i
+
+
+def write_isarchive(loc):
+    # Write out an ISA archive to a given location
+    pass
