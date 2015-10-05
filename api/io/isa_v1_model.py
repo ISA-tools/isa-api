@@ -1,6 +1,7 @@
+import datetime
+import csv
 __author__ = 'dj'
 
-import datetime, csv
 
 class Investigation(object):
     """An investigation maintains metadata about the project context and links to one or more studies. There can only
@@ -171,11 +172,13 @@ class StudyFactor(object):
 
     Attributes:
         name: Free text name for the term
+        type: Study factor type as free text
         ontologyReference: A representation of an ontology source reference
     """
 
     def __init__(self):
         self.name = ""
+        self.type = ""
         self.ontologyAnnotation = OntologyAnnotation()
 
 
@@ -210,7 +213,9 @@ def from_isarchive(isatab_dir):
     rows = csv.reader(investigation_file, dialect="excel-tab")
     row = next(rows)
     # TODO Implement error checking to raise Exceptions when parsing picks up unexpected structure or content
-    # TODO Handle Comments row parsing
+    # TODO Handle Comments row parsing (can happen anywhere)
+    # TODO Handle # comments
+    # TODO Handle or skip OntologyAnnotations
     if row[0] == "ONTOLOGY SOURCE REFERENCE":
         # Create OntologySourceReference objects and add to Investigation object
         row = next(rows)
@@ -357,7 +362,7 @@ def from_isarchive(isatab_dir):
             # Create Publication objects and add to Investigation object
             row = next(rows)
             cols = len(row)
-            last_col = cols -1
+            last_col = cols-1
             if row[0] == "Study PubMed ID":
                 for x in range(1, last_col):
                     p = Publication()
@@ -375,8 +380,42 @@ def from_isarchive(isatab_dir):
             if row[0] == "Study Publication Status":
                 for x in range(1, last_col):
                     setattr(s.publications[x-1], "status", row[x])
+        row = next(rows)
+        if row[0] == "STUDY FACTORS":
+            row = next(rows)
+            cols = len(row)
+            last_col = cols-1
+            if row[0] == "Study Factor Name":
+                for x in range(1, last_col):
+                    f = StudyFactor()
+                    f.name = row[x]
+                    s.factors.append(f)
+                row = next(rows)
+            if row[0] == "Study Factor Type":
+                for x in range(1, last_col):
+                    setattr(s.factors[x-1], "type", row[x])
+        row = next(rows)
+        if row[0] == "STUDY ASSAYS":
+            row = next(rows)
+            cols = len(row)
+            last_col = cols-1
+            if row[0] == "Study Assay Measurement Type":
+                for x in range(1, last_col):
+                    a = Assay()
+                    a.measurementType = row[x]
+                    s.assays.append(a)
+                row = next(rows)
+                if row[0] == "Study Assay Measurement Type Term Accession Number":
+                    # Skip OntologyAnnotation.accessionNumber
+                    pass
+                row = next(rows)
+                if row[0] == "Study Assay Technology Type":
+                    # Skip OntologyAnnotation.sourceREF
+                    pass
+                row = next(rows)
 
         i.studies.append(s)
+    return i
 
 
 
