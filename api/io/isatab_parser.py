@@ -37,6 +37,7 @@ import glob
 import collections
 import pprint
 
+
 def parse(isatab_ref):
     """Entry point to parse an ISA-Tab directory.
 
@@ -55,6 +56,7 @@ def parse(isatab_ref):
         rec = i_parser.parse(in_handle)
     return rec
 
+
 class InvestigationParser:
     """Parse top level investigation files into ISATabRecord objects.
     """
@@ -70,7 +72,11 @@ class InvestigationParser:
             "STUDY ASSAYS" : "assays",
             "STUDY PROTOCOLS" : "protocols",
             "STUDY CONTACTS": "contacts"}
+        self._roleAttributes = ["Investigation Person Roles", "Investigation Person Roles Term Accession Number", "Investigation Person Roles Term Source REF",
+                                "Study Person Roles", "Study Person Roles Term Accession Number", "Study Person Roles Term Source REF"]
+        self._affiliation = ["Investigation Person Affiliation", "Study Person Affiliation"]
         self._nolist = ["metadata"]
+
 
     def parse(self, in_handle):
         line_iter = self._line_iter(in_handle)
@@ -82,6 +88,8 @@ class InvestigationParser:
             study = ISATabStudyRecord()
             study, had_info = self._parse_region(study, line_iter)
             if had_info:
+                self._create_roles_bundle(study.contacts, 'Study Person')
+                self._create_affiliations_bundle(study.contacts, 'Study Person')
                 rec.studies.append(study)
             else:
                 break
@@ -90,7 +98,47 @@ class InvestigationParser:
             study = ISATabStudyRecord()
             study.metadata["Study File Name"] = rec.metadata["SDRF File"]
             rec.studies.append(study)
+        self._create_roles_bundle(rec.contacts, 'Investigation Person')
+        self._create_affiliations_bundle(rec.contacts, 'Investigation Person')
         return rec
+
+
+    def _create_roles_bundle(self, rec, prefix):
+        rolesStruct = []
+        for mycontacts in rec:
+            newrole = {}
+            for iRoles in mycontacts[prefix + ' Roles']:
+                newrole['role'] = iRoles
+                index = mycontacts[prefix + ' Roles'].index(iRoles)
+                if len(mycontacts[prefix + ' Roles']) != len(mycontacts[prefix + ' Roles Term Accession Number']):
+                    if index < len(mycontacts[prefix + ' Roles Term Accession Number']):
+                        newrole['termAccession'] = mycontacts[prefix + ' Roles Term Accession Number'][index]
+                    else:
+                        newrole['termAccession'] = ''
+                else:
+                    newrole['termAccession'] = mycontacts[prefix + ' Roles Term Accession Number'][index]
+                if len(mycontacts[prefix + ' Roles']) != len(mycontacts[prefix + ' Roles Term Source REF']):
+                    if index < len(mycontacts[prefix + ' Roles Term Source REF']):
+                        newrole['termSource'] = mycontacts[prefix + ' Roles Term Source REF'][index]
+                    else:
+                        newrole['termSource'] = ''
+                else:
+                    newrole['termSource'] = mycontacts[prefix + ' Roles Term Source REF'][index]
+                rolesStruct.append(newrole)
+                newrole = {}
+            mycontacts[prefix + ' Roles'] = rolesStruct
+            rolesStruct = []
+            del mycontacts[prefix + ' Roles Term Source REF']
+            del mycontacts[prefix + ' Roles Term Accession Number']
+        return rec
+
+
+    def _create_affiliations_bundle(self, rec, prefix):
+        for mycontacts in rec:
+            mycontacts[prefix + ' Affiliations'] = mycontacts[prefix + ' Affiliation']
+            del mycontacts[prefix + ' Affiliation']
+        return rec
+
 
     def _parse_region(self, rec, line_iter):
         """Parse a section of an ISA-Tab, assigning information to a supplied record.
@@ -112,6 +160,7 @@ class InvestigationParser:
             section = next_section
         return rec, had_info
 
+
     def _line_iter(self, in_handle):
         """Read tab delimited file, handling ISA-Tab special case headers.
         """
@@ -122,6 +171,7 @@ class InvestigationParser:
                 if line[0].upper() == line[0] and "".join(line[1:]) == "":
                     line = [line[0]]
                 yield line
+
 
     def _parse_keyvals(self, line_iter):
         """Generate dictionary from key/value pairs.
@@ -134,16 +184,21 @@ class InvestigationParser:
             else:
                 # setup output dictionaries, trimming off blank columns
                 if out is None:
-                    while not line[-1]:
-                        line = line[:-1]
+                    # This commented out at the moment as it is generating a bug when none of the inner sections has values
+                    # while not line[-1]:
+                    #     line = line[:-1]
                     out = [{} for _ in line[1:]]
                 # add blank values if the line is stripped
                 while len(line) < len(out) + 1:
                     line.append("")
                 for i in range(len(out)):
-                    out[i][line[0]] = line[i+1].strip()
+                    if 'roles' in line[0].lower() or 'affiliation' in line[0].lower():
+                        out[i][line[0]] = line[i+1].strip().split(';')
+                    else:
+                        out[i][line[0]] = line[i+1].strip()
                 line = None
         return out, line
+
 
 class StudyAssayParser:
     """Parse row oriented metadata associated with study and assay samples.
@@ -174,6 +229,7 @@ class StudyAssayParser:
                           "Raw Spectral Data File": "Raw Data File",
                           "Derived Spectral Data File": "Derived Data File"}
 
+
     def parse(self, rec):
         """Retrieve row data from files associated with the ISATabRecord.
         """
@@ -195,6 +251,7 @@ class StudyAssayParser:
                 final_studies.append(study)
         rec.studies = final_studies
         return rec
+
 
     def _parse_study(self, fname, node_types):
         """Parse study or assay row oriented file around the supplied base node.
@@ -228,6 +285,7 @@ class StudyAssayParser:
                 nodes[name].metadata = attrs
         return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
 
+
     def _finalize_metadata(self, node):
         """Convert node metadata back into a standard dictionary and list.
         """
@@ -240,6 +298,7 @@ class StudyAssayParser:
         node.metadata = final
         return node
 
+
     def _line_keyvals(self, line, header, hgroups, htypes, out):
         out = self._line_by_type(line, header, hgroups, htypes, out, "attribute",
                                  self._collapse_attributes)
@@ -247,6 +306,7 @@ class StudyAssayParser:
                                  self._collapse_attributes)
         out = self._line_by_type(line, header, hgroups, htypes, out, "node")
         return out
+
 
     def _line_by_type(self, line, header, hgroups, htypes, out, want_type,
                       collapse_quals_fn = None):
@@ -262,6 +322,7 @@ class StudyAssayParser:
             out[key].add(val)
         return out
 
+
     def _collapse_attributes(self, line, header, indexes):
         """Combine attributes in multiple columns into single named tuple.
         """
@@ -273,6 +334,7 @@ class StudyAssayParser:
             vals.append(line[i])
         Attrs = collections.namedtuple('Attrs', names)
         return Attrs(*vals)
+
 
     def _clean_header(self, header):
         """Remove ISA-Tab specific information from Header[real name] headers.
@@ -288,6 +350,7 @@ class StudyAssayParser:
             pass
         return header
 
+
     def _characterize_header(self, header, hgroups):
         """Characterize header groups into different data types.
         """
@@ -301,6 +364,7 @@ class StudyAssayParser:
             out.append(this_ctype)
         return out
 
+
     def _collapse_header(self, header):
         """Combine header columns into related groups.
         """
@@ -312,8 +376,10 @@ class StudyAssayParser:
                 out.append([i])
         return out
 
+
     def _swap_synonyms(self, header):
         return [self._synonyms.get(h, h) for h in header]
+
 
 _record_str = \
 """* ISATab Record
@@ -342,6 +408,7 @@ _node_str = \
 """       * Node {name} {type}
          metadata: {md}"""
 
+
 class ISATabRecord:
     """Represent ISA-Tab metadata in structured format.
 
@@ -361,12 +428,14 @@ class ISATabRecord:
         self.contacts = []
         self.studies = []
 
+
     def __str__(self):
         return _record_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 3),
                                   ont=self.ontology_refs,
                                   pub=self.publications,
                                   contact=self.contacts,
                                   studies="\n".join(str(x) for x in self.studies))
+
 
 class ISATabStudyRecord:
     """Represent a study within an ISA-Tab record.
@@ -381,10 +450,12 @@ class ISATabStudyRecord:
         self.contacts = []
         self.nodes = {}
 
+
     def __str__(self):
         return _study_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 5),
                                  assays="\n".join(str(x) for x in self.assays),
                                  nodes="\n".join(str(x) for x in self.nodes.values()))
+
 
 class ISATabAssayRecord:
     """Represent an assay within an ISA-Tab record.
@@ -394,9 +465,11 @@ class ISATabAssayRecord:
         self.metadata = metadata
         self.nodes = {}
 
+
     def __str__(self):
         return _assay_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 7),
                                  nodes="\n".join(str(x) for x in self.nodes.values()))
+
 
 class NodeRecord:
     """Represent a data node within an ISA-Tab Study/Assay file.
