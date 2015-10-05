@@ -42,8 +42,8 @@ class ISATab2CEDAR():
                                 ("model", "https://repo.metadatacenter.org/model/"),
                                 ("xsd", "http://www.w3.org/2001/XMLSchema"),
                                 ("schema", "https://schema.org/"),
-                                ("title", "schema:title"),
-                                ("description", "schema:description")
+                                ("title", "https://repo.metadatacenter.org/model/title"),
+                                ("description", "https://repo.metadatacenter.org/model/description")
                             ]
                         )),
                         ("title", dict([ ("value", isa_tab.metadata['Investigation Title'])])),
@@ -230,18 +230,29 @@ class ISATab2CEDAR():
                 ("type", dict([("value", protocol['Study Protocol Type'])])),
                 ("version", dict([("value", protocol['Study Protocol Version'])])),
                 ("uri", dict([("value", protocol['Study Protocol URI'])])),
-                ("hasProtocolParameter", []),
+                ("hasProtocolParameter", self.createProtocolParametersList(protocol)),
                 ])
-                #        "hasProtocolParameter": [
-                #            {
-                #                "@type": "https://repo.metadatacenter.org/model/ProtocolParameter",
-                #                "@id": "https://repo.metadatacenter.org/UUID",
-                #                "name": { "value": "protocol parameter name" },
-                #                "description": { "value": "protocol parameter description" }
-                #            }
-                #        ]
-
             json_list.append(json_item)
+        return json_list
+
+    def createProtocolParametersList(self, protocol):
+        json_list = []
+        parameters = protocol['Study Protocol Parameters Name']
+        parametersURIs = protocol['Study Protocol Parameters Name Term Accession Number']
+        #print "parameters--->", parameters
+        #print "parametersURIs---->",parametersURIs
+        index = 0
+        if len(parameters) > 0:
+            for parameter in parameters.split(';'):
+                json_item = dict([
+                      ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                    ("@type", "https://repo.metadatacenter.org/model/ProtocolParameter"),
+                    ("name", dict([("value", parameter)])),
+                    ("description", (dict([("value", parametersURIs[index] if (len(parametersURIs) == len(parameters)) else "")]))),
+                ])
+                index=index+1
+                json_list.append(json_item)
+        print json_list
         return json_list
 
     def createStudyFactorsList(self, factors):
@@ -274,4 +285,4 @@ class ISATab2CEDAR():
 
 isa2cedar = ISATab2CEDAR()
 #isa2cedar.createCEDARjson("../../tests/data/BII-I-1", "./schemas/cedar", True)
-isa2cedar.createCEDARjson("./datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1", "./datasets/output", False)
+isa2cedar.createCEDARjson("./datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1", "./datasets/metabolights", False)
