@@ -92,7 +92,6 @@ class ISATab2CEDAR():
     def createStudiesList(self, studies):
         json_list = []
         for study in studies:
-            #print study.nodes
             json_item = dict([
                 ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                 ("@type", "https://repo.metadatacenter.org/model/Study"),
@@ -107,12 +106,47 @@ class ISATab2CEDAR():
                 ("hasStudyFactor", self.createStudyFactorsList(study.factors)),
                 ("hasStudyAssay", self.createStudyAssaysList(study.assays)),
                 ("hasStudyGroupPopulation", []),
-                ("hasStudySubject", []),
+                ("hasStudySubject", self.createStudySubjectList(study.nodes)),
                 ("hasStudyProtocol", self.createStudyProtocolList(study.protocols)),
                 ("hasProcess", [])
             ])
             json_list.append(json_item)
         return json_list
+
+    def createStudySubjectList(self, nodes):
+        json_list = []
+        for node in nodes:
+            json_item = dict([
+                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                ("@type", "https://repo.metadatacenter.org/model/StudySubject"),
+                ("name", dict([("value", node)])),
+                ("type", dict([("value", "http://purl.obolibrary.org/obo/OBI_0000925")])),
+                ("hasCharacteristic", self.createCharacteristicList(node)),
+            ])
+            json_list.append(json_item)
+        return json_list
+
+    def createCharacteristicList(self, node):
+        json_list = []
+            #            "hasCharacteristic": [
+            #                {
+            #                    "@type": "https://repo.metadatacenter.org/model/Characteristic",
+            #                    "@id": "https://repo.metadatacenter.org/UUID",
+            #                    "name": { "value": "a characteristic name" },
+            #                    "description": { "value": "a characteristic description" },
+            #                    "hasCharacteristicValue": {
+            #                        "@type": "https://repo.metadatacenter.org/model/CharacteristicValue",
+            #                        "@id": "https://repo.metadatacenter.org/UUID",
+            #                        "type": { "value": "a characteristic type" },
+            #                        "unit": { "value": "a characteristic unit" },
+            #                        "value": { "value": "a characteristic value" }
+            #                    }
+            #                }
+            #            ]
+        #json_item = dict([])
+        #json_list.append(json_item)
+        return json_list
+
 
     def createInvestigationContactsList(self, contacts):
         json_list = []
