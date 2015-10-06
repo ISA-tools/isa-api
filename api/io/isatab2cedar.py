@@ -9,7 +9,7 @@ from os.path import join
 import warlock
 
 #from bcbio.isatab.parser import InvestigationParser
-from isatab_parser import InvestigationParser
+from isatab_parser import parse
 
 
 class ISATab2CEDAR():
@@ -20,16 +20,11 @@ class ISATab2CEDAR():
         schema = json.load(open(join(path,schema_file)))
         CEDARSchema = warlock.model_factory(schema)
 
-        #parse ISA tab
-        inv_parser = InvestigationParser()
+        isa_tab = parse(work_dir)
 
-        investigation_file = glob.glob(os.path.join(work_dir, "i_*.txt"))
-
-        if len(investigation_file) > 0:
-
-            with open(investigation_file[0], "rU") as in_handle:
-                isa_tab = inv_parser.parse(in_handle)
-
+        if isa_tab is None:
+            print "No ISAtab dataset found"
+        else:
                 #print isa_tab
 
                 if isa_tab.metadata != {}:
@@ -93,15 +88,11 @@ class ISATab2CEDAR():
                     json.dump(cedar_json, outfile, indent=4, sort_keys=True)
                     outfile.close()
                 print "... conversion finished."
-        else:
-            print "No investigation file found."
 
     def createStudiesList(self, studies):
         json_list = []
         for study in studies:
-
-            print study.contacts
-            #print study
+            #print study.nodes
             json_item = dict([
                 ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                 ("@type", "https://repo.metadatacenter.org/model/Study"),
@@ -207,13 +198,13 @@ class ISATab2CEDAR():
     def createStudyAssaysList(self, assays):
         json_list = []
         for assay in assays:
-            #print assay
+            #print assay.nodes
             json_item = dict([
                 ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                 ("@type", "https://repo.metadatacenter.org/model/StudyAssay"),
-                ("measurementType", dict([("value", assay['Study Assay Measurement Type Term Accession Number'])])),
-                ("platform", dict([("value", assay['Study Assay Technology Platform'])])),
-                ("technology", dict([("value", assay['Study Assay Technology Type'])]))
+                ("measurementType", dict([("value", assay.metadata['Study Assay Measurement Type Term Accession Number'])])),
+                ("platform", dict([("value", assay.metadata['Study Assay Technology Platform'])])),
+                ("technology", dict([("value", assay.metadata['Study Assay Technology Type'])]))
                 ])
             json_list.append(json_item)
         return json_list
@@ -252,7 +243,6 @@ class ISATab2CEDAR():
                 ])
                 index=index+1
                 json_list.append(json_item)
-        print json_list
         return json_list
 
     def createStudyFactorsList(self, factors):
