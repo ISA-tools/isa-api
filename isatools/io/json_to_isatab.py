@@ -2,7 +2,7 @@ __author__ = 'alfie'
 
 import os, glob, json, ntpath
 
-from api.io.common_functions import CommonFunctions
+from isatools.io.common_functions import CommonFunctions
 
 class JsonToIsatabWriter():
     commonFunctions = CommonFunctions()
