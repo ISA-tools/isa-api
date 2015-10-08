@@ -1,6 +1,8 @@
+import unittest
+import os
+from isatools.io import isa_v1_model
 __author__ = 'dj'
-import unittest, os
-from api.io import isa_v1_model
+
 
 class TestISATabReader(unittest.TestCase):
 

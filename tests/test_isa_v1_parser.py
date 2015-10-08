@@ -1,8 +1,8 @@
 import unittest, os, json, glob, shutil, filecmp
 
-from api.io.isatab_parser import parse
-from api.io.isatab_to_json import IsatabToJsonWriter
-from api.io.json_to_isatab import JsonToIsatabWriter
+from isatools.io.isatab_parser import parse
+from isatools.io.isatab_to_json import IsatabToJsonWriter
+from isatools.io.json_to_isatab import JsonToIsatabWriter
 
 
 class ISATabTest(unittest.TestCase):
@@ -19,8 +19,8 @@ class ISATabTest(unittest.TestCase):
 
     def tearDown(self):
         """Remove temporary directories (generated JSON and Tab)?"""
-        shutil.rmtree(self._json_dir, ignore_errors=True)
-        shutil.rmtree(self._generated_isatab_dir, ignore_errors=True)
+        #shutil.rmtree(self._json_dir, ignore_errors=True)
+        #shutil.rmtree(self._generated_isatab_dir, ignore_errors=True)
         pass
 
     def test_basic_parsing(self):
