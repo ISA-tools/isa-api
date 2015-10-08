@@ -216,7 +216,6 @@ class StudyAssayParser:
         return rec
 
     def _get_process_nodes(self, fname, study):
-        print "in _get_process_nodes...", fname
         if not os.path.exists(os.path.join(self._dir, fname)):
             return None
         process_nodes = {}
@@ -227,55 +226,33 @@ class StudyAssayParser:
             hgroups = self._collapse_header(headers)
             htypes = self._characterize_header(headers, hgroups)
 
-            print "headers ->", headers
-            print "hgroups ->", hgroups
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
             node_indices = [i for i, x in enumerate(htypes) if x == "node"]
 
-            print "processing_indices==",processing_indices
-            print "node_indices==", node_indices
-
             for processing_index in processing_indices:
-                print "processing_index", processing_index
                 input_index = find_lt(node_indices, processing_index)
                 output_index = find_gt(node_indices, processing_index)
-                print "input_index==", input_index
-                print "output_index==", output_index
-
                 input_header = headers[hgroups[input_index][0]]
                 output_header = headers[hgroups[output_index][0]]
-                # print "input header ", input_header
-                # print "output header ", output_header
-
                 processing_header = headers[hgroups[processing_index][0]]
-
+                line_number = 0
+                max_number = 0
                 for line in reader:
-                    input_name = line[hgroups[input_index][0]]
-                    output_name = line[hgroups[output_index][0]]
-                    processing_name = line[hgroups[processing_index][0]]
-                    print "input_name--->",  input_name
-                    print "output_name--->",  output_name
-                    print "processing_name--->",  processing_name
+                    if line_number >=  max_number:
+                        input_name = line[hgroups[input_index][0]]
+                        #output_name = line[hgroups[output_index][0]]
+                        processing_name = line[hgroups[processing_index][0]]
+                        input_node = study.nodes[input_name]
+                        process_node = ProcessNodeRecord(processing_name, processing_header)
+                        process_node.outputs = input_node.metadata[output_header]
+                        process_node.inputs = input_node.metadata[input_header]
+                        max_number = max(len(process_node.inputs), len(process_node.outputs))
+                        line_number += 1
+                        process_nodes[processing_name] = process_node
+                    else:
+                        line_number += 1
+                study.process_nodes = process_nodes
 
-                    print study
-
-                    input_node = study.nodes[input_name]
-                    #print "input_node==>", input_node
-
-                    process_node = ProcessNodeRecord(processing_name, processing_header)
-                    process_node.outputs = input_node.metadata[output_header]
-                    process_node.inputs = input_node.metadata[input_header]
-
-                    print "ProcessNode ---> ", process_node
-
-                    break
-
-
-                # input = study.nodes.metadata[input_header]
-                # output = study.nodes.metadata[output_header]
-                #
-                # print "input ->", input
-                # print "output ->", output
 
     def _parse_study(self, fname, node_types):
         """Parse study or assay row oriented file around the supplied base node.
@@ -309,54 +286,6 @@ class StudyAssayParser:
                 nodes[name].metadata = attrs
         return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
 
-    # def _parse_study(self, fname, node_types, data_nodes):
-    #     """Parse study or assay row oriented file around the supplied base node.
-    #     """
-    #     if not os.path.exists(os.path.join(self._dir, fname)):
-    #         return None
-    #
-    #     nodes = {}
-    #     with open(os.path.join(self._dir, fname), "rU") as in_handle:
-    #         reader = csv.reader(in_handle, dialect="excel-tab")
-    #         header = self._swap_synonyms(reader.next())
-    #         hgroups = self._collapse_header(header)
-    #         htypes = self._characterize_header(header, hgroups)
-    #         for node_type in node_types:
-    #             try:
-    #                 name_index = header.index(node_type)
-    #                 break
-    #             except ValueError:
-    #                 name_index = None
-    #         assert name_index is not None, "Could not find standard header name: %s in %s" \
-    #                % (node_types, header)
-    #         for line in reader:
-    #             name = line[name_index]
-    #             try:
-    #                 node = nodes[name]
-    #             except KeyError:
-    #                 if node_type == "Protocol REF":
-    #                     node = ProcessNodeRecord(name, node_type)
-    #                     nodes[name] = node
-    #                 else:
-    #                     node = NodeRecord(name, node_type)
-    #                     node.metadata = collections.defaultdict(set)
-    #                     nodes[name] = node
-    #
-    #             if node_type == "Protocol REF":
-    #                  inputs = {}
-    #                  outputs = {}
-    #                  #self._get_inputs_outputs(line, header, hgroups, htypes, inputs, outputs, data_nodes)
-    #                  #print "inputs--->", inputs
-    #                  #print "outputs--->", outputs
-    #             else:
-    #                 attrs = self._line_keyvals(line, header, hgroups, htypes,
-    #                                        node.metadata)
-    #                 nodes[name].metadata = attrs
-    #
-    #     print "nodes before returning from _parse_study --->", nodes.items()
-    #
-    #     return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
-
     def _finalize_metadata(self, node):
         """Convert node metadata back into a standard dictionary and list.
         """
@@ -368,49 +297,6 @@ class StudyAssayParser:
             final[key] = list(val)
         node.metadata = final
         return node
-
-    def _get_inputs_outputs(self, line, header, hgroups, htypes, inputs, outputs, data_nodes):
-        print "_get_inputs--->"
-        processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
-        node_indices = [i for i, x in enumerate(htypes) if x == "node"]
-
-        print "data_nodes--->", data_nodes
-        print "processing_indices--->",processing_indices
-        print "node_indices--->",node_indices
-        return
-
-        # if len(line) == 0:
-        #   return (inputs, outputs)
-        # else:
-        #     try:
-        #         processing_index = htypes.index('processing')
-        #     except ValueError:
-        #         print "No processing node"
-        #         return
-        #
-        #     data_node_index = htypes.index('node')
-        #
-        #     print "data_node_index-->", data_node_index
-        #     print "data node name--->", line[data_node_index]
-        #     print "data node--->", data_nodes[line[data_node_index]]
-        #
-        #     print "processing_index--->", processing_index
-        #
-        #     if data_node_index < processing_index:
-        #         #add inputs
-        #         #print "data nodes--->", data_nodes
-        #
-        #         inputs = data_nodes[line[data_node_index]]
-        #         hgroups_index = hgroups[processing_index][0] +1
-        #         line = line[hgroups_index:]
-        #     else:
-        #         outputs = data_nodes[line[data_node_index]]
-        #         hgroups_index = hgroups[data_node_index][0] +1
-        #         line = line[hgroups_index:]
-        #
-        #     print "new line--->", line
-        #     return self._get_inputs_outputs(line,header, hgroups, htypes, inputs, outputs, data_nodes)
-
 
     def _line_keyvals(self, line, header, hgroups, htypes, out):
         out = self._line_by_type(line, header, hgroups, htypes, out, "attribute",
