@@ -42,12 +42,11 @@ def find_lt(a, x):
 
 
 def find_gt(a, x):
-    "Find leftmost item greater than or equal to x"
-    i = bisect.bisect_left(a, x)
+    """Find leftmost value greater than x"""
+    i = bisect.bisect_right(a, x)
     if i != len(a):
         return a[i]
     raise ValueError
-
 
 def parse(isatab_ref):
     """Entry point to parse an ISA-Tab directory.
@@ -203,9 +202,10 @@ class StudyAssayParser:
                 for assay in study.assays:
                     cur_assay = ISATabAssayRecord(assay)
                     assay_data = self._parse_study(assay["Study Assay File Name"],
-                                                   ["Raw Data File", "Derived Data File",
+                                                   ["Sample Name", "Extract Name","Raw Data File", "Derived Data File",
                                                     "Image File"])
                     cur_assay.nodes = assay_data
+                    self._get_process_nodes(assay["Study Assay File Name"], cur_assay)
                     final_assays.append(cur_assay)
                 study.assays = final_assays
 
@@ -230,8 +230,12 @@ class StudyAssayParser:
             node_indices = [i for i, x in enumerate(htypes) if x == "node"]
 
             for processing_index in processing_indices:
-                input_index = find_lt(node_indices, processing_index)
-                output_index = find_gt(node_indices, processing_index)
+                try:
+                    input_index = find_lt(node_indices, processing_index)
+                    output_index = find_gt(node_indices, processing_index)
+                except ValueError:
+                    print "Invalid indices for process nodes"
+                    break
                 input_header = headers[hgroups[input_index][0]]
                 output_header = headers[hgroups[output_index][0]]
                 processing_header = headers[hgroups[processing_index][0]]
