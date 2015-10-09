@@ -10,6 +10,7 @@ import warlock
 
 #from bcbio.isatab.parser import InvestigationParser
 from isatab_parser import parse
+#from isatab_parser_orig import parse
 
 
 class ISATab2CEDAR():
@@ -26,7 +27,6 @@ class ISATab2CEDAR():
             print "No ISAtab dataset found"
         else:
                 #print isa_tab
-
                 if isa_tab.metadata != {}:
                     investigationObject = dict([
                         ("schemaID", "https://repo.metadatacenter.org/UUID"),
@@ -92,7 +92,7 @@ class ISATab2CEDAR():
     def createStudiesList(self, studies):
         json_list = []
         for study in studies:
-            print study
+            #print study
             json_item = dict([
                 ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                 ("@type", "https://repo.metadatacenter.org/model/Study"),
@@ -116,55 +116,45 @@ class ISATab2CEDAR():
 
     def createStudySubjectList(self, nodes):
         json_list = []
-        for node in nodes:
-            #print "nodes[node]", nodes[node]
-            json_item = dict([
-                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
-                ("@type", "https://repo.metadatacenter.org/model/StudySubject"),
-                ("name", dict([("value", node)])),
-                ("type", dict([("value", "http://purl.obolibrary.org/obo/OBI_0000925")])),
-                ("hasCharacteristic", self.createCharacteristicList(node, nodes[node])),
-            ])
+        for node_name in nodes:
+            if nodes[node_name].ntype == "Source Name":
+                json_item = dict([
+                    ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                    ("@type", "https://repo.metadatacenter.org/model/StudySubject"),
+                    ("name", dict([("value", node_name)])),
+                    ("type", dict([("value", "http://purl.obolibrary.org/obo/OBI_0000925")])),
+                    ("hasCharacteristic", self.createCharacteristicList(node_name, nodes[node_name])),
+                ])
+                json_list.append(json_item)
+        return json_list
+
+    def createCharacteristicList(self, node_name, node):
+        json_list = []
+        print "creacteCharactersticList for ", node_name
+        print "node ->", node
+        for header in node.metadata:
+            if header.startswith("Characteristics"):
+                 characteristic = header.replace("]", "").split("[")[-1]
+                 json_item = dict([
+                    ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                    ("@type", "https://repo.metadatacenter.org/model/Characteristic"),
+                    ("name", dict([("value", characteristic)])),
+                    ("description", dict([("value", "")])),
+                    ("hasCharacteristicValue", self.createCharacteristicValueList(node.metadata[header]))
+                    ])
             json_list.append(json_item)
         return json_list
 
-    def createCharacteristicList(self, name, node):
-        json_list = []
-        for characteristic in node.metadata:
-            json_item = dict([
-               ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
-               ("@type", "https://repo.metadatacenter.org/model/Characteristic"),
-               ("name", dict([("value", characteristic)])),
-               ("description", dict([("value", "")])),
-               ("hasCharacteristicsValue",
-               dict([
-                    ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
-                    ("@type", "https://repo.metadatacenter.org/model/CharacteristicValue"),
-                    ("type", dict([("value", node)])),
-                    ("unit", dict([("value", "")])),
-                    ("value", dict([("value", node)]))
-               ])
-               )
-                ])
-            json_list.append(json_item)
-        return json_list
-            #            "hasCharacteristic": [
-            #                {
-            #
-            #                    "name": { "value": "a characteristic name" },
-            #                    "description": { "value": "a characteristic description" },
-            #                    "hasCharacteristicValue": {
-            #                        "@type": "https://repo.metadatacenter.org/model/CharacteristicValue",
-            #                        "@id": "https://repo.metadatacenter.org/UUID",
-            #                        "type": { "value": "a characteristic type" },
-            #                        "unit": { "value": "a characteristic unit" },
-            #                        "value": { "value": "a characteristic value" }
-            #                    }
-            #                }
-            #            ]
-        #json_item = dict([])
-        #json_list.append(json_item)
-        return json_list
+    def createCharacteristicValueList(self, characteristicValues):
+        #TODO - check how to represent more than one characteristics value
+        characteristicValue = dict([
+                                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                                ("@type", "https://repo.metadatacenter.org/model/CharacteristicValue"),
+                                ("type", dict([("value", characteristicValues[0][2])])),
+                                ("unit", dict([("value", "")])),
+                                ("value", dict([("value", characteristicValues[0][0])]))
+                    ])
+        return characteristicValue
 
 
     def createInvestigationContactsList(self, contacts):
