@@ -195,15 +195,14 @@ class StudyAssayParser:
         final_studies = []
         for study in rec.studies:
             source_data = self._parse_study(study.metadata["Study File Name"],
-                                            ["Source Name","Sample Name", "Comment[ENA_SAMPLE]"])
+                                            ["Source Name","Sample Name","Comment[ENA_SAMPLE]"])
             if source_data:
                 study.nodes = source_data
                 final_assays = []
                 for assay in study.assays:
                     cur_assay = ISATabAssayRecord(assay)
                     assay_data = self._parse_study(assay["Study Assay File Name"],
-                                                   ["Sample Name", "Extract Name","Raw Data File", "Derived Data File",
-                                                    "Image File"])
+                                                   ["Sample Name", "Extract Name","Raw Data File", "Derived Data File", "Image File"])
                     cur_assay.nodes = assay_data
                     self._get_process_nodes(assay["Study Assay File Name"], cur_assay)
                     final_assays.append(cur_assay)
@@ -316,7 +315,7 @@ class StudyAssayParser:
         """
         for index, htype in ((i, t) for i, t in enumerate(htypes) if t == want_type):
             col = hgroups[index][0]
-            key = self._clean_header(header[col])
+            key = header[col]#self._clean_header(header[col])
             if collapse_quals_fn:
                 val = collapse_quals_fn(line, header, hgroups[index])
             else:
