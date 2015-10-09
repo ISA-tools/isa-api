@@ -125,6 +125,7 @@ class JsonToIsatabWriter():
         # INVESTIGATION PUBLICATIONS
         my_str = self.writeSectionInvestigation(my_str, "INVESTIGATION PUBLICATIONS", jsonData["investigation"]["investigationPublications"], self._isatab_i_investigation_publications_sec)
         # INVESTIGATION CONTACTS
+        # FIXME: Test fails here, investigation contact should only have one affiliation, but affiliations is a list
         my_str = self.writeSectionInvestigation(my_str, "INVESTIGATION CONTACTS", jsonData["investigation"]["investigationContacts"], self._isatab_i_investigation_contacts_sec)
         for study in jsonData["studies"]:
             # STUDY
