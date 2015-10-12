@@ -1,7 +1,11 @@
-import unittest, os, json, glob, shutil, filecmp
+import unittest
+import os
+import json
+import glob
+import filecmp
 
 from isatools.io.isatab_parser import parse
-from isatools.io.isatab_to_json import IsatabToJsonWriter
+from isatools.convert.isatab_to_json import IsatabToJsonWriter
 from isatools.io.json_to_isatab import JsonToIsatabWriter
 
 
@@ -38,7 +42,7 @@ class ISATabTest(unittest.TestCase):
         assert study.metadata["Study File Name"] == "s_BII-S-1.txt"
 
         assert len(study.assays) == 3
-        assert study.assays[0]["Study Assay File Name"] == "a_proteome.txt"
+        assert study.assays[0].metadata["Study Assay File Name"] == "a_proteome.txt"
 
     def test_isatab_json_writer(self):
         """Test general parsing of an example ISA-Tab JSON directory.

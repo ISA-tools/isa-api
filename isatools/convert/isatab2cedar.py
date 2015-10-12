@@ -9,7 +9,7 @@ from os.path import join
 import warlock
 
 #from bcbio.isatab.parser import InvestigationParser
-from isatab_parser import InvestigationParser
+from isatools.io.isatab_parser import InvestigationParser
 
 
 class ISATab2CEDAR():
