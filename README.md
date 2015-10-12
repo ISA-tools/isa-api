@@ -2,6 +2,10 @@
 
 Python ISA API library.
 
+## isatools package
+
+* Install using `pip install -e .` from inside `isa-api` project root (may need to sudo it)
+
 ## service
 
 **Note:**
