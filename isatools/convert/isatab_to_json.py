@@ -2,8 +2,8 @@ __author__ = 'Alfie Abdul-Rahman'
 
 import json, glob, os, ntpath, csv
 
-from api.io import isatab_parser
-from api.io.common_functions import CommonFunctions
+from isatools.io import isatab_parser
+from isatools.io.common_functions import CommonFunctions
 
 class IsatabToJsonWriter():
     commonFunctions = CommonFunctions()
@@ -110,9 +110,9 @@ class IsatabToJsonWriter():
         myassay = []
         for assay in rec.assays:
             json_assay_structure = {}
-            for i_assay in assay.metadata:
-                json_assay_structure[self.commonFunctions.makeAttributeName(i_assay)] = assay.metadata[i_assay]
-                filename = (assay.metadata["Study Assay File Name"]).split(".")[0]
+            for i_assay in assay:
+                json_assay_structure[self.commonFunctions.makeAttributeName(i_assay)] = assay[i_assay]
+                filename = (assay["Study Assay File Name"]).split(".")[0]
                 assaysTable = self.readIsatabStudyAssayExtend(os.path.join(work_dir, filename + ".txt"))
                 if (isSingleStructure):
                     json_assay_structure["assaysTable"] = assaysTable
