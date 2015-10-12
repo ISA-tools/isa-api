@@ -6,4 +6,4 @@ Python ISA API library.
 
 **Note:**
 
-* REST service implementation has been moved to isa-rest-api project
+* REST service implementation has been moved to [isa-rest-api project](https://github.com/ISA-tools/isa-rest-api)
