@@ -1,6 +1,6 @@
 __author__ = 'dj'
 import unittest, os
-from api.io import isa_v1_model
+from isatools.io import isa_v1_model
 
 class TestISATabWriter(unittest.TestCase):
 
