@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='isatools_api',
     version='0.0.1',
-    packages=['isatools', 'isatools.io', 'isatools.io.schemas'],
+    packages=['isatools', 'isatools.convert', 'isatools.io', 'isatools.schemas'],
     description='ISA version 1.0 API',
     author='ISA Infrastructure Team',
     author_email='isa@googlegroups.com',
