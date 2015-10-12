@@ -5,7 +5,7 @@ from jsonschema import validate, FormatChecker, RefResolver, Draft4Validator
 from os.path import join
 
 
-path = os.path.abspath("cedar")
+path = os.path.abspath("../schemas/cedar")
 
 
 investigationSchema = json.load(open(join(path,"*")))

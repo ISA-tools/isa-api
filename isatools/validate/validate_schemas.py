@@ -18,5 +18,5 @@ def validateSchemasInFolder(folder):
             print "done."
 
 
-validateSchemasInFolder("cedar")
+validateSchemasInFolder("../schemas/cedar")
 #validateSchemasInFolder("isa_model_version_1_0_schemas")
