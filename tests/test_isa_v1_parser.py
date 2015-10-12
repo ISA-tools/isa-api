@@ -38,7 +38,7 @@ class ISATabTest(unittest.TestCase):
         assert study.metadata["Study File Name"] == "s_BII-S-1.txt"
 
         assert len(study.assays) == 3
-        assert study.assays[0]["Study Assay File Name"] == "a_proteome.txt"
+        assert study.assays[0].metadata["Study Assay File Name"] == "a_proteome.txt"
 
     def test_isatab_json_writer(self):
         """Test general parsing of an example ISA-Tab JSON directory.
