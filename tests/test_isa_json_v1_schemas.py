@@ -1,13 +1,13 @@
 
 import json, os, unittest
 from jsonschema import Draft4Validator, validate, FormatChecker
-from api.io.isatab_to_json import IsatabToJsonWriter
+from isatools.convert.isatab_to_json import IsatabToJsonWriter
 
 class ISASchemasTest(unittest.TestCase):
 
     def setUp(self):
         self._dir = os.path.join(os.path.dirname(__file__), "data")
-        self._schema_dir = os.path.join(os.path.dirname(__file__) + "/../isatools/io", "schemas/isa_model_version_1_0_schemas")
+        self._schema_dir = os.path.join(os.path.dirname(__file__) + "/../isatools", "schemas/isa_model_version_1_0_schemas")
         self._work_dir = os.path.join(self._dir, "BII-I-1")
         self._json_dir = self._work_dir + "-json"
 
