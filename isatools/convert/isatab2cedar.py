@@ -2,9 +2,7 @@ __author__ = 'agbeltran'
 
 import json
 import os
-import glob
 from uuid import uuid4
-from os.path import join
 from os import listdir
 from os.path import isdir, join
 

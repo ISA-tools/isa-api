@@ -1,22 +1,14 @@
 __author__ = 'agbeltran'
 
 import json,os
-from jsonschema import validate, FormatChecker, RefResolver, Draft4Validator
+from jsonschema import RefResolver, Draft4Validator
 from os.path import join
 
 
-path = os.path.abspath("../schemas/cedar")
-
-
-investigationSchema = json.load(open(join(path,"*")))
-
-resolver = RefResolver('file://'+path+'/'+"InvestigationSchema.json", investigationSchema)
-
-validator = Draft4Validator(investigationSchema, resolver=resolver)
-
-#validator.validate(json.load(open(join(path,"ExampleInvestigationData.json"))), investigationSchema)
-validator.validate(json.load(open(join(path,"InvestigationExampleInstances.json"))), investigationSchema)
-
-validator.validate(json.load(open(join(path,"BII-I-1.json"))), investigationSchema)
+def validateJsonAgainstSchemas(schema_file, json_file):
+    schema = json.load(open(join(schema_file)))
+    resolver = RefResolver('file://'+schema_file, schema)
+    validator = Draft4Validator(schema, resolver=resolver)
+    return validator.validate(json.load(open(json_file)), schema)
 
 
