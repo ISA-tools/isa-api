@@ -5,9 +5,8 @@ import glob
 import filecmp
 
 from isatools.io.isatab_parser import parse
-from isatools.convert.isatab_to_json import IsatabToJsonWriter
-from isatools.convert.json_to_isatab import JsonToIsatabWriter
-
+from isatools.convert.isatab2json import IsatabToJsonWriter
+from isatools.convert.json2isatab import JsonToIsatabWriter
 
 class ISATabTest(unittest.TestCase):
     def setUp(self):

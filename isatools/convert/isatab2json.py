@@ -1,9 +1,13 @@
 __author__ = 'Alfie Abdul-Rahman'
 
-import json, glob, os, ntpath, csv
+import json
+import glob
+import os
+import ntpath
+import csv
 
 from isatools.io import isatab_parser
-from isatools.io.common_functions import CommonFunctions
+from isatools.convert.common_functions import CommonFunctions
 
 class IsatabToJsonWriter():
     commonFunctions = CommonFunctions()

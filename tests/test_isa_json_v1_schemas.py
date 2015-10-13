@@ -1,7 +1,6 @@
 
 import json, os, unittest
-from jsonschema import Draft4Validator, validate, FormatChecker
-from isatools.convert.isatab_to_json import IsatabToJsonWriter
+from jsonschema import Draft4Validator
 
 class ISASchemasTest(unittest.TestCase):
 
@@ -58,10 +57,6 @@ class ISASchemasTest(unittest.TestCase):
 
     def test_source_schema(self):
         schema = json.load(open(self._schema_dir + "/source_schema.json"))
-        Draft4Validator.check_schema(schema)
-
-    def test_study_sample_table_schema(self):
-        schema = json.load(open(self._schema_dir + "/study_sample_table_schema.json"))
         Draft4Validator.check_schema(schema)
 
     def test_protocol_schema(self):

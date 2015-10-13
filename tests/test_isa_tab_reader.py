@@ -3,6 +3,7 @@ import os
 from isatools.io import isa_v1_model
 __author__ = 'dj'
 
+from isatools.io import isa_v1_model
 
 class TestISATabReader(unittest.TestCase):
 

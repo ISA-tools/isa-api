@@ -1,8 +1,11 @@
 __author__ = 'alfie'
 
-import os, glob, json, ntpath
+import os
+import glob
+import json
+import ntpath
 
-from isatools.io.common_functions import CommonFunctions
+from isatools.convert.common_functions import CommonFunctions
 
 class JsonToIsatabWriter():
     commonFunctions = CommonFunctions()
