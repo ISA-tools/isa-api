@@ -5,7 +5,6 @@ from os import listdir
 from os.path import isfile, join
 from jsonschema import Draft4Validator
 
-
 def validateSchemasInFolder(folder):
     path = os.path.abspath(folder)
     files = [ f for f in listdir(path) if isfile(join(path,f)) ]
@@ -16,7 +15,3 @@ def validateSchemasInFolder(folder):
             schema = json.load(open(join(path,schemaFile)))
             Draft4Validator.check_schema(schema)
             print "done."
-
-
-validateSchemasInFolder("../schemas/cedar")
-#validateSchemasInFolder("isa_model_version_1_0_schemas")
