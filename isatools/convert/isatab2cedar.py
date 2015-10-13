@@ -370,8 +370,9 @@ class ISATab2CEDAR():
 
 
 
-isa2cedar = ISATab2CEDAR()
+#local tests
+#isa2cedar = ISATab2CEDAR()
 #isa2cedar.createCEDARjson("../../tests/data/BII-I-1", "./schemas/cedar", True)
-#isa2cedar.createCEDARjson("./datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1", "./datasets/metabolights", False)
-isa2cedar.createCEDARjson_folder("../schemas/cedar","../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/", "../../tests/datasets/metabolights", False)
+#isa2cedar.createCEDARjson("../schemas/cedar","../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS161", "../../tests/datasets/metabolights", False)
+#isa2cedar.createCEDARjson_folder("../schemas/cedar","../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/", "../../tests/datasets/metabolights", False)
 
