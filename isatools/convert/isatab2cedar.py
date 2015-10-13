@@ -12,21 +12,22 @@ import warlock
 from isatools.io.isatab_parser import parse
 #from isatab_parser_orig import parse
 
+CEDAR_SCHEMA_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/cedar")
 
 class ISATab2CEDAR():
-    def createCEDARjson_folder(self, schema_paths, work_dir, json_dir, inv_identifier):
+    def createCEDARjson_folder(self, work_dir, json_dir, inv_identifier):
         print "Convert ISA datasets in folder ", work_dir
         path = os.path.abspath(work_dir)
         folders = [ f for f in listdir(path) if isdir(join(path,f))]
 
         for folder in folders:
-            self.createCEDARjson(schema_paths, join(path,folder), json_dir, inv_identifier)
+            self.createCEDARjson(CEDAR_SCHEMA_PATH, join(path,folder), json_dir, inv_identifier)
 
 
-    def createCEDARjson(self, path, work_dir, json_dir, inv_identifier):
+    def createCEDARjson(self, work_dir, json_dir, inv_identifier):
         print "Converting ISA to CEDAR model for ", work_dir
         schema_file = "InvestigationSchema.json"
-        schema = json.load(open(join(path,schema_file)))
+        schema = json.load(open(join(CEDAR_SCHEMA_PATH,schema_file)))
         CEDARSchema = warlock.model_factory(schema)
 
         isa_tab = parse(work_dir)
@@ -114,18 +115,23 @@ class ISATab2CEDAR():
                 ("hasContact", self.createStudyContactsList(study.contacts)),
                 ("hasStudyFactor", self.createStudyFactorsList(study.factors)),
                 ("hasStudyAssay", self.createStudyAssaysList(study.assays)),
-                ("hasStudyGroupPopulation", []),
+                ("hasStudyGroupPopulation", self.createStudyGroupList(study.nodes)),
                 ("hasStudySubject", self.createStudySubjectList(study.nodes)),
                 ("hasStudyProtocol", self.createStudyProtocolList(study.protocols)),
-                ("hasProcess", self.createProcessList(study.process_nodes))
+                ("hasProcess", self.createProcessList(study.process_nodes, study.nodes))
             ])
             json_list.append(json_item)
         return json_list
 
-    def createProcessList(self, process_nodes):
+    def createStudyGroupList(self, nodes):
+        #TODO complete
+        return []
+
+    def createProcessList(self, process_nodes, nodes):
         json_list = []
         #TODO fix hasStudyAssay
         for process_node_name in process_nodes:
+            print process_nodes[process_node_name]
             json_item = dict([
                     ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                     ("@type", "https://repo.metadatacenter.org/model/Process"),
@@ -136,10 +142,17 @@ class ISATab2CEDAR():
                                         "measurementType": { "value": "http://purl.obolibrary.org/obo/IAO_0000003" },
                                         "platform": { "value": "http://purl.obolibrary.org/obo/IAO_0000023" },
                                         "technology": { "value": "http://purl.obolibrary.org/obo/IAO_0000321" } }),
-                    ("hasInput", []),
-                    ("hasOutput", [])
+                    ("hasInput", self.createInputOutputList(process_nodes[process_node_name].inputs, nodes)),
+                    ("hasOutput", self.createInputOutputList(process_nodes[process_node_name].outputs, nodes) )
             ])
             json_list.append(json_item)
+        return json_list
+
+    def createInputOutputList(self, arguments, nodes):
+        json_list = []
+        for argument in arguments:
+            json_item = dict([])
+            #json_list.append(json_item)
         return json_list
 
 
@@ -182,6 +195,7 @@ class ISATab2CEDAR():
                     ("hasCharacteristic", self.createCharacteristicList(node_name, nodes[node_name])),
                 ])
                 json_list.append(json_item)
+        print "study subject list ", json_list
         return json_list
 
     def createCharacteristicList(self, node_name, node):
@@ -371,6 +385,7 @@ class ISATab2CEDAR():
 #local tests
 #isa2cedar = ISATab2CEDAR()
 #isa2cedar.createCEDARjson("../../tests/data/BII-I-1", "./schemas/cedar", True)
-#isa2cedar.createCEDARjson("../schemas/cedar","../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS161", "../../tests/datasets/metabolights", False)
-#isa2cedar.createCEDARjson_folder("../schemas/cedar","../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/", "../../tests/datasets/metabolights", False)
+#isa2cedar.createCEDARjson("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1", "../../tests/datasets/metabolights", False)
+#isa2cedar.createCEDARjson("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS161", "../../tests/datasets/metabolights", False)
+#isa2cedar.createCEDARjson_folder("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/", "../../tests/datasets/metabolights", False)
 

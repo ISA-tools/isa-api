@@ -9,12 +9,11 @@ import unittest
 class ISAtab2CEDARTest(unittest.TestCase):
       def setUp(self):
         """set up directories etc"""
-        self.pathToSchemas = os.path.abspath("../isatools/schemas/cedar")
         self.isa2cedar = ISATab2CEDAR()
 
       def test_bii_i_1_conversion(self):
         self.test_data = "./data/BII-I-1"
-        self.isa2cedar.createCEDARjson(self.pathToSchemas, self.test_data, "./datasets", False)
+        self.isa2cedar.createCEDARjson(self.test_data, "./datasets", False)
 
       def test_metabolights_conversion(self):
         self.folder = "./datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/"
@@ -23,6 +22,6 @@ class ISAtab2CEDARTest(unittest.TestCase):
 
         for directory in self.directories:
             print "Converting ", directory, " ..."
-            self.isa2cedar.createCEDARjson(self.pathToSchemas, join(self.path,directory), "./datasets/metabolights", False)
+            self.isa2cedar.createCEDARjson(join(self.path,directory), "./datasets/metabolights", False)
         print "\t... done"
 
