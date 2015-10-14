@@ -246,7 +246,7 @@ class StudyAssayParser:
                         #output_name = line[hgroups[output_index][0]]
                         processing_name = line[hgroups[processing_index][0]]
                         input_node = study.nodes[input_name]
-                        process_node = ProcessNodeRecord(processing_name, processing_header)
+                        process_node = ProcessNodeRecord(processing_name, processing_header, study)
                         process_node.outputs = input_node.metadata[output_header]
                         process_node.inputs = input_node.metadata[input_header]
                         max_number = max(len(process_node.inputs), len(process_node.outputs))
@@ -513,8 +513,9 @@ class NodeRecord:
 class ProcessNodeRecord:
     """Represent a process node within an ISA-Tab Study/Assay file.
     """
-    def __init__(self, name="", ntype=""):
+    def __init__(self, name="", ntype="", study_assay=""):
         self.ntype = ntype
+        self.study_assay = study_assay
         self.name = name
         self.inputs = {}
         self.outputs = {}

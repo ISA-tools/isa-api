@@ -31,6 +31,7 @@ class ISATab2CEDAR():
         CEDARSchema = warlock.model_factory(schema)
 
         isa_tab = parse(work_dir)
+        #print isa_tab
 
         if isa_tab is None:
             print "No ISAtab dataset found"
@@ -136,11 +137,25 @@ class ISATab2CEDAR():
          json_list.append(json_item)
          return json_list
 
-    
+
     def createProcessList(self, process_nodes, source_dict, sample_dict):
         json_list = []
-        #TODO fix hasStudyAssay
         for process_node_name in process_nodes:
+            try:
+                measurement_type = process_nodes[process_node_name].study_assay.metadata["Study Assay Measurement Type"]
+            except:
+                measurement_type = ""
+
+            try:
+                platform = process_nodes[process_node_name].study_assay.metadata["Study Assay Technology Platform"]
+            except:
+                platform = ""
+
+            try:
+                technology = process_nodes[process_node_name].study_assay.metadata["Study Assay Technology Type"]
+            except:
+                technology = ""
+
             json_item = dict([
                     ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                     ("@type", "https://repo.metadatacenter.org/model/Process"),
@@ -148,9 +163,9 @@ class ISATab2CEDAR():
                     ("executeStudyProtocol", self.createExecuteStudyProtocol(process_node_name, process_nodes[process_node_name])),
                     ("hasStudyAssay", { "@type": "https://repo.metadatacenter.org/model/StudyAssay",
                                         "@id": "https://repo.metadatacenter.org/UUID",
-                                        "measurementType": { "value": "http://purl.obolibrary.org/obo/IAO_0000003" },
-                                        "platform": { "value": "http://purl.obolibrary.org/obo/IAO_0000023" },
-                                        "technology": { "value": "http://purl.obolibrary.org/obo/IAO_0000321" } }),
+                                        "measurementType": { "value": measurement_type },
+                                        "platform": { "value": platform },
+                                        "technology": { "value": technology } }),
                     ("hasInput", self.createInputOutputList(process_nodes[process_node_name].inputs, source_dict, sample_dict)),
                     ("hasOutput", self.createInputOutputList(process_nodes[process_node_name].outputs, source_dict, sample_dict) )
             ])
@@ -355,7 +370,6 @@ class ISATab2CEDAR():
     def createStudyAssaysList(self, assays):
         json_list = []
         for assay in assays:
-            #print assay.nodes
             json_item = dict([
                 ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                 ("@type", "https://repo.metadatacenter.org/model/StudyAssay"),
