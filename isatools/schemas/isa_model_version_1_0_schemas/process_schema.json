@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title": "ISA process or protocol application schema, corresponds to Protocol REF columns in the study and assay files",
+    "description": "JSON-schema representing a protocol application in the ISA model",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "executesProtocol": {
+                "$ref": "protocol.json#"
+        },
+        "parameters": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "parameterType": {
+                        "$ref": "ontology_annotation_schema.json#"
+                    }
+                }
+
+            }
+        },
+        "inputs" : {
+            "type": "array",
+            "items": {
+                 "anyOf": [
+                        {
+                            "type": "object",
+                            "$ref": "material_schema.json#"
+                        },
+                        {
+                            "type": "object",
+                            "$ref": "data_schema.json#"
+                        }
+                    ]
+            }
+        },
+         "outputs" : {
+            "type": "array",
+            "items": {
+                 "anyOf": [
+                        {
+                            "type": "object",
+                            "$ref": "material_schema.json#"
+                        },
+                        {
+                            "type": "object",
+                            "$ref": "data_schema.json#"
+                        }
+                    ]
+            }
+        }
+    }
+}

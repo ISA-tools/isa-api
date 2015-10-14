@@ -36,16 +36,19 @@
                 "$ref": "ontology_annotation_schema.json#"
               }
         },
-        "studySampleTable": {
-              "type": "object",
-                "$ref": "study_sample_table_schema.json#"
-        },
         "protocols" : {
               "type": "array",
               "items" : {
                 "$ref": "protocol_schema.json#"
               }
         },
+        "sources": {
+            "type": "array",
+              "items" : {
+                "$ref": "protocol_schema.json#"
+              }
+        },
+
         "assays" : {
               "type": "array",
               "items" : {

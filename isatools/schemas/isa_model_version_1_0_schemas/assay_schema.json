@@ -28,11 +28,11 @@
             }
         },
         "technologyPlatform" : { "type" : "string"},
-        "assayTable": {
-              "type": "object",
-              "schema" : {
-                "$ref": "assay_table_schema.json#"
-              }
+        "processSequence": {
+              "type": "array",
+              "items" : {
+               "$ref" : "process_schema.json#"
+            }
         }
     }
 }

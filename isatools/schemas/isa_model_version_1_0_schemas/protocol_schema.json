@@ -21,9 +21,6 @@
         "version": {
             "type": "string"
         },
-        "phone": {
-            "type": "string"
-        },
         "parameters": {
             "type": "array",
             "items": {
