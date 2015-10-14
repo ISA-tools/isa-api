@@ -196,9 +196,6 @@ class StudyAssayParser:
         for study in rec.studies:
             source_data = self._parse_study(study.metadata["Study File Name"],
                                             ["Source Name","Sample Name","Comment[ENA_SAMPLE]"])
-
-            print "source_data ", source_data
-
             if source_data:
                 study.nodes = source_data
                 final_assays = []
@@ -270,7 +267,6 @@ class StudyAssayParser:
         with open(os.path.join(self._dir, fname), "rU") as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
             header = self._swap_synonyms(reader.next())
-            print header
             hgroups = self._collapse_header(header)
             htypes = self._characterize_header(header, hgroups)
             #print "node_types ", node_types
@@ -284,7 +280,7 @@ class StudyAssayParser:
                 #print "name_index ", name_index
                 if name_index is None:
                     print "Could not find standard header name: %s in %s" \
-                                            % (node_types, header)
+                                            % (node_type, header)
                     continue
                 #else:
                     #print "name_index ", name_index
