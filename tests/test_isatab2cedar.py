@@ -13,7 +13,7 @@ class ISAtab2CEDARTest(unittest.TestCase):
 
       def test_bii_i_1_conversion(self):
         self.test_data = "./data/BII-I-1"
-        self.isa2cedar.createCEDARjson(self.test_data, "./datasets", False)
+        self.isa2cedar.createCEDARjson(self.test_data, "./datasets", True)
 
       def test_metabolights_conversion(self):
         self.folder = "./datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/"

@@ -9,4 +9,4 @@ class ValidateJsonTest(unittest.TestCase):
         validateJsonAgainstSchemas("../isatools/schemas/cedar/InvestigationSchema.json","../isatools/schemas/cedar/InvestigationExampleInstances.json")
 
       def test_cedar_bii_i_1(self):
-        validateJsonAgainstSchemas("../isatools/schemas/cedar/InvestigationSchema.json","./datassets/BII-S-1.json")
+        validateJsonAgainstSchemas("../isatools/schemas/cedar/InvestigationSchema.json","./datassets/BII-I-1.json")

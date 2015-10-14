@@ -196,13 +196,16 @@ class StudyAssayParser:
         for study in rec.studies:
             source_data = self._parse_study(study.metadata["Study File Name"],
                                             ["Source Name","Sample Name","Comment[ENA_SAMPLE]"])
+
+            print "source_data ", source_data
+
             if source_data:
                 study.nodes = source_data
                 final_assays = []
                 for assay in study.assays:
                     cur_assay = ISATabAssayRecord(assay)
                     assay_data = self._parse_study(assay["Study Assay File Name"],
-                                                   ["Sample Name", "Extract Name","Raw Data File", "Derived Data File", "Image File"])
+                                                   ["Sample Name","Extract Name","Raw Data File", "Derived Data File", "Image File"])
                     cur_assay.nodes = assay_data
                     self._get_process_nodes(assay["Study Assay File Name"], cur_assay)
                     final_assays.append(cur_assay)
@@ -260,33 +263,48 @@ class StudyAssayParser:
     def _parse_study(self, fname, node_types):
         """Parse study or assay row oriented file around the supplied base node.
         """
+        #print "parse ", fname
         if not os.path.exists(os.path.join(self._dir, fname)):
             return None
         nodes = {}
         with open(os.path.join(self._dir, fname), "rU") as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
             header = self._swap_synonyms(reader.next())
+            print header
             hgroups = self._collapse_header(header)
             htypes = self._characterize_header(header, hgroups)
+            #print "node_types ", node_types
             for node_type in node_types:
+                #print "node_type ", node_type
                 try:
                     name_index = header.index(node_type)
-                    break
                 except ValueError:
                     name_index = None
-            assert name_index is not None, "Could not find standard header name: %s in %s" \
-                   % (node_types, header)
-            for line in reader:
-                name = line[name_index]
-                try:
-                    node = nodes[name]
-                except KeyError:
-                    node = NodeRecord(name, node_type)
-                    node.metadata = collections.defaultdict(set)
-                    nodes[name] = node
-                attrs = self._line_keyvals(line, header, hgroups, htypes,
+
+                #print "name_index ", name_index
+                if name_index is None:
+                    print "Could not find standard header name: %s in %s" \
+                                            % (node_types, header)
+                    continue
+                #else:
+                    #print "name_index ", name_index
+                in_handle.seek(0)
+                for line in reader:
+                    name = line[name_index]
+                    #print "name ", name
+                    try:
+                        node = nodes[name]
+                    except KeyError:
+                        #print "creating node ", name, node_type
+                        node = NodeRecord(name, node_type)
+                        node.metadata = collections.defaultdict(set)
+                        nodes[name] = node
+                    attrs = self._line_keyvals(line, header, hgroups, htypes,
                                            node.metadata)
                 nodes[name].metadata = attrs
+
+            #print "nodes before returning ", nodes
+
         return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
 
     def _finalize_metadata(self, node):
