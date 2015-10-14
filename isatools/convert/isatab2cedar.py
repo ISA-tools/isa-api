@@ -100,7 +100,6 @@ class ISATab2CEDAR():
     def createStudiesList(self, studies):
         json_list = []
         for study in studies:
-            #print study
             source_dict = self.createStudySubjectDictionary(study.nodes)
             sample_dict = self.createSampleDictionary(study.nodes)
             json_item = dict([
@@ -116,7 +115,7 @@ class ISATab2CEDAR():
                 ("hasContact", self.createStudyContactsList(study.contacts)),
                 ("hasStudyFactor", self.createStudyFactorsList(study.factors)),
                 ("hasStudyAssay", self.createStudyAssaysList(study.assays)),
-                ("hasStudyGroupPopulation", self.createStudyGroupList(study.nodes)),
+                ("hasStudyGroupPopulation", self.createStudyGroupList(source_dict)),
                 #REMOVED FROM SCHEMA, ONLY AVAILABLE IN STUDY GROUP POPULATION NOW - ("hasStudySubject", source_dict.values()),
                 ("hasStudyProtocol", self.createStudyProtocolList(study.protocols)),
                 ("hasProcess", self.createProcessList(study.process_nodes, source_dict, sample_dict))
@@ -124,10 +123,20 @@ class ISATab2CEDAR():
             json_list.append(json_item)
         return json_list
 
-    def createStudyGroupList(self, nodes):
-        #TODO complete
-        return []
+    def createStudyGroupList(self, source_dict):
+         json_list = []
+         json_item = dict([
+                    ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                    ("@type", "https://repo.metadatacenter.org/model/StudyGroupPopulation"),
+                    ("name", dict([("value", "population name")])),
+                    ("type", dict([("value", "http://bioportal.bioontology.org/ontologies/EFO/3232")])),
+                    ("selectionRule",  dict([("value", "selection rule")])),
+                    ("hasStudySubject", source_dict.values())
+                ])
+         json_list.append(json_item)
+         return json_list
 
+    
     def createProcessList(self, process_nodes, source_dict, sample_dict):
         json_list = []
         #TODO fix hasStudyAssay
