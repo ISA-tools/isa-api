@@ -1,6 +1,6 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
     "name": "InvestigationSchema",
+    "$schema": "http://json-schema.org/draft-04/schema#",
     "properties": {
         "investigation": {
             "$schema": "http://json-schema.org/draft-04/schema#",
@@ -22,11 +22,6 @@
                         "description": {
                             "enum": [
                                 "https://repo.metadatacenter.org/model/description"
-                            ]
-                        },
-                        "type": {
-                            "enum": [
-                                "https://repo.metadatacenter.org/model/type"
                             ]
                         },
                         "identifier": {
@@ -402,11 +397,6 @@
                             "https://repo.metadatacenter.org/model/hasStudyGroupPopulation"
                         ]
                     },
-                    "hasStudySubject": {
-                        "enum": [
-                            "https://repo.metadatacenter.org/model/hasStudySubject"
-                        ]
-                    },
                     "hasProcess": {
                         "enum": [
                             "https://repo.metadatacenter.org/model/hasProcess"
@@ -548,13 +538,6 @@
             "hasStudyProtocol": {
                 "items": {
                     "$ref": "#/studyProtocol",
-                    "type": "object"
-                },
-                "type": "array"
-            },
-            "hasStudySubject": {
-                "items": {
-                    "$ref": "#/studySubject",
                     "type": "object"
                 },
                 "type": "array"
@@ -810,7 +793,6 @@
             "hasStudyFactor",
             "hasStudyAssay",
             "hasStudyGroupPopulation",
-            "hasStudySubject",
             "hasProcess"
         ],
         "additionalProperties": false
@@ -939,52 +921,6 @@
                 },
                 "minItems": 1,
                 "type": "array"
-            },
-            "description": {
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "@id": "https://repo.metadatacenter.org/UUID",
-                "additionalProperties": false,
-                "title": "Auto-generated JSON Schema title for 'description' field",
-                "description": "Auto-generated JSON Schema description for 'description' field",
-                "properties": {
-                    "@type": {
-                        "oneOf": [
-                            {
-                                "type": "string",
-                                "format": "uri",
-                                "enum": [
-                                    "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C25365",
-                                    "http://semanticscience.org/resource/SIO_000136"
-                                ]
-                            },
-                            {
-                                "type": "array",
-                                "minItems": 1,
-                                "items": {
-                                    "type": "string",
-                                    "format": "uri",
-                                    "enum": [
-                                        "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C25365",
-                                        "http://semanticscience.org/resource/SIO_000136"
-                                    ]
-                                },
-                                "uniqueItems": true
-                            }
-                        ]
-                    },
-                    "info": {
-                        "description": "Enter a description for the publication",
-                        "input_type": "textfield",
-                        "title": "Description"
-                    },
-                    "value": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "value"
-                ]
             },
             "doi": {
                 "$schema": "http://json-schema.org/draft-04/schema#",
@@ -1501,15 +1437,10 @@
         "version": "1.0.0",
         "provenance": {},
         "title": "Contact",
-        "description": "JSON-LD/Schema Study Template Element",
+        "description": "JSON-LD/Schema Contact Template Element",
         "properties": {
             "@context": {
                 "properties": {
-                    "title": {
-                        "enum": [
-                            "https://repo.metadatacenter.org/model/title"
-                        ]
-                    },
                     "lastName": {
                         "enum": [
                             "https://repo.medadatacenter.org/model/lastName"
@@ -2534,11 +2465,18 @@
         "$schema": "http://json-schema.org/draft-04/schema#",
         "type": "object",
         "@id": "https://repo.metadatacenter.org/UUID",
+        "version": "1.0.0",
+        "provenance": {},
         "title": "Process",
         "description": "JSON-LD/Schema Process Template Element",
         "properties": {
             "@context": {
                 "properties": {
+                    "type": {
+                        "enum": [
+                            "https://repo.metadatacenter.org/model/type"
+                        ]
+                    },
                     "executeStudyProtocol": {
                         "enum": [
                             "https://repo.metadatacenter.org/model/executeStudyProtocol"
@@ -2562,11 +2500,6 @@
                     "hasParameterValue": {
                         "enum": [
                             "https://repo.metadatacenter.org/model/hasParameterValue"
-                        ]
-                    },
-                    "hasCharacteristicValue": {
-                        "enum": [
-                            "https://repo.metadatacenter.org/model/hasCharacteristicValue"
                         ]
                     },
                     "hasParameterValue": {
@@ -2630,6 +2563,13 @@
                 "required": [
                     "value"
                 ]
+            },
+            "schema_version": {
+                "type": "string",
+                "minLength": 1
+            },
+            "instance_provenance": {
+                "$ref": "#/instanceProvenance"
             },
             "executeStudyProtocol": {
                 "$ref": "#/studyProtocol",
@@ -2708,6 +2648,8 @@
         "$schema": "http://json-schema.org/draft-04/schema#",
         "type": "object",
         "@id": "https://repo.metadatacenter.org/UUID",
+        "version": "1.0.0",
+        "provenance": {},
         "title": "Sample",
         "description": "JSON-LD/Schema Sample Template Element",
         "properties": {
@@ -2784,9 +2726,12 @@
                 "type": "string",
                 "format": "uri"
             },
-            "version": {
+            "schema_version": {
                 "type": "string",
                 "minLength": 1
+            },
+            "instance_provenance": {
+                "$ref": "#/instanceProvenance"
             },
             "name": {
                 "$schema": "http://json-schema.org/draft-04/schema#",
@@ -2998,6 +2943,8 @@
         "$schema": "http://json-schema.org/draft-04/schema#",
         "type": "object",
         "@id": "https://repo.metadatacenter.org/UUID",
+        "version": "1.0.0",
+        "provenance": {},
         "title": "Reagent",
         "description": "JSON-LD/Schema Reagent Template Element",
         "properties": {
@@ -3054,9 +3001,12 @@
                 "type": "string",
                 "format": "uri"
             },
-            "version": {
+            "schema_version": {
                 "type": "string",
                 "minLength": 1
+            },
+            "instance_provenance": {
+                "$ref": "#/instanceProvenance"
             },
             "name": {
                 "$schema": "http://json-schema.org/draft-04/schema#",
@@ -3168,9 +3118,35 @@
         "$schema": "http://json-schema.org/draft-04/schema#",
         "type": "object",
         "@id": "https://repo.metadatacenter.org/UUID",
+        "version": "1.0.0",
+        "provenance": {},
         "title": "Study Assay",
         "description": "JSON-LD/Schema Study Assay Template Element",
         "properties": {
+            "@context": {
+                "properties": {
+                    "measurementType": {
+                        "enum": [
+                            "https://repo.metadatacenter.org/model/measurementType"
+                        ]
+                    },
+                    "platform": {
+                        "enum": [
+                            "https://repo.metadatacenter.org/model/platform"
+                        ]
+                    },
+                    "technology": {
+                        "enum": [
+                            "https://repo.medadatacenter.org/model/technology"
+                        ]
+                    },
+                    "value": {
+                        "enum": [
+                            "https://schema.org/value"
+                        ]
+                    }
+                }
+            },
             "@type": {
                 "oneOf": [
                     {
@@ -3199,6 +3175,13 @@
             "@id": {
                 "type": "string",
                 "format": "uri"
+            },
+            "schema_version": {
+                "type": "string",
+                "minLength": 1
+            },
+            "instance_provenance": {
+                "$ref": "#/instanceProvenance"
             },
             "measurementType": {
                 "$schema": "http://json-schema.org/draft-04/schema#",
@@ -3736,6 +3719,13 @@
                 "type": "string",
                 "format": "uri"
             },
+            "schema_version": {
+                "type": "string",
+                "minLength": 1
+            },
+            "instance_provenance": {
+                "$ref": "#/instanceProvenance"
+            },
             "name": {
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "type": "object",
@@ -3881,6 +3871,13 @@
                 "type": "string",
                 "format": "uri"
             },
+            "schema_version": {
+                "type": "string",
+                "minLength": 1
+            },
+            "instance_provenance": {
+                "$ref": "#/instanceProvenance"
+            },
             "type": {
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "type": "object",
@@ -4014,9 +4011,35 @@
         "$schema": "http://json-schema.org/draft-04/schema#",
         "type": "object",
         "@id": "https://repo.metadatacenter.org/UUID",
+        "version": "1.0.0",
+        "provenance": {},
         "title": "Factor Value",
         "description": "JSON-LD/Schema Factor Value Template Element",
         "properties": {
+            "@context": {
+                "properties": {
+                    "type": {
+                        "enum": [
+                            "https://repo.metadatacenter.org/model/type"
+                        ]
+                    },
+                    "unit": {
+                        "enum": [
+                            "https://repo.metadatacenter.org/model/unit"
+                        ]
+                    },
+                    "value": {
+                        "enum": [
+                            "https://schema.org/value"
+                        ]
+                    },
+                    "hasStudyFactor": {
+                        "enum": [
+                            "https://repo.metadatacenter.org/model/hasStudyFactor"
+                        ]
+                    }
+                }
+            },
             "@type": {
                 "oneOf": [
                     {
@@ -4044,13 +4067,41 @@
                 "type": "string",
                 "format": "uri"
             },
-            "factor": {
+            "schema_version": {
+                "type": "string",
+                "minLength": 1
+            },
+            "instance_provenance": {
+                "$ref": "#/instanceProvenance"
+            },
+            "type": {
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "type": "object",
                 "@id": "https://repo.metadatacenter.org/UUID",
                 "additionalProperties": false,
-                "title": "Auto-generated JSON Schema title for 'factor' field",
-                "description": "Auto-generated JSON Schema description for 'factor' field",
+                "title": "Auto-generated JSON Schema title for factor value 'type' field",
+                "description": "Auto-generated JSON Schema description for factor value 'type' field",
+                "properties": {
+                    "info": {
+                        "description": "Select a type for the factor value",
+                        "input_type": "textfield",
+                        "title": "Type of Factor Value"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "value"
+                ]
+            },
+            "unit": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "@id": "https://repo.metadatacenter.org/UUID",
+                "additionalProperties": false,
+                "title": "Auto-generated JSON Schema title for factor value's 'unit' field",
+                "description": "Auto-generated JSON Schema description for factor value's 'unit' field",
                 "properties": {
                     "@type": {
                         "oneOf": [
@@ -4058,7 +4109,7 @@
                                 "type": "string",
                                 "format": "uri",
                                 "enum": [
-                                    "http://www.ebi.ac.uk/efo/EFO_0000001"
+                                    "http://purl.obolibrary.org/obo/UO_0000003"
                                 ]
                             },
                             {
@@ -4068,7 +4119,7 @@
                                     "type": "string",
                                     "format": "uri",
                                     "enum": [
-                                        "http://www.ebi.ac.uk/efo/EFO_0000001"
+                                        "http://purl.obolibrary.org/obo/UO_0000003"
                                     ]
                                 },
                                 "uniqueItems": true
@@ -4076,9 +4127,9 @@
                         ]
                     },
                     "info": {
-                        "description": "Select a factor",
+                        "description": "Select unit for the factor value",
                         "input_type": "textfield",
-                        "title": "Factor"
+                        "title": "Unit of Factor Value"
                     },
                     "value": {
                         "type": "string"
@@ -4125,13 +4176,22 @@
                 "required": [
                     "value"
                 ]
+            },
+            "hasStudyFactor": {
+                "items": {
+                    "$ref": "#/studyFactor",
+                    "type": "object"
+                },
+                "type": "array"
             }
         },
         "required": [
             "@type",
             "@id",
-            "factor",
-            "value"
+            "type",
+            "unit",
+            "value",
+            "hasStudyFactor"
         ],
         "additionalProperties": false
     },
@@ -4139,9 +4199,35 @@
         "$schema": "http://json-schema.org/draft-04/schema#",
         "type": "object",
         "@id": "https://repo.metadatacenter.org/UUID",
+        "version": "1.0.0",
+        "provenance": {},
         "title": "Parameter Value",
         "description": "JSON-LD/Schema Parameter Value Template Element",
         "properties": {
+            "@context": {
+                "properties": {
+                    "type": {
+                        "enum": [
+                            "https://repo.metadatacenter.org/model/type"
+                        ]
+                    },
+                    "unit": {
+                        "enum": [
+                            "https://repo.metadatacenter.org/model/unit"
+                        ]
+                    },
+                    "value": {
+                        "enum": [
+                            "https://schema.org/value"
+                        ]
+                    },
+                    "hasProtocolParameter": {
+                        "enum": [
+                            "https://repo.metadatacenter.org/model/hasProtocolParameter"
+                        ]
+                    }
+                }
+            },
             "@type": {
                 "oneOf": [
                     {
@@ -4169,12 +4255,41 @@
                 "type": "string",
                 "format": "uri"
             },
-            "parameter": {
+            "schema_version": {
+                "type": "string",
+                "minLength": 1
+            },
+            "instance_provenance": {
+                "$ref": "#/instanceProvenance"
+            },
+            "type": {
                 "$schema": "http://json-schema.org/draft-04/schema#",
                 "type": "object",
                 "@id": "https://repo.metadatacenter.org/UUID",
-                "title": "Auto-generated JSON Schema title for 'parameter' field",
-                "description": "Auto-generated JSON Schema description for 'parameter' field",
+                "additionalProperties": false,
+                "title": "Auto-generated JSON Schema title for parameter value 'type' field",
+                "description": "Auto-generated JSON Schema description for parameter value 'type' field",
+                "properties": {
+                    "info": {
+                        "description": "Select a type for the parameter value",
+                        "input_type": "textfield",
+                        "title": "Type of Parameter Value"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "value"
+                ]
+            },
+            "unit": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "@id": "https://repo.metadatacenter.org/UUID",
+                "additionalProperties": false,
+                "title": "Auto-generated JSON Schema title for parameter value's 'unit' field",
+                "description": "Auto-generated JSON Schema description for parameter value's 'unit' field",
                 "properties": {
                     "@type": {
                         "oneOf": [
@@ -4182,7 +4297,7 @@
                                 "type": "string",
                                 "format": "uri",
                                 "enum": [
-                                    "http://www.ebi.ac.uk/efo/EFO_0002658"
+                                    "http://purl.obolibrary.org/obo/UO_0000003"
                                 ]
                             },
                             {
@@ -4192,7 +4307,7 @@
                                     "type": "string",
                                     "format": "uri",
                                     "enum": [
-                                        "http://www.ebi.ac.uk/efo/EFO_0002658"
+                                        "http://purl.obolibrary.org/obo/UO_0000003"
                                     ]
                                 },
                                 "uniqueItems": true
@@ -4200,9 +4315,9 @@
                         ]
                     },
                     "info": {
-                        "description": "Select a parameter of the protocol",
+                        "description": "Select unit for the parameter value",
                         "input_type": "textfield",
-                        "title": "Parameter"
+                        "title": "Unit of Parameter Value"
                     },
                     "value": {
                         "type": "string"
@@ -4210,8 +4325,7 @@
                 },
                 "required": [
                     "value"
-                ],
-                "additionalProperties": false
+                ]
             },
             "value": {
                 "$schema": "http://json-schema.org/draft-04/schema#",
@@ -4256,13 +4370,22 @@
                 "required": [
                     "value"
                 ]
+            },
+            "hasProtocolParameter": {
+                "items": {
+                    "$ref": "#/protocolParameter",
+                    "type": "object"
+                },
+                "type": "array"
             }
         },
         "required": [
             "@type",
             "@id",
-            "parameter",
-            "value"
+            "type",
+            "unit",
+            "value",
+            "hasProtocolParameter"
         ],
         "additionalProperties": false
     },
@@ -4326,9 +4449,12 @@
                 "type": "string",
                 "format": "uri"
             },
-            "version": {
+            "schema_version": {
                 "type": "string",
                 "minLength": 1
+            },
+            "instance_provenance": {
+                "$ref": "#/instanceProvenance"
             },
             "name": {
                 "$schema": "http://json-schema.org/draft-04/schema#",
@@ -4481,9 +4607,12 @@
                 "type": "string",
                 "format": "uri"
             },
-            "version": {
+            "schema_version": {
                 "type": "string",
                 "minLength": 1
+            },
+            "instance_provenance": {
+                "$ref": "#/instanceProvenance"
             },
             "type": {
                 "$schema": "http://json-schema.org/draft-04/schema#",

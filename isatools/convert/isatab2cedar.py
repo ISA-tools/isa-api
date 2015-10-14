@@ -117,7 +117,7 @@ class ISATab2CEDAR():
                 ("hasStudyFactor", self.createStudyFactorsList(study.factors)),
                 ("hasStudyAssay", self.createStudyAssaysList(study.assays)),
                 ("hasStudyGroupPopulation", self.createStudyGroupList(study.nodes)),
-                ("hasStudySubject", source_dict.values()),
+                #REMOVED FROM SCHEMA, ONLY AVAILABLE IN STUDY GROUP POPULATION NOW - ("hasStudySubject", source_dict.values()),
                 ("hasStudyProtocol", self.createStudyProtocolList(study.protocols)),
                 ("hasProcess", self.createProcessList(study.process_nodes, source_dict, sample_dict))
             ])
@@ -150,11 +150,7 @@ class ISATab2CEDAR():
 
     def createInputOutputList(self, arguments, source_dict, sample_dict):
         json_list = []
-        print "arguments ", arguments
-        print "source_dict ", source_dict
-        print "sample_dict ", sample_dict
         for argument in arguments:
-            #print "argument ", argument
             try:
                 json_item = source_dict[argument]
                 json_list.append(json_item)

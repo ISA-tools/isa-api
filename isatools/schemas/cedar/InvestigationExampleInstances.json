@@ -72,29 +72,6 @@
                         ]
                     }
                 ],
-                "hasStudySubject": [
-                    {
-                        "@type": "https://repo.metadatacenter.org/model/StudySubject",
-                        "@id": "https://repo.metadatacenter.org/UUID",
-                        "name": { "value": "study subject name" },
-                        "type": { "value": "http://purl.obolibrary.org/obo/OBI_0000925" },
-                        "hasCharacteristic": [
-                            {
-                                "@type": "https://repo.metadatacenter.org/model/Characteristic",
-                                "@id": "https://repo.metadatacenter.org/UUID",
-                                "name": { "value": "a characteristic name" },
-                                "description": { "value": "a characteristic description" },
-                                "hasCharacteristicValue": {
-                                    "@type": "https://repo.metadatacenter.org/model/CharacteristicValue",
-                                    "@id": "https://repo.metadatacenter.org/UUID",
-                                    "type": { "value": "a characteristic type" },
-                                    "unit": { "value": "a characteristic unit" },
-                                    "value": { "value": "a characteristic value" }
-                                }
-                            }
-                        ]
-                    }
-                ],
                 "hasStudyFactor": [
                     {
                         "@type": "https://repo.metadatacenter.org/model/StudyFactor",
@@ -177,8 +154,17 @@
                             {
                                 "@type": "https://repo.metadatacenter.org/model/ParameterValue",
                                 "@id": "https://repo.metadatacenter.org/UUID",
-                                "parameter": { "value": "p1" },
-                                "value": { "value": "v1" }
+                                "type": { "value": "a parameter value type" },
+                                "unit": { "value": "a parameter value unit" },
+                                "value": { "value": "a parameter value" },
+                                "hasProtocolParameter": [
+                                    {
+                                        "@type": "https://repo.metadatacenter.org/model/ProtocolParameter",
+                                        "@id": "https://repo.metadatacenter.org/UUID",
+                                        "name": { "value": "p1" },
+                                        "description": { "value": "a protocol parameter description" }
+                                    }
+                                ]
                             }
                         ],
                         "hasInput": [
@@ -259,8 +245,17 @@
                                     {
                                         "@type": "https://repo.metadatacenter.org/model/FactorValue",
                                         "@id": "https://repo.metadatacenter.org/UUID",
-                                        "factor": { "value": "a factor" },
-                                        "value": { "value": "a factor value" }
+                                        "type": { "value": "a factor value type" },
+                                        "unit": { "value": "a factor value unit" },
+                                        "value": { "value": "a factor value" },
+                                        "hasStudyFactor": [
+                                            {
+                                                "@type": "https://repo.metadatacenter.org/model/StudyFactor",
+                                                "@id": "https://repo.metadatacenter.org/UUID",
+                                                "name": { "value": "weight" },
+                                                "description": { "value": "a study factor description" }
+                                            }
+                                        ]
                                     }
                                 ]
                             }
