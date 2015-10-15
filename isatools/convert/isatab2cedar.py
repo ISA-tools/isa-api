@@ -15,6 +15,7 @@ from isatools.io.isatab_parser import parse
 CEDAR_SCHEMA_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/cedar")
 
 class ISATab2CEDAR():
+
     def createCEDARjson_folder(self, work_dir, json_dir, inv_identifier):
         print "Convert ISA datasets in folder ", work_dir
         path = os.path.abspath(work_dir)
@@ -443,9 +444,9 @@ class ISATab2CEDAR():
 
 
 #local tests
-isa2cedar = ISATab2CEDAR()
+#isa2cedar = ISATab2CEDAR()
 #isa2cedar.createCEDARjson("../../tests/data/BII-I-1", "./schemas/cedar", True)
-isa2cedar.createCEDARjson("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1", "../../tests/datasets/metabolights", False)
+#isa2cedar.createCEDARjson("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1", "../../tests/datasets/metabolights", False)
 #isa2cedar.createCEDARjson("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS161", "../../tests/datasets/metabolights", False)
 #isa2cedar.createCEDARjson_folder("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/", "../../tests/datasets/metabolights", False)
 

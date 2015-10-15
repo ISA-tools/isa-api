@@ -1,6 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "Study JSON Schema",
+    "name": "Study JSON Schema",
     "description": "JSON Schema describing an Study",
     "@context": {
         "@base": "http://purl.org/isaterms/",
@@ -13,8 +14,6 @@
         "description" : { "type" : "string"},
         "submissionDate" : { "type" : "string", "format" : "date-time"},
         "publicReleaseDate" : { "type" : "string", "format" : "date-time"},
-        "createdWithConfiguration" : { "type": "string"},
-        "lastOpenedWithConfiguration" : { "type" : "string" },
         "publications" : {
             "type" : "array",
             "items" : {
