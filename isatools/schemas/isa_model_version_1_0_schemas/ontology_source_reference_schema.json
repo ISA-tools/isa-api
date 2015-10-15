@@ -1,12 +1,13 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema",
     "title" : "ISA ontology source reference schema",
+    "name" : "ISA ontology source reference schema",
     "description" : "JSON-schema representing an ontology reference in the ISA model",
     "type" : "object",
     "properties" : {
         "description" : { "type" : "string" },
         "file" : { "type" : "string" },
-         "name": {"type": "string"},
-         "version": { "type": "string"}
+        "name": {"type": "string"},
+        "version": { "type": "string"}
     }
 }
