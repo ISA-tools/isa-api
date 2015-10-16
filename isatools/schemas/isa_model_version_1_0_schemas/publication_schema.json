@@ -1,6 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema",
     "title" : "ISA investigation schema",
+    "name" : "ISA investigation schema",
     "description" : "JSON-schema representing an investigation in the ISA model",
     "type" : "object",
     "properties" : {
@@ -8,8 +9,7 @@
         "doi" : { "type" : "string"},
         "authorList" : { "type" : "string" },
         "title" : { "type" : "string" },
-        "status" : { "type" : "string" },
-        "ontologyAnnotation" : {
+        "status" : {
             "#ref": "ontology_annotation_schema.json#"
         }
     }
