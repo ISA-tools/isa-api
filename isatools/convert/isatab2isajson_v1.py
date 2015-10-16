@@ -32,6 +32,7 @@ class ISATab2ISAjson_v1():
 
         print SCHEMAS_PATH
 
+        #warlock related
         #investigation_schema = json.load(open(join(SCHEMAS_PATH,INVESTIGATION_SCHEMA)))
         #Investigation = warlock.model_factory(investigation_schema)
         # isa_schema = json.load(open(join(SCHEMAS_PATH,ISA_MODEL_V1_SCHEMA)))
@@ -94,31 +95,76 @@ class ISATab2ISAjson_v1():
                 ("email", contact[inv_or_study+" Person Email"]),
                 ("phone", contact[inv_or_study+" Person Phone"]),
                 ("fax", contact[inv_or_study+" Person Fax"]),
-                ("address", contact[inv_or_study+" Person Address"])
-        # "affiliations" : {
+                ("address", contact[inv_or_study+" Person Address"]),
+                ("affiliations", contact[inv_or_study+" Person Affiliation"]),
+               #TODO
+                ("roles", [])
             ])
             people_json.append(person_json)
         return people_json
 
 
     def createPublications(self, publications, inv_or_study):
-        publication_schema = json.load(open(join(SCHEMAS_PATH, PUBLICATION_SCHEMA)))
-        Publication = warlock.model_factory(publication_schema)
+        # publication_schema = json.load(open(join(SCHEMAS_PATH, PUBLICATION_SCHEMA)))
+        # Publication = warlock.model_factory(publication_schema)
+        # publications_json = []
+        # for pub in publications:
+        #     publication_json = Publication(
+        #          pubMedID = pub[inv_or_study+' PubMed ID'],
+        #          doi = pub[inv_or_study+' Publication DOI'],
+        #          authorList = pub[inv_or_study+' Publication Author List'],
+        #          title = pub[inv_or_study+' Publication Title'],
+        #         #status = self.createStatusOntologyAnnotation(pub)
+        #     )
+        #     publications_json.append(publication_json)
+        # return publications_json
+
         publications_json = []
         for pub in publications:
-            print pub
-            publication_json = Publication(
-                 pubMedID = pub[inv_or_study+' PubMed ID'],
-                 doi = pub[inv_or_study+' Publication DOI'],
-                 authorList = pub[inv_or_study+' Publication Author List'],
-                 title = pub[inv_or_study+' Publication Title'],
-                #status = self.createStatusOntologyAnnotation(pub)
+            publication_json = dict([
+                ("pubMedID", pub[inv_or_study+' PubMed ID']),
+                ("doi", pub[inv_or_study+' Publication DOI']),
+                ("authorList", pub[inv_or_study+' Publication Author List']),
+                ("title", pub[inv_or_study+' Publication Title']),
+                ("status", self.createOntologyAnnotation(pub, inv_or_study, " Publication Status"))
+            ]
             )
-        # "title" : { "type" : "string" },
-        # "status" : { "type" : "string" },
-        # "ontologyAnnotation" : {
             publications_json.append(publication_json)
         return publications_json
+
+    def createProtocols(self, protocols):
+        protocols_json = []
+        for protocol in protocols:
+            protocol_json = dict([
+                ("name", protocol['Study Protocol Name']),
+                ("type", self.createOntologyAnnotation(protocol,"Study", " Protocol Type")),
+                ("description", protocol['Study Protocol Description']),
+                ("uri", protocol['Study Protocol URI']),
+                ("version", protocol['Study Protocol Version']),
+                #("parameters", self.createOntologyAnnotations(protocol['Study Protocol Parameters Name'],"Study", " Protocol Parameters Name")),
+            ]
+            )
+            protocols_json.append(protocol_json)
+        return protocols_json
+
+    def createOntologyAnnotation(self, object, inv_or_study, type):
+        onto_ann = dict([
+            ("name", object[inv_or_study+type]),
+            ("termSource", object[inv_or_study+type+" Term Source REF"]),
+            ("termAccession", object[inv_or_study+type+" Term Accession Number"])
+        ])
+        return onto_ann
+
+    def createOntologyAnnotations(self, array, inv_or_study, type):
+        onto_annotations = []
+        for object in array:
+            onto_ann = dict([
+                ("name", object[inv_or_study+type]),
+                ("termSource", object[inv_or_study+type+" Term Source REF"]),
+                ("termAccession", object[inv_or_study+type+" Term Accession Number"])
+            ])
+            onto_annotations.append(onto_ann)
+        return onto_annotations
 
 
     def createOntologySourceReferences(self, ontology_refs):
@@ -167,9 +213,9 @@ class ISATab2ISAjson_v1():
                 ("submissionDate", study.metadata['Study Submission Date']),
                 ("publicReleaseDate", study.metadata['Study Public Release Date']),
                 ("people", self.createContacts(study.contacts, "Study")),
-                ("studyDesignDescriptors",[]),
+                ("studyDesignDescriptors",self.createOntologyAnnotations(study.design_descriptors,"Study", " Design Type")),
                 ("publications", self.createPublications(study.publications, "Study")),
-                ("protocols", []),
+                ("protocols", self.createProtocols(study.protocols)),
                 ("sources", []),
                 ("samples",[]),
                 ("processSequence", []),
