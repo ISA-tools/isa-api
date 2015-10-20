@@ -195,7 +195,7 @@ class StudyAssayParser:
         final_studies = []
         for study in rec.studies:
             source_data = self._parse_study(study.metadata["Study File Name"],
-                                            ["Source Name","Sample Name","Comment[ENA_SAMPLE]"])
+                                            ["Source Name", "Sample Name", "Comment[ENA_SAMPLE]"])
             if source_data:
                 study.nodes = source_data
                 final_assays = []
@@ -225,15 +225,21 @@ class StudyAssayParser:
             hgroups = self._collapse_header(headers)
             htypes = self._characterize_header(headers, hgroups)
 
+            # print "headers:", headers
+            # print "hgroups:", hgroups
+            # print "htypes:", htypes
+
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
             node_indices = [i for i, x in enumerate(htypes) if x == "node"]
 
+            # print "processing_indices ->", processing_indices
+            # print "node_indices -> ", node_indices
             for processing_index in processing_indices:
                 try:
                     input_index = find_lt(node_indices, processing_index)
                     output_index = find_gt(node_indices, processing_index)
                 except ValueError:
-                    print "Invalid indices for process nodes"
+                    # print "Invalid indices for process nodes"
                     break
                 input_header = headers[hgroups[input_index][0]]
                 output_header = headers[hgroups[output_index][0]]
@@ -243,9 +249,13 @@ class StudyAssayParser:
                 for line in reader:
                     if line_number >=  max_number:
                         input_name = line[hgroups[input_index][0]]
+                        input_type =  headers[input_index]
+                        input_node_index = input_type+input_name
+                        # print "input_name ", input_name
+                        # print "input_type ", input_type
                         #output_name = line[hgroups[output_index][0]]
                         processing_name = line[hgroups[processing_index][0]]
-                        input_node = study.nodes[input_name]
+                        input_node = study.nodes[input_node_index]
                         process_node = ProcessNodeRecord(processing_name, processing_header, study)
                         process_node.outputs = input_node.metadata[output_header]
                         process_node.inputs = input_node.metadata[input_header]
@@ -269,35 +279,35 @@ class StudyAssayParser:
             header = self._swap_synonyms(reader.next())
             hgroups = self._collapse_header(header)
             htypes = self._characterize_header(header, hgroups)
-            #print "node_types ", node_types
+
             for node_type in node_types:
-                #print "node_type ", node_type
                 try:
                     name_index = header.index(node_type)
                 except ValueError:
                     name_index = None
 
-                #print "name_index ", name_index
                 if name_index is None:
-                    print "Could not find standard header name: %s in %s" \
-                                            % (node_type, header)
+                    #print "Could not find standard header name: %s in %s" \
+                    #                        % (node_type, header)
                     continue
-                #else:
-                    #print "name_index ", name_index
-                in_handle.seek(0)
+
+                in_handle.seek(0, 0)
                 for line in reader:
                     name = line[name_index]
+                    node_index = node_type+name
+                    if name in header:
+                        continue
                     #print "name ", name
                     try:
-                        node = nodes[name]
+                        node = nodes[name+node_type]
                     except KeyError:
-                        #print "creating node ", name, node_type
+                        #print "creating node ", node_index
                         node = NodeRecord(name, node_type)
                         node.metadata = collections.defaultdict(set)
-                        nodes[name] = node
+                        nodes[node_index] = node
                     attrs = self._line_keyvals(line, header, hgroups, htypes,
                                            node.metadata)
-                nodes[name].metadata = attrs
+                nodes[node_index].metadata = attrs
 
             #print "nodes before returning ", nodes
 

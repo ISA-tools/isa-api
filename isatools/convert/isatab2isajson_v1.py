@@ -141,7 +141,7 @@ class ISATab2ISAjson_v1():
                 ("description", protocol['Study Protocol Description']),
                 ("uri", protocol['Study Protocol URI']),
                 ("version", protocol['Study Protocol Version']),
-                #("parameters", self.createOntologyAnnotations(protocol['Study Protocol Parameters Name'],"Study", " Protocol Parameters Name")),
+                ("parameters", self.createOntologyAnnotationsFromStringList(protocol,"Study", " Protocol Parameters Name")),
             ]
             )
             protocols_json.append(protocol_json)
@@ -155,7 +155,24 @@ class ISATab2ISAjson_v1():
         ])
         return onto_ann
 
-    def createOntologyAnnotations(self, array, inv_or_study, type):
+
+    def createOntologyAnnotationsFromStringList(self, object, inv_or_study, type):
+        name_array = object[inv_or_study+type].split(";")
+        term_source_array = object[inv_or_study+type+" Term Source REF"].split(";")
+        term_accession_array = object[inv_or_study+type+" Term Accession Number"].split(";")
+        onto_annotations = []
+
+        for i in xrange(0,len(name_array)):
+             onto_ann = dict([
+                 ("name", name_array[i]),
+                 ("termSource", term_source_array[i]),
+                 ("termAccession", term_accession_array[i])
+             ])
+             onto_annotations.append(onto_ann)
+        return onto_annotations
+
+
+    def createOntologyAnnotationsFromObject(self, array, inv_or_study, type):
         onto_annotations = []
         for object in array:
             onto_ann = dict([
@@ -182,6 +199,27 @@ class ISATab2ISAjson_v1():
         return ontologies
 
     def createStudies(self, studies):
+        study_array = []
+        for study in studies:
+            studyJson = dict([
+                ("identifier",study.metadata['Study Identifier']),
+                ("title", study.metadata['Study Title']),
+                ("description", study.metadata['Study Description']),
+                ("submissionDate", study.metadata['Study Submission Date']),
+                ("publicReleaseDate", study.metadata['Study Public Release Date']),
+                ("people", self.createContacts(study.contacts, "Study")),
+                ("studyDesignDescriptors",self.createOntologyAnnotationsFromObject(study.design_descriptors,"Study", " Design Type")),
+                ("publications", self.createPublications(study.publications, "Study")),
+                ("protocols", self.createProtocols(study.protocols)),
+                ("sources", self.createSources(study.nodes)),
+                ("samples",[]),
+                ("processSequence", []),
+                ("assays", [])
+            ])
+            study_array.append(studyJson)
+
+        return study_array
+
         # study_schema = json.load(open(join(SCHEMAS_PATH,STUDY_SCHEMA)))
         # Study = warlock.model_factory(study_schema)
         # study_array = []
@@ -204,25 +242,32 @@ class ISATab2ISAjson_v1():
         #     study_array.append(studyJson)
         # return study_array
 
-        study_array = []
-        for study in studies:
-            studyJson = dict([
-                ("identifier",study.metadata['Study Identifier']),
-                ("title", study.metadata['Study Title']),
-                ("description", study.metadata['Study Description']),
-                ("submissionDate", study.metadata['Study Submission Date']),
-                ("publicReleaseDate", study.metadata['Study Public Release Date']),
-                ("people", self.createContacts(study.contacts, "Study")),
-                ("studyDesignDescriptors",self.createOntologyAnnotations(study.design_descriptors,"Study", " Design Type")),
-                ("publications", self.createPublications(study.publications, "Study")),
-                ("protocols", self.createProtocols(study.protocols)),
-                ("sources", []),
-                ("samples",[]),
-                ("processSequence", []),
-                ("assays", [])
-            ])
-        study_array.append(studyJson)
-        return study_array
+
+
+    def createSources(self, nodes):
+        json_dict = dict([])
+        for node_name in nodes:
+            if nodes[node_name].ntype == "Source Name":
+                json_item = dict([
+                    ("name", dict([("value", node_name)])),
+                    ("characteristics", self.createCharacteristicList(node_name, nodes[node_name])),
+                ])
+                json_dict.update({node_name: json_item})
+        return json_dict
+
+
+    def createCharacteristicList(self, node_name, node):
+        json_list = []
+        for header in node.metadata:
+            if header.startswith("Characteristics"):
+                 characteristic = header.replace("]", "").split("[")[-1]
+                 json_item = dict([
+                    ("name", dict([("value", characteristic)])),
+                    ("termSource", dict([("value", "")])),
+                    ("termAccession", self.createCharacteristicValueList(node.metadata[header]))
+                    ])
+                 json_list.append(json_item)
+        return json_list
 
 
 
