@@ -1,10 +1,11 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema",
     "title" : "ISA ontology reference schema",
+    "name" : "ISA ontology reference schema",
     "description" : "JSON-schema representing an ontology reference or annotation in the ISA model (for fields that are required to be ontology annotations)",
     "type" : "object",
     "properties" : {
-        "name": { "type" : "string"},
+        "name": { "type" : "string" },
         "termSource" : {
             "type" : "string",
             "description" : "The abbreviated ontology name. It should correspond to one of the sources as specified in the ontologySourceReference section of the Investigation."
