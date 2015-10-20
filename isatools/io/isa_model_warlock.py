@@ -1,5 +1,3 @@
-__author__ = 'dj'
-
 import warlock
 import json
 import os
@@ -8,6 +6,49 @@ JSONv1_SCHEMA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "
 
 investigation_schema = json.load(open(os.path.join(JSONv1_SCHEMA_PATH, 'investigation_schema.json')))
 study_schema = json.load(open(os.path.join(JSONv1_SCHEMA_PATH, 'study_schema.json')))
+ontology_source_reference_schema = json.load(open(os.path.join(JSONv1_SCHEMA_PATH, 'ontology_source_reference_schema.json')))
+publication_schema = json.load(open(os.path.join(JSONv1_SCHEMA_PATH, 'publication_schema.json')))
+ontology_annotation_schema = json.load(open(os.path.join(JSONv1_SCHEMA_PATH, 'ontology_annotation_schema.json')))
+study_factor_schema = json.load(open(os.path.join(JSONv1_SCHEMA_PATH, 'factor_schema.json')))
+assay_schema = json.load(open(os.path.join(JSONv1_SCHEMA_PATH, 'assay_schema.json')))
+study_protocol_schema = json.load(open(os.path.join(JSONv1_SCHEMA_PATH, 'protocol_schema.json')))
+contact_schema = json.load(open(os.path.join(JSONv1_SCHEMA_PATH, 'person_schema.json')))
+
+def ontology_source_reference_factory(**kwargs):
+    OntologySourceReference = warlock.model_factory(ontology_source_reference_schema)
+    obj = OntologySourceReference(kwargs)
+    return obj
+
+
+def ontology_annotation_factory(**kwargs):
+    OntologyAnnotation = warlock.model_factory(ontology_annotation_schema)
+    obj = OntologyAnnotation(kwargs)
+    return obj
+
+
+def publication_factory(**kwargs):
+    Publication = warlock.model_factory(publication_schema)
+    obj = Publication(kwargs)
+    return obj
+
+
+def study_factor_factory(**kwargs):
+    StudyFactor = warlock.model_factory(study_factor_schema)
+    obj = StudyFactor(kwargs)
+    return obj
+
+
+def study_protocol_factory(**kwargs):
+    StudyProtocol = warlock.model_factory(study_protocol_schema)
+    obj = StudyProtocol(kwargs)
+    return obj
+
+
+def contact_factory(**kwargs):
+    Contact = warlock.model_factory(contact_schema)
+    obj = Contact(kwargs)
+    return obj
+
 
 def investigation_factory(**kwargs):
     """
@@ -31,6 +72,8 @@ def investigation_factory(**kwargs):
     """
     Investigation = warlock.model_factory(investigation_schema)
     obj = Investigation(kwargs)
+    obj.ontologySourceReferences = []
+    obj.publications = []
     return obj
 
 
@@ -56,4 +99,14 @@ def study_factory(**kwargs):
     """
     Study = warlock.model_factory(study_schema)
     obj = Study(kwargs)
+    obj.studyDesignDescriptors = []
+    obj.publications = []
+    obj.studyFactors = []
+    obj.assays = []
+    return obj
+
+
+def assay_factory(**kwargs):
+    Assay = warlock.model_factory(assay_schema)
+    obj = Assay(kwargs)
     return obj
