@@ -1,6 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "Assay JSON Schema",
+    "name": "Assay JSON Schema",
     "description": "JSON Schema describing an Assay",
     "@context": {
         "@base": "http://purl.org/isaterms/",
