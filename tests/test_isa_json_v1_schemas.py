@@ -19,6 +19,10 @@ class ISASchemasTest(unittest.TestCase):
         schema = json.load(open(self._schema_dir + "/ontology_source_reference_schema.json"))
         Draft4Validator.check_schema(schema)
 
+    def test_ontology_annotation_schema(self):
+        schema = json.load(open(self._schema_dir + "/ontology_annotation_schema.json"))
+        Draft4Validator.check_schema(schema)
+
     def test_factor_schema(self):
         schema = json.load(open(self._schema_dir + "/factor_schema.json"))
         Draft4Validator.check_schema(schema)
@@ -35,9 +39,9 @@ class ISASchemasTest(unittest.TestCase):
         schema = json.load(open(self._schema_dir + "/sample_schema.json"))
         Draft4Validator.check_schema(schema)
 
-    def test_assay_table_schema(self):
-        schema = json.load(open(self._schema_dir + "/assay_table_schema.json"))
-        Draft4Validator.check_schema(schema)
+    # def test_assay_table_schema(self):
+    #     schema = json.load(open(self._schema_dir + "/assay_table_schema.json"))
+    #     Draft4Validator.check_schema(schema)
 
     def test_assay_schema(self):
         schema = json.load(open(self._schema_dir + "/assay_schema.json"))
