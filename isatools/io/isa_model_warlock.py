@@ -1,6 +1,7 @@
 import warlock
 import json
 import os
+from jsonschema import RefResolver
 
 JSONv1_SCHEMA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas")
 
@@ -13,47 +14,76 @@ study_factor_schema = json.load(open(os.path.join(JSONv1_SCHEMA_PATH, 'factor_sc
 assay_schema = json.load(open(os.path.join(JSONv1_SCHEMA_PATH, 'assay_schema.json')))
 study_protocol_schema = json.load(open(os.path.join(JSONv1_SCHEMA_PATH, 'protocol_schema.json')))
 contact_schema = json.load(open(os.path.join(JSONv1_SCHEMA_PATH, 'person_schema.json')))
+schemas_path = 'file://' + JSONv1_SCHEMA_PATH + '/'
+resolver = RefResolver(schemas_path, None)
+
+
+
+
 
 def ontology_source_reference_factory(**kwargs):
-    OntologySourceReference = warlock.model_factory(ontology_source_reference_schema)
+    """This annotation section is identical to that in the MAGE-TAB format.
+
+    Attributes:
+        name: The name of the source of a term; i.e. the source controlled vocabulary or ontology. These names will be
+            used in all corresponding Term Source REF fields.
+        file: A file name or a URI of an official resource.
+        version: The version number of the Term Source to support terms tracking.
+        description: Use for disambiguating resources when homologous prefixes have been used.
+
+    Args:
+        A list of parameters of any of the above. Ignores any params we don't know about
+
+    Returns:
+        a OntologySourceReference object - get and set properties above as normal
+
+    References:
+        Schema - ontology_source_reference_schema.json
+        Specification - ISA-TAB RC1 v1.0 November 2008, section 4.1.1
+
+    """
+    OntologySourceReference = warlock.model_factory(ontology_source_reference_schema, resolver)
     obj = OntologySourceReference(kwargs)
     return obj
 
 
 def ontology_annotation_factory(**kwargs):
-    OntologyAnnotation = warlock.model_factory(ontology_annotation_schema)
+    OntologyAnnotation = warlock.model_factory(ontology_annotation_schema, resolver)
     obj = OntologyAnnotation(kwargs)
     return obj
 
 
 def publication_factory(**kwargs):
-    Publication = warlock.model_factory(publication_schema)
+
+    Publication = warlock.model_factory(publication_schema, resolver)
     obj = Publication(kwargs)
     return obj
 
 
 def study_factor_factory(**kwargs):
-    StudyFactor = warlock.model_factory(study_factor_schema)
+    StudyFactor = warlock.model_factory(study_factor_schema, resolver)
     obj = StudyFactor(kwargs)
     return obj
 
 
 def study_protocol_factory(**kwargs):
-    StudyProtocol = warlock.model_factory(study_protocol_schema)
+    StudyProtocol = warlock.model_factory(study_protocol_schema, resolver)
     obj = StudyProtocol(kwargs)
+    obj.parameters = []
     return obj
 
 
 def contact_factory(**kwargs):
-    Contact = warlock.model_factory(contact_schema)
+    Contact = warlock.model_factory(contact_schema, resolver)
     obj = Contact(kwargs)
+    obj.roles = []
     return obj
 
 
 def investigation_factory(**kwargs):
     """
     An investigation maintains metadata about the project context and links to one or more studies. There can only
-    be 1 Investigation in an ISA package. Investigations has the following properties:
+        be 1 Investigation in an ISA package. Investigations has the following properties:
 
     Attributes:
         identifier: A locally unique identifier or an accession number provided by a repository.
@@ -65,48 +95,66 @@ def investigation_factory(**kwargs):
         publications: Publications associated with an Investigation.
         contacts: People/contacts associated with an Investigation.
         studies: Study is the central unit, containing information on the subject under study, its characteristics and
-        any treatments applied.
+            any treatments applied.
 
-    Args: A list of parameters of any of the above. Ignores any params we don't know about
-    Returns: an Investigation object - get and set properties above as normal
+    Args:
+        A list of parameters of any of the above. Ignores any params we don't know about
+
+    Returns:
+        an Investigation object - get and set properties above as normal
+
+    Schema - investigation_schema.json
+    Specification - ISA-TAB RC1 v1.0 November 2008, section 4.1.2
+
     """
-    Investigation = warlock.model_factory(investigation_schema)
+    Investigation = warlock.model_factory(investigation_schema, resolver)
     obj = Investigation(kwargs)
     obj.ontologySourceReferences = []
     obj.publications = []
+    obj.studies = []
     return obj
 
 
 def study_factory(**kwargs):
     """Study is the central unit, containing information on the subject under study, its characteristics
-    and any treatments applied.
+        and any treatments applied.
 
     Attributes:
-        identifier: A unique identifier: either a temporary identifier supplied by users or one generated by a
-        repository or other database.
-        title: A concise phrase used to encapsulate the purpose and goal of the study.
-        description: A textual description of the study, with components such as objective or goals.
-        submissionDate: The date on which the study is submitted to an archive.
-        publicReleaseDate: The date on which the study should be released publicly.
-        fileName: A field to specify the name of the Study file corresponding the definition of that Study.
-        designDescriptors: Classifications of the study based on the overall experimental design.
-        publications: Publications associated with a Study.
-        contacts: People/contacts associated with a Study.
-        factors: A factor corresponds to an independent variable manipulated by the experimentalist with the intention
-        to affect biological systems in a way that can be measured by an assay.
-        protocols: Protocols used within the ISA artifact.
-        assays: An Assay represents a portion of the experimental design.
+        identifier (string): A unique identifier: either a temporary identifier supplied by users or one generated by a
+            repository or other database.
+        title (string): A concise phrase used to encapsulate the purpose and goal of the study.
+        description (string): A textual description of the study, with components such as objective or goals.
+        submissionDate (date-time): The date on which the study is submitted to an archive.
+        publicReleaseDate (date-time): The date on which the study should be released publicly.
+        fileName (string): A field to specify the name of the Study file corresponding the definition of that Study.
+        designDescriptors (array of OntologyAnnotation): Classifications of the study based on the overall experimental
+            design.
+        publications (array of Publication): Publications associated with a Study.
+        contacts (array of Contact): People/contacts associated with a Study.
+        factors(array of StudyFactor): A factor corresponds to an independent variable manipulated by the
+            experimentalist with the intention to affect biological systems in a way that can be measured by an assay.
+        protocols (array of StudyProtocol: Protocols used within the ISA artifact.
+        assays (array of Assay): An Assay represents a portion of the experimental design.
+
+    Args:
+        A list of parameters of any of the above. Ignores any params we don't know about
+
+    Returns:
+        a Study object - get and set properties above as normal
+
     """
-    Study = warlock.model_factory(study_schema)
+    Study = warlock.model_factory(study_schema, resolver)
     obj = Study(kwargs)
     obj.studyDesignDescriptors = []
     obj.publications = []
     obj.studyFactors = []
     obj.assays = []
+    obj.protocols = []
+    obj.contacts = []
     return obj
 
 
 def assay_factory(**kwargs):
-    Assay = warlock.model_factory(assay_schema)
+    Assay = warlock.model_factory(assay_schema, resolver)
     obj = Assay(kwargs)
     return obj
