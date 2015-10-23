@@ -8,7 +8,7 @@ from isatools.io.isatab_parser import parse
 from isatools.convert.isatab2json import IsatabToJsonWriter
 from isatools.convert.json2isatab import JsonToIsatabWriter
 
-class ISATabTest(unittest.TestCase):
+class ISATabConversionTest(unittest.TestCase):
     def setUp(self):
         """set up directories etc"""
         self._dir = os.path.join(os.path.dirname(__file__), "data")

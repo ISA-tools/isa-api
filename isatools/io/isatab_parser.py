@@ -249,16 +249,19 @@ class StudyAssayParser:
                 for line in reader:
                     if line_number >=  max_number:
                         input_name = line[hgroups[input_index][0]]
-                        input_type =  headers[input_index]
-                        input_node_index = input_type+input_name
-                        # print "input_name ", input_name
-                        # print "input_type ", input_type
-                        #output_name = line[hgroups[output_index][0]]
+                        input_node_index = self._build_node_index(input_header,input_name)
+                        #input_node = study.nodes[input_node_index]
+
+                        output_name = line[hgroups[output_index][0]]
+                        output_node_index = self._build_node_index(output_header, output_name)
+                        #output_node = study.nodes[output_node_index]
+
                         processing_name = line[hgroups[processing_index][0]]
-                        input_node = study.nodes[input_node_index]
                         process_node = ProcessNodeRecord(processing_name, processing_header, study)
-                        process_node.outputs = input_node.metadata[output_header]
-                        process_node.inputs = input_node.metadata[input_header]
+
+                        process_node.inputs.append(input_node_index)
+                        process_node.outputs.append(output_node_index)
+
                         max_number = max(len(process_node.inputs), len(process_node.outputs))
                         line_number += 1
                         process_nodes[processing_name] = process_node
@@ -270,7 +273,6 @@ class StudyAssayParser:
     def _parse_study(self, fname, node_types):
         """Parse study or assay row oriented file around the supplied base node.
         """
-        #print "parse ", fname
         if not os.path.exists(os.path.join(self._dir, fname)):
             return None
         nodes = {}
@@ -294,10 +296,10 @@ class StudyAssayParser:
                 in_handle.seek(0, 0)
                 for line in reader:
                     name = line[name_index]
-                    node_index = node_type+name
+                    #to deal with same name used for different node types (e.g. Source Name and Sample Name using the same string)
+                    node_index = self._build_node_index(node_type,name)
                     if name in header:
                         continue
-                    #print "name ", name
                     try:
                         node = nodes[name+node_type]
                     except KeyError:
@@ -399,6 +401,15 @@ class StudyAssayParser:
 
     def _swap_synonyms(self, header):
         return [self._synonyms.get(h, h) for h in header]
+
+    #to ensure uniqueness of node indexes
+    def _build_node_index(self, type, name):
+        if type=="Source Name":
+            return "source-"+name
+        else:
+            if type == "Sample Name":
+                return "sample-"+name
+
 
 _record_str = \
 """* ISATab Record
@@ -527,8 +538,8 @@ class ProcessNodeRecord:
         self.ntype = ntype
         self.study_assay = study_assay
         self.name = name
-        self.inputs = {}
-        self.outputs = {}
+        self.inputs = []
+        self.outputs = []
 
     def __str__(self):
         return _process_node_str.format(inputs=pprint.pformat(self.inputs).replace("\n", "\n" + " " * 9),
