@@ -8,8 +8,9 @@
     },
     "type": "object",
     "properties": {
-        "allOf": {
-            "$ref" : "protocol_application_schema.json#",
+            "protocolApplicatotions": {
+                "$ref": "protocol_application_schema.json#"
+            },
             "identifierInfo" : {
                 "type" : "array",
                 "items" : {
@@ -75,12 +76,6 @@
                     "$ref": "resource_annotation_schema.json#"
                 }
             },
-            "studySampleTable": {
-                "type": "object",
-                "properties": {
-                    "$ref": "study_sample_table_schema.json#"
-                }
-            },
             "protocols": {
                 "type": "array",
                 "items": {
@@ -93,6 +88,5 @@
                     "$ref": "protocol_application_schema.json#"
                 }
             }
-        }
     }
 }
