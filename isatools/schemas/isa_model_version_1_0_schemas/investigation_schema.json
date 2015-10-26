@@ -10,8 +10,14 @@
         "description" : { "type" : "string"},
         "submissionDate" : { "type" : "string", "format" : "date-time"},
         "publicReleaseDate" : { "type" : "string", "format" : "date-time"},
-        "commentCreatedWithConfiguration" : { "type": "string"},
-        "commentLastOpenedWithConfiguration" : { "type" : "string" },
+        "commentCreatedWithConfiguration" : {
+            "$ref": "comment_schema.json#",
+            "name": "Created With Configuration"
+        },
+        "commentLastOpenedWithConfiguration" : {
+            "$ref": "comment_schema.json#",
+            "name": "Last Opened With Configuration"
+        },
         "ontologySourceReferences" : {
             "type" : "array",
             "items" : {
