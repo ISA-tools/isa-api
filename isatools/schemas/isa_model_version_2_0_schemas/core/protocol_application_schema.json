@@ -4,13 +4,14 @@
     "description" : "JSON-schema representing a protocol application in the ISA model v2.0",
     "type" : "object",
     "properties" : {
-        "startDate" : { "type" : "date-time"},
-        "endDate" : { "type" : "date-time"},
+        "startDate" : { "type" : "string", "format": "date-time"},
+        "endDate" : { "type" : "string", "format": "date-time"},
         "performer" : {
-            "oneOf" : {
-                "$ref": "person_schema.json#",
-                "$ref": "organization_schema.json#"
-            }
+            "type": "object",
+            "oneOf": [
+                    {"$ref": "person_schema.json#"},
+                    {"$ref": "organization_schema.json#"}
+            ]
         },
         "runOrder" : { "type": "integer"},
         "cost" : {
@@ -24,19 +25,23 @@
         "inputs": {
                 "description": "a property to specify the dataset used as input",
                 "type": "array",
-                "oneOf": {
-                    "$ref": "digital_object_schema.json#",
-                    "$ref": "biomaterial_object_schema.json"
+                "items" : {
+                    "oneOf": [
+                        {"$ref": "digital_object_schema.json#"},
+                        {"$ref": "biomaterial_object_schema.json#"}
+                    ]
                 },
                 "minItems" : 1
             },
         "outputs": {
                 "description": "a property to specify the dataset resulting from applying the technology",
                 "type": "array",
-                    "oneOf": {
-                    "$ref": "digital_object_schema.json#",
-                    "$ref": "biomaterial_object_schema.json"
-                    },
+                "items": {
+                    "oneOf": [
+                        {"$ref": "digital_object_schema.json#"},
+                        {"$ref": "biomaterial_object_schema.json#"}
+                    ]
+                },
                 "minItems" : 1
          }
     }

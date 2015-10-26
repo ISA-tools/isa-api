@@ -8,10 +8,7 @@
             "type": "string"
         },
         "protocolType": {
-            "type": "object",
-            "properties": {
-                "$ref": "resource_annotation_schema.json#"
-            }
+            "$ref": "resource_annotation_schema.json#"
         },
         "description": {
             "type": "string"
