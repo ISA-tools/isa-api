@@ -147,7 +147,7 @@ def study_protocol_factory(**kwargs):
             column heading) to list the values used for each protocol parameter. Refer to section Multiple values
             fields in the Investigation File on how to encode multiple values in one field and match term sources.
             Parameters optionally include OntologyAnnotations.
-        components (array of Component): A list of a protocol’s components; e.g. instrument names, software names, and
+        components (array of Component): A list of a protocol's components; e.g. instrument names, software names, and
             reagents names. Refer to section Multiple values fields in the Investigation File on how to encode multiple
             components in one field and match term sources. Components optionally include OntologyAnnotations.
 
