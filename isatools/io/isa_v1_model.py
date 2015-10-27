@@ -2,8 +2,30 @@ import datetime
 import csv
 __author__ = 'dj'
 
+class Comment(object):
+    """A comment allows arbitrary annotation of all ISA classes
+    
+    Attributes:
+        name: The name of the comment (as mapped to Comment[SomeName]) to give context to the comment field
+        value: A value for the corresponding comment, as a string encoded in some way
+        isa_element: If applicable, the ISA class attribute the comment relates to. If blank, it is assumed
+            that the comment relates to the ISA class
+    """
+    def __init__(self):
+        self.name = ""
+        self.value = ""
+        self.isa_element = ""
 
-class Investigation(object):
+class IsaObject(object):
+    """ An ISA Object is an abstract class to enable containment of Comments
+    
+    Attributes:
+        comments: Comments associated with the implementing ISA class (all ISA classes)
+    """
+    def __init__(self):
+        self.comments = []
+
+class Investigation(IsaObject):
     """An investigation maintains metadata about the project context and links to one or more studies. There can only
     be 1 Investigation in an ISA package. Investigations has the following properties:
 
@@ -33,7 +55,7 @@ class Investigation(object):
         self.studies = []
 
 
-class OntologySourceReference(object):
+class OntologySourceReference(IsaObject):
     """This annotation section is identical to that in the MAGE-TAB format.
 
     Attributes:
@@ -50,7 +72,7 @@ class OntologySourceReference(object):
         self.version = ""
         self.description = ""
 
-class OntologyAnnotation(object):
+class OntologyAnnotation(IsaObject):
     """An ontology term annotation reference
 
     Attributes:
@@ -64,7 +86,7 @@ class OntologyAnnotation(object):
         self.ontologySourceReference = ""
 
 
-class Publication(object):
+class Publication(IsaObject):
     """A publication associated with an investigation or study.
 
     Attributes:
@@ -84,7 +106,7 @@ class Publication(object):
         self.status = ""
 
 
-class Person(object):
+class Person(IsaObject):
     """A person/contact that can be attributed to an Investigation or Study.
 
     Attributes:
@@ -114,7 +136,7 @@ class Person(object):
         self.roles = ""
 
 
-class Study(object):
+class Study(IsaObject):
     """Study is the central unit, containing information on the subject under study, its characteristics
     and any treatments applied.
 
@@ -151,7 +173,7 @@ class Study(object):
         self.assays = []
 
 
-class StudyDesignDescriptor(object):
+class StudyDesignDescriptor(IsaObject):
     """A Study Design Descriptor provides a term allowing the classification of the study based on the overall
     experimental design. The term can be free text (Attribute: name) or from, for example, a controlled vocabulary or
     an ontology (Attribute: ontologyReference).
@@ -166,7 +188,7 @@ class StudyDesignDescriptor(object):
         self.ontologyAnnotation = OntologyAnnotation()
 
 
-class StudyFactor(object):
+class StudyFactor(IsaObject):
     """A Study Factor corresponds to an independent variable manipulated by the experimentalist with the intention to
     affect biological systems in a way that can be measured by an assay.
 
@@ -182,7 +204,7 @@ class StudyFactor(object):
         self.ontologyAnnotation = OntologyAnnotation()
 
 
-class Assay(object):
+class Assay(IsaObject):
     """A Study Assay declares and describes each of the Assay files associated with the current Study.
 
     Attributes:
@@ -199,11 +221,8 @@ class Assay(object):
         self.fileName = ""
 
 
-def create():
-    return Investigation()
-
-
 def from_isarchive(isatab_dir):
+
     # build ISA objects from ISA-Tab ISArchive (zipped or not zipped?)
     print("Reading " + isatab_dir)
     # check that an investigation file is present. If more than one is present, throw an exception
