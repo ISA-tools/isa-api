@@ -177,12 +177,13 @@ class StudyAssayParser:
         self._col_types = {"attribute": ("Characteristics", "Factor Type",
                                          "Comment", "Label", "Material Type", "Factor Value"),
                            "node" : ("Sample Name", "Source Name", "Image File",
-                                     "Raw Data File", "Derived Data File"),
+                                     "Raw Data File", "Derived Data File", "Acquisition Parameter Data File"),
                            "node_assay" : ("Extract Name", "Labeled Extract Name",
                                            "Assay Name", "Data Transformation Name",
                                            "Normalization Name"),
                            "processing": ("Protocol REF",)}
         self._synonyms = {"Array Data File" : "Raw Data File",
+                          "Free Induction Decay Data File": "Raw Data File",
                           "Derived Array Data File" : "Derived Data File",
                           "Hybridization Assay Name": "Assay Name",
                           "Derived Array Data Matrix File": "Derived Data File",
@@ -202,7 +203,7 @@ class StudyAssayParser:
                 for assay in study.assays:
                     cur_assay = ISATabAssayRecord(assay)
                     assay_data = self._parse_study(assay["Study Assay File Name"],
-                                                   ["Sample Name","Extract Name","Raw Data File", "Derived Data File", "Image File"])
+                                                   ["Sample Name","Extract Name","Raw Data File","Derived Data File", "Image File", "Acquisition Parameter Data File", "Free Induction Decay Data File"])
                     cur_assay.nodes = assay_data
                     self._get_process_nodes(assay["Study Assay File Name"], cur_assay)
                     final_assays.append(cur_assay)
@@ -225,12 +226,12 @@ class StudyAssayParser:
             hgroups = self._collapse_header(headers)
             htypes = self._characterize_header(headers, hgroups)
 
-            # print "headers:", headers
-            # print "hgroups:", hgroups
-            # print "htypes:", htypes
+            print "headers:", headers
+            print "hgroups:", hgroups
+            print "htypes:", htypes
 
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
-            node_indices = [i for i, x in enumerate(htypes) if x == "node"]
+            node_indices = [i for i, x in enumerate(htypes) if x == "node" or x=="node_assay"]
 
             # print "processing_indices ->", processing_indices
             # print "node_indices -> ", node_indices
@@ -238,6 +239,12 @@ class StudyAssayParser:
                 try:
                     input_index = find_lt(node_indices, processing_index)
                     output_index = find_gt(node_indices, processing_index)
+
+                    print "processing_index ", processing_index
+                    print "input_index ", input_index
+                    print "output_index ", output_index
+                    print " "
+
                 except ValueError:
                     # print "Invalid indices for process nodes"
                     break
@@ -310,8 +317,6 @@ class StudyAssayParser:
                     attrs = self._line_keyvals(line, header, hgroups, htypes,
                                            node.metadata)
                 nodes[node_index].metadata = attrs
-
-            #print "nodes before returning ", nodes
 
         return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
 
@@ -409,6 +414,24 @@ class StudyAssayParser:
         else:
             if type == "Sample Name":
                 return "sample-"+name
+            else:
+                if type == "Extract Name":
+                   return "extract-"+name
+                else:
+                    if type == "Raw Data File":
+                       return "rawdatafile-"+name
+                    else:
+                        if type=="Derived Data File":
+                            return "deriveddatafile-"+name
+                        else:
+                            if type=="Acquisiton Parameter Data File":
+                                return "acquisitionparameterfile-"+name
+                            else:
+                                "ERROR - Type not being considered! ", type
+
+
+
+
 
 
 _record_str = \
