@@ -32,9 +32,9 @@ class ISATab2ISAjson_v1():
         print(SCHEMAS_PATH)
 
         #warlock related
-        investigation_schema = json.load(open(join(SCHEMAS_PATH,INVESTIGATION_SCHEMA)))
-        resolver = RefResolver(SCHEMAS_PATH, None)
-        Investigation = warlock.model_factory(investigation_schema, resolver=resolver)
+        # investigation_schema = json.load(open(join(SCHEMAS_PATH,INVESTIGATION_SCHEMA)))
+        # resolver = RefResolver(SCHEMAS_PATH, None)
+        # Investigation = warlock.model_factory(investigation_schema, resolver=resolver)
 
         isa_tab = parse(work_dir)
 
@@ -42,32 +42,33 @@ class ISATab2ISAjson_v1():
             print("No ISAtab dataset found")
         else:
                 if isa_tab.metadata != {}:
-                    # isa_json = dict([
-                    #     ("identifier",isa_tab.metadata['Investigation Identifier']),
-                    #     ("title", isa_tab.metadata['Investigation Title']),
-                    #     ("description",isa_tab.metadata['Investigation Description']),
-                    #     ("submissionDate", isa_tab.metadata['Investigation Submission Date']),
-                    #     ("publicReleaseDate", isa_tab.metadata['Investigation Public Release Date']),
-                    #     ("commentCreatedWithConfiguration", isa_tab.metadata['Comment[Created With Configuration]']),
-                    #     ("commentLastOpenedWithConfiguration", isa_tab.metadata['Comment[Last Opened With Configuration]']),
-                    #     ("ontologySourceReferences", self.createOntologySourceReferences(isa_tab.ontology_refs)),
-                    #     ("publications", self.createPublications(isa_tab.publications, "Investigation")),
-                    #     ("people", self.createContacts(isa_tab.contacts, "Investigation")),
-                    #     ("studies", self.createStudies(isa_tab.studies))
-                    # ])
-                    isa_json = Investigation(
-                       identifier = isa_tab.metadata['Investigation Identifier'],
-                       title = isa_tab.metadata['Investigation Title'],
-                       description = isa_tab.metadata['Investigation Description'],
-                       submissionDate = isa_tab.metadata['Investigation Submission Date'],
-                       publicReleaseDate = isa_tab.metadata['Investigation Public Release Date'],
-                       commentCreatedWithConfiguration = isa_tab.metadata['Comment[Created With Configuration]'],
-                       commentLastOpenedWithConfiguration = isa_tab.metadata['Comment[Last Opened With Configuration]'],
-                       ontologySourceReferences = self.createOntologySourceReferences(isa_tab.ontology_refs, resolver),
-                       publications = self.createPublications(isa_tab.publications, "Investigation"),
-                       people = self.createContacts(isa_tab.contacts, "Investigation"),
-                       studies = self.createStudies(isa_tab.studies)
-                       )
+                    isa_json = dict([
+                        ("identifier",isa_tab.metadata['Investigation Identifier']),
+                        ("title", isa_tab.metadata['Investigation Title']),
+                        ("description",isa_tab.metadata['Investigation Description']),
+                        ("submissionDate", isa_tab.metadata['Investigation Submission Date']),
+                        ("publicReleaseDate", isa_tab.metadata['Investigation Public Release Date']),
+                        ("commentCreatedWithConfiguration", isa_tab.metadata['Comment[Created With Configuration]']),
+                        ("commentLastOpenedWithConfiguration", isa_tab.metadata['Comment[Last Opened With Configuration]']),
+                        ("ontologySourceReferences", self.createOntologySourceReferences(isa_tab.ontology_refs)),
+                        ("publications", self.createPublications(isa_tab.publications, "Investigation")),
+                        ("people", self.createContacts(isa_tab.contacts, "Investigation")),
+                        ("studies", self.createStudies(isa_tab.studies))
+                    ])
+                    # isa_json = Investigation(
+                    #    identifier = isa_tab.metadata['Investigation Identifier'],
+                    #    title = isa_tab.metadata['Investigation Title'],
+                    #    description = isa_tab.metadata['Investigation Description'],
+                    #    submissionDate = isa_tab.metadata['Investigation Submission Date'],
+                    #    publicReleaseDate = isa_tab.metadata['Investigation Public Release Date'],
+                    #    #commentCreatedWithConfiguration = [],#isa_tab.metadata['Comment[Created With Configuration]'],
+                    #    #commentLastOpenedWithConfiguration = [], #isa_tab.metadata['Comment[Last Opened With Configuration]'],
+                    #    ontologySourceReferences = [],#self.createOntologySourceReferences(isa_tab.ontology_refs, resolver),
+                    #    publications = [],#self.createPublications(isa_tab.publications, "Investigation"),
+                    #    people = [],#self.createContacts(isa_tab.contacts, "Investigation"),
+                    #    studies = []#self.createStudies(isa_tab.studies)
+                    #    )
+                    # isa_json.people = self.createContacts(isa_tab.contacts, "Investigation")
 
                 if (inv_identifier):
                     file_name = os.path.join(json_dir,isa_tab.metadata['Investigation Identifier']+".json")
@@ -153,7 +154,6 @@ class ISATab2ISAjson_v1():
         return onto_ann
 
 
-
     def createOntologyAnnotationsFromStringList(self, object, inv_or_study, type):
         name_array = object[inv_or_study+type].split(";")
         term_source_array = object[inv_or_study+type+" Term Source REF"].split(";")
@@ -182,9 +182,11 @@ class ISATab2ISAjson_v1():
         return onto_annotations
 
 
-    def createOntologySourceReferences(self, ontology_refs, resolver):
+    #def createOntologySourceReferences(self, ontology_refs, resolver):
+    def createOntologySourceReferences(self, ontology_refs):
         ontology_reference_schema = json.load(open(join(SCHEMAS_PATH, ONTOLOGY_REF_SCHEMA)))
-        OntologyRef = warlock.model_factory(ontology_reference_schema, resolver=resolver)
+        #OntologyRef = warlock.model_factory(ontology_reference_schema, resolver=resolver)
+        OntologyRef = warlock.model_factory(ontology_reference_schema)
         ontologies = []
         for ontology_ref in ontology_refs:
             ontology = OntologyRef(
@@ -199,6 +201,7 @@ class ISATab2ISAjson_v1():
     def createStudies(self, studies):
         study_array = []
         for study in studies:
+            sample_dict = self.createSampleDictionary(study.nodes)
             studyJson = dict([
                 ("identifier",study.metadata['Study Identifier']),
                 ("title", study.metadata['Study Title']),
@@ -210,9 +213,9 @@ class ISATab2ISAjson_v1():
                 ("publications", self.createPublications(study.publications, "Study")),
                 ("protocols", self.createProtocols(study.protocols)),
                 ("sources", self.createSources(study.nodes)),
-                ("samples",[]),
+                ("samples",list(sample_dict.items())),
                 ("processSequence", []),
-                ("assays", [])
+                ("assays", self.createStudyAssaysList(study.assays))
             ])
             study_array.append(studyJson)
 
@@ -240,7 +243,36 @@ class ISATab2ISAjson_v1():
         #     study_array.append(studyJson)
         # return study_array
 
+    def createStudyAssaysList(self, assays):
+        json_list = []
+        for assay in assays:
+            json_item = dict([
+                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                ("@type", "https://repo.metadatacenter.org/model/StudyAssay"),
+                ("measurementType", dict([("value", assay.metadata['Study Assay Measurement Type Term Accession Number'])])),
+                ("platform", dict([("value", assay.metadata['Study Assay Technology Platform'])])),
+                ("technology", dict([("value", assay.metadata['Study Assay Technology Type'])]))
+                ])
+            json_list.append(json_item)
+        return json_list
 
+
+    def createSampleDictionary(self, nodes):
+        json_dict = dict([])
+        for node_index in nodes:
+            if nodes[node_index].ntype == "Sample Name":
+                json_item = dict([
+                    ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                    ("@type", "https://repo.metadatacenter.org/model/Sample"),
+                    ("name", dict([("value", node_index)])),
+                    ("type", dict([("value", "http://purl.obolibrary.org/obo/OBI_0000747")])),
+                    ("description", dict([("value", "")])),
+                    ("source", dict([("value", "")])),
+                    ("factorValues", []),
+                    ("characteristics", self.createCharacteristicList(node_index, nodes[node_index])),
+                ])
+                json_dict.update({node_index: json_item})
+        return json_dict
 
     def createSources(self, nodes):
         json_dict = dict([])

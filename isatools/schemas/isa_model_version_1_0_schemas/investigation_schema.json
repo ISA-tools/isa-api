@@ -1,7 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema",
     "title" : "ISA investigation schema",
-    "name" : "ISA investigation schema",
     "description" : "JSON-schema representing an investigation in the ISA model",
     "type" : "object",
     "properties" : {
