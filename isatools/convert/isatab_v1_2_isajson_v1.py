@@ -201,7 +201,9 @@ class ISATab2ISAjson_v1():
     def createStudies(self, studies):
         study_array = []
         for study in studies:
+            source_dict = self.createSources(study.nodes)
             sample_dict = self.createSampleDictionary(study.nodes)
+            data_dict = self.createDataFiles(study.nodes)
             studyJson = dict([
                 ("identifier",study.metadata['Study Identifier']),
                 ("title", study.metadata['Study Title']),
@@ -214,47 +216,120 @@ class ISATab2ISAjson_v1():
                 ("protocols", self.createProtocols(study.protocols)),
                 ("sources", self.createSources(study.nodes)),
                 ("samples",list(sample_dict.items())),
-                ("processSequence", []),
+                ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
                 ("assays", self.createStudyAssaysList(study.assays))
             ])
             study_array.append(studyJson)
 
         return study_array
 
-        # study_schema = json.load(open(join(SCHEMAS_PATH,STUDY_SCHEMA)))
-        # Study = warlock.model_factory(study_schema)
-        # study_array = []
-        # for study in studies:
-        #     studyJson = Study(
-        #         identifier = study.metadata['Study Identifier'],
-        #         title = study.metadata['Study Title'],
-        #         description = study.metadata['Study Description'],
-        #         submissionDate = study.metadata['Study Submission Date'],
-        #         publicReleaseDate = study.metadata['Study Public Release Date'],
-        #         people = self.createContacts(study.contacts, "Study"),
-        #         studyDesignDescriptors = [],
-        #         publications = [],#self.createInvestigationPublications(study.publications),
-        #         protocols = [],
-        #         sources = [],
-        #         samples = [],
-        #         processSequence = [],
-        #         assays = []
-        #     )
-        #     study_array.append(studyJson)
-        # return study_array
+    def createProcessSequence(self, process_nodes, source_dict, sample_dict, data_dict):
+        json_list = []
+        for process_node_name in process_nodes:
+            try:
+                measurement_type = process_nodes[process_node_name].study_assay.metadata["Study Assay Measurement Type"]
+            except:
+                measurement_type = ""
+
+            try:
+                platform = process_nodes[process_node_name].study_assay.metadata["Study Assay Technology Platform"]
+            except:
+                platform = ""
+
+            try:
+                technology = process_nodes[process_node_name].study_assay.metadata["Study Assay Technology Type"]
+            except:
+                technology = ""
+
+            json_item = dict([
+                    ("executesProtocol", self.createExecuteStudyProtocol(process_node_name, process_nodes[process_node_name])),
+                    ("parameters", []),
+                    ("inputs", self.createInputList(process_nodes[process_node_name].inputs, source_dict, sample_dict)),
+                    ("outputs", self.createOutputList(process_nodes[process_node_name].outputs, sample_dict) )
+            ])
+            json_list.append(json_item)
+        return json_list
+
+
+    def createInputList(self, inputs, source_dict, sample_dict):
+        json_list = []
+        for argument in inputs:
+            try:
+                json_item = source_dict[argument]
+                json_list.append(json_item)
+            except KeyError:
+                pass
+            try:
+                json_item = sample_dict[argument]
+                json_list.append(json_item)
+            except KeyError:
+                pass
+        return json_list
+
+
+    def createOutputList(self, arguments, sample_dict):
+        json_list = []
+        for argument in arguments:
+            try:
+                json_item = sample_dict[argument]
+                json_list.append(json_item)
+            except KeyError:
+                pass
+        return json_list
+
+
+    def createExecuteStudyProtocol(self, process_node_name, process_node):
+        json_item = dict([
+                    ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                    ("@type", "https://repo.metadatacenter.org/model/StudyProtocol"),
+                    ("name", dict([("value", process_node_name)])),
+                    ("type", dict([("value", "http://purl.obolibrary.org/obo/OBI_0000715")])),
+                    ("description", dict([("value", process_node_name)])),
+                    ("version", dict([("value", process_node_name)])),
+                    ("uri", dict([("value", process_node_name)])),
+                    ("parameters", self.createProcessParameterList(process_node_name, process_node))
+                ])
+        return json_item
+
+
+    def createProcessParameterList(self, process_node_name, process_node):
+        json_list = []
+        json_item = dict([
+
+                    ("@type", "https://repo.metadatacenter.org/model/ProtocolParameter"),
+                    ("name", dict([("value", process_node_name )])),
+                    ("description", dict([("value", "")])),
+                ])
+        json_list.append(json_item)
+        return json_list
+
 
     def createStudyAssaysList(self, assays):
         json_list = []
         for assay in assays:
+            data_dict = self.createDataFiles(assay.nodes)
             json_item = dict([
                 ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                 ("@type", "https://repo.metadatacenter.org/model/StudyAssay"),
                 ("measurementType", dict([("value", assay.metadata['Study Assay Measurement Type Term Accession Number'])])),
                 ("platform", dict([("value", assay.metadata['Study Assay Technology Platform'])])),
-                ("technology", dict([("value", assay.metadata['Study Assay Technology Type'])]))
+                ("technology", dict([("value", assay.metadata['Study Assay Technology Type'])])),
+                ("processSequence", [])
                 ])
             json_list.append(json_item)
         return json_list
+
+
+    def createDataFiles(self, nodes):
+        print("create data files dictionary...")
+        json_dict = dict([])
+        for node_index in nodes:
+            if nodes[node_index].ntype.endswith("Data File") :
+                json_item = dict([
+                    ("name", nodes[node_index].name),
+                ])
+                json_dict.update({node_index: json_item})
+        return json_dict
 
 
     def createSampleDictionary(self, nodes):
@@ -303,4 +378,5 @@ class ISATab2ISAjson_v1():
 
 isatab2isajson = ISATab2ISAjson_v1()
 #isatab2isajson.convert("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1","../../tests/datasets/metabolights", False)
-isatab2isajson.convert("../../tests/data/BII-I-1","../../tests/data", True)
+#isatab2isajson.convert("../../tests/data/BII-I-1","../../tests/data", True)
+isatab2isajson.convert("../../tests/data/BII-S-7","../../tests/data", True)

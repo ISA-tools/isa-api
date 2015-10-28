@@ -35,6 +35,7 @@ class ISATab2CEDAR():
         CEDARSchema = warlock.model_factory(schema)
 
         isa_tab = parse(work_dir)
+        print(isa_tab)
 
         if isa_tab is None:
             print("No ISAtab dataset found")
@@ -108,9 +109,9 @@ class ISATab2CEDAR():
     def createStudiesList(self, studies):
         json_list = []
         for study in studies:
-            source_dict = self.createStudySubjectDictionary(study.nodes)
-            sample_dict = self.createSampleDictionary(study.nodes)
-            data_dict = self.createDataFilesDictionary(study.nodes)
+            source_dict = self.createSources(study.nodes)
+            sample_dict = self.createSamples(study.nodes)
+            data_dict = self.createDataFiles(study.nodes)
             json_item = dict([
                 ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                 ("@type", "https://repo.metadatacenter.org/model/Study"),
@@ -179,6 +180,7 @@ class ISATab2CEDAR():
             json_list.append(json_item)
         return json_list
 
+
     def createInputList(self, inputs, source_dict, sample_dict):
         json_list = []
         for argument in inputs:
@@ -208,8 +210,6 @@ class ISATab2CEDAR():
 
     def createExecuteStudyProtocol(self, process_node_name, process_node):
         json_item = dict([
-                    ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
-                    ("@type", "https://repo.metadatacenter.org/model/StudyProtocol"),
                     ("name", dict([("value", process_node_name)])),
                     ("type", dict([("value", "http://purl.obolibrary.org/obo/OBI_0000715")])),
                     ("description", dict([("value", process_node_name)])),
@@ -232,7 +232,8 @@ class ISATab2CEDAR():
         json_list.append(json_item)
         return json_list
 
-    def createDataFilesDictionary(self, nodes):
+
+    def createDataFiles(self, nodes):
         print("create data files dictionary...")
         json_dict = dict([])
         for node_index in nodes:
@@ -248,7 +249,7 @@ class ISATab2CEDAR():
                 json_dict.update({node_index: json_item})
         return json_dict
 
-    def createSampleDictionary(self, nodes):
+    def createSamples(self, nodes):
         json_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype == "Sample Name":
@@ -266,7 +267,7 @@ class ISATab2CEDAR():
                 json_dict.update({node_index: json_item})
         return json_dict
 
-    def createStudySubjectDictionary(self, nodes):
+    def createSources(self, nodes):
         json_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype == "Source Name":

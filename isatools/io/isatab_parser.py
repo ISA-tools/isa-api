@@ -416,7 +416,7 @@ class StudyAssayParser:
                 return "sample-"+name
             else:
                 if type == "Extract Name":
-                   return "extract-"+name
+                    return "extract-"+name
                 else:
                     if type == "Raw Data File":
                        return "rawdatafile-"+name
@@ -428,10 +428,6 @@ class StudyAssayParser:
                                 return "acquisitionparameterfile-"+name
                             else:
                                 "ERROR - Type not being considered! ", type
-
-
-
-
 
 
 _record_str = \
