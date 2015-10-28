@@ -20,7 +20,7 @@ class ISATab2CEDAR():
         self.primary_source = primary_source
 
     def createCEDARjson_folder(self, work_dir, json_dir, inv_identifier):
-        print "Convert ISA datasets in folder ", work_dir
+        print("Convert ISA datasets in folder ", work_dir)
         path = os.path.abspath(work_dir)
         folders = [ f for f in listdir(path) if isdir(join(path,f))]
 
@@ -29,16 +29,15 @@ class ISATab2CEDAR():
 
 
     def createCEDARjson(self, work_dir, json_dir, inv_identifier):
-        print "Converting ISA to CEDAR model for ", work_dir
+        print("Converting ISA to CEDAR model for ", work_dir)
         schema_file = "InvestigationSchema.json"
         schema = json.load(open(join(CEDAR_SCHEMA_PATH,schema_file)))
         CEDARSchema = warlock.model_factory(schema)
 
         isa_tab = parse(work_dir)
-        print isa_tab
 
         if isa_tab is None:
-            print "No ISAtab dataset found"
+            print("No ISAtab dataset found")
         else:
                 if isa_tab.metadata != {}:
                     investigationObject = dict([
@@ -104,7 +103,7 @@ class ISATab2CEDAR():
                 with open(file_name, "w") as outfile:
                     json.dump(cedar_json, outfile, indent=4, sort_keys=True)
                     outfile.close()
-                print "... conversion finished."
+                print("... conversion finished.")
 
     def createStudiesList(self, studies):
         json_list = []
@@ -140,7 +139,7 @@ class ISATab2CEDAR():
                     ("name", dict([("value", "population name")])),
                     ("type", dict([("value", "http://bioportal.bioontology.org/ontologies/EFO/3232")])),
                     ("selectionRule",  dict([("value", "selection rule")])),
-                    ("hasStudySubject", source_dict.values())
+                    ("hasStudySubject", list(source_dict.values()))
                 ])
          json_list.append(json_item)
          return json_list
@@ -234,10 +233,10 @@ class ISATab2CEDAR():
         return json_list
 
     def createDataFilesDictionary(self, nodes):
-        print "create data files dictionary..."
+        print("create data files dictionary...")
         json_dict = dict([])
         for node_index in nodes:
-            print "node_index...", node_index
+            print("node_index...", node_index)
             if nodes[node_index].ntype.endswith("Data File") :
                 json_item = dict([
                     ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),

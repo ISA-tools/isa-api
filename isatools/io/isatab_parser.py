@@ -100,7 +100,7 @@ class InvestigationParser:
             else:
                 break
         # handle SDRF files for MAGE compliant ISATab
-        if rec.metadata.has_key("SDRF File"):
+        if "SDRF File" in rec.metadata:
             study = ISATabStudyRecord()
             study.metadata["Study File Name"] = rec.metadata["SDRF File"]
             rec.studies.append(study)
@@ -222,13 +222,13 @@ class StudyAssayParser:
 
         with open(os.path.join(self._dir, fname), "rU") as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
-            headers = self._swap_synonyms(reader.next())
+            headers = self._swap_synonyms(reader.__next__())
             hgroups = self._collapse_header(headers)
             htypes = self._characterize_header(headers, hgroups)
-
-            print "headers:", headers
-            print "hgroups:", hgroups
-            print "htypes:", htypes
+            #
+            # print "headers:", headers
+            # print "hgroups:", hgroups
+            # print "htypes:", htypes
 
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
             node_indices = [i for i, x in enumerate(htypes) if x == "node" or x=="node_assay"]
@@ -240,10 +240,10 @@ class StudyAssayParser:
                     input_index = find_lt(node_indices, processing_index)
                     output_index = find_gt(node_indices, processing_index)
 
-                    print "processing_index ", processing_index
-                    print "input_index ", input_index
-                    print "output_index ", output_index
-                    print " "
+                    # print "processing_index ", processing_index
+                    # print "input_index ", input_index
+                    # print "output_index ", output_index
+                    # print " "
 
                 except ValueError:
                     # print "Invalid indices for process nodes"
@@ -285,7 +285,7 @@ class StudyAssayParser:
         nodes = {}
         with open(os.path.join(self._dir, fname), "rU") as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
-            header = self._swap_synonyms(reader.next())
+            header = self._swap_synonyms(reader.__next__())
             hgroups = self._collapse_header(header)
             htypes = self._characterize_header(header, hgroups)
 
@@ -324,7 +324,7 @@ class StudyAssayParser:
         """Convert node metadata back into a standard dictionary and list.
         """
         final = {}
-        for key, val in node.metadata.iteritems():
+        for key, val in iter(node.metadata.items()):
             #val = list(val)
             #if isinstance(val[0], tuple):
             #    val = [dict(v) for v in val]
@@ -386,7 +386,7 @@ class StudyAssayParser:
         out = []
         for h in [header[g[0]] for g in hgroups]:
             this_ctype = None
-            for ctype, names in self._col_types.iteritems():
+            for ctype, names in self._col_types.items():
                 if h.startswith(names):
                     this_ctype = ctype
                     break

@@ -10,7 +10,7 @@ import warlock
 from isatools.io.isatab_parser import parse
 from jsonschema import RefResolver
 
-SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas")
+SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
 STUDY_SCHEMA = "study_schema.json"
 PUBLICATION_SCHEMA = "publication_schema.json"
@@ -27,9 +27,9 @@ class ISATab2ISAjson_v1():
             :param work_dir: directory containing the ISA-tab dataset
             :param json_dir: output directory where the resulting json file will be saved
         """
-        print "Converting ISAtab to ISAjson for ", work_dir
+        print("Converting ISAtab to ISAjson for ", work_dir)
 
-        print SCHEMAS_PATH
+        print(SCHEMAS_PATH)
 
         #warlock related
         investigation_schema = json.load(open(join(SCHEMAS_PATH,INVESTIGATION_SCHEMA)))
@@ -39,7 +39,7 @@ class ISATab2ISAjson_v1():
         isa_tab = parse(work_dir)
 
         if isa_tab is None:
-            print "No ISAtab dataset found"
+            print("No ISAtab dataset found")
         else:
                 if isa_tab.metadata != {}:
                     # isa_json = dict([
@@ -79,7 +79,7 @@ class ISATab2ISAjson_v1():
                 with open(file_name, "w") as outfile:
                     json.dump(isa_json, outfile, indent=4, sort_keys=True)
                     outfile.close()
-                print "... conversion finished."
+                print("... conversion finished.")
 
 
     def createContacts(self, contacts, inv_or_study):
@@ -153,13 +153,14 @@ class ISATab2ISAjson_v1():
         return onto_ann
 
 
+
     def createOntologyAnnotationsFromStringList(self, object, inv_or_study, type):
         name_array = object[inv_or_study+type].split(";")
         term_source_array = object[inv_or_study+type+" Term Source REF"].split(";")
         term_accession_array = object[inv_or_study+type+" Term Accession Number"].split(";")
         onto_annotations = []
 
-        for i in xrange(0,len(name_array)):
+        for i in range(0,len(name_array)):
              onto_ann = dict([
                  ("name", name_array[i]),
                  ("termSource", term_source_array[i]),
