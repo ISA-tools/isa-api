@@ -1,7 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "Study JSON Schema",
-    "name": "Study JSON Schema",
     "description": "JSON Schema describing an Study",
     "@context": {
         "@base": "http://purl.org/isaterms/",
