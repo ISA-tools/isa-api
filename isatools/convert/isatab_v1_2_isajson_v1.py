@@ -327,6 +327,7 @@ class ISATab2ISAjson_v1():
             if nodes[node_index].ntype.endswith("Data File") :
                 json_item = dict([
                     ("name", nodes[node_index].name),
+                    ("type", nodes[node_index].ntype)
                 ])
                 json_dict.update({node_index: json_item})
         return json_dict

@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema",
-    "title": "ISA process or protocol application schema, corresponds to Protocol REF columns in the study and assay files",
+    "title": "ISA process or protocol application schema, corresponds to 'Protocol REF' columns in the study and assay files",
     "description": "JSON-schema representing a protocol application in the ISA model",
     "type": "object",
     "properties": {
