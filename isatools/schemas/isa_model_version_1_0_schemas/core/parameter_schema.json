@@ -1,0 +1,11 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "title" : "ISA parameter schema",
+    "description" : "JSON-schema representing a parameter in the ISA model",
+    "type" : "object",
+    "properties" : {
+        "parameterType": {
+            "$ref": "ontology_annotation_schema.json#"
+        }
+    }
+}

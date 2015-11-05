@@ -23,8 +23,7 @@
             "items" : {
                 "type" : "object",
                 "properties" : {
-                    "role": { "type": "string" },
-                    "ontologyAnnotation" : {
+                    "role":{
                         "$ref": "ontology_annotation_schema.json#"
                     }
                 }
