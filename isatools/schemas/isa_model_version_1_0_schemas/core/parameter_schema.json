@@ -5,7 +5,10 @@
     "type" : "object",
     "properties" : {
         "parameterType": {
-            "$ref": "ontology_annotation_schema.json#"
+             "$ref": "ontology_annotation_schema.json#"
+        },
+        "unit": {
+             "$ref": "ontology_annotation_schema.json#"
         }
     }
 }

@@ -551,7 +551,7 @@ class NodeRecord:
 
 
 class ProcessNodeRecord:
-    """Represent a process node within an ISA-Tab Study/Assay file.
+    """Represent a process node within an ISA-Tab Study/Assay file (corresponds to Protocol REF).
     """
     def __init__(self, name="", ntype="", study_assay=""):
         self.ntype = ntype

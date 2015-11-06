@@ -10,7 +10,7 @@ import warlock
 from isatools.io.isatab_parser import parse
 from jsonschema import RefResolver
 
-SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/")
+SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
 STUDY_SCHEMA = "study_schema.json"
 PUBLICATION_SCHEMA = "publication_schema.json"
