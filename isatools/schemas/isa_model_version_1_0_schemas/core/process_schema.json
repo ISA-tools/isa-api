@@ -8,7 +8,7 @@
             "type": "string"
         },
         "executesProtocol": {
-                "$ref": "protocol.json#"
+                "$ref": "protocol_schema.json#"
         },
         "parameters": {
             "type": "array",
