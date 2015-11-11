@@ -1,25 +1,21 @@
 import unittest
 import datetime
 from isatools.model.v1 import Investigation, OntologySourceReference, Publication, OntologyAnnotation, Study, \
-    StudyFactor, Assay, StudyProtocol, Contact
+    StudyFactor, Assay, Contact, Protocol, Process, Source, Material, MaterialAttribute, Data, Sample, Comment
 
 
 class ISAModelTests(unittest.TestCase):
 
     # FIXME: Does not test Comments yet
-    # FIXME: Does not use StudyProtocol yet?
 
     def test_build_isa_objects(self):
 
-        # INVESTIGATION
-        investigation = Investigation(
-            identifier="",
-            title="",
-            description="",
-            submissionDate="",
-            publicReleaseDate=""
-        )
+        # comment = Comment(
+        #     name="",
+        #     value=""
+        # )
 
+        # ONTOLOGY SOURCE REFERENCE
         ontology_source_reference = OntologySourceReference(
             name="",
             description="",
@@ -27,14 +23,14 @@ class ISAModelTests(unittest.TestCase):
             version=""
         )
 
-        investigation.ontologySourceReferences.append(ontology_source_reference)
-
+        # ONTOLOGY ANNOTATION
         ontology_annotation = OntologyAnnotation(
             name="",
             termSource=ontology_source_reference,
             termAccession=""
         )
 
+        # PUBLICATION
         publication = Publication(
             pubMedID="",
             DOI="",
@@ -42,25 +38,98 @@ class ISAModelTests(unittest.TestCase):
             title="",
             status=ontology_annotation
         )
-        investigation.publications.append(publication)
 
-        study = Study(
+        # CONTACT
+        contact = Contact(
+            lastName="",
+            firstName="",
+            midInitials="",
+            address="",
+            affiliation=""
+        )
+        contact.roles.append(ontology_annotation)
+
+        # INVESTIGATION
+        investigation = Investigation(
             identifier="",
             title="",
             description="",
-            submissionDate=datetime.date,
-            publicReleaseDate=datetime.date,
-            fileName=""
+            submission_date=datetime.date,
+            public_release_date=datetime.date
         )
-        design_descriptor = ontology_annotation
-        study.designDescriptors.append(design_descriptor)
-        study.publications.append(publication)
+        investigation.ontologySourceReferences.append(ontology_source_reference)
+        investigation.publications.append(publication)
+        investigation.contacts.append(contact)
 
+        # PROTOCOL
+        protocol = Protocol(
+            name="",
+            protocolType=ontology_annotation,
+            description="",
+            uri="",
+            version=""
+        )
+        protocol.parameters.append(ontology_annotation)
+        protocol.components.append(ontology_annotation)
+
+        # MATERIAL ATTRIBUTE
+        material_attribute = MaterialAttribute(
+            ontologyAnnotation=ontology_annotation
+        )
+
+        # SOURCE
+        source = Source(
+            name=""
+        )
+        source.characteristics.append(material_attribute)
+
+        # FACTOR
         factor = StudyFactor(
             name="",
             type=ontology_annotation
         )
-        study.factors.append(factor)
+
+        # SAMPLE
+        sample = Sample(
+            name=""
+        )
+        sample.characteristics.append(material_attribute)
+        sample.factors.append(factor)
+
+        # MATERIAL
+        material = Material(name="")
+        material.characteristics.append(material_attribute)
+
+        # DATA
+        data = Data(name="")
+
+        # PROCESS
+        process = Process(
+            name="",
+            executesProtocol=protocol,
+        )
+        process.parameters.append(ontology_annotation)
+        process.inputs.append(material)
+        process.inputs.append(data)
+        process.outputs.append(material)
+        process.outputs.append(data)
+
+        #STUDY
+        study = Study(
+            identifier="",
+            title="",
+            description="",
+            submission_date=datetime.date,
+            public_release_date=datetime.date,
+            file_name=""
+        )
+        study.publications.append(publication)
+        study.contacts.append(contact)
+        study.design_descriptors.append(ontology_annotation)
+        study.protocols.append(protocol)
+        study.sources.append(source)
+        study.samples.append(sample)
+        study.process_sequence.append(process)
 
         assay = Assay(
             fileName="",
@@ -71,23 +140,8 @@ class ISAModelTests(unittest.TestCase):
 
         study.assays.append(assay)
 
-        protocol = StudyProtocol(
-            name="",
-            protocolType=ontology_annotation,
-            description=""
-        )
-
-        contact = Contact(
-            lastName="",
-            firstName="",
-            midInitials="",
-            address="",
-            affiliation=""
-        )
-        contact.roles.append(ontology_annotation)
-
-        study.contacts.append(contact)
-
+        study.samples.append(sample)
+        study.processSequence.append(process)
         investigation.studies.append(study)
 
         from json import dumps
