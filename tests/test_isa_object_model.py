@@ -26,24 +26,24 @@ class ISAModelTests(unittest.TestCase):
         # ONTOLOGY ANNOTATION
         ontology_annotation = OntologyAnnotation(
             name="",
-            termSource=ontology_source_reference,
-            termAccession=""
+            term_source=ontology_source_reference,
+            term_accession=""
         )
 
         # PUBLICATION
         publication = Publication(
-            pubMedID="",
-            DOI="",
-            authorList="",
+            pubmed_id="",
+            doi="",
+            author_list="",
             title="",
             status=ontology_annotation
         )
 
         # CONTACT
         contact = Contact(
-            lastName="",
-            firstName="",
-            midInitials="",
+            last_name="",
+            first_name="",
+            mid_initials="",
             address="",
             affiliation=""
         )
@@ -57,14 +57,14 @@ class ISAModelTests(unittest.TestCase):
             submission_date=datetime.date,
             public_release_date=datetime.date
         )
-        investigation.ontologySourceReferences.append(ontology_source_reference)
+        investigation.ontology_source_references.append(ontology_source_reference)
         investigation.publications.append(publication)
         investigation.contacts.append(contact)
 
         # PROTOCOL
         protocol = Protocol(
             name="",
-            protocolType=ontology_annotation,
+            protocol_type=ontology_annotation,
             description="",
             uri="",
             version=""
@@ -74,7 +74,7 @@ class ISAModelTests(unittest.TestCase):
 
         # MATERIAL ATTRIBUTE
         material_attribute = MaterialAttribute(
-            ontologyAnnotation=ontology_annotation
+            ontology_annotation=ontology_annotation
         )
 
         # SOURCE
@@ -106,7 +106,7 @@ class ISAModelTests(unittest.TestCase):
         # PROCESS
         process = Process(
             name="",
-            executesProtocol=protocol,
+            executes_protocol=protocol,
         )
         process.parameters.append(ontology_annotation)
         process.inputs.append(material)
@@ -132,16 +132,16 @@ class ISAModelTests(unittest.TestCase):
         study.process_sequence.append(process)
 
         assay = Assay(
-            fileName="",
-            measurementType=ontology_annotation,
-            technologyType=ontology_annotation,
-            technologyPlatform=""
+            file_name="",
+            measurement_type=ontology_annotation,
+            technology_type=ontology_annotation,
+            technology_platform=""
         )
 
         study.assays.append(assay)
 
         study.samples.append(sample)
-        study.processSequence.append(process)
+        study.process_sequence.append(process)
         investigation.studies.append(study)
 
         from json import dumps
