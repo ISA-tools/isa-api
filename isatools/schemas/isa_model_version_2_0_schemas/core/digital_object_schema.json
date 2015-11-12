@@ -6,14 +6,14 @@
     "properties": {
         "allOf": {
             "$ref": "node_schema.json#",
-            "file_type": {
+            "fileType": {
                 "enum": ["image file", "raw data file", "derived data file"]
             },
             "mimeType": {},
             "size": {
                 "type": "number"
             },
-            "format": {
+            "digitalObjectFormat": {
                 "type": {
                     "type": "array",
                     "items": {
@@ -24,7 +24,7 @@
             "checksum": {
                 "type": "string"
             },
-            "hashing_method": {
+            "hashingMethod": {
                 "enum": ["", ""]
             },
             "isEncrypted": {
@@ -33,7 +33,7 @@
             "isCompressed": {
                 "type": "boolean"
             },
-            "fileLicenses_or_accessrights": {
+            "fileLicensesOrAccessRights": {
                 "type": "array",
                 "description": "specifies the licenses for individual file element, to provide granularity of access rights. Licenses may vary depending on whether commercial use is allowed or not, etc...",
                 "items": {

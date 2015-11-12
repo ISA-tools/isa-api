@@ -100,7 +100,7 @@ class InvestigationParser:
             else:
                 break
         # handle SDRF files for MAGE compliant ISATab
-        if rec.metadata.has_key("SDRF File"):
+        if "SDRF File" in rec.metadata:
             study = ISATabStudyRecord()
             study.metadata["Study File Name"] = rec.metadata["SDRF File"]
             rec.studies.append(study)
@@ -177,12 +177,13 @@ class StudyAssayParser:
         self._col_types = {"attribute": ("Characteristics", "Factor Type",
                                          "Comment", "Label", "Material Type", "Factor Value"),
                            "node" : ("Sample Name", "Source Name", "Image File",
-                                     "Raw Data File", "Derived Data File"),
+                                     "Raw Data File", "Derived Data File", "Acquisition Parameter Data File"),
                            "node_assay" : ("Extract Name", "Labeled Extract Name",
                                            "Assay Name", "Data Transformation Name",
                                            "Normalization Name"),
                            "processing": ("Protocol REF",)}
         self._synonyms = {"Array Data File" : "Raw Data File",
+                          "Free Induction Decay Data File": "Raw Data File",
                           "Derived Array Data File" : "Derived Data File",
                           "Hybridization Assay Name": "Assay Name",
                           "Derived Array Data Matrix File": "Derived Data File",
@@ -202,7 +203,7 @@ class StudyAssayParser:
                 for assay in study.assays:
                     cur_assay = ISATabAssayRecord(assay)
                     assay_data = self._parse_study(assay["Study Assay File Name"],
-                                                   ["Sample Name","Extract Name","Raw Data File", "Derived Data File", "Image File"])
+                                                   ["Sample Name","Extract Name","Raw Data File","Derived Data File", "Image File", "Acquisition Parameter Data File", "Free Induction Decay Data File"])
                     cur_assay.nodes = assay_data
                     self._get_process_nodes(assay["Study Assay File Name"], cur_assay)
                     final_assays.append(cur_assay)
@@ -221,16 +222,16 @@ class StudyAssayParser:
 
         with open(os.path.join(self._dir, fname), "rU") as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
-            headers = self._swap_synonyms(reader.next())
+            headers = self._swap_synonyms(reader.__next__())
             hgroups = self._collapse_header(headers)
             htypes = self._characterize_header(headers, hgroups)
-
+            #
             # print "headers:", headers
             # print "hgroups:", hgroups
             # print "htypes:", htypes
 
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
-            node_indices = [i for i, x in enumerate(htypes) if x == "node"]
+            node_indices = [i for i, x in enumerate(htypes) if x == "node" or x=="node_assay"]
 
             # print "processing_indices ->", processing_indices
             # print "node_indices -> ", node_indices
@@ -238,6 +239,12 @@ class StudyAssayParser:
                 try:
                     input_index = find_lt(node_indices, processing_index)
                     output_index = find_gt(node_indices, processing_index)
+
+                    # print "processing_index ", processing_index
+                    # print "input_index ", input_index
+                    # print "output_index ", output_index
+                    # print " "
+
                 except ValueError:
                     # print "Invalid indices for process nodes"
                     break
@@ -249,16 +256,19 @@ class StudyAssayParser:
                 for line in reader:
                     if line_number >=  max_number:
                         input_name = line[hgroups[input_index][0]]
-                        input_type =  headers[input_index]
-                        input_node_index = input_type+input_name
-                        # print "input_name ", input_name
-                        # print "input_type ", input_type
-                        #output_name = line[hgroups[output_index][0]]
+                        input_node_index = self._build_node_index(input_header,input_name)
+                        #input_node = study.nodes[input_node_index]
+
+                        output_name = line[hgroups[output_index][0]]
+                        output_node_index = self._build_node_index(output_header, output_name)
+                        #output_node = study.nodes[output_node_index]
+
                         processing_name = line[hgroups[processing_index][0]]
-                        input_node = study.nodes[input_node_index]
                         process_node = ProcessNodeRecord(processing_name, processing_header, study)
-                        process_node.outputs = input_node.metadata[output_header]
-                        process_node.inputs = input_node.metadata[input_header]
+
+                        process_node.inputs.append(input_node_index)
+                        process_node.outputs.append(output_node_index)
+
                         max_number = max(len(process_node.inputs), len(process_node.outputs))
                         line_number += 1
                         process_nodes[processing_name] = process_node
@@ -270,13 +280,12 @@ class StudyAssayParser:
     def _parse_study(self, fname, node_types):
         """Parse study or assay row oriented file around the supplied base node.
         """
-        #print "parse ", fname
         if not os.path.exists(os.path.join(self._dir, fname)):
             return None
         nodes = {}
         with open(os.path.join(self._dir, fname), "rU") as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
-            header = self._swap_synonyms(reader.next())
+            header = self._swap_synonyms(reader.__next__())
             hgroups = self._collapse_header(header)
             htypes = self._characterize_header(header, hgroups)
 
@@ -294,10 +303,10 @@ class StudyAssayParser:
                 in_handle.seek(0, 0)
                 for line in reader:
                     name = line[name_index]
-                    node_index = node_type+name
+                    #to deal with same name used for different node types (e.g. Source Name and Sample Name using the same string)
+                    node_index = self._build_node_index(node_type,name)
                     if name in header:
                         continue
-                    #print "name ", name
                     try:
                         node = nodes[name+node_type]
                     except KeyError:
@@ -309,15 +318,13 @@ class StudyAssayParser:
                                            node.metadata)
                 nodes[node_index].metadata = attrs
 
-            #print "nodes before returning ", nodes
-
         return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
 
     def _finalize_metadata(self, node):
         """Convert node metadata back into a standard dictionary and list.
         """
         final = {}
-        for key, val in node.metadata.iteritems():
+        for key, val in iter(node.metadata.items()):
             #val = list(val)
             #if isinstance(val[0], tuple):
             #    val = [dict(v) for v in val]
@@ -379,7 +386,7 @@ class StudyAssayParser:
         out = []
         for h in [header[g[0]] for g in hgroups]:
             this_ctype = None
-            for ctype, names in self._col_types.iteritems():
+            for ctype, names in self._col_types.items():
                 if h.startswith(names):
                     this_ctype = ctype
                     break
@@ -399,6 +406,29 @@ class StudyAssayParser:
 
     def _swap_synonyms(self, header):
         return [self._synonyms.get(h, h) for h in header]
+
+    #to ensure uniqueness of node indexes
+    def _build_node_index(self, type, name):
+        if type=="Source Name":
+            return "source-"+name
+        else:
+            if type == "Sample Name":
+                return "sample-"+name
+            else:
+                if type == "Extract Name":
+                    return "extract-"+name
+                else:
+                    if type == "Raw Data File":
+                       return "rawdatafile-"+name
+                    else:
+                        if type=="Derived Data File":
+                            return "deriveddatafile-"+name
+                        else:
+                            if type=="Acquisiton Parameter Data File":
+                                return "acquisitionparameterfile-"+name
+                            else:
+                                "ERROR - Type not being considered! ", type
+
 
 _record_str = \
 """* ISATab Record
@@ -521,14 +551,14 @@ class NodeRecord:
 
 
 class ProcessNodeRecord:
-    """Represent a process node within an ISA-Tab Study/Assay file.
+    """Represent a process node within an ISA-Tab Study/Assay file (corresponds to Protocol REF).
     """
     def __init__(self, name="", ntype="", study_assay=""):
         self.ntype = ntype
         self.study_assay = study_assay
         self.name = name
-        self.inputs = {}
-        self.outputs = {}
+        self.inputs = []
+        self.outputs = []
 
     def __str__(self):
         return _process_node_str.format(inputs=pprint.pformat(self.inputs).replace("\n", "\n" + " " * 9),

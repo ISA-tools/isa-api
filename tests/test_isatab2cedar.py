@@ -9,13 +9,15 @@ import unittest
 class ISAtab2CEDARTest(unittest.TestCase):
       def setUp(self):
         """set up directories etc"""
-        self.isa2cedar = ISATab2CEDAR()
+        pass
 
       def test_bii_i_1_conversion(self):
+        self.isa2cedar = ISATab2CEDAR("http://www.isa-tools.org/")
         self.test_data = "./data/BII-I-1"
         self.isa2cedar.createCEDARjson(self.test_data, "./datasets", True)
 
       def test_metabolights_conversion(self):
+        self.isa2cedar = ISATab2CEDAR("http://www.ebi.ac.uk/metabolights/")
         self.folder = "./datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/"
         self.path = os.path.abspath(self.folder)
         self.directories = [ f for f in listdir(self.path) ]

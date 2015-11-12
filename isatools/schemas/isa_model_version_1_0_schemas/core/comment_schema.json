@@ -1,10 +1,13 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema",
-    "title": "ISA data schema",
+    "title": "ISA comment schema - it corresponds to ISA Comment[] construct",
     "description": "JSON-schema representing a data file in the ISA model",
     "type": "object",
     "properties": {
         "name": {
+            "type": "string"
+        },
+        "value": {
             "type": "string"
         }
     }

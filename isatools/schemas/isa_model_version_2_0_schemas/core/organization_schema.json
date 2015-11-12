@@ -24,9 +24,9 @@
             "items": {
                 "type": "object",
                 "properties": {
-                    "role": "string",
-                    "ontologyReference": {
-                        "#ref": "resource_reference_schema.json#"
+                    "role": { "type": "string"},
+                    "resourceReference": {
+                        "$ref": "resource_reference_schema.json#"
                     }
                 }
             }
