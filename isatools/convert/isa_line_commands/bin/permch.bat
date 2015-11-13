@@ -1,0 +1,1 @@
+@echo offREM Wrapper for the ISATAB PermMod commandcall config.batset ILBIN=%~dp0call %ILBIN%\invoke.bat org.isatools.isatab.commandline.PermModShellCommand %*
