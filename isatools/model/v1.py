@@ -1,6 +1,8 @@
 import datetime
-import csv
+import json
+
 __author__ = 'dj'
+
 
 class Comment(object):
     """A comment allows arbitrary annotation of all ISA classes
@@ -16,6 +18,14 @@ class Comment(object):
         self.value = value
         self.isa_element = isa_element
 
+    def to_json(self):
+        return {
+            "name": self.name,
+            "value": self.value,
+            "isaElement": self.isa_element
+        }
+
+
 class IsaObject(object):
     """ An ISA Object is an abstract class to enable containment of Comments
     
@@ -27,6 +37,12 @@ class IsaObject(object):
             self.comments = []
         else:
             self.comments = comments
+
+    def get_comments_json(self):
+        comments_json = []
+        for comment in self.comments:
+            comments_json.append(comment.to_json())
+        return comments_json
 
 class Investigation(IsaObject):
     """An investigation maintains metadata about the project context and links to one or more studies. There can only
@@ -71,6 +87,36 @@ class Investigation(IsaObject):
         else:
             self.studies = studies
 
+    def to_json(self):
+        ontologySourceReferences_json = []
+        for ontologySourceReference in self.ontologySourceReferences:
+            ontologySourceReferences_json.append(ontologySourceReference.to_json())
+
+        publications_json = []
+        for publication in self.publications:
+            publications_json.append(publication.to_json())
+
+        contacts_json = []
+        for contact in self.contacts:
+            contacts_json.append(contact.to_json())
+
+        studies_json = []
+        for study in self.studies:
+            studies_json.append(study.to_json())
+
+        return {
+            "identifier": self.identifier,
+            "title": self.title,
+            "description": self.description,
+            "submissionDate": self.submissionDate,
+            "publicReleaseDate": self.publicReleaseDate,
+            "ontologySourceReferences": ontologySourceReferences_json,
+            "publications": publications_json,
+            "contacts": contacts_json,
+            "studies": studies_json,
+            "comments": self.get_comments_json()
+        }
+
 
 class OntologySourceReference(IsaObject):
     """This annotation section is identical to that in the MAGE-TAB format.
@@ -89,6 +135,16 @@ class OntologySourceReference(IsaObject):
         self.version = version
         self.description = description
 
+    def to_json(self):
+        return {
+            "name": self.name,
+            "file": self.file,
+            "version": self.version,
+            "description": self.description,
+            "comments": self.get_comments_json()
+        }
+
+
 class OntologyAnnotation(IsaObject):
     """An ontology term annotation reference
 
@@ -101,11 +157,16 @@ class OntologyAnnotation(IsaObject):
     def __init__(self, name="", termSource=None, termAccession="", comments=None):
         super(OntologyAnnotation, self).__init__(comments)
         self.name = name
-        if termSource is None:
-            self.termSource = OntologySourceReference()
-        else:
-            self.termSource = termSource
+        self.termSource = termSource
         self.termAccession = termAccession
+
+    def to_json(self):
+        return {
+            "name": self.name,
+            "termSource": self.termSource,
+            "termAccession": self.termAccession,
+            "comments": self.get_comments_json
+        }
 
 
 class Publication(IsaObject):
@@ -129,6 +190,16 @@ class Publication(IsaObject):
             self.status = OntologyAnnotation()
         else:
             self.status = status
+
+    def to_json(self):
+        return {
+            "pubMedID": self.pubMedID,
+            "DOI": self.DOI,
+            "authorList": self.authorList,
+            "title": self.title,
+            "status": self.status.to_json(),
+            "comments": self.get_comments_json
+        }
 
 
 class Contact(IsaObject):
@@ -160,6 +231,20 @@ class Contact(IsaObject):
         self.address = address
         self.affiliation = affiliation
         self.roles = roles
+
+    def to_json(self):
+        return {
+            "firstName": self.firstName,
+            "midInitials": self.midInitials,
+            "lastName": self.lastName,
+            "email": self.email,
+            "phone": self.phone,
+            "fax": self.fax,
+            "address": self.address,
+            "affiliation": self.affiliation,
+            "roles": self.roles,
+            "comments": self.get_comments_json()
+        }
 
 
 class Study(IsaObject):
@@ -218,7 +303,48 @@ class Study(IsaObject):
         else:
             self.assays = assays
 
+    def to_json(self):
+        designDescriptors_json = []
+        for designDescriptor in self.designDescriptors:
+            designDescriptors_json.append(designDescriptor.to_json())
 
+        publications_json = []
+        for publication in self.publications:
+            publications_json.append(publication.to_json())
+
+        contacts_json = []
+        for contact in self.contacts:
+            contacts_json.append(contact.to_json())
+
+        factors_json = []
+        for factor in self.factors:
+            factors_json.append(factor.to_json())
+
+        protocols_json = []
+        for protocol in self.protocols:
+            protocols_json.append(protocol.to_json())
+
+        assays_json = []
+        for assay in self.assays:
+            assays_json.append(assay.to_json())
+
+        return {
+            "identifier": self.identifier,
+            "title": self.title,
+            "description": self.description,
+            "submissionDate": self.submissionDate,
+            "publicReleaseDate": self.publicReleaseDate,
+            "fileName": self.fileName,
+            "comments": self.get_comments_json(),
+            "designDescriptors": self.designDescriptors,
+            "publications": self.publications,
+            "contacts": self.contacts,
+            "factors": self.factors,
+            "protocols": self.protocols,
+            "assays": self.assays
+        }
+
+# TODO: Got up to here. To finish adding to_json()s
 class StudyDesignDescriptor(IsaObject):
     """A Study Design Descriptor provides a term allowing the classification of the study based on the overall
     experimental design. The term can be free text (Attribute: name) or from, for example, a controlled vocabulary or
