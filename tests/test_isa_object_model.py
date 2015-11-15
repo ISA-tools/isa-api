@@ -109,7 +109,7 @@ class ISAModelTests(unittest.TestCase):
         # FACTOR
         factor = StudyFactor(
             name="",
-            type=ontology_annotation
+            type_=ontology_annotation
         )
 
         # SAMPLE
