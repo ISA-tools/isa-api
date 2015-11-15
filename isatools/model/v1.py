@@ -1,5 +1,5 @@
 from datetime import date
-import json
+import abc
 
 __author__ = 'dj'
 
@@ -43,6 +43,12 @@ class IsaObject(object):
         for comment in self.comments:
             comments_json.append(comment.to_json())
         return comments_json
+
+    @abc.abstractmethod
+    def to_json(self):
+        """Implement JSON serialization"""
+        return
+
 
 class Investigation(IsaObject):
     """An investigation maintains metadata about the project context and links to one or more studies. There can only
@@ -354,8 +360,8 @@ class Study(IsaObject):
             "identifier": self.identifier,
             "title": self.title,
             "description": self.description,
-            "submissionDate": self.submission_date,
-            "publicReleaseDate": self.public_release_date,
+            "submissionDate": self.submission_date.isoformat(),
+            "publicReleaseDate": self.public_release_date.isoformat(),
             "fileName": self.file_name,
             "comments": self.get_comments_json(),
             "designDescriptors": design_descriptors_json,
@@ -403,10 +409,10 @@ class StudyFactor(IsaObject):
         ontologyReference: A representation of an ontology source reference
     """
 
-    def __init__(self, name="", type="", ontology_annotation=None, comments=None):
+    def __init__(self, name="", type_="", ontology_annotation=None, comments=None):
         super(StudyFactor, self).__init__(comments)
         self.name = name
-        self.type = type
+        self.type = type_
         if ontology_annotation is None:
             self.ontology_annotation = OntologyAnnotation()
         else:
@@ -432,7 +438,8 @@ class Assay(IsaObject):
     Technology Platform: Manufacturer and platform name, e.g. Bruker AVANCE
     File Name: A field to specify the name of the Assay file corresponding the definition of that assay.
     """
-    def __init__(self, measurement_type=None, technology_type=None, technology_platform="", file_name="", comments=None):
+    def __init__(self, measurement_type=None, technology_type=None, technology_platform="", file_name="",
+                 comments=None):
         super(Assay, self).__init__(comments)
         if measurement_type is None:
             self.measurement_type = OntologyAnnotation()
@@ -500,6 +507,24 @@ class Process(IsaObject):
         self.inputs = []
         self.outputs = []
 
+    def to_json(self):
+        parameters_json = []
+        for parameter in self.parameters:
+            parameters_json.append(parameter.to_json())
+        inputs_json = []
+        for input_ in self.inputs:
+            inputs_json.append(input_.to_json())
+        outputs_json = []
+        for output in self.outputs:
+            outputs_json.append(output.to_json())
+        return {
+            "name": self.name,
+            "executes_protocol": self.executes_protocol.name,
+            "parameters": parameters_json,
+            "inputs": inputs_json,
+            "outputs": outputs_json
+        }
+
 
 class Source(IsaObject):
     def __init__(self, name="", comments=None):
@@ -507,12 +532,30 @@ class Source(IsaObject):
         self.name = name
         self.characteristics = []
 
+    def to_json(self):
+        characteristics_json = []
+        for characteristic in self.characteristics:
+            characteristics_json.append(characteristic.to_json())
+        return {
+            "name": self.name,
+            "characteristics": characteristics_json
+        }
+
 
 class Material(IsaObject):
     def __init__(self, name="", comments=None):
         super().__init__(comments)
         self.name = name
         self.characteristics = []
+
+    def to_json(self):
+        characteristics_json = []
+        for characteristic in self.characteristics:
+            characteristics_json.append(characteristic.to_json())
+        return {
+            "name": self.name,
+            "characteristics": characteristics_json
+        }
 
 
 class MaterialAttribute(IsaObject):
@@ -523,11 +566,21 @@ class MaterialAttribute(IsaObject):
         else:
             self.ontology_annotation = ontology_annotation
 
+    def to_json(self):
+        return {
+            "ontologyAnnotation": self.ontology_annotation.to_json(),
+        }
+
 
 class Data(IsaObject):
     def __init__(self, name="", comments=None):
         super().__init__(comments)
         self.name = name
+
+    def to_json(self):
+        return {
+            "name": self.name,
+        }
 
 
 class Sample(IsaObject):
@@ -536,3 +589,16 @@ class Sample(IsaObject):
         self.name = name
         self.characteristics = []
         self.factors = []
+
+    def to_json(self):
+        characteristics_json = []
+        for characteristic in self.characteristics:
+            characteristics_json.append(characteristic.to_json())
+        factors_json = []
+        for factor in self.factors:
+            factors_json.append(factor.to_json())
+        return {
+            "name": self.name,
+            "characteristics": characteristics_json,
+            "factors": factors_json
+        }

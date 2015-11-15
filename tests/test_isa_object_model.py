@@ -39,6 +39,7 @@ class ISAModelTests(unittest.TestCase):
             file="",
             version=""
         )
+        # ontology_source_reference.comments.append(comment)
 
         # ONTOLOGY ANNOTATION
         ontology_annotation = OntologyAnnotation(
@@ -55,6 +56,7 @@ class ISAModelTests(unittest.TestCase):
             title="",
             status=ontology_annotation
         )
+        # publication.comments.append(comment)
 
         # CONTACT
         contact = Contact(
@@ -65,6 +67,7 @@ class ISAModelTests(unittest.TestCase):
             affiliation=""
         )
         contact.roles.append(ontology_annotation)
+        # contact.comments.append(comment)
 
         # INVESTIGATION
         investigation = Investigation(
@@ -77,6 +80,8 @@ class ISAModelTests(unittest.TestCase):
         investigation.ontology_source_references.append(ontology_source_reference)
         investigation.publications.append(publication)
         investigation.contacts.append(contact)
+        # investigation.comments.append(comment)
+
 
         # PROTOCOL
         protocol = Protocol(
@@ -88,6 +93,7 @@ class ISAModelTests(unittest.TestCase):
         )
         protocol.parameters.append(ontology_annotation)
         protocol.components.append(ontology_annotation)
+        # protocol.comments.append(comment)
 
         # MATERIAL ATTRIBUTE
         material_attribute = MaterialAttribute(
@@ -147,18 +153,17 @@ class ISAModelTests(unittest.TestCase):
         study.sources.append(source)
         study.samples.append(sample)
         study.process_sequence.append(process)
-
         assay = Assay(
             file_name="",
             measurement_type=ontology_annotation,
             technology_type=ontology_annotation,
             technology_platform=""
         )
-
         study.assays.append(assay)
-
         study.samples.append(sample)
         study.process_sequence.append(process)
+        # study.comments.append(comment)
+
         investigation.studies.append(study)
 
         print(investigation.to_json())
