@@ -13,16 +13,14 @@ class Comment(object):
         isa_element: If applicable, the ISA class attribute the comment relates to. If blank, it is assumed
             that the comment relates to the ISA class
     """
-    def __init__(self, name="", value="", isa_element=None):
+    def __init__(self, name="", value=""):
         self.name = name
         self.value = value
-        self.isa_element = isa_element
 
     def to_json(self):
         return {
             "name": self.name,
             "value": self.value,
-            "isaElement": self.isa_element
         }
 
 
@@ -69,8 +67,8 @@ class Investigation(IsaObject):
 
     def __init__(self, identifier="", title="", description="", submission_date=date.today(),
                  public_release_date=date.today(), ontology_source_references=None, publications=None,
-                 contacts=None, studies=None, comments=None):
-        super(Investigation, self).__init__(comments)
+                 contacts=None, studies=None, created_with_configuration="", last_opened_with_configuration=""):
+        super(Investigation, self).__init__()
         self.identifier = identifier
         self.title = title
         self.description = description
@@ -92,6 +90,8 @@ class Investigation(IsaObject):
             self.studies = []
         else:
             self.studies = studies
+        self.created_with_configuration = Comment(name="Created With Configuration", value=created_with_configuration)
+        self.last_opened_with_configuration = Comment(name="Last Opened With Configuration", value=last_opened_with_configuration)
 
     def to_json(self):
         ontology_source_references_json = []
@@ -120,7 +120,8 @@ class Investigation(IsaObject):
             "publications": publications_json,
             "contacts": contacts_json,
             "studies": studies_json,
-            "comments": self.get_comments_json()
+            "commentCreatedWithConfiguration": self.created_with_configuration.to_json(),
+            "commentLastOpenedWithConfiguration": self.last_opened_with_configuration.to_json()
         }
 
 
@@ -146,8 +147,8 @@ class OntologySourceReference(IsaObject):
             "name": self.name,
             "file": self.file,
             "version": self.version,
-            "description": self.description,
-            "comments": self.get_comments_json()
+            "description": self.description
+            # "comments": self.get_comments_json()
         }
 
 
@@ -173,8 +174,8 @@ class OntologyAnnotation(IsaObject):
         return {
             "name": self.name,
             "termSource": self.term_source.name,
-            "termAccession": self.term_accession,
-            "comments": self.get_comments_json()
+            "termAccession": self.term_accession
+            # "comments": self.get_comments_json()
         }
 
 
