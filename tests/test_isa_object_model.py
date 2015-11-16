@@ -220,11 +220,12 @@ class ISAObjectJsonWriterTest(unittest.TestCase):
     """Tests to_json() implementations by validating against the schemas"""
 
     def setUp(self):
-        self._schemas_path = "../isatools/schemas/isa_model_version_1_0_schemas/core/"
+        self._schemas_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                          "../isatools/schemas/isa_model_version_1_0_schemas/core/")
 
     def _validate(self, isa_object, schema_file_name):
         schema = json.load(open(os.path.join(self._schemas_path + schema_file_name)))
-        resolver = RefResolver("file://" + self._schemas_path + schema_file_name, schema)
+        resolver = RefResolver(base_uri="file://" + self._schemas_path + "/", referrer=schema)
         Draft4Validator(schema, resolver=resolver).validate(isa_object.to_json(), schema)
 
     def test_ontology_source_reference_to_json(self):
