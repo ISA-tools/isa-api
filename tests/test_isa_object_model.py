@@ -267,8 +267,8 @@ class ISAObjectJsonWriterTest(unittest.TestCase):
     def test_material_attribute_to_json(self):
         self._validate(MaterialAttribute(), "material_attribute_schema.json")
 
-    def test_assay_attribute_to_json(self):
+    def test_assay_to_json(self):
         self._validate(Assay(), "assay_schema.json")
 
-    def test_study_attribute_to_json(self):
+    def test_study_to_json(self):
         self._validate(Study(), "study_schema.json")
