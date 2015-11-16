@@ -11,13 +11,7 @@
         "phone" : { "type": "string"},
         "fax" : { "type" : "string" },
         "address" : { "type" : "string" },
-        "affiliations" : {
-            "type" : "array",
-            "items" : {
-                 "$ref": "organization_schema.json#"
-
-            }
-        },
+        "affiliation" : { "type" : "string" },
         "roles" : {
             "type" : "array",
             "items" : {
