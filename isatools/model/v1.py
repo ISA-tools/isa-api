@@ -68,7 +68,7 @@ class Investigation(IsaObject):
     def __init__(self, identifier="", title="", description="", submission_date=date.today(),
                  public_release_date=date.today(), ontology_source_references=None, publications=None,
                  contacts=None, studies=None, created_with_configuration="", last_opened_with_configuration=""):
-        super(Investigation, self).__init__()
+        super().__init__()
         self.identifier = identifier
         self.title = title
         self.description = description
@@ -136,7 +136,7 @@ class OntologySourceReference(IsaObject):
     """
 
     def __init__(self, name="", file="", version="", description="", comments=None):
-        super(OntologySourceReference, self).__init__(comments)
+        super().__init__(comments)
         self.name = name
         self.file = file
         self.version = version
@@ -162,7 +162,7 @@ class OntologyAnnotation(IsaObject):
     """
 
     def __init__(self, name="", term_source=None, term_accession="", comments=None):
-        super(OntologyAnnotation, self).__init__(comments)
+        super().__init__(comments)
         self.name = name
         if term_source is None:
             self.term_source = OntologySourceReference()
@@ -191,7 +191,7 @@ class Publication(IsaObject):
     """
 
     def __init__(self, pubmed_id="", doi="", author_list="", title="", status=None, comments=None):
-        super(Publication, self).__init__(comments)
+        super().__init__(comments)
         self.pubmed_id = pubmed_id
         self.doi = doi
         self.author_list = author_list
@@ -231,7 +231,7 @@ class Contact(IsaObject):
 
     def __init__(self, first_name="", last_name="", mid_initials="", email="", phone="", fax="", address="",
                  affiliation="", roles=None, comments=None):
-        super(Contact, self).__init__(comments)
+        super().__init__(comments)
         self.last_name = last_name
         self.first_name = first_name
         self.mid_initials = mid_initials
@@ -288,7 +288,7 @@ class Study(IsaObject):
                  public_release_date=date.today(), file_name="", design_descriptors=None, publications=None,
                  contacts=None, factors=None, protocols=None, assays=None, sources=None, samples=None,
                  process_sequence=None, comments=None):
-        super(Study, self).__init__(comments)
+        super().__init__(comments)
         self.identifier = identifier
         self.title = title
         self.description = description
@@ -385,7 +385,7 @@ class StudyDesignDescriptor(IsaObject):
     """
 
     def __init__(self, name="", ontology_annotation=None, comments=None):
-        super(StudyDesignDescriptor, self).__init__(comments)
+        super().__init__(comments)
         self.name = name
         if ontology_annotation is None:
             self.ontology_annotation = OntologyAnnotation()
@@ -411,7 +411,7 @@ class StudyFactor(IsaObject):
     """
 
     def __init__(self, name="", type_="", ontology_annotation=None, comments=None):
-        super(StudyFactor, self).__init__(comments)
+        super().__init__(comments)
         self.name = name
         self.type = type_
         if ontology_annotation is None:
@@ -441,7 +441,7 @@ class Assay(IsaObject):
     """
     def __init__(self, measurement_type=None, technology_type=None, technology_platform="", file_name="",
                  comments=None):
-        super(Assay, self).__init__(comments)
+        super().__init__(comments)
         if measurement_type is None:
             self.measurement_type = OntologyAnnotation()
         else:
