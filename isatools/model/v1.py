@@ -118,7 +118,7 @@ class Investigation(IsaObject):
             "publicReleaseDate": self.public_release_date.isoformat(),
             "ontologySourceReferences": ontology_source_references_json,
             "publications": publications_json,
-            "contacts": contacts_json,
+            "people": contacts_json,
             "studies": studies_json,
             "commentCreatedWithConfiguration": self.created_with_configuration.to_json(),
             "commentLastOpenedWithConfiguration": self.last_opened_with_configuration.to_json()
@@ -204,11 +204,11 @@ class Publication(IsaObject):
     def to_json(self):
         return {
             "pubMedID": self.pubmed_id,
-            "DOI": self.doi,
+            "doi": self.doi,
             "authorList": self.author_list,
             "title": self.title,
-            "status": self.status.to_json(),
-            "comments": self.get_comments_json()
+            "status": self.status.to_json()
+            # "comments": self.get_comments_json()
         }
 
 
@@ -258,8 +258,8 @@ class Contact(IsaObject):
             "fax": self.fax,
             "address": self.address,
             "affiliation": self.affiliation,
-            "roles": roles_json,
-            "comments": self.get_comments_json()
+            "roles": roles_json
+            # "comments": self.get_comments_json()
         }
 
 
@@ -286,7 +286,7 @@ class Study(IsaObject):
 
     def __init__(self, identifier="", title="", description="", submission_date=date.today(),
                  public_release_date=date.today(), file_name="", design_descriptors=None, publications=None,
-                 contacts=None, factors=None, protocols=None, assays=None, sources=None, samples=None,
+                 contacts=None, protocols=None, assays=None, sources=None, samples=None,
                  process_sequence=None, comments=None):
         super().__init__(comments)
         self.identifier = identifier
@@ -307,10 +307,10 @@ class Study(IsaObject):
             self.contacts = []
         else:
             self.contacts = contacts
-        if factors is None:
-            self.factors = []
-        else:
-            self.factors = factors
+        # if factors is None:
+        #     self.factors = []
+        # else:
+        #     self.factors = factors
         if protocols is None:
             self.protocols = []
         else:
@@ -345,9 +345,9 @@ class Study(IsaObject):
         for contact in self.contacts:
             contacts_json.append(contact.to_json())
 
-        factors_json = []
-        for factor in self.factors:
-            factors_json.append(factor.to_json())
+        # factors_json = []
+        # for factor in self.factors:
+        #     factors_json.append(factor.to_json())
 
         protocols_json = []
         for protocol in self.protocols:
@@ -363,12 +363,11 @@ class Study(IsaObject):
             "description": self.description,
             "submissionDate": self.submission_date.isoformat(),
             "publicReleaseDate": self.public_release_date.isoformat(),
-            "fileName": self.file_name,
-            "comments": self.get_comments_json(),
-            "designDescriptors": design_descriptors_json,
+            # "fileName": self.file_name,
+            # "comments": self.get_comments_json(),
+            "studyDesignDescriptors": design_descriptors_json,
             "publications": publications_json,
-            "contacts": contacts_json,
-            "factors": factors_json,
+            "people": contacts_json,
             "protocols": protocols_json,
             "assays": assays_json
         }
@@ -395,8 +394,8 @@ class StudyDesignDescriptor(IsaObject):
     def to_json(self):
         return {
             "name": self.name,
-            "ontologyAnnotation": self.ontology_annotation.to_json(),
-            "comments": self.get_comments_json()
+            "ontologyAnnotation": self.ontology_annotation.to_json()
+            # "comments": self.get_comments_json()
         }
 
 
@@ -422,9 +421,8 @@ class StudyFactor(IsaObject):
     def to_json(self):
         return {
             "name": self.name,
-            "type": self.type,
-            "ontologyAnnotation": self.ontology_annotation.to_json(),
-            "comments": self.get_comments_json()
+            "ontologyAnnotation": self.ontology_annotation.to_json()
+            # "comments": self.get_comments_json()
         }
 
 
@@ -458,8 +456,8 @@ class Assay(IsaObject):
             "measurementType": self.measurement_type.to_json(),
             "technologyType": self.technology_type.to_json(),
             "technologyPlatform": self.technology_platform,
-            "fileName": self.file_name,
-            "comments": self.get_comments_json()
+            "fileName": self.file_name
+            # "comments": self.get_comments_json()
         }
 
 
@@ -491,8 +489,8 @@ class Protocol(IsaObject):
             "uri": self.uri,
             "version": self.version,
             "parameters": parameters_json,
-            "components": components_json,
-            "comments": self.get_comments_json()
+            "components": components_json
+            # "comments": self.get_comments_json()
         }
 
 
@@ -520,7 +518,7 @@ class Process(IsaObject):
             outputs_json.append(output.to_json())
         return {
             "name": self.name,
-            "executes_protocol": self.executes_protocol.name,
+            "executesProtocol": self.executes_protocol.to_json(),
             "parameters": parameters_json,
             "inputs": inputs_json,
             "outputs": outputs_json
