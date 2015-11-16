@@ -17,5 +17,6 @@
                "$ref" : "factor_value_schema.json#"
             }
         }
-    }
+    },
+    "additionalProperties": false
 }

@@ -14,5 +14,6 @@
             "type" : "string",
             "format" : "uri"
         }
-    }
+    },
+    "additionalProperties": false
 }
