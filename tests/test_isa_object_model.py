@@ -1,11 +1,13 @@
 import unittest
-
+import json
+from jsonschema import RefResolver, Draft4Validator
+import os
 from datetime import date
 from isatools.model.v1 import Investigation, OntologySourceReference, Publication, OntologyAnnotation, Study, \
     StudyFactor, Assay, Contact, Protocol, Process, Source, Material, MaterialAttribute, Data, Sample, Comment
 
 
-class ISAModelTests(unittest.TestCase):
+class ISAObjectTests(unittest.TestCase):
 
     def test_object_comment(self):
         comment = Comment(
@@ -211,3 +213,62 @@ class ISAModelTests(unittest.TestCase):
         assert(isinstance(study.process_sequence[0], Process))
         assert(isinstance(study.assays[0], Assay))
         assert(isinstance(study.samples[0], Sample))
+
+
+class ISAObjectJsonWriterTest(unittest.TestCase):
+
+    """Tests to_json() implementations by validating against the schemas"""
+
+    def setUp(self):
+        self._schemas_path = "../isatools/schemas/isa_model_version_1_0_schemas/core/"
+
+    def _validate(self, isa_object, schema_file_name):
+        schema = json.load(open(os.path.join(self._schemas_path + schema_file_name)))
+        schema_url = "file://" + self._schemas_path + schema_file_name
+        resolver = RefResolver(schema_url, schema)
+        Draft4Validator(schema, resolver=resolver).validate(isa_object.to_json(), schema)
+
+    def test_ontology_source_reference_to_json(self):
+        self._validate(OntologySourceReference(), "ontology_source_reference_schema.json")
+
+    def test_ontology_annotation_to_json(self):
+        self._validate(OntologyAnnotation(), "ontology_annotation_schema.json")
+
+    def test_publication_to_json(self):
+        self._validate(Publication(), "publication_schema.json")
+
+    def test_contact_to_json(self):
+        self._validate(OntologySourceReference(), "person_schema.json")
+
+    def test_investigation_to_json(self):
+        self._validate(OntologySourceReference(), "investigation_schema.json")
+
+    def test_protocol_to_json(self):
+        self._validate(OntologySourceReference(), "protocol_schema.json")
+
+    def test_material_to_json(self):
+        self._validate(OntologySourceReference(), "material_schema.json")
+
+    def test_source_to_json(self):
+        self._validate(OntologySourceReference(), "source_schema.json")
+
+    def test_sample_to_json(self):
+        self._validate(OntologySourceReference(), "sample_schema.json")
+
+    def test_study_factor_to_json(self):
+        self._validate(OntologySourceReference(), "factor_schema.json")
+
+    def test_data_to_json(self):
+        self._validate(OntologySourceReference(), "data_schema.json")
+
+    def test_process_to_json(self):
+        self._validate(OntologySourceReference(), "process_schema.json")
+
+    def test_material_attribute_to_json(self):
+        self._validate(OntologySourceReference(), "material_attribute_schema.json")
+
+    def test_assay_attribute_to_json(self):
+        self._validate(OntologySourceReference(), "assay_schema.json")
+
+    def test_study_attribute_to_json(self):
+        self._validate(OntologySourceReference(), "study_schema.json")
