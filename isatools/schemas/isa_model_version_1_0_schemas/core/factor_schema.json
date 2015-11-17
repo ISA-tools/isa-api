@@ -11,5 +11,6 @@
         "ontologyAnnotation": {
             "$ref": "ontology_annotation_schema.json#"
         }
-    }
+    },
+    "additionalProperties": false
 }

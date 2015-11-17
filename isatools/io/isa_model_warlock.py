@@ -38,7 +38,7 @@ def ontology_source_reference_factory(**kwargs):
         Specification - ISA-TAB RC1 v1.0 November 2008, section 4.1.1
 
     """
-    OntologySourceReference = warlock.model_factory(ontology_source_reference_schema, resolver)
+    OntologySourceReference = warlock.model_factory(ontology_source_reference_schema, resolver=resolver, name='OntologySourceReference')
     obj = OntologySourceReference(kwargs)
     return obj
 
@@ -67,7 +67,7 @@ def ontology_annotation_factory(**kwargs):
             4.1.3.3 (Study Publications, Study Publication Status) ...
 
     """
-    OntologyAnnotation = warlock.model_factory(ontology_annotation_schema, resolver)
+    OntologyAnnotation = warlock.model_factory(ontology_annotation_schema, resolver=resolver, name='OntologyAnnotation')
     obj = OntologyAnnotation(kwargs)
     return obj
 
@@ -97,7 +97,7 @@ def publication_factory(**kwargs):
             Publications)
 
     """
-    Publication = warlock.model_factory(publication_schema, resolver)
+    Publication = warlock.model_factory(publication_schema, resolver=resolver, name='Publication')
     obj = Publication(kwargs)
     return obj
 
@@ -124,7 +124,7 @@ def study_factor_factory(**kwargs):
             Publications)
 
     """
-    StudyFactor = warlock.model_factory(study_factor_schema, resolver)
+    StudyFactor = warlock.model_factory(study_factor_schema, resolver=resolver, name='StudyFactor')
     obj = StudyFactor(kwargs)
     return obj
 
@@ -147,7 +147,7 @@ def study_protocol_factory(**kwargs):
             column heading) to list the values used for each protocol parameter. Refer to section Multiple values
             fields in the Investigation File on how to encode multiple values in one field and match term sources.
             Parameters optionally include OntologyAnnotations.
-        components (array of Component): A list of a protocol’s components; e.g. instrument names, software names, and
+        components (array of Component): A list of a protocol's components; e.g. instrument names, software names, and
             reagents names. Refer to section Multiple values fields in the Investigation File on how to encode multiple
             components in one field and match term sources. Components optionally include OntologyAnnotations.
 
@@ -162,7 +162,7 @@ def study_protocol_factory(**kwargs):
         Specification - ISA-TAB RC1 v1.0 November 2008, section 4.1.3.6 (Study Protocols)
 
     """
-    StudyProtocol = warlock.model_factory(study_protocol_schema, resolver)
+    StudyProtocol = warlock.model_factory(study_protocol_schema, resolver=resolver, name='StudyProtocol')
     obj = StudyProtocol(kwargs)
     obj.parameters = []
     obj.components = []
@@ -196,7 +196,7 @@ def contact_factory(**kwargs):
             Contacts)
 
     """
-    Contact = warlock.model_factory(contact_schema, resolver)
+    Contact = warlock.model_factory(contact_schema, resolver=resolver, name='Contact')
     obj = Contact(kwargs)
     obj.roles = []
     return obj
@@ -229,7 +229,7 @@ def investigation_factory(**kwargs):
         Specification - ISA-TAB RC1 v1.0 November 2008, section 4.1.2
 
     """
-    Investigation = warlock.model_factory(investigation_schema, resolver)
+    Investigation = warlock.model_factory(investigation_schema, resolver=resolver, name='Investigation')
     obj = Investigation(kwargs)
     obj.ontologySourceReferences = []
     obj.publications = []
@@ -269,7 +269,7 @@ def study_factory(**kwargs):
         Specification - ISA-TAB RC1 v1.0 November 2008, section 4.1.3 (Study section)
 
     """
-    Study = warlock.model_factory(study_schema, resolver)
+    Study = warlock.model_factory(study_schema, resolver=resolver, name='Study')
     obj = Study(kwargs)
     obj.studyDesignDescriptors = []
     obj.publications = []
@@ -303,6 +303,6 @@ def assay_factory(**kwargs):
         Specification - ISA-TAB RC1 v1.0 November 2008, 4.1.3.5 (Study Assays)
 
     """
-    Assay = warlock.model_factory(assay_schema, resolver)
+    Assay = warlock.model_factory(assay_schema, resolver=resolver, name='Assay')
     obj = Assay(kwargs)
     return obj
