@@ -1,0 +1,18 @@
+#ÊThe database parameters
+hibernate.connection.username=CHANGEME
+hibernate.connection.password=CHANGEME
+hibernate.connection.url=jdbc:postgresql://localhost:5432/bioinvindex
+hibernate.connection.driver_class=org.postgresql.Driver
+hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+# Change these paths as you need
+hibernate.search.default.indexBase=/tmp/bii/testdb/lucene
+
+# Change this to get some debug info
+hibernate.show_sql=false
+
+# This shouldn't need to be changed
+hibernate.search.default.directory_provider=org.hibernate.search.store.FSDirectoryProvider
+hibernate.hbm2ddl.auto=update
+hibernate.search.indexing_strategy=manual
+hibernate.mapping.precedence=hbm,class

@@ -33,7 +33,7 @@ def get_assay_type(container):
             assay_type = "mass spectrometry"
         elif str(line).startswith("#ANALYSIS TYPE: NMR;"):
             assay_type = "nmr spectroscopy"
-    print(assay_type)
+    print assay_type
     return assay_type
 
 
@@ -68,7 +68,7 @@ def write_assay(assay_filename, assayrecords, assay_wf_header):
 #the method takes 3 parameters as input: a filehandle, a MW identifier for the study, a MW identifier for the analysis
 #the method return nothing but creates a raw signal quantification file and a metabolite assignment file.
 def create_data_files(f, studyID, analysisID):
-    print("file to download: ", f)
+    print "file to download: ", f
 
     dlurl = urllib2.urlopen(f)
     #saving a remote file to local drive
@@ -222,7 +222,7 @@ def create_nmr_assay_records(f):
         if "AN:SOFTWARE_VERSION" in row[0]:
             pv_sw_version = row[1]
 
-        print(pv_sw_version)
+        print pv_sw_version
 
 
 #a method to create an ISA assay table for MS records
@@ -291,7 +291,7 @@ def create_ms_assay_records(input, studyID, analysisID, fv_records):
 
         if "MS_ALL_DATA_START" in row[0]:
             raw_data_file = str(studyID) + "_" + str(analysisID) + "_raw_data.txt"
-            print(raw_data_file)
+            print raw_data_file
 
         if "MS_METABOLITE_DATA:UNITS" in row[0] and len(row) > 1:
             ms_maf_qt = row[1]
@@ -618,7 +618,7 @@ studyID = "ST000102"
 tt = "NMR"
 
 pageurl = baseurl + tt + "Data&StudyID=" + studyID + "&StudyType=" + tt + "&ResultType=1#DataTabs"
-print("pageurl:", pageurl)
+print "pageurl:", pageurl
 
 concaturl1 = "Data&StudyID="
 concaturl2 = "&StudyType=" + tt + "&ResultType=1#DataTabs"
@@ -640,7 +640,7 @@ for table in AnalysisParamTable:
             tds = row.find_all('td')
             analysisID = tds[1].text
 
-            print("ID: ", analysisID)
+            print "ID: ", analysisID
 
             downLoadURI = "http://www.metabolomicsworkbench.org/data/study_textformat_view.php?STUDY_ID=" + studyID + "&ANALYSIS_ID="
 
@@ -653,8 +653,8 @@ for table in AnalysisParamTable:
 
             isa_assay_names_with_dlurl[analysisID] = downLoadURI
 
-print("all file names:", isa_assay_names)
-print("all assay types:", assay_types)
+print "all file names:", isa_assay_names
+print "all assay types:", assay_types
 
 inputFile = urllib2.urlopen(downLoadURI).read()
 inputFile = inputFile.split('\n')
@@ -833,7 +833,7 @@ studyfileheader = basestudysamplerecordheader + fv_record_header
 for key in isa_assay_names_with_dlurl:
     # print "element:", key
     file = get_mwfile_as_Lol(isa_assay_names_with_dlurl[key])
-    print("file to read: ", isa_assay_names_with_dlurl[key])
+    print "file to read: ", isa_assay_names_with_dlurl[key]
 
     assay_records, assay_header = create_ms_assay_records(isa_assay_names_with_dlurl[key], studyID, key, study_records)
     technology_type = "mass spectrometry"

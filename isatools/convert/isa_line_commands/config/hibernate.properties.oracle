@@ -1,0 +1,23 @@
+# Database parameters
+hibernate.connection.username=bioinvindex
+hibernate.connection.password=PASSWORD
+hibernate.connection.url=jdbc:oracle:thin:@localhost:1521:bioinvindex
+hibernate.connection.driver_class=oracle.jdbc.driver.OracleDriver
+hibernate.dialect=org.hibernate.dialect.Oracle10gDialect
+
+# Change these paths as you need
+hibernate.search.default.indexBase=/tmp/bii/testdb/lucene
+
+# Change this to get some debug info
+hibernate.show_sql=false
+
+# Set to 0 if you have problems with the Oracle Driver
+# (See http://forum.hibernate.org/viewtopic.php?t=82)
+hibernate.max_fetch_depth=0
+hibernate.jdbc.batch_size=0
+
+# This shouldn't need to be changed
+hibernate.search.default.directory_provider=org.hibernate.search.store.FSDirectoryProvider
+hibernate.hbm2ddl.auto=update
+hibernate.search.indexing_strategy=manual
+hibernate.mapping.precedence=hbm,class
