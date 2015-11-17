@@ -1,4 +1,5 @@
 __author__ = 'dj'
+import csv
 from isatools.model.v1 import *
 
 def from_isarchive(isatab_dir):
