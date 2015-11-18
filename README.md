@@ -1,6 +1,6 @@
 # isa-api
 
-Python ISA API library.
+Python ISA API library. It relies on Python 3.4. We follow the GitFlow development workflow.
 
 ## isatools package
 
