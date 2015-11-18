@@ -1,26 +1,30 @@
 {
-    "root": "SWNT-ODNFAM-NH2_carbon_nanotube",
     "materials": [
         {
             "source": {
                 "name": "MSKCC-CU-UA-CVillaNL2008-02",
-                "entity": [
+                "root": "SWNT-ODNFAM-NH2_carbon_nanotube",
+                "constituents": [
                     {
                         "name": "SWNT_ODNFAM-NH2-carbon_nanotube",
+                        "type": [
+                            "nanoparticle sample",
+                            "carbon nanotube"
+                        ],
                         "lot identifier": "",
                         "description": "",
                         "synthesis": "",
-                        "linkage": "???",
-                        "constituents": [
+                        "linkageType": "covalent?",
+                        "linkage": [
                             {
-                                "name": "SWNT-NHBo-COOH_core",
-                                "linkage": "???"
+                                "name": "SWNT-NHBo-COOH_core"
                             },
                             {
                                 "name": "ODNFAM-NH2_modifier"
                             },
                             {
-                                "name": "EDC_coat"
+                                "name": "EDC_coat",
+                                "type": "coating"
                             },
                             {
                                 "name": "TFA_coat"
@@ -29,7 +33,11 @@
                     },
                     {
                         "name": "SWNT-COOH_core",
-                        "constituents": [
+                        "type": [
+                            "core"
+                        ],
+                        "linkageType": "covalent",
+                        "linkage": [
                             {
                                 "name": "linker_coat"
                             },
@@ -39,25 +47,41 @@
                         ]
                     },
                     {
-                        "name": "NH2_carbon_nanotube"
+                        "name": "SWNT-ODNFAM-NH2_carbon_nanotube",
+                        "type": [
+                            "core"
+                        ]
                     },
                     {
-                        "name": "SWNT-ODNFAM-NH2_carbon_nanotube"
+                        "name": "ODNFAM-NH2_modifier",
+                        "type": [
+                            "modifier"
+                        ]
                     },
                     {
-                        "name": "ODNFAM-NH2_modifier"
+                        "name": "EDC_coat",
+                        "type": [
+                            "coat"
+                        ]
                     },
                     {
-                        "name": "EDC_coat"
+                        "name": "TFA_coat",
+                        "type": [
+                            "coat"
+                        ]
                     },
                     {
-                        "name": "TFA_coat"
+                        "name": "linker_coat",
+                        "type": [
+                            "linker",
+                            "coat"
+                        ]
                     },
                     {
-                        "name": "linker_coat"
-                    },
-                    {
-                        "name": "paraformaldehyde_coat"
+                        "name": "paraformaldehyde_coat",
+                        "type": [
+                            "coat"
+                        ]
                     }
                 ]
             }
