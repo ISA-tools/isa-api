@@ -1,0 +1,66 @@
+{
+    "root": "SWNT-ODNFAM-NH2_carbon_nanotube",
+    "materials": [
+        {
+            "source": {
+                "name": "MSKCC-CU-UA-CVillaNL2008-02",
+                "entity": [
+                    {
+                        "name": "SWNT_ODNFAM-NH2-carbon_nanotube",
+                        "lot identifier": "",
+                        "description": "",
+                        "synthesis": "",
+                        "linkage": "???",
+                        "constituents": [
+                            {
+                                "name": "SWNT-NHBo-COOH_core",
+                                "linkage": "???"
+                            },
+                            {
+                                "name": "ODNFAM-NH2_modifier"
+                            },
+                            {
+                                "name": "EDC_coat"
+                            },
+                            {
+                                "name": "TFA_coat"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "SWNT-COOH_core",
+                        "constituents": [
+                            {
+                                "name": "linker_coat"
+                            },
+                            {
+                                "name": "paraformaldehyde_coat"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "NH2_carbon_nanotube"
+                    },
+                    {
+                        "name": "SWNT-ODNFAM-NH2_carbon_nanotube"
+                    },
+                    {
+                        "name": "ODNFAM-NH2_modifier"
+                    },
+                    {
+                        "name": "EDC_coat"
+                    },
+                    {
+                        "name": "TFA_coat"
+                    },
+                    {
+                        "name": "linker_coat"
+                    },
+                    {
+                        "name": "paraformaldehyde_coat"
+                    }
+                ]
+            }
+        }
+    ]
+}
