@@ -1,5 +1,4 @@
 import csv
-from datetime import date
 from isatools.model.v1 import *
 
 
