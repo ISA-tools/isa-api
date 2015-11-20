@@ -10,7 +10,7 @@
         "authorList" : { "type" : "string" },
         "title" : { "type" : "string" },
         "status" : {
-            "#ref": "ontology_annotation_schema.json#"
+            "$ref": "ontology_annotation_schema.json#"
         }
     }
 }
