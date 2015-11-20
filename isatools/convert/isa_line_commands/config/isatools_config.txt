@@ -1,0 +1,67 @@
+
+===== ISA Tools Configuration ======
+
+This file explains how to configure the BII components ISATAB validator and ISATAB loader.
+
+Validator is a graphical tool that allows to verify  an ISATAB submission. It checks both that the structure complains
+with the ISATAB specification and the biological meaning of the information represented in a submission archive.
+
+The Loader is used for loading a submission into the BII database. 
+
+
+== Configuration Directory ==
+
+Every ISA Tool has this directory under the the tool installation path: 
+
+  <tool-path>/config
+
+This directory contains several configuration files, a description of them is provided in below.
+
+Note for advanced users: should you need to change the location of this directory, it can be done by editing the 
+launching script (run.sh), which is present in every tool, and changing the Java property "bioinvindex.config-path". 
+The launching command in the script will look like:  
+
+java -Dbioinvindex.config-path -cp isatools_deps.jar org.isatools.gui.validator.ValidatorInvoker
+
+  
+== ISAConfigurator Files == 
+
+This is located under 
+
+  <launching-path>/config/isa_configurator
+  
+It contains .xml files that are produced by the ISA-Configurator. Hence, these files specify various information on the 
+sample and assay files that are expected to be read by the ISA Tools, including validation information (e.g: a certain field
+must be present and must have values from a given ontology). 
+
+
+== Assay file locations: data_locations.xml == 
+
+This file allows to specify, for each pair of assay end point and assay technology, where the files about the corresponding
+assay type have to be copied when an ISATAB submission is loaded in the BII infrastrucure. Loading consists of saving information
+in the BII database AND copying the ISATAB files (meta-data files such as investigation or sample files, and experimental data files)
+to destinations defined in this file. Such destinations must be file system paths that are accessible from both the machine where 
+the loader is run and the JBOSS server that runs the BII web application. 
+
+Furthermore, the data locations configuration file allows to specify how the files for a certain assay type are accessible via 
+web, i.e.: the URLs that will be used by the web application to point to the files.
+
+More details are explained in the file itself
+
+
+== Database and Lucene Index Engine Configuration: hibernate.properties ==
+
+this is the usual file used by Hibernate. Mainly it contains configuration info about the database where 
+ISATAB data are saved. This include the DB's index, which is managed by the Lucene component, the directory where the
+index information is stored must be specified in hibernate.properties as well. 
+
+
+== General Configuration: config.properties == 
+
+This file is used to setup general properties that are ISA Tools-specific
+
+
+== Log4J Configuration: log4j.properties ==
+
+This is the usual configuration file for Log4J, the logging component that affect the level of user reporting for the 
+BII tools. See Log4J documentation for details.

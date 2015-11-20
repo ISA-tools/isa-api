@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>THE ISATAB/BII IMPORT LAYER - Internal Instructions</title>
+    <style>
+        dt {
+            font-size: large;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        var stepno = 0;
+        var stepNames = new Array();
+
+        function step(name) {
+            stepno++;
+            if (name) {
+                document.write('<a name = "' + name + '">STEP ' + stepno + '</a>');
+                stepNames [ name ] = stepno;
+            }
+            else
+                document.write('STEP ' + stepno);
+            document.write(': ');
+        }
+
+        function stepRef(name) {
+            document.write("STEP " + stepNames [name ]);
+        }
+    </script>
+</head>
+<body>
+
+<h1>ISATAB submissions into the BII</h1>
+
+
+<strong>TODO</strong>: this document is outdated and to be reviewed.
+
+<p>This file explains the specific setting and procedures in use at the EBI, for managing ISATAB submissions into the
+    BII
+    repository. Please refer to the <a href="../../../../readme.html">general readme file</a> for general instructions
+    on
+    how to use import layer commands. (TODO: URLs for the binary distro)</p>
+
+<h2>Configuration</h2>
+
+<p>
+    The BII software packages are installed under <code>/nfs/ma/home/NETproject/svn</code>.
+    The import layer package is there, under <code>import_layer</code>. So, the commands referred in the readme, are
+    under
+    <code>/nfs/ma/home/NETproject/svn/import_layer/mvn_bin</code>. <b>Please note</b>: it seems that Lucene doesn't like
+    relative paths, so use the absolute ones hereby reported.
+</p>
+
+<p>
+    Although the files are accessible to all users under UNIX neteam group, the preferred user for accessing them is
+    netuser.
+    This is indeed a virtual user, and can be accessed in two ways. Either you first login to an EBI host with your
+    usual
+    user and then issue "become netuser". Or you add your public SSH key to
+    <code>&lt;netuser-home&gt;/.ssh/authorized_keys</code>. Since netuser is not a regular UNIX user, we cannot setup a
+    password for it and use it straight via SSH.
+</p>
+
+<p>
+    Configuration parameters can be set in <code>mvn_bin/config.properties</code>. These include the connection to the
+    relational BII database and the data file repositories where the data files are stored during the persistence step.
+    The latter usually point to <code>/ebi/ftp/pub/databases/bii</code>, which is the space allocated for BII under the
+    EBI's anonymous FTP.
+</p>
+
+<h3>Multiple configurations</h3>
+
+<p>
+    You'll typically need to work with different configurations (e.g.: test/production database or file repositories).
+    We suggest that you keep different <code>.properties</code> files. and copy into
+    <code>configuration.properties</code>
+    the one you need.
+</p>
+
+<p>
+    <code>config.properties</code> has also a parameter for setting the location of Lucene index. But if it doesn't
+    work,
+    use one of ebi_nfs_* profiles.
+</p>
+
+
+<h2>Rebuilding the import layer package</h2>
+
+<p>
+    <i>(NOTE: this note is mainly for developers)</i>. All the packages are an SVN working copy, so that they can be
+    updated
+    via SVN. To rebuild the import layer you need to run <code>"maven install"</code> with the profiles: oracle
+    (or oracle_submission, depending on the database you want), nodrop, ebi_nfs. Unfortunately it's not possible to
+    switch
+    database type by only changing parameters in <code>configuration.properties</code>. To be fixed in future.
+</p>
+
+
+<h2>The Submission workflow @BII system - EBI</h2>
+
+<p>
+    Our typical submission workflow has the following steps (see also: TODO: Susanna's slides).
+</p>
+
+<p>
+<dl>
+
+    <dt>
+        <script>step('init');</script>
+        User sends us the ISATAB archive
+    </dt>
+    <dd>
+        <ul>
+            <li><p>
+                The preferred way to do that is via FTP. We have a single FTP account for FTP uploads, where we simulate
+                multiple private user accounts, by 1) making the root level of the FTP account file system non
+                browseable and
+                2) by assigning to each user a directory with an obfuscated, non guessable name, such as <code>"user1_ug675gh6r"</code>.
+                At the time of writing these personal directories must be created for each new user.
+            </p></li>
+            <li><p>
+                From now on, we will refer to the directory <code>user1/</code>, meaning a user's personal directory.
+            </p></li>
+            <li>
+                <p>
+                    User1 can upload two things in its directory, either an ISATAB archive file, i.e.: a file named like
+                    <code>submission1.zip</code>
+                    or <code>submission1.tar.bz2</code>, or a directory that contains the single ISATAB submission
+                    (<code>submission1/</code>,
+                    and that is the exploded version of an archive. In both cases
+                    create a working copy, under <code>user1</code>, We suggest that you do that by exploding the
+                    archive into
+                    <code>submission1</code>, under the user's FTP directory (<code>user1/</code>), or by copying <code>submission1/</code>
+                    to <code>submission1_original/</code> and making <code>submission1/</code> the working copy. This is
+                    either the name
+                    we will use in the follow as an example of working copy.
+                </p>
+
+                <p><i>
+                    We strongly suggest to keep an untouched copy of the original submission, both for reference and
+                    because the
+                    submission process requires several changes to what the end user provides us.
+                </i></p>
+            </li>
+        </ul>
+
+        <p>Details:</p>
+
+        <p>
+            Let's see some details with an example. Let's suppose the <code>user1</code> wants to send <code>submission1.zip</code>.
+            First, he/she will have its user1_&lt;code&gt; directory under the FTP account named: 'biiup', so, do
+            something like:
+
+        <p><textarea cols="80" readonly="true">
+            $ cd /ebi/ftp/private/biiup # This is the NFS path for the biiup FTP account
+            $ mkdir user1_e1031623
+            $ cd ugo=rwX user1_e1031623 # Needed for FTP-accessibility
+        </textarea></p>
+
+</p>
+
+<p>Note: a nice way to generate an 8-digits random code is:
+
+<p><textarea cols="80" readonly="true">
+    $ dd bs=1 count=4 if=/dev/random 2>/dev/null | hexdump -e '"%x"'; echo ' '
+    224eae8a # A tyical output of the command above
+</textarea></p>
+
+</p>
+
+<p>Next, The user must have the parameters to upload via FTP:
+<ul>
+    <li>Server: ftp.ebi.ac.uk</li>
+    <li>Username: biiup</li>
+    <li>Password: W8DEdyMZ (i.e.: all users have the same FTP account)</li>
+    <li>Initial path: /user1_e1031623 (the user must be told that this is reserved) TODO: check</li>
+</ul>
+
+<p>The user will upload <code>submission1.zip</code> into the directory above.
+    Now, keep this file and create the working copy:</p>
+
+<p><textarea cols="120" readonly="true" rows="8">
+    $ cd /ebi/ftp/private/biiup
+
+    # Ask the user to put all the files into the directory 'submission1' and then zip this. Check that the .zip is
+    # like that with listing command (i.e.: "unzip -l file.zip" or "tar --list --bzip2 -f file.tar.bz2")
+    $ unzip submission1.zip
+
+    # Now you should have the submission directory under /ebi/ftp/private/biiup/submission1/
+</textarea></p>
+
+</dd>
+
+<dt>
+    <script>step('validation');</script>
+    Validation
+</dt>
+<dd>
+    <p>
+        Run the validation, as explained in the <a href="../../../../readme.html#validation">readme file</a>,
+        passing the working directory <code>submission1</code>. So in the example case above, this will be
+        <code>/ebi/ftp/private/biiup/submission1</code> (plus, possibly, "<code>/&lt;investigation-file-name&gt;"</code>).
+    </p>
+
+    <p>
+        If the submission looks fine, go to the next step. You will need to issue ArrayExpess dispatching or PRIDE
+        dispatching, or
+        skip straight to the persistence step, depending on what you have in your submission. You can run the
+        dispatching steps in
+        any case: if the current submission doesn't contain AE or PRIDE assay files, the corresponding step won't
+        generate any
+        dispatching file.
+    </p>
+
+    <p>
+        Change the current submission, possibly working with the user, if there are errors/problems.
+    </p>
+</dd>
+
+<dt>
+    <script>step('ae');</script>
+    ArrayExpress Dispatching
+</dt>
+<dd>
+    <p>
+        Run the AE dispatching command, as explained in the <a href="../../../../readme.html#ae">readme file</a>.
+        Again, in the example case above, the input directory will be <code>/ebi/ftp/private/biiup/submission1</code>
+        (plus investigation
+        file name, as above). We suggest to use the default as destination. By doing so, in the mentioned example,
+        <code>export/ae</code> will be created under <code>/ebi/ftp/private/biiup/submission1</code>, at this level
+        you'll find the
+        log file of the dispatching execution, plus one directory per each ISATAB assay file that has AE as target for
+        the
+        dispatching. Each of these directories is a MAGETAB submission and contains the corresponding meta-data and data
+        files.
+    </p>
+
+    <p>
+        Next step is sending the MAGETAB submissions to AE curators and wait for their feedback. In order to do that,
+        copy the MAGETAB
+        submissions to TODO and notify AE curators. If it is all right, you should
+        get: 1) an accession for each MAGETAB submission, 2) a list of new names for the data files.
+    </p>
+
+    <p>
+        Put the accession in the Investigation file, in ASSAYS section, using the field "Comment[ArrayExpress
+        Accession]".
+    </p>
+
+    <p>
+        Edit the assay files, change the file name columns into comment columns and replace the old names with the new
+        ones.
+        Also rename the data files in the submission directory. <i>NOTE: we will write a script for doing this</i>.</p>
+</dd>
+
+
+<dt>
+    <script>step('pride');</script>
+    PRIDE Dispatching
+</dt>
+<dd>
+    <p>
+        Similarly to the AE case, run the PRIDE dispatch command to generate PRIDE-ML files from the ISATAB submission.
+        If you use
+        the default destination, the <code>pride/</code> directory will be created under a directory like
+        <code>/ebi/ftp/private/biiup/submission1/export/pride</code>. Here, a PRIDE-ML files is created for each MS
+        assay
+    </p>
+
+    <p>
+        To submit the files to PRIDE, copy it to TODO and notify the PRIDE team. You'll get one PRIDE accession per each
+        MS Assay. You'll need to edit the ISATAB assay files and put the accessions in a column named "Comment[PRIDE
+        Accession]".
+    </p>
+</dd>
+
+
+<dt>
+    <script>step('persist');</script>
+    Persistence into the BII database
+</dt>
+<dd>
+    <p>
+        Once the previous steps are completed (in particular, when AE/PRIDE feedback is embedded in the working copy),
+        the submission working copy can be sent to the BII database, so that it will be accessible by the web
+        application.
+        Run the persistence command, explained in the <a href="../../../../readme.html#persist">readme file</a>, to do
+        that.
+    </p>
+</dd>
+
+
+<dt>Unloading a submission</dt>
+<dd>
+    <p>
+        This is not much different than what explained in the <a href="../../../../readme.html#unload">readme file</a>.
+        <i>Note: unfortunately the unloading of submissions from Oracle is still problematic. Please report to
+            developers
+            possible failings of this operation.</i>
+    </p>
+</dd>
+
+</dl>
+</p>
+
+</body>
+</html>

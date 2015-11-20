@@ -1,0 +1,18 @@
+#ÊThe database parameters
+hibernate.connection.username=bioinvindex
+hibernate.connection.password=PASSWORD
+hibernate.connection.url=jdbc:mysql://localhost:3306/bioinvindex
+hibernate.connection.driver_class=com.mysql.jdbc.Driver
+hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+
+# Change these paths as you need
+hibernate.search.default.indexBase=/tmp/bii/testdb/lucene
+
+# Change this to get some debug info
+hibernate.show_sql=false
+
+# This shouldn't need to be changed
+hibernate.search.default.directory_provider=org.hibernate.search.store.FSDirectoryProvider
+hibernate.hbm2ddl.auto=update
+hibernate.search.indexing_strategy=manual
+hibernate.mapping.precedence=hbm,class
