@@ -68,6 +68,7 @@ class ISAObjectTests(unittest.TestCase):
         assert(isinstance(contact.last_name, str))
         assert(isinstance(contact.address, str))
         assert(isinstance(contact.affiliation, str))
+        assert(isinstance(contact.roles, list))
         assert(isinstance(contact.roles[0], OntologyAnnotation))
 
     def test_object_investigation(self):
@@ -87,9 +88,13 @@ class ISAObjectTests(unittest.TestCase):
         assert(isinstance(investigation.description, str))
         assert(isinstance(investigation.submission_date, date))
         assert(isinstance(investigation.public_release_date, date))
+        assert(isinstance(investigation.ontology_source_references, list))
         assert(isinstance(investigation.ontology_source_references[0], OntologySourceReference))
+        assert(isinstance(investigation.publications, list))
         assert(isinstance(investigation.publications[0], Publication))
+        assert(isinstance(investigation.contacts, list))
         assert(isinstance(investigation.contacts[0], Contact))
+        assert(isinstance(investigation.studies, list))
         assert(isinstance(investigation.studies[0], Study))
 
     def test_object_protocol(self):
@@ -120,6 +125,7 @@ class ISAObjectTests(unittest.TestCase):
         )
         source.characteristics.append(MaterialAttribute())
         assert(isinstance(source.name, str))
+        assert(isinstance(source.characteristics, list))
         assert(isinstance(source.characteristics[0], MaterialAttribute))
 
     def test_object_study_factor(self):
@@ -137,13 +143,16 @@ class ISAObjectTests(unittest.TestCase):
         sample.characteristics.append(MaterialAttribute())
         sample.factors.append(StudyFactor())
         assert(isinstance(sample.name, str))
+        assert(isinstance(sample.characteristics, list))
         assert(isinstance(sample.characteristics[0], MaterialAttribute))
+        assert(isinstance(sample.factors, list))
         assert(isinstance(sample.factors[0], StudyFactor))
 
     def test_object_material(self):
         material = Material(name="")
         material.characteristics.append(MaterialAttribute())
         assert(isinstance(material.name, str))
+        assert(isinstance(material.characteristics, list))
         assert(isinstance(material.characteristics[0], MaterialAttribute))
 
     def test_object_data(self):
@@ -162,9 +171,12 @@ class ISAObjectTests(unittest.TestCase):
         process.outputs.append(Data())
         assert(isinstance(process.name, str))
         assert(isinstance(process.executes_protocol, Protocol))
+        assert(isinstance(process.parameters, list))
         assert(isinstance(process.parameters[0], OntologyAnnotation))
+        assert(isinstance(process.inputs, list))
         assert(isinstance(process.inputs[0], Material))
         assert(isinstance(process.inputs[1], Data))
+        assert(isinstance(process.outputs, list))
         assert(isinstance(process.outputs[0], Material))
         assert(isinstance(process.outputs[1], Data))
 
@@ -204,14 +216,23 @@ class ISAObjectTests(unittest.TestCase):
         assert(isinstance(study.submission_date, date))
         assert(isinstance(study.public_release_date, date))
         assert(isinstance(study.file_name, str))
+        assert(isinstance(study.publications, list))
         assert(isinstance(study.publications[0], Publication))
+        assert(isinstance(study.contacts, list))
         assert(isinstance(study.contacts[0], Contact))
+        assert(isinstance(study.design_descriptors, list))
         assert(isinstance(study.design_descriptors[0], OntologyAnnotation))
+        assert(isinstance(study.protocols, list))
         assert(isinstance(study.protocols[0], Protocol))
+        assert(isinstance(study.sources, list))
         assert(isinstance(study.sources[0], Source))
+        assert(isinstance(study.samples, list))
         assert(isinstance(study.samples[0], Sample))
+        assert(isinstance(study.process_sequence, list))
         assert(isinstance(study.process_sequence[0], Process))
+        assert(isinstance(study.assays, list))
         assert(isinstance(study.assays[0], Assay))
+        assert(isinstance(study.samples, list))
         assert(isinstance(study.samples[0], Sample))
 
 
