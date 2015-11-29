@@ -1,0 +1,377 @@
+<datasources>
+
+    <isatab_source>
+        <location
+                filesystem_path="/ebi/ftp/pub/databases/bii/submission_repo/study_${study-acc}"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/submission_repo/study_${study-acc}"
+                />
+    </isatab_source>
+
+    <datasource measurement_type="transcription profiling" technology_type="DNA microarray"
+                name="ArrayExpress"
+                url="http://www.ebi.ac.uk/microarray-as/ae/"
+                description="ArrayExpress"
+            >
+        <raw_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <processed_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <db_entry web_url="http://www.ebi.ac.uk/microarray-as/ae/browse.html?keywords=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="DNA methylation profiling" technology_type="DNA microarray"
+                name="ArrayExpress"
+                url="http://www.ebi.ac.uk/microarray-as/ae/"
+                description="ArrayExpress"
+            >
+        <raw_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <processed_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <db_entry web_url="http://www.ebi.ac.uk/microarray-as/ae/browse.html?keywords=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="SNP analysis" technology_type="DNA microarray"
+                name="ArrayExpress"
+                url="http://www.ebi.ac.uk/microarray-as/ae/"
+                description="ArrayExpress"
+            >
+        <raw_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <processed_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <db_entry web_url="http://www.ebi.ac.uk/microarray-as/ae/browse.html?keywords=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="copy number variation profiling" technology_type="DNA microarray"
+                name="ArrayExpress"
+                url="http://www.ebi.ac.uk/microarray-as/ae/"
+                description="ArrayExpress"
+            >
+        <raw_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <processed_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <db_entry web_url="http://www.ebi.ac.uk/microarray-as/ae/browse.html?keywords=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="loss of heterozygosity profiling" technology_type="DNA microarray"
+                name="ArrayExpress"
+                url="http://www.ebi.ac.uk/microarray-as/ae/"
+                description="ArrayExpress"
+            >
+        <raw_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <processed_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <db_entry web_url="http://www.ebi.ac.uk/microarray-as/ae/browse.html?keywords=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="transcription factor binding site identification" technology_type="DNA microarray"
+                name="ArrayExpress"
+                url="http://www.ebi.ac.uk/microarray-as/ae/"
+                description="ArrayExpress"
+            >
+        <raw_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <processed_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <db_entry web_url="http://www.ebi.ac.uk/microarray-as/ae/browse.html?keywords=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="protein expression profiling" technology_type="protein microarray"
+                name="ArrayExpress"
+                url="http://www.ebi.ac.uk/microarray-as/ae/"
+                description="ArrayExpress"
+            >
+        <raw_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <processed_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <db_entry web_url="http://www.ebi.ac.uk/microarray-as/ae/browse.html?keywords=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="protein-protein interaction detection" technology_type="protein microarray"
+                name="ArrayExpress"
+                url="http://www.ebi.ac.uk/microarray-as/ae/"
+                description="ArrayExpress"
+            >
+        <raw_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <processed_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <db_entry web_url="http://www.ebi.ac.uk/microarray-as/ae/browse.html?keywords=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="transcription profiling" technology_type="nucleotide sequencing"
+                name="EBI/ENA"
+            >
+        <raw_data web_url="ftp://ftp.era-xml.ebi.ac.uk/ERA000/${study-acc}"/>
+        <db_entry web_url="ftp://ftp.era-xml.ebi.ac.uk/ERA000/${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="transcription profiling" technology_type="real time PCR"
+                name="ArrayExpress"
+                url="http://www.ebi.ac.uk/microarray-as/ae/"
+                description="ArrayExpress"
+            >
+        <raw_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <processed_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/microarray/data/experiment/${study-acc-prefix}/${study-acc}"
+                />
+        <db_entry web_url="http://www.ebi.ac.uk/microarray-as/ae/browse.html?keywords=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="DNA methylation profiling" technology_type="nucleotide sequencing"
+                name="EMBL-Bank"
+                url="http://www.ebi.ac.uk/embl"
+                description="EMBL Nucleotide Sequence Database"
+            >
+        <db_entry web_url="http://www.ebi.ac.uk/cgi-bin/dbfetch?db=EMBL&amp;id=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="transcription factor binding site identification"
+                technology_type="nucleotide sequencing"
+                name="EMBL-Bank"
+                url="http://www.ebi.ac.uk/embl"
+                description="EMBL Nucleotide Sequence Database"
+            >
+        <db_entry web_url="http://www.ebi.ac.uk/cgi-bin/dbfetch?db=EMBL&amp;id=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="genome sequencing" technology_type="nucleotide sequencing"
+                name="EMBL-Bank"
+                url="http://www.ebi.ac.uk/embl"
+                description="EMBL Nucleotide Sequence Database"
+            >
+        <db_entry web_url="http://www.ebi.ac.uk/cgi-bin/dbfetch?db=EMBL&amp;id=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="metagenome sequencing" technology_type="nucleotide sequencing"
+                name="EMBL-Bank"
+                url="http://www.ebi.ac.uk/embl"
+                description="EMBL Nucleotide Sequence Database"
+            >
+        <db_entry web_url="http://www.ebi.ac.uk/cgi-bin/dbfetch?db=EMBL&amp;id=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="protein identification" technology_type="mass spectrometry"
+                name="PRIDE"
+                url="http://www.ebi.ac.uk/pride"
+                description="PRIDE"
+            >
+        <processed_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/pride/PRIDE_Exp_Complete_Ac_${study-acc}.xml.gz"
+                />
+        <db_entry web_url="http://www.ebi.ac.uk/pride/experimentLink.do?experimentAccessionNumber=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="protein expression profiling" technology_type="gel electrophoresis">
+        <raw_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/raw_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/raw_data"
+                />
+        <processed_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/processed_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/processed_data"
+                />
+        <generic_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/generic_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/generic_data"
+                />
+    </datasource>
+
+    <datasource measurement_type="protein expression profiling" technology_type="mass spectrometry"
+                name="PRIDE"
+                url="http://www.ebi.ac.uk/pride"
+                description="PRIDE"
+            >
+        <processed_data
+                filesystem_path=""
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/pride/PRIDE_Exp_Complete_Ac_${study-acc}.xml.gz"
+                />
+        <db_entry web_url="http://www.ebi.ac.uk/pride/experimentLink.do?experimentAccessionNumber=${study-acc}"/>
+    </datasource>
+
+    <datasource measurement_type="metabolite profiling" technology_type="mass spectrometry">
+        <raw_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/meda_repo/ms/study_${study-acc}/raw_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/meda_repo/ms/study_${study-acc}/raw_data"
+                />
+        <processed_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/meda_repo/ms/study_${study-acc}/processed_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/meda_repo/ms/study_${study-acc}/processed_data"
+                />
+        <generic_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/meda_repo/ms/study_${study-acc}/generic_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/meda_repo/ms/study_${study-acc}/generic_data"
+                />
+    </datasource>
+
+    <datasource measurement_type="metabolite profiling" technology_type="NMR spectroscopy">
+        <raw_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/meda_repo/nmr/study_${study-acc}/raw_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/meda_repo/nmr/study_${study-acc}/raw_data"
+                />
+        <processed_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/meda_repo/nmr/study_${study-acc}/processed_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/meda_repo/nmr/study_${study-acc}/processed_data"
+                />
+        <generic_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/meda_repo/nmr/study_${study-acc}/generic_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/meda_repo/nmr/study_${study-acc}/generic_data"
+                />
+    </datasource>
+
+    <datasource measurement_type="clinical chemistry analysis" technology_type="">
+        <raw_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/raw_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/raw_data"
+                />
+        <processed_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/processed_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/processed_data"
+                />
+        <generic_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/generic_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/generic_data"
+                />
+    </datasource>
+
+    <datasource measurement_type="histology" technology_type="">
+        <raw_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/raw_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/raw_data"
+                />
+        <processed_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/processed_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/processed_data"
+                />
+        <generic_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/generic_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/generic_data"
+                />
+    </datasource>
+
+    <datasource measurement_type="hematology" technology_type="">
+        <raw_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/raw_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/raw_data"
+                />
+        <processed_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/processed_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/processed_data"
+                />
+        <generic_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/generic_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/generic_data"
+                />
+    </datasource>
+
+    <datasource measurement_type="metabolite profiling" technology_type="clinical chemistry">
+        <raw_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/raw_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/raw_data"
+                />
+        <processed_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/processed_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/processed_data"
+                />
+        <generic_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_repo/study_${study-acc}/generic_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_repo/study_${study-acc}/generic_data"
+                />
+    </datasource>
+
+<datasource measurement_type="transcription profiling" technology_type="DNA microarray"
+name="Generic"
+>
+        <raw_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_genechip_repo/study_${study-acc}/raw_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_genechip_repo/study_${study-acc}/raw_data"
+                />
+        <processed_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_genechip_repo/study_${study-acc}/processed_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_genechip_repo/study_${study-acc}/processed_data"
+                />
+        <generic_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_genechip_repo/study_${study-acc}/generic_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_genechip_repo/study_${study-acc}/generic_data"
+                />
+</datasource> 
+
+
+
+ <datasource measurement_type="protein identification" technology_type="mass spectrometry"
+             name="Generic"
+             >
+        <raw_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_proteomic_repo/study_${study-acc}/raw_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_proteomic_repo/study_${study-acc}/raw_data"
+                />
+        <processed_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_proteomic_repo/study_${study-acc}/processed_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_proteomic_repo/study_${study-acc}/processed_data"
+                />
+        <generic_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_proteomic_repo/study_${study-acc}/generic_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_proteomic_repo/study_${study-acc}/generic_data"
+                />
+ </datasource>
+
+ <datasource measurement_type="protein expression profiling" technology_type="mass spectrometry"
+             name="Generic"
+             >
+        <raw_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_proteomic_repo/study_${study-acc}/raw_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_proteomic_repo/study_${study-acc}/raw_data"
+                />
+        <processed_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_proteomic_repo/study_${study-acc}/processed_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_proteomic_repo/study_${study-acc}/processed_data"
+                />
+        <generic_data
+                filesystem_path="/ebi/ftp/pub/databases/bii/generic_proteomic_repo/study_${study-acc}/generic_data"
+                web_url="ftp://ftp.ebi.ac.uk/pub/databases/bii/generic_proteomic_repo/study_${study-acc}/generic_data"
+                />
+ </datasource>
+
+</datasources>
+        
