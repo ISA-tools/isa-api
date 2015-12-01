@@ -5,7 +5,7 @@ class ISATabTest(unittest.TestCase):
     def setUp(self):
         """set up directories etc"""
         self._dir = os.path.join(os.path.dirname(__file__), "data")
-        self._work_dir = os.path.join(self._dir, "BII-S-7")
+        self._work_dir = os.path.join(self._dir, "BII-S-3")
         self._sra_dir = self._work_dir + "-sra"
         if not os.path.exists(self._sra_dir):
             os.makedirs(self._sra_dir)
