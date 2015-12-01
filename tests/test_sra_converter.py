@@ -1,5 +1,8 @@
 import unittest
 import os
+import shutil
+
+
 class ISATabTest(unittest.TestCase):
 
     def setUp(self):
@@ -11,9 +14,7 @@ class ISATabTest(unittest.TestCase):
             os.makedirs(self._sra_dir)
 
     def tearDown(self):
-        """Remove temporary directories (generated JSON and Tab)?"""
-        #shutil.rmtree(self._json_dir, ignore_errors=True)
-        #shutil.rmtree(self._generated_isatab_dir, ignore_errors=True)
+        shutil.rmtree(self._sra_dir, ignore_errors=True)
         pass
 
     def test_isatab_to_sra(self):
