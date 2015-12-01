@@ -5,10 +5,11 @@ import os
 def create_sra(source_path="", dest_path=""):
     print("Source: " + source_path)
     print("Dest: " + dest_path)
-    convert_command =  os.path.join(os.path.dirname(os.path.abspath(__file__)), "isa_line_commands/bin/convert.sh")
+    convert_command = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   "isa_line_commands/bin/convert.sh -t sra " + source_path + " " + dest_path)
     from subprocess import call
     try:
-        return_code = call([convert_command, "-t", "sra", source_path, dest_path], shell=True)
+        return_code = call([convert_command], shell=True)
         if return_code < 0:
             print(sys.stderr, "Terminated by signal", -return_code)
         else:
