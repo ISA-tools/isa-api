@@ -35,5 +35,6 @@
                "$ref" : "process_schema.json#"
             }
         }
-    }
+    },
+    "additionalProperties": false
 }

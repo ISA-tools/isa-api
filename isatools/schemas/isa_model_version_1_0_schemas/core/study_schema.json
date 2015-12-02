@@ -63,5 +63,6 @@
                 "$ref": "assay_schema.json#"
               }
         }
-    }
+    },
+    "additionalProperties": false
 }

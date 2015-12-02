@@ -10,5 +10,6 @@
         "value": {
             "type": "string"
         }
-    }
+    },
+    "additionalProperties": false
 }

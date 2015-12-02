@@ -8,7 +8,7 @@ from os.path import isdir, join
 import warlock
 
 from isatools.io.isatab_parser import parse
-from jsonschema import RefResolver
+from jsonschema import RefResolver, Draft4Validator
 
 SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
@@ -31,11 +31,6 @@ class ISATab2ISAjson_v1():
 
         print(SCHEMAS_PATH)
 
-        #warlock related
-        # investigation_schema = json.load(open(join(SCHEMAS_PATH,INVESTIGATION_SCHEMA)))
-        # resolver = RefResolver(SCHEMAS_PATH, None)
-        # Investigation = warlock.model_factory(investigation_schema, resolver=resolver)
-
         isa_tab = parse(work_dir)
 
         if isa_tab is None:
@@ -55,20 +50,6 @@ class ISATab2ISAjson_v1():
                         ("people", self.createContacts(isa_tab.contacts, "Investigation")),
                         ("studies", self.createStudies(isa_tab.studies))
                     ])
-                    # isa_json = Investigation(
-                    #    identifier = isa_tab.metadata['Investigation Identifier'],
-                    #    title = isa_tab.metadata['Investigation Title'],
-                    #    description = isa_tab.metadata['Investigation Description'],
-                    #    submissionDate = isa_tab.metadata['Investigation Submission Date'],
-                    #    publicReleaseDate = isa_tab.metadata['Investigation Public Release Date'],
-                    #    #commentCreatedWithConfiguration = [],#isa_tab.metadata['Comment[Created With Configuration]'],
-                    #    #commentLastOpenedWithConfiguration = [], #isa_tab.metadata['Comment[Last Opened With Configuration]'],
-                    #    ontologySourceReferences = [],#self.createOntologySourceReferences(isa_tab.ontology_refs, resolver),
-                    #    publications = [],#self.createPublications(isa_tab.publications, "Investigation"),
-                    #    people = [],#self.createContacts(isa_tab.contacts, "Investigation"),
-                    #    studies = []#self.createStudies(isa_tab.studies)
-                    #    )
-                    # isa_json.people = self.createContacts(isa_tab.contacts, "Investigation")
 
                 if (inv_identifier):
                     file_name = os.path.join(json_dir,isa_tab.metadata['Investigation Identifier']+".json")
@@ -76,6 +57,10 @@ class ISATab2ISAjson_v1():
                     file_name = os.path.join(json_dir,isa_tab.studies[0].metadata['Study Identifier']+".json")
 
                 #validate json
+                schema = json.load(open(join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)))
+                resolver = RefResolver('file://'+join(SCHEMAS_PATH, INVESTIGATION_SCHEMA), schema)
+                validator = Draft4Validator(schema, resolver=resolver)
+                validator.validate(isa_json, schema)
 
                 with open(file_name, "w") as outfile:
                     json.dump(isa_json, outfile, indent=4, sort_keys=True)
@@ -94,8 +79,7 @@ class ISATab2ISAjson_v1():
                 ("phone", contact[inv_or_study+" Person Phone"]),
                 ("fax", contact[inv_or_study+" Person Fax"]),
                 ("address", contact[inv_or_study+" Person Address"]),
-                ("affiliations", contact[inv_or_study+" Person Affiliation"]),
-               #TODO
+                ("affiliation", contact[inv_or_study+" Person Affiliation"]),
                 ("roles", [])
             ])
             people_json.append(person_json)
@@ -103,20 +87,6 @@ class ISATab2ISAjson_v1():
 
 
     def createPublications(self, publications, inv_or_study):
-        # publication_schema = json.load(open(join(SCHEMAS_PATH, PUBLICATION_SCHEMA)))
-        # Publication = warlock.model_factory(publication_schema)
-        # publications_json = []
-        # for pub in publications:
-        #     publication_json = Publication(
-        #          pubMedID = pub[inv_or_study+' PubMed ID'],
-        #          doi = pub[inv_or_study+' Publication DOI'],
-        #          authorList = pub[inv_or_study+' Publication Author List'],
-        #          title = pub[inv_or_study+' Publication Title'],
-        #         #status = self.createStatusOntologyAnnotation(pub)
-        #     )
-        #     publications_json.append(publication_json)
-        # return publications_json
-
         publications_json = []
         for pub in publications:
             publication_json = dict([
