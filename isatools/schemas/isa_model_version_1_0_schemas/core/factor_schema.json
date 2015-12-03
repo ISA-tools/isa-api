@@ -5,9 +5,6 @@
     "description": "JSON-schema representing a factor value in the ISA model",
     "type": "object",
     "properties": {
-        "name": {
-            "type": "string"
-        },
         "ontologyAnnotation": {
             "$ref": "ontology_annotation_schema.json#"
         }

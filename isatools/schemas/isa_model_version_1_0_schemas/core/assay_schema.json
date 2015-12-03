@@ -13,7 +13,6 @@
         "measurementType" : {
             "type" : "object",
             "properties": {
-                "name" : {"type" : "string"},
                 "ontologyAnnotation" : {
                     "$ref": "ontology_annotation_schema.json#"
                 }
@@ -22,7 +21,6 @@
         "technologyType" : {
             "type" : "object",
             "properties": {
-                "name" : {"type" : "string"},
                 "ontologyAnnotation" : {
                     "$ref": "ontology_annotation_schema.json#"
                 }
