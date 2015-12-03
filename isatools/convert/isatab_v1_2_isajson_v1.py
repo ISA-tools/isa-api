@@ -101,7 +101,7 @@ class ISATab2ISAjson_v1():
                 ("doi", pub[inv_or_study+' Publication DOI']),
                 ("authorList", pub[inv_or_study+' Publication Author List']),
                 ("title", pub[inv_or_study+' Publication Title']),
-                ("status", self.createOntologyAnnotation(pub, inv_or_study, " Publication Status"))
+                ("status", self.createOntologyAnnotationForInvOrStudy(pub, inv_or_study, " Publication Status"))
             ]
             )
             publications_json.append(publication_json)
@@ -112,21 +112,45 @@ class ISATab2ISAjson_v1():
         for protocol in protocols:
             protocol_json = dict([
                 ("name", protocol['Study Protocol Name']),
-                ("type", self.createOntologyAnnotation(protocol,"Study", " Protocol Type")),
+                ("protocolType", self.createOntologyAnnotationForInvOrStudy(protocol, "Study", " Protocol Type")),
                 ("description", protocol['Study Protocol Description']),
                 ("uri", protocol['Study Protocol URI']),
                 ("version", protocol['Study Protocol Version']),
-                ("parameters", self.createOntologyAnnotationsFromStringList(protocol,"Study", " Protocol Parameters Name")),
-            ]
-            )
+                ("parameters", self.createProtocolParameterList(protocol))
+                ]
+                )
             protocols_json.append(protocol_json)
         return protocols_json
 
-    def createOntologyAnnotation(self, object, inv_or_study, type):
+
+    def createProtocolParameterList(self, protocol):
+        json_list = []
+        parameters = protocol['Study Protocol Parameters Name']
+        #parametersURIs = protocol['Study Protocol Parameters Name Term Accession Number']
+        index = 0
+        if len(parameters) > 0:
+            for parameter in parameters.split(';'):
+                json_item = dict([
+                    ("parameterName", self.createOntologyAnnotationForInvOrStudy(protocol, "Study", " Protocol Parameters Name")),
+                ])
+                index=index+1
+                json_list.append(json_item)
+        return json_list
+
+
+    def createOntologyAnnotationForInvOrStudy(self, object, inv_or_study, type):
         onto_ann = dict([
             ("name", object[inv_or_study+type]),
             ("termSource", object[inv_or_study+type+" Term Source REF"]),
             ("termAccession", object[inv_or_study+type+" Term Accession Number"])
+        ])
+        return onto_ann
+
+    def createOntologyAnnotation(self, name, termSource, termAccesssion):
+        onto_ann = dict([
+            ("name", name),
+            ("termSource", termSource),
+            ("termAccession", termAccesssion)
         ])
         return onto_ann
 
@@ -147,7 +171,7 @@ class ISATab2ISAjson_v1():
         return onto_annotations
 
 
-    def createOntologyAnnotationsFromObject(self, array, inv_or_study, type):
+    def createOntologyAnnotationListForInvOrStudy(self, array, inv_or_study, type):
         onto_annotations = []
         for object in array:
             onto_ann = dict([
@@ -161,8 +185,6 @@ class ISATab2ISAjson_v1():
 
 
     def createOntologySourceReferences(self, ontology_refs):
-
-
         ontologies = []
         for ontology_ref in ontology_refs:
             ontology = dict([
@@ -186,7 +208,7 @@ class ISATab2ISAjson_v1():
                 ("description", study.metadata['Study Description']),
                 ("submissionDate", study.metadata['Study Submission Date']),
                 ("publicReleaseDate", study.metadata['Study Public Release Date']),
-                ("studyDesignDescriptors",self.createOntologyAnnotationsFromObject(study.design_descriptors,"Study", " Design Type")),
+                ("studyDesignDescriptors",self.createOntologyAnnotationListForInvOrStudy(study.design_descriptors, "Study", " Design Type")),
                 ("publications", self.createPublications(study.publications, "Study")),
                 ("people", self.createContacts(study.contacts, "Study")),
                 ("studyDesignDescriptors", []),
@@ -233,11 +255,13 @@ class ISATab2ISAjson_v1():
         for argument in inputs:
             try:
                 json_item = source_dict[argument]
+                print("source-->", json_item)
                 json_list.append(json_item)
             except KeyError:
                 pass
             try:
                 json_item = sample_dict[argument]
+                print("sample-->", json_item)
                 json_list.append(json_item)
             except KeyError:
                 pass
@@ -257,19 +281,20 @@ class ISATab2ISAjson_v1():
 
     def createExecuteStudyProtocol(self, process_node_name, process_node):
         json_item = dict([
-                    ("name", dict([("value", process_node_name)])),
-                    ("description", dict([("value", process_node_name)])),
-                    ("version", dict([("value", process_node_name)])),
-                    ("uri", dict([("value", process_node_name)])),
-                    ("parameters", self.createProcessParameterList(process_node_name, process_node))
+                   # ("name", dict([("value", process_node_name)])),
+                   # ("description", dict([("value", process_node_name)])),
+                   # ("version", dict([("value", process_node_name)])),
+                   # ("uri", dict([("value", process_node_name)])),
+                   # ("parameters", self.createProcessParameterList(process_node_name, process_node))
                 ])
         return json_item
 
 
     def createProcessParameterList(self, process_node_name, process_node):
+        #self.createOntologyAnnotationsFromStringList(protocol,"Study", " Protocol Parameters Name")
         json_list = []
         json_item = dict([
-                    ("name", dict([("value", process_node_name )])),
+                    ("parameterType", dict([("value", process_node_name )])),
                     ("description", dict([("value", "")])),
                 ])
         json_list.append(json_item)
@@ -279,13 +304,19 @@ class ISATab2ISAjson_v1():
     def createStudyAssaysList(self, assays):
         json_list = []
         for assay in assays:
+            source_dict = self.createSources(assay.nodes)
+            sample_dict = self.createSampleDictionary(assay.nodes)
             data_dict = self.createDataFiles(assay.nodes)
             json_item = dict([
-                ("filename", "")
-                ("measurementType", dict([("value", assay.metadata['Study Assay Measurement Type Term Accession Number'])])),
-                ("technologyType", dict([("value", assay.metadata['Study Assay Technology Type'])])),
-                ("technologyPlatform", dict([("value", assay.metadata['Study Assay Technology Platform'])])),
-                ("processSequence", [])
+                ("fileName", assay.metadata['Study Assay File Name']),
+                ("measurementType", self.createOntologyAnnotation(assay.metadata['Study Assay Measurement Type'],
+                                                                  assay.metadata['Study Assay Measurement Type Term Source REF'],
+                                                                  assay.metadata['Study Assay Measurement Type Term Accession Number'])),
+                ("technologyType", self.createOntologyAnnotation(assay.metadata['Study Assay Technology Type'],
+                                                                 assay.metadata['Study Assay Technology Type Term Source REF'],
+                                                                 assay.metadata['Study Assay Technology Type Term Accession Number'])),
+                ("technologyPlatform", assay.metadata['Study Assay Technology Platform']),
+                ("processSequence", self.createProcessSequence(assay.process_nodes, source_dict, sample_dict, data_dict))
                 ])
             json_list.append(json_item)
         return json_list
@@ -309,10 +340,8 @@ class ISATab2ISAjson_v1():
         for node_index in nodes:
             if nodes[node_index].ntype == "Sample Name":
                 json_item = dict([
-                    ("name", dict([("value", node_index)])),
-                    ("description", dict([("value", "")])),
-                    ("source", dict([("value", "")])),
-                    ("factorValues", []),
+                    ("name", node_index),
+                    ("factors", []),
                     ("characteristics", self.createCharacteristicList(node_index, nodes[node_index])),
                 ])
                 json_dict.update({node_index: json_item})
@@ -323,7 +352,7 @@ class ISATab2ISAjson_v1():
         for node_name in nodes:
             if nodes[node_name].ntype == "Source Name":
                 json_item = dict([
-                    ("name", dict([("value", node_name)])),
+                    ("name", node_name),
                     ("characteristics", self.createCharacteristicList(node_name, nodes[node_name])),
                 ])
                 json_dict.update({node_name: json_item})
@@ -336,10 +365,8 @@ class ISATab2ISAjson_v1():
             if header.startswith("Characteristics"):
                  characteristic = header.replace("]", "").split("[")[-1]
                  json_item = dict([
-                    ("name", dict([("value", characteristic)])),
-                    ("termSource", dict([("value", "")])),
-                    ("termAccession", [])#self.createCharacteristicValueList(node.metadata[header]))
-                    ])
+                     ("characteristic", self.createOntologyAnnotation(characteristic, "", ""))
+                 ])
                  json_list.append(json_item)
         return json_list
 
