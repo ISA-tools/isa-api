@@ -28,15 +28,13 @@ class ISATab2ISAjson_v1():
         """
         print("Converting ISAtab to ISAjson for ", work_dir)
 
-        print(SCHEMAS_PATH)
-
         isa_tab = parse(work_dir)
 
         if isa_tab is None:
             print("No ISAtab dataset found")
         else:
                 if isa_tab.metadata != {}:
-                    print("isa_tab.metadata->",isa_tab.metadata)
+                    #print("isa_tab.metadata->",isa_tab.metadata)
                     isa_json = dict([
                         ("identifier",isa_tab.metadata['Investigation Identifier']),
                         ("title", isa_tab.metadata['Investigation Title']),
@@ -124,17 +122,7 @@ class ISATab2ISAjson_v1():
 
 
     def createProtocolParameterList(self, protocol):
-        json_list = []
-        parameters = protocol['Study Protocol Parameters Name']
-        #parametersURIs = protocol['Study Protocol Parameters Name Term Accession Number']
-        index = 0
-        if len(parameters) > 0:
-            for parameter in parameters.split(';'):
-                json_item = dict([
-                    ("parameterName", self.createOntologyAnnotationForInvOrStudy(protocol, "Study", " Protocol Parameters Name")),
-                ])
-                index=index+1
-                json_list.append(json_item)
+        json_list = self.createOntologyAnnotationsFromStringList(protocol, "Study", " Protocol Parameters Name")
         return json_list
 
 
@@ -323,7 +311,6 @@ class ISATab2ISAjson_v1():
 
 
     def createDataFiles(self, nodes):
-        print("create data files dictionary...")
         json_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype.endswith("Data File") :

@@ -21,6 +21,12 @@
             "items": {
                  "anyOf": [
                         {
+                            "$ref": "source_schema.json#"
+                        },
+                        {
+                            "$ref": "sample_schema.json#"
+                        },
+                        {
                             "$ref": "material_schema.json#"
                         },
                         {
