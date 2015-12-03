@@ -11,12 +11,7 @@
     "properties": {
         "fileName" : { "type" : "string" },
         "measurementType" : {
-            "type" : "object",
-            "properties": {
-                "ontologyAnnotation" : {
                     "$ref": "ontology_annotation_schema.json#"
-                }
-            }
         },
         "technologyType" : {
             "type" : "object",

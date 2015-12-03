@@ -8,7 +8,7 @@
             "type" : "array",
             "items" :  {
                 "$ref": "material_attribute_schema.json#"
-                }
+            }
         }
     },
   "additionalProperties": false

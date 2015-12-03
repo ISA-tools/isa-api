@@ -21,11 +21,9 @@
             "items": {
                  "anyOf": [
                         {
-                            "type": "object",
                             "$ref": "material_schema.json#"
                         },
                         {
-                            "type": "object",
                             "$ref": "data_schema.json#"
                         }
                     ]
@@ -36,11 +34,9 @@
             "items": {
                  "anyOf": [
                         {
-                            "type": "object",
                             "$ref": "material_schema.json#"
                         },
                         {
-                            "type": "object",
                             "$ref": "data_schema.json#"
                         }
                     ]
