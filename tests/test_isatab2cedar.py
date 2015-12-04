@@ -23,7 +23,7 @@ class ISAtab2CEDARTest(unittest.TestCase):
         self.directories = [ f for f in listdir(self.path) ]
 
         for directory in self.directories:
-            print "Converting ", directory, " ..."
+            print("Converting ", directory, " ...")
             self.isa2cedar.createCEDARjson(join(self.path,directory), "./datasets/metabolights", False)
-        print "\t... done"
+        print("\t... done")
 
