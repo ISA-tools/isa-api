@@ -10,7 +10,7 @@ class ISATabTest(unittest.TestCase):
         self._dir = os.path.join(os.path.dirname(__file__), "data")
         self._work_dir = os.path.join(self._dir, "BII-S-3")
         self._sra_dir = self._work_dir + "-sra"
-        self._config_dir = os.path.join(self._dir, "Configuration-Files/isaconfig-default_v2015-07-02")
+        self._config_dir = os.path.join(self._dir, "Configurations/isaconfig-default_v2015-07-02")
         if not os.path.exists(self._sra_dir):
             os.makedirs(self._sra_dir)
 
