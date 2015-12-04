@@ -9,7 +9,7 @@
     "type": "object",
     "properties": {
             "protocolApplicatotions": {
-                "$ref": "protocol_application_schema.json#"
+                "$ref": "process_schema.json#"
             },
             "identifierInfo" : {
                 "type" : "array",
@@ -85,7 +85,7 @@
             "protocolApplications": {
                 "type": "array",
                 "items": {
-                    "$ref": "protocol_application_schema.json#"
+                    "$ref": "process_schema.json#"
                 }
             }
     }

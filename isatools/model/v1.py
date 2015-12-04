@@ -10,8 +10,6 @@ class Comment(object):
     Attributes:
         name: The name of the comment (as mapped to Comment[SomeName]) to give context to the comment field
         value: A value for the corresponding comment, as a string encoded in some way
-        isa_element: If applicable, the ISA class attribute the comment relates to. If blank, it is assumed
-            that the comment relates to the ISA class
     """
     def __init__(self, name="", value=""):
         self.name = name
@@ -56,9 +54,9 @@ class Investigation(IsaObject):
         identifier: A locally unique identifier or an accession number provided by a repository.
         title: A concise name given to the investigation
         description: A textual description of the investigation
-        submissionDate: The date on which the investigation was reported to the repository.
-        publicReleaseDate: The date on which the investigation should be released publicly
-        ontologySourceReferences: This annotation section is identical to that in the MAGE-TAB format.
+        submission_date: The date on which the investigation was reported to the repository.
+        public_release_date: The date on which the investigation should be released publicly
+        ontology_source_references: This annotation section is identical to that in the MAGE-TAB format.
         publications: Publications associated with an Investigation.
         contacts: People/contacts associated with an Investigation.
         studies: Study is the central unit, containing information on the subject under study, its characteristics and
@@ -156,9 +154,9 @@ class OntologyAnnotation(IsaObject):
     """An ontology term annotation reference
 
     Attributes:
-        termSource: The abbreviated ontology name. It should correspond to one of the sources as specified in the
-        ontologySourceReference section of the Investigation.
-        termAccession: URI
+        term_source: The abbreviated ontology name. It should correspond to one of the sources as specified in the
+        ontology_source_reference section of the Investigation.
+        term_accession: URI
     """
 
     def __init__(self, name="", term_source=None, term_accession="", comments=None):
@@ -183,9 +181,9 @@ class Publication(IsaObject):
     """A publication associated with an investigation or study.
 
     Attributes:
-        pubMedID: The PubMed IDs of the described publication(s) associated with this investigation.
-        DOI: A Digital Object Identifier (DOI) for that publication (where available).
-        authorList: The list of authors associated with that publication.
+        pubmed_id: The PubMed IDs of the described publication(s) associated with this investigation.
+        doi: A Digital Object Identifier (DOI) for that publication (where available).
+        author_list: The list of authors associated with that publication.
         title: The title of publication associated with the investigation.
         status: A term describing the status of that publication (i.e. submitted, in preparation, published).
     """
@@ -216,9 +214,9 @@ class Contact(IsaObject):
     """A person/contact that can be attributed to an Investigation or Study.
 
     Attributes:
-        lastName: The last name of a person associated with the investigation.
-        firstName: The first name of a person associated with the investigation.
-        midInitials: The middle initials of a person associated with the investigation.
+        last_name: The last name of a person associated with the investigation.
+        first_name: The first name of a person associated with the investigation.
+        mid_initials: The middle initials of a person associated with the investigation.
         email: The email address of a person associated with the investigation.
         phone: The telephone number of a person associated with the investigation.
         fax: The fax number of a person associated with the investigation.
@@ -272,10 +270,10 @@ class Study(IsaObject):
         repository or other database.
         title: A concise phrase used to encapsulate the purpose and goal of the study.
         description: A textual description of the study, with components such as objective or goals.
-        submissionDate: The date on which the study is submitted to an archive.
-        publicReleaseDate: The date on which the study should be released publicly.
-        fileName: A field to specify the name of the Study file corresponding the definition of that Study.
-        designDescriptors: Classifications of the study based on the overall experimental design.
+        submission_date: The date on which the study is submitted to an archive.
+        public_release_date: The date on which the study should be released publicly.
+        file_name: A field to specify the name of the Study file corresponding the definition of that Study.
+        design_descriptors: Classifications of the study based on the overall experimental design.
         publications: Publications associated with a Study.
         contacts: People/contacts associated with a Study.
         factors: A factor corresponds to an independent variable manipulated by the experimentalist with the intention
@@ -376,11 +374,11 @@ class Study(IsaObject):
 class StudyDesignDescriptor(IsaObject):
     """A Study Design Descriptor provides a term allowing the classification of the study based on the overall
     experimental design. The term can be free text (Attribute: name) or from, for example, a controlled vocabulary or
-    an ontology (Attribute: ontologyReference).
+    an ontology.
 
     Attributes:
         name: Free text name for the term
-        ontologyAnnotation: A representation of an ontology annotation
+        ontology_annotation: A representation of an ontology annotation
     """
 
     def __init__(self, name="", ontology_annotation=None, comments=None):
@@ -406,7 +404,7 @@ class StudyFactor(IsaObject):
     Attributes:
         name: Free text name for the term
         type: Study factor type as free text
-        ontologyReference: A representation of an ontology source reference
+        ontology_reference: A representation of an ontology source reference
     """
 
     def __init__(self, name="", type_="", ontology_annotation=None, comments=None):
@@ -430,12 +428,12 @@ class Assay(IsaObject):
     """A Study Assay declares and describes each of the Assay files associated with the current Study.
 
     Attributes:
-    Measurement Type: A term to qualify the endpoint, or what is being measured (e.g. gene expression profiling or
-    protein identification). The term can be free text or from, for example, a controlled vocabulary or an ontology.
-    Technology Type: Term to identify the technology used to perform the measurement, e.g. DNA microarray, mass
-    spectrometry. The term can be free text or from, for example, a controlled vocabulary or an ontology.
-    Technology Platform: Manufacturer and platform name, e.g. Bruker AVANCE
-    File Name: A field to specify the name of the Assay file corresponding the definition of that assay.
+        measurement_type: A term to qualify the endpoint, or what is being measured (e.g. gene expression profiling or
+        protein identification). The term can be free text or from, for example, a controlled vocabulary or an ontology.
+        technology_type: Term to identify the technology used to perform the measurement, e.g. DNA microarray, mass
+        spectrometry. The term can be free text or from, for example, a controlled vocabulary or an ontology.
+        technology_platform: Manufacturer and platform name, e.g. Bruker AVANCE
+        file_name: A field to specify the name of the Assay file corresponding the definition of that assay.
     """
     def __init__(self, measurement_type=None, technology_type=None, technology_platform="", file_name="",
                  comments=None):
@@ -462,6 +460,17 @@ class Assay(IsaObject):
 
 
 class Protocol(IsaObject):
+    """A Protocol.
+
+    Attributes:
+        name:
+        protocol_type:
+        description:
+        uri:
+        version:
+        parameters:
+        components:
+    """
     def __init__(self, name="", protocol_type=None, description="", uri="", version="", comments=None):
         super().__init__(comments)
         self.name = name
@@ -495,6 +504,15 @@ class Protocol(IsaObject):
 
 
 class Process(IsaObject):
+    """A Process.
+
+    Attributes:
+        name:
+        executes_protocol:
+        parameters:
+        inputs:
+        outputs:
+    """
     def __init__(self, name="", executes_protocol=None, comments=None):
         super().__init__(comments)
         self.name = name
@@ -526,6 +544,12 @@ class Process(IsaObject):
 
 
 class Source(IsaObject):
+    """A Source.
+
+    Attributes:
+        name:
+        characteristics:
+    """
     def __init__(self, name="", comments=None):
         super().__init__(comments)
         self.name = name
@@ -542,6 +566,12 @@ class Source(IsaObject):
 
 
 class Material(IsaObject):
+    """A Material.
+
+    Attributes:
+        name:
+        characteristics:
+    """
     def __init__(self, name="", comments=None):
         super().__init__(comments)
         self.name = name
@@ -558,6 +588,11 @@ class Material(IsaObject):
 
 
 class MaterialAttribute(IsaObject):
+    """A MaterialAttribute.
+
+    Attributes:
+        ontology_annotation:
+    """
     def __init__(self, ontology_annotation=None, comments=None):
         super().__init__(comments)
         if ontology_annotation is None:
@@ -572,6 +607,11 @@ class MaterialAttribute(IsaObject):
 
 
 class Data(IsaObject):
+    """A Data.
+
+    Attributes:
+        name:
+    """
     def __init__(self, name="", comments=None):
         super().__init__(comments)
         self.name = name
@@ -583,6 +623,13 @@ class Data(IsaObject):
 
 
 class Sample(IsaObject):
+    """A Sample.
+
+    Attributes:
+        name:
+        characteristics:
+        factors:
+    """
     def __init__(self, name="", comments=None):
         super().__init__(comments)
         self.name = name

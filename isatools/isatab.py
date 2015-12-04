@@ -1,9 +1,10 @@
-__author__ = 'dj'
+from .model.v1 import Investigation, OntologySourceReference, Publication, Contact, Study, StudyDesignDescriptor, \
+    StudyFactor, Assay
+from datetime import date
 import csv
-from isatools.model.v1 import *
 
-def from_isarchive(isatab_dir):
 
+def load(isatab_dir):
     # build ISA objects from ISA-Tab ISArchive (zipped or not zipped?)
     print("Reading " + isatab_dir)
     # check that an investigation file is present. If more than one is present, throw an exception
@@ -25,19 +26,19 @@ def from_isarchive(isatab_dir):
             for x in range(1, last_col):
                 o = OntologySourceReference()
                 o.name = row[x]
-                i.ontologySourceReferences.append(o)
+                i.ontology_source_references.append(o)
             row = next(rows)
         if row[0] == "Term Source File":
             for x in range(1, last_col):
-                setattr(i.ontologySourceReferences[x-1], "file", row[x])
+                setattr(i.ontology_source_references[x-1], "file", row[x])
             row = next(rows)
         if row[0] == "Term Source Version":
             for x in range(1, last_col):
-                setattr(i.ontologySourceReferences[x-1], "version", row[x])
+                setattr(i.ontology_source_references[x-1], "version", row[x])
             row = next(rows)
         if row[0] == "Term Source Description":
             for x in range(1, last_col):
-                setattr(i.ontologySourceReferences[x-1], "description", row[x])
+                setattr(i.ontology_source_references[x-1], "description", row[x])
     row = next(rows)
     if row[0] != "INVESTIGATION":
         # Populate Investigation object fields
@@ -52,27 +53,27 @@ def from_isarchive(isatab_dir):
             i.description = row[1]
             row = next(rows)
         if row[0] == "Investigation Submission Date":
-            submission_date = datetime.date(row[1])
+            submission_date = date(row[1])
             i.submissionDate = submission_date
             row = next(rows)
         if row[0] == "Investigation Public Release Date":
-            public_release_date = datetime.date(row[1])
+            public_release_date = date(row[1])
             i.publicReleaseDate = public_release_date
     row = next(rows)
     if row[0] == "INVESTIGATION PUBLICATIONS":
         # Create Publication objects and add to Investigation object
         row = next(rows)
         cols = len(row)
-        last_col = cols -1
+        last_col = cols - 1
         if row[0] == "Investigation PubMed ID":
             for x in range(1, last_col):
                 p = Publication()
-                p.pubMedID = row[x]
+                p.pubmed_id = row[x]
                 i.publications.append(p)
             row = next(rows)
         if row[0] == "Investigation Publication DOI":
             for x in range(1, last_col):
-                setattr(i.publications[x-1], "authorList", row[x])
+                setattr(i.publications[x-1], "author_list", row[x])
             row = next(rows)
         if row[0] == "Investigation Publication Title":
             for x in range(1, last_col):
@@ -91,16 +92,16 @@ def from_isarchive(isatab_dir):
         if row[0] == "Investigation Person Last Name":
             for x in range(1, last_col):
                 c = Contact()
-                c.lastName = row[x]
+                c.last_name = row[x]
                 i.contacts.append(c)
             row = next(rows)
         if row[0] == "Investigation Person First Name":
             for x in range(1, last_col):
-                setattr(i.publications[x-1], "firstName", row[x])
+                setattr(i.publications[x-1], "first_name", row[x])
             row = next(rows)
         if row[0] == "Investigation Person Mid Initials":
             for x in range(1, last_col):
-                setattr(i.publications[x-1], "midInitials", row[x])
+                setattr(i.publications[x-1], "mid_initials", row[x])
             row = next(rows)
         if row[0] == "Investigation Person Email":
             for x in range(1, last_col):
@@ -140,13 +141,13 @@ def from_isarchive(isatab_dir):
             s.description = row[1]
             row = next(rows)
         if row[0] == "Study Submission Date":
-            s.submissionDate = datetime.date(row[1])
+            s.submission_date = date(row[1])
             row = next(rows)
         if row[0] == "Study Public Release Date":
-            s.publicReleaseDate = datetime.date(row[1])
+            s.public_release_date = date(row[1])
             row = next(rows)
         if row[0] == "Study File Name":
-            s.fileName = datetime.date(row[1])
+            s.file_name = date(row[1])
             row = next(rows)
         if row[0] == "STUDY DESIGN DESCRIPTORS":
             row = next(rows)
@@ -154,9 +155,9 @@ def from_isarchive(isatab_dir):
             last_col = cols -1
             if row[0] == "Study Design Type":
                 for x in range(1, last_col):
-                    d = StudyDesignDescriptor
+                    d = StudyDesignDescriptor()
                     d.name = row[x]
-                    s.designDescriptors.append(d)
+                    s.design_descriptors.append(d)
                 row = next(rows)
         if row[0] == "STUDY PUBLICATIONS":
             # Create Publication objects and add to Investigation object
@@ -166,12 +167,12 @@ def from_isarchive(isatab_dir):
             if row[0] == "Study PubMed ID":
                 for x in range(1, last_col):
                     p = Publication()
-                    p.pubMedID = row[x]
+                    p.pubmed_id = row[x]
                     s.publications.append(p)
                 row = next(rows)
             if row[0] == "Study Publication DOI":
                 for x in range(1, last_col):
-                    setattr(s.publications[x-1], "authorList", row[x])
+                    setattr(s.publications[x-1], "author_list", row[x])
                 row = next(rows)
             if row[0] == "Study Publication Title":
                 for x in range(1, last_col):
@@ -202,7 +203,7 @@ def from_isarchive(isatab_dir):
             if row[0] == "Study Assay Measurement Type":
                 for x in range(1, last_col):
                     a = Assay()
-                    a.measurementType = row[x]
+                    a.measurement_type = row[x]
                     s.assays.append(a)
                 row = next(rows)
                 if row[0] == "Study Assay Measurement Type Term Accession Number":
@@ -215,4 +216,19 @@ def from_isarchive(isatab_dir):
                 row = next(rows)
 
         i.studies.append(s)
-        return i
+    return i
+
+
+def dump(isa_obj, fp):
+    s = isa_obj.to_json()
+    return s
+
+
+def loads(s):
+    isa_obj = Investigation()
+    return isa_obj
+
+
+def dumps(isa_obj):
+    s = isa_obj.to_json()
+    return s

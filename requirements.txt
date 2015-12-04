@@ -1,13 +1,5 @@
-jsonschema
-beautifulsoup4==4.3.2
-functools32==3.2.3-2
-itsdangerous==0.24
-Jinja2==2.7.3
-jsonschema==2.5.1
-lxml==3.4.4
-MarkupSafe==0.23
-requests==2.7.0
-WTForms==2.0.2
 warlock
 biopy-isatab
+jsonschema
+warlock
 
