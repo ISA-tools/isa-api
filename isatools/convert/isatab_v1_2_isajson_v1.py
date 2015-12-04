@@ -12,9 +12,6 @@ from jsonschema import RefResolver, Draft4Validator
 
 SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
-#STUDY_SCHEMA = "study_schema.json"
-#PUBLICATION_SCHEMA = "publication_schema.json"
-#ONTOLOGY_REF_SCHEMA = "ontology_source_reference_schema.json"
 
 class ISATab2ISAjson_v1():
 
@@ -122,15 +119,21 @@ class ISATab2ISAjson_v1():
 
 
     def createProtocolParameterList(self, protocol):
-        json_list = self.createOntologyAnnotationsFromStringList(protocol, "Study", " Protocol Parameters Name")
+        json_list = []
+        parameters_json = self.createOntologyAnnotationsFromStringList(protocol, "Study", " Protocol Parameters Name")
+        for parameter_json in parameters_json:
+            json_item = dict([
+                ("parameterName",  parameter_json)
+            ])
+            json_list.append(json_item)
         return json_list
 
 
     def createOntologyAnnotationForInvOrStudy(self, object, inv_or_study, type):
         onto_ann = dict([
-            ("name", object[inv_or_study+type]),
-            ("termSource", object[inv_or_study+type+" Term Source REF"]),
-            ("termAccession", object[inv_or_study+type+" Term Accession Number"])
+                ("name", object[inv_or_study+type]),
+                ("termSource", object[inv_or_study+type+" Term Source REF"]),
+                ("termAccession", object[inv_or_study+type+" Term Accession Number"])
         ])
         return onto_ann
 
@@ -142,13 +145,11 @@ class ISATab2ISAjson_v1():
         ])
         return onto_ann
 
-
     def createOntologyAnnotationsFromStringList(self, object, inv_or_study, type):
         name_array = object[inv_or_study+type].split(";")
         term_source_array = object[inv_or_study+type+" Term Source REF"].split(";")
         term_accession_array = object[inv_or_study+type+" Term Accession Number"].split(";")
         onto_annotations = []
-
         for i in range(0,len(name_array)):
              onto_ann = dict([
                  ("name", name_array[i]),
@@ -187,7 +188,7 @@ class ISATab2ISAjson_v1():
     def createStudies(self, studies):
         study_array = []
         for study in studies:
-            source_dict = self.createSources(study.nodes)
+            source_dict = self.createSourcesDictionary(study.nodes)
             sample_dict = self.createSampleDictionary(study.nodes)
             data_dict = self.createDataFiles(study.nodes)
             studyJson = dict([
@@ -199,10 +200,11 @@ class ISATab2ISAjson_v1():
                 ("studyDesignDescriptors",self.createOntologyAnnotationListForInvOrStudy(study.design_descriptors, "Study", " Design Type")),
                 ("publications", self.createPublications(study.publications, "Study")),
                 ("people", self.createContacts(study.contacts, "Study")),
+                #TODO
                 ("studyDesignDescriptors", []),
                 ("protocols", self.createProtocols(study.protocols)),
-                ("sources", self.createSources(study.nodes)),
-                ("samples",list(sample_dict.items())),
+                ("sources", list(source_dict.values())),
+                ("samples",list(sample_dict.values())),
                 ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
                 ("assays", self.createStudyAssaysList(study.assays))
             ])
@@ -243,13 +245,11 @@ class ISATab2ISAjson_v1():
         for argument in inputs:
             try:
                 json_item = source_dict[argument]
-                print("source-->", json_item)
                 json_list.append(json_item)
             except KeyError:
                 pass
             try:
                 json_item = sample_dict[argument]
-                print("sample-->", json_item)
                 json_list.append(json_item)
             except KeyError:
                 pass
@@ -292,7 +292,7 @@ class ISATab2ISAjson_v1():
     def createStudyAssaysList(self, assays):
         json_list = []
         for assay in assays:
-            source_dict = self.createSources(assay.nodes)
+            source_dict = self.createSourcesDictionary(assay.nodes)
             sample_dict = self.createSampleDictionary(assay.nodes)
             data_dict = self.createDataFiles(assay.nodes)
             json_item = dict([
@@ -334,7 +334,7 @@ class ISATab2ISAjson_v1():
                 json_dict.update({node_index: json_item})
         return json_dict
 
-    def createSources(self, nodes):
+    def createSourcesDictionary(self, nodes):
         json_dict = dict([])
         for node_name in nodes:
             if nodes[node_name].ntype == "Source Name":
@@ -351,15 +351,16 @@ class ISATab2ISAjson_v1():
         for header in node.metadata:
             if header.startswith("Characteristics"):
                  characteristic = header.replace("]", "").split("[")[-1]
+                 characteristic_json = self.createOntologyAnnotation(characteristic, "", "")
                  json_item = dict([
-                     ("characteristic", self.createOntologyAnnotation(characteristic, "", ""))
+                     ("characteristic", characteristic_json)
                  ])
                  json_list.append(json_item)
         return json_list
 
 
 
-isatab2isajson = ISATab2ISAjson_v1()
+#isatab2isajson = ISATab2ISAjson_v1()
 #isatab2isajson.convert("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1","../../tests/datasets/metabolights", False)
 #isatab2isajson.convert("../../tests/data/BII-I-1","../../tests/data", True)
-isatab2isajson.convert("../../tests/data/BII-S-7","../../tests/data", True)
+#isatab2isajson.convert("../../tests/data/BII-S-7","../../tests/data", True)
