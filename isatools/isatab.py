@@ -43,7 +43,7 @@ def load(isatab_dir):
     def _createPublications(publications, inv_or_study):
         publications = []
         for pub in publications:
-            publication= Publication(
+            publication = Publication(
                 pubmed_id=pub[inv_or_study+' PubMed ID'],
                 doi=pub[inv_or_study+' Publication DOI'],
                 author_list=pub[inv_or_study+' Publication Author List'],
@@ -61,7 +61,7 @@ def load(isatab_dir):
         )
         return onto_ann
 
-    def _createContacts(self, contacts, inv_or_study):
+    def _createContacts(contacts, inv_or_study):
         people_json = []
         for contact in contacts:
             person_json = Contact(
@@ -79,28 +79,40 @@ def load(isatab_dir):
         return people_json
 
 
-    def _createSampleDictionary(self, nodes):
+    def _createSampleDictionary(nodes):
         json_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype == "Sample Name":
                 json_item = dict([
                     ("name", node_index),
                     ("factors", []),
-                    ("characteristics", self.createCharacteristicList(node_index, nodes[node_index])),
+                    ("characteristics", _createCharacteristicList(node_index, nodes[node_index])),
                 ])
                 json_dict.update({node_index: json_item})
         return json_dict
 
-    def _createSourcesDictionary(self, nodes):
+    def _createSourcesDictionary(nodes):
         json_dict = dict([])
         for node_name in nodes:
             if nodes[node_name].ntype == "Source Name":
                 json_item = dict([
                     ("name", node_name),
-                    ("characteristics", self.createCharacteristicList(node_name, nodes[node_name])),
+                    ("characteristics", _createCharacteristicList(node_name, nodes[node_name])),
                 ])
                 json_dict.update({node_name: json_item})
         return json_dict
+
+    def _createCharacteristicList(node_name, node):
+        json_list = []
+        for header in node.metadata:
+            if header.startswith("Characteristics"):
+                 characteristic = header.replace("]", "").split("[")[-1]
+                 characteristic_json = OntologyAnnotation(name=characteristic)
+                 json_item = dict([
+                     ("characteristic", characteristic_json)
+                 ])
+                 json_list.append(json_item)
+        return json_list
 
     def _createOntologyAnnotationListForInvOrStudy(array, inv_or_study, type_):
         onto_annotations = []
@@ -113,12 +125,12 @@ def load(isatab_dir):
             onto_annotations.append(onto_ann)
         return onto_annotations
 
-    def _createProtocols(self, protocols):
+    def _createProtocols(protocols):
         protocols_list = []
         for prot in protocols:
             protocol = Protocol(
                 name=prot['Study Protocol Name'],
-                protocol_type=self.createOntologyAnnotationForInvOrStudy(prot, "Study", " Protocol Type"),
+                protocol_type=_createOntologyAnnotationForInvOrStudy(prot, "Study", " Protocol Type"),
                 description=prot['Study Protocol Description'],
                 uri=prot['Study Protocol URI'],
                 version=prot['Study Protocol Version'],
@@ -191,7 +203,7 @@ def load(isatab_dir):
             json_list.append(json_item)
         return json_list
 
-    def _createExecuteStudyProtocol(self, process_node_name, process_node):
+    def _createExecuteStudyProtocol(process_node_name, process_node):
         json_item = dict([
                    # ("name", dict([("value", process_node_name)])),
                    # ("description", dict([("value", process_node_name)])),
@@ -201,7 +213,7 @@ def load(isatab_dir):
                 ])
         return json_item
 
-    def _createInputList(self, inputs, source_dict, sample_dict):
+    def _createInputList(inputs, source_dict, sample_dict):
         json_list = []
         for argument in inputs:
             try:
@@ -216,8 +228,7 @@ def load(isatab_dir):
                 pass
         return json_list
 
-
-    def _createOutputList(self, arguments, sample_dict):
+    def _createOutputList(arguments, sample_dict):
         json_list = []
         for argument in arguments:
             try:
@@ -227,12 +238,12 @@ def load(isatab_dir):
                 pass
         return json_list
 
-    def _createStudyAssaysList(self, assays):
+    def _createStudyAssaysList(assays):
         json_list = []
         for assay in assays:
-            source_dict = self.createSourcesDictionary(assay.nodes)
-            sample_dict = self.createSampleDictionary(assay.nodes)
-            data_dict = self.createDataFiles(assay.nodes)
+            source_dict = _createSourcesDictionary(assay.nodes)
+            sample_dict = _createSampleDictionary(assay.nodes)
+            data_dict = _createDataFiles(assay.nodes)
             json_item = Assay(
                 file_name=assay.metadata['Study Assay File Name'],
                 measurement_type=OntologyAnnotation(
