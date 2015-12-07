@@ -1,5 +1,29 @@
 from .model.v1 import *
 from isatools.io import isatab_parser
+import os
+import sys
+
+
+def validate(isatab_dir, config_dir):
+    """ Validate an ISA-Tab archive using the Java validator
+    :param isatab_dir: Path to ISA-Tab files
+    :param config_dir: Path to configuration XML files
+    """
+    if not os.path.exists(isatab_dir):
+        raise IOError("isatab_dir " + isatab_dir + " does not exist")
+    print("Using source ISA Tab folder: " + isatab_dir)
+    print("ISA configuration XML folder: " + config_dir)
+    convert_command = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   "convert/isa_line_commands/bin/validate.sh -c " + config_dir + " " + isatab_dir)
+    from subprocess import call
+    try:
+        return_code = call([convert_command], shell=True)
+        if return_code < 0:
+            print(sys.stderr, "Terminated by signal", -return_code)
+        else:
+            print(sys.stderr, "Returned", return_code)
+    except OSError as e:
+        print(sys.stderr, "Execution failed:", e)
 
 
 def load(isatab_dir):
@@ -271,7 +295,7 @@ def load(isatab_dir):
     return investigation
 
 
-def dump(isa_obj, fp):
+def dumpj(isa_obj, fp):
     s = isa_obj.to_json()
     return s
 
