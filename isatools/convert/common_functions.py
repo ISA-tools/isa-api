@@ -19,8 +19,8 @@ class CommonFunctions():
         return myStr
 
     def makeAttributeName(self, tag):
-        table = string.maketrans("","")
-        stripTag = tag.translate(table, string.punctuation)
+        table = ''.maketrans('', '')
+        stripTag = tag.translate(dict.fromkeys(' ', table))
         if (len(stripTag.split(' ',1)) > 1):
             return self.makeLowercaseFirstChar(stripTag.split(' ',1)[0]) + self.makeUppercaseFirstCharInStringArray(stripTag.split(' ',1)[1])
         else:

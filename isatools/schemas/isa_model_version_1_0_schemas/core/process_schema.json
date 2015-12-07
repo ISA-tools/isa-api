@@ -13,22 +13,23 @@
         "parameters": {
             "type": "array",
             "items": {
-                  "$ref" : "parameter_schema.json#"
+                  "$ref" : "protocol_parameter_schema.json#"
             }
         },
         "inputs" : {
             "type": "array",
             "items": {
                  "anyOf": [
-                        {
-                            "type": "object",
-                            "$ref": "material_schema.json#"
-                        },
-                        {
-                            "type": "object",
-                            "$ref": "data_schema.json#"
-                        }
-                    ]
+                   {
+                     "$ref": "source_schema.json#"
+                   },
+                   {
+                     "$ref": "sample_schema.json#"
+                   },
+                   {
+                     "$ref": "data_schema.json#"
+                   }
+                 ]
             }
         },
         "outputs" : {
@@ -36,11 +37,9 @@
             "items": {
                  "anyOf": [
                         {
-                            "type": "object",
-                            "$ref": "material_schema.json#"
+                            "$ref": "sample_schema.json#"
                         },
                         {
-                            "type": "object",
                             "$ref": "data_schema.json#"
                         }
                     ]

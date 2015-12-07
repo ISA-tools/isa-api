@@ -1,0 +1,17 @@
+# The database parameters
+hibernate.connection.username=sa
+hibernate.connection.password=
+hibernate.connection.url=jdbc:h2:/tmp/bii/testdb/bioinvindex
+hibernate.connection.driver_class=org.h2.Driver
+hibernate.dialect=uk.ac.ebi.bioinvindex.utils.H2FixedDialect
+
+# Change these paths as you need
+hibernate.search.default.indexBase=/tmp/bii/testdb/lucene
+# Change this to get some debug info
+hibernate.show_sql=false
+
+# This shouldn't need to be changed
+hibernate.search.default.directory_provider=org.hibernate.search.store.FSDirectoryProvider
+hibernate.hbm2ddl.auto=update
+hibernate.search.indexing_strategy=manual
+hibernate.mapping.precedence=hbm,class

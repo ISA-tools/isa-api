@@ -95,7 +95,7 @@ class IsatabToJsonWriter():
         for sp in rec.protocols:
             json_sp = {}
             for i_sp in sp:
-                json_sp[self.commonFunctions.makeAttributeName(i_sp)] = sp[i_sp].decode('ascii', errors='ignore')
+                json_sp[self.commonFunctions.makeAttributeName(i_sp)] = sp[i_sp]
             json_study_protocol.append(json_sp)
         json_inner_struct["studyProtocols"] = json_study_protocol
         json_inner_struct["studyContacts"] = self.createListOfAttributesArray(rec.contacts)
@@ -155,7 +155,7 @@ class IsatabToJsonWriter():
             studySamples = []
             with open(studyfilepath, "rU") as in_handle:
                 reader = csv.reader(in_handle, dialect="excel-tab")
-                header = reader.next()
+                header = next(reader)
                 hGroupings = self.createHeaderGrouping(header)
                 for line in reader:
                     studySample = []
@@ -270,7 +270,7 @@ class IsatabToJsonWriter():
             nodes = []
             with open(studyfilepath, "rU") as in_handle:
                 reader = csv.reader(in_handle, dialect="excel-tab")
-                header = reader.next()
+                header = next(reader)
                 for line in reader:
                     nodes.append(line)
             return header, nodes

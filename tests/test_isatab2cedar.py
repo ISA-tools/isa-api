@@ -6,6 +6,7 @@ from isatools.convert.isatab2cedar import ISATab2CEDAR
 from os.path import join
 import unittest
 
+
 class ISAtab2CEDARTest(unittest.TestCase):
       def setUp(self):
         """set up directories etc"""
@@ -23,7 +24,7 @@ class ISAtab2CEDARTest(unittest.TestCase):
         self.directories = [ f for f in listdir(self.path) ]
 
         for directory in self.directories:
-            print "Converting ", directory, " ..."
+            print("Converting ", directory, " ...")
             self.isa2cedar.createCEDARjson(join(self.path,directory), "./datasets/metabolights", False)
-        print "\t... done"
+        print("\t... done")
 
