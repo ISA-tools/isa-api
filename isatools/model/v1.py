@@ -402,15 +402,11 @@ class StudyFactor(IsaObject):
     affect biological systems in a way that can be measured by an assay.
 
     Attributes:
-        name: Free text name for the term
-        type: Study factor type as free text
-        ontology_reference: A representation of an ontology source reference
+        ontology_annotation: A representation of an ontology source reference
     """
 
-    def __init__(self, name="", type_="", ontology_annotation=None, comments=None):
+    def __init__(self, ontology_annotation=None, comments=None):
         super().__init__(comments)
-        self.name = name
-        self.type = type_
         if ontology_annotation is None:
             self.ontology_annotation = OntologyAnnotation()
         else:
@@ -418,8 +414,7 @@ class StudyFactor(IsaObject):
 
     def to_json(self):
         return {
-            "name": self.name,
-            "ontologyAnnotation": self.ontology_annotation.to_json()
+            "ontologyAnnotation": self.ontology_annotation.to_json(),
             # "comments": self.get_comments_json()
         }
 
@@ -591,18 +586,24 @@ class MaterialAttribute(IsaObject):
     """A MaterialAttribute.
 
     Attributes:
-        ontology_annotation:
+        characteristic:
+        unit:
     """
-    def __init__(self, ontology_annotation=None, comments=None):
+    def __init__(self, characteristic=None, unit=None, comments=None):
         super().__init__(comments)
-        if ontology_annotation is None:
-            self.ontology_annotation = OntologyAnnotation()
+        if characteristic is None:
+            self.characteristic = OntologyAnnotation()
         else:
-            self.ontology_annotation = ontology_annotation
+            self.characteristic = characteristic
+        if unit is None:
+            self.unit = OntologyAnnotation()
+        else:
+            self.unit = unit
 
     def to_json(self):
         return {
-            "ontologyAnnotation": self.ontology_annotation.to_json(),
+            "characteristic": self.characteristic.to_json(),
+            "unit": self.characteristic.to_json(),
         }
 
 
