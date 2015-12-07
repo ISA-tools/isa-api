@@ -6,6 +6,7 @@ from isatools.convert.isatab2cedar import ISATab2CEDAR
 from os.path import join
 import unittest
 
+
 class ISAtab2CEDARTest(unittest.TestCase):
       def setUp(self):
         """set up directories etc"""
