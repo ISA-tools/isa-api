@@ -13,7 +13,8 @@ from jsonschema import RefResolver, Draft4Validator
 SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
 
-class ISATab2ISAjson_v1():
+
+class ISATab2ISAjson_v1:
 
     def __init__(self):
         pass
@@ -61,7 +62,6 @@ class ISATab2ISAjson_v1():
                     json.dump(isa_json, outfile, indent=4, sort_keys=True)
                     outfile.close()
                 print("... conversion finished.")
-
 
     def createComment(self, name, value):
         comment_json = dict([
@@ -117,7 +117,6 @@ class ISATab2ISAjson_v1():
             protocols_json.append(protocol_json)
         return protocols_json
 
-
     def createProtocolParameterList(self, protocol):
         json_list = []
         parameters_json = self.createOntologyAnnotationsFromStringList(protocol, "Study", " Protocol Parameters Name")
@@ -159,7 +158,6 @@ class ISATab2ISAjson_v1():
              onto_annotations.append(onto_ann)
         return onto_annotations
 
-
     def createOntologyAnnotationListForInvOrStudy(self, array, inv_or_study, type):
         onto_annotations = []
         for object in array:
@@ -170,8 +168,6 @@ class ISATab2ISAjson_v1():
             ])
             onto_annotations.append(onto_ann)
         return onto_annotations
-
-
 
     def createOntologySourceReferences(self, ontology_refs):
         ontologies = []
@@ -209,7 +205,6 @@ class ISATab2ISAjson_v1():
                 ("assays", self.createStudyAssaysList(study.assays))
             ])
             study_array.append(studyJson)
-
         return study_array
 
     def createProcessSequence(self, process_nodes, source_dict, sample_dict, data_dict):
@@ -239,7 +234,6 @@ class ISATab2ISAjson_v1():
             json_list.append(json_item)
         return json_list
 
-
     def createInputList(self, inputs, source_dict, sample_dict):
         json_list = []
         for argument in inputs:
@@ -255,7 +249,6 @@ class ISATab2ISAjson_v1():
                 pass
         return json_list
 
-
     def createOutputList(self, arguments, sample_dict):
         json_list = []
         for argument in arguments:
@@ -265,7 +258,6 @@ class ISATab2ISAjson_v1():
             except KeyError:
                 pass
         return json_list
-
 
     def createExecuteStudyProtocol(self, process_node_name, process_node):
         json_item = dict([
@@ -277,7 +269,6 @@ class ISATab2ISAjson_v1():
                 ])
         return json_item
 
-
     def createProcessParameterList(self, process_node_name, process_node):
         #self.createOntologyAnnotationsFromStringList(protocol,"Study", " Protocol Parameters Name")
         json_list = []
@@ -287,7 +278,6 @@ class ISATab2ISAjson_v1():
                 ])
         json_list.append(json_item)
         return json_list
-
 
     def createStudyAssaysList(self, assays):
         json_list = []
@@ -309,7 +299,6 @@ class ISATab2ISAjson_v1():
             json_list.append(json_item)
         return json_list
 
-
     def createDataFiles(self, nodes):
         json_dict = dict([])
         for node_index in nodes:
@@ -320,7 +309,6 @@ class ISATab2ISAjson_v1():
                 ])
                 json_dict.update({node_index: json_item})
         return json_dict
-
 
     def createSampleDictionary(self, nodes):
         json_dict = dict([])
@@ -344,7 +332,6 @@ class ISATab2ISAjson_v1():
                 ])
                 json_dict.update({node_name: json_item})
         return json_dict
-
 
     def createCharacteristicList(self, node_name, node):
         json_list = []
