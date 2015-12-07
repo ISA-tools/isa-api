@@ -478,10 +478,10 @@ class ISATab2CEDAR():
 
 
 #local tests
-isa2cedar = ISATab2CEDAR("Metabolights")
+#isa2cedar = ISATab2CEDAR("Metabolights")
 #isa2cedar.createCEDARjson("../../tests/data/BII-I-1", "./schemas/cedar", True)
 #isa2cedar.createCEDARjson("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS114", "../../tests/datasets/metabolights", False)
-isa2cedar.createCEDARjson("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1", "../../tests/datasets/metabolights", False)
+#isa2cedar.createCEDARjson("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1", "../../tests/datasets/metabolights", False)
 #isa2cedar.createCEDARjson("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS10", "../../tests/datasets/metabolights", False)
 #isa2cedar.createCEDARjson("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS161", "../../tests/datasets/metabolights", False)
 #isa2cedar.createCEDARjson_folder("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/", "../../tests/datasets/metabolights", False)
