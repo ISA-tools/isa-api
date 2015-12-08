@@ -222,7 +222,7 @@ class StudyAssayParser:
 
         with open(os.path.join(self._dir, fname), "rU") as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
-            headers = self._swap_synonyms(reader.__next__())
+            headers = self._swap_synonyms(next(reader))
             hgroups = self._collapse_header(headers)
             htypes = self._characterize_header(headers, hgroups)
             #
@@ -285,7 +285,7 @@ class StudyAssayParser:
         nodes = {}
         with open(os.path.join(self._dir, fname), "rU") as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
-            header = self._swap_synonyms(reader.__next__())
+            header = self._swap_synonyms(next(reader))
             hgroups = self._collapse_header(header)
             htypes = self._characterize_header(header, hgroups)
 
