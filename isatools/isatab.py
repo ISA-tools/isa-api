@@ -144,7 +144,7 @@ def load(isatab_dir):
         parameters_annotations = _createOntologyAnnotationsFromStringList(protocol, "Study", " Protocol Parameters Name")
         for parameter_annotation in parameters_annotations:
             parameter = ProtocolParameter(
-                name=parameter_annotation
+                parameterName=parameter_annotation
             )
             # TODO Units?
             parameters_list.append(parameter)
@@ -550,7 +550,93 @@ def dump(isa_obj, fp):
             study_factors_df = study_factors_df.set_index('Study Factor Name').T
             fp.write('STUDY FACTORS\n')
             study_factors_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                     index_label='Study Factor Name')
+                                    index_label='Study Factor Name')
+
+            # Write STUDY ASSAYS section
+            study_assays_df = pandas.DataFrame(columns=('Study Assay Measurement Type',
+                                                        'Study Assay Measurement Type Term Accession Number',
+                                                        'Study Assay Measurement Type Term Source REF',
+                                                        'Study Assay Technology Type',
+                                                        'Study Assay Technology Type Term Accession Number',
+                                                        'Study Assay Technology Type Term Source REF',
+                                                        'Study Assay Technology Platform',
+                                                        'Study Assay File Name'
+                                                        )
+                                               )
+            j = 0
+            for assay in study.assays:
+                study_assays_df.loc[j] = [
+                    assay.measurement_type.name,
+                    assay.measurement_type.term_accession,
+                    assay.measurement_type.term_source,
+                    assay.technology_type.name,
+                    assay.technology_type.term_accession,
+                    assay.technology_type.term_source,
+                    assay.technology_platform,
+                    assay.file_name
+                ]
+                j += 1
+            study_assays_df = study_assays_df.set_index('Study Assay Measurement Type').T
+            fp.write('STUDY ASSAYS\n')
+            study_assays_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                                   index_label='Study Assay Measurement Type')
+
+            # Write STUDY PROTOCOLS section
+            study_protocols_df = pandas.DataFrame(columns=('Study Protocol Name',
+                                                           'Study Protocol Type',
+                                                           'Study Protocol Type  Accession Number',
+                                                           'Study Protocol Type Source REF',
+                                                           'Study Protocol Description',
+                                                           'Study Protocol URI',
+                                                           'Study Protocol Version',
+                                                           'Study Protocol Parameters Name',
+                                                           'Study Protocol Parameters Name Term Accession Number',
+                                                           'Study Protocol Parameters Name Term Source REF',
+                                                           'Study Protocol Components Name'
+                                                           'Study Protocol Components Type',
+                                                           'Study Protocol Components Type Term Accession Number',
+                                                           'Study Protocol Components Type Term Source REF',
+                                                           )
+                                                  )
+            j = 0
+            for protocol in study.protocols:
+                parameters_names = ''
+                parameters_accession_numbers = ''
+                parameters_source_refs = ''
+                for parameter in protocol.parameters:
+                    parameters_names += parameter.parameterName.name + ';'
+                    parameters_accession_numbers += parameter.parameterName.term_accession + ';'
+                    parameters_source_refs += parameter.parameterName.term_source + ';'
+                component_names = ''
+                component_types = ''
+                component_types_accession_numbers = ''
+                component_types_source_refs = ''
+                for component in protocol.components:
+                    component_names += component.name + ';'
+                    component_types += component.componentType + ';'
+                    component_types_accession_numbers += component.componentType.term_accession + ';'
+                    component_types_source_refs += component.componentType.term_source.name + ';'
+                study_protocols_df.loc[j] = [
+                    protocol.name,
+                    protocol.protocol_type.name,
+                    protocol.protocol_type.term_accession,
+                    protocol.protocol_type.term_source,
+                    protocol.description,
+                    protocol.uri,
+                    protocol.version,
+                    parameters_names,
+                    parameters_accession_numbers,
+                    parameters_source_refs,
+                    component_names,
+                    component_types,
+                    component_types_accession_numbers,
+                    component_types_source_refs
+                ]
+                j += 1
+            study_protocols_df = study_assays_df.set_index('Study Protocol Name').T
+            fp.write('STUDY PROTOCOLS\n')
+            study_protocols_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                                   index_label='Study Protocol Name')
 
     else:
         raise NotImplementedError("Dumping this ISA object to ISAtab is not yet supported")
