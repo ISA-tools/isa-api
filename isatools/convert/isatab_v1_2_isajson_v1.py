@@ -22,6 +22,7 @@ class ISATab2ISAjson_v1:
         print("Converting ISAtab to ISAjson for ", work_dir)
 
         isa_tab = parse(work_dir)
+        print(isa_tab)
 
         if isa_tab is None:
             print("No ISAtab dataset found")
@@ -201,9 +202,20 @@ class ISATab2ISAjson_v1:
                 ("samples",list(sample_dict.values())),
                 ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
                 ("assays", self.createStudyAssaysList(study.assays))
+                ("factors", self.createStudyFactorsList(study.factors))
             ])
             study_array.append(studyJson)
         return study_array
+
+    def createStudyFactorsList(self, factors):
+        json_list = []
+        for factor in factors:
+             json_item = dict([
+                ("name", factor['Study Factor Name']),
+                ("factorType", self.createOntologyAnnotation(factor['Study Factor Type'], factor['Study Factor Type Term Source REF'],factor['Study Factor Type Term Accession Number']))
+            ])
+             json_list.append(json_item)
+        return json_list
 
 
     def createProcessSequence(self, process_nodes, source_dict, sample_dict, data_dict):
@@ -347,7 +359,7 @@ class ISATab2ISAjson_v1:
 
 
 
-#isatab2isajson = ISATab2ISAjson_v1()
+isatab2isajson = ISATab2ISAjson_v1()
 #isatab2isajson.convert("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1","../../tests/datasets/metabolights", False)
-#isatab2isajson.convert("../../tests/data/BII-I-1","../../tests/data", True)
+isatab2isajson.convert("../../tests/data/BII-I-1","../../tests/data", True)
 #isatab2isajson.convert("../../tests/data/BII-S-7","../../tests/data", True)
