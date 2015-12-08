@@ -272,7 +272,8 @@ def load(isatab_dir):
                 description=study.metadata['Study Description'],
                 submission_date=study.metadata['Study Submission Date'],
                 public_release_date=study.metadata['Study Public Release Date'],
-                design_descriptors=_createOntologyAnnotationListForInvOrStudy(study.design_descriptors, "Study", " Design Type"),
+                design_descriptors=_createOntologyAnnotationListForInvOrStudy(study.design_descriptors, "Study",
+                                                                              " Design Type"),
                 publications=_createPublications(study.publications, "Study"),
                 contacts=_createContacts(study.contacts, "Study"),
                 protocols=_createProtocols(study.protocols),
@@ -284,9 +285,8 @@ def load(isatab_dir):
             study_array.append(studyJson)
         return study_array
 
-
+    investigation = None
     isa_tab = isatab_parser.parse(isatab_dir)
-
     if isa_tab is None:
         raise IOError("There was problem parsing the ISA Tab")
     else:
@@ -306,9 +306,76 @@ def load(isatab_dir):
     return investigation
 
 
-def dumpj(isa_obj, fp):
-    s = isa_obj.to_json()
-    return s
+def dump(isa_obj, fp):
+    import pandas
+    if isinstance(isa_obj, Investigation):
+        # Process Investigation object
+        investigation = isa_obj
+
+        # Write ONTOLOGY SOURCE REFERENCE section
+        ontology_source_references_df = pandas.DataFrame(columns=('Term Source Name',
+                                                                  'Term Source File',
+                                                                  'Term Source Version',
+                                                                  'Term Source Description'))
+        i = 0
+        for ontology_source_reference in investigation.ontology_source_references:
+            ontology_source_references_df.loc[i] = [
+                ontology_source_reference.name,
+                ontology_source_reference.file,
+                ontology_source_reference.version,
+                ontology_source_reference.description
+            ]
+            i += 1
+        ontology_source_references_df = ontology_source_references_df.set_index('Term Source Name').T
+        fp.write('ONTOLOGY SOURCE REFERENCE\n')
+        ontology_source_references_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                                             index_label='Term Source Name')  # Need to set index_label as top left cell
+
+        # Write INVESTIGATION section
+        investigation_df = pandas.DataFrame(columns=('Investigation Identifier',
+                                                     'Investigation Title',
+                                                     'Investigation Description',
+                                                     'Investigation Submission Date',
+                                                     'Investigation Public Release Date'))
+        investigation_df.loc[0] = [
+            investigation.identifier,
+            investigation.title,
+            investigation.description,
+            investigation.submission_date,
+            investigation.public_release_date
+        ]
+        investigation_df = investigation_df.set_index('Investigation Identifier').T
+        fp.write('INVESTIGATION\n')
+        investigation_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                                index_label='Investigation Identifier')  # Need to set index_label as top left cell
+
+        # Write INVESTIGATION PUBLICATIONS section
+        investigation_publications_df = pandas.DataFrame(columns=('Investigation PubMed ID',
+                                                                  'Investigation Publication DOI',
+                                                                  'Investigation Publication Author List',
+                                                                  'Investigation Publication Status',
+                                                                  'Investigation Publication Status Term Accession '
+                                                                  'Number',
+                                                                  'Investigation Publication Status Term Source REF'))
+        i = 0
+        for investigation_publication in investigation.publications:
+            investigation_publications_df.loc[i] = [
+                investigation_publication.pubmed_id,
+                investigation_publication.doi,
+                investigation_publication.author_list,
+                investigation_publication.status.name,
+                investigation_publication.status.term_source.name,
+                investigation_publication.status.term_accession,
+            ]
+            i += 1
+        investigation_publications_df = investigation_publications_df.set_index('Investigation PubMed ID').T
+        fp.write('INVESTIGATION PUBLICATIONS\n')
+        investigation_publications_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                                             index_label='Investigation PubMed ID')
+
+    else:
+        raise NotImplementedError("Dumping this ISA object to ISAtab is not yet supported")
+    return fp
 
 
 def loads(s):
