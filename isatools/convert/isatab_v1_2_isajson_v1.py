@@ -201,7 +201,7 @@ class ISATab2ISAjson_v1:
                 ("sources", list(source_dict.values())),
                 ("samples",list(sample_dict.values())),
                 ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
-                ("assays", self.createStudyAssaysList(study.assays))
+                ("assays", self.createStudyAssaysList(study.assays)),
                 ("factors", self.createStudyFactorsList(study.factors))
             ])
             study_array.append(studyJson)
@@ -359,7 +359,7 @@ class ISATab2ISAjson_v1:
 
 
 
-isatab2isajson = ISATab2ISAjson_v1()
+#isatab2isajson = ISATab2ISAjson_v1()
 #isatab2isajson.convert("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1","../../tests/datasets/metabolights", False)
-isatab2isajson.convert("../../tests/data/BII-I-1","../../tests/data", True)
+#isatab2isajson.convert("../../tests/data/BII-I-1","../../tests/data", True)
 #isatab2isajson.convert("../../tests/data/BII-S-7","../../tests/data", True)
