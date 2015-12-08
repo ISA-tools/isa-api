@@ -40,9 +40,9 @@ def load(isatab_dir):
             ontologies.append(ontology)
         return ontologies
 
-    def _createPublications(publications, inv_or_study):
+    def _createPublications(isapubs, inv_or_study):
         publications = []
-        for pub in publications:
+        for pub in isapubs:
             publication = Publication(
                 pubmed_id=pub[inv_or_study+' PubMed ID'],
                 doi=pub[inv_or_study+' Publication DOI'],
@@ -272,6 +272,7 @@ def load(isatab_dir):
                 description=study.metadata['Study Description'],
                 submission_date=study.metadata['Study Submission Date'],
                 public_release_date=study.metadata['Study Public Release Date'],
+                file_name=study.metadata['Study File Name'],
                 design_descriptors=_createOntologyAnnotationListForInvOrStudy(study.design_descriptors, "Study",
                                                                               " Design Type"),
                 publications=_createPublications(study.publications, "Study"),
@@ -370,7 +371,7 @@ def dump(isa_obj, fp):
                 investigation_publication.doi,
                 investigation_publication.author_list,
                 investigation_publication.status.name,
-                investigation_publication.status.term_source.name,
+                investigation_publication.status.term_source,
                 investigation_publication.status.term_accession,
             ]
             i += 1
@@ -415,22 +416,23 @@ def dump(isa_obj, fp):
                 roles_accession_numbers,
                 roles_source_refs
             ]
+            i += 1
         investigation_contacts_df = investigation_contacts_df.set_index('Investigation Person Last Name').T
         fp.write('INVESTIGATION CONTACTS\n')
         investigation_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                          index_label='Investigation PubMed ID')
 
-        # Write STUDY section
-        study_df = pandas.DataFrame(columns=('Study Identifier',
-                                             'Study Title',
-                                             'Study Description',
-                                             'Study Submission Date',
-                                             'Study Public Release Date',
-                                             'Study File Name'
-                                             )
-                                    )
+        # Write STUDY sections
         i = 0
         for study in investigation.studies:
+            study_df = pandas.DataFrame(columns=('Study Identifier',
+                                                 'Study Title',
+                                                 'Study Description',
+                                                 'Study Submission Date',
+                                                 'Study Public Release Date',
+                                                 'Study File Name'
+                                                 )
+                                       )
             study_df.loc[i] = [
                 study.identifier,
                 study.title,
@@ -439,9 +441,96 @@ def dump(isa_obj, fp):
                 study.public_release_date,
                 study.file_name
             ]
-        study_df = study_df.set_index('Study Identifier').T
-        fp.write('STUDY\n')
-        study_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8', index_label='Study Identifier')
+            study_df = study_df.set_index('Study Identifier').T
+            fp.write('STUDY\n')
+            study_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8', index_label='Study Identifier')
+
+            # Write STUDY DESIGN DESCRIPTORS section
+            study_design_descriptors_df = pandas.DataFrame(columns=('Study Design Type',
+                                                                    'Study Design Type Term Accession Number',
+                                                                    'Study Design Type Term Source REF'
+                                                                    )
+                                                           )
+            j = 0
+            for design_descriptor in study.design_descriptors:
+                study_design_descriptors_df.loc[j] = [
+                    design_descriptor.name,
+                    design_descriptor.term_accession,
+                    design_descriptor.term_source
+                ]
+                study_design_descriptors_df = study_design_descriptors_df.set_index('Study Design Type').T
+                fp.write('STUDY DESIGN DESCRIPTORS\n')
+                study_design_descriptors_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                                                   index_label='Study Design Type')
+
+            # Write STUDY PUBLICATIONS section
+            study_publications_df = pandas.DataFrame(columns=('Study PubMed ID',
+                                                              'Study Publication DOI',
+                                                              'Study Publication Author List',
+                                                              'Study Publication Status',
+                                                              'Study Publication Status Term Accession Number',
+                                                              'Study Publication Status Term Source REF'
+                                                              )
+                                                     )
+            j = 0
+            for study_publication in study.publications:
+                study_publications_df.loc[j] = [
+                    study_publication.pubmed_id,
+                    study_publication.doi,
+                    study_publication.author_list,
+                    study_publication.status.name,
+                    study_publication.status.term_source,
+                    study_publication.status.term_accession,
+                ]
+                j += 1
+            study_publications_df = study_publications_df.set_index('Study PubMed ID').T
+            fp.write('STUDY PUBLICATIONS\n')
+            study_publications_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                                                 index_label='Study PubMed ID')
+
+            # Write STUDY CONTACTS section
+            study_contacts_df = pandas.DataFrame(columns=('Study Person Last Name',
+                                                          'Study Person First Name',
+                                                          'Study Person Mid Initials',
+                                                          'Study Person Email',
+                                                          'Study Person Phone',
+                                                          'Study Person Fax',
+                                                          'Study Person Address',
+                                                          'Study Person Affiliation',
+                                                          'Study Person Roles',
+                                                          'Study Person Roles Term Accession Number',
+                                                          'Study Person Roles Term Source REF'
+                                                          )
+                                                 )
+            j = 0
+            for study_contact in study.contacts:
+                roles = ''
+                roles_accession_numbers = ''
+                roles_source_refs = ''
+                for role in study_contact.roles:
+                    roles += role.name + ';'
+                    roles_accession_numbers += role.term_accession + ';'
+                    roles_source_refs += role.term_source.name + ';'
+                study_contacts_df.loc[j] = [
+                    study_contact.last_name,
+                    study_contact.first_name,
+                    study_contact.mid_initials,
+                    study_contact.email,
+                    study_contact.phone,
+                    study_contact.fax,
+                    study_contact.address,
+                    study_contact.affiliation,
+                    roles,
+                    roles_accession_numbers,
+                    roles_source_refs
+                ]
+                j += 1
+            study_contacts_df = study_contacts_df.set_index('Study Person Last Name').T
+            fp.write('STUDY CONTACTS\n')
+            study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                                     index_label='Study PubMed ID')
+
+
 
     else:
         raise NotImplementedError("Dumping this ISA object to ISAtab is not yet supported")
