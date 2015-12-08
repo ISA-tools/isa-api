@@ -225,24 +225,24 @@ class StudyAssayParser:
             headers = self._swap_synonyms(next(reader))
             hgroups = self._collapse_header(headers)
             htypes = self._characterize_header(headers, hgroups)
-            #
-            # print "headers:", headers
-            # print "hgroups:", hgroups
-            # print "htypes:", htypes
+
+            print("headers:", headers)
+            print("hgroups:", hgroups)
+            print("htypes:", htypes)
 
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
             node_indices = [i for i, x in enumerate(htypes) if x == "node" or x=="node_assay"]
 
-            # print "processing_indices ->", processing_indices
-            # print "node_indices -> ", node_indices
+            print("processing_indices ->", processing_indices)
+            print("node_indices -> ", node_indices)
             for processing_index in processing_indices:
                 try:
                     input_index = find_lt(node_indices, processing_index)
                     output_index = find_gt(node_indices, processing_index)
 
-                    # print "processing_index ", processing_index
-                    # print "input_index ", input_index
-                    # print "output_index ", output_index
+                    print("processing_index ", processing_index)
+                    print("input_index ", input_index)
+                    print("output_index ", output_index)
                     # print " "
 
                 except ValueError:
@@ -263,8 +263,18 @@ class StudyAssayParser:
                         output_node_index = self._build_node_index(output_header, output_name)
                         #output_node = study.nodes[output_node_index]
 
+                        #if both input_name and output_name are empty, ignore the row
+                        if (not input_name and not output_name):
+                            continue
+
                         processing_name = line[hgroups[processing_index][0]]
                         process_node = ProcessNodeRecord(processing_name, processing_header, study)
+
+                        print("input_name->",input_name)
+                        print("output_name->",output_name)
+                        print("input_node_index->",input_node_index)
+                        print("output_node_index->",output_node_index)
+
 
                         process_node.inputs.append(input_node_index)
                         process_node.outputs.append(output_node_index)
@@ -274,6 +284,7 @@ class StudyAssayParser:
                         process_nodes[processing_name] = process_node
                     else:
                         line_number += 1
+                print("process_nodes",process_nodes)
                 study.process_nodes = process_nodes
 
 
@@ -305,18 +316,20 @@ class StudyAssayParser:
                     name = line[name_index]
                     #to deal with same name used for different node types (e.g. Source Name and Sample Name using the same string)
                     node_index = self._build_node_index(node_type,name)
+                    #skip the header line and empty lines
                     if name in header:
                         continue
+                    if (not name):
+                        continue
                     try:
-                        node = nodes[name+node_type]
+                        node = nodes[node_index]
                     except KeyError:
-                        #print "creating node ", node_index
+                        #print("creating node ", name, "  index", node_index)
                         node = NodeRecord(name, node_type)
                         node.metadata = collections.defaultdict(set)
                         nodes[node_index] = node
-                    attrs = self._line_keyvals(line, header, hgroups, htypes,
-                                           node.metadata)
-                nodes[node_index].metadata = attrs
+                        attrs = self._line_keyvals(line, header, hgroups, htypes, node.metadata)
+                        nodes[node_index].metadata = attrs
 
         return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
 
