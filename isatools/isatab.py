@@ -272,6 +272,7 @@ def load(isatab_dir):
                 description=study.metadata['Study Description'],
                 submission_date=study.metadata['Study Submission Date'],
                 public_release_date=study.metadata['Study Public Release Date'],
+                factors=None,
                 file_name=study.metadata['Study File Name'],
                 design_descriptors=_createOntologyAnnotationListForInvOrStudy(study.design_descriptors, "Study",
                                                                               " Design Type"),
