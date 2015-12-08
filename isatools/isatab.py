@@ -530,7 +530,26 @@ def dump(isa_obj, fp):
             study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                      index_label='Study PubMed ID')
 
-
+            # Write STUDY FACTORS section
+            study_factors_df = pandas.DataFrame(columns=('Study Factor Name',
+                                                         'Study Factor Type',
+                                                         'Study Factor Type Term Accession Number',
+                                                         'Study Factor Type Term Source REF'
+                                                         )
+                                                )
+            j = 0
+            for factor in study.factors:
+                study_factors_df.loc[j] = [
+                    factor.name,
+                    factor.factorType.name,
+                    factor.factorType.term_accession,
+                    factor.factorType.term_source
+                ]
+                j += 1
+            study_factors_df = study_factors_df.set_index('Study Factor Name').T
+            fp.write('STUDY FACTORS\n')
+            study_factors_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                                     index_label='Study Factor Name')
 
     else:
         raise NotImplementedError("Dumping this ISA object to ISAtab is not yet supported")
