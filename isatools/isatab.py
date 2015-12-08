@@ -316,7 +316,9 @@ def dump(isa_obj, fp):
         ontology_source_references_df = pandas.DataFrame(columns=('Term Source Name',
                                                                   'Term Source File',
                                                                   'Term Source Version',
-                                                                  'Term Source Description'))
+                                                                  'Term Source Description'
+                                                                  )
+                                                         )
         i = 0
         for ontology_source_reference in investigation.ontology_source_references:
             ontology_source_references_df.loc[i] = [
@@ -336,7 +338,9 @@ def dump(isa_obj, fp):
                                                      'Investigation Title',
                                                      'Investigation Description',
                                                      'Investigation Submission Date',
-                                                     'Investigation Public Release Date'))
+                                                     'Investigation Public Release Date'
+                                                     )
+                                            )
         investigation_df.loc[0] = [
             investigation.identifier,
             investigation.title,
@@ -356,7 +360,9 @@ def dump(isa_obj, fp):
                                                                   'Investigation Publication Status',
                                                                   'Investigation Publication Status Term Accession '
                                                                   'Number',
-                                                                  'Investigation Publication Status Term Source REF'))
+                                                                  'Investigation Publication Status Term Source REF'
+                                                                  )
+                                                         )
         i = 0
         for investigation_publication in investigation.publications:
             investigation_publications_df.loc[i] = [
@@ -372,6 +378,47 @@ def dump(isa_obj, fp):
         fp.write('INVESTIGATION PUBLICATIONS\n')
         investigation_publications_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                              index_label='Investigation PubMed ID')
+
+        # Write INVESTIGATION CONTACTS section
+        investigation_contacts_df = pandas.DataFrame(columns=('Investigation Person Last Name',
+                                                              'Investigation Person First Name',
+                                                              'Investigation Person Mid Initials',
+                                                              'Investigation Person Email',
+                                                              'Investigation Person Phone',
+                                                              'Investigation Person Fax',
+                                                              'Investigation Person Address',
+                                                              'Investigation Person Affiliation',
+                                                              'Investigation Person Roles',
+                                                              'Investigation Person Roles Term Accession Number',
+                                                              'Investigation Person Roles Term Source REF'
+                                                              )
+                                                     )
+        i = 0
+        for investigation_contact in investigation.contacts:
+            roles = ''
+            roles_accession_numbers = ''
+            roles_source_refs = ''
+            for role in investigation_contact.roles:
+                roles += role.name + ';'
+                roles_accession_numbers += role.term_accession + ';'
+                roles_source_refs += role.term_source.name + ';'
+            investigation_contacts_df.loc[i] = [
+                investigation_contact.last_name,
+                investigation_contact.first_name,
+                investigation_contact.mid_initials,
+                investigation_contact.email,
+                investigation_contact.phone,
+                investigation_contact.fax,
+                investigation_contact.address,
+                investigation_contact.affiliation,
+                roles,
+                roles_accession_numbers,
+                roles_source_refs
+            ]
+        investigation_contacts_df = investigation_contacts_df.set_index('Investigation Person Last Name').T
+        fp.write('INVESTIGATION CONTACTS\n')
+        investigation_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                                         index_label='Investigation PubMed ID')
 
     else:
         raise NotImplementedError("Dumping this ISA object to ISAtab is not yet supported")
