@@ -514,9 +514,13 @@ class ProtocolParameter(IsaObject):
         name:
         unit:
     """
-    def __init__(self, name="", unit=None, comments=None):
+    def __init__(self, parameterName=None, unit=None, comments=None):
         super().__init__(comments)
-        self.name=name
+        if parameterName is None:
+            self.name = OntologyAnnotation()
+        else:
+            self.parameterName = parameterName
+        self.parameterName = parameterName
         if unit is None:
             self.unit = OntologyAnnotation()
         else:
