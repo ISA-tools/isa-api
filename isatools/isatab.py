@@ -588,10 +588,10 @@ def dump(isa_obj, fp):
                     parameters_names,
                     parameters_accession_numbers,
                     parameters_source_refs,
-                    "",  # component_names,
-                    "",  # component_types,
-                    "",  # component_types_accession_numbers,
-                    "",  # component_types_source_refs
+                    '',  # component_names,
+                    '',  # component_types,
+                    '',  # component_types_accession_numbers,
+                    '',  # component_types_source_refs
                 ]
                 j += 1
             study_protocols_df = study_protocols_df.set_index('Study Protocol Name').T
@@ -615,13 +615,13 @@ def dump(isa_obj, fp):
                                                  )
             j = 0
             for study_contact in study.contacts:
-                roles = ''
-                roles_accession_numbers = ''
-                roles_source_refs = ''
-                for role in study_contact.roles:
-                    roles += role.name + ';'
-                    roles_accession_numbers += role.term_accession + ';'
-                    roles_source_refs += role.term_source.name + ';'
+                # roles = ''
+                # roles_accession_numbers = ''
+                # roles_source_refs = ''
+                # for role in study_contact.roles:
+                #     roles += role.name + ';'
+                #     roles_accession_numbers += role.term_accession + ';'
+                #     roles_source_refs += role.term_source.name + ';'
                 study_contacts_df.loc[j] = [
                     study_contact.last_name,
                     study_contact.first_name,
@@ -631,9 +631,9 @@ def dump(isa_obj, fp):
                     study_contact.fax,
                     study_contact.address,
                     study_contact.affiliation,
-                    roles,
-                    roles_accession_numbers,
-                    roles_source_refs
+                    '',  # roles,
+                    '',  # roles_accession_numbers,
+                    '',  # roles_source_refs
                 ]
                 j += 1
             study_contacts_df = study_contacts_df.set_index('Study Person Last Name').T
