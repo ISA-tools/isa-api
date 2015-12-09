@@ -108,9 +108,9 @@ class ISATab2ISAjson_v1:
                 ("description", protocol['Study Protocol Description']),
                 ("uri", protocol['Study Protocol URI']),
                 ("version", protocol['Study Protocol Version']),
-                ("parameters", self.createProtocolParameterList(protocol))
-                ]
-                )
+                ("parameters", self.createProtocolParameterList(protocol)),
+                ("components", self.createProtocolComponentList(protocol))
+                ])
             protocols_json.append(protocol_json)
         return protocols_json
 
@@ -207,11 +207,28 @@ class ISATab2ISAjson_v1:
             study_array.append(studyJson)
         return study_array
 
+
+    def createProtocolComponentList(self, protocol):
+        json_list = []
+        components_name = protocol['Study Protocol Components Name'].split(";")
+        components_type_json = self.createOntologyAnnotationsFromStringList(protocol, "Study", " Protocol Components Type")
+        index = 0
+        for component_type_json in components_type_json:
+            component_name = components_name[index]
+            json_item = dict([
+                ("componentName", component_name),
+                ("componentType",  component_type_json)
+            ])
+            json_list.append(json_item)
+            index += 1
+        return json_list
+
+
     def createStudyFactorsList(self, factors):
         json_list = []
         for factor in factors:
              json_item = dict([
-                ("name", factor['Study Factor Name']),
+                ("factorName", factor['Study Factor Name']),
                 ("factorType", self.createOntologyAnnotation(factor['Study Factor Type'], factor['Study Factor Type Term Source REF'],factor['Study Factor Type Term Accession Number']))
             ])
              json_list.append(json_item)
