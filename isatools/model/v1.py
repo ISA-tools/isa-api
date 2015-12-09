@@ -284,7 +284,7 @@ class Study(IsaObject):
 
     def __init__(self, identifier="", title="", description="", submission_date=date.today(),
                  public_release_date=date.today(), file_name="", design_descriptors=None, publications=None,
-                 contacts=None, protocols=None, assays=None, sources=None, samples=None,
+                 contacts=None, factors=None, protocols=None, assays=None, sources=None, samples=None,
                  process_sequence=None, comments=None):
         super().__init__(comments)
         self.identifier = identifier
@@ -305,10 +305,10 @@ class Study(IsaObject):
             self.contacts = []
         else:
             self.contacts = contacts
-        # if factors is None:
-        #     self.factors = []
-        # else:
-        #     self.factors = factors
+        if factors is None:
+            self.factors = []
+        else:
+            self.factors = factors
         if protocols is None:
             self.protocols = []
         else:
@@ -402,24 +402,21 @@ class StudyFactor(IsaObject):
     affect biological systems in a way that can be measured by an assay.
 
     Attributes:
-        name: Free text name for the term
-        type: Study factor type as free text
-        ontology_reference: A representation of an ontology source reference
+        ontology_annotation: A representation of an ontology source reference
     """
 
-    def __init__(self, name="", type_="", ontology_annotation=None, comments=None):
+    def __init__(self, name="", factorType=None, comments=None):
         super().__init__(comments)
         self.name = name
-        self.type = type_
-        if ontology_annotation is None:
-            self.ontology_annotation = OntologyAnnotation()
+        if factorType is None:
+            self.factorType = OntologyAnnotation()
         else:
-            self.ontology_annotation = ontology_annotation
+            self.factorType = factorType
 
     def to_json(self):
         return {
             "name": self.name,
-            "ontologyAnnotation": self.ontology_annotation.to_json()
+            "factorType": self.ontology_annotation.to_json(),
             # "comments": self.get_comments_json()
         }
 
@@ -436,7 +433,7 @@ class Assay(IsaObject):
         file_name: A field to specify the name of the Assay file corresponding the definition of that assay.
     """
     def __init__(self, measurement_type=None, technology_type=None, technology_platform="", file_name="",
-                 comments=None):
+                 process_sequence=None, comments=None):
         super().__init__(comments)
         if measurement_type is None:
             self.measurement_type = OntologyAnnotation()
@@ -448,6 +445,10 @@ class Assay(IsaObject):
             self.technology_type = technology_type
         self.technology_platform = technology_platform
         self.file_name = file_name
+        if process_sequence is None:
+            self.process_sequence = []
+        else:
+            self.process_sequence = process_sequence
 
     def to_json(self):
         return {
@@ -471,7 +472,7 @@ class Protocol(IsaObject):
         parameters:
         components:
     """
-    def __init__(self, name="", protocol_type=None, description="", uri="", version="", comments=None):
+    def __init__(self, name="", protocol_type=None, description="", uri="", version="", parameters=None, comments=None):
         super().__init__(comments)
         self.name = name
         if protocol_type is None:
@@ -481,7 +482,10 @@ class Protocol(IsaObject):
         self.description = description
         self.uri = uri
         self.version = version
-        self.parameters = []
+        if parameters is None:
+            self.parameters = []
+        else:
+            self.parameters = parameters
         self.components = []
 
     def to_json(self):
@@ -501,6 +505,26 @@ class Protocol(IsaObject):
             "components": components_json
             # "comments": self.get_comments_json()
         }
+
+
+class ProtocolParameter(IsaObject):
+    """A Protocol Parameter.
+
+    Attributes:
+        name:
+        unit:
+    """
+    def __init__(self, parameterName=None, unit=None, comments=None):
+        super().__init__(comments)
+        if parameterName is None:
+            self.name = OntologyAnnotation()
+        else:
+            self.parameterName = parameterName
+        self.parameterName = parameterName
+        if unit is None:
+            self.unit = OntologyAnnotation()
+        else:
+            self.unit = unit
 
 
 class Process(IsaObject):
@@ -591,18 +615,24 @@ class MaterialAttribute(IsaObject):
     """A MaterialAttribute.
 
     Attributes:
-        ontology_annotation:
+        characteristic:
+        unit:
     """
-    def __init__(self, ontology_annotation=None, comments=None):
+    def __init__(self, characteristic=None, unit=None, comments=None):
         super().__init__(comments)
-        if ontology_annotation is None:
-            self.ontology_annotation = OntologyAnnotation()
+        if characteristic is None:
+            self.characteristic = OntologyAnnotation()
         else:
-            self.ontology_annotation = ontology_annotation
+            self.characteristic = characteristic
+        if unit is None:
+            self.unit = OntologyAnnotation()
+        else:
+            self.unit = unit
 
     def to_json(self):
         return {
-            "ontologyAnnotation": self.ontology_annotation.to_json(),
+            "characteristic": self.characteristic.to_json(),
+            "unit": self.characteristic.to_json(),
         }
 
 
@@ -612,13 +642,15 @@ class Data(IsaObject):
     Attributes:
         name:
     """
-    def __init__(self, name="", comments=None):
+    def __init__(self, name="", type_="", comments=None):
         super().__init__(comments)
         self.name = name
+        self.type_ = type_
 
     def to_json(self):
         return {
             "name": self.name,
+            "type": self.type_
         }
 
 

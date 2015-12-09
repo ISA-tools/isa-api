@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='isatools',
-    version='0.0.3',
+    version='0.0.4',
     packages=['isatools', 'isatools.convert', 'isatools.io', 'isatools.model'],
     description='ISA version 1.0 API',
     author='ISA Infrastructure Team',

@@ -115,9 +115,11 @@ class ISAObjectTests(unittest.TestCase):
 
     def test_object_material_attribute(self):
         material_attribute = MaterialAttribute(
-            ontology_annotation=OntologyAnnotation()
+            characteristic=OntologyAnnotation(),
+            unit=OntologyAnnotation()
         )
-        assert(isinstance(material_attribute.ontology_annotation, OntologyAnnotation))
+        assert(isinstance(material_attribute.characteristic, OntologyAnnotation))
+        assert(isinstance(material_attribute.unit, OntologyAnnotation))
 
     def test_object_source(self):
         source = Source(
@@ -130,11 +132,9 @@ class ISAObjectTests(unittest.TestCase):
 
     def test_object_study_factor(self):
         factor = StudyFactor(
-            name="",
-            type_=OntologyAnnotation()
+            ontology_annotation=OntologyAnnotation()
         )
-        assert(isinstance(factor.name, str))
-        assert(isinstance(factor.type, OntologyAnnotation))
+        assert(isinstance(factor.ontology_annotation, OntologyAnnotation))
 
     def test_object_sample(self):
         sample = Sample(
