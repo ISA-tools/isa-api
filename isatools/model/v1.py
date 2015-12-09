@@ -284,7 +284,7 @@ class Study(IsaObject):
 
     def __init__(self, identifier="", title="", description="", submission_date=date.today(),
                  public_release_date=date.today(), file_name="", design_descriptors=None, publications=None,
-                 contacts=None, protocols=None, assays=None, sources=None, samples=None,
+                 contacts=None, factors=None, protocols=None, assays=None, sources=None, samples=None,
                  process_sequence=None, comments=None):
         super().__init__(comments)
         self.identifier = identifier
@@ -305,10 +305,10 @@ class Study(IsaObject):
             self.contacts = []
         else:
             self.contacts = contacts
-        # if factors is None:
-        #     self.factors = []
-        # else:
-        #     self.factors = factors
+        if factors is None:
+            self.factors = []
+        else:
+            self.factors = factors
         if protocols is None:
             self.protocols = []
         else:
@@ -405,16 +405,18 @@ class StudyFactor(IsaObject):
         ontology_annotation: A representation of an ontology source reference
     """
 
-    def __init__(self, ontology_annotation=None, comments=None):
+    def __init__(self, name="", factorType=None, comments=None):
         super().__init__(comments)
-        if ontology_annotation is None:
-            self.ontology_annotation = OntologyAnnotation()
+        self.name = name
+        if factorType is None:
+            self.factorType = OntologyAnnotation()
         else:
-            self.ontology_annotation = ontology_annotation
+            self.factorType = factorType
 
     def to_json(self):
         return {
-            "ontologyAnnotation": self.ontology_annotation.to_json(),
+            "name": self.name,
+            "factorType": self.ontology_annotation.to_json(),
             # "comments": self.get_comments_json()
         }
 
@@ -512,9 +514,13 @@ class ProtocolParameter(IsaObject):
         name:
         unit:
     """
-    def __init__(self, name="", unit=None, comments=None):
+    def __init__(self, parameterName=None, unit=None, comments=None):
         super().__init__(comments)
-        self.name=name
+        if parameterName is None:
+            self.name = OntologyAnnotation()
+        else:
+            self.parameterName = parameterName
+        self.parameterName = parameterName
         if unit is None:
             self.unit = OntologyAnnotation()
         else:

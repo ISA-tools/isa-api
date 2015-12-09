@@ -2,22 +2,19 @@ __author__ = 'agbeltran'
 
 import json
 import os
-from uuid import uuid4
-from os import listdir
-from os.path import isdir, join
-import warlock
-
+from os.path import join
 from isatools.io.isatab_parser import parse
 from jsonschema import RefResolver, Draft4Validator
 
 SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
 
-
 class ISATab2ISAjson_v1:
+
 
     def __init__(self):
         pass
+
 
     def convert(self, work_dir, json_dir, inv_identifier):
         """Convert an ISA-Tab dataset (version 1) to JSON provided the ISA model v1.0 JSON Schemas
@@ -27,6 +24,7 @@ class ISATab2ISAjson_v1:
         print("Converting ISAtab to ISAjson for ", work_dir)
 
         isa_tab = parse(work_dir)
+        #print(isa_tab)
 
         if isa_tab is None:
             print("No ISAtab dataset found")
@@ -63,12 +61,14 @@ class ISATab2ISAjson_v1:
                     outfile.close()
                 print("... conversion finished.")
 
+
     def createComment(self, name, value):
         comment_json = dict([
             ("name", name),
             ("value", value)
         ])
         return comment_json
+
 
     def createContacts(self, contacts, inv_or_study):
         people_json = []
@@ -102,6 +102,7 @@ class ISATab2ISAjson_v1:
             publications_json.append(publication_json)
         return publications_json
 
+
     def createProtocols(self, protocols):
         protocols_json = []
         for protocol in protocols:
@@ -111,11 +112,12 @@ class ISATab2ISAjson_v1:
                 ("description", protocol['Study Protocol Description']),
                 ("uri", protocol['Study Protocol URI']),
                 ("version", protocol['Study Protocol Version']),
-                ("parameters", self.createProtocolParameterList(protocol))
-                ]
-                )
+                ("parameters", self.createProtocolParameterList(protocol)),
+                ("components", self.createProtocolComponentList(protocol))
+                ])
             protocols_json.append(protocol_json)
         return protocols_json
+
 
     def createProtocolParameterList(self, protocol):
         json_list = []
@@ -136,6 +138,7 @@ class ISATab2ISAjson_v1:
         ])
         return onto_ann
 
+
     def createOntologyAnnotation(self, name, termSource, termAccesssion):
         onto_ann = dict([
             ("name", name),
@@ -143,6 +146,7 @@ class ISATab2ISAjson_v1:
             ("termAccession", termAccesssion)
         ])
         return onto_ann
+
 
     def createOntologyAnnotationsFromStringList(self, object, inv_or_study, type):
         name_array = object[inv_or_study+type].split(";")
@@ -158,6 +162,7 @@ class ISATab2ISAjson_v1:
              onto_annotations.append(onto_ann)
         return onto_annotations
 
+
     def createOntologyAnnotationListForInvOrStudy(self, array, inv_or_study, type):
         onto_annotations = []
         for object in array:
@@ -168,6 +173,7 @@ class ISATab2ISAjson_v1:
             ])
             onto_annotations.append(onto_ann)
         return onto_annotations
+
 
     def createOntologySourceReferences(self, ontology_refs):
         ontologies = []
@@ -180,6 +186,7 @@ class ISATab2ISAjson_v1:
             ])
             ontologies.append(ontology)
         return ontologies
+
 
     def createStudies(self, studies):
         study_array = []
@@ -196,16 +203,43 @@ class ISATab2ISAjson_v1:
                 ("studyDesignDescriptors",self.createOntologyAnnotationListForInvOrStudy(study.design_descriptors, "Study", " Design Type")),
                 ("publications", self.createPublications(study.publications, "Study")),
                 ("people", self.createContacts(study.contacts, "Study")),
-                #TODO
-                ("studyDesignDescriptors", []),
                 ("protocols", self.createProtocols(study.protocols)),
                 ("sources", list(source_dict.values())),
                 ("samples",list(sample_dict.values())),
                 ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
-                ("assays", self.createStudyAssaysList(study.assays))
+                ("assays", self.createStudyAssaysList(study.assays)),
+                ("factors", self.createStudyFactorsList(study.factors))
             ])
             study_array.append(studyJson)
         return study_array
+
+
+    def createProtocolComponentList(self, protocol):
+        json_list = []
+        components_name = protocol['Study Protocol Components Name'].split(";")
+        components_type_json = self.createOntologyAnnotationsFromStringList(protocol, "Study", " Protocol Components Type")
+        index = 0
+        for component_type_json in components_type_json:
+            component_name = components_name[index]
+            json_item = dict([
+                ("componentName", component_name),
+                ("componentType",  component_type_json)
+            ])
+            json_list.append(json_item)
+            index += 1
+        return json_list
+
+
+    def createStudyFactorsList(self, factors):
+        json_list = []
+        for factor in factors:
+             json_item = dict([
+                ("factorName", factor['Study Factor Name']),
+                ("factorType", self.createOntologyAnnotation(factor['Study Factor Type'], factor['Study Factor Type Term Source REF'],factor['Study Factor Type Term Accession Number']))
+            ])
+             json_list.append(json_item)
+        return json_list
+
 
     def createProcessSequence(self, process_nodes, source_dict, sample_dict, data_dict):
         json_list = []
@@ -316,11 +350,14 @@ class ISATab2ISAjson_v1:
             if nodes[node_index].ntype == "Sample Name":
                 json_item = dict([
                     ("name", node_index),
-                    ("factors", []),
-                    ("characteristics", self.createCharacteristicList(node_index, nodes[node_index])),
+                    ("factorValues", self.createFactorValueList(node_index, nodes[node_index])),
+                    ("characteristics", self.createCharacteristicList(node_index, nodes[node_index]))
+                    #TODO complete
+                    #("derivesFrom", nodes[node_index].metadata["Source Name"])
                 ])
                 json_dict.update({node_index: json_item})
         return json_dict
+
 
     def createSourcesDictionary(self, nodes):
         json_dict = dict([])
@@ -332,6 +369,7 @@ class ISATab2ISAjson_v1:
                 ])
                 json_dict.update({node_name: json_item})
         return json_dict
+
 
     def createCharacteristicList(self, node_name, node):
         json_list = []
@@ -346,8 +384,22 @@ class ISATab2ISAjson_v1:
         return json_list
 
 
+    def createFactorValueList(self, node_name, node):
+        json_list = []
+        for header in node.metadata:
+            if header.startswith("Factor Value"):
+                 factor_value = header.replace("]", "").split("[")[-1]
+                 factor_value_ontology_annotation = self.createOntologyAnnotation(factor_value, "", "")
+                 factor_value_json = dict([
+                     ("value", factor_value_ontology_annotation)
+                 ])
+                 json_list.append(factor_value_json)
+        return json_list
+
+
 
 #isatab2isajson = ISATab2ISAjson_v1()
 #isatab2isajson.convert("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1","../../tests/datasets/metabolights", False)
 #isatab2isajson.convert("../../tests/data/BII-I-1","../../tests/data", True)
 #isatab2isajson.convert("../../tests/data/BII-S-7","../../tests/data", True)
+#isatab2isajson.convert("../../tests/data/isatab-test1","../../tests/data", True)

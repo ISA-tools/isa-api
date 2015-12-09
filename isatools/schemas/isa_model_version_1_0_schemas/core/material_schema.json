@@ -10,6 +10,9 @@
             "items" :  {
                 "$ref": "material_attribute_schema.json#"
                 }
+        },
+        "derivesFrom": {
+          "$ref": "material_schema.json#"
         }
     },
     "additionalProperties": false
