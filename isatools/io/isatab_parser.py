@@ -226,24 +226,13 @@ class StudyAssayParser:
             hgroups = self._collapse_header(headers)
             htypes = self._characterize_header(headers, hgroups)
 
-            print("headers:", headers)
-            print("hgroups:", hgroups)
-            print("htypes:", htypes)
-
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
             node_indices = [i for i, x in enumerate(htypes) if x == "node" or x=="node_assay"]
 
-            print("processing_indices ->", processing_indices)
-            print("node_indices -> ", node_indices)
             for processing_index in processing_indices:
                 try:
                     input_index = find_lt(node_indices, processing_index)
                     output_index = find_gt(node_indices, processing_index)
-
-                    print("processing_index ", processing_index)
-                    print("input_index ", input_index)
-                    print("output_index ", output_index)
-                    # print " "
 
                 except ValueError:
                     # print "Invalid indices for process nodes"
@@ -253,38 +242,50 @@ class StudyAssayParser:
                 processing_header = headers[hgroups[processing_index][0]]
                 line_number = 0
                 max_number = 0
+
+                #reading line by line and identifying inputs outputs and create
+                process_number = 1
+                input_process_map = {}
+                output_process_map = {}
                 for line in reader:
                     if line_number >=  max_number:
                         input_name = line[hgroups[input_index][0]]
                         input_node_index = self._build_node_index(input_header,input_name)
-                        #input_node = study.nodes[input_node_index]
 
                         output_name = line[hgroups[output_index][0]]
                         output_node_index = self._build_node_index(output_header, output_name)
-                        #output_node = study.nodes[output_node_index]
 
                         #if both input_name and output_name are empty, ignore the row
                         if (not input_name and not output_name):
                             continue
+                        try:
+                            unique_process_name = input_process_map[input_node_index]
+                        except KeyError:
+                            try:
+                                unique_process_name = output_process_map[output_node_index]
+                            except KeyError:
+                                processing_name = line[hgroups[processing_index][0]]
+                                unique_process_name = processing_name+str(process_number)
 
-                        processing_name = line[hgroups[processing_index][0]]
-                        process_node = ProcessNodeRecord(processing_name, processing_header, study)
+                        try:
+                            process_node = process_nodes[unique_process_name]
+                        except KeyError:
+                            #create process node
+                            process_node = ProcessNodeRecord(unique_process_name, processing_header, study)
+                            process_number += 1
 
-                        print("input_name->",input_name)
-                        print("output_name->",output_name)
-                        print("input_node_index->",input_node_index)
-                        print("output_node_index->",output_node_index)
-
-
-                        process_node.inputs.append(input_node_index)
-                        process_node.outputs.append(output_node_index)
+                        if not (input_node_index in process_node.inputs):
+                            process_node.inputs.append(input_node_index)
+                        if not (output_node_index in process_node.outputs):
+                            process_node.outputs.append(output_node_index)
+                        input_process_map[input_node_index] = unique_process_name
+                        output_process_map[output_node_index] = unique_process_name
 
                         max_number = max(len(process_node.inputs), len(process_node.outputs))
                         line_number += 1
-                        process_nodes[processing_name] = process_node
+                        process_nodes[unique_process_name] = process_node
                     else:
                         line_number += 1
-                print("process_nodes",process_nodes)
                 study.process_nodes = process_nodes
 
 
@@ -346,11 +347,11 @@ class StudyAssayParser:
         return node
 
     def _line_keyvals(self, line, header, hgroups, htypes, out):
+        out = self._line_by_type(line, header, hgroups, htypes, out, "node")
         out = self._line_by_type(line, header, hgroups, htypes, out, "attribute",
                                  self._collapse_attributes)
         out = self._line_by_type(line, header, hgroups, htypes, out, "processing",
                                  self._collapse_attributes)
-        out = self._line_by_type(line, header, hgroups, htypes, out, "node")
         return out
 
     def _line_by_type(self, line, header, hgroups, htypes, out, want_type,
