@@ -7,4 +7,5 @@ try:
 except ImportError as e:
     raise RuntimeError("gut-microflora data requires json to be installed")
 
+#  returns json representation of gutmicroflora.json
 microflora = json.load(join(dirname(__file__), 'gutmicroflora.json'))

@@ -7,4 +7,5 @@ try:
 except ImportError as e:
     raise RuntimeError("eukaryotecell data requires json to be installed")
 
+#  returns json representation of eukaryotecell.json
 eukaryotecell = json.load(join(dirname(__file__), 'eukaryotecell.json'))
