@@ -5,7 +5,7 @@ import glob
 import filecmp
 
 from isatools.io.isatab_parser import parse
-from isatools.convert.isatab_v1_2_isajson_v1 import ISATab2ISAjson_v1
+from isatools.convert.isatab2isajson import ISATab2ISAjson_v1
 from isatools.convert.json2isatab import JsonToIsatabWriter
 
 

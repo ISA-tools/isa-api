@@ -11,7 +11,6 @@ INVESTIGATION_SCHEMA = "investigation_schema.json"
 
 class ISATab2ISAjson_v1:
 
-
     def __init__(self):
         pass
 
