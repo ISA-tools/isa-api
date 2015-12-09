@@ -2,9 +2,7 @@ import unittest
 import json
 from jsonschema import RefResolver, Draft4Validator
 import os
-from datetime import date
-from isatools.model.v1 import Investigation, OntologySourceReference, Publication, OntologyAnnotation, Study, \
-    StudyFactor, Assay, Contact, Protocol, Process, Source, Material, MaterialAttribute, Data, Sample, Comment
+from isatools.model.v1 import *
 
 
 class ISAObjectTests(unittest.TestCase):
@@ -202,7 +200,7 @@ class ISAObjectTests(unittest.TestCase):
             file_name=""
         )
         study.publications.append(Publication())
-        study.contacts.append(Contact())
+        study.contacts.append(Person())
         study.design_descriptors.append(OntologyAnnotation())
         study.protocols.append(Protocol())
         study.sources.append(Source())
@@ -219,7 +217,7 @@ class ISAObjectTests(unittest.TestCase):
         assert(isinstance(study.publications, list))
         assert(isinstance(study.publications[0], Publication))
         assert(isinstance(study.contacts, list))
-        assert(isinstance(study.contacts[0], Contact))
+        assert(isinstance(study.contacts[0], Person))
         assert(isinstance(study.design_descriptors, list))
         assert(isinstance(study.design_descriptors[0], OntologyAnnotation))
         assert(isinstance(study.protocols, list))
