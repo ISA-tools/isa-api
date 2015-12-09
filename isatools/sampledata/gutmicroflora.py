@@ -1,5 +1,7 @@
 from os.path import dirname, join
 
+# This is BII-S-7 "Gut microflora Metagenomes in 2 different population fed a different diet"
+
 try:
     import json
 except ImportError as e:

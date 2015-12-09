@@ -1,5 +1,7 @@
 from os.path import dirname, join
 
+# This is BII-I-1 "Growth control of the eukaryote cell: a systems biology study in yeast"
+
 try:
     import json
 except ImportError as e:

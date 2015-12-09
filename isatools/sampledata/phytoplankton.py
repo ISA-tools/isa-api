@@ -1,5 +1,8 @@
 from os.path import dirname, join
 
+# This is BII-S-3 "Metagenomes and Metatranscriptomes of phytoplankton blooms from an ocean acidification mesocosm
+# experiment"
+
 try:
     import json
 except ImportError as e:
