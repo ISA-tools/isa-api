@@ -73,6 +73,7 @@ def load(isatab_dir):
                 fax=contact[inv_or_study+" Person Fax"],
                 address=contact[inv_or_study+" Person Address"],
                 affiliation=contact[inv_or_study+" Person Affiliation"],
+                # FIXME Parsing roles?
                 roles=[]
             )
             people_json.append(person_json)
@@ -141,7 +142,8 @@ def load(isatab_dir):
 
     def _createProtocolParameterList(protocol):
         parameters_list = []
-        parameters_annotations = _createOntologyAnnotationsFromStringList(protocol, "Study", " Protocol Parameters Name")
+        parameters_annotations = _createOntologyAnnotationsFromStringList(protocol, "Study",
+                                                                          " Protocol Parameters Name")
         for parameter_annotation in parameters_annotations:
             parameter = ProtocolParameter(
                 parameterName=parameter_annotation
@@ -151,6 +153,7 @@ def load(isatab_dir):
         return parameters_list
 
     def _createOntologyAnnotationsFromStringList(object_, inv_or_study, type_):
+        #FIXME If empty string, it returns 1?
         name_array = object_[inv_or_study+type_].split(";")
         term_source_array = object_[inv_or_study+type_+" Term Source REF"].split(";")
         term_accession_array = object_[inv_or_study+type_+" Term Accession Number"].split(";")
@@ -489,48 +492,6 @@ def dump(isa_obj, fp):
             study_publications_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                                  index_label='Study PubMed ID')
 
-            # Write STUDY CONTACTS section
-            study_contacts_df = pandas.DataFrame(columns=('Study Person Last Name',
-                                                          'Study Person First Name',
-                                                          'Study Person Mid Initials',
-                                                          'Study Person Email',
-                                                          'Study Person Phone',
-                                                          'Study Person Fax',
-                                                          'Study Person Address',
-                                                          'Study Person Affiliation',
-                                                          'Study Person Roles',
-                                                          'Study Person Roles Term Accession Number',
-                                                          'Study Person Roles Term Source REF'
-                                                          )
-                                                 )
-            j = 0
-            for study_contact in study.contacts:
-                roles = ''
-                roles_accession_numbers = ''
-                roles_source_refs = ''
-                for role in study_contact.roles:
-                    roles += role.name + ';'
-                    roles_accession_numbers += role.term_accession + ';'
-                    roles_source_refs += role.term_source.name + ';'
-                study_contacts_df.loc[j] = [
-                    study_contact.last_name,
-                    study_contact.first_name,
-                    study_contact.mid_initials,
-                    study_contact.email,
-                    study_contact.phone,
-                    study_contact.fax,
-                    study_contact.address,
-                    study_contact.affiliation,
-                    roles,
-                    roles_accession_numbers,
-                    roles_source_refs
-                ]
-                j += 1
-            study_contacts_df = study_contacts_df.set_index('Study Person Last Name').T
-            fp.write('STUDY CONTACTS\n')
-            study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                     index_label='Study PubMed ID')
-
             # Write STUDY FACTORS section
             study_factors_df = pandas.DataFrame(columns=('Study Factor Name',
                                                          'Study Factor Type',
@@ -592,7 +553,7 @@ def dump(isa_obj, fp):
                                                            'Study Protocol Parameters Name',
                                                            'Study Protocol Parameters Name Term Accession Number',
                                                            'Study Protocol Parameters Name Term Source REF',
-                                                           'Study Protocol Components Name'
+                                                           'Study Protocol Components Name',
                                                            'Study Protocol Components Type',
                                                            'Study Protocol Components Type Term Accession Number',
                                                            'Study Protocol Components Type Term Source REF',
@@ -607,15 +568,15 @@ def dump(isa_obj, fp):
                     parameters_names += parameter.parameterName.name + ';'
                     parameters_accession_numbers += parameter.parameterName.term_accession + ';'
                     parameters_source_refs += parameter.parameterName.term_source + ';'
-                component_names = ''
-                component_types = ''
-                component_types_accession_numbers = ''
-                component_types_source_refs = ''
-                for component in protocol.components:
-                    component_names += component.name + ';'
-                    component_types += component.componentType + ';'
-                    component_types_accession_numbers += component.componentType.term_accession + ';'
-                    component_types_source_refs += component.componentType.term_source.name + ';'
+                # component_names = ''
+                # component_types = ''
+                # component_types_accession_numbers = ''
+                # component_types_source_refs = ''
+                # for component in protocol.components:
+                #     component_names += component.name + ';'
+                #     component_types += component.componentType + ';'
+                #     component_types_accession_numbers += component.componentType.term_accession + ';'
+                #     component_types_source_refs += component.componentType.term_source.name + ';'
                 study_protocols_df.loc[j] = [
                     protocol.name,
                     protocol.protocol_type.name,
@@ -627,16 +588,58 @@ def dump(isa_obj, fp):
                     parameters_names,
                     parameters_accession_numbers,
                     parameters_source_refs,
-                    component_names,
-                    component_types,
-                    component_types_accession_numbers,
-                    component_types_source_refs
+                    "",  # component_names,
+                    "",  # component_types,
+                    "",  # component_types_accession_numbers,
+                    "",  # component_types_source_refs
                 ]
                 j += 1
-            study_protocols_df = study_assays_df.set_index('Study Protocol Name').T
+            study_protocols_df = study_protocols_df.set_index('Study Protocol Name').T
             fp.write('STUDY PROTOCOLS\n')
             study_protocols_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                    index_label='Study Protocol Name')
+
+            # Write STUDY CONTACTS section
+            study_contacts_df = pandas.DataFrame(columns=('Study Person Last Name',
+                                                          'Study Person First Name',
+                                                          'Study Person Mid Initials',
+                                                          'Study Person Email',
+                                                          'Study Person Phone',
+                                                          'Study Person Fax',
+                                                          'Study Person Address',
+                                                          'Study Person Affiliation',
+                                                          'Study Person Roles',
+                                                          'Study Person Roles Term Accession Number',
+                                                          'Study Person Roles Term Source REF'
+                                                          )
+                                                 )
+            j = 0
+            for study_contact in study.contacts:
+                roles = ''
+                roles_accession_numbers = ''
+                roles_source_refs = ''
+                for role in study_contact.roles:
+                    roles += role.name + ';'
+                    roles_accession_numbers += role.term_accession + ';'
+                    roles_source_refs += role.term_source.name + ';'
+                study_contacts_df.loc[j] = [
+                    study_contact.last_name,
+                    study_contact.first_name,
+                    study_contact.mid_initials,
+                    study_contact.email,
+                    study_contact.phone,
+                    study_contact.fax,
+                    study_contact.address,
+                    study_contact.affiliation,
+                    roles,
+                    roles_accession_numbers,
+                    roles_source_refs
+                ]
+                j += 1
+            study_contacts_df = study_contacts_df.set_index('Study Person Last Name').T
+            fp.write('STUDY CONTACTS\n')
+            study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                                     index_label='Study Person Last Name')
 
     else:
         raise NotImplementedError("Dumping this ISA object to ISAtab is not yet supported")
