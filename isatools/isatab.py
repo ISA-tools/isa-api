@@ -650,44 +650,105 @@ def dump(isa_obj, fp):
 
 def read_investigation_file(fp):
 
+    def _peek(f):
+        position = f.tell()
+        l = f.readline()
+        f.seek(position)
+        return l
+
+    def _read_tab_section(fp, sec_key, next_sec_key=None):
+
+        line = fp.readline()
+        if not line.rstrip() == sec_key:
+            raise IOError("Expected: " + sec_key + " section, but got: " + line)
+        memf = io.StringIO()
+        while not _peek(f=fp).rstrip() == next_sec_key:
+            line = fp.readline()
+            if not line:
+                break
+            memf.write(line)
+        memf.seek(0)
+        return memf
+
+    def _build_section_df(fp):
+        df = pd.read_csv(fp, sep='\t').T  # Load and transpose ISA file section
+        df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
+        df.reset_index(inplace=True)  # Reset index so it is accessible as column
+        df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
+        df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
+        return df
+
     # Read in investigation file into DataFrames first
-
-    # ONTOLOGY SOURCE REFERENCE block
-    line = fp.readline()
-    if not line == 'ONTOLOGY SOURCE REFERENCE\n':
-        raise IOError("Expected ONTOLOGY SOURCE REFERENCE, got " + line)
-    memf = io.StringIO()  # Create memory file and read in rows
-    memf.write(fp.readline())  # Term Source Name
-    memf.write(fp.readline())  # Term Source File
-    memf.write(fp.readline())  # Term Source Name
-    memf.write(fp.readline())  # Term Source Version
-    memf.seek(0)  # Reset index in memory file
-    ontology_sources_df = pd.read_csv(memf, sep='\t').T  # Load and transpose ONTOLOGY SOURCE REFERENCE section
-    ontology_sources_df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
-    ontology_sources_df.reset_index(inplace=True)  # Reset index so it is accessible as column
-    ontology_sources_df.columns = ontology_sources_df.iloc[0]  # If all was OK, promote this row to the column headers
-    ontology_sources_df = ontology_sources_df.reindex(ontology_sources_df.index.drop(0))  # Reindex the DataFrame
-    assert(['Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'] in
-           list(ontology_sources_df.columns.values))  # Check labels correct
-
-    # INVESTIGATION block
-    line = fp.readline()
-    if not line == 'INVESTIGATION\n':
-        raise IOError("Expected INVESTIGATION, got " + line)
-    memf = io.StringIO()  # Reset memory file
-    memf.write(fp.readline())  # Investigation Identifier
-    memf.write(fp.readline())  # Investigation Title
-    memf.write(fp.readline())  # Investigation Description
-    memf.write(fp.readline())  # Investigation Submission Date
-    memf.write(fp.readline())  # Investigation Public Release Date
-    memf.seek(0)  # Reset index in mem file
-    investigation_df = pd.read_csv(memf, sep='\t').T  # Load and transpose
-    investigation_df.reset_index(inplace=True)
+    ontology_sources_df = _build_section_df(_read_tab_section(
+        fp=fp,
+        sec_key='ONTOLOGY SOURCE REFERENCE',
+        next_sec_key='INVESTIGATION'
+    ))
+    # assert({'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
+    #        .issubset(set(ontology_sources_df.columns.values)))  # Check required labels are present
+    investigation_df = _build_section_df(_read_tab_section(
+        fp=fp,
+        sec_key='INVESTIGATION',
+        next_sec_key='INVESTIGATION PUBLICATIONS'
+    ))
+    investigation_publications_df = _build_section_df(_read_tab_section(
+        fp=fp,
+        sec_key='INVESTIGATION PUBLICATIONS',
+        next_sec_key='INVESTIGATION CONTACTS'
+    ))
+    investigation_contacts_df = _build_section_df(_read_tab_section(
+        fp=fp,
+        sec_key='INVESTIGATION CONTACTS',
+        next_sec_key='STUDY'
+    ))
+    study_df_list = list()
+    study_design_descriptors_df_list = list()
+    study_publications_df_list = list()
+    study_factors_df_list = list()
+    study_assays_df_list = list()
+    study_protocols_df_list = list()
+    study_contacts_df_list = list()
+    while _peek(fp):  # Iterate hopefully through STUDY blocks until end of file
+        study_df_list.append(_build_section_df(_read_tab_section(
+            fp=fp,
+            sec_key='STUDY',
+            next_sec_key='STUDY DESIGN DESCRIPTORS'
+        )))
+        study_design_descriptors_df_list.append(_build_section_df(_read_tab_section(
+            fp=fp,
+            sec_key='STUDY DESIGN DESCRIPTORS',
+            next_sec_key='STUDY PUBLICATIONS'
+        )))
+        study_publications_df_list.append(_build_section_df(_read_tab_section(
+            fp=fp,
+            sec_key='STUDY PUBLICATIONS',
+            next_sec_key='STUDY FACTORS'
+        )))
+        study_factors_df_list.append(_build_section_df(_read_tab_section(
+            fp=fp,
+            sec_key='STUDY FACTORS',
+            next_sec_key='STUDY ASSAYS'
+        )))
+        study_assays_df_list.append(_build_section_df(_read_tab_section(
+            fp=fp,
+            sec_key='STUDY ASSAYS',
+            next_sec_key='STUDY PROTOCOLS'
+        )))
+        study_protocols_df_list.append(_build_section_df(_read_tab_section(
+            fp=fp,
+            sec_key='STUDY PROTOCOLS',
+            next_sec_key='STUDY CONTACTS'
+        )))
+        study_contacts_df_list.append(_build_section_df(_read_tab_section(
+            fp=fp,
+            sec_key='STUDY CONTACTS',
+            next_sec_key='STUDY'
+        )))
 
     # Start building the object model
     ontology_source_references = list()
-    for x in ontology_sources_df.iterrows():  # Iterate over the value rows to build our OntologySourceReference objs
-        y = x[1]  # Get data out
+    for x in ontology_sources_df.iterrows():  # Iterate over the rows to build our OntologySourceReference objs
+        y = x[1]  # Get data out of df row
         ontology_source = OntologySourceReference(
             name=y['Term Source Name'],
             file=y['Term Source File'],
@@ -697,5 +758,3 @@ def read_investigation_file(fp):
         print(ontology_source.to_json())
         ontology_source_references.append(ontology_source)
 
-
-    return ontology_sources_df, investigation_df
