@@ -2,6 +2,9 @@ from .model.v1 import *
 from isatools.io import isatab_parser
 import os
 import sys
+import io
+import pandas as pd
+import numpy as np
 
 
 def validate(isatab_dir, config_dir):
@@ -312,13 +315,12 @@ def load(isatab_dir):
 
 
 def dump(isa_obj, fp):
-    import pandas
     if isinstance(isa_obj, Investigation):
         # Process Investigation object
         investigation = isa_obj
 
         # Write ONTOLOGY SOURCE REFERENCE section
-        ontology_source_references_df = pandas.DataFrame(columns=('Term Source Name',
+        ontology_source_references_df = pd.DataFrame(columns=('Term Source Name',
                                                                   'Term Source File',
                                                                   'Term Source Version',
                                                                   'Term Source Description'
@@ -339,7 +341,7 @@ def dump(isa_obj, fp):
                                              index_label='Term Source Name')  # Need to set index_label as top left cell
 
         # Write INVESTIGATION section
-        investigation_df = pandas.DataFrame(columns=('Investigation Identifier',
+        investigation_df = pd.DataFrame(columns=('Investigation Identifier',
                                                      'Investigation Title',
                                                      'Investigation Description',
                                                      'Investigation Submission Date',
@@ -359,7 +361,7 @@ def dump(isa_obj, fp):
                                 index_label='Investigation Identifier')  # Need to set index_label as top left cell
 
         # Write INVESTIGATION PUBLICATIONS section
-        investigation_publications_df = pandas.DataFrame(columns=('Investigation PubMed ID',
+        investigation_publications_df = pd.DataFrame(columns=('Investigation PubMed ID',
                                                                   'Investigation Publication DOI',
                                                                   'Investigation Publication Author List',
                                                                   'Investigation Publication Status',
@@ -385,7 +387,7 @@ def dump(isa_obj, fp):
                                              index_label='Investigation PubMed ID')
 
         # Write INVESTIGATION CONTACTS section
-        investigation_contacts_df = pandas.DataFrame(columns=('Investigation Person Last Name',
+        investigation_contacts_df = pd.DataFrame(columns=('Investigation Person Last Name',
                                                               'Investigation Person First Name',
                                                               'Investigation Person Mid Initials',
                                                               'Investigation Person Email',
@@ -429,7 +431,7 @@ def dump(isa_obj, fp):
         # Write STUDY sections
         i = 0
         for study in investigation.studies:
-            study_df = pandas.DataFrame(columns=('Study Identifier',
+            study_df = pd.DataFrame(columns=('Study Identifier',
                                                  'Study Title',
                                                  'Study Description',
                                                  'Study Submission Date',
@@ -450,7 +452,7 @@ def dump(isa_obj, fp):
             study_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8', index_label='Study Identifier')
 
             # Write STUDY DESIGN DESCRIPTORS section
-            study_design_descriptors_df = pandas.DataFrame(columns=('Study Design Type',
+            study_design_descriptors_df = pd.DataFrame(columns=('Study Design Type',
                                                                     'Study Design Type Term Accession Number',
                                                                     'Study Design Type Term Source REF'
                                                                     )
@@ -468,7 +470,7 @@ def dump(isa_obj, fp):
                                                    index_label='Study Design Type')
 
             # Write STUDY PUBLICATIONS section
-            study_publications_df = pandas.DataFrame(columns=('Study PubMed ID',
+            study_publications_df = pd.DataFrame(columns=('Study PubMed ID',
                                                               'Study Publication DOI',
                                                               'Study Publication Author List',
                                                               'Study Publication Status',
@@ -493,7 +495,7 @@ def dump(isa_obj, fp):
                                                  index_label='Study PubMed ID')
 
             # Write STUDY FACTORS section
-            study_factors_df = pandas.DataFrame(columns=('Study Factor Name',
+            study_factors_df = pd.DataFrame(columns=('Study Factor Name',
                                                          'Study Factor Type',
                                                          'Study Factor Type Term Accession Number',
                                                          'Study Factor Type Term Source REF'
@@ -514,7 +516,7 @@ def dump(isa_obj, fp):
                                     index_label='Study Factor Name')
 
             # Write STUDY ASSAYS section
-            study_assays_df = pandas.DataFrame(columns=('Study Assay Measurement Type',
+            study_assays_df = pd.DataFrame(columns=('Study Assay Measurement Type',
                                                         'Study Assay Measurement Type Term Accession Number',
                                                         'Study Assay Measurement Type Term Source REF',
                                                         'Study Assay Technology Type',
@@ -543,7 +545,7 @@ def dump(isa_obj, fp):
                                    index_label='Study Assay Measurement Type')
 
             # Write STUDY PROTOCOLS section
-            study_protocols_df = pandas.DataFrame(columns=('Study Protocol Name',
+            study_protocols_df = pd.DataFrame(columns=('Study Protocol Name',
                                                            'Study Protocol Type',
                                                            'Study Protocol Type  Accession Number',
                                                            'Study Protocol Type Source REF',
@@ -600,7 +602,7 @@ def dump(isa_obj, fp):
                                    index_label='Study Protocol Name')
 
             # Write STUDY CONTACTS section
-            study_contacts_df = pandas.DataFrame(columns=('Study Person Last Name',
+            study_contacts_df = pd.DataFrame(columns=('Study Person Last Name',
                                                           'Study Person First Name',
                                                           'Study Person Mid Initials',
                                                           'Study Person Email',
@@ -646,11 +648,54 @@ def dump(isa_obj, fp):
     return fp
 
 
-def loads(s):
-    isa_obj = Investigation()
-    return isa_obj
+def read_investigation_file(fp):
+
+    # Read in investigation file into DataFrames first
+
+    # ONTOLOGY SOURCE REFERENCE block
+    line = fp.readline()
+    if not line == 'ONTOLOGY SOURCE REFERENCE\n':
+        raise IOError("Expected ONTOLOGY SOURCE REFERENCE, got " + line)
+    memf = io.StringIO()  # Create memory file and read in rows
+    memf.write(fp.readline())  # Term Source Name
+    memf.write(fp.readline())  # Term Source File
+    memf.write(fp.readline())  # Term Source Name
+    memf.write(fp.readline())  # Term Source Version
+    memf.seek(0)  # Reset index in memory file
+    ontology_sources_df = pd.read_csv(memf, sep='\t').T  # Load and transpose ONTOLOGY SOURCE REFERENCE section
+    ontology_sources_df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
+    ontology_sources_df.reset_index(inplace=True)  # Reset index so it is accessible as column
+    ontology_sources_df.columns = ontology_sources_df.iloc[0]  # If all was OK, promote this row to the column headers
+    ontology_sources_df = ontology_sources_df.reindex(ontology_sources_df.index.drop(0))  # Reindex the DataFrame
+    assert(['Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'] in
+           list(ontology_sources_df.columns.values))  # Check labels correct
+
+    # INVESTIGATION block
+    line = fp.readline()
+    if not line == 'INVESTIGATION\n':
+        raise IOError("Expected INVESTIGATION, got " + line)
+    memf = io.StringIO()  # Reset memory file
+    memf.write(fp.readline())  # Investigation Identifier
+    memf.write(fp.readline())  # Investigation Title
+    memf.write(fp.readline())  # Investigation Description
+    memf.write(fp.readline())  # Investigation Submission Date
+    memf.write(fp.readline())  # Investigation Public Release Date
+    memf.seek(0)  # Reset index in mem file
+    investigation_df = pd.read_csv(memf, sep='\t').T  # Load and transpose
+    investigation_df.reset_index(inplace=True)
+
+    # Start building the object model
+    ontology_source_references = list()
+    for x in ontology_sources_df.iterrows():  # Iterate over the value rows to build our OntologySourceReference objs
+        y = x[1]  # Get data out
+        ontology_source = OntologySourceReference(
+            name=y['Term Source Name'],
+            file=y['Term Source File'],
+            version=y['Term Source Version'],
+            description=y['Term Source Description']
+        )
+        print(ontology_source.to_json())
+        ontology_source_references.append(ontology_source)
 
 
-def dumps(isa_obj):
-    s = isa_obj.to_json()
-    return s
+    return ontology_sources_df, investigation_df
