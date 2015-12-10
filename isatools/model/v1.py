@@ -548,10 +548,13 @@ class Source(IsaObject):
         name:
         characteristics:
     """
-    def __init__(self, name="", comments=None):
+    def __init__(self, name="", characteristics=None, comments=None):
         super().__init__(comments)
         self.name = name
-        self.characteristics = []
+        if characteristics is None:
+            self.characteristics = []
+        else:
+            self.characteristics = characteristics
 
     def to_json(self):
         characteristics_json = []
