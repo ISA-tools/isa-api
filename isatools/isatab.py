@@ -64,7 +64,7 @@ def load(isatab_dir):
     def _createContacts(contacts, inv_or_study):
         people_json = []
         for contact in contacts:
-            person_json = Contact(
+            person_json = Person(
                 last_name=contact[inv_or_study+" Person Last Name"],
                 first_name=contact[inv_or_study+" Person First Name"],
                 mid_initials=contact[inv_or_study+" Person Mid Initials"],
@@ -503,9 +503,9 @@ def dump(isa_obj, fp):
             for factor in study.factors:
                 study_factors_df.loc[j] = [
                     factor.name,
-                    factor.factorType.name,
-                    factor.factorType.term_accession,
-                    factor.factorType.term_source
+                    factor.factor_type.name,
+                    factor.factor_type.term_accession,
+                    factor.factor_type.term_source
                 ]
                 j += 1
             study_factors_df = study_factors_df.set_index('Study Factor Name').T
@@ -568,15 +568,15 @@ def dump(isa_obj, fp):
                     parameters_names += parameter.parameterName.name + ';'
                     parameters_accession_numbers += parameter.parameterName.term_accession + ';'
                     parameters_source_refs += parameter.parameterName.term_source + ';'
-                # component_names = ''
-                # component_types = ''
-                # component_types_accession_numbers = ''
-                # component_types_source_refs = ''
-                # for component in protocol.components:
-                #     component_names += component.name + ';'
-                #     component_types += component.componentType + ';'
-                #     component_types_accession_numbers += component.componentType.term_accession + ';'
-                #     component_types_source_refs += component.componentType.term_source.name + ';'
+                component_names = ''
+                component_types = ''
+                component_types_accession_numbers = ''
+                component_types_source_refs = ''
+                for component in protocol.components:
+                    component_names += component.name + ';'
+                    component_types += component.componentType + ';'
+                    component_types_accession_numbers += component.componentType.term_accession + ';'
+                    component_types_source_refs += component.componentType.term_source.name + ';'
                 study_protocols_df.loc[j] = [
                     protocol.name,
                     protocol.protocol_type.name,
@@ -588,10 +588,10 @@ def dump(isa_obj, fp):
                     parameters_names,
                     parameters_accession_numbers,
                     parameters_source_refs,
-                    '',  # component_names,
-                    '',  # component_types,
-                    '',  # component_types_accession_numbers,
-                    '',  # component_types_source_refs
+                    component_names,
+                    component_types,
+                    component_types_accession_numbers,
+                    component_types_source_refs
                 ]
                 j += 1
             study_protocols_df = study_protocols_df.set_index('Study Protocol Name').T

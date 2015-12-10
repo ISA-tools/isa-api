@@ -210,7 +210,7 @@ class Publication(IsaObject):
         }
 
 
-class Contact(IsaObject):
+class Person(IsaObject):
     """A person/contact that can be attributed to an Investigation or Study.
 
     Attributes:
@@ -371,32 +371,6 @@ class Study(IsaObject):
         }
 
 
-class StudyDesignDescriptor(IsaObject):
-    """A Study Design Descriptor provides a term allowing the classification of the study based on the overall
-    experimental design. The term can be free text (Attribute: name) or from, for example, a controlled vocabulary or
-    an ontology.
-
-    Attributes:
-        name: Free text name for the term
-        ontology_annotation: A representation of an ontology annotation
-    """
-
-    def __init__(self, name="", ontology_annotation=None, comments=None):
-        super().__init__(comments)
-        self.name = name
-        if ontology_annotation is None:
-            self.ontology_annotation = OntologyAnnotation()
-        else:
-            self.ontology_annotation = ontology_annotation
-
-    def to_json(self):
-        return {
-            "name": self.name,
-            "ontologyAnnotation": self.ontology_annotation.to_json()
-            # "comments": self.get_comments_json()
-        }
-
-
 class StudyFactor(IsaObject):
     """A Study Factor corresponds to an independent variable manipulated by the experimentalist with the intention to
     affect biological systems in a way that can be measured by an assay.
@@ -405,18 +379,18 @@ class StudyFactor(IsaObject):
         ontology_annotation: A representation of an ontology source reference
     """
 
-    def __init__(self, name="", factorType=None, comments=None):
+    def __init__(self, name="", factor_type=None, comments=None):
         super().__init__(comments)
         self.name = name
-        if factorType is None:
-            self.factorType = OntologyAnnotation()
+        if factor_type is None:
+            self.factor_type = OntologyAnnotation()
         else:
-            self.factorType = factorType
+            self.factor_type = factor_type
 
     def to_json(self):
         return {
             "name": self.name,
-            "factorType": self.ontology_annotation.to_json(),
+            "factorType": self.factor_type.to_json(),
             # "comments": self.get_comments_json()
         }
 
