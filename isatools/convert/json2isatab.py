@@ -17,5 +17,5 @@ def convert(json_fp, tab_fp):
         json2isatab.convert(json_file, tab_file)
 
     """
-    isa_obj = isajson.load(json_fp)
-    isatab.dump(isa_obj=isa_obj, tab_fp)
+    isa_obj = isajson.load(fp=json_fp)
+    isatab.dump(isa_obj=isa_obj, fp=tab_fp)
