@@ -96,15 +96,13 @@ def load(isatab_dir):
         return json_dict
 
     def _createSourcesDictionary(nodes):
-        json_dict = dict([])
         for node_name in nodes:
             if nodes[node_name].ntype == "Source Name":
-                json_item = dict([
-                    ("name", node_name),
-                    ("characteristics", _createCharacteristicList(node_name, nodes[node_name])),
-                ])
-                json_dict.update({node_name: json_item})
-        return json_dict
+                source = Source(
+                    name=node_name,
+                    characteristics=_createCharacteristicList(node_name, nodes[node_name]),
+                )
+        return source
 
     def _createCharacteristicList(node_name, node):
         json_list = []
@@ -272,7 +270,7 @@ def load(isatab_dir):
             source_dict = _createSourcesDictionary(study.nodes)
             sample_dict = _createSampleDictionary(study.nodes)
             data_dict = _createDataFiles(study.nodes)
-            studyJson = Study(
+            study_obj = Study(
                 identifier=study.metadata['Study Identifier'],
                 title=study.metadata['Study Title'],
                 description=study.metadata['Study Description'],
@@ -290,7 +288,7 @@ def load(isatab_dir):
                 process_sequence=_createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict),
                 assays=_createStudyAssaysList(study.assays),
             )
-            study_array.append(studyJson)
+            study_array.append(study_obj)
         return study_array
 
     investigation = None
@@ -314,18 +312,21 @@ def load(isatab_dir):
     return investigation
 
 
-def dump(isa_obj, fp):
+def dump(isa_obj, path):
+    fp = None
+    if os.path.exists(path):
+        fp = open(os.path.join(path, 'i_investigation.txt'), 'w')
     if isinstance(isa_obj, Investigation):
         # Process Investigation object
         investigation = isa_obj
 
         # Write ONTOLOGY SOURCE REFERENCE section
         ontology_source_references_df = pd.DataFrame(columns=('Term Source Name',
-                                                                  'Term Source File',
-                                                                  'Term Source Version',
-                                                                  'Term Source Description'
-                                                                  )
-                                                         )
+                                                              'Term Source File',
+                                                              'Term Source Version',
+                                                              'Term Source Description'
+                                                              )
+                                                     )
         i = 0
         for ontology_source_reference in investigation.ontology_source_references:
             ontology_source_references_df.loc[i] = [
@@ -342,12 +343,12 @@ def dump(isa_obj, fp):
 
         # Write INVESTIGATION section
         investigation_df = pd.DataFrame(columns=('Investigation Identifier',
-                                                     'Investigation Title',
-                                                     'Investigation Description',
-                                                     'Investigation Submission Date',
-                                                     'Investigation Public Release Date'
-                                                     )
-                                            )
+                                                 'Investigation Title',
+                                                 'Investigation Description',
+                                                 'Investigation Submission Date',
+                                                 'Investigation Public Release Date'
+                                                 )
+                                        )
         investigation_df.loc[0] = [
             investigation.identifier,
             investigation.title,
@@ -362,14 +363,14 @@ def dump(isa_obj, fp):
 
         # Write INVESTIGATION PUBLICATIONS section
         investigation_publications_df = pd.DataFrame(columns=('Investigation PubMed ID',
-                                                                  'Investigation Publication DOI',
-                                                                  'Investigation Publication Author List',
-                                                                  'Investigation Publication Status',
-                                                                  'Investigation Publication Status Term Accession '
-                                                                  'Number',
-                                                                  'Investigation Publication Status Term Source REF'
-                                                                  )
-                                                         )
+                                                              'Investigation Publication DOI',
+                                                              'Investigation Publication Author List',
+                                                              'Investigation Publication Status',
+                                                              'Investigation Publication Status Term Accession '
+                                                              'Number',
+                                                              'Investigation Publication Status Term Source REF'
+                                                              )
+                                                     )
         i = 0
         for investigation_publication in investigation.publications:
             investigation_publications_df.loc[i] = [
@@ -388,18 +389,18 @@ def dump(isa_obj, fp):
 
         # Write INVESTIGATION CONTACTS section
         investigation_contacts_df = pd.DataFrame(columns=('Investigation Person Last Name',
-                                                              'Investigation Person First Name',
-                                                              'Investigation Person Mid Initials',
-                                                              'Investigation Person Email',
-                                                              'Investigation Person Phone',
-                                                              'Investigation Person Fax',
-                                                              'Investigation Person Address',
-                                                              'Investigation Person Affiliation',
-                                                              'Investigation Person Roles',
-                                                              'Investigation Person Roles Term Accession Number',
-                                                              'Investigation Person Roles Term Source REF'
-                                                              )
-                                                     )
+                                                          'Investigation Person First Name',
+                                                          'Investigation Person Mid Initials',
+                                                          'Investigation Person Email',
+                                                          'Investigation Person Phone',
+                                                          'Investigation Person Fax',
+                                                          'Investigation Person Address',
+                                                          'Investigation Person Affiliation',
+                                                          'Investigation Person Roles',
+                                                          'Investigation Person Roles Term Accession Number',
+                                                          'Investigation Person Roles Term Source REF'
+                                                          )
+                                                 )
         i = 0
         for investigation_contact in investigation.contacts:
             roles = ''
@@ -432,13 +433,13 @@ def dump(isa_obj, fp):
         i = 0
         for study in investigation.studies:
             study_df = pd.DataFrame(columns=('Study Identifier',
-                                                 'Study Title',
-                                                 'Study Description',
-                                                 'Study Submission Date',
-                                                 'Study Public Release Date',
-                                                 'Study File Name'
-                                                 )
-                                       )
+                                             'Study Title',
+                                             'Study Description',
+                                             'Study Submission Date',
+                                             'Study Public Release Date',
+                                             'Study File Name'
+                                             )
+                                    )
             study_df.loc[i] = [
                 study.identifier,
                 study.title,
@@ -453,10 +454,10 @@ def dump(isa_obj, fp):
 
             # Write STUDY DESIGN DESCRIPTORS section
             study_design_descriptors_df = pd.DataFrame(columns=('Study Design Type',
-                                                                    'Study Design Type Term Accession Number',
-                                                                    'Study Design Type Term Source REF'
-                                                                    )
-                                                           )
+                                                                'Study Design Type Term Accession Number',
+                                                                'Study Design Type Term Source REF'
+                                                                )
+                                                       )
             j = 0
             for design_descriptor in study.design_descriptors:
                 study_design_descriptors_df.loc[j] = [
@@ -471,13 +472,13 @@ def dump(isa_obj, fp):
 
             # Write STUDY PUBLICATIONS section
             study_publications_df = pd.DataFrame(columns=('Study PubMed ID',
-                                                              'Study Publication DOI',
-                                                              'Study Publication Author List',
-                                                              'Study Publication Status',
-                                                              'Study Publication Status Term Accession Number',
-                                                              'Study Publication Status Term Source REF'
-                                                              )
-                                                     )
+                                                          'Study Publication DOI',
+                                                          'Study Publication Author List',
+                                                          'Study Publication Status',
+                                                          'Study Publication Status Term Accession Number',
+                                                          'Study Publication Status Term Source REF'
+                                                          )
+                                                 )
             j = 0
             for study_publication in study.publications:
                 study_publications_df.loc[j] = [
@@ -496,11 +497,11 @@ def dump(isa_obj, fp):
 
             # Write STUDY FACTORS section
             study_factors_df = pd.DataFrame(columns=('Study Factor Name',
-                                                         'Study Factor Type',
-                                                         'Study Factor Type Term Accession Number',
-                                                         'Study Factor Type Term Source REF'
-                                                         )
-                                                )
+                                                     'Study Factor Type',
+                                                     'Study Factor Type Term Accession Number',
+                                                     'Study Factor Type Term Source REF'
+                                                     )
+                                            )
             j = 0
             for factor in study.factors:
                 study_factors_df.loc[j] = [
@@ -517,15 +518,15 @@ def dump(isa_obj, fp):
 
             # Write STUDY ASSAYS section
             study_assays_df = pd.DataFrame(columns=('Study Assay Measurement Type',
-                                                        'Study Assay Measurement Type Term Accession Number',
-                                                        'Study Assay Measurement Type Term Source REF',
-                                                        'Study Assay Technology Type',
-                                                        'Study Assay Technology Type Term Accession Number',
-                                                        'Study Assay Technology Type Term Source REF',
-                                                        'Study Assay Technology Platform',
-                                                        'Study Assay File Name'
-                                                        )
-                                               )
+                                                    'Study Assay Measurement Type Term Accession Number',
+                                                    'Study Assay Measurement Type Term Source REF',
+                                                    'Study Assay Technology Type',
+                                                    'Study Assay Technology Type Term Accession Number',
+                                                    'Study Assay Technology Type Term Source REF',
+                                                    'Study Assay Technology Platform',
+                                                    'Study Assay File Name'
+                                                    )
+                                           )
             j = 0
             for assay in study.assays:
                 study_assays_df.loc[j] = [
@@ -546,21 +547,21 @@ def dump(isa_obj, fp):
 
             # Write STUDY PROTOCOLS section
             study_protocols_df = pd.DataFrame(columns=('Study Protocol Name',
-                                                           'Study Protocol Type',
-                                                           'Study Protocol Type  Accession Number',
-                                                           'Study Protocol Type Source REF',
-                                                           'Study Protocol Description',
-                                                           'Study Protocol URI',
-                                                           'Study Protocol Version',
-                                                           'Study Protocol Parameters Name',
-                                                           'Study Protocol Parameters Name Term Accession Number',
-                                                           'Study Protocol Parameters Name Term Source REF',
-                                                           'Study Protocol Components Name',
-                                                           'Study Protocol Components Type',
-                                                           'Study Protocol Components Type Term Accession Number',
-                                                           'Study Protocol Components Type Term Source REF',
-                                                           )
-                                                  )
+                                                       'Study Protocol Type',
+                                                       'Study Protocol Type  Accession Number',
+                                                       'Study Protocol Type Source REF',
+                                                       'Study Protocol Description',
+                                                       'Study Protocol URI',
+                                                       'Study Protocol Version',
+                                                       'Study Protocol Parameters Name',
+                                                       'Study Protocol Parameters Name Term Accession Number',
+                                                       'Study Protocol Parameters Name Term Source REF',
+                                                       'Study Protocol Components Name',
+                                                       'Study Protocol Components Type',
+                                                       'Study Protocol Components Type Term Accession Number',
+                                                       'Study Protocol Components Type Term Source REF',
+                                                       )
+                                              )
             j = 0
             for protocol in study.protocols:
                 parameters_names = ''
@@ -599,22 +600,22 @@ def dump(isa_obj, fp):
             study_protocols_df = study_protocols_df.set_index('Study Protocol Name').T
             fp.write('STUDY PROTOCOLS\n')
             study_protocols_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                   index_label='Study Protocol Name')
+                                      index_label='Study Protocol Name')
 
             # Write STUDY CONTACTS section
             study_contacts_df = pd.DataFrame(columns=('Study Person Last Name',
-                                                          'Study Person First Name',
-                                                          'Study Person Mid Initials',
-                                                          'Study Person Email',
-                                                          'Study Person Phone',
-                                                          'Study Person Fax',
-                                                          'Study Person Address',
-                                                          'Study Person Affiliation',
-                                                          'Study Person Roles',
-                                                          'Study Person Roles Term Accession Number',
-                                                          'Study Person Roles Term Source REF'
-                                                          )
-                                                 )
+                                                      'Study Person First Name',
+                                                      'Study Person Mid Initials',
+                                                      'Study Person Email',
+                                                      'Study Person Phone',
+                                                      'Study Person Fax',
+                                                      'Study Person Address',
+                                                      'Study Person Affiliation',
+                                                      'Study Person Roles',
+                                                      'Study Person Roles Term Accession Number',
+                                                      'Study Person Roles Term Source REF'
+                                                      )
+                                             )
             j = 0
             for study_contact in study.contacts:
                 # roles = ''
@@ -642,9 +643,10 @@ def dump(isa_obj, fp):
             fp.write('STUDY CONTACTS\n')
             study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                      index_label='Study Person Last Name')
+        fp.close()
 
     else:
-        raise NotImplementedError("Dumping this ISA object to ISAtab is not yet supported")
+        raise NotImplementedError("Dumping this ISA object to ISA Tab is not yet supported")
     return fp
 
 
@@ -656,22 +658,22 @@ def read_investigation_file(fp):
         f.seek(position)
         return l
 
-    def _read_tab_section(fp, sec_key, next_sec_key=None):
+    def _read_tab_section(f, sec_key, next_sec_key=None):
 
-        line = fp.readline()
+        line = f.readline()
         if not line.rstrip() == sec_key:
             raise IOError("Expected: " + sec_key + " section, but got: " + line)
         memf = io.StringIO()
-        while not _peek(f=fp).rstrip() == next_sec_key:
-            line = fp.readline()
+        while not _peek(f=f).rstrip() == next_sec_key:
+            line = f.readline()
             if not line:
                 break
             memf.write(line)
         memf.seek(0)
         return memf
 
-    def _build_section_df(fp):
-        df = pd.read_csv(fp, sep='\t').T  # Load and transpose ISA file section
+    def _build_section_df(f):
+        df = pd.read_csv(f, sep='\t').T  # Load and transpose ISA file section
         df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
         df.reset_index(inplace=True)  # Reset index so it is accessible as column
         df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
@@ -680,24 +682,24 @@ def read_investigation_file(fp):
 
     # Read in investigation file into DataFrames first
     ontology_sources_df = _build_section_df(_read_tab_section(
-        fp=fp,
+        f=fp,
         sec_key='ONTOLOGY SOURCE REFERENCE',
         next_sec_key='INVESTIGATION'
     ))
     # assert({'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
     #        .issubset(set(ontology_sources_df.columns.values)))  # Check required labels are present
     investigation_df = _build_section_df(_read_tab_section(
-        fp=fp,
+        f=fp,
         sec_key='INVESTIGATION',
         next_sec_key='INVESTIGATION PUBLICATIONS'
     ))
     investigation_publications_df = _build_section_df(_read_tab_section(
-        fp=fp,
+        f=fp,
         sec_key='INVESTIGATION PUBLICATIONS',
         next_sec_key='INVESTIGATION CONTACTS'
     ))
     investigation_contacts_df = _build_section_df(_read_tab_section(
-        fp=fp,
+        f=fp,
         sec_key='INVESTIGATION CONTACTS',
         next_sec_key='STUDY'
     ))
@@ -710,51 +712,73 @@ def read_investigation_file(fp):
     study_contacts_df_list = list()
     while _peek(fp):  # Iterate hopefully through STUDY blocks until end of file
         study_df_list.append(_build_section_df(_read_tab_section(
-            fp=fp,
+            f=fp,
             sec_key='STUDY',
             next_sec_key='STUDY DESIGN DESCRIPTORS'
         )))
         study_design_descriptors_df_list.append(_build_section_df(_read_tab_section(
-            fp=fp,
+            f=fp,
             sec_key='STUDY DESIGN DESCRIPTORS',
             next_sec_key='STUDY PUBLICATIONS'
         )))
         study_publications_df_list.append(_build_section_df(_read_tab_section(
-            fp=fp,
+            f=fp,
             sec_key='STUDY PUBLICATIONS',
             next_sec_key='STUDY FACTORS'
         )))
         study_factors_df_list.append(_build_section_df(_read_tab_section(
-            fp=fp,
+            f=fp,
             sec_key='STUDY FACTORS',
             next_sec_key='STUDY ASSAYS'
         )))
         study_assays_df_list.append(_build_section_df(_read_tab_section(
-            fp=fp,
+            f=fp,
             sec_key='STUDY ASSAYS',
             next_sec_key='STUDY PROTOCOLS'
         )))
         study_protocols_df_list.append(_build_section_df(_read_tab_section(
-            fp=fp,
+            f=fp,
             sec_key='STUDY PROTOCOLS',
             next_sec_key='STUDY CONTACTS'
         )))
         study_contacts_df_list.append(_build_section_df(_read_tab_section(
-            fp=fp,
+            f=fp,
             sec_key='STUDY CONTACTS',
             next_sec_key='STUDY'
         )))
 
-    # Start building the object model
-    ontology_source_references = list()
-    for x in ontology_sources_df.iterrows():  # Iterate over the rows to build our OntologySourceReference objs
-        y = x[1]  # Get data out of df row
-        ontology_source = OntologySourceReference(
-            name=y['Term Source Name'],
-            file=y['Term Source File'],
-            version=y['Term Source Version'],
-            description=y['Term Source Description']
-        )
-        print(ontology_source.to_json())
-        ontology_source_references.append(ontology_source)
-
+    # # Start building the object model
+    # ontology_source_references = list()
+    # for x in ontology_sources_df.iterrows():  # Iterate over the rows to build our OntologySourceReference objs
+    #     ontology_source_data = x[1]  # Get data out of df row
+    #     ontology_source = OntologySourceReference(
+    #         name=ontology_source_data['Term Source Name'],
+    #         file=ontology_source_data['Term Source File'],
+    #         version=ontology_source_data['Term Source Version'],
+    #         description=ontology_source_data['Term Source Description']
+    #     )
+    #     print(ontology_source.to_json())
+    #     ontology_source_references.append(ontology_source)
+    # investigation_data = investigation_df[1]
+    # investigation = Investigation(
+    #     identifier=investigation_data['Investigation Identifier'],
+    #     title=investigation_data['Investigation Title'],
+    #     description=investigation_data['Investigation Description'],
+    #     submission_date=investigation_data['Investigation Submission Date'],
+    #     public_release_date=investigation_data['Investigation Public Release Date'],
+    # )
+    # for x in investigation_publications_df.iterrows():
+    #     investigation_publication_data = x[1]
+    #     investigation_publication = Publication(
+    #         pubmed_id=investigation_publication_data['Investigation PubMed ID'],
+    #         doi=investigation_publication_data['Investigation Publication DOI'],
+    #         author_list=investigation_publication_data['Investigation Publication Author List'],
+    #         title=investigation_publication_data['Investigation Publication Title'],
+    #         status=OntologyAnnotation(
+    #             name=investigation_publication_data['Investigation Publication Status'],
+    #             term_accession=investigation_publication_data['Investigation Publication Status Term Accession'],
+    #             term_source=investigation_publication_data['Investigation Publication Status Term Source REF'],
+    #         )
+    #     )
+    #     investigation.publications.append(investigation_publication)
+    return investigation_df
