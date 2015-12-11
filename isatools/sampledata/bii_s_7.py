@@ -5,7 +5,7 @@ from os.path import dirname, join
 try:
     import json
 except ImportError as e:
-    raise RuntimeError("gut-microflora data requires json to be installed")
+    raise RuntimeError("BII-S-7 data requires json to be installed")
 
 #  returns json representation of gutmicroflora.json
-microflora = json.load(join(dirname(__file__), 'gutmicroflora.json'))
+bii_s_7 = json.load(join(dirname(__file__), 'BII-S-7.json'))
