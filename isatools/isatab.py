@@ -83,38 +83,19 @@ def load(isatab_dir):
         return people_json
 
 
-    def _createSampleDictionary(nodes):
-        json_dict = dict([])
-        for node_index in nodes:
-            if nodes[node_index].ntype == "Sample Name":
-                json_item = dict([
-                    ("name", node_index),
-                    ("factors", []),
-                    ("characteristics", _createCharacteristicList(node_index, nodes[node_index])),
-                ])
-                json_dict.update({node_index: json_item})
-        return json_dict
-
-    def _createSourcesDictionary(nodes):
-        for node_name in nodes:
-            if nodes[node_name].ntype == "Source Name":
-                source = Source(
-                    name=node_name,
-                    characteristics=_createCharacteristicList(node_name, nodes[node_name]),
-                )
-        return source
-
     def _createCharacteristicList(node_name, node):
-        json_list = []
+        obj_list = []
         for header in node.metadata:
             if header.startswith("Characteristics"):
-                 characteristic = header.replace("]", "").split("[")[-1]
-                 characteristic_json = OntologyAnnotation(name=characteristic)
-                 json_item = dict([
-                     ("characteristic", characteristic_json)
-                 ])
-                 json_list.append(json_item)
-        return json_list
+                characteristic = header.replace("]", "").split("[")[-1]
+                characteristic_obj = Characteristic(
+                    value=OntologyAnnotation(name=characteristic)
+                )
+                obj_item = dict([
+                    ("characteristic", characteristic_obj)
+                ])
+                obj_list.append(obj_item)
+        return obj_list
 
     def _createOntologyAnnotationListForInvOrStudy(array, inv_or_study, type_):
         onto_annotations = []
@@ -242,33 +223,63 @@ def load(isatab_dir):
                 pass
         return json_list
 
-    def _createStudyAssaysList(assays):
+    # def _createStudyAssaysList(assays):
+    #     json_list = []
+    #     for assay in assays:
+    #         source_dict = _createSourcesDictionary(assay.nodes)
+    #         sample_dict = _createSampleDictionary(assay.nodes)
+    #         data_dict = _createDataFiles(assay.nodes)
+    #         json_item = Assay(
+    #             file_name=assay.metadata['Study Assay File Name'],
+    #             measurement_type=OntologyAnnotation(
+    #                 name=assay.metadata['Study Assay Measurement Type'],
+    #                 term_source=assay.metadata['Study Assay Measurement Type Term Source REF'],
+    #                 term_accession=assay.metadata['Study Assay Measurement Type Term Accession Number']),
+    #             technology_type=OntologyAnnotation(
+    #                 name=assay.metadata['Study Assay Technology Type'],
+    #                 term_source=assay.metadata['Study Assay Technology Type Term Source REF'],
+    #                 term_accession=assay.metadata['Study Assay Technology Type Term Accession Number']),
+    #             technology_platform=assay.metadata['Study Assay Technology Platform'],
+    #             process_sequence=_createProcessSequence(assay.process_nodes, source_dict, sample_dict, data_dict),
+    #         )
+    #         json_list.append(json_item)
+    #     return json_list
+
+    def _createFactorValueList(self, node_name, node):
         json_list = []
-        for assay in assays:
-            source_dict = _createSourcesDictionary(assay.nodes)
-            sample_dict = _createSampleDictionary(assay.nodes)
-            data_dict = _createDataFiles(assay.nodes)
-            json_item = Assay(
-                file_name=assay.metadata['Study Assay File Name'],
-                measurement_type=OntologyAnnotation(
-                    name=assay.metadata['Study Assay Measurement Type'],
-                    term_source=assay.metadata['Study Assay Measurement Type Term Source REF'],
-                    term_accession=assay.metadata['Study Assay Measurement Type Term Accession Number']),
-                technology_type=OntologyAnnotation(
-                    name=assay.metadata['Study Assay Technology Type'],
-                    term_source=assay.metadata['Study Assay Technology Type Term Source REF'],
-                    term_accession=assay.metadata['Study Assay Technology Type Term Accession Number']),
-                technology_platform=assay.metadata['Study Assay Technology Platform'],
-                process_sequence=_createProcessSequence(assay.process_nodes, source_dict, sample_dict, data_dict),
-            )
-            json_list.append(json_item)
+        for header in node.metadata:
+            if header.startswith("Factor Value"):
+                 factor_value = header.replace("]", "").split("[")[-1]
+                 factor_value_ontology_annotation = self.createOntologyAnnotation(factor_value, "", "")
+                 factor_value_json = dict([
+                     ("value", factor_value_ontology_annotation)
+                 ])
+                 json_list.append(factor_value_json)
         return json_list
+
+    def _createSourcesSamples(nodes):
+        samples_json_dict = dict([])
+        sources_obj_dict = dict([])
+        for node_index in nodes:
+            if nodes[node_index].ntype == "Sample Name":
+                sample = Sample(
+                    name=node_index,
+                    factors=_createFactorValueList(node_index, nodes[node_index]),
+                    characteristics=_createCharacteristicList(node_index, nodes[node_index])
+                )
+                samples_json_dict.update({node_index: sample})
+            elif nodes[node_index].ntype == "Source Name":
+                source = Source(
+                    name=node_index,
+                    characteristics=_createCharacteristicList(node_index, nodes[node_index])
+                )
+                sources_obj_dict.update({node_index: source})
+        return sources_obj_dict, samples_json_dict
 
     def _createStudies(studies):
         study_array = []
         for study in studies:
-            source_dict = _createSourcesDictionary(study.nodes)
-            sample_dict = _createSampleDictionary(study.nodes)
+            sources, samples = _createSourcesSamples(study.nodes)
             data_dict = _createDataFiles(study.nodes)
             study_obj = Study(
                 identifier=study.metadata['Study Identifier'],
@@ -283,9 +294,9 @@ def load(isatab_dir):
                 publications=_createPublications(study.publications, "Study"),
                 contacts=_createContacts(study.contacts, "Study"),
                 protocols=_createProtocols(study.protocols),
-                sources=list(source_dict.values()),
-                samples=list(sample_dict.values()),
-                process_sequence=_createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict),
+                sources=list(sources.values()),
+                samples=list(samples.values()),
+                process_sequence=_createProcessSequence(study.process_nodes, sources, samples, data_dict),
                 assays=_createStudyAssaysList(study.assays),
             )
             study_array.append(study_obj)
