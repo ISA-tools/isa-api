@@ -1,8 +1,9 @@
 from isatools import isajson
 from isatools import isatab
+import os
 
 
-def convert(json_fp, tab_fp):
+def convert(json_fp, path):
     """ Converter for ISA JSON to ISA Tab. Currently only converts investigation file contents
     :param json_fp: File pointer to ISA JSON input
     :param tab_fp: File pointer to ISA tab output
@@ -18,4 +19,4 @@ def convert(json_fp, tab_fp):
 
     """
     isa_obj = isajson.load(fp=json_fp)
-    isatab.dump(isa_obj=isa_obj, fp=tab_fp)
+    isatab.dump(isa_obj=isa_obj, path=path)
