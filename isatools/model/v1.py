@@ -439,9 +439,15 @@ class Sample(IsaObject):
         characteristics:
         factors:
     """
-    def __init__(self, name="", comments=None):
+    def __init__(self, name="", factors=None, characteristics=None, comments=None):
         super().__init__(comments)
         self.name = name
-        self.characteristics = []
-        self.factors = []
+        if factors is None:
+            self.factors = []
+        else:
+            self.factors = factors
+        if characteristics is None:
+            self.characteristics = []
+        else:
+            self.characteristics = characteristics
 
