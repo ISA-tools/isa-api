@@ -374,6 +374,20 @@ class Source(IsaObject):
 
 
 class FactorValue(IsaObject):
+    def __init__(self, factorName="", value=None, unit=None, comments=None):
+        super().__init__(comments)
+        self.factorName=factorName
+        if self.value is None:
+            self.value = OntologyAnnotation()
+        else:
+            self.value = value
+        if self.unit is None:
+            self.unit = OntologyAnnotation()
+        else:
+            self.unit = unit
+
+
+class Characteristic(IsaObject):
     def __init__(self, category="", value=None, unit=None, comments=None):
         super().__init__(comments)
         self.category=category
