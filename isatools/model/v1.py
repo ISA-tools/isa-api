@@ -373,7 +373,7 @@ class Source(IsaObject):
             self.characteristics = characteristics
 
 
-class Characteristic(IsaObject):
+class FactorValue(IsaObject):
     def __init__(self, category="", value=None, unit=None, comments=None):
         super().__init__(comments)
         self.category=category
@@ -439,13 +439,13 @@ class Sample(IsaObject):
         characteristics:
         factors:
     """
-    def __init__(self, name="", factors=None, characteristics=None, comments=None):
+    def __init__(self, name="", factor_values=None, characteristics=None, comments=None):
         super().__init__(comments)
         self.name = name
-        if factors is None:
-            self.factors = []
+        if factor_values is None:
+            self.factor_values = []
         else:
-            self.factors = factors
+            self.factor_values = factor_values
         if characteristics is None:
             self.characteristics = []
         else:
