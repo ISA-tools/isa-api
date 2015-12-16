@@ -1,0 +1,41 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Material",
+	"description": "Definition of Material (or Substance)",
+	"type": "object",
+	
+	"properties":{
+		"name": { 
+			"type": "string",
+			"description":"Material name"
+		},
+		
+		"sourceName": {"type": "string" },
+		
+		"root": {"type": "string" },
+		
+		"constituents":{
+			"type": "array",
+			"items" : {
+				"$ref" : "constituent_schema.json#"
+			}
+		},
+		
+		"description":{"type": "string" },
+		
+		"synthesis":{"type": "string" },
+		
+		"designRationale":{"type": "string" },
+		
+		"chemicalName":{
+			"type" : "object",
+			"properties": {
+				"name" : {"type" : "string"},
+				"termAccession" : {"type" : "string"},
+				"termSource" : {"type" : "string"}
+			}
+		}
+	},
+	
+	"required": ["name"]
+}
