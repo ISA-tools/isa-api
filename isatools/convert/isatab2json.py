@@ -15,7 +15,7 @@ class ISATab2ISAjson_v1:
         pass
 
 
-    def convert(self, work_dir, json_dir, inv_identifier):
+    def convert(self, work_dir, json_dir):
         """Convert an ISA-Tab dataset (version 1) to JSON provided the ISA model v1.0 JSON Schemas
             :param work_dir: directory containing the ISA-tab dataset
             :param json_dir: output directory where the resulting json file will be saved
@@ -44,7 +44,7 @@ class ISATab2ISAjson_v1:
                         ("studies", self.createStudies(isa_tab.studies))
                     ])
 
-                if (inv_identifier):
+                if (isa_tab.metadata['Investigation Identifier']):
                     file_name = os.path.join(json_dir,isa_tab.metadata['Investigation Identifier']+".json")
                 else:
                     file_name = os.path.join(json_dir,isa_tab.studies[0].metadata['Study Identifier']+".json")
@@ -55,10 +55,12 @@ class ISATab2ISAjson_v1:
                 validator = Draft4Validator(schema, resolver=resolver)
                 validator.validate(isa_json, schema)
 
+                #TODO refactor saving the file into a separate method
                 with open(file_name, "w") as outfile:
                     json.dump(isa_json, outfile, indent=4, sort_keys=True)
                     outfile.close()
                 print("... conversion finished.")
+                return isa_json
 
 
     def createComment(self, name, value):
@@ -319,7 +321,7 @@ class ISATab2ISAjson_v1:
             sample_dict = self.createSampleDictionary(assay.nodes)
             data_dict = self.createDataFiles(assay.nodes)
             json_item = dict([
-                ("fileName", assay.metadata['Study Assay File Name']),
+                ("filename", assay.metadata['Study Assay File Name']),
                 ("measurementType", self.createOntologyAnnotation(assay.metadata['Study Assay Measurement Type'],
                                                                   assay.metadata['Study Assay Measurement Type Term Source REF'],
                                                                   assay.metadata['Study Assay Measurement Type Term Accession Number'])),
