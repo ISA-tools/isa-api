@@ -83,7 +83,7 @@ class ISATab2ISAjson_v1:
                 ("fax", contact[inv_or_study+" Person Fax"]),
                 ("address", contact[inv_or_study+" Person Address"]),
                 ("affiliation", contact[inv_or_study+" Person Affiliation"]),
-                ("roles", [])
+                ("roles", self.createOntologyAnnotationsFromStringList(contact, inv_or_study, " Person Roles"))
             ])
             people_json.append(person_json)
         return people_json
@@ -390,7 +390,6 @@ class ISATab2ISAjson_v1:
         for header in node.metadata:
             if header.startswith("Factor Value"):
                  factor_value_header = header.replace("]", "").split("[")[-1]
-                 print(factor_value_header)
                  value_attributes = node.metadata[header][0]
                  factor_value_json = dict()
                  try:
