@@ -351,8 +351,8 @@ class ISATab2ISAjson_v1:
             if nodes[node_index].ntype == "Sample Name":
                 json_item = dict([
                     ("name", node_index),
-                    ("factorValues", self.createFactorValueList(node_index, nodes[node_index])),
-                    ("characteristics", self.createCharacteristicList(node_index, nodes[node_index]))
+                    ("factorValues", self.createValueList("Factor Value", node_index, nodes[node_index])),
+                    ("characteristics", self.createValueList("Characteristics",node_index, nodes[node_index]))
                     #TODO complete
                     #("derivesFrom", nodes[node_index].metadata["Source Name"])
                 ])
@@ -366,53 +366,35 @@ class ISATab2ISAjson_v1:
             if nodes[node_name].ntype == "Source Name":
                 json_item = dict([
                     ("name", node_name),
-                    ("characteristics", self.createCharacteristicList(node_name, nodes[node_name])),
+                    ("characteristics", self.createValueList("Characteristics", node_name, nodes[node_name])),
                 ])
                 json_dict.update({node_name: json_item})
         return json_dict
 
 
-    def createCharacteristicList(self, node_name, node):
+    def createValueList(self, column_name, node_name, node):
         json_list = []
         for header in node.metadata:
-            if header.startswith("Characteristics"):
-                 characteristic = header.replace("]", "").split("[")[-1]
-                 characteristic_json = self.createOntologyAnnotation(characteristic, "", "")
-                 json_item = dict([
-                     ("characteristic", characteristic_json)
-                 ])
-                 json_list.append(json_item)
-        return json_list
-
-
-    def createFactorValueList(self, node_name, node):
-        json_list = []
-        for header in node.metadata:
-            if header.startswith("Factor Value"):
-                 factor_value_header = header.replace("]", "").split("[")[-1]
+            if header.startswith(column_name):
+                 value_header = header.replace("]", "").split("[")[-1]
                  value_attributes = node.metadata[header][0]
                  try:
-                        factor_value_json = dict([
+                        value_json = dict([
                          ("value", value_attributes[0]),
                          ("unit", self.createOntologyAnnotation(value_attributes.Unit, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
                         ])
-                        json_list.append(factor_value_json)
+                        json_list.append(value_json)
                         continue
                  except AttributeError:
                     try:
-                        factor_value_json = dict([
+                        value_json = dict([
                                 ("value", self.createOntologyAnnotation(value_attributes[0], value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
                             ])
-                        json_list.append(factor_value_json)
+                        json_list.append(value_json)
                         continue
                     except AttributeError:
-                      factor_value_json = dict([
+                      value_json = dict([
                           ("value", value_attributes[0])
                           ])
-                      json_list.append(factor_value_json)
-
-
-
-
-
+                      json_list.append(value_json)
         return json_list

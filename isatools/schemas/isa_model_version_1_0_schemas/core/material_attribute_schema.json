@@ -4,8 +4,11 @@
     "description" : "JSON-schema representing a material attribute or characteristic in the ISA model",
     "type" : "object",
     "properties" : {
-        "characteristic": {
-            "$ref": "ontology_annotation_schema.json#"
+        "value": {
+            "anyOf" : [
+                { "$ref": "ontology_annotation_schema.json#"},
+                { "type": "string"}
+                ]
         },
         "unit": {
             "$ref": "ontology_annotation_schema.json#"
