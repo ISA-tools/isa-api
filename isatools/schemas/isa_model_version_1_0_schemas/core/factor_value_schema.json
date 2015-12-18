@@ -5,7 +5,10 @@
     "type": "object",
     "properties": {
         "value": {
-            "$ref": "ontology_annotation_schema.json#"
+            "anyOf" : [
+                { "$ref": "ontology_annotation_schema.json#"},
+                { "type": "string"}
+                ]
         },
         "unit": {
             "$ref": "ontology_annotation_schema.json#"

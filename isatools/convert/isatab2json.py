@@ -389,18 +389,28 @@ class ISATab2ISAjson_v1:
         json_list = []
         for header in node.metadata:
             if header.startswith("Factor Value"):
-                 factor_value = header.replace("]", "").split("[")[-1]
-                 factor_value_ontology_annotation = self.createOntologyAnnotation(factor_value, "", "")
-                 factor_value_json = dict([
-                     ("value", factor_value_ontology_annotation)
-                 ])
-                 json_list.append(factor_value_json)
+                 factor_value_header = header.replace("]", "").split("[")[-1]
+                 print(factor_value_header)
+                 value_attributes = node.metadata[header][0]
+                 factor_value_json = dict()
+                 try:
+                      if (value_attributes.Unit):
+                        factor_value_json = dict([
+                         ("value", value_attributes[0]),
+                         ("unit", self.createOntologyAnnotation(value_attributes.Unit, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
+                        ])
+                 except AttributeError:
+                    try:
+                        if (value_attributes.Term_Source_REF):
+                            factor_value_json = dict([
+                                ("value", self.createOntologyAnnotation(value_attributes[0], value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
+                            ])
+                    except AttributeError:
+                      factor_value_json = dict([
+                          ("value", value_attributes[0])
+                          ])
+                 finally:
+                    if (factor_value_json):
+                        json_list.append(factor_value_json)
+
         return json_list
-
-
-
-#isatab2isajson = ISATab2ISAjson_v1()
-#isatab2isajson.convert("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1","../../tests/datasets/metabolights", False)
-#isatab2isajson.convert("../../tests/data/BII-I-1","../../tests/data", True)
-#isatab2isajson.convert("../../tests/data/BII-S-7","../../tests/data", True)
-#isatab2isajson.convert("../../tests/data/isatab-test1","../../tests/data", True)
