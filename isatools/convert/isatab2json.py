@@ -391,25 +391,28 @@ class ISATab2ISAjson_v1:
             if header.startswith("Factor Value"):
                  factor_value_header = header.replace("]", "").split("[")[-1]
                  value_attributes = node.metadata[header][0]
-                 factor_value_json = dict()
                  try:
-                      if (value_attributes.Unit):
                         factor_value_json = dict([
                          ("value", value_attributes[0]),
                          ("unit", self.createOntologyAnnotation(value_attributes.Unit, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
                         ])
+                        json_list.append(factor_value_json)
+                        continue
                  except AttributeError:
                     try:
-                        if (value_attributes.Term_Source_REF):
-                            factor_value_json = dict([
+                        factor_value_json = dict([
                                 ("value", self.createOntologyAnnotation(value_attributes[0], value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
                             ])
+                        json_list.append(factor_value_json)
+                        continue
                     except AttributeError:
                       factor_value_json = dict([
                           ("value", value_attributes[0])
                           ])
-                 finally:
-                    if (factor_value_json):
-                        json_list.append(factor_value_json)
+                      json_list.append(factor_value_json)
+
+
+
+
 
         return json_list
