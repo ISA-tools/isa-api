@@ -349,14 +349,16 @@ class ISATab2ISAjson_v1:
         json_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype == "Sample Name":
+              try:
                 json_item = dict([
                     ("name", node_index),
                     ("factorValues", self.createValueList("Factor Value", node_index, nodes[node_index])),
-                    ("characteristics", self.createValueList("Characteristics",node_index, nodes[node_index]))
-                    #TODO complete
-                    #("derivesFrom", nodes[node_index].metadata["Source Name"])
+                    ("characteristics", self.createValueList("Characteristics",node_index, nodes[node_index])),
+                    ("derivesFrom", nodes[node_index].metadata["Source Name"])
                 ])
                 json_dict.update({node_index: json_item})
+              except KeyError:
+                  pass
         return json_dict
 
 

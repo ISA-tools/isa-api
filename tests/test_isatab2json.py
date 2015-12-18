@@ -26,8 +26,16 @@ class ISAtab2jsonTest(unittest.TestCase):
         assert(isa_json["commentCreatedWithConfiguration"]["value"] == "")
         assert(isa_json["commentLastOpenedWithConfiguration"]["name"] == "Last Opened With Configuration")
         assert(isa_json["commentLastOpenedWithConfiguration"]["value"] == "isaconfig-default_v2013-02-13")
+        assert(len(isa_json["ontologySourceReferences"])==7)
         assert(len(isa_json["publications"])==1)
         assert(len(isa_json["people"])==3)
+        assert(len(isa_json["studies"])==2)
+        assert(isa_json["studies"][0]["identifier"]=="BII-S-1")
+        assert(isa_json["studies"][1]["identifier"]=="BII-S-2")
+        assert(len(isa_json["studies"][0]["sources"])==18)
+        assert(len(isa_json["studies"][0]["samples"])==163)
+        assert(len(isa_json["studies"][1]["sources"])==1)
+        assert(len(isa_json["studies"][1]["samples"])==2)
 
 
 
