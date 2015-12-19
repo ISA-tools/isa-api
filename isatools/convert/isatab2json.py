@@ -374,15 +374,27 @@ class ISATab2ISAjson_v1:
         return json_dict
 
 
+
+    def convert_num(self, s):
+        try:
+            return int(s)
+        except ValueError:
+            try:
+               return float(s)
+            except ValueError:
+                return s
+
+
     def createValueList(self, column_name, node_name, node):
         json_list = []
         for header in node.metadata:
             if header.startswith(column_name):
                  value_header = header.replace("]", "").split("[")[-1]
                  value_attributes = node.metadata[header][0]
+                 value  = self.convert_num(value_attributes[0])
                  try:
                         value_json = dict([
-                         ("value", value_attributes[0]),
+                         ("value", value),
                          ("unit", self.createOntologyAnnotation(value_attributes.Unit, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
                         ])
                         json_list.append(value_json)
@@ -390,13 +402,13 @@ class ISATab2ISAjson_v1:
                  except AttributeError:
                     try:
                         value_json = dict([
-                                ("value", self.createOntologyAnnotation(value_attributes[0], value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
+                                ("value", self.createOntologyAnnotation(value, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
                             ])
                         json_list.append(value_json)
                         continue
                     except AttributeError:
                       value_json = dict([
-                          ("value", value_attributes[0])
+                          ("value", value)
                           ])
                       json_list.append(value_json)
         return json_list
