@@ -15,12 +15,7 @@
         "roles" : {
             "type" : "array",
             "items" : {
-                "type" : "object",
-                "properties" : {
-                    "role":{
-                        "$ref": "ontology_annotation_schema.json#"
-                    }
-                }
+                "$ref": "ontology_annotation_schema.json#"
             }
         }
     },

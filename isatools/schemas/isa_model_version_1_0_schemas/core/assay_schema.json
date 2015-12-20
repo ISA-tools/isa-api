@@ -9,7 +9,7 @@
     },
     "type": "object",
     "properties": {
-        "fileName" : { "type" : "string" },
+        "filename" : { "type" : "string" },
         "measurementType" : {
                     "$ref": "ontology_annotation_schema.json#"
         },
