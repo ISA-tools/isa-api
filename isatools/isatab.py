@@ -721,7 +721,7 @@ def read_investigation_file(fp):
     study_assays_df_list = list()
     study_protocols_df_list = list()
     study_contacts_df_list = list()
-    while _peek(fp):  # Iterate hopefully through STUDY blocks until end of file
+    while _peek(fp):  # Iterate through STUDY blocks until end of file
         study_df_list.append(_build_section_df(_read_tab_section(
             f=fp,
             sec_key='STUDY',
@@ -793,3 +793,61 @@ def read_investigation_file(fp):
     #     )
     #     investigation.publications.append(investigation_publication)
     return investigation_df
+
+
+# def read_study_file(fp):
+#     import re
+#     study_file_column_headers = list()
+#
+#     def _read_study_record_line(row):
+#
+#         characteristics_regex = re.compile('Characteristics\[(.*?)\]')
+#         source_name = ''
+#         characteristics = list()
+#         for column in study_file_column_headers:
+#             if column == 'Source Name':
+#                 source_name = row[0]
+#             if characteristics_regex.match(column):
+#                 characteristics.append()
+#
+#     import csv
+#     characteristics_regex = re.compile('Characteristics\[(.*?)\]')
+#     factor_value_regex = re.compile('Factor Value\[(.*?)\]')
+#     source_characteristics = dict()  # k is category, v is is_unit
+#     source_factor_values = dict()  # k is factor value name, v is is_unit
+#     sample_characteristics = dict()  # k is category, v is is_unit
+#     sample_factor_values = dict()  # k is factor value name, v is is_unit
+#     study_reader = csv.reader(fp, delimiter='\t')
+#     fieldnames = next(study_reader)
+#
+#     for row in study_reader:
+#         source = Source()
+#         for fieldname in fieldnames:
+#             col_index = 0
+#             if fieldname == 'Source Name':
+#                 source.name = fieldname
+#                 if characteristics_regex.match(fieldname):
+#                     characteristic = Characteristic(
+#                         category=characteristics_regex(fieldname).group(1)
+#                     )
+#                     if fieldname[col_index+1] == 'Unit':
+#                         characteristic.value = OntologyAnnotation(
+#                             name=row[col_index]
+#                         )
+#                         characteristic.unit = OntologyAnnotation(
+#                             name=row[col_index+1],
+#                             term_accession=[col_index+2],
+#                             term_source=[col_index+3],
+#                         )
+#                     else:
+#                         characteristic.value = OntologyAnnotation(
+#                             name=row[col_index],
+#                             term_accession=row[col_index+1],
+#                             term_source=row[col_index+2]
+#                         )
+#             if fieldname == 'Sample Name':
+#                 break
+#             col_index += 1
+
+    # for row in study_reader:
+    #     print(row['Source Name'], row['Sample Name'])
