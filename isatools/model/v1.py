@@ -368,7 +368,7 @@ class Source(IsaObject):
         super().__init__(comments)
         self.name = name
         if characteristics is None:
-            self.characteristics = []
+            self.characteristics = list()
         else:
             self.characteristics = characteristics
 
@@ -377,11 +377,11 @@ class FactorValue(IsaObject):
     def __init__(self, factorName="", value=None, unit=None, comments=None):
         super().__init__(comments)
         self.factorName=factorName
-        if self.value is None:
+        if value is None:
             self.value = OntologyAnnotation()
         else:
             self.value = value
-        if self.unit is None:
+        if unit is None:
             self.unit = OntologyAnnotation()
         else:
             self.unit = unit
@@ -391,11 +391,11 @@ class Characteristic(IsaObject):
     def __init__(self, category="", value=None, unit=None, comments=None):
         super().__init__(comments)
         self.category=category
-        if self.value is None:
+        if value is None:
             self.value = OntologyAnnotation()
         else:
             self.value = value
-        if self.unit is None:
+        if unit is None:
             self.unit = OntologyAnnotation()
         else:
             self.unit = unit
@@ -453,7 +453,7 @@ class Sample(IsaObject):
         characteristics:
         factors:
     """
-    def __init__(self, name="", factor_values=None, characteristics=None, comments=None):
+    def __init__(self, name="", factor_values=None, characteristics=None, derives_from=None, comments=None):
         super().__init__(comments)
         self.name = name
         if factor_values is None:
@@ -464,4 +464,3 @@ class Sample(IsaObject):
             self.characteristics = []
         else:
             self.characteristics = characteristics
-
