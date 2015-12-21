@@ -385,29 +385,17 @@ class Source(IsaObject):
 class FactorValue(IsaObject):
     def __init__(self, factorName="", value=None, unit=None, comments=None):
         super().__init__(comments)
-        self.factorName=factorName
-        if value is None:
-            self.value = OntologyAnnotation()
-        else:
-            self.value = value
-        if unit is None:
-            self.unit = OntologyAnnotation()
-        else:
-            self.unit = unit
+        self.factorName = factorName
+        self.value = value
+        self.unit = unit
 
 
 class Characteristic(IsaObject):
     def __init__(self, category="", value=None, unit=None, comments=None):
         super().__init__(comments)
-        self.category=category
-        if value is None:
-            self.value = OntologyAnnotation()
-        else:
-            self.value = value
-        if unit is None:
-            self.unit = OntologyAnnotation()
-        else:
-            self.unit = unit
+        self.category = category
+        self.value = value
+        self.unit = unit
 
 
 class Material(IsaObject):
@@ -465,6 +453,7 @@ class Sample(IsaObject):
     def __init__(self, name="", factor_values=None, characteristics=None, derives_from=None, comments=None):
         super().__init__(comments)
         self.name = name
+        self.derives_from = derives_from
         if factor_values is None:
             self.factor_values = []
         else:
