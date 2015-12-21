@@ -130,7 +130,6 @@ def load(isatab_dir):
             parameter = ProtocolParameter(
                 parameterName=parameter_annotation
             )
-            # TODO Units?
             parameters_list.append(parameter)
         return parameters_list
 
@@ -222,27 +221,27 @@ def load(isatab_dir):
                 pass
         return obj_list
 
-    # def _createStudyAssaysList(assays):
-    #     json_list = []
-    #     for assay in assays:
-    #         source_dict = _createSourcesDictionary(assay.nodes)
-    #         sample_dict = _createSampleDictionary(assay.nodes)
-    #         data_dict = _createDataFiles(assay.nodes)
-    #         json_item = Assay(
-    #             file_name=assay.metadata['Study Assay File Name'],
-    #             measurement_type=OntologyAnnotation(
-    #                 name=assay.metadata['Study Assay Measurement Type'],
-    #                 term_source=assay.metadata['Study Assay Measurement Type Term Source REF'],
-    #                 term_accession=assay.metadata['Study Assay Measurement Type Term Accession Number']),
-    #             technology_type=OntologyAnnotation(
-    #                 name=assay.metadata['Study Assay Technology Type'],
-    #                 term_source=assay.metadata['Study Assay Technology Type Term Source REF'],
-    #                 term_accession=assay.metadata['Study Assay Technology Type Term Accession Number']),
-    #             technology_platform=assay.metadata['Study Assay Technology Platform'],
-    #             process_sequence=_createProcessSequence(assay.process_nodes, source_dict, sample_dict, data_dict),
-    #         )
-    #         json_list.append(json_item)
-    #     return json_list
+    def _createStudyAssaysList(assays):
+        json_list = list()
+        for assay in assays:
+            source_dict = _createSourceDictionary(assay.nodes)
+            sample_dict = _createSampleDictionary(assay.nodes)
+            data_dict = _createDataFiles(assay.nodes)
+            json_item = Assay(
+                file_name=assay.metadata['Study Assay File Name'],
+                measurement_type=OntologyAnnotation(
+                    name=assay.metadata['Study Assay Measurement Type'],
+                    term_source=assay.metadata['Study Assay Measurement Type Term Source REF'],
+                    term_accession=assay.metadata['Study Assay Measurement Type Term Accession Number']),
+                technology_type=OntologyAnnotation(
+                    name=assay.metadata['Study Assay Technology Type'],
+                    term_source=assay.metadata['Study Assay Technology Type Term Source REF'],
+                    term_accession=assay.metadata['Study Assay Technology Type Term Accession Number']),
+                technology_platform=assay.metadata['Study Assay Technology Platform'],
+                process_sequence=_createProcessSequence(assay.process_nodes, source_dict, sample_dict, data_dict),
+            )
+            json_list.append(json_item)
+        return json_list
 
     def _createValueList(column_name, node_name, node):
         obj_list = list()
@@ -363,7 +362,7 @@ def load(isatab_dir):
                 sources=list(sources.values()),
                 samples=list(samples.values()),
                 process_sequence=_createProcessSequence(study.process_nodes, sources, samples, data_dict),
-                # assays=_createStudyAssaysList(study.assays),
+                assays=_createStudyAssaysList(study.assays),
             )
             study_array.append(study_obj)
         return study_array
