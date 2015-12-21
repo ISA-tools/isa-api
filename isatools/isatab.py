@@ -245,42 +245,110 @@ def load(isatab_dir):
     #         json_list.append(json_item)
     #     return json_list
 
-    def _createFactorValueList(self, node_name, node):
-        json_list = []
+    def _createValueList(column_name, node_name, node):
+        obj_list = list()
         for header in node.metadata:
-            if header.startswith("Factor Value"):
-                 factor_value = header.replace("]", "").split("[")[-1]
-                 factor_value_ontology_annotation = self.createOntologyAnnotation(factor_value, "", "")
-                 factor_value_json = dict([
-                     ("value", factor_value_ontology_annotation)
-                 ])
-                 json_list.append(factor_value_json)
-        return json_list
+            if header.startswith(column_name):
+                value_header = header.replace("]", "").split("[")[-1]
+                value_attributes = node.metadata[header][0]
+                value = value_attributes[0]  # In tab2json uses convert_num to recast string to int or float
+                try:
+                    if column_name == 'Characteristics':
+                        value_obj = Characteristic(
+                            category=value_header,
+                            value=value,
+                            unit=OntologyAnnotation(
+                                name=value_attributes.Unit,
+                                term_accession=value_attributes.Term_Accession_Number,
+                                term_source=value_attributes.Term_Source_REF,
+                            )
+                        )
+                    elif column_name == 'Factor Value':
+                        value_obj = FactorValue(
+                            factorName=value_header,
+                            value=value,
+                            unit=OntologyAnnotation(
+                                name=value_attributes.Unit,
+                                term_accession=value_attributes.Term_Accession_Number,
+                                term_source=value_attributes.Term_Source_REF,
+                            )
+                        )
+                    obj_list.append(value_obj)
+                    continue
+                except AttributeError:
+                    try:
+                        if column_name == 'Characteristics':
+                            value_obj = Characteristic(
+                                category=value_header,
+                                value=OntologyAnnotation(
+                                    name=value,
+                                    term_accession=value_attributes.Term_Accession_Number,
+                                    term_source=value_attributes.Term_Source_REF,
+                                )
+                            )
+                            obj_list.append(value_obj)
+                        elif column_name == 'Factor Value':
+                            value_obj = FactorValue(
+                                factorName=value_header,
+                                value=OntologyAnnotation(
+                                    name=value,
+                                    term_accession=value_attributes.Term_Accession_Number,
+                                    term_source=value_attributes.Term_Source_REF,
+                                )
+                            )
+                        continue
+                    except AttributeError:
+                        if column_name == 'Characteristics':
+                            value_obj = Characteristic(
+                                category=value_header,
+                                value=OntologyAnnotation(
+                                    name=value
+                                )
+                            )
+                        elif column_name == 'Factor Value':
+                            value_obj = FactorValue(
+                                factorName=value_header,
+                                value=OntologyAnnotation(
+                                    name=value
+                                )
+                            )
+                        obj_list.append(value_obj)
+        return obj_list
 
-    def _createSourcesSamples(nodes):
-        samples_json_dict = dict([])
-        sources_obj_dict = dict([])
+    def _createSourceDictionary(nodes):
+        obj_dict = dict([])
+        for node_name in nodes:
+            if nodes[node_name].ntype == "Source Name":
+                source_item = Source(
+                    name=node_name,
+                    characteristics=_createValueList("Characteristics", node_name, nodes[node_name]),
+                )
+                obj_dict.update({node_name: source_item})
+        return obj_dict
+
+
+    def _createSampleDictionary(nodes):
+        obj_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype == "Sample Name":
-                sample = Sample(
-                    name=node_index,
-                    factors=_createFactorValueList(node_index, nodes[node_index]),
-                    characteristics=_createCharacteristicList(node_index, nodes[node_index])
-                )
-                samples_json_dict.update({node_index: sample})
-            elif nodes[node_index].ntype == "Source Name":
-                source = Source(
-                    name=node_index,
-                    characteristics=_createCharacteristicList(node_index, nodes[node_index])
-                )
-                sources_obj_dict.update({node_index: source})
-        return sources_obj_dict, samples_json_dict
+                try:
+                    obj_item = Sample(
+                        name=node_index,
+                        factor_values=_createValueList("Factor Value", node_index, nodes[node_index]),
+                        characteristics=_createValueList("Characteristics", node_index, nodes[node_index]),
+                        derives_from=nodes[node_index].metadata["Source Name"],
+                    )
+                    obj_dict.update({node_index: obj_item})
+                except KeyError:
+                    pass
+        return obj_dict
 
     def _createStudies(studies):
         study_array = []
         for study in studies:
-            sources, samples = _createSourcesSamples(study.nodes)
-            data_dict = _createDataFiles(study.nodes)
+            sources = _createSourceDictionary(study.nodes)
+            samples = _createSampleDictionary(study.nodes)
+            # data_dict = _createDataFiles(study.nodes)
             study_obj = Study(
                 identifier=study.metadata['Study Identifier'],
                 title=study.metadata['Study Title'],
@@ -296,8 +364,8 @@ def load(isatab_dir):
                 protocols=_createProtocols(study.protocols),
                 sources=list(sources.values()),
                 samples=list(samples.values()),
-                process_sequence=_createProcessSequence(study.process_nodes, sources, samples, data_dict),
-                assays=_createStudyAssaysList(study.assays),
+                # process_sequence=_createProcessSequence(study.process_nodes, sources, samples, data_dict),
+                # assays=_createStudyAssaysList(study.assays),
             )
             study_array.append(study_obj)
         return study_array
