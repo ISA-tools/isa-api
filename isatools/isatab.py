@@ -149,20 +149,19 @@ def load(isatab_dir):
              onto_annotations.append(onto_ann)
         return onto_annotations
 
-    #TODO Finish how to process nodes etc.
     def _createDataFiles(nodes):
-        json_dict = dict([])
+        obj_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype.endswith("Data File"):
-                json_item = Data(
+                obj_item = Data(
                     name=nodes[node_index].name,
                     type_=nodes[node_index].ntype
                 )
-                json_dict.update({node_index: json_item})
-        return json_dict
+                obj_dict.update({node_index: obj_item})
+        return obj_dict
 
     def _createProcessSequence(process_nodes, source_dict, sample_dict, data_dict):
-        json_list = []
+        obj_list = []
         for process_node_name in process_nodes:
             try:
                 measurement_type = process_nodes[process_node_name].study_assay.metadata["Study Assay Measurement Type"]
@@ -179,14 +178,14 @@ def load(isatab_dir):
             except:
                 technology = ""
 
-            json_item = dict([
-                    ("executesProtocol", _createExecuteStudyProtocol(process_node_name, process_nodes[process_node_name])),
-                    ("parameters", []),
-                    ("inputs", _createInputList(process_nodes[process_node_name].inputs, source_dict, sample_dict)),
-                    ("outputs", _createOutputList(process_nodes[process_node_name].outputs, sample_dict) )
-            ])
-            json_list.append(json_item)
-        return json_list
+            obj_item = Process(
+                executes_protocol=_createExecuteStudyProtocol(process_node_name, process_nodes[process_node_name]),
+                parameters=list(),
+                inputs=_createInputList(process_nodes[process_node_name].inputs, source_dict, sample_dict),
+                outputs=_createOutputList(process_nodes[process_node_name].outputs, sample_dict)
+            )
+            obj_list.append(obj_item)
+        return obj_list
 
     def _createExecuteStudyProtocol(process_node_name, process_node):
         json_item = dict([
@@ -199,29 +198,29 @@ def load(isatab_dir):
         return json_item
 
     def _createInputList(inputs, source_dict, sample_dict):
-        json_list = []
+        obj_list = list()
         for argument in inputs:
             try:
-                json_item = source_dict[argument]
-                json_list.append(json_item)
+                obj_item = source_dict[argument]
+                obj_list.append(obj_item)
             except KeyError:
                 pass
             try:
-                json_item = sample_dict[argument]
-                json_list.append(json_item)
+                obj_item = sample_dict[argument]
+                obj_list.append(obj_item)
             except KeyError:
                 pass
-        return json_list
+        return obj_list
 
     def _createOutputList(arguments, sample_dict):
-        json_list = []
+        obj_list = []
         for argument in arguments:
             try:
-                json_item = sample_dict[argument]
-                json_list.append(json_item)
+                obj_item = sample_dict[argument]
+                obj_list.append(obj_item)
             except KeyError:
                 pass
-        return json_list
+        return obj_list
 
     # def _createStudyAssaysList(assays):
     #     json_list = []
@@ -326,7 +325,6 @@ def load(isatab_dir):
                 obj_dict.update({node_name: source_item})
         return obj_dict
 
-
     def _createSampleDictionary(nodes):
         obj_dict = dict([])
         for node_index in nodes:
@@ -348,7 +346,7 @@ def load(isatab_dir):
         for study in studies:
             sources = _createSourceDictionary(study.nodes)
             samples = _createSampleDictionary(study.nodes)
-            # data_dict = _createDataFiles(study.nodes)
+            data_dict = _createDataFiles(study.nodes)
             study_obj = Study(
                 identifier=study.metadata['Study Identifier'],
                 title=study.metadata['Study Title'],
@@ -364,7 +362,7 @@ def load(isatab_dir):
                 protocols=_createProtocols(study.protocols),
                 sources=list(sources.values()),
                 samples=list(samples.values()),
-                # process_sequence=_createProcessSequence(study.process_nodes, sources, samples, data_dict),
+                process_sequence=_createProcessSequence(study.process_nodes, sources, samples, data_dict),
                 # assays=_createStudyAssaysList(study.assays),
             )
             study_array.append(study_obj)

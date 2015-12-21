@@ -345,16 +345,25 @@ class Process(IsaObject):
         inputs:
         outputs:
     """
-    def __init__(self, name="", executes_protocol=None, comments=None):
+    def __init__(self, name="", executes_protocol=None, parameters=None, inputs=None, outputs=None, comments=None):
         super().__init__(comments)
         self.name = name
         if executes_protocol is None:
             self.executes_protocol = Protocol()
         else:
             self.executes_protocol = executes_protocol
-        self.parameters = []
-        self.inputs = []
-        self.outputs = []
+        if parameters is None:
+            self.parameters = list()
+        else:
+            self.parameters = parameters
+        if inputs is None:
+            self.inputs = list()
+        else:
+            self.inputs = inputs
+        if outputs is None:
+            self.outputs = list()
+        else:
+            self.outputs = outputs
 
 
 class Source(IsaObject):
