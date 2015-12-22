@@ -69,7 +69,7 @@ def load(fp):
                 description=study_json['description'],
                 submission_date=study_json['submissionDate'],
                 public_release_date=study_json['publicReleaseDate'],
-                # file_name=study_json['studyFileName']
+                file_name=study_json['filename']
             )
             for study_publication_json in study_json['publications']:
                 logger.debug('Build Study Publication object')
@@ -172,65 +172,65 @@ def load(fp):
                         term_source=characteristic_json['value']['termSource'],
                     )
                     sample.characteristics.append(characteristic)
-                for factor_value_json in sample_json['factorValues']:
-                    logger.debug('Build Ontology Annotation object (Sample Factor Value)')
-                    factor_value = FactorValue(),
-                    try:
-                        factor_value.value=OntologyAnnotation(
-                            name=factor_value_json['value']['name'],
-                            term_accession=factor_value_json['value']['termAccession'],
-                            term_source=factor_value_json['value']['termSource'],
-                        )
-                    except TypeError:
-                        factor_value.value=factor_value_json['value']
-                    sample.characteristics.append(factor_value)
-            for process_json in study_json['processSequence']:
-                process = Process(
-                    executes_protocol=process_json['executesProtocol'],
-                )
-                for input_json in process_json['inputs']['characteristics']:
-                    input_ = Sample(
-                        name=input_json['name']
-                    )
-                    for characteristic_json in input_json['characteristics']:
-                        characteristic = Characteristic(
-                            value=OntologyAnnotation(
-                                name=characteristic_json['value']['name'],
-                                term_accession=characteristic_json['value']['termAccession'],
-                                term_source=characteristic_json['value']['termSource'],
-                            )
-                        )
-                        input_.characteristics.append(characteristic)
-                    input_.derives_from = input_json['derivesFrom']
-                    process.inputs.append(input_)
-                for output_json in process_json['outputs']:
-                    output = Sample(
-                        name=output_json['name']
-                    )
-                    for characteristic_json in output_json['characteristics']:
-                        characteristic = Characteristic(
-                            value=OntologyAnnotation(
-                                name=characteristic_json['value']['name'],
-                                term_accession=characteristic_json['value']['termAccession'],
-                                term_source=characteristic_json['value']['termSource'],
-                            )
-                        )
-                        output.characteristics.append(characteristic)
-                    for factor_value_json in output_json['factorValues']:
-                        factor_value = FactorValue(
-                            value=OntologyAnnotation(
-                                name=factor_value_json['value']['name'],
-                                term_accession=factor_value_json['value']['termAccession'],
-                                term_source=factor_value_json['value']['termSource'],
-                            ),
-                            unit=OntologyAnnotation(
-                                name=factor_value_json['unit']['name'],
-                                term_accession=factor_value_json['unit']['termAccession'],
-                                term_source=factor_value_json['unit']['termSource'],
-                            )
-                        )
-                        output.factor_values.append(factor_value)
-                    process.outputs.append(output)
+            #     for factor_value_json in sample_json['factorValues']:
+            #         logger.debug('Build Ontology Annotation object (Sample Factor Value)')
+            #         factor_value = FactorValue(),
+            #         try:
+            #             factor_value.value = OntologyAnnotation(
+            #                 name=factor_value_json['value']['name'],
+            #                 term_accession=factor_value_json['value']['termAccession'],
+            #                 term_source=factor_value_json['value']['termSource'],
+            #             )
+            #         except TypeError:
+            #             factor_value.value=factor_value_json['value']
+            #         sample.characteristics.append(factor_value)
+            # for process_json in study_json['processSequence']:
+            #     process = Process(
+            #         executes_protocol=process_json['executesProtocol'],
+            #     )
+            #     for input_json in process_json['inputs']['characteristics']:
+            #         input_ = Sample(
+            #             name=input_json['name']
+            #         )
+            #         for characteristic_json in input_json['characteristics']:
+            #             characteristic = Characteristic(
+            #                 value=OntologyAnnotation(
+            #                     name=characteristic_json['value']['name'],
+            #                     term_accession=characteristic_json['value']['termAccession'],
+            #                     term_source=characteristic_json['value']['termSource'],
+            #                 )
+            #             )
+            #             input_.characteristics.append(characteristic)
+            #         input_.derives_from = input_json['derivesFrom']
+            #         process.inputs.append(input_)
+            #     for output_json in process_json['outputs']:
+            #         output = Sample(
+            #             name=output_json['name']
+            #         )
+            #         for characteristic_json in output_json['characteristics']:
+            #             characteristic = Characteristic(
+            #                 value=OntologyAnnotation(
+            #                     name=characteristic_json['value']['name'],
+            #                     term_accession=characteristic_json['value']['termAccession'],
+            #                     term_source=characteristic_json['value']['termSource'],
+            #                 )
+            #             )
+            #             output.characteristics.append(characteristic)
+            #         for factor_value_json in output_json['factorValues']:
+            #             factor_value = FactorValue(
+            #                 value=OntologyAnnotation(
+            #                     name=factor_value_json['value']['name'],
+            #                     term_accession=factor_value_json['value']['termAccession'],
+            #                     term_source=factor_value_json['value']['termSource'],
+            #                 ),
+            #                 unit=OntologyAnnotation(
+            #                     name=factor_value_json['unit']['name'],
+            #                     term_accession=factor_value_json['unit']['termAccession'],
+            #                     term_source=factor_value_json['unit']['termSource'],
+            #                 )
+            #             )
+            #             output.factor_values.append(factor_value)
+            #         process.outputs.append(output)
 
             logger.debug('End building Study object')
             investigation.studies.append(study)
