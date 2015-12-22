@@ -209,7 +209,8 @@ class ISATab2ISAjson_v1:
                 ("samples",list(sample_dict.values())),
                 ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
                 ("assays", self.createStudyAssaysList(study.assays)),
-                ("factors", self.createStudyFactorsList(study.factors))
+                ("factors", self.createStudyFactorsList(study.factors)),
+                ("filename", study.metadata['Study File Name']),
             ])
             study_array.append(studyJson)
         return study_array
