@@ -783,6 +783,10 @@ def dump(isa_obj, path):
                     row = source_row_dict[source_ref] + sample_row
                     study_file_writer.writerow(row)
                 study_fp.close()
+                for assay in study.assays:
+                    assay_fp = open(os.path.join(path, assay.file_name), 'w')
+                    #  FIXME: Not yet implemented - parser doesn't seem to load into assay nodes (related to issue #37)
+                    assay_fp.close()
         fp.close()
 
     else:
