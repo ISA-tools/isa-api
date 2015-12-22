@@ -296,11 +296,7 @@ class ISATab2ISAjson_v1:
 
     def createExecuteStudyProtocol(self, process_node_name, process_node):
         json_item = dict([
-                   # ("name", dict([("value", process_node_name)])),
-                   # ("description", dict([("value", process_node_name)])),
-                   # ("version", dict([("value", process_node_name)])),
-                   # ("uri", dict([("value", process_node_name)])),
-                   # ("parameters", self.createProcessParameterList(process_node_name, process_node))
+                   ("name", process_node_name)
                 ])
         return json_item
 
