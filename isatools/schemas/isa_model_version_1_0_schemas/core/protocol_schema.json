@@ -24,8 +24,7 @@
         "parameters": {
             "type": "array",
             "items": {
-
-                "$ref": "parameter_schema.json#"
+                "$ref": "protocol_parameter_schema.json#"
             }
         },
         "components": {
@@ -33,7 +32,7 @@
             "items": {
                 "type": "object",
                 "properties": {
-                    "name": {
+                    "componentName": {
                         "type": "string"
                     },
                     "componentType": {

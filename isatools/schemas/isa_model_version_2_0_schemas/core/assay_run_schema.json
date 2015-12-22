@@ -1,11 +1,11 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema",
     "title" : "ISA model 2.0 assay_run schema",
-    "description" : "JSON-schema representing an assay run (protocol application of a data acquisition protocol) in the ISA model v2.0, subclass of protocol_application_schema.json",
+    "description" : "JSON-schema representing an assay run (protocol application of a data acquisition protocol) in the ISA model v2.0, subclass of process_schema.json",
     "type" : "object",
     "properties" : {
         "allOf" : {
-            "$ref": "protocol_application_schema.json#",
+            "$ref": "process_schema.json#",
             "measurementType" : {
                 "type" : "object",
                 "properties": {

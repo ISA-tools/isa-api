@@ -17,7 +17,6 @@
             "type" : "array",
             "items" : {
                  "$ref": "publication_schema.json#"
-
             }
         },
         "people" : {
@@ -62,7 +61,13 @@
               "items" : {
                 "$ref": "assay_schema.json#"
               }
-        }
+        },
+      "factors": {
+          "type": "array",
+          "items": {
+                "$ref": "factor_schema.json#"
+          }
+      }
     },
     "additionalProperties": false
 }

@@ -1,8 +1,8 @@
 from distutils.core import setup
 
 setup(
-    name='isatools_api',
-    version='0.0.2',
+    name='isatools',
+    version='0.0.4',
     packages=['isatools', 'isatools.convert', 'isatools.io', 'isatools.model'],
     description='ISA version 1.0 API',
     author='ISA Infrastructure Team',
@@ -10,8 +10,8 @@ setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Library',
-        'Programming Language :: Python :: 3.5',
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
+        'Programming Language :: Python :: 3.4',
         ],
     url='http://www.isa-tools.org/',
 )

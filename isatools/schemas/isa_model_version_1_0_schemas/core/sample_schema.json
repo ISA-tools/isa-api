@@ -11,11 +11,14 @@
                 "$ref": "material_attribute_schema.json#"
                 }
         },
-        "factors" : {
+        "factorValues" : {
             "type" : "array",
             "items" : {
                "$ref" : "factor_value_schema.json#"
             }
+        },
+        "derivesFrom": {
+          "$ref": "source_schema.json#"
         }
     },
     "additionalProperties": false

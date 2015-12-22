@@ -5,8 +5,9 @@ import glob
 import filecmp
 
 from isatools.io.isatab_parser import parse
-from isatools.convert.isatab2json import IsatabToJsonWriter
+from isatools.convert.isatab2isajson import ISATab2ISAjson_v1
 from isatools.convert.json2isatab import JsonToIsatabWriter
+
 
 class ISATabConversionTest(unittest.TestCase):
     def setUp(self):
@@ -47,8 +48,8 @@ class ISATabConversionTest(unittest.TestCase):
         """Test general parsing of an example ISA-Tab JSON directory.
         """
         # write out the json files for the isa-tab
-        writer = IsatabToJsonWriter()
-        writer.parsingIsatab(self._work_dir, self._json_dir)
+        writer = ISATab2ISAjson_v1()
+        writer.convert(self._work_dir, self._json_dir, True)
         if os.path.isdir(self._json_dir):
             fnames = glob.glob(os.path.join(self._json_dir, "i_*.json"))
             assert len(fnames) == 1
@@ -124,8 +125,8 @@ class ISATabConversionTest(unittest.TestCase):
         """Test general parsing of a single combined JSON ISA-Tab file
         """
         # write out the json files for the isa-tab
-        writer = IsatabToJsonWriter()
-        writer.parsingIsatab(self._work_dir, self._json_dir)
+        writer = ISATab2ISAjson_v1()
+        writer.convert(self._work_dir, self._json_dir)
         if os.path.isdir(self._json_dir):
             investigation_json_ref = os.path.join(self._json_dir, os.path.basename(self._work_dir) + ".json")
             assert os.path.exists(investigation_json_ref)
@@ -161,8 +162,8 @@ class ISATabConversionTest(unittest.TestCase):
 
     def test_jsonToIsatab_writer(self):
         # write out the json files for the isa-tab. Depends on test_isatab_json_writer()
-        writer = IsatabToJsonWriter()
-        writer.parsingIsatab(self._work_dir, self._json_dir)
+        writer = ISATab2ISAjson_v1()
+        writer.convert(self._work_dir, self._json_dir)
         mywriter = JsonToIsatabWriter()
         output_dir = self._generated_isatab_dir
         original_dir = self._work_dir
