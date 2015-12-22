@@ -209,7 +209,8 @@ class ISATab2ISAjson_v1:
                 ("samples",list(sample_dict.values())),
                 ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
                 ("assays", self.createStudyAssaysList(study.assays)),
-                ("factors", self.createStudyFactorsList(study.factors))
+                ("factors", self.createStudyFactorsList(study.factors)),
+                ("filename", study.metadata['Study File Name']),
             ])
             study_array.append(studyJson)
         return study_array
@@ -296,11 +297,7 @@ class ISATab2ISAjson_v1:
 
     def createExecuteStudyProtocol(self, process_node_name, process_node):
         json_item = dict([
-                   # ("name", dict([("value", process_node_name)])),
-                   # ("description", dict([("value", process_node_name)])),
-                   # ("version", dict([("value", process_node_name)])),
-                   # ("uri", dict([("value", process_node_name)])),
-                   # ("parameters", self.createProcessParameterList(process_node_name, process_node))
+                   ("name", process_node.protocol)
                 ])
         return json_item
 
