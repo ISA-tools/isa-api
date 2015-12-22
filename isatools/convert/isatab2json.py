@@ -197,6 +197,7 @@ class ISATab2ISAjson_v1:
             data_dict = self.createDataFiles(study.nodes)
             studyJson = dict([
                 ("identifier",study.metadata['Study Identifier']),
+                ("filename",study.metadata['Study File Name']),
                 ("title", study.metadata['Study Title']),
                 ("description", study.metadata['Study Description']),
                 ("submissionDate", study.metadata['Study Submission Date']),
@@ -296,7 +297,7 @@ class ISATab2ISAjson_v1:
 
     def createExecuteStudyProtocol(self, process_node_name, process_node):
         json_item = dict([
-                   ("name", process_node_name)
+                   ("name", process_node.protocol)
                 ])
         return json_item
 
