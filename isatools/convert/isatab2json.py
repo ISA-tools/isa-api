@@ -9,11 +9,16 @@ from jsonschema import RefResolver, Draft4Validator
 SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
 
+
+def convert(work_dir, json_dir):
+    converter = ISATab2ISAjson_v1()
+    converter.convert(work_dir, json_dir)
+
+
 class ISATab2ISAjson_v1:
 
     def __init__(self):
         pass
-
 
     def convert(self, work_dir, json_dir):
         """Convert an ISA-Tab dataset (version 1) to JSON provided the ISA model v1.0 JSON Schemas
