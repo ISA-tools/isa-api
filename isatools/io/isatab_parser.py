@@ -360,7 +360,7 @@ class StudyAssayParser:
         """
         for index, htype in ((i, t) for i, t in enumerate(htypes) if t == want_type):
             col = hgroups[index][0]
-            key = header[col]#self._clean_header(header[col])
+            key = header[col]
             if collapse_quals_fn:
                 val = collapse_quals_fn(line, header, hgroups[index])
             else:

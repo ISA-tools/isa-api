@@ -9,13 +9,18 @@ from jsonschema import RefResolver, Draft4Validator
 SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
 
+
+def convert(work_dir, json_dir):
+    converter = ISATab2ISAjson_v1()
+    converter.convert(work_dir, json_dir)
+
+
 class ISATab2ISAjson_v1:
 
     def __init__(self):
         pass
 
-
-    def convert(self, work_dir, json_dir, inv_identifier):
+    def convert(self, work_dir, json_dir):
         """Convert an ISA-Tab dataset (version 1) to JSON provided the ISA model v1.0 JSON Schemas
             :param work_dir: directory containing the ISA-tab dataset
             :param json_dir: output directory where the resulting json file will be saved
@@ -44,7 +49,7 @@ class ISATab2ISAjson_v1:
                         ("studies", self.createStudies(isa_tab.studies))
                     ])
 
-                if (inv_identifier):
+                if (isa_tab.metadata['Investigation Identifier']):
                     file_name = os.path.join(json_dir,isa_tab.metadata['Investigation Identifier']+".json")
                 else:
                     file_name = os.path.join(json_dir,isa_tab.studies[0].metadata['Study Identifier']+".json")
@@ -55,10 +60,12 @@ class ISATab2ISAjson_v1:
                 validator = Draft4Validator(schema, resolver=resolver)
                 validator.validate(isa_json, schema)
 
+                #TODO refactor saving the file into a separate method
                 with open(file_name, "w") as outfile:
                     json.dump(isa_json, outfile, indent=4, sort_keys=True)
                     outfile.close()
                 print("... conversion finished.")
+                return isa_json
 
 
     def createComment(self, name, value):
@@ -81,7 +88,7 @@ class ISATab2ISAjson_v1:
                 ("fax", contact[inv_or_study+" Person Fax"]),
                 ("address", contact[inv_or_study+" Person Address"]),
                 ("affiliation", contact[inv_or_study+" Person Affiliation"]),
-                ("roles", [])
+                ("roles", self.createOntologyAnnotationsFromStringList(contact, inv_or_study, " Person Roles"))
             ])
             people_json.append(person_json)
         return people_json
@@ -207,7 +214,8 @@ class ISATab2ISAjson_v1:
                 ("samples",list(sample_dict.values())),
                 ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
                 ("assays", self.createStudyAssaysList(study.assays)),
-                ("factors", self.createStudyFactorsList(study.factors))
+                ("factors", self.createStudyFactorsList(study.factors)),
+                ("filename", study.metadata['Study File Name']),
             ])
             study_array.append(studyJson)
         return study_array
@@ -294,11 +302,7 @@ class ISATab2ISAjson_v1:
 
     def createExecuteStudyProtocol(self, process_node_name, process_node):
         json_item = dict([
-                   # ("name", dict([("value", process_node_name)])),
-                   # ("description", dict([("value", process_node_name)])),
-                   # ("version", dict([("value", process_node_name)])),
-                   # ("uri", dict([("value", process_node_name)])),
-                   # ("parameters", self.createProcessParameterList(process_node_name, process_node))
+                   ("name", process_node.protocol)
                 ])
         return json_item
 
@@ -319,7 +323,7 @@ class ISATab2ISAjson_v1:
             sample_dict = self.createSampleDictionary(assay.nodes)
             data_dict = self.createDataFiles(assay.nodes)
             json_item = dict([
-                ("fileName", assay.metadata['Study Assay File Name']),
+                ("filename", assay.metadata['Study Assay File Name']),
                 ("measurementType", self.createOntologyAnnotation(assay.metadata['Study Assay Measurement Type'],
                                                                   assay.metadata['Study Assay Measurement Type Term Source REF'],
                                                                   assay.metadata['Study Assay Measurement Type Term Accession Number'])),
@@ -347,14 +351,16 @@ class ISATab2ISAjson_v1:
         json_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype == "Sample Name":
+              try:
                 json_item = dict([
                     ("name", node_index),
-                    ("factorValues", self.createFactorValueList(node_index, nodes[node_index])),
-                    ("characteristics", self.createCharacteristicList(node_index, nodes[node_index]))
-                    #TODO complete
-                    #("derivesFrom", nodes[node_index].metadata["Source Name"])
+                    ("factorValues", self.createValueList("Factor Value", node_index, nodes[node_index])),
+                    ("characteristics", self.createValueList("Characteristics",node_index, nodes[node_index])),
+                    ("derivesFrom", nodes[node_index].metadata["Source Name"])
                 ])
                 json_dict.update({node_index: json_item})
+              except KeyError:
+                  pass
         return json_dict
 
 
@@ -364,41 +370,47 @@ class ISATab2ISAjson_v1:
             if nodes[node_name].ntype == "Source Name":
                 json_item = dict([
                     ("name", node_name),
-                    ("characteristics", self.createCharacteristicList(node_name, nodes[node_name])),
+                    ("characteristics", self.createValueList("Characteristics", node_name, nodes[node_name])),
                 ])
                 json_dict.update({node_name: json_item})
         return json_dict
 
 
-    def createCharacteristicList(self, node_name, node):
+
+    def convert_num(self, s):
+        try:
+            return int(s)
+        except ValueError:
+            try:
+               return float(s)
+            except ValueError:
+                return s
+
+
+    def createValueList(self, column_name, node_name, node):
         json_list = []
         for header in node.metadata:
-            if header.startswith("Characteristics"):
-                 characteristic = header.replace("]", "").split("[")[-1]
-                 characteristic_json = self.createOntologyAnnotation(characteristic, "", "")
-                 json_item = dict([
-                     ("characteristic", characteristic_json)
-                 ])
-                 json_list.append(json_item)
+            if header.startswith(column_name):
+                 value_header = header.replace("]", "").split("[")[-1]
+                 value_attributes = node.metadata[header][0]
+                 value  = self.convert_num(value_attributes[0])
+                 try:
+                        value_json = dict([
+                         ("value", value),
+                         ("unit", self.createOntologyAnnotation(value_attributes.Unit, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
+                        ])
+                        json_list.append(value_json)
+                        continue
+                 except AttributeError:
+                    try:
+                        value_json = dict([
+                                ("value", self.createOntologyAnnotation(value, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
+                            ])
+                        json_list.append(value_json)
+                        continue
+                    except AttributeError:
+                      value_json = dict([
+                          ("value", value)
+                          ])
+                      json_list.append(value_json)
         return json_list
-
-
-    def createFactorValueList(self, node_name, node):
-        json_list = []
-        for header in node.metadata:
-            if header.startswith("Factor Value"):
-                 factor_value = header.replace("]", "").split("[")[-1]
-                 factor_value_ontology_annotation = self.createOntologyAnnotation(factor_value, "", "")
-                 factor_value_json = dict([
-                     ("value", factor_value_ontology_annotation)
-                 ])
-                 json_list.append(factor_value_json)
-        return json_list
-
-
-
-#isatab2isajson = ISATab2ISAjson_v1()
-#isatab2isajson.convert("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1","../../tests/datasets/metabolights", False)
-#isatab2isajson.convert("../../tests/data/BII-I-1","../../tests/data", True)
-#isatab2isajson.convert("../../tests/data/BII-S-7","../../tests/data", True)
-#isatab2isajson.convert("../../tests/data/isatab-test1","../../tests/data", True)
