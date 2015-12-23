@@ -16,7 +16,6 @@ class ISATabTest(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self._sra_dir, ignore_errors=True)
-        pass
 
     def test_isatab_to_sra(self):
         from isatools.convert import isatab2sra
