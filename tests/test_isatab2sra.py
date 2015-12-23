@@ -1,9 +1,9 @@
-import unittest
+from unittest import TestCase
 import os
 import shutil
 
 
-class ISATabTest(unittest.TestCase):
+class ISATabTest(TestCase):
 
     def setUp(self):
         """set up directories etc"""
