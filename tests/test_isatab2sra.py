@@ -1,9 +1,9 @@
-import unittest
+from unittest import TestCase
 import os
 import shutil
 
 
-class ISATabTest(unittest.TestCase):
+class ISATabTest(TestCase):
 
     def setUp(self):
         """set up directories etc"""
@@ -16,7 +16,6 @@ class ISATabTest(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self._sra_dir, ignore_errors=True)
-        pass
 
     def test_isatab_to_sra(self):
         from isatools.convert import isatab2sra
