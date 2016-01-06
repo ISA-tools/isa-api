@@ -1,7 +1,7 @@
 import os
 from unittest import TestCase
 from isatools.convert import isatab2json
-
+import json
 
 class ISAtab2jsonTest(TestCase):
 
@@ -12,7 +12,8 @@ class ISAtab2jsonTest(TestCase):
     def test_bii_i_1_conversion(self):
         test_data_dir = os.path.join(self._dir, "./data/BII-I-1")
         self.sample_data_dir = os.path.join(self._dir, "../isatools/sampledata/")
-        isa_json = isatab2json.convert(test_data_dir, self.sample_data_dir)
+        isatab2json.convert(test_data_dir, self.sample_data_dir)
+        isa_json = json.load(open("../isatools/sampledata/BII-I-1.json"))
         self.assertEqual(isa_json["identifier"], "BII-I-1")
         self.assertEqual(isa_json["title"], "Growth control of the eukaryote cell: a systems biology study in yeast")
         self.assertEqual(isa_json["description"], "Background Cell growth underlies many key cellular and "
