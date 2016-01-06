@@ -5,8 +5,8 @@ import os
 from uuid import uuid4
 from os import listdir
 from os.path import isdir, join
+from jsonschema import RefResolver, Draft4Validator
 
-import warlock
 
 #from bcbio.isatab.parser import InvestigationParser
 from isatools.io.isatab_parser import parse
@@ -32,10 +32,11 @@ class ISATab2CEDAR():
         print("Converting ISA to CEDAR model for ", work_dir)
         schema_file = "InvestigationSchema.json"
         schema = json.load(open(join(CEDAR_SCHEMA_PATH,schema_file)))
-        CEDARSchema = warlock.model_factory(schema)
+        resolver = RefResolver('file://'+join(CEDAR_SCHEMA_PATH, schema_file), schema)
+        validator = Draft4Validator(schema, resolver=resolver)
 
         isa_tab = parse(work_dir)
-        print(isa_tab)
+        #print(isa_tab)
 
         if isa_tab is None:
             print("No ISAtab dataset found")
@@ -91,9 +92,11 @@ class ISATab2CEDAR():
                         ("hasPublication", self.createInvestigationPublicationsList(isa_tab.publications))
                     ])
 
-                cedar_json = CEDARSchema(
-                    investigation=investigationObject
-                )
+                cedar_json = dict([
+                    ("investigation",investigationObject)
+                ])
+
+                validator.validate(cedar_json, schema)
 
                 #save output json
                 if (inv_identifier):
@@ -211,7 +214,9 @@ class ISATab2CEDAR():
     def createExecuteStudyProtocol(self, process_node_name, process_node):
         json_item = dict([
                     ("name", dict([("value", process_node_name)])),
-                    ("type", dict([("value", "http://purl.obolibrary.org/obo/OBI_0000715")])),
+                    ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                    ("@type", "http://purl.obolibrary.org/obo/OBI_0000272"),
+                    ("type", dict([("value", "http://purl.obolibrary.org/obo/OBI_0000272")])),
                     ("description", dict([("value", process_node_name)])),
                     ("version", dict([("value", process_node_name)])),
                     ("uri", dict([("value", process_node_name)])),
