@@ -48,6 +48,16 @@ def find_gt(a, x):
         return a[i]
     raise ValueError
 
+def find_between(a, x, y):
+    result = []
+    i = bisect.bisect_right(a, x)
+    if i!= len(a):
+        while i < len(a):
+            result.append(i)
+            i+=1
+            return result
+    raise ValueError
+
 def parse(isatab_ref):
     """Entry point to parse an ISA-Tab directory.
     isatab_ref can point to a directory of ISA-Tab data, in which case we
@@ -181,7 +191,9 @@ class StudyAssayParser:
                            "node_assay" : ("Extract Name", "Labeled Extract Name",
                                            "Assay Name", "Data Transformation Name",
                                            "Normalization Name"),
-                           "processing": ("Protocol REF",)}
+                           "processing": ("Protocol REF"),
+                           "parameter": ("Parameter Value")
+                           }
         self._synonyms = {"Array Data File" : "Raw Data File",
                           "Free Induction Decay Data File": "Raw Data File",
                           "Derived Array Data File" : "Derived Data File",
@@ -227,12 +239,15 @@ class StudyAssayParser:
             htypes = self._characterize_header(headers, hgroups)
 
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
+            all_parameters_indices = [i for i, x in enumerate(htypes) if x == "parameter"]
             node_indices = [i for i, x in enumerate(htypes) if x == "node" or x=="node_assay"]
 
             for processing_index in processing_indices:
                 try:
                     input_index = find_lt(node_indices, processing_index)
                     output_index = find_gt(node_indices, processing_index)
+                    #next_processing_index =
+                    #parameters_indices = find_between(all_parameters_indices, processing_index)
 
                 except ValueError:
                     # print "Invalid indices for process nodes"
@@ -243,7 +258,7 @@ class StudyAssayParser:
                 line_number = 0
                 max_number = 0
 
-                #reading line by line and identifying inputs outputs and create
+                #reading line by line and identifying inputs outputs and creating process_node
                 process_number = 1
                 input_process_map = {}
                 output_process_map = {}
@@ -271,7 +286,7 @@ class StudyAssayParser:
                             process_node = process_nodes[unique_process_name]
                         except KeyError:
                             #create process node
-                            process_node = ProcessNodeRecord(unique_process_name, processing_header, study)
+                            process_node = ProcessNodeRecord(unique_process_name, processing_header, study, processing_name)
                             process_number += 1
 
                         if not (input_node_index in process_node.inputs):
@@ -483,6 +498,7 @@ _process_node_str = \
 """       * Process Node ->  {name} {type}
          inputs: {inputs}
          outputs: {outputs}
+         parameters: {parameters}
          """
 
 
@@ -567,15 +583,19 @@ class NodeRecord:
 class ProcessNodeRecord:
     """Represent a process node within an ISA-Tab Study/Assay file (corresponds to Protocol REF).
     """
-    def __init__(self, name="", ntype="", study_assay=""):
+    def __init__(self, name="", ntype="", study_assay="", protocol=""):
         self.ntype = ntype
         self.study_assay = study_assay
         self.name = name
         self.inputs = []
         self.outputs = []
+        self.protocol = protocol
+        self.parameters = []
 
     def __str__(self):
         return _process_node_str.format(inputs=pprint.pformat(self.inputs).replace("\n", "\n" + " " * 9),
                                 outputs=pprint.pformat(self.outputs).replace("\n", "\n" + " " * 9),
                                 name=self.name,
-                                type=self.ntype)
+                                type=self.ntype,
+                                protocol=self.protocol,
+                                parameters=pprint.pformat(self.parameters).replace("\n","\n"+" "*9))
