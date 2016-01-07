@@ -18,7 +18,7 @@ class ISAtab2jsonTest(TestCase):
 
     def test_bii_i_1_conversion(self):
         isatab2json.convert(os.path.join(self._dir, './data/BII-I-1/'), self._tmp)
-        isa_json = json.load(open("../isatools/sampledata/BII-I-1.json"))
+        isa_json = json.load(open(os.path.join(self._tmp, 'BII-I-1.json')))
         self.assertEqual(isa_json["identifier"], "BII-I-1")
         self.assertEqual(isa_json["title"], "Growth control of the eukaryote cell: a systems biology study in yeast")
         self.assertEqual(isa_json["description"], "Background Cell growth underlies many key cellular and "
