@@ -1,6 +1,8 @@
 # isa-api
 
-Python ISA API library.
+This repository is a python-based ISA-API library, which supports the programmatic creation of ISA objects, multiple ISA serializations (e.g. tabular and JSON representations) and conversions between ISA and other formats.
+
+It relies on Python 3.4. We follow the [GitFlow development workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow).
 
 ## isatools package
 
