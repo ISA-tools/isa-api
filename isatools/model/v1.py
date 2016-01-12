@@ -1,5 +1,5 @@
 from datetime import date
-import abc
+import uuid
 
 __author__ = 'dj'
 
@@ -27,6 +27,7 @@ class IsaObject(object):
             self.comments = []
         else:
             self.comments = comments
+        self.obj_id = uuid.uuid4()
 
 
 class Investigation(IsaObject):
@@ -322,13 +323,13 @@ class ProtocolParameter(IsaObject):
         name:
         unit:
     """
-    def __init__(self, parameterName=None, unit=None, comments=None):
+    def __init__(self, parameter_name=None, unit=None, comments=None):
         super().__init__(comments)
-        if parameterName is None:
+        if parameter_name is None:
             self.name = OntologyAnnotation()
         else:
-            self.parameterName = parameterName
-        self.parameterName = parameterName
+            self.parameterName = parameter_name
+        self.parameterName = parameter_name
         if unit is None:
             self.unit = OntologyAnnotation()
         else:
@@ -383,9 +384,9 @@ class Source(IsaObject):
 
 
 class FactorValue(IsaObject):
-    def __init__(self, factorName="", value=None, unit=None, comments=None):
+    def __init__(self, factor_name="", value=None, unit=None, comments=None):
         super().__init__(comments)
-        self.factorName = factorName
+        self.factor_name = factor_name
         self.value = value
         self.unit = unit
 

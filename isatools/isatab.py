@@ -928,59 +928,92 @@ def dump(isa_obj, path):
 #     return investigation_df
 
 
-# def read_study_file(fp):
-#     import re
-#     study_file_column_headers = list()
-#
-#     def _read_study_record_line(row):
-#
-#         characteristics_regex = re.compile('Characteristics\[(.*?)\]')
-#         source_name = ''
-#         characteristics = list()
-#         for column in study_file_column_headers:
-#             if column == 'Source Name':
-#                 source_name = row[0]
-#             if characteristics_regex.match(column):
-#                 characteristics.append()
-#
-#     import csv
-#     characteristics_regex = re.compile('Characteristics\[(.*?)\]')
-#     factor_value_regex = re.compile('Factor Value\[(.*?)\]')
-#     source_characteristics = dict()  # k is category, v is is_unit
-#     source_factor_values = dict()  # k is factor value name, v is is_unit
-#     sample_characteristics = dict()  # k is category, v is is_unit
-#     sample_factor_values = dict()  # k is factor value name, v is is_unit
-#     study_reader = csv.reader(fp, delimiter='\t')
-#     fieldnames = next(study_reader)
-#
-#     for row in study_reader:
-#         source = Source()
-#         for fieldname in fieldnames:
-#             col_index = 0
-#             if fieldname == 'Source Name':
-#                 source.name = fieldname
-#                 if characteristics_regex.match(fieldname):
-#                     characteristic = Characteristic(
-#                         category=characteristics_regex(fieldname).group(1)
-#                     )
-#                     if fieldname[col_index+1] == 'Unit':
-#                         characteristic.value = OntologyAnnotation(
-#                             name=row[col_index]
-#                         )
-#                         characteristic.unit = OntologyAnnotation(
-#                             name=row[col_index+1],
-#                             term_accession=[col_index+2],
-#                             term_source=[col_index+3],
-#                         )
-#                     else:
-#                         characteristic.value = OntologyAnnotation(
-#                             name=row[col_index],
-#                             term_accession=row[col_index+1],
-#                             term_source=row[col_index+2]
-#                         )
-#             if fieldname == 'Sample Name':
-#                 break
-#             col_index += 1
+def read_study_file(fp):
+    import re
 
+    def _read_study_record_line(column_names, row_):
+        characteristics_regex = re.compile('Characteristics\[(.*?)\]')
+        factor_value_regex = re.compile('Factor Value\[(.*?)\]')
+        if len(column_names) != len(row_):
+            raise IOError
+        source_ = Source()
+        sample_ = Sample()
+        for index, value in enumerate(column_names):
+            if value == 'Source Name':
+                source_.name = row_[index]
+            if value == 'Sample Name':
+                sample_.name = row_[index]
+            if value == 'Material Type':
+                pass
+            if value == 'Protocol REF':
+                protocol_ref_ = row[index]
+            if characteristics_regex.match(value):
+                characteristic = Characteristic()
+                characteristic.category = characteristics_regex.findall(value)[0]
+                try:
+                    peek_column = column_names[index+1]
+                    if peek_column == 'Term Source REF':
+                        characteristic.value = OntologyAnnotation(
+                            name=row_[index],
+                            term_source=row_[index+1],
+                            term_accession=row_[index+2],
+                        )
+                    else:
+                        characteristic.value = row_[index]
+                except IndexError:
+                    pass
+                finally:
+                    if sample_.name == '':
+                        source_.characteristics.append(characteristic)
+                    else:
+                        sample_.characteristics.append(characteristic)
+            if factor_value_regex.match(value):
+                factor_value = FactorValue()
+                factor_value.factor_name = factor_value_regex.findall(value)[0]
+                try:
+                    peek_column = column_names[index+1]
+                    if peek_column == 'Term Source REF':
+                        factor_value.value = OntologyAnnotation(
+                            name=row_[index],
+                            term_source=row_[index+1],
+                            term_accession=row_[index+2],
+                        )
+                    elif peek_column == 'Unit':
+                        factor_value.value = row_[index]
+                        factor_value.unit = OntologyAnnotation(
+                            name=row_[index+1],
+                            term_source=row_[index+2],
+                            term_accession=row_[index+3],
+                        )
+                except IndexError:
+                    pass
+                finally:
+                    sample_.factor_values.append(factor_value)
+        return source_, sample_, protocol_ref_
+
+    import csv
+    sources = dict()  # k is is, v is obj
+    samples = dict()  # k is is, v is obj
+    processing_events = list()
+    study_reader = csv.reader(fp, delimiter='\t')
+    fieldnames = next(study_reader)
+    row = next(study_reader)
+    for row in study_reader:
+        source, sample, protocol_ref = _read_study_record_line(column_names=fieldnames, row_=row)
+        if not (source.name in sources.keys()):
+            sources[source.name] = source
+        if not (sample.name in samples.keys()):
+            samples[sample.name] = sample
+        processing_events.append((source.name, protocol_ref, sample.name))
+    experimental_graph = dict()
+    for processing_event in processing_events:
+        try:
+            experimental_graph[(str(processing_event[0]), processing_event[1])].append((processing_event[1],
+                                                                                        str(processing_event[2])))
+        except KeyError:
+            experimental_graph[(str(processing_event[0]), processing_event[1])] = list()
+            experimental_graph[(str(processing_event[0]), processing_event[1])].append((processing_event[1],
+                                                                                        str(processing_event[2])))
+    return sources, samples, experimental_graph
     # for row in study_reader:
-    #     print(row['Source Name'], row['Sample Name'])
+    #     print(_read_study_record_line(column_names=fieldnames, row_=row))
