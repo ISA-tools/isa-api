@@ -336,6 +336,10 @@ class ProtocolParameter(IsaObject):
             self.unit = unit
 
 
+class ProtocolREF(IsaObject):
+    pass
+
+
 class Process(IsaObject):
     """A Process.
 
