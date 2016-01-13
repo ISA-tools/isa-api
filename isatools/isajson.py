@@ -55,7 +55,7 @@ def load(fp):
                 description=study_json['description'],
                 submission_date=study_json['submissionDate'],
                 public_release_date=study_json['publicReleaseDate'],
-                #  FIXME: file_name=study_json['fileName']
+                file_name=study_json['filename']
             )
             for study_publication_json in study_json['publications']:
                 study_publication = Publication(
@@ -111,7 +111,7 @@ def load(fp):
                         term_source=assay_json['technologyType']['termSource']
                     ),
                     technology_platform=assay_json['technologyPlatform'],
-                    file_name=assay_json['fileName']
+                    file_name=assay_json['filename']
                 )
                 study.assays.append(assay)
             for factor_json in study_json['factors']:
