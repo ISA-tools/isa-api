@@ -132,7 +132,9 @@ def load(fp):
                     file_name=assay_json['filename']
                 )
                 for process_json in assay_json['processSequence']:
-                    process = Process()  # TODO: Implement process - need example JSON
+                    process = Process(
+                        executes_protocol=process_json['executesProtocol']['name']
+                    )  # TODO: Implement process - need example JSON
                     assay.process_sequence.append(process)
                 study.assays.append(assay)
             for factor_json in study_json['factors']:
