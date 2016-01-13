@@ -946,7 +946,22 @@ def read_study_file(fp):
             if value == 'Material Type':
                 pass
             if value == 'Protocol REF':
-                protocol_ref_ = row[index]
+                processing_event_ = ProcessingEvent(
+                    protocol_ref=row_[index],
+                )
+                try:
+                    peek_column = column_names[index+1]
+                    if peek_column == 'Date':
+                        processing_event_.date_ = row_[index+1]
+                        peek_column = column_names[index+2]
+                        if peek_column == 'Performer':
+                            processing_event_.performer = row_[index+2]
+                    if peek_column == 'Performer':
+                        processing_event_.performer = row_[index+1]
+                        if peek_column == 'Date':
+                            processing_event_.date = row_[index+2]
+                except IndexError:
+                    pass
             if characteristics_regex.match(value):
                 characteristic = Characteristic()
                 characteristic.category = characteristics_regex.findall(value)[0]
@@ -989,31 +1004,22 @@ def read_study_file(fp):
                     pass
                 finally:
                     sample_.factor_values.append(factor_value)
-        return source_, sample_, protocol_ref_
+        return source_, sample_, processing_event_
 
     import csv
-    sources = dict()  # k is is, v is obj
-    samples = dict()  # k is is, v is obj
-    processing_events = list()
     study_reader = csv.reader(fp, delimiter='\t')
     fieldnames = next(study_reader)
-    row = next(study_reader)
-    for row in study_reader:
-        source, sample, protocol_ref = _read_study_record_line(column_names=fieldnames, row_=row)
-        if not (source.name in sources.keys()):
-            sources[source.name] = source
-        if not (sample.name in samples.keys()):
-            samples[sample.name] = sample
-        processing_events.append((source.name, protocol_ref, sample.name))
     experimental_graph = dict()
-    for processing_event in processing_events:
+    for row in study_reader:
+        source, sample, processing_event = _read_study_record_line(column_names=fieldnames, row_=row)
         try:
-            experimental_graph[(str(processing_event[0]), processing_event[1])].append((processing_event[1],
-                                                                                        str(processing_event[2])))
+            experimental_graph[source].append(processing_event)
         except KeyError:
-            experimental_graph[(str(processing_event[0]), processing_event[1])] = list()
-            experimental_graph[(str(processing_event[0]), processing_event[1])].append((processing_event[1],
-                                                                                        str(processing_event[2])))
-    return sources, samples, experimental_graph
-    # for row in study_reader:
-    #     print(_read_study_record_line(column_names=fieldnames, row_=row))
+            experimental_graph[source] = list()
+            experimental_graph[source].append(processing_event)
+        try:
+            experimental_graph[processing_event].append(sample)
+        except KeyError:
+            experimental_graph[processing_event] = list()
+            experimental_graph[processing_event].append(sample)
+    return experimental_graph

@@ -336,8 +336,15 @@ class ProtocolParameter(IsaObject):
             self.unit = unit
 
 
-class ProtocolREF(IsaObject):
-    pass
+class ProcessingEvent(IsaObject):
+
+    def __init__(self, protocol_ref='', parameters=None, performer='', date_=date.today(), comments=None):
+        super().__init__(comments)
+        self.protocol_ref = protocol_ref
+        if parameters is None:
+            self.parameters = list()
+        self.performer = performer
+        self.date = date_
 
 
 class Process(IsaObject):
