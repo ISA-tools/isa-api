@@ -297,7 +297,7 @@ def load(isatab_dir):
                 sources=list(sources.values()),
                 samples=list(samples.values()),
                 process_sequence=_createProcessSequence(study.process_nodes, sources, samples, data_dict),
-                assays=_createStudyAssaysList(study.assays),
+                # assays=_createStudyAssaysList(study.assays),
             )
             study_array.append(study_obj)
         return study_array
