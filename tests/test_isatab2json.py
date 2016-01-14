@@ -16,6 +16,10 @@ class ISAtab2jsonTest(TestCase):
     def tearDown(self):
         shutil.rmtree(self._tmp, ignore_errors=True)
 
+    def test_isa_repeated_measure_conversion(self):
+        isatab2json.convert(os.path.join(self._dir, './data/TEST-ISA-repeated-measure/'), self._tmp)
+        #isa_json = json.load(open(os.path.join(self._tmp, 'TEST-ISA-repeated-measure.json')))
+
     def test_bii_i_1_conversion(self):
         isatab2json.convert(os.path.join(self._dir, './data/BII-I-1/'), self._tmp)
         isa_json = json.load(open(os.path.join(self._tmp, 'BII-I-1.json')))
