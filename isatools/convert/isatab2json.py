@@ -268,7 +268,7 @@ class ISATab2ISAjson_v1:
 
             json_item = dict([
                     ("executesProtocol", self.createExecuteStudyProtocol(process_node_name, process_nodes[process_node_name])),
-                    ("parameters", []),
+                    ("parameters", self.createProcessParameterValueList(process_node_name, process_nodes[process_node_name])),
                     ("inputs", self.createInputList(process_nodes[process_node_name].inputs, source_dict, sample_dict)),
                     ("outputs", self.createOutputList(process_nodes[process_node_name].outputs, sample_dict) )
             ])
@@ -306,13 +306,12 @@ class ISATab2ISAjson_v1:
                 ])
         return json_item
 
-    def createProcessParameterList(self, process_node_name, process_node):
-        #self.createOntologyAnnotationsFromStringList(protocol,"Study", " Protocol Parameters Name")
+
+    def createProcessParameterValueList(self, process_node_name, process_node):
         json_list = []
         json_item = dict([
-                    ("parameterType", dict([("value", process_node_name )])),
-                    ("description", dict([("value", "")])),
-                ])
+            ("value", ""),
+        ])
         json_list.append(json_item)
         return json_list
 
