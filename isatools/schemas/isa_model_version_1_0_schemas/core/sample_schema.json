@@ -8,7 +8,7 @@
         "characteristics" : {
             "type" : "array",
             "items" :  {
-                "$ref": "material_attribute_schema.json#"
+                "$ref": "material_attribute_value_schema.json#"
                 }
         },
         "factorValues" : {

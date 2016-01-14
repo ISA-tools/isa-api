@@ -13,7 +13,7 @@
         "parameters": {
             "type": "array",
             "items": {
-                  "$ref" : "protocol_parameter_schema.json#"
+                  "$ref" : "process_parameter_value_schema.json#"
             }
         },
         "inputs" : {
