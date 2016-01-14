@@ -128,7 +128,7 @@ def load(isatab_dir):
                                                                           " Protocol Parameters Name")
         for parameter_annotation in parameters_annotations:
             parameter = ProtocolParameter(
-                parameterName=parameter_annotation
+                # parameterName=parameter_annotation
             )
             parameters_list.append(parameter)
         return parameters_list
@@ -263,7 +263,7 @@ def load(isatab_dir):
                         )
                     elif column_name == 'Factor Value':
                         value_obj = FactorValue(
-                            factorName=value_header,
+                            # factorName=value_header,
                             value=value,
                             unit=OntologyAnnotation(
                                 name=value_attributes.Unit,
@@ -287,7 +287,7 @@ def load(isatab_dir):
                             obj_list.append(value_obj)
                         elif column_name == 'Factor Value':
                             value_obj = FactorValue(
-                                factorName=value_header,
+                                # factorName=value_header,
                                 value=OntologyAnnotation(
                                     name=value,
                                     term_accession=value_attributes.Term_Accession_Number,
@@ -305,7 +305,7 @@ def load(isatab_dir):
                             )
                         elif column_name == 'Factor Value':
                             value_obj = FactorValue(
-                                factorName=value_header,
+                                # factorName=value_header,
                                 value=OntologyAnnotation(
                                     name=value
                                 )
