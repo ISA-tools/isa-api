@@ -5,6 +5,9 @@
     "type" : "object",
     "properties" : {
         "value": {
+            "category" : {
+             "$ref": "protocol_parameter_schema.json#"
+            },
             "anyOf" : [
                 { "$ref": "ontology_annotation_schema.json#"},
                 { "type": "string"},
