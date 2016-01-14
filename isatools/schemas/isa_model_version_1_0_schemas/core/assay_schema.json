@@ -9,6 +9,12 @@
     },
     "type": "object",
     "properties": {
+        "comments" : {
+            "type": "array",
+            "items": {
+                 "$ref": "comment_schema.json#"
+            }
+        },
         "filename" : { "type" : "string" },
         "measurementType" : {
                     "$ref": "ontology_annotation_schema.json#"

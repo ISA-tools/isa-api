@@ -4,6 +4,12 @@
     "description": "JSON-schema representing a protocol application in the ISA model",
     "type": "object",
     "properties": {
+        "comments" : {
+            "type": "array",
+            "items": {
+                 "$ref": "comment_schema.json#"
+            }
+        },
         "name": {
             "type": "string"
         },
@@ -13,7 +19,7 @@
         "parameters": {
             "type": "array",
             "items": {
-                  "$ref" : "protocol_parameter_schema.json#"
+                  "$ref" : "process_parameter_value_schema.json#"
             }
         },
         "inputs" : {

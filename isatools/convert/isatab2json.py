@@ -41,12 +41,11 @@ class ISATab2ISAjson_v1:
                         ("description",isa_tab.metadata['Investigation Description']),
                         ("submissionDate", isa_tab.metadata['Investigation Submission Date']),
                         ("publicReleaseDate", isa_tab.metadata['Investigation Public Release Date']),
-                        ("commentCreatedWithConfiguration", self.createComment('Created With Configuration',isa_tab.metadata['Comment[Created With Configuration]'])),
-                        ("commentLastOpenedWithConfiguration", self.createComment('Last Opened With Configuration', isa_tab.metadata['Comment[Last Opened With Configuration]'])),
                         ("ontologySourceReferences", self.createOntologySourceReferences(isa_tab.ontology_refs)),
                         ("publications", self.createPublications(isa_tab.publications, "Investigation")),
                         ("people", self.createContacts(isa_tab.contacts, "Investigation")),
-                        ("studies", self.createStudies(isa_tab.studies))
+                        ("studies", self.createStudies(isa_tab.studies)),
+                        ("comments", self.createInvestigationComments(isa_tab))
                     ])
 
                 if (isa_tab.metadata['Investigation Identifier']):
@@ -67,6 +66,11 @@ class ISATab2ISAjson_v1:
                 print("... conversion finished.")
                 return isa_json
 
+    def createInvestigationComments(self, isa_tab):
+        comments = []
+        comments.append(self.createComment('Created With Configuration',isa_tab.metadata['Comment[Created With Configuration]']))
+        comments.append(self.createComment('Last Opened With Configuration', isa_tab.metadata['Comment[Last Opened With Configuration]']))
+        return comments
 
     def createComment(self, name, value):
         comment_json = dict([
@@ -268,7 +272,7 @@ class ISATab2ISAjson_v1:
 
             json_item = dict([
                     ("executesProtocol", self.createExecuteStudyProtocol(process_node_name, process_nodes[process_node_name])),
-                    ("parameters", []),
+                    ("parameters", self.createProcessParameterValueList(process_node_name, process_nodes[process_node_name])),
                     ("inputs", self.createInputList(process_nodes[process_node_name].inputs, source_dict, sample_dict)),
                     ("outputs", self.createOutputList(process_nodes[process_node_name].outputs, sample_dict) )
             ])
@@ -306,13 +310,12 @@ class ISATab2ISAjson_v1:
                 ])
         return json_item
 
-    def createProcessParameterList(self, process_node_name, process_node):
-        #self.createOntologyAnnotationsFromStringList(protocol,"Study", " Protocol Parameters Name")
+
+    def createProcessParameterValueList(self, process_node_name, process_node):
         json_list = []
         json_item = dict([
-                    ("parameterType", dict([("value", process_node_name )])),
-                    ("description", dict([("value", "")])),
-                ])
+            ("value", ""),
+        ])
         json_list.append(json_item)
         return json_list
 
