@@ -5,8 +5,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-
-def load(fp):
+def load (fp):
     # ontologySourceReference_REFs = dict()  # For term source REF pointers
     # file_REFs = dict()  # For fileName REF pointers
     investigation = None
@@ -59,7 +58,7 @@ def load(fp):
                 address=person_json['address'],
                 affiliation=person_json['affiliation']
             )
-            # FIXME: Implement support for roles
+            # TODO: Implement support for roles
             investigation.contacts.append(person)
         for study_json in isajson['studies']:
             logger.debug('Start building Study object')
@@ -69,7 +68,7 @@ def load(fp):
                 description=study_json['description'],
                 submission_date=study_json['submissionDate'],
                 public_release_date=study_json['publicReleaseDate'],
-                file_name=study_json['filename']
+                # file_name=study_json['studyFileName']
             )
             for study_publication_json in study_json['publications']:
                 logger.debug('Build Study Publication object')
@@ -129,13 +128,8 @@ def load(fp):
                         term_source=assay_json['technologyType']['termSource']
                     ),
                     technology_platform=assay_json['technologyPlatform'],
-                    file_name=assay_json['filename']
+                    file_name=assay_json['fileName']
                 )
-                for process_json in assay_json['processSequence']:
-                    process = Process(
-                        executes_protocol=process_json['executesProtocol']['name']
-                    )  # TODO: Implement process - need example JSON
-                    assay.process_sequence.append(process)
                 study.assays.append(assay)
             for factor_json in study_json['factors']:
                 logger.debug('Build Study Factor object')
@@ -156,9 +150,9 @@ def load(fp):
                 for characteristic_json in source_json['characteristics']:
                     logger.debug('Build Ontology Annotation object (Source Characteristic)')
                     characteristic = OntologyAnnotation(
-                        name=characteristic_json['value']['name'],
-                        term_accession=characteristic_json['value']['termAccession'],
-                        term_source=characteristic_json['value']['termSource'],
+                        name=characteristic_json['name'],
+                        term_accession=characteristic_json['termAccession'],
+                        term_source=characteristic_json['termSource'],
                     )
                     source.characteristics.append(characteristic)
             for sample_json in study_json['samples']:
@@ -169,71 +163,63 @@ def load(fp):
                 for characteristic_json in sample_json['characteristics']:
                     logger.debug('Build Ontology Annotation object (Sample Characteristic)')
                     characteristic = OntologyAnnotation(
-                        name=characteristic_json['value']['name'],
-                        term_accession=characteristic_json['value']['termAccession'],
-                        term_source=characteristic_json['value']['termSource'],
+                        name=characteristic_json['name'],
+                        term_accession=characteristic_json['termAccession'],
+                        term_source=characteristic_json['termSource'],
                     )
                     sample.characteristics.append(characteristic)
-            #     for factor_value_json in sample_json['factorValues']:
-            #         logger.debug('Build Ontology Annotation object (Sample Factor Value)')
-            #         factor_value = FactorValue(),
-            #         try:
-            #             factor_value.value = OntologyAnnotation(
-            #                 name=factor_value_json['value']['name'],
-            #                 term_accession=factor_value_json['value']['termAccession'],
-            #                 term_source=factor_value_json['value']['termSource'],
-            #             )
-            #         except TypeError:
-            #             factor_value.value=factor_value_json['value']
-            #         sample.characteristics.append(factor_value)
-            # for process_json in study_json['processSequence']:
-            #     process = Process(
-            #         executes_protocol=process_json['executesProtocol'],
-            #     )
-            #     for input_json in process_json['inputs']['characteristics']:
-            #         input_ = Sample(
-            #             name=input_json['name']
-            #         )
-            #         for characteristic_json in input_json['characteristics']:
-            #             characteristic = Characteristic(
-            #                 value=OntologyAnnotation(
-            #                     name=characteristic_json['value']['name'],
-            #                     term_accession=characteristic_json['value']['termAccession'],
-            #                     term_source=characteristic_json['value']['termSource'],
-            #                 )
-            #             )
-            #             input_.characteristics.append(characteristic)
-            #         input_.derives_from = input_json['derivesFrom']
-            #         process.inputs.append(input_)
-            #     for output_json in process_json['outputs']:
-            #         output = Sample(
-            #             name=output_json['name']
-            #         )
-            #         for characteristic_json in output_json['characteristics']:
-            #             characteristic = Characteristic(
-            #                 value=OntologyAnnotation(
-            #                     name=characteristic_json['value']['name'],
-            #                     term_accession=characteristic_json['value']['termAccession'],
-            #                     term_source=characteristic_json['value']['termSource'],
-            #                 )
-            #             )
-            #             output.characteristics.append(characteristic)
-            #         for factor_value_json in output_json['factorValues']:
-            #             factor_value = FactorValue(
-            #                 value=OntologyAnnotation(
-            #                     name=factor_value_json['value']['name'],
-            #                     term_accession=factor_value_json['value']['termAccession'],
-            #                     term_source=factor_value_json['value']['termSource'],
-            #                 ),
-            #                 unit=OntologyAnnotation(
-            #                     name=factor_value_json['unit']['name'],
-            #                     term_accession=factor_value_json['unit']['termAccession'],
-            #                     term_source=factor_value_json['unit']['termSource'],
-            #                 )
-            #             )
-            #             output.factor_values.append(factor_value)
-            #         process.outputs.append(output)
+                for factor_value_json in sample_json['factorValues']:
+                    logger.debug('Build Ontology Annotation object (Sample Factor Value)')
+                    factor_value = FactorValue(
+                        value=OntologyAnnotation(
+                            name=factor_value_json['value']['name'],
+                            term_accession=factor_value_json['value']['termAccession'],
+                            term_source=factor_value_json['value']['termSource'],
+                        ),
 
+                    )
+                    sample.characteristics.append(factor_value)
+            for process_json in study_json['processSequence']:
+                logger.debug('Build Process object')
+                process = Process(
+                    executes_protocol=process_json['executesProtocol'],
+                )
+                inputs = list()
+                for input_json in process_json['inputs']:
+                    if input_json['name'].startswith('source-'):
+                        input_ = Source(
+                            name=input_json['name'],
+                        )
+                        characteristics = list()
+                        for characteristic_json in input_json['characteristics']:
+                            characteristic = Characteristic(
+                                value=OntologyAnnotation(
+                                    name=characteristic_json['name'],
+                                    term_accession=characteristic_json['termAccession'],
+                                    term_source=characteristic_json['termSource']
+                                )
+                            )
+                            characteristics.append(characteristic)
+                        input_.characteristics = characteristics
+                        inputs.append(input_)
+                outputs = list()
+                for output_json in process_json['outputs']:
+                    if output_json['name'].startswith('sample-'):
+                        output = Sample(
+                            name=output_json['name'],
+                        )
+                    outputs.append(output)
+                    characteristics = list()
+                    for characteristic_json in output_json['characteristics']:
+                        characteristic = Characteristic(
+                                value=OntologyAnnotation(
+                                    name=characteristic_json['name'],
+                                    term_accession=characteristic_json['termAccession'],
+                                    term_source=characteristic_json['termSource']
+                                )
+                            )
+                        characteristics.append(characteristic)
+            study.process_sequence.append(process)
             logger.debug('End building Study object')
             investigation.studies.append(study)
         logger.debug('End building Investigation object')
