@@ -4,12 +4,7 @@
     "description" : "JSON-schema representing a person in the ISA model",
     "type" : "object",
     "properties" : {
-        "comments" : {
-            "type": "array",
-            "items": {
-                 "$ref": "comment_schema.json#"
-            }
-        },
+        "@id": { "type": "string", "format": "uri" },
         "lastName" : { "type" : "string"},
         "firstName" : { "type" : "string"},
         "midInitials" : { "type" : "string" },
@@ -22,6 +17,12 @@
             "type" : "array",
             "items" : {
                 "$ref": "ontology_annotation_schema.json#"
+            }
+        },
+        "comments" : {
+            "type": "array",
+            "items": {
+                 "$ref": "comment_schema.json#"
             }
         }
     },

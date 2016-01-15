@@ -9,6 +9,7 @@
     },
     "type": "object",
     "properties": {
+        "@id": { "type": "string", "format": "uri" },
         "comments" : {
             "type": "array",
             "items": {

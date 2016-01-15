@@ -5,6 +5,7 @@ import os
 from os.path import join
 from isatools.io.isatab_parser import parse
 from jsonschema import RefResolver, Draft4Validator
+from uuid import uuid4
 
 SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
@@ -18,7 +19,13 @@ def convert(work_dir, json_dir):
 class ISATab2ISAjson_v1:
 
     def __init__(self):
-        pass
+        self.identifiers = list() #list of dictionaries
+
+    def getIdentifier(self, type, name):
+        for subVal in self.identifiers:
+            if subVal["type"]==type and subVal["name"]==name:
+                return subVal["id"]
+
 
     def convert(self, work_dir, json_dir):
         """Convert an ISA-Tab dataset (version 1) to JSON provided the ISA model v1.0 JSON Schemas
@@ -26,6 +33,7 @@ class ISATab2ISAjson_v1:
             :param json_dir: output directory where the resulting json file will be saved
         """
         print("Converting ISAtab to ISAjson for ", work_dir)
+
 
         isa_tab = parse(work_dir)
         #print(isa_tab)
@@ -116,8 +124,12 @@ class ISATab2ISAjson_v1:
     def createProtocols(self, protocols):
         protocols_json = []
         for protocol in protocols:
+            protocol_identifier = "http://data.isa-tools.org/UUID/"+str(uuid4())
+            protocol_name = protocol['Study Protocol Name']
+            self.identifiers.append(dict([("type", "protocol"), ("name", protocol_name), ("id", protocol_identifier)]))
             protocol_json = dict([
-                ("name", protocol['Study Protocol Name']),
+                ("@id", protocol_identifier),
+                ("name", protocol_name),
                 ("protocolType", self.createOntologyAnnotationForInvOrStudy(protocol, "Study", " Protocol Type")),
                 ("description", protocol['Study Protocol Description']),
                 ("uri", protocol['Study Protocol URI']),
@@ -306,7 +318,8 @@ class ISATab2ISAjson_v1:
 
     def createExecuteStudyProtocol(self, process_node_name, process_node):
         json_item = dict([
-                   ("name", process_node.protocol)
+                   #("name", process_node.protocol)
+                   ("@id", self.getIdentifier("protocol", process_node.protocol))
                 ])
         return json_item
 
