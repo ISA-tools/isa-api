@@ -21,11 +21,16 @@ class ISATab2ISAjson_v1:
     def __init__(self):
         self.identifiers = list() #list of dictionaries
 
+    def setIdentifier(self, type, name, identifier):
+        self.identifiers.append(dict([("type", type), ("name", name), ("identifier", identifier)]))
+
     def getIdentifier(self, type, name):
         for subVal in self.identifiers:
             if subVal["type"]==type and subVal["name"]==name:
-                return subVal["id"]
+                return subVal["identifier"]
 
+    def generateIdentifier(self):
+        return "http://data.isa-tools.org/UUID/"+str(uuid4())
 
     def convert(self, work_dir, json_dir):
         """Convert an ISA-Tab dataset (version 1) to JSON provided the ISA model v1.0 JSON Schemas
@@ -124,9 +129,9 @@ class ISATab2ISAjson_v1:
     def createProtocols(self, protocols):
         protocols_json = []
         for protocol in protocols:
-            protocol_identifier = "http://data.isa-tools.org/UUID/"+str(uuid4())
+            protocol_identifier = self.generateIdentifier()
             protocol_name = protocol['Study Protocol Name']
-            self.identifiers.append(dict([("type", "protocol"), ("name", protocol_name), ("id", protocol_identifier)]))
+            self.setIdentifier("protocol", protocol_name, protocol_identifier)
             protocol_json = dict([
                 ("@id", protocol_identifier),
                 ("name", protocol_name),
@@ -213,11 +218,15 @@ class ISATab2ISAjson_v1:
     def createStudies(self, studies):
         study_array = []
         for study in studies:
+            study_identifier = self.generateIdentifier()
+            study_name = study.metadata['Study Identifier']
+            self.setIdentifier("study", study_name, study_identifier)
             source_dict = self.createSourcesDictionary(study.nodes)
             sample_dict = self.createSampleDictionary(study.nodes)
             data_dict = self.createDataFiles(study.nodes)
             studyJson = dict([
-                ("identifier",study.metadata['Study Identifier']),
+                ("@id", study_identifier),
+                ("identifier",study_name),
                 ("title", study.metadata['Study Title']),
                 ("description", study.metadata['Study Description']),
                 ("submissionDate", study.metadata['Study Submission Date']),
@@ -318,7 +327,6 @@ class ISATab2ISAjson_v1:
 
     def createExecuteStudyProtocol(self, process_node_name, process_node):
         json_item = dict([
-                   #("name", process_node.protocol)
                    ("@id", self.getIdentifier("protocol", process_node.protocol))
                 ])
         return json_item
@@ -338,7 +346,11 @@ class ISATab2ISAjson_v1:
             source_dict = self.createSourcesDictionary(assay.nodes)
             sample_dict = self.createSampleDictionary(assay.nodes)
             data_dict = self.createDataFiles(assay.nodes)
+            assay_identifier = self.generateIdentifier()
+            assay_name = assay.metadata['Study Assay File Name']
+            self.setIdentifier("assay", assay_name, assay_identifier)
             json_item = dict([
+                ("@id", assay_identifier),
                 ("filename", assay.metadata['Study Assay File Name']),
                 ("measurementType", self.createOntologyAnnotation(assay.metadata['Study Assay Measurement Type'],
                                                                   assay.metadata['Study Assay Measurement Type Term Source REF'],
@@ -356,7 +368,10 @@ class ISATab2ISAjson_v1:
         json_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype.endswith("Data File") :
+                data_identifier = self.generateIdentifier()
+                self.setIdentifier("data", node_index, data_identifier)
                 json_item = dict([
+                    ("@id", data_identifier),
                     ("name", nodes[node_index].name),
                     ("type", nodes[node_index].ntype)
                 ])
@@ -368,7 +383,10 @@ class ISATab2ISAjson_v1:
         for node_index in nodes:
             if nodes[node_index].ntype == "Sample Name":
               try:
+                sample_identifier = self.generateIdentifier()
+                self.setIdentifier("sample", node_index, sample_identifier)
                 json_item = dict([
+                    ("@id", sample_identifier),
                     ("name", node_index),
                     ("factorValues", self.createValueList("Factor Value", node_index, nodes[node_index])),
                     ("characteristics", self.createValueList("Characteristics",node_index, nodes[node_index])),
@@ -382,13 +400,16 @@ class ISATab2ISAjson_v1:
 
     def createSourcesDictionary(self, nodes):
         json_dict = dict([])
-        for node_name in nodes:
-            if nodes[node_name].ntype == "Source Name":
+        for node_index in nodes:
+            if nodes[node_index].ntype == "Source Name":
+                source_identifier = self.generateIdentifier()
+                self.setIdentifier("source", node_index, source_identifier)
                 json_item = dict([
-                    ("name", node_name),
-                    ("characteristics", self.createValueList("Characteristics", node_name, nodes[node_name])),
+                    ("@id", source_identifier),
+                    ("name", node_index),
+                    ("characteristics", self.createValueList("Characteristics", node_index, nodes[node_index])),
                 ])
-                json_dict.update({node_name: json_item})
+                json_dict.update({node_index: json_item})
         return json_dict
 
 
