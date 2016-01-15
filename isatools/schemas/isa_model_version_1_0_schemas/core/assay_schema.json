@@ -29,6 +29,24 @@
             }
         },
         "technologyPlatform" : { "type" : "string"},
+        "dataFiles" : {
+          "type": "array",
+              "items" : {
+                "$ref": "data_schema.json#"
+              }
+        },
+        "samples": {
+            "type": "array",
+              "items" : {
+                "$ref": "sample_schema.json#"
+              }
+        },
+        "materials": {
+            "type": "array",
+              "items" : {
+                "$ref": "material_schema.json#"
+              }
+        },
         "processSequence": {
               "type": "array",
               "items" : {

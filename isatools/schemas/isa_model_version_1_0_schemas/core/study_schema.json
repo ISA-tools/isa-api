@@ -52,6 +52,12 @@
                 "$ref": "sample_schema.json#"
               }
         },
+        "materials": {
+            "type": "array",
+              "items" : {
+                "$ref": "material_schema.json#"
+              }
+        },
         "processSequence": {
               "type": "array",
               "items" : {
@@ -70,7 +76,7 @@
                 "$ref": "factor_schema.json#"
           }
       },
-       "comments" : {
+      "comments" : {
             "type": "array",
             "items": {
                  "$ref": "comment_schema.json#"
