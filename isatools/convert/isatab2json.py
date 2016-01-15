@@ -223,6 +223,7 @@ class ISATab2ISAjson_v1:
             self.setIdentifier("study", study_name, study_identifier)
             source_dict = self.createSourcesDictionary(study.nodes)
             sample_dict = self.createSampleDictionary(study.nodes)
+            #This data_dict should be empty on the studies - it is only used in the assays
             data_dict = self.createDataFiles(study.nodes)
             studyJson = dict([
                 ("@id", study_identifier),
@@ -237,6 +238,8 @@ class ISATab2ISAjson_v1:
                 ("protocols", self.createProtocols(study.protocols)),
                 ("sources", list(source_dict.values())),
                 ("samples",list(sample_dict.values())),
+                #TODO
+                ("materials",[]),
                 ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
                 ("assays", self.createStudyAssaysList(study.assays)),
                 ("factors", self.createStudyFactorsList(study.factors)),
@@ -305,12 +308,14 @@ class ISATab2ISAjson_v1:
         for argument in inputs:
             try:
                 json_item = source_dict[argument]
-                json_list.append(json_item)
+                source_id = dict([("@id", json_item["@id"])])
+                json_list.append(source_id)
             except KeyError:
                 pass
             try:
                 json_item = sample_dict[argument]
-                json_list.append(json_item)
+                sample_id = dict([("@id", json_item["@id"])])
+                json_list.append(sample_id)
             except KeyError:
                 pass
         return json_list
@@ -320,7 +325,8 @@ class ISATab2ISAjson_v1:
         for argument in arguments:
             try:
                 json_item = sample_dict[argument]
-                json_list.append(json_item)
+                sample_id = dict([("@id", json_item["@id"])])
+                json_list.append(sample_id)
             except KeyError:
                 pass
         return json_list
@@ -343,6 +349,7 @@ class ISATab2ISAjson_v1:
     def createStudyAssaysList(self, assays):
         json_list = []
         for assay in assays:
+            print(assay)
             source_dict = self.createSourcesDictionary(assay.nodes)
             sample_dict = self.createSampleDictionary(assay.nodes)
             data_dict = self.createDataFiles(assay.nodes)
@@ -359,6 +366,10 @@ class ISATab2ISAjson_v1:
                                                                  assay.metadata['Study Assay Technology Type Term Source REF'],
                                                                  assay.metadata['Study Assay Technology Type Term Accession Number'])),
                 ("technologyPlatform", assay.metadata['Study Assay Technology Platform']),
+                ("samples", list(sample_dict.values())),
+                #TODO
+                ("materials", []),
+                ("dataFiles", list(data_dict.values())),
                 ("processSequence", self.createProcessSequence(assay.process_nodes, source_dict, sample_dict, data_dict))
                 ])
             json_list.append(json_item)
