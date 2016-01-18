@@ -223,6 +223,7 @@ class ISATab2ISAjson_v1:
             self.setIdentifier("study", study_name, study_identifier)
             source_dict = self.createSourcesDictionary(study.nodes)
             sample_dict = self.createSampleDictionary(study.nodes)
+            material_dict = self.createMaterialDictionary(study.nodes)
             #This data_dict should be empty on the studies - it is only used in the assays
             data_dict = self.createDataFiles(study.nodes)
             studyJson = dict([
@@ -238,8 +239,7 @@ class ISATab2ISAjson_v1:
                 ("protocols", self.createProtocols(study.protocols)),
                 ("sources", list(source_dict.values())),
                 ("samples",list(sample_dict.values())),
-                #TODO
-                ("materials",[]),
+                ("materials",list(material_dict.values())),
                 ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
                 ("assays", self.createStudyAssaysList(study.assays)),
                 ("factors", self.createStudyFactorsList(study.factors)),
@@ -352,6 +352,7 @@ class ISATab2ISAjson_v1:
             print(assay)
             source_dict = self.createSourcesDictionary(assay.nodes)
             sample_dict = self.createSampleDictionary(assay.nodes)
+            material_dict = self.createMaterialDictionary(assay.nodes)
             data_dict = self.createDataFiles(assay.nodes)
             assay_identifier = self.generateIdentifier()
             assay_name = assay.metadata['Study Assay File Name']
@@ -367,8 +368,7 @@ class ISATab2ISAjson_v1:
                                                                  assay.metadata['Study Assay Technology Type Term Accession Number'])),
                 ("technologyPlatform", assay.metadata['Study Assay Technology Platform']),
                 ("samples", list(sample_dict.values())),
-                #TODO
-                ("materials", []),
+                ("materials", list(material_dict.values())),
                 ("dataFiles", list(data_dict.values())),
                 ("processSequence", self.createProcessSequence(assay.process_nodes, source_dict, sample_dict, data_dict))
                 ])
@@ -388,6 +388,7 @@ class ISATab2ISAjson_v1:
                 ])
                 json_dict.update({node_index: json_item})
         return json_dict
+
 
     def createSampleDictionary(self, nodes):
         json_dict = dict([])
@@ -418,6 +419,21 @@ class ISATab2ISAjson_v1:
                 json_item = dict([
                     ("@id", source_identifier),
                     ("name", node_index),
+                    ("characteristics", self.createValueList("Characteristics", node_index, nodes[node_index])),
+                ])
+                json_dict.update({node_index: json_item})
+        return json_dict
+
+    def createMaterialDictionary(self, nodes):
+        json_dict = dict([])
+        for node_index in nodes:
+            if nodes[node_index].ntype != "Source Name" and nodes[node_index].ntype != "Sample Name" and nodes[node_index].ntype.find("File")==-1:
+                material_identifier = self.generateIdentifier()
+                self.setIdentifier("material", node_index, material_identifier)
+                json_item = dict([
+                    ("@id", material_identifier),
+                    ("name", node_index),
+                    ("type", nodes[node_index].ntype),
                     ("characteristics", self.createValueList("Characteristics", node_index, nodes[node_index])),
                 ])
                 json_dict.update({node_index: json_item})
