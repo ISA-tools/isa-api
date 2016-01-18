@@ -152,40 +152,52 @@ def load(fp):
                 )
                 for characteristic_json in source_json['characteristics']:
                     logger.debug('Build Ontology Annotation object (Source Characteristic)')
-                    if isinstance(characteristic_json['value'], float):
+                    if isinstance(characteristic_json['value'], int or float):
                         characteristic = Characteristic(
                             value=characteristic_json['value'],
                             unit=OntologyAnnotation(
-                                name=characteristic_json['name'],
-                                term_accession=characteristic_json['termAccession'],
-                                term_source=characteristic_json['termSource'],
+                                name=characteristic_json['unit']['name'],
+                                term_accession=characteristic_json['unit']['termAccession'],
+                                term_source=characteristic_json['unit']['termSource'],
                             )
                         )
                     else:
                         characteristic = Characteristic(
                             category=characteristic_json['category'],
                             value=OntologyAnnotation(
-                                name=characteristic_json['name'],
-                                term_accession=characteristic_json['termAccession'],
-                                term_source=characteristic_json['termSource'],
+                                name=characteristic_json['value']['name'],
+                                term_accession=characteristic_json['value']['termAccession'],
+                                term_source=characteristic_json['value']['termSource'],
                             )
                         )
                     source.characteristics.append(characteristic)
                 sources_dict[source.name] = source
+                study.sources.append(source)
             samples_dict = dict()
             for sample_json in study_json['samples']:
                 logger.debug('Build Source object')
                 sample = Sample(
                     name=sample_json['name'],
                 )
-                for characteristic_json in sample_json['characteristics']:
-                    logger.debug('Build Ontology Annotation object (Sample Characteristic)')
-                    characteristic = OntologyAnnotation(
-                        name=characteristic_json['name'],
-                        term_accession=characteristic_json['termAccession'],
-                        term_source=characteristic_json['termSource'],
+                if isinstance(characteristic_json['value'], int or float):
+                    characteristic = Characteristic(
+                        value=characteristic_json['value'],
+                        unit=OntologyAnnotation(
+                            name=characteristic_json['unit']['name'],
+                            term_accession=characteristic_json['unit']['termAccession'],
+                            term_source=characteristic_json['unit']['termSource'],
+                        )
                     )
-                    sample.characteristics.append(characteristic)
+                else:
+                    characteristic = Characteristic(
+                        category=characteristic_json['category'],
+                        value=OntologyAnnotation(
+                            name=characteristic_json['value']['name'],
+                            term_accession=characteristic_json['value']['termAccession'],
+                            term_source=characteristic_json['value']['termSource'],
+                        )
+                    )
+                sample.characteristics.append(characteristic)
                 for factor_value_json in sample_json['factorValues']:
                     logger.debug('Build Ontology Annotation object (Sample Factor Value)')
                     factor_value = FactorValue(
@@ -198,6 +210,7 @@ def load(fp):
                     )
                     sample.characteristics.append(factor_value)
                 samples_dict[sample.name] = sample
+                study.samples.append(sample)
             data_dict = dict()
             for data_json in study_json['data']:
                 logger.debug('Build Data object')
@@ -206,6 +219,7 @@ def load(fp):
                     type_=data_json['type'],
                 )
                 data_dict[data.name] = data
+                study.data.append(data)
             for process_json in study_json['processSequence']:
                 logger.debug('Build Process object')
                 process = Process(
@@ -214,13 +228,27 @@ def load(fp):
                     performer=process_json['performer'],
                 )
                 for parameter_json in process_json['parameters']:
-                    parameter = ParameterValue(
-                        name=parameter_json['name'],
-                        parameter_value=parameter_json['parameterValue'],
-                        unit=parameter_json['unit']
-                    )
+                    if isinstance(parameter_json['parameterValue'], int or float):
+                        parameter = ParameterValue(
+                            name=parameter_json['name'],
+                            parameter_value=parameter_json['parameterValue'],
+                            unit=OntologyAnnotation(
+                                name=parameter_json['unit']['name'],
+                                term_accession=parameter_json['unit']['termAccession'],
+                                term_source=parameter_json['unit']['termSource'],
+                            )
+                        )
+                    else:
+                        parameter = ParameterValue(
+                            name=parameter_json['name'],
+                            parameter_value=OntologyAnnotation(
+                                name=parameter_json['parameterValue']['name'],
+                                term_accession=parameter_json['parameterValue']['termAccession'],
+                                term_source=parameter_json['parameterValue']['termSource'],
+                            )
+                        )
                     process.parameters.append(parameter)
-
+                study.process_sequence.append(process)
                 inputs = list()
                 for input_json in process_json['inputs']:
                     if input_json['name'].startswith('source-'):
@@ -228,14 +256,16 @@ def load(fp):
                     elif input_json['name'].startswith('sample-'):
                         input_ = samples_dict[input_json['name']]
                     inputs.append(input_)
+                    process.inputs = inputs
                 outputs = list()
                 for output_json in process_json['outputs']:
                     if output_json['name'].startswith('source-'):
-                        output = sources_dict[input_json['name']]
+                        output = sources_dict[output_json['name']]
                     elif output_json['name'].startswith('sample-'):
-                        output = samples_dict[input_json['name']]
+                        output = samples_dict[output_json['name']]
                     outputs.append(output)
-            study.process_sequence.append(process)
+                    process.outputs = outputs
+                study.process_sequence.append(process)
             logger.debug('End building Study object')
             investigation.studies.append(study)
         logger.debug('End building Investigation object')
