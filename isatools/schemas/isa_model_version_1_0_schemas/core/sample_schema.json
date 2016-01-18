@@ -4,11 +4,12 @@
     "description" : "JSON-schema representing a sample in the ISA model. A sample represents a major output resulting from a protocol application other than the special case outputs of Extract or a Labeled Extract.",
     "type": "object",
     "properties" : {
+        "@id": { "type": "string", "format": "uri" },
         "name" : { "type" : "string" },
         "characteristics" : {
             "type" : "array",
             "items" :  {
-                "$ref": "material_attribute_schema.json#"
+                "$ref": "material_attribute_value_schema.json#"
                 }
         },
         "factorValues" : {

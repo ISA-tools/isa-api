@@ -5,6 +5,12 @@
     "description" : "JSON-schema representing an investigation in the ISA model",
     "type" : "object",
     "properties" : {
+        "comments" : {
+            "type": "array",
+            "items": {
+                 "$ref": "comment_schema.json#"
+            }
+        },
         "pubMedID" : { "type" : "string" },
         "doi" : { "type" : "string"},
         "authorList" : { "type" : "string" },

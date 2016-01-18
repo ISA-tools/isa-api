@@ -16,6 +16,10 @@ class ISAtab2jsonTest(TestCase):
     def tearDown(self):
         shutil.rmtree(self._tmp, ignore_errors=True)
 
+    def test_isa_repeated_measure_conversion(self):
+        isatab2json.convert(os.path.join(self._dir, './data/TEST-ISA-repeated-measure/'), self._dir)
+        #isa_json = json.load(open(os.path.join(self._dir, 'TEST-ISA-repeated-measure.json')))
+
     def test_bii_i_1_conversion(self):
         isatab2json.convert(os.path.join(self._dir, './data/BII-I-1/'), self._tmp)
         isa_json = json.load(open(os.path.join(self._tmp, 'BII-I-1.json')))
@@ -55,10 +59,10 @@ class ISAtab2jsonTest(TestCase):
                                                   "genome-scale systems biology models of the eukaryotic cell.")
         self.assertEqual(isa_json["submissionDate"],  "2007-04-30")
         self.assertEqual(isa_json["publicReleaseDate"], "2009-03-10")
-        self.assertEqual(isa_json["commentCreatedWithConfiguration"]["name"], "Created With Configuration")
-        self.assertEqual(isa_json["commentCreatedWithConfiguration"]["value"], "")
-        self.assertEqual(isa_json["commentLastOpenedWithConfiguration"]["name"], "Last Opened With Configuration")
-        self.assertEqual(isa_json["commentLastOpenedWithConfiguration"]["value"], "isaconfig-default_v2013-02-13")
+        self.assertEqual(isa_json["comments"][0]["name"], "Created With Configuration")
+        self.assertEqual(isa_json["comments"][0]["value"], "")
+        self.assertEqual(isa_json["comments"][1]["name"], "Last Opened With Configuration")
+        self.assertEqual(isa_json["comments"][1]["value"], "isaconfig-default_v2013-02-13")
         self.assertEqual(len(isa_json["ontologySourceReferences"]), 7)
         self.assertEqual(len(isa_json["publications"]), 1)
         self.assertEqual(isa_json["publications"][0]["pubMedID"], "17439666")

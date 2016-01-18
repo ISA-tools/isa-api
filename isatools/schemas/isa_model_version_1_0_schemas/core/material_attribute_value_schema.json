@@ -1,12 +1,13 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema",
-    "title" : "ISA process parameter value schema",
-    "description" : "JSON-schema representing a Parameter Value (associated with a Protocol REF) in the ISA model",
+    "title" : "ISA material attribute schema",
+    "description" : "JSON-schema representing a material attribute (or characteristic) value in the ISA model",
     "type" : "object",
     "properties" : {
+         "@id": { "type": "string", "format": "uri" },
         "category" : {
-             "$ref": "protocol_parameter_schema.json#"
-            },
+             "$ref": "material_attribute_schema.json#"
+        },
         "value": {
             "anyOf" : [
                 { "$ref": "ontology_annotation_schema.json#"},

@@ -4,20 +4,13 @@
     "description" : "JSON-schema representing an investigation in the ISA model",
     "type" : "object",
     "properties" : {
+         "@id": { "type": "string", "format": "uri" },
         "filename": { "type" : "string"},
         "identifier" : { "type" : "string" },
         "title" : { "type" : "string"},
         "description" : { "type" : "string"},
         "submissionDate" : { "type" : "string", "format" : "date-time"},
         "publicReleaseDate" : { "type" : "string", "format" : "date-time"},
-        "commentCreatedWithConfiguration" : {
-            "$ref": "comment_schema.json#",
-            "name": "Created With Configuration"
-        },
-        "commentLastOpenedWithConfiguration" : {
-            "$ref": "comment_schema.json#",
-            "name": "Last Opened With Configuration"
-        },
         "ontologySourceReferences" : {
             "type" : "array",
             "items" : {
@@ -43,6 +36,12 @@
             "items" : {
                  "$ref": "study_schema.json#"
 
+            }
+        },
+        "comments" : {
+            "type": "array",
+            "items": {
+                 "$ref": "comment_schema.json#"
             }
         }
     },

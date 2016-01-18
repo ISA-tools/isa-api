@@ -341,7 +341,7 @@ class StudyAssayParser:
                         node = nodes[node_index]
                     except KeyError:
                         #print("creating node ", name, "  index", node_index)
-                        node = NodeRecord(name, node_type)
+                        node = NodeRecord(name, node_type, node_index)
                         node.metadata = collections.defaultdict(set)
                         nodes[node_index] = node
                         attrs = self._line_keyvals(line, header, hgroups, htypes, node.metadata)
@@ -491,7 +491,7 @@ _assay_str = \
 """
 
 _node_str = \
-"""       * Node -> {name} {type}
+"""       * Node -> {name} {type} {index}
          metadata: {md}"""
 
 _process_node_str = \
@@ -569,13 +569,15 @@ class ISATabAssayRecord:
 class NodeRecord:
     """Represent a data or material node within an ISA-Tab Study/Assay file.
     """
-    def __init__(self, name="", ntype=""):
+    def __init__(self, name="", ntype="", nindex=""):
         self.ntype = ntype
         self.name = name
+        self.index = nindex
         self.metadata = {}
 
     def __str__(self):
         return _node_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 9),
+                                index=self.index,
                                 name=self.name,
                                 type=self.ntype)
 
