@@ -20,6 +20,7 @@ class ISATab2ISAjson_v1:
 
     def __init__(self):
         self.identifiers = list() #list of dictionaries
+        self.counters = dict()
 
     def setIdentifier(self, type, name, identifier):
         self.identifiers.append(dict([("type", type), ("name", name), ("identifier", identifier)]))
@@ -29,8 +30,16 @@ class ISATab2ISAjson_v1:
             if subVal["type"]==type and subVal["name"]==name:
                 return subVal["identifier"]
 
-    def generateIdentifier(self):
-        return "http://data.isa-tools.org/UUID/"+str(uuid4())
+    def generateIdentifier(self, type):
+        try:
+            self.counters[type] += 1
+        except KeyError:
+            self.counters[type] = 1
+
+        return "http://data.isa-tools.org/"+type+"/"+str(self.counters[type])
+
+    #def generateIdentifier(self):
+    #    return "http://data.isa-tools.org/UUID/"+str(uuid4())
 
     def convert(self, work_dir, json_dir):
         """Convert an ISA-Tab dataset (version 1) to JSON provided the ISA model v1.0 JSON Schemas
@@ -129,7 +138,7 @@ class ISATab2ISAjson_v1:
     def createProtocols(self, protocols):
         protocols_json = []
         for protocol in protocols:
-            protocol_identifier = self.generateIdentifier()
+            protocol_identifier = self.generateIdentifier("protocol")
             protocol_name = protocol['Study Protocol Name']
             self.setIdentifier("protocol", protocol_name, protocol_identifier)
             protocol_json = dict([
@@ -218,7 +227,7 @@ class ISATab2ISAjson_v1:
     def createStudies(self, studies):
         study_array = []
         for study in studies:
-            study_identifier = self.generateIdentifier()
+            study_identifier = self.generateIdentifier("study")
             study_name = study.metadata['Study Identifier']
             self.setIdentifier("study", study_name, study_identifier)
             source_dict = self.createSourcesDictionary(study.nodes)
@@ -268,7 +277,10 @@ class ISATab2ISAjson_v1:
     def createStudyFactorsList(self, factors):
         json_list = []
         for factor in factors:
+             factor_identifier = self.generateIdentifier("factor")
+             self.setIdentifier("factor", factor['Study Factor Name'], factor_identifier)
              json_item = dict([
+                ("@id", factor_identifier),
                 ("factorName", factor['Study Factor Name']),
                 ("factorType", self.createOntologyAnnotation(factor['Study Factor Type'], factor['Study Factor Type Term Source REF'],factor['Study Factor Type Term Accession Number']))
             ])
@@ -354,7 +366,7 @@ class ISATab2ISAjson_v1:
             sample_dict = self.createSampleDictionary(assay.nodes)
             material_dict = self.createMaterialDictionary(assay.nodes)
             data_dict = self.createDataFiles(assay.nodes)
-            assay_identifier = self.generateIdentifier()
+            assay_identifier = self.generateIdentifier("assay")
             assay_name = assay.metadata['Study Assay File Name']
             self.setIdentifier("assay", assay_name, assay_identifier)
             json_item = dict([
@@ -379,7 +391,7 @@ class ISATab2ISAjson_v1:
         json_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype.endswith("Data File") :
-                data_identifier = self.generateIdentifier()
+                data_identifier = self.generateIdentifier("data")
                 self.setIdentifier("data", node_index, data_identifier)
                 json_item = dict([
                     ("@id", data_identifier),
@@ -395,7 +407,7 @@ class ISATab2ISAjson_v1:
         for node_index in nodes:
             if nodes[node_index].ntype == "Sample Name":
               try:
-                sample_identifier = self.generateIdentifier()
+                sample_identifier = self.generateIdentifier("sample")
                 self.setIdentifier("sample", node_index, sample_identifier)
                 json_item = dict([
                     ("@id", sample_identifier),
@@ -414,7 +426,7 @@ class ISATab2ISAjson_v1:
         json_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype == "Source Name":
-                source_identifier = self.generateIdentifier()
+                source_identifier = self.generateIdentifier("source")
                 self.setIdentifier("source", node_index, source_identifier)
                 json_item = dict([
                     ("@id", source_identifier),
@@ -428,7 +440,7 @@ class ISATab2ISAjson_v1:
         json_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype != "Source Name" and nodes[node_index].ntype != "Sample Name" and nodes[node_index].ntype.find("File")==-1:
-                material_identifier = self.generateIdentifier()
+                material_identifier = self.generateIdentifier("material")
                 self.setIdentifier("material", node_index, material_identifier)
                 json_item = dict([
                     ("@id", material_identifier),
@@ -458,23 +470,58 @@ class ISATab2ISAjson_v1:
                  value_header = header.replace("]", "").split("[")[-1]
                  value_attributes = node.metadata[header][0]
                  value  = self.convert_num(value_attributes[0])
-                 try:
+                 header_type = None
+                 #TODO use objects and unify the call below, adding the declaration of characteristics to the Study object
+                 if column_name.strip()=="Characteristics":
+                     header_type = "characteristic"
+                 if column_name.strip()=="Factor Value":
+                     header_type = "factor"
+
+                 category_identifier =  self.getIdentifier(header_type, value_header)
+
+                 if value_header==None or category_identifier==None:
+                    try:
                         value_json = dict([
                          ("value", value),
                          ("unit", self.createOntologyAnnotation(value_attributes.Unit, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
                         ])
                         json_list.append(value_json)
                         continue
-                 except AttributeError:
+                    except AttributeError:
+                        try:
+                            value_json = dict([
+                                ("value", self.createOntologyAnnotation(value, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
+                                ])
+                            json_list.append(value_json)
+                            continue
+                        except AttributeError:
+                            value_json = dict([
+                                 ("value", value)
+                                 ])
+                            json_list.append(value_json)
+
+                 else:
                     try:
                         value_json = dict([
-                                ("value", self.createOntologyAnnotation(value, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
-                            ])
+                         ("category", category_identifier),
+                         ("value", value),
+                         ("unit", self.createOntologyAnnotation(value_attributes.Unit, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
+                        ])
                         json_list.append(value_json)
                         continue
                     except AttributeError:
-                      value_json = dict([
-                          ("value", value)
-                          ])
-                      json_list.append(value_json)
+                        try:
+                            value_json = dict([
+                                ("category", category_identifier),
+                                ("value", self.createOntologyAnnotation(value, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
+                                ])
+                            json_list.append(value_json)
+                            continue
+                        except AttributeError:
+                            value_json = dict([
+                                ("category", category_identifier),
+                                 ("value", value)
+                                 ])
+                            json_list.append(value_json)
+
         return json_list
