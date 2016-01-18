@@ -1,12 +1,14 @@
 {
-    "commentCreatedWithConfiguration": {
-        "name": "Created With Configuration",
-        "value": ""
-    },
-    "commentLastOpenedWithConfiguration": {
-        "name": "Last Opened With Configuration",
-        "value": ""
-    },
+    "comments": [
+        {
+            "name": "Created With Configuration",
+            "value": ""
+        },
+        {
+            "name": "Last Opened With Configuration",
+            "value": ""
+        }
+    ],
     "description": "",
     "identifier": "1406894715587",
     "ontologySourceReferences": [
