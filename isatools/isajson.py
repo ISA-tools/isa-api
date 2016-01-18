@@ -70,7 +70,7 @@ def load(fp):
                 description=study_json['description'],
                 submission_date=study_json['submissionDate'],
                 public_release_date=study_json['publicReleaseDate'],
-                # file_name=study_json['studyFileName']
+                file_name=study_json['filename']
             )
             for study_publication_json in study_json['publications']:
                 logger.debug('Build Study Publication object')
@@ -154,6 +154,7 @@ def load(fp):
                     logger.debug('Build Ontology Annotation object (Source Characteristic)')
                     if isinstance(characteristic_json['value'], int or float):
                         characteristic = Characteristic(
+                            category=characteristic_json['category'],
                             value=characteristic_json['value'],
                             unit=OntologyAnnotation(
                                 name=characteristic_json['unit']['name'],
@@ -178,9 +179,11 @@ def load(fp):
                 logger.debug('Build Source object')
                 sample = Sample(
                     name=sample_json['name'],
+                    derives_from=sample_json['derivesFrom']
                 )
                 if isinstance(characteristic_json['value'], int or float):
                     characteristic = Characteristic(
+                        category=characteristic_json['category'],
                         value=characteristic_json['value'],
                         unit=OntologyAnnotation(
                             name=characteristic_json['unit']['name'],

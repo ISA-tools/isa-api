@@ -746,42 +746,49 @@ def dump(isa_obj, path):
                 import csv
                 study_file_writer = csv.writer(study_fp, delimiter='\t')
                 study_file_writer.writerow(source_headers)
-
-                # First build a lookup of sources so we can then match samples to sources
-                source_row_dict = dict()
-                for source in study.sources:
-                    source_row_dict[source.name] = [source.name]
-                    for characteristic in source.characteristics:
-                        if isinstance(characteristic.value, str):
-                            source_row_dict[source.name].append(characteristic.value)
-                        elif isinstance(characteristic.value, OntologyAnnotation):
-                            source_row_dict[source.name].extend((characteristic.value.name,
-                                                                 characteristic.value.term_source,
-                                                                 characteristic.value.term_accession))
-                    source_row_dict[source.name].append('')
-                for sample in study.samples:
-                    sample_row = [sample.name]
-                    for characteristic in sample.characteristics:
-                        if isinstance(characteristic.value, str):
-                            sample_row.append(characteristic.value)
-                        elif isinstance(characteristic.value, OntologyAnnotation):
-                            sample_row.extend((characteristic.value.name, characteristic.value.term_source,
-                                               characteristic.value.term_accession))
-                        if not (characteristic.unit is None):
-                            sample_row.extend((characteristic.unit.name, characteristic.unit.term_source,
-                                               characteristic.unit.term_accession))
-                    for factor_value in sample.factor_values:
-                        if isinstance(factor_value.value, str):
-                            sample_row.append(factor_value.value)
-                        elif isinstance(factor_value.value, OntologyAnnotation):
-                            sample_row.extend((factor_value.value.name, factor_value.value.term_source,
-                                               factor_value.value.term_accession))
-                        if not (factor_value.unit is None):
-                            sample_row.extend((factor_value.unit.name, factor_value.unit.term_source,
-                                               factor_value.unit.term_accession))
-                    source_ref = sample.derives_from
-                    row = source_row_dict[source_ref] + sample_row
-                    study_file_writer.writerow(row)
+                # Now write out the row content
+                for process in study.process_sequence:
+                    inputs_dict = dict()
+                    for input_ in process.inputs:
+                        inputs_dict[input_.name] = input_
+                    for output in process.outputs:
+                        row = list()
+                        if isinstance(output, Sample):
+                            derived_obj = inputs_dict[output.derives_from[0]]
+                            if isinstance(derived_obj, Source):
+                                row.append(derived_obj.name)
+                                for characteristic in derived_obj.characteristics:
+                                    if isinstance(characteristic.value, int or float):
+                                        row.append(characteristic.value)
+                                        row.append(characteristic.unit.name)
+                                        row.append(characteristic.unit.term_accession)
+                                        row.append(characteristic.unit.term_source)
+                                    elif isinstance(characteristic.value, OntologyAnnotation):
+                                        row.append(characteristic.value.name)
+                                        row.append(characteristic.value.term_accession)
+                                        row.append(characteristic.value.term_source)
+                            row.append(process.executes_protocol)
+                            for characteristic in output.characteristics:
+                                if isinstance(characteristic.value, int or float):
+                                    row.append(characteristic.value)
+                                    row.append(characteristic.unit.name)
+                                    row.append(characteristic.unit.term_accession)
+                                    row.append(characteristic.unit.term_source)
+                                elif isinstance(characteristic.value, OntologyAnnotation):
+                                    row.append(characteristic.value.name)
+                                    row.append(characteristic.value.term_accession)
+                                    row.append(characteristic.value.term_source)
+                            for factor_value in output.factor_values:
+                                if isinstance(factor_value.value, int or float):
+                                    row.append(factor_value.value)
+                                    row.append(factor_value.unit.name)
+                                    row.append(factor_value.unit.term_accession)
+                                    row.append(factor_value.unit.term_source)
+                                elif isinstance(factor_value.value, OntologyAnnotation):
+                                    row.append(factor_value.value.name)
+                                    row.append(factor_value.value.term_accession)
+                                    row.append(factor_value.value.term_source)
+                        study_file_writer.writerow(row)
                 study_fp.close()
         fp.close()
 
