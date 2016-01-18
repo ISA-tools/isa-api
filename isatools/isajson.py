@@ -6,7 +6,8 @@ import networkx as nx
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-def load (fp):
+
+def load(fp):
     # ontologySourceReference_REFs = dict()  # For term source REF pointers
     # file_REFs = dict()  # For fileName REF pointers
     investigation = None
@@ -151,11 +152,24 @@ def load (fp):
                 )
                 for characteristic_json in source_json['characteristics']:
                     logger.debug('Build Ontology Annotation object (Source Characteristic)')
-                    characteristic = OntologyAnnotation(
-                        name=characteristic_json['name'],
-                        term_accession=characteristic_json['termAccession'],
-                        term_source=characteristic_json['termSource'],
-                    )
+                    if isinstance(characteristic_json['value'], float):
+                        characteristic = Characteristic(
+                            value=characteristic_json['value'],
+                            unit=OntologyAnnotation(
+                                name=characteristic_json['name'],
+                                term_accession=characteristic_json['termAccession'],
+                                term_source=characteristic_json['termSource'],
+                            )
+                        )
+                    else:
+                        characteristic = Characteristic(
+                            category=characteristic_json['category'],
+                            value=OntologyAnnotation(
+                                name=characteristic_json['name'],
+                                term_accession=characteristic_json['termAccession'],
+                                term_source=characteristic_json['termSource'],
+                            )
+                        )
                     source.characteristics.append(characteristic)
                 sources_dict[source.name] = source
             samples_dict = dict()
