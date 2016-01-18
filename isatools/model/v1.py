@@ -188,12 +188,13 @@ class Study(IsaObject):
         to affect biological systems in a way that can be measured by an assay.
         protocols: Protocols used within the ISA artifact.
         assays: An Assay represents a portion of the experimental design.
+        data: Data files associated with the study
     """
 
     def __init__(self, identifier="", title="", description="", submission_date=date.today(),
                  public_release_date=date.today(), file_name="", design_descriptors=None, publications=None,
                  contacts=None, factors=None, protocols=None, assays=None, sources=None, samples=None,
-                 process_sequence=None, comments=None):
+                 process_sequence=None, data=None, comments=None):
         super().__init__(comments)
         self.identifier = identifier
         self.title = title
@@ -237,6 +238,10 @@ class Study(IsaObject):
             self.process_sequence = []
         else:
             self.process_sequence = process_sequence
+        if data is None:
+            self.data = []
+        else:
+            self.data = data
 
 
 class StudyFactor(IsaObject):
