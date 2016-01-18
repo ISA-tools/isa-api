@@ -6,15 +6,20 @@
     "properties": {
         "@id": { "type": "string", "format": "uri" },
         "name": {
-             "type": "string"
+            "type": "string"
         },
         "type": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+                "Raw Data File",
+                "Derived Data File",
+                "Image File"
+            ]
         },
         "comments" : {
             "type": "array",
             "items": {
-                 "$ref": "comment_schema.json#"
+                "$ref": "comment_schema.json#"
             }
         }
     },
