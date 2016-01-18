@@ -322,17 +322,29 @@ class ProtocolParameter(IsaObject):
         name:
         unit:
     """
-    def __init__(self, parameterName=None, unit=None, comments=None):
+    def __init__(self, parameter_name=None, unit=None, comments=None):
         super().__init__(comments)
-        if parameterName is None:
+        if parameter_name is None:
             self.name = OntologyAnnotation()
         else:
-            self.parameterName = parameterName
-        self.parameterName = parameterName
+            self.parameter_name = parameter_name
+        self.parameter_name = parameter_name
         if unit is None:
             self.unit = OntologyAnnotation()
         else:
             self.unit = unit
+
+
+class ParameterValue(IsaObject):
+    """A Parameter Value
+    """
+    def __init__(self, name="", parameter_value=None, unit=None):
+        self.name = name
+        if parameter_value is None:
+            self.parameter_value = OntologyAnnotation()
+        else:
+            self.parameter_value = parameter_value
+        self.unit = unit
 
 
 class Process(IsaObject):
@@ -345,13 +357,15 @@ class Process(IsaObject):
         inputs:
         outputs:
     """
-    def __init__(self, name="", executes_protocol=None, parameters=None, inputs=None, outputs=None, comments=None):
+    def __init__(self, name="", executes_protocol=None, date_=date.today(), performer="", parameters=None, inputs=None, outputs=None, comments=None):
         super().__init__(comments)
         self.name = name
         if executes_protocol is None:
             self.executes_protocol = Protocol()
         else:
             self.executes_protocol = executes_protocol
+        self.date = date_
+        self.performer = performer
         if parameters is None:
             self.parameters = list()
         else:

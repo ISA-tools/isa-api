@@ -1,6 +1,7 @@
 from isatools.model.v1 import *
 import json
 import logging
+import networkx as nx
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -142,6 +143,7 @@ def load (fp):
                     )
                 )
                 study.factors.append(factor)
+            sources_dict = dict()
             for source_json in study_json['sources']:
                 logger.debug('Build Source object')
                 source = Source(
@@ -155,6 +157,8 @@ def load (fp):
                         term_source=characteristic_json['termSource'],
                     )
                     source.characteristics.append(characteristic)
+                sources_dict[source.name] = source
+            samples_dict = dict()
             for sample_json in study_json['samples']:
                 logger.debug('Build Source object')
                 sample = Sample(
@@ -179,46 +183,44 @@ def load (fp):
 
                     )
                     sample.characteristics.append(factor_value)
+                samples_dict[sample.name] = sample
+            data_dict = dict()
+            for data_json in study_json['data']:
+                logger.debug('Build Data object')
+                data = Data(
+                    name=data_json['name'],
+                    type_=data_json['type'],
+                )
+                data_dict[data.name] = data
             for process_json in study_json['processSequence']:
                 logger.debug('Build Process object')
                 process = Process(
                     executes_protocol=process_json['executesProtocol'],
+                    date_=process_json['date'],
+                    performer=process_json['performer'],
                 )
+                for parameter_json in process_json['parameters']:
+                    parameter = ParameterValue(
+                        name=parameter_json['name'],
+                        parameter_value=parameter_json['parameterValue'],
+                        unit=parameter_json['unit']
+                    )
+                    process.parameters.append(parameter)
+
                 inputs = list()
                 for input_json in process_json['inputs']:
                     if input_json['name'].startswith('source-'):
-                        input_ = Source(
-                            name=input_json['name'],
-                        )
-                        characteristics = list()
-                        for characteristic_json in input_json['characteristics']:
-                            characteristic = Characteristic(
-                                value=OntologyAnnotation(
-                                    name=characteristic_json['name'],
-                                    term_accession=characteristic_json['termAccession'],
-                                    term_source=characteristic_json['termSource']
-                                )
-                            )
-                            characteristics.append(characteristic)
-                        input_.characteristics = characteristics
-                        inputs.append(input_)
+                        input_ = sources_dict[input_json['name']]
+                    elif input_json['name'].startswith('sample-'):
+                        input_ = samples_dict[input_json['name']]
+                    inputs.append(input_)
                 outputs = list()
                 for output_json in process_json['outputs']:
-                    if output_json['name'].startswith('sample-'):
-                        output = Sample(
-                            name=output_json['name'],
-                        )
+                    if output_json['name'].startswith('source-'):
+                        output = sources_dict[input_json['name']]
+                    elif output_json['name'].startswith('sample-'):
+                        output = samples_dict[input_json['name']]
                     outputs.append(output)
-                    characteristics = list()
-                    for characteristic_json in output_json['characteristics']:
-                        characteristic = Characteristic(
-                                value=OntologyAnnotation(
-                                    name=characteristic_json['name'],
-                                    term_accession=characteristic_json['termAccession'],
-                                    term_source=characteristic_json['termSource']
-                                )
-                            )
-                        characteristics.append(characteristic)
             study.process_sequence.append(process)
             logger.debug('End building Study object')
             investigation.studies.append(study)
