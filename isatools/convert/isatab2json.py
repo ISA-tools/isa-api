@@ -223,6 +223,7 @@ class ISATab2ISAjson_v1:
             self.setIdentifier("study", study_name, study_identifier)
             source_dict = self.createSourcesDictionary(study.nodes)
             sample_dict = self.createSampleDictionary(study.nodes)
+            material_dict = self.createMaterialDictionary(study.nodes)
             #This data_dict should be empty on the studies - it is only used in the assays
             data_dict = self.createDataFiles(study.nodes)
             studyJson = dict([
@@ -238,8 +239,7 @@ class ISATab2ISAjson_v1:
                 ("protocols", self.createProtocols(study.protocols)),
                 ("sources", list(source_dict.values())),
                 ("samples",list(sample_dict.values())),
-                #TODO
-                ("materials",[]),
+                ("materials",list(material_dict.values())),
                 ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
                 ("assays", self.createStudyAssaysList(study.assays)),
                 ("factors", self.createStudyFactorsList(study.factors)),
@@ -433,6 +433,7 @@ class ISATab2ISAjson_v1:
                 json_item = dict([
                     ("@id", material_identifier),
                     ("name", node_index),
+                    ("type", nodes[node_index].ntype),
                     ("characteristics", self.createValueList("Characteristics", node_index, nodes[node_index])),
                 ])
                 json_dict.update({node_index: json_item})

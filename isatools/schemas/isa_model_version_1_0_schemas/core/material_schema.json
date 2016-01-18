@@ -6,6 +6,13 @@
     "properties" : {
         "@id": { "type": "string", "format": "uri" },
         "name" : { "type" : "string" },
+         "type": {
+            "type": "string",
+            "enum": [
+                "Extract Name",
+                "Labeled Extract Name"
+            ]
+        },
         "characteristics" : {
             "type" : "array",
             "items" :  {
