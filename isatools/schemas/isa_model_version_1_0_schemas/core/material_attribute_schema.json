@@ -1,14 +1,13 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema",
     "title" : "ISA material attribute schema",
-    "description" : "JSON-schema representing a material attribute or characteristic in the ISA model",
+    "description" : "JSON-schema representing a characteristics category (what appears between the brackets in Charactersitics[]) in the ISA model",
     "type" : "object",
     "properties" : {
-        "ontologyAnnotation": {
-            "$ref": "ontology_annotation_schema.json#"
-        },
-        "unit": {
+         "@id": { "type": "string", "format": "uri" },
+        "parameterName": {
             "$ref": "ontology_annotation_schema.json#"
         }
-    }
+    },
+    "additionalProperties": false
 }

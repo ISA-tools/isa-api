@@ -48,6 +48,16 @@ def find_gt(a, x):
         return a[i]
     raise ValueError
 
+def find_between(a, x, y):
+    result = []
+    i = bisect.bisect_right(a, x)
+    if i!= len(a):
+        while i < len(a):
+            result.append(i)
+            i+=1
+            return result
+    raise ValueError
+
 def parse(isatab_ref):
     """Entry point to parse an ISA-Tab directory.
     isatab_ref can point to a directory of ISA-Tab data, in which case we
@@ -181,7 +191,9 @@ class StudyAssayParser:
                            "node_assay" : ("Extract Name", "Labeled Extract Name",
                                            "Assay Name", "Data Transformation Name",
                                            "Normalization Name"),
-                           "processing": ("Protocol REF",)}
+                           "processing": ("Protocol REF"),
+                           "parameter": ("Parameter Value")
+                           }
         self._synonyms = {"Array Data File" : "Raw Data File",
                           "Free Induction Decay Data File": "Raw Data File",
                           "Derived Array Data File" : "Derived Data File",
@@ -222,28 +234,20 @@ class StudyAssayParser:
 
         with open(os.path.join(self._dir, fname), "rU") as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
-            headers = self._swap_synonyms(reader.__next__())
+            headers = self._swap_synonyms(next(reader))
             hgroups = self._collapse_header(headers)
             htypes = self._characterize_header(headers, hgroups)
-            #
-            # print "headers:", headers
-            # print "hgroups:", hgroups
-            # print "htypes:", htypes
 
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
+            all_parameters_indices = [i for i, x in enumerate(htypes) if x == "parameter"]
             node_indices = [i for i, x in enumerate(htypes) if x == "node" or x=="node_assay"]
 
-            # print "processing_indices ->", processing_indices
-            # print "node_indices -> ", node_indices
             for processing_index in processing_indices:
                 try:
                     input_index = find_lt(node_indices, processing_index)
                     output_index = find_gt(node_indices, processing_index)
-
-                    # print "processing_index ", processing_index
-                    # print "input_index ", input_index
-                    # print "output_index ", output_index
-                    # print " "
+                    #next_processing_index =
+                    #parameters_indices = find_between(all_parameters_indices, processing_index)
 
                 except ValueError:
                     # print "Invalid indices for process nodes"
@@ -253,25 +257,48 @@ class StudyAssayParser:
                 processing_header = headers[hgroups[processing_index][0]]
                 line_number = 0
                 max_number = 0
+
+                #reading line by line and identifying inputs outputs and creating process_node
+                process_number = 1
+                input_process_map = {}
+                output_process_map = {}
                 for line in reader:
                     if line_number >=  max_number:
                         input_name = line[hgroups[input_index][0]]
                         input_node_index = self._build_node_index(input_header,input_name)
-                        #input_node = study.nodes[input_node_index]
 
                         output_name = line[hgroups[output_index][0]]
                         output_node_index = self._build_node_index(output_header, output_name)
-                        #output_node = study.nodes[output_node_index]
 
-                        processing_name = line[hgroups[processing_index][0]]
-                        process_node = ProcessNodeRecord(processing_name, processing_header, study)
+                        #if both input_name and output_name are empty, ignore the row
+                        if (not input_name and not output_name):
+                            continue
+                        try:
+                            unique_process_name = input_process_map[input_node_index]
+                        except KeyError:
+                            try:
+                                unique_process_name = output_process_map[output_node_index]
+                            except KeyError:
+                                processing_name = line[hgroups[processing_index][0]]
+                                unique_process_name = processing_name+str(process_number)
 
-                        process_node.inputs.append(input_node_index)
-                        process_node.outputs.append(output_node_index)
+                        try:
+                            process_node = process_nodes[unique_process_name]
+                        except KeyError:
+                            #create process node
+                            process_node = ProcessNodeRecord(unique_process_name, processing_header, study, processing_name)
+                            process_number += 1
+
+                        if not (input_node_index in process_node.inputs):
+                            process_node.inputs.append(input_node_index)
+                        if not (output_node_index in process_node.outputs):
+                            process_node.outputs.append(output_node_index)
+                        input_process_map[input_node_index] = unique_process_name
+                        output_process_map[output_node_index] = unique_process_name
 
                         max_number = max(len(process_node.inputs), len(process_node.outputs))
                         line_number += 1
-                        process_nodes[processing_name] = process_node
+                        process_nodes[unique_process_name] = process_node
                     else:
                         line_number += 1
                 study.process_nodes = process_nodes
@@ -285,7 +312,7 @@ class StudyAssayParser:
         nodes = {}
         with open(os.path.join(self._dir, fname), "rU") as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
-            header = self._swap_synonyms(reader.__next__())
+            header = self._swap_synonyms(next(reader))
             hgroups = self._collapse_header(header)
             htypes = self._characterize_header(header, hgroups)
 
@@ -305,18 +332,20 @@ class StudyAssayParser:
                     name = line[name_index]
                     #to deal with same name used for different node types (e.g. Source Name and Sample Name using the same string)
                     node_index = self._build_node_index(node_type,name)
+                    #skip the header line and empty lines
                     if name in header:
                         continue
+                    if (not name):
+                        continue
                     try:
-                        node = nodes[name+node_type]
+                        node = nodes[node_index]
                     except KeyError:
-                        #print "creating node ", node_index
-                        node = NodeRecord(name, node_type)
+                        #print("creating node ", name, "  index", node_index)
+                        node = NodeRecord(name, node_type, node_index)
                         node.metadata = collections.defaultdict(set)
                         nodes[node_index] = node
-                    attrs = self._line_keyvals(line, header, hgroups, htypes,
-                                           node.metadata)
-                nodes[node_index].metadata = attrs
+                        attrs = self._line_keyvals(line, header, hgroups, htypes, node.metadata)
+                        nodes[node_index].metadata = attrs
 
         return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
 
@@ -333,11 +362,11 @@ class StudyAssayParser:
         return node
 
     def _line_keyvals(self, line, header, hgroups, htypes, out):
+        out = self._line_by_type(line, header, hgroups, htypes, out, "node")
         out = self._line_by_type(line, header, hgroups, htypes, out, "attribute",
                                  self._collapse_attributes)
         out = self._line_by_type(line, header, hgroups, htypes, out, "processing",
                                  self._collapse_attributes)
-        out = self._line_by_type(line, header, hgroups, htypes, out, "node")
         return out
 
     def _line_by_type(self, line, header, hgroups, htypes, out, want_type,
@@ -346,7 +375,7 @@ class StudyAssayParser:
         """
         for index, htype in ((i, t) for i, t in enumerate(htypes) if t == want_type):
             col = hgroups[index][0]
-            key = header[col]#self._clean_header(header[col])
+            key = header[col]
             if collapse_quals_fn:
                 val = collapse_quals_fn(line, header, hgroups[index])
             else:
@@ -462,13 +491,14 @@ _assay_str = \
 """
 
 _node_str = \
-"""       * Node -> {name} {type}
+"""       * Node -> {name} {type} {index}
          metadata: {md}"""
 
 _process_node_str = \
 """       * Process Node ->  {name} {type}
          inputs: {inputs}
          outputs: {outputs}
+         parameters: {parameters}
          """
 
 
@@ -539,13 +569,15 @@ class ISATabAssayRecord:
 class NodeRecord:
     """Represent a data or material node within an ISA-Tab Study/Assay file.
     """
-    def __init__(self, name="", ntype=""):
+    def __init__(self, name="", ntype="", nindex=""):
         self.ntype = ntype
         self.name = name
+        self.index = nindex
         self.metadata = {}
 
     def __str__(self):
         return _node_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 9),
+                                index=self.index,
                                 name=self.name,
                                 type=self.ntype)
 
@@ -553,15 +585,19 @@ class NodeRecord:
 class ProcessNodeRecord:
     """Represent a process node within an ISA-Tab Study/Assay file (corresponds to Protocol REF).
     """
-    def __init__(self, name="", ntype="", study_assay=""):
+    def __init__(self, name="", ntype="", study_assay="", protocol=""):
         self.ntype = ntype
         self.study_assay = study_assay
         self.name = name
         self.inputs = []
         self.outputs = []
+        self.protocol = protocol
+        self.parameters = []
 
     def __str__(self):
         return _process_node_str.format(inputs=pprint.pformat(self.inputs).replace("\n", "\n" + " " * 9),
                                 outputs=pprint.pformat(self.outputs).replace("\n", "\n" + " " * 9),
                                 name=self.name,
-                                type=self.ntype)
+                                type=self.ntype,
+                                protocol=self.protocol,
+                                parameters=pprint.pformat(self.parameters).replace("\n","\n"+" "*9))

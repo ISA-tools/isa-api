@@ -9,31 +9,50 @@
     },
     "type": "object",
     "properties": {
-        "fileName" : { "type" : "string" },
-        "measurementType" : {
-            "type" : "object",
-            "properties": {
-                "name" : {"type" : "string"},
-                "ontologyAnnotation" : {
-                    "$ref": "ontology_annotation_schema.json#"
-                }
+        "@id": { "type": "string", "format": "uri" },
+        "comments" : {
+            "type": "array",
+            "items": {
+                 "$ref": "comment_schema.json#"
             }
+        },
+        "filename" : { "type" : "string" },
+        "measurementType" : {
+                    "$ref": "ontology_annotation_schema.json#"
         },
         "technologyType" : {
             "type" : "object",
             "properties": {
-                "name" : {"type" : "string"},
                 "ontologyAnnotation" : {
                     "$ref": "ontology_annotation_schema.json#"
                 }
             }
         },
         "technologyPlatform" : { "type" : "string"},
+        "dataFiles" : {
+          "type": "array",
+              "items" : {
+                "$ref": "data_schema.json#"
+              }
+        },
+        "samples": {
+            "type": "array",
+              "items" : {
+                "$ref": "sample_schema.json#"
+              }
+        },
+        "materials": {
+            "type": "array",
+              "items" : {
+                "$ref": "material_schema.json#"
+              }
+        },
         "processSequence": {
               "type": "array",
               "items" : {
                "$ref" : "process_schema.json#"
             }
         }
-    }
+    },
+    "additionalProperties": false
 }

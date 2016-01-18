@@ -5,6 +5,12 @@
     "description" : "JSON-schema representing an ontology reference or annotation in the ISA model (for fields that are required to be ontology annotations)",
     "type" : "object",
     "properties" : {
+        "comments" : {
+            "type": "array",
+            "items": {
+                 "$ref": "comment_schema.json#"
+            }
+        },
         "name": { "type" : "string" },
         "termSource" : {
             "type" : "string",
@@ -14,5 +20,6 @@
             "type" : "string",
             "format" : "uri"
         }
-    }
+    },
+    "additionalProperties": false
 }

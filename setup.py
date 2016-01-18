@@ -1,19 +1,17 @@
 from distutils.core import setup
 
 setup(
-    name='isatools_api',
-    version='0.0.1',
-    packages=['isatools', 'isatools.convert', 'isatools.io', 'isatools.schemas'],
-    description='ISA version 0.0.1 API',
+    name='isatools',
+    version='0.0.4',
+    packages=['isatools', 'isatools.convert', 'isatools.io', 'isatools.model'],
+    description='ISA version 1.0 API',
     author='ISA Infrastructure Team',
-    author_email='isatools@googlegroups.com',
+    author_email='isa@googlegroups.com',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Library',
-        'Programming Language :: Python :: 3',
-        'Intended Audience :: Science/Research',
-        'Programming Language :: Python',
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
+        'Programming Language :: Python :: 3.4',
         ],
-    url='https://github.com/ISA-tools/isa-api',
+    url='http://www.isa-tools.org/',
 )

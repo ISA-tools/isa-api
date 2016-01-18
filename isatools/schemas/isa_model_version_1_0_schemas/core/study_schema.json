@@ -8,6 +8,8 @@
     },
     "type": "object",
     "properties": {
+        "@id": { "type": "string", "format": "uri" },
+        "filename" : { "type" : "string"},
         "identifier" : { "type" : "string" },
         "title" : { "type" : "string"},
         "description" : { "type" : "string"},
@@ -17,7 +19,6 @@
             "type" : "array",
             "items" : {
                  "$ref": "publication_schema.json#"
-
             }
         },
         "people" : {
@@ -51,6 +52,12 @@
                 "$ref": "sample_schema.json#"
               }
         },
+        "materials": {
+            "type": "array",
+              "items" : {
+                "$ref": "material_schema.json#"
+              }
+        },
         "processSequence": {
               "type": "array",
               "items" : {
@@ -62,6 +69,19 @@
               "items" : {
                 "$ref": "assay_schema.json#"
               }
+        },
+      "factors": {
+          "type": "array",
+          "items": {
+                "$ref": "factor_schema.json#"
+          }
+      },
+      "comments" : {
+            "type": "array",
+            "items": {
+                 "$ref": "comment_schema.json#"
+            }
         }
-    }
+    },
+    "additionalProperties": false
 }

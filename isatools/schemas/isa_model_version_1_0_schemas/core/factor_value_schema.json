@@ -4,19 +4,20 @@
     "description": "JSON-schema representing a factor value in the ISA model",
     "type": "object",
     "properties": {
-        "factor": {
+         "@id": { "type": "string", "format": "uri" },
+         "category" : {
              "$ref": "factor_schema.json#"
         },
         "value": {
-            "type": "object",
-            "properties": {
-                "ontologyAnnotation": {
-                    "$ref": "ontology_annotation_schema.json#"
-                },
-                "unit": {
-                    "$ref": "ontology_annotation_schema.json#"
-                }
-            }
+            "anyOf" : [
+                { "$ref": "ontology_annotation_schema.json#"},
+                { "type": "string"},
+                { "type": "number"}
+                ]
+        },
+        "unit": {
+            "$ref": "ontology_annotation_schema.json#"
         }
-    }
+    },
+    "additionalProperties": false
 }
