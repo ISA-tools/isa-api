@@ -17,6 +17,13 @@
                   "$ref" : "process_parameter_value_schema.json#"
             }
         },
+        "performer": {
+             "type": "string"
+        },
+        "date": {
+             "type": "string",
+              "format": "date-time"
+        },
         "inputs" : {
             "type": "array",
             "items": {
