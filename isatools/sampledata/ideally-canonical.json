@@ -1,287 +1,232 @@
 {
-    "title": "Investigation",
-    "identifier": "1406894706246",
-    "description": "",
-    "submissionDate": "", 
-    "publicReleaseDate": "",
-    "publications": [],
-    "people": [],
-    
-    "commentCreatedWithConfiguration": {
-        "name": "Created With Configuration",
-        "value": ""
-    },
-    "commentLastOpenedWithConfiguration": {
-        "name": "Last Opened With Configuration",
-        "value": "GSC MIxS human gut"
-    },
-    
-    "ontologySourceReferences": [
-        {
-            "description": "Chemical Entities of Biological Interest Ontology",
-            "file": "http://data.bioontology.org/ontologies/CHEBI",
-            "name": "CHEBI",
-            "version": "78"
-        }
-    ],
+	"title": "Investigation",
+	"identifier": "1406894706246",
+	"description": "",
+	"submissionDate": "",
+	"publicReleaseDate": "",
+	"publications": [],
+	"people": [],
 
-    "studies": [
-        {
-        "identifier": "TEST-Template5-repeatedmeasure",
-        "title": "TEST-Template5-repeatedmeasure",
-        "description": "TEST-Template5-repeatedmeasure: more complex example, with 2 subjects, undergoing 4 distinct interventions, the order in which those are applied differs between the 2 subjects. interventions are identified as distinct protocols, whose application is identified by a date. intervention protocols are followed by a sample collection event, yielding from each subject 1 sample for the first 3 interventions and then 2 samples after the last intervention. Note: for repeated measure/longitudinal use cases, it is necessary for users to rely on 'Date' field associated to Protocol to allow for ordering along timeline. failing to do so prevents from distinguishing the information from a regular splitting. conversely, in ISA1.0, there can be cases where distinguishing a repeated measure design from other situation can be tricky.",
-        "submissionDate": "",
-        "publicReleaseDate": "",
-            "publications": [
-                {
-                    "authorList": "el-Attar A, Adu-Gyamfi Y, Tawfique K.",
-                    "doi": "",
-                    "pubMedID": "1435624",
-                    "status": {
-                        "name": "Published",
-                        "termAccession": "",
-                        "termSource": ""
-                    },
-                    "title": "Flumazenil reversal of midazolam sedation for dental procedures."
-                }
-            ], 
-            "studyDesignDescriptors": [
-                {
-                    "name": "repeated measure design",
-                    "termAccession": "http://purl.obolibrary.org/obo/OBI_0500002",
-                    "termSource": "OBI"
-                }
-            ],
-            "factors": [
-                {
-                    "factorName": "location",
-                    "factorType": {
-                        "name": "geographical location",
-                        "termAccession": "",
-                        "termSource": ""
-                    }
-                }
-            ],
- 
-            "protocols": [
-                {
-                    "name": "sample collection",
-                    "protocolType": {
-                        "name": "sample collection",
-                        "termAccession": "",
-                        "termSource": ""
-                    },
-                    "description": "a sample collection protocol description",   
-                    "uri": "http://www.research.org/protocol1.pdf",
-                    "version": "1.0",                 
-                    "parameters": [
-                        {
-                            "parameterName": {
-                                "name": "storage container",
-                                "termAccession": "",
-                                "termSource": ""
-                            }
-                        }
-                    ],
-                    "components": [
-                        {
-                            "componentName": "barcode reader",
-                            "componentType": {
-                                "name": "device",
-                                "termAccession": "",
-                                "termSource": ""
-                            }
-                        },
-                    ]
-                },
-                
-                {
-                    "name": "data acquisition",
-                    "protocolType": {
-                        "name": "data acquisition",
-                        "termAccession": "",
-                        "termSource": ""
-                    },
-                    "description": "a data acquisition protocol description",   
-                    "uri": "http://www.research.org/protocol2.pdf",
-                    "version": "2.0"                 
-                },
-                {
-                    "name": "data transformation",
-                    "protocolType": {
-                        "name": "data transformation",
-                        "termAccession": "",
-                        "termSource": ""
-                    },
-                    "description": "a data transformation protocol description",   
-                    "uri": "http://www.research.org/protocol3.pdf",
-                    "version": "1.0"                 
-                }
-                
-            ],
- 
-            "people": [
-                {
-                    "firstName": "John",
-                    "lastName": "Smith",
-                    "midInitials": "F",                
-                    "affiliation": "University of Oxford",
-                    "address": "34, Beaumont Street",
-                    "email": "john.f.smith@research.org",
-                    "fax": "+44 (0) 1865 645 000",
-                    "phone": "+44 (0) 1865 645 234",
-                    "roles": [
-                        {
-                            "name": "principale investigator",
-                            "termAccession": "",
-                            "termSource": ""
-                        }
-                    ]
-                }
-            ],             
-            
-            "filename": "s_TEST-Template5-repeatedmeasure.txt",
-            
-            "sources": [
-                {
-                    "name": "source-source2",
-                    "characteristics": [
-                        {
-                            "value": "4",
-                            "unit": {
-                                "name": "year",
-                                "termAccession": "http://purl.obolibrary.org/obo/UO_000124",
-                                "termSource": "UO"
-                            }
-                        },
-                        {
-                            "value": {
-                                "name": "blood",
-                                "termAccession": "http://purl.obolibrary.org/obo/UBERON_0000178",
-                                "termSource": "UBERON"
-                            }
-                        }
-                    ],
-                    "factorValues": []
-                }
-                ],
-                
-             "samples": [
-                {
-                    "name": "sample-sample4",
-                    "characteristics": [
-                        {
-                            "value": {
-                                "name": "blood",
-                                "termAccession": "http://purl.obolibrary.org/obo/UBERON_0000178",
-                                "termSource": "UBERON"
-                            }
-                        },
-                    ],
-                    "derivesFrom": [
-                        "source-source2"
-                    ],
-                    "factorValues": []
+	"commentCreatedWithConfiguration": {
+		"name": "Created With Configuration",
+		"value": ""
+	},
+	"commentLastOpenedWithConfiguration": {
+		"name": "Last Opened With Configuration",
+		"value": "GSC MIxS human gut"
+	},
 
-                }
-                ],
-                
-             "data":[
-                {
-                    "name": "my_favourite_raw_data_file.cdf",
-                    "type": "raw data file"
-                },
-                {
-                    "name": "my_prefered_derived_data_file.txt",
-                    "type": "derived data file"
-                }
-             ],
-             
-            "processSequence": [
-                        {
-                            "executesProtocol": {
-                                "name": "sample collection"
-                            },
-                            "date": "YYYY-MM-DD+Thh:mm:ss",
-                            "performer": "john smith",
-                            "inputs": [ 
-                                  {
-                                        "name": "source-source2"
-                                  }
-                            ],
-                            "outputs": [
-                                {
-                                        "name": "sample-sample4"
-                                 }
-                            ],
-                            "parameters": [
-                                    {
-                                        "name": "storage vessel",
-                                        "parameterValue":{
-                                                     "name": "heparinated tube",
-                                                     "termAccession": "http://purl.obolibrary.org/obo/OBI_XYZ",
-                                                     "termSource": "OBI"
-                                                     }
-                                    }
-                            ]
-                        }
-            ],
-            
-            "assays": [
-                {
-                    "fileName": "a_gilbert-assay-Gx.txt",
-                    "measurementType": {
-                        "name": "metagenome sequencing",
-                        "termAccession": "",
-                        "termSource": "OBI"
-                    },                        
-                    "technologyType": {
-                        "name": "nucleotide sequencing",
-                        "termAccession": "",
-                        "termSource": "OBI"
-                    },
-                    "technologyPlatform": "454 Genome Sequencer FLX",
+	"ontologySourceReferences": [{
+		"description": "Chemical Entities of Biological Interest Ontology",
+		"file": "http://data.bioontology.org/ontologies/CHEBI",
+		"name": "CHEBI",
+		"version": "78"
+	}],
 
-                     "processSequence": [
-                        {
-                            "executesProtocol": {
-                                "name": "data collection"
-                                },
-                            "inputs": [
-                                {
-                                    "name": "sample-sample4"
-                                }
-                            ],
-                            "outputs": [
-                                {
-                                    "name": "my_favourite_raw_data_file.cdf"
-                                }
-                            ],
-                            "parameters": []
-                        },
-                        { 
-                            "executesProtocol": {
-                                  "name":   "data transformation"
-                                  },
-                            "inputs": [
-                                {
-                                    "name": "my_favourite_raw_data_file.cdf"
-                                }
-                            ],
-                            "outputs": [
-                                {
-                                    "name": "my_prefered_derived_data_file.txt"
-                                }
-                            ],
-                            "parameters": []
-                        }
-                        
-                     ]
-                }
-                ]
-          }
-     ]
+	"studies": [{
+		"identifier": "TEST-Template5-repeatedmeasure",
+		"title": "TEST-Template5-repeatedmeasure",
+		"description": "TEST-Template5-repeatedmeasure: more complex example, with 2 subjects, undergoing 4 distinct interventions, the order in which those are applied differs between the 2 subjects. interventions are identified as distinct protocols, whose application is identified by a date. intervention protocols are followed by a sample collection event, yielding from each subject 1 sample for the first 3 interventions and then 2 samples after the last intervention. Note: for repeated measure/longitudinal use cases, it is necessary for users to rely on 'Date' field associated to Protocol to allow for ordering along timeline. failing to do so prevents from distinguishing the information from a regular splitting. conversely, in ISA1.0, there can be cases where distinguishing a repeated measure design from other situation can be tricky.",
+		"submissionDate": "",
+		"publicReleaseDate": "",
+		"publications": [{
+			"authorList": "el-Attar A, Adu-Gyamfi Y, Tawfique K.",
+			"doi": "",
+			"pubMedID": "1435624",
+			"status": {
+				"name": "Published",
+				"termAccession": "",
+				"termSource": ""
+			},
+			"title": "Flumazenil reversal of midazolam sedation for dental procedures."
+		}],
+		"studyDesignDescriptors": [{
+			"name": "repeated measure design",
+			"termAccession": "http://purl.obolibrary.org/obo/OBI_0500002",
+			"termSource": "OBI"
+		}],
+		"factors": [{
+			"factorName": "location",
+			"factorType": {
+				"name": "geographical location",
+				"termAccession": "",
+				"termSource": ""
+			}
+		}],
+
+		"protocols": [{
+				"name": "sample collection",
+				"protocolType": {
+					"name": "sample collection",
+					"termAccession": "",
+					"termSource": ""
+				},
+				"description": "a sample collection protocol description",
+				"uri": "http://www.research.org/protocol1.pdf",
+				"version": "1.0",
+				"parameters": [{
+					"parameterName": {
+						"name": "storage container",
+						"termAccession": "",
+						"termSource": ""
+					}
+				}],
+				"components": [{
+					"componentName": "barcode reader",
+					"componentType": {
+						"name": "device",
+						"termAccession": "",
+						"termSource": ""
+					}
+				}]
+			},
+
+			{
+				"name": "data acquisition",
+				"protocolType": {
+					"name": "data acquisition",
+					"termAccession": "",
+					"termSource": ""
+				},
+				"description": "a data acquisition protocol description",
+				"uri": "http://www.research.org/protocol2.pdf",
+				"version": "2.0"
+			}, {
+				"name": "data transformation",
+				"protocolType": {
+					"name": "data transformation",
+					"termAccession": "",
+					"termSource": ""
+				},
+				"description": "a data transformation protocol description",
+				"uri": "http://www.research.org/protocol3.pdf",
+				"version": "1.0"
+			}
+
+		],
+
+		"people": [{
+			"firstName": "John",
+			"lastName": "Smith",
+			"midInitials": "F",
+			"affiliation": "University of Oxford",
+			"address": "34, Beaumont Street",
+			"email": "john.f.smith@research.org",
+			"fax": "+44 (0) 1865 645 000",
+			"phone": "+44 (0) 1865 645 234",
+			"roles": [{
+				"name": "principale investigator",
+				"termAccession": "",
+				"termSource": ""
+			}]
+		}],
+
+		"filename": "s_TEST-Template5-repeatedmeasure.txt",
+
+		"sources": [{
+			"name": "source-source2",
+			"characteristics": [{
+				"value": "4",
+				"unit": {
+					"name": "year",
+					"termAccession": "http://purl.obolibrary.org/obo/UO_000124",
+					"termSource": "UO"
+				}
+			}, {
+				"value": {
+					"name": "blood",
+					"termAccession": "http://purl.obolibrary.org/obo/UBERON_0000178",
+					"termSource": "UBERON"
+				}
+			}],
+			"factorValues": []
+		}],
+
+		"samples": [{
+			"name": "sample-sample4",
+			"characteristics": [{
+				"value": {
+					"name": "blood",
+					"termAccession": "http://purl.obolibrary.org/obo/UBERON_0000178",
+					"termSource": "UBERON"
+				}
+			}],
+			"derivesFrom": [
+				"source-source2"
+			],
+			"factorValues": []
+
+		}],
+
+		"data": [{
+			"name": "my_favourite_raw_data_file.cdf",
+			"type": "raw data file"
+		}, {
+			"name": "my_prefered_derived_data_file.txt",
+			"type": "derived data file"
+		}],
+
+		"processSequence": [{
+			"executesProtocol": {
+				"name": "sample collection"
+			},
+			"date": "YYYY-MM-DD+Thh:mm:ss",
+			"performer": "john smith",
+			"inputs": [{
+				"name": "source-source2"
+			}],
+			"outputs": [{
+				"name": "sample-sample4"
+			}],
+			"parameters": [{
+				"name": "storage vessel",
+				"parameterValue": {
+					"name": "heparinated tube",
+					"termAccession": "http://purl.obolibrary.org/obo/OBI_XYZ",
+					"termSource": "OBI"
+				}
+			}]
+		}],
+
+		"assays": [{
+			"fileName": "a_gilbert-assay-Gx.txt",
+			"measurementType": {
+				"name": "metagenome sequencing",
+				"termAccession": "",
+				"termSource": "OBI"
+			},
+			"technologyType": {
+				"name": "nucleotide sequencing",
+				"termAccession": "",
+				"termSource": "OBI"
+			},
+			"technologyPlatform": "454 Genome Sequencer FLX",
+
+			"processSequence": [{
+					"executesProtocol": {
+						"name": "data collection"
+					},
+					"inputs": [{
+						"name": "sample-sample4"
+					}],
+					"outputs": [{
+						"name": "my_favourite_raw_data_file.cdf"
+					}],
+					"parameters": []
+				}, {
+					"executesProtocol": {
+						"name": "data transformation"
+					},
+					"inputs": [{
+						"name": "my_favourite_raw_data_file.cdf"
+					}],
+					"outputs": [{
+						"name": "my_prefered_derived_data_file.txt"
+					}],
+					"parameters": []
+				}
+
+			]
+		}]
+	}]
 }
-
-
-                   
