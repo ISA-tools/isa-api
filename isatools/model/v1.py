@@ -188,12 +188,13 @@ class Study(IsaObject):
         to affect biological systems in a way that can be measured by an assay.
         protocols: Protocols used within the ISA artifact.
         assays: An Assay represents a portion of the experimental design.
+        data: Data files associated with the study
     """
 
     def __init__(self, identifier="", title="", description="", submission_date=date.today(),
                  public_release_date=date.today(), file_name="", design_descriptors=None, publications=None,
                  contacts=None, factors=None, protocols=None, assays=None, sources=None, samples=None,
-                 process_sequence=None, comments=None):
+                 process_sequence=None, data=None, comments=None):
         super().__init__(comments)
         self.identifier = identifier
         self.title = title
@@ -237,6 +238,10 @@ class Study(IsaObject):
             self.process_sequence = []
         else:
             self.process_sequence = process_sequence
+        if data is None:
+            self.data = []
+        else:
+            self.data = data
 
 
 class StudyFactor(IsaObject):
@@ -322,17 +327,29 @@ class ProtocolParameter(IsaObject):
         name:
         unit:
     """
-    def __init__(self, parameterName=None, unit=None, comments=None):
+    def __init__(self, parameter_name=None, unit=None, comments=None):
         super().__init__(comments)
-        if parameterName is None:
+        if parameter_name is None:
             self.name = OntologyAnnotation()
         else:
-            self.parameterName = parameterName
-        self.parameterName = parameterName
+            self.parameter_name = parameter_name
+        self.parameter_name = parameter_name
         if unit is None:
             self.unit = OntologyAnnotation()
         else:
             self.unit = unit
+
+
+class ParameterValue(IsaObject):
+    """A Parameter Value
+    """
+    def __init__(self, parameter_name="", parameter_value=None, unit=None):
+        self.parameter_name = parameter_name
+        if parameter_value is None:
+            self.parameter_value = OntologyAnnotation()
+        else:
+            self.parameter_value = parameter_value
+        self.unit = unit
 
 
 class Process(IsaObject):
@@ -345,16 +362,27 @@ class Process(IsaObject):
         inputs:
         outputs:
     """
-    def __init__(self, name="", executes_protocol=None, comments=None):
+    def __init__(self, name="", executes_protocol=None, date_=date.today(), performer="", parameters=None, inputs=None, outputs=None, comments=None):
         super().__init__(comments)
         self.name = name
         if executes_protocol is None:
             self.executes_protocol = Protocol()
         else:
             self.executes_protocol = executes_protocol
-        self.parameters = []
-        self.inputs = []
-        self.outputs = []
+        self.date = date_
+        self.performer = performer
+        if parameters is None:
+            self.parameters = list()
+        else:
+            self.parameters = parameters
+        if inputs is None:
+            self.inputs = list()
+        else:
+            self.inputs = inputs
+        if outputs is None:
+            self.outputs = list()
+        else:
+            self.outputs = outputs
 
 
 class Source(IsaObject):
@@ -368,23 +396,25 @@ class Source(IsaObject):
         super().__init__(comments)
         self.name = name
         if characteristics is None:
-            self.characteristics = []
+            self.characteristics = list()
         else:
             self.characteristics = characteristics
+
+
+class FactorValue(IsaObject):
+    def __init__(self, factorName="", value=None, unit=None, comments=None):
+        super().__init__(comments)
+        self.factorName = factorName
+        self.value = value
+        self.unit = unit
 
 
 class Characteristic(IsaObject):
     def __init__(self, category="", value=None, unit=None, comments=None):
         super().__init__(comments)
-        self.category=category
-        if self.value is None:
-            self.value = OntologyAnnotation()
-        else:
-            self.value = value
-        if self.unit is None:
-            self.unit = OntologyAnnotation()
-        else:
-            self.unit = unit
+        self.category = category
+        self.value = value
+        self.unit = unit
 
 
 class Material(IsaObject):
@@ -439,15 +469,15 @@ class Sample(IsaObject):
         characteristics:
         factors:
     """
-    def __init__(self, name="", factors=None, characteristics=None, comments=None):
+    def __init__(self, name="", factor_values=None, characteristics=None, derives_from=None, comments=None):
         super().__init__(comments)
         self.name = name
-        if factors is None:
-            self.factors = []
+        self.derives_from = derives_from
+        if factor_values is None:
+            self.factor_values = []
         else:
-            self.factors = factors
+            self.factor_values = factor_values
         if characteristics is None:
             self.characteristics = []
         else:
             self.characteristics = characteristics
-
