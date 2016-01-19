@@ -1,7 +1,6 @@
 from isatools.model.v1 import *
 import json
 import logging
-import networkx as nx
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -27,13 +26,13 @@ def load(fp):
         logger.debug('Populate the ontology source references')
         for ontologySourceReference_json in isajson['ontologySourceReferences']:
             logger.debug('Build Ontology Source Reference object')
-            ontologySourceReference = OntologySourceReference(
+            ontology_source_reference = OntologySourceReference(
                 name=ontologySourceReference_json['name'],
                 file=ontologySourceReference_json['file'],
                 version=ontologySourceReference_json['version'],
                 description=ontologySourceReference_json['description']
             )
-            investigation.ontology_source_references.append(ontologySourceReference)
+            investigation.ontology_source_references.append(ontology_source_reference)
         for publication_json in isajson['publications']:
             logger.debug('Build Investigation Publication object')
             publication = Publication(
@@ -62,6 +61,10 @@ def load(fp):
             )
             # TODO: Implement support for roles
             investigation.contacts.append(person)
+        logger.debug('Start building Studies objects')
+        samples_dict = dict()
+        sources_dict = dict()
+        data_dict = dict()
         for study_json in isajson['studies']:
             logger.debug('Start building Study object')
             study = Study(
@@ -116,23 +119,6 @@ def load(fp):
                     )
                 )
                 study.protocols.append(protocol)
-            for assay_json in study_json['assays']:
-                logger.debug('Build Study Assay object')
-                assay = Assay(
-                    measurement_type=OntologyAnnotation(
-                        name=assay_json['measurementType']['name'],
-                        term_accession=assay_json['measurementType']['termAccession'],
-                        term_source=assay_json['measurementType']['termSource']
-                    ),
-                    technology_type=OntologyAnnotation(
-                        name=assay_json['technologyType']['name'],
-                        term_accession=assay_json['technologyType']['termAccession'],
-                        term_source=assay_json['technologyType']['termSource']
-                    ),
-                    technology_platform=assay_json['technologyPlatform'],
-                    file_name=assay_json['fileName']
-                )
-                study.assays.append(assay)
             for factor_json in study_json['factors']:
                 logger.debug('Build Study Factor object')
                 factor = StudyFactor(
@@ -144,7 +130,6 @@ def load(fp):
                     )
                 )
                 study.factors.append(factor)
-            sources_dict = dict()
             for source_json in study_json['sources']:
                 logger.debug('Build Source object')
                 source = Source(
@@ -174,7 +159,6 @@ def load(fp):
                     source.characteristics.append(characteristic)
                 sources_dict[source.name] = source
                 study.sources.append(source)
-            samples_dict = dict()
             for sample_json in study_json['samples']:
                 logger.debug('Build Source object')
                 sample = Sample(
@@ -214,7 +198,7 @@ def load(fp):
                     sample.characteristics.append(factor_value)
                 samples_dict[sample.name] = sample
                 study.samples.append(sample)
-            data_dict = dict()
+
             for data_json in study_json['data']:
                 logger.debug('Build Data object')
                 data = Data(
@@ -223,14 +207,14 @@ def load(fp):
                 )
                 data_dict[data.name] = data
                 study.data.append(data)
-            for process_json in study_json['processSequence']:
+            for study_process_json in study_json['processSequence']:
                 logger.debug('Build Process object')
                 process = Process(
-                    executes_protocol=process_json['executesProtocol']['name'],
-                    date_=process_json['date'],
-                    performer=process_json['performer'],
+                    executes_protocol=study_process_json['executesProtocol']['name'],
+                    date_=study_process_json['date'],
+                    performer=study_process_json['performer'],
                 )
-                for parameter_json in process_json['parameters']:
+                for parameter_json in study_process_json['parameters']:
                     if isinstance(parameter_json['parameterValue'], int or float):
                         parameter = ParameterValue(
                             parameter_name=parameter_json['name'],
@@ -252,24 +236,60 @@ def load(fp):
                         )
                     process.parameters.append(parameter)
                 study.process_sequence.append(process)
-                inputs = list()
-                for input_json in process_json['inputs']:
+                for input_json in study_process_json['inputs']:
                     if input_json['name'].startswith('source-'):
                         input_ = sources_dict[input_json['name']]
                     elif input_json['name'].startswith('sample-'):
                         input_ = samples_dict[input_json['name']]
-                    inputs.append(input_)
-                    process.inputs = inputs
-                outputs = list()
-                for output_json in process_json['outputs']:
+                    process.inputs.append(input_)
+                for output_json in study_process_json['outputs']:
                     if output_json['name'].startswith('source-'):
                         output = sources_dict[output_json['name']]
                     elif output_json['name'].startswith('sample-'):
                         output = samples_dict[output_json['name']]
-                    outputs.append(output)
-                    process.outputs = outputs
+                    process.outputs.append(output)
                 study.process_sequence.append(process)
+                for assay_json in study_json['assays']:
+                    logger.debug('Start building Assay object')
+                    logger.debug('Build Study Assay object')
+                    assay = Assay(
+                        measurement_type=OntologyAnnotation(
+                            name=assay_json['measurementType']['name'],
+                            term_accession=assay_json['measurementType']['termAccession'],
+                            term_source=assay_json['measurementType']['termSource']
+                        ),
+                        technology_type=OntologyAnnotation(
+                            name=assay_json['technologyType']['name'],
+                            term_accession=assay_json['technologyType']['termAccession'],
+                            term_source=assay_json['technologyType']['termSource']
+                        ),
+                        technology_platform=assay_json['technologyPlatform'],
+                        file_name=assay_json['fileName']
+                    )
+                    for assay_process_json in assay_json['processSequence']:
+                        process = Process(
+                            executes_protocol=assay_process_json['executesProtocol']['name']
+                        )
+                        for input_json in assay_process_json['inputs']:
+                            if input_json['name'].startswith('source-'):
+                                input_ = sources_dict[input_json['name']]
+                            elif input_json['name'].startswith('sample-'):
+                                input_ = samples_dict[input_json['name']]
+                            else:
+                                input_ = data_dict[input_json['name']]
+                            process.inputs.append(input_)
+                        for output_json in assay_process_json['outputs']:
+                            if output_json['name'].startswith('source-'):
+                                output = sources_dict[output_json['name']]
+                            elif output_json['name'].startswith('sample-'):
+                                output = samples_dict[output_json['name']]
+                            else:
+                                output = data_dict[output_json['name']]
+                            process.outputs.append(output)
+                        assay.process_sequence.append(process)
+                study.assays.append(assay)
             logger.debug('End building Study object')
             investigation.studies.append(study)
+        logger.debug('End building Studies objects')
         logger.debug('End building Investigation object')
     return investigation
