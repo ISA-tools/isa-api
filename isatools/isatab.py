@@ -730,7 +730,13 @@ def dump(isa_obj, path):
                     if not (characteristic.unit is None):
                         source_headers.append('Unit')
                     source_headers.extend(('Term Source REF', 'Term Accession', ))
-                source_headers.append('Protocol REF')
+                process_headers = ['Protocol REF']
+                for parameter in study.process_sequence[0].parameters:
+                    process_headers.append('Parameter Value[' + parameter.parameter_name + ']')
+                    if not (parameter.unit is None):
+                        process_headers.append('Unit')
+                    process_headers.extend(('Term Source REF', 'Term Accession', ))
+                source_headers.extend(process_headers)
                 sample_headers = ['Sample Name']
                 for characteristic in study.samples[0].characteristics:
                     sample_headers.append('Characteristics[' + characteristic.category + ']')
@@ -754,40 +760,51 @@ def dump(isa_obj, path):
                     for output in process.outputs:
                         row = list()
                         if isinstance(output, Sample):
-                            derived_obj = inputs_dict[output.derives_from[0]]
-                            if isinstance(derived_obj, Source):
-                                row.append(derived_obj.name)
-                                for characteristic in derived_obj.characteristics:
+                            derived_from_obj = inputs_dict[output.derives_from[0]]
+                            if isinstance(derived_from_obj, Source):
+                                row.append(derived_from_obj.name)
+                                for characteristic in derived_from_obj.characteristics:
                                     if isinstance(characteristic.value, int or float):
                                         row.append(characteristic.value)
                                         row.append(characteristic.unit.name)
-                                        row.append(characteristic.unit.term_accession)
                                         row.append(characteristic.unit.term_source)
+                                        row.append(characteristic.unit.term_accession)
                                     elif isinstance(characteristic.value, OntologyAnnotation):
                                         row.append(characteristic.value.name)
-                                        row.append(characteristic.value.term_accession)
                                         row.append(characteristic.value.term_source)
+                                        row.append(characteristic.value.term_accession)
                             row.append(process.executes_protocol)
+                            for parameter in process.parameters:
+                                if isinstance(parameter.parameter_value, int or float):
+                                    row.append(parameter.parameter_value)
+                                    row.append(parameter.unit.name)
+                                    row.append(parameter.unit.term_source)
+                                    row.append(parameter.unit.term_accession)
+                                elif isinstance(parameter.parameter_value, OntologyAnnotation):
+                                    row.append(parameter.parameter_value.name)
+                                    row.append(parameter.parameter_value.term_source)
+                                    row.append(parameter.parameter_value.term_accession)
+                            row.append(output.name)
                             for characteristic in output.characteristics:
                                 if isinstance(characteristic.value, int or float):
                                     row.append(characteristic.value)
                                     row.append(characteristic.unit.name)
-                                    row.append(characteristic.unit.term_accession)
                                     row.append(characteristic.unit.term_source)
+                                    row.append(characteristic.unit.term_accession)
                                 elif isinstance(characteristic.value, OntologyAnnotation):
                                     row.append(characteristic.value.name)
-                                    row.append(characteristic.value.term_accession)
                                     row.append(characteristic.value.term_source)
+                                    row.append(characteristic.value.term_accession)
                             for factor_value in output.factor_values:
                                 if isinstance(factor_value.value, int or float):
                                     row.append(factor_value.value)
                                     row.append(factor_value.unit.name)
-                                    row.append(factor_value.unit.term_accession)
                                     row.append(factor_value.unit.term_source)
+                                    row.append(factor_value.unit.term_accession)
                                 elif isinstance(factor_value.value, OntologyAnnotation):
                                     row.append(factor_value.value.name)
-                                    row.append(factor_value.value.term_accession)
                                     row.append(factor_value.value.term_source)
+                                    row.append(factor_value.value.term_accession)
                         study_file_writer.writerow(row)
                 study_fp.close()
         fp.close()

@@ -226,14 +226,14 @@ def load(fp):
             for process_json in study_json['processSequence']:
                 logger.debug('Build Process object')
                 process = Process(
-                    executes_protocol=process_json['executesProtocol'],
+                    executes_protocol=process_json['executesProtocol']['name'],
                     date_=process_json['date'],
                     performer=process_json['performer'],
                 )
                 for parameter_json in process_json['parameters']:
                     if isinstance(parameter_json['parameterValue'], int or float):
                         parameter = ParameterValue(
-                            name=parameter_json['name'],
+                            parameter_name=parameter_json['name'],
                             parameter_value=parameter_json['parameterValue'],
                             unit=OntologyAnnotation(
                                 name=parameter_json['unit']['name'],
@@ -243,7 +243,7 @@ def load(fp):
                         )
                     else:
                         parameter = ParameterValue(
-                            name=parameter_json['name'],
+                            parameter_name=parameter_json['name'],
                             parameter_value=OntologyAnnotation(
                                 name=parameter_json['parameterValue']['name'],
                                 term_accession=parameter_json['parameterValue']['termAccession'],
