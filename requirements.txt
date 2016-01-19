@@ -2,3 +2,4 @@ biopy-isatab
 jsonschema
 pandas
 networkx
+behave
