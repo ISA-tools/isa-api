@@ -8,6 +8,7 @@
     },
     "type": "object",
     "properties": {
+        "@id": { "type": "string", "format": "uri" },
         "filename" : { "type" : "string"},
         "identifier" : { "type" : "string" },
         "title" : { "type" : "string"},
@@ -51,6 +52,12 @@
                 "$ref": "sample_schema.json#"
               }
         },
+        "materials": {
+            "type": "array",
+              "items" : {
+                "$ref": "material_schema.json#"
+              }
+        },
         "processSequence": {
               "type": "array",
               "items" : {
@@ -69,7 +76,7 @@
                 "$ref": "factor_schema.json#"
           }
       },
-       "comments" : {
+      "comments" : {
             "type": "array",
             "items": {
                  "$ref": "comment_schema.json#"

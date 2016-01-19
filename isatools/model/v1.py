@@ -1,5 +1,5 @@
 from datetime import date
-import uuid
+import abc
 
 __author__ = 'dj'
 
@@ -27,7 +27,6 @@ class IsaObject(object):
             self.comments = []
         else:
             self.comments = comments
-        self.obj_id = uuid.uuid4()
 
 
 class Investigation(IsaObject):
@@ -189,12 +188,13 @@ class Study(IsaObject):
         to affect biological systems in a way that can be measured by an assay.
         protocols: Protocols used within the ISA artifact.
         assays: An Assay represents a portion of the experimental design.
+        data: Data files associated with the study
     """
 
     def __init__(self, identifier="", title="", description="", submission_date=date.today(),
                  public_release_date=date.today(), file_name="", design_descriptors=None, publications=None,
                  contacts=None, factors=None, protocols=None, assays=None, sources=None, samples=None,
-                 process_sequence=None, comments=None):
+                 process_sequence=None, data=None, comments=None):
         super().__init__(comments)
         self.identifier = identifier
         self.title = title
@@ -238,6 +238,10 @@ class Study(IsaObject):
             self.process_sequence = []
         else:
             self.process_sequence = process_sequence
+        if data is None:
+            self.data = []
+        else:
+            self.data = data
 
 
 class StudyFactor(IsaObject):
@@ -328,23 +332,24 @@ class ProtocolParameter(IsaObject):
         if parameter_name is None:
             self.name = OntologyAnnotation()
         else:
-            self.parameterName = parameter_name
-        self.parameterName = parameter_name
+            self.parameter_name = parameter_name
+        self.parameter_name = parameter_name
         if unit is None:
             self.unit = OntologyAnnotation()
         else:
             self.unit = unit
 
 
-class ProcessingEvent(IsaObject):
-
-    def __init__(self, protocol_ref='', parameters=None, performer='', date_=date.today(), comments=None):
-        super().__init__(comments)
-        self.protocol_ref = protocol_ref
-        if parameters is None:
-            self.parameters = list()
-        self.performer = performer
-        self.date = date_
+class ParameterValue(IsaObject):
+    """A Parameter Value
+    """
+    def __init__(self, parameter_name="", parameter_value=None, unit=None):
+        self.parameter_name = parameter_name
+        if parameter_value is None:
+            self.parameter_value = OntologyAnnotation()
+        else:
+            self.parameter_value = parameter_value
+        self.unit = unit
 
 
 class Process(IsaObject):
@@ -357,13 +362,15 @@ class Process(IsaObject):
         inputs:
         outputs:
     """
-    def __init__(self, name="", executes_protocol=None, parameters=None, inputs=None, outputs=None, comments=None):
+    def __init__(self, name="", executes_protocol=None, date_=date.today(), performer="", parameters=None, inputs=None, outputs=None, comments=None):
         super().__init__(comments)
         self.name = name
         if executes_protocol is None:
             self.executes_protocol = Protocol()
         else:
             self.executes_protocol = executes_protocol
+        self.date = date_
+        self.performer = performer
         if parameters is None:
             self.parameters = list()
         else:
@@ -395,9 +402,9 @@ class Source(IsaObject):
 
 
 class FactorValue(IsaObject):
-    def __init__(self, factor_name="", value=None, unit=None, comments=None):
+    def __init__(self, factorName="", value=None, unit=None, comments=None):
         super().__init__(comments)
-        self.factor_name = factor_name
+        self.factorName = factorName
         self.value = value
         self.unit = unit
 
