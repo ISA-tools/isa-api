@@ -343,8 +343,8 @@ class ProtocolParameter(IsaObject):
 class ParameterValue(IsaObject):
     """A Parameter Value
     """
-    def __init__(self, name="", parameter_value=None, unit=None):
-        self.name = name
+    def __init__(self, parameter_name="", parameter_value=None, unit=None):
+        self.parameter_name = parameter_name
         if parameter_value is None:
             self.parameter_value = OntologyAnnotation()
         else:
