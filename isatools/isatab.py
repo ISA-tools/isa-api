@@ -128,9 +128,8 @@ def load(isatab_dir):
                                                                           " Protocol Parameters Name")
         for parameter_annotation in parameters_annotations:
             parameter = ProtocolParameter(
-                parameterName=parameter_annotation
+                # parameterName=parameter_annotation
             )
-            # TODO Units?
             parameters_list.append(parameter)
         return parameters_list
 
@@ -149,20 +148,19 @@ def load(isatab_dir):
              onto_annotations.append(onto_ann)
         return onto_annotations
 
-    #TODO Finish how to process nodes etc.
     def _createDataFiles(nodes):
-        json_dict = dict([])
+        obj_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype.endswith("Data File"):
-                json_item = Data(
+                obj_item = Data(
                     name=nodes[node_index].name,
                     type_=nodes[node_index].ntype
                 )
-                json_dict.update({node_index: json_item})
-        return json_dict
+                obj_dict.update({node_index: obj_item})
+        return obj_dict
 
     def _createProcessSequence(process_nodes, source_dict, sample_dict, data_dict):
-        json_list = []
+        obj_list = []
         for process_node_name in process_nodes:
             try:
                 measurement_type = process_nodes[process_node_name].study_assay.metadata["Study Assay Measurement Type"]
@@ -179,14 +177,14 @@ def load(isatab_dir):
             except:
                 technology = ""
 
-            json_item = dict([
-                    ("executesProtocol", _createExecuteStudyProtocol(process_node_name, process_nodes[process_node_name])),
-                    ("parameters", []),
-                    ("inputs", _createInputList(process_nodes[process_node_name].inputs, source_dict, sample_dict)),
-                    ("outputs", _createOutputList(process_nodes[process_node_name].outputs, sample_dict) )
-            ])
-            json_list.append(json_item)
-        return json_list
+            obj_item = Process(
+                executes_protocol=_createExecuteStudyProtocol(process_node_name, process_nodes[process_node_name]),
+                parameters=list(),
+                inputs=_createInputList(process_nodes[process_node_name].inputs, source_dict, sample_dict),
+                outputs=_createOutputList(process_nodes[process_node_name].outputs, sample_dict)
+            )
+            obj_list.append(obj_item)
+        return obj_list
 
     def _createExecuteStudyProtocol(process_node_name, process_node):
         json_item = dict([
@@ -199,87 +197,156 @@ def load(isatab_dir):
         return json_item
 
     def _createInputList(inputs, source_dict, sample_dict):
-        json_list = []
+        obj_list = list()
         for argument in inputs:
             try:
-                json_item = source_dict[argument]
-                json_list.append(json_item)
+                obj_item = source_dict[argument]
+                obj_list.append(obj_item)
             except KeyError:
                 pass
             try:
-                json_item = sample_dict[argument]
-                json_list.append(json_item)
+                obj_item = sample_dict[argument]
+                obj_list.append(obj_item)
             except KeyError:
                 pass
-        return json_list
+        return obj_list
 
     def _createOutputList(arguments, sample_dict):
-        json_list = []
+        obj_list = []
         for argument in arguments:
             try:
-                json_item = sample_dict[argument]
-                json_list.append(json_item)
+                obj_item = sample_dict[argument]
+                obj_list.append(obj_item)
             except KeyError:
                 pass
+        return obj_list
+
+    def _createStudyAssaysList(assays):
+        json_list = list()
+        for assay in assays:
+            source_dict = _createSourceDictionary(assay.nodes)
+            sample_dict = _createSampleDictionary(assay.nodes)
+            data_dict = _createDataFiles(assay.nodes)
+            json_item = Assay(
+                file_name=assay.metadata['Study Assay File Name'],
+                measurement_type=OntologyAnnotation(
+                    name=assay.metadata['Study Assay Measurement Type'],
+                    term_source=assay.metadata['Study Assay Measurement Type Term Source REF'],
+                    term_accession=assay.metadata['Study Assay Measurement Type Term Accession Number']),
+                technology_type=OntologyAnnotation(
+                    name=assay.metadata['Study Assay Technology Type'],
+                    term_source=assay.metadata['Study Assay Technology Type Term Source REF'],
+                    term_accession=assay.metadata['Study Assay Technology Type Term Accession Number']),
+                technology_platform=assay.metadata['Study Assay Technology Platform'],
+                process_sequence=_createProcessSequence(assay.process_nodes, source_dict, sample_dict, data_dict),
+            )
+            json_list.append(json_item)
         return json_list
 
-    # def _createStudyAssaysList(assays):
-    #     json_list = []
-    #     for assay in assays:
-    #         source_dict = _createSourcesDictionary(assay.nodes)
-    #         sample_dict = _createSampleDictionary(assay.nodes)
-    #         data_dict = _createDataFiles(assay.nodes)
-    #         json_item = Assay(
-    #             file_name=assay.metadata['Study Assay File Name'],
-    #             measurement_type=OntologyAnnotation(
-    #                 name=assay.metadata['Study Assay Measurement Type'],
-    #                 term_source=assay.metadata['Study Assay Measurement Type Term Source REF'],
-    #                 term_accession=assay.metadata['Study Assay Measurement Type Term Accession Number']),
-    #             technology_type=OntologyAnnotation(
-    #                 name=assay.metadata['Study Assay Technology Type'],
-    #                 term_source=assay.metadata['Study Assay Technology Type Term Source REF'],
-    #                 term_accession=assay.metadata['Study Assay Technology Type Term Accession Number']),
-    #             technology_platform=assay.metadata['Study Assay Technology Platform'],
-    #             process_sequence=_createProcessSequence(assay.process_nodes, source_dict, sample_dict, data_dict),
-    #         )
-    #         json_list.append(json_item)
-    #     return json_list
-
-    def _createFactorValueList(self, node_name, node):
-        json_list = []
+    def _createValueList(column_name, node_name, node):
+        obj_list = list()
         for header in node.metadata:
-            if header.startswith("Factor Value"):
-                 factor_value = header.replace("]", "").split("[")[-1]
-                 factor_value_ontology_annotation = self.createOntologyAnnotation(factor_value, "", "")
-                 factor_value_json = dict([
-                     ("value", factor_value_ontology_annotation)
-                 ])
-                 json_list.append(factor_value_json)
-        return json_list
+            if header.startswith(column_name):
+                value_header = header.replace("]", "").split("[")[-1]
+                value_attributes = node.metadata[header][0]
+                value = value_attributes[0]  # In tab2json uses convert_num to recast string to int or float
+                try:
+                    if column_name == 'Characteristics':
+                        value_obj = Characteristic(
+                            category=value_header,
+                            value=value,
+                            unit=OntologyAnnotation(
+                                name=value_attributes.Unit,
+                                term_accession=value_attributes.Term_Accession_Number,
+                                term_source=value_attributes.Term_Source_REF,
+                            )
+                        )
+                    elif column_name == 'Factor Value':
+                        value_obj = FactorValue(
+                            # factorName=value_header,
+                            value=value,
+                            unit=OntologyAnnotation(
+                                name=value_attributes.Unit,
+                                term_accession=value_attributes.Term_Accession_Number,
+                                term_source=value_attributes.Term_Source_REF,
+                            )
+                        )
+                    obj_list.append(value_obj)
+                    continue
+                except AttributeError:
+                    try:
+                        if column_name == 'Characteristics':
+                            value_obj = Characteristic(
+                                category=value_header,
+                                value=OntologyAnnotation(
+                                    name=value,
+                                    term_accession=value_attributes.Term_Accession_Number,
+                                    term_source=value_attributes.Term_Source_REF,
+                                )
+                            )
+                            obj_list.append(value_obj)
+                        elif column_name == 'Factor Value':
+                            value_obj = FactorValue(
+                                # factorName=value_header,
+                                value=OntologyAnnotation(
+                                    name=value,
+                                    term_accession=value_attributes.Term_Accession_Number,
+                                    term_source=value_attributes.Term_Source_REF,
+                                )
+                            )
+                        continue
+                    except AttributeError:
+                        if column_name == 'Characteristics':
+                            value_obj = Characteristic(
+                                category=value_header,
+                                value=OntologyAnnotation(
+                                    name=value
+                                )
+                            )
+                        elif column_name == 'Factor Value':
+                            value_obj = FactorValue(
+                                # factorName=value_header,
+                                value=OntologyAnnotation(
+                                    name=value
+                                )
+                            )
+                        obj_list.append(value_obj)
+        return obj_list
 
-    def _createSourcesSamples(nodes):
-        samples_json_dict = dict([])
-        sources_obj_dict = dict([])
+    def _createSourceDictionary(nodes):
+        obj_dict = dict([])
+        for node_name in nodes:
+            if nodes[node_name].ntype == "Source Name":
+                reformatted_node_name = node_name[7:]  # Strip out the source- bit
+                source_item = Source(
+                    name=reformatted_node_name,
+                    characteristics=_createValueList("Characteristics", node_name, nodes[node_name]),
+                )
+                obj_dict.update({node_name: source_item})
+        return obj_dict
+
+    def _createSampleDictionary(nodes):
+        obj_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype == "Sample Name":
-                sample = Sample(
-                    name=node_index,
-                    factors=_createFactorValueList(node_index, nodes[node_index]),
-                    characteristics=_createCharacteristicList(node_index, nodes[node_index])
-                )
-                samples_json_dict.update({node_index: sample})
-            elif nodes[node_index].ntype == "Source Name":
-                source = Source(
-                    name=node_index,
-                    characteristics=_createCharacteristicList(node_index, nodes[node_index])
-                )
-                sources_obj_dict.update({node_index: source})
-        return sources_obj_dict, samples_json_dict
+                reformatted_node_name = node_index[7:]  # Strip out the sample- bit
+                try:
+                    obj_item = Sample(
+                        name=reformatted_node_name,
+                        factor_values=_createValueList("Factor Value", node_index, nodes[node_index]),
+                        characteristics=_createValueList("Characteristics", node_index, nodes[node_index]),
+                        derives_from=nodes[node_index].metadata["Source Name"][0],
+                    )
+                    obj_dict.update({node_index: obj_item})
+                except KeyError:
+                    pass
+        return obj_dict
 
     def _createStudies(studies):
         study_array = []
         for study in studies:
-            sources, samples = _createSourcesSamples(study.nodes)
+            sources = _createSourceDictionary(study.nodes)
+            samples = _createSampleDictionary(study.nodes)
             data_dict = _createDataFiles(study.nodes)
             study_obj = Study(
                 identifier=study.metadata['Study Identifier'],
@@ -328,7 +395,7 @@ def dump(isa_obj, path):
     if os.path.exists(path):
         fp = open(os.path.join(path, 'i_investigation.txt'), 'w')
     if isinstance(isa_obj, Investigation):
-        # Process Investigation object
+        # Process Investigation object first to write the investigation file
         investigation = isa_obj
 
         # Write ONTOLOGY SOURCE REFERENCE section
@@ -654,6 +721,96 @@ def dump(isa_obj, path):
             fp.write('STUDY CONTACTS\n')
             study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                      index_label='Study Person Last Name')
+            if os.path.exists(path):
+                study_fp = open(os.path.join(path, study.file_name), 'w')
+                #  Calculate and write out the header row first
+                source_headers = ['Source Name']
+                for characteristic in study.sources[0].characteristics:
+                    source_headers.append('Characteristics[' + characteristic.category + ']')
+                    if not (characteristic.unit is None):
+                        source_headers.append('Unit')
+                    source_headers.extend(('Term Source REF', 'Term Accession', ))
+                process_headers = ['Protocol REF']
+                for parameter in study.process_sequence[0].parameters:
+                    process_headers.append('Parameter Value[' + parameter.parameter_name + ']')
+                    if not (parameter.unit is None):
+                        process_headers.append('Unit')
+                    process_headers.extend(('Term Source REF', 'Term Accession', ))
+                source_headers.extend(process_headers)
+                sample_headers = ['Sample Name']
+                for characteristic in study.samples[0].characteristics:
+                    sample_headers.append('Characteristics[' + characteristic.category + ']')
+                    if not (characteristic.unit is None):
+                        sample_headers.append('Unit')
+                    sample_headers.extend(('Term Source REF', 'Term Accession'))
+                for factor_value in study.samples[0].factor_values:
+                    sample_headers.append('Factor Value[' + factor_value.factorName + ']')
+                    if not (factor_value.unit is None):
+                        sample_headers.append('Unit')
+                    sample_headers.extend(('Term Source REF', 'Term Accession'))
+                source_headers.extend(sample_headers)
+                import csv
+                study_file_writer = csv.writer(study_fp, delimiter='\t')
+                study_file_writer.writerow(source_headers)
+                # Now write out the row content
+                for process in study.process_sequence:
+                    inputs_dict = dict()
+                    for input_ in process.inputs:
+                        inputs_dict[input_.name] = input_
+                    for output in process.outputs:
+                        row = list()
+                        if isinstance(output, Sample):
+                            derived_from_obj = inputs_dict[output.derives_from[0]]
+                            if isinstance(derived_from_obj, Source):
+                                row.append(derived_from_obj.name)
+                                for characteristic in derived_from_obj.characteristics:
+                                    if isinstance(characteristic.value, int or float):
+                                        row.append(characteristic.value)
+                                        row.append(characteristic.unit.name)
+                                        row.append(characteristic.unit.term_source)
+                                        row.append(characteristic.unit.term_accession)
+                                    elif isinstance(characteristic.value, OntologyAnnotation):
+                                        row.append(characteristic.value.name)
+                                        row.append(characteristic.value.term_source)
+                                        row.append(characteristic.value.term_accession)
+                            row.append(process.executes_protocol)
+                            for parameter in process.parameters:
+                                if isinstance(parameter.parameter_value, int or float):
+                                    row.append(parameter.parameter_value)
+                                    row.append(parameter.unit.name)
+                                    row.append(parameter.unit.term_source)
+                                    row.append(parameter.unit.term_accession)
+                                elif isinstance(parameter.parameter_value, OntologyAnnotation):
+                                    row.append(parameter.parameter_value.name)
+                                    row.append(parameter.parameter_value.term_source)
+                                    row.append(parameter.parameter_value.term_accession)
+                            row.append(output.name)
+                            for characteristic in output.characteristics:
+                                if isinstance(characteristic.value, int or float):
+                                    row.append(characteristic.value)
+                                    row.append(characteristic.unit.name)
+                                    row.append(characteristic.unit.term_source)
+                                    row.append(characteristic.unit.term_accession)
+                                elif isinstance(characteristic.value, OntologyAnnotation):
+                                    row.append(characteristic.value.name)
+                                    row.append(characteristic.value.term_source)
+                                    row.append(characteristic.value.term_accession)
+                            for factor_value in output.factor_values:
+                                if isinstance(factor_value.value, int or float):
+                                    row.append(factor_value.value)
+                                    row.append(factor_value.unit.name)
+                                    row.append(factor_value.unit.term_source)
+                                    row.append(factor_value.unit.term_accession)
+                                elif isinstance(factor_value.value, OntologyAnnotation):
+                                    row.append(factor_value.value.name)
+                                    row.append(factor_value.value.term_source)
+                                    row.append(factor_value.value.term_accession)
+                        study_file_writer.writerow(row)
+                study_fp.close()
+                for assay in study.assays:
+                    assay_fp = open(os.path.join(path, assay.file_name), 'w')
+                    #  FIXME: Not yet implemented - parser doesn't seem to load into assay nodes (related to issue #37)
+                    assay_fp.close()
         fp.close()
 
     else:
@@ -661,135 +818,232 @@ def dump(isa_obj, path):
     return fp
 
 
-def read_investigation_file(fp):
+# def read_investigation_file(fp):
+#
+#     def _peek(f):
+#         position = f.tell()
+#         l = f.readline()
+#         f.seek(position)
+#         return l
+#
+#     def _read_tab_section(f, sec_key, next_sec_key=None):
+#
+#         line = f.readline()
+#         if not line.rstrip() == sec_key:
+#             raise IOError("Expected: " + sec_key + " section, but got: " + line)
+#         memf = io.StringIO()
+#         while not _peek(f=f).rstrip() == next_sec_key:
+#             line = f.readline()
+#             if not line:
+#                 break
+#             memf.write(line)
+#         memf.seek(0)
+#         return memf
+#
+#     def _build_section_df(f):
+#         df = pd.read_csv(f, sep='\t').T  # Load and transpose ISA file section
+#         df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
+#         df.reset_index(inplace=True)  # Reset index so it is accessible as column
+#         df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
+#         df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
+#         return df
+#
+#     # Read in investigation file into DataFrames first
+#     ontology_sources_df = _build_section_df(_read_tab_section(
+#         f=fp,
+#         sec_key='ONTOLOGY SOURCE REFERENCE',
+#         next_sec_key='INVESTIGATION'
+#     ))
+#     # assert({'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
+#     #        .issubset(set(ontology_sources_df.columns.values)))  # Check required labels are present
+#     investigation_df = _build_section_df(_read_tab_section(
+#         f=fp,
+#         sec_key='INVESTIGATION',
+#         next_sec_key='INVESTIGATION PUBLICATIONS'
+#     ))
+#     investigation_publications_df = _build_section_df(_read_tab_section(
+#         f=fp,
+#         sec_key='INVESTIGATION PUBLICATIONS',
+#         next_sec_key='INVESTIGATION CONTACTS'
+#     ))
+#     investigation_contacts_df = _build_section_df(_read_tab_section(
+#         f=fp,
+#         sec_key='INVESTIGATION CONTACTS',
+#         next_sec_key='STUDY'
+#     ))
+#     study_df_list = list()
+#     study_design_descriptors_df_list = list()
+#     study_publications_df_list = list()
+#     study_factors_df_list = list()
+#     study_assays_df_list = list()
+#     study_protocols_df_list = list()
+#     study_contacts_df_list = list()
+#     while _peek(fp):  # Iterate through STUDY blocks until end of file
+#         study_df_list.append(_build_section_df(_read_tab_section(
+#             f=fp,
+#             sec_key='STUDY',
+#             next_sec_key='STUDY DESIGN DESCRIPTORS'
+#         )))
+#         study_design_descriptors_df_list.append(_build_section_df(_read_tab_section(
+#             f=fp,
+#             sec_key='STUDY DESIGN DESCRIPTORS',
+#             next_sec_key='STUDY PUBLICATIONS'
+#         )))
+#         study_publications_df_list.append(_build_section_df(_read_tab_section(
+#             f=fp,
+#             sec_key='STUDY PUBLICATIONS',
+#             next_sec_key='STUDY FACTORS'
+#         )))
+#         study_factors_df_list.append(_build_section_df(_read_tab_section(
+#             f=fp,
+#             sec_key='STUDY FACTORS',
+#             next_sec_key='STUDY ASSAYS'
+#         )))
+#         study_assays_df_list.append(_build_section_df(_read_tab_section(
+#             f=fp,
+#             sec_key='STUDY ASSAYS',
+#             next_sec_key='STUDY PROTOCOLS'
+#         )))
+#         study_protocols_df_list.append(_build_section_df(_read_tab_section(
+#             f=fp,
+#             sec_key='STUDY PROTOCOLS',
+#             next_sec_key='STUDY CONTACTS'
+#         )))
+#         study_contacts_df_list.append(_build_section_df(_read_tab_section(
+#             f=fp,
+#             sec_key='STUDY CONTACTS',
+#             next_sec_key='STUDY'
+#         )))
+#
+#     # # Start building the object model
+#     # ontology_source_references = list()
+#     # for x in ontology_sources_df.iterrows():  # Iterate over the rows to build our OntologySourceReference objs
+#     #     ontology_source_data = x[1]  # Get data out of df row
+#     #     ontology_source = OntologySourceReference(
+#     #         name=ontology_source_data['Term Source Name'],
+#     #         file=ontology_source_data['Term Source File'],
+#     #         version=ontology_source_data['Term Source Version'],
+#     #         description=ontology_source_data['Term Source Description']
+#     #     )
+#     #     print(ontology_source.to_json())
+#     #     ontology_source_references.append(ontology_source)
+#     # investigation_data = investigation_df[1]
+#     # investigation = Investigation(
+#     #     identifier=investigation_data['Investigation Identifier'],
+#     #     title=investigation_data['Investigation Title'],
+#     #     description=investigation_data['Investigation Description'],
+#     #     submission_date=investigation_data['Investigation Submission Date'],
+#     #     public_release_date=investigation_data['Investigation Public Release Date'],
+#     # )
+#     # for x in investigation_publications_df.iterrows():
+#     #     investigation_publication_data = x[1]
+#     #     investigation_publication = Publication(
+#     #         pubmed_id=investigation_publication_data['Investigation PubMed ID'],
+#     #         doi=investigation_publication_data['Investigation Publication DOI'],
+#     #         author_list=investigation_publication_data['Investigation Publication Author List'],
+#     #         title=investigation_publication_data['Investigation Publication Title'],
+#     #         status=OntologyAnnotation(
+#     #             name=investigation_publication_data['Investigation Publication Status'],
+#     #             term_accession=investigation_publication_data['Investigation Publication Status Term Accession'],
+#     #             term_source=investigation_publication_data['Investigation Publication Status Term Source REF'],
+#     #         )
+#     #     )
+#     #     investigation.publications.append(investigation_publication)
+#     return investigation_df
 
-    def _peek(f):
-        position = f.tell()
-        l = f.readline()
-        f.seek(position)
-        return l
 
-    def _read_tab_section(f, sec_key, next_sec_key=None):
+def read_study_file(fp):
+    import re
 
-        line = f.readline()
-        if not line.rstrip() == sec_key:
-            raise IOError("Expected: " + sec_key + " section, but got: " + line)
-        memf = io.StringIO()
-        while not _peek(f=f).rstrip() == next_sec_key:
-            line = f.readline()
-            if not line:
-                break
-            memf.write(line)
-        memf.seek(0)
-        return memf
+    def _read_study_record_line(column_names, row_):
+        characteristics_regex = re.compile('Characteristics\[(.*?)\]')
+        factor_value_regex = re.compile('Factor Value\[(.*?)\]')
+        if len(column_names) != len(row_):
+            raise IOError
+        source_ = Source()
+        sample_ = Sample()
+        for index, value in enumerate(column_names):
+            if value == 'Source Name':
+                source_.name = row_[index]
+            if value == 'Sample Name':
+                sample_.name = row_[index]
+            if value == 'Material Type':
+                pass
+            if value == 'Protocol REF':
+                processing_event_ = ProcessingEvent(
+                    protocol_ref=row_[index],
+                )
+                try:
+                    peek_column = column_names[index+1]
+                    if peek_column == 'Date':
+                        processing_event_.date_ = row_[index+1]
+                        peek_column = column_names[index+2]
+                        if peek_column == 'Performer':
+                            processing_event_.performer = row_[index+2]
+                    if peek_column == 'Performer':
+                        processing_event_.performer = row_[index+1]
+                        if peek_column == 'Date':
+                            processing_event_.date = row_[index+2]
+                except IndexError:
+                    pass
+            if characteristics_regex.match(value):
+                characteristic = Characteristic()
+                characteristic.category = characteristics_regex.findall(value)[0]
+                try:
+                    peek_column = column_names[index+1]
+                    if peek_column == 'Term Source REF':
+                        characteristic.value = OntologyAnnotation(
+                            name=row_[index],
+                            term_source=row_[index+1],
+                            term_accession=row_[index+2],
+                        )
+                    else:
+                        characteristic.value = row_[index]
+                except IndexError:
+                    pass
+                finally:
+                    if sample_.name == '':
+                        source_.characteristics.append(characteristic)
+                    else:
+                        sample_.characteristics.append(characteristic)
+            if factor_value_regex.match(value):
+                factor_value = FactorValue()
+                factor_value.factor_name = factor_value_regex.findall(value)[0]
+                try:
+                    peek_column = column_names[index+1]
+                    if peek_column == 'Term Source REF':
+                        factor_value.value = OntologyAnnotation(
+                            name=row_[index],
+                            term_source=row_[index+1],
+                            term_accession=row_[index+2],
+                        )
+                    elif peek_column == 'Unit':
+                        factor_value.value = row_[index]
+                        factor_value.unit = OntologyAnnotation(
+                            name=row_[index+1],
+                            term_source=row_[index+2],
+                            term_accession=row_[index+3],
+                        )
+                except IndexError:
+                    pass
+                finally:
+                    sample_.factor_values.append(factor_value)
+        return source_, sample_, processing_event_
 
-    def _build_section_df(f):
-        df = pd.read_csv(f, sep='\t').T  # Load and transpose ISA file section
-        df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
-        df.reset_index(inplace=True)  # Reset index so it is accessible as column
-        df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
-        df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
-        return df
-
-    # Read in investigation file into DataFrames first
-    ontology_sources_df = _build_section_df(_read_tab_section(
-        f=fp,
-        sec_key='ONTOLOGY SOURCE REFERENCE',
-        next_sec_key='INVESTIGATION'
-    ))
-    # assert({'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
-    #        .issubset(set(ontology_sources_df.columns.values)))  # Check required labels are present
-    investigation_df = _build_section_df(_read_tab_section(
-        f=fp,
-        sec_key='INVESTIGATION',
-        next_sec_key='INVESTIGATION PUBLICATIONS'
-    ))
-    investigation_publications_df = _build_section_df(_read_tab_section(
-        f=fp,
-        sec_key='INVESTIGATION PUBLICATIONS',
-        next_sec_key='INVESTIGATION CONTACTS'
-    ))
-    investigation_contacts_df = _build_section_df(_read_tab_section(
-        f=fp,
-        sec_key='INVESTIGATION CONTACTS',
-        next_sec_key='STUDY'
-    ))
-    study_df_list = list()
-    study_design_descriptors_df_list = list()
-    study_publications_df_list = list()
-    study_factors_df_list = list()
-    study_assays_df_list = list()
-    study_protocols_df_list = list()
-    study_contacts_df_list = list()
-    while _peek(fp):  # Iterate hopefully through STUDY blocks until end of file
-        study_df_list.append(_build_section_df(_read_tab_section(
-            f=fp,
-            sec_key='STUDY',
-            next_sec_key='STUDY DESIGN DESCRIPTORS'
-        )))
-        study_design_descriptors_df_list.append(_build_section_df(_read_tab_section(
-            f=fp,
-            sec_key='STUDY DESIGN DESCRIPTORS',
-            next_sec_key='STUDY PUBLICATIONS'
-        )))
-        study_publications_df_list.append(_build_section_df(_read_tab_section(
-            f=fp,
-            sec_key='STUDY PUBLICATIONS',
-            next_sec_key='STUDY FACTORS'
-        )))
-        study_factors_df_list.append(_build_section_df(_read_tab_section(
-            f=fp,
-            sec_key='STUDY FACTORS',
-            next_sec_key='STUDY ASSAYS'
-        )))
-        study_assays_df_list.append(_build_section_df(_read_tab_section(
-            f=fp,
-            sec_key='STUDY ASSAYS',
-            next_sec_key='STUDY PROTOCOLS'
-        )))
-        study_protocols_df_list.append(_build_section_df(_read_tab_section(
-            f=fp,
-            sec_key='STUDY PROTOCOLS',
-            next_sec_key='STUDY CONTACTS'
-        )))
-        study_contacts_df_list.append(_build_section_df(_read_tab_section(
-            f=fp,
-            sec_key='STUDY CONTACTS',
-            next_sec_key='STUDY'
-        )))
-
-    # # Start building the object model
-    # ontology_source_references = list()
-    # for x in ontology_sources_df.iterrows():  # Iterate over the rows to build our OntologySourceReference objs
-    #     ontology_source_data = x[1]  # Get data out of df row
-    #     ontology_source = OntologySourceReference(
-    #         name=ontology_source_data['Term Source Name'],
-    #         file=ontology_source_data['Term Source File'],
-    #         version=ontology_source_data['Term Source Version'],
-    #         description=ontology_source_data['Term Source Description']
-    #     )
-    #     print(ontology_source.to_json())
-    #     ontology_source_references.append(ontology_source)
-    # investigation_data = investigation_df[1]
-    # investigation = Investigation(
-    #     identifier=investigation_data['Investigation Identifier'],
-    #     title=investigation_data['Investigation Title'],
-    #     description=investigation_data['Investigation Description'],
-    #     submission_date=investigation_data['Investigation Submission Date'],
-    #     public_release_date=investigation_data['Investigation Public Release Date'],
-    # )
-    # for x in investigation_publications_df.iterrows():
-    #     investigation_publication_data = x[1]
-    #     investigation_publication = Publication(
-    #         pubmed_id=investigation_publication_data['Investigation PubMed ID'],
-    #         doi=investigation_publication_data['Investigation Publication DOI'],
-    #         author_list=investigation_publication_data['Investigation Publication Author List'],
-    #         title=investigation_publication_data['Investigation Publication Title'],
-    #         status=OntologyAnnotation(
-    #             name=investigation_publication_data['Investigation Publication Status'],
-    #             term_accession=investigation_publication_data['Investigation Publication Status Term Accession'],
-    #             term_source=investigation_publication_data['Investigation Publication Status Term Source REF'],
-    #         )
-    #     )
-    #     investigation.publications.append(investigation_publication)
-    return investigation_df
+    import csv
+    study_reader = csv.reader(fp, delimiter='\t')
+    fieldnames = next(study_reader)
+    experimental_graph = dict()
+    for row in study_reader:
+        source, sample, processing_event = _read_study_record_line(column_names=fieldnames, row_=row)
+        try:
+            experimental_graph[source].append(processing_event)
+        except KeyError:
+            experimental_graph[source] = list()
+            experimental_graph[source].append(processing_event)
+        try:
+            experimental_graph[processing_event].append(sample)
+        except KeyError:
+            experimental_graph[processing_event] = list()
+            experimental_graph[processing_event].append(sample)
+    return experimental_graph

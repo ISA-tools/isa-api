@@ -48,7 +48,20 @@ def find_gt(a, x):
         return a[i]
     raise ValueError
 
+def find_in_between(a, x, y):
+    result = []
+    element_gt = find_gt(a, x)
+    if (element_gt > x and element_gt < y):
+        result.append(element_gt)
+    element_lt = find_lt(a, y)
+    if element_lt not in result:
+        if (element_lt < y and element_lt > x):
+           result.append(element_lt)
+    return result
+
+
 def find_between(a, x, y):
+    """Find value a between x and y"""
     result = []
     i = bisect.bisect_right(a, x)
     if i!= len(a):
@@ -240,18 +253,20 @@ class StudyAssayParser:
 
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
             all_parameters_indices = [i for i, x in enumerate(htypes) if x == "parameter"]
+            print("all_parameters_indices ---> ", all_parameters_indices)
             node_indices = [i for i, x in enumerate(htypes) if x == "node" or x=="node_assay"]
 
             for processing_index in processing_indices:
                 try:
                     input_index = find_lt(node_indices, processing_index)
                     output_index = find_gt(node_indices, processing_index)
-                    #next_processing_index =
-                    #parameters_indices = find_between(all_parameters_indices, processing_index)
+                    next_processing_index = find_gt(processing_indices, processing_index)
+                    parameters_indices = find_in_between(all_parameters_indices, processing_index, next_processing_index)
 
                 except ValueError:
-                    # print "Invalid indices for process nodes"
+                    print("Invalid indices for process nodes")
                     break
+
                 input_header = headers[hgroups[input_index][0]]
                 output_header = headers[hgroups[output_index][0]]
                 processing_header = headers[hgroups[processing_index][0]]
@@ -273,6 +288,7 @@ class StudyAssayParser:
                         #if both input_name and output_name are empty, ignore the row
                         if (not input_name and not output_name):
                             continue
+
                         try:
                             unique_process_name = input_process_map[input_node_index]
                         except KeyError:
@@ -295,6 +311,13 @@ class StudyAssayParser:
                             process_node.outputs.append(output_node_index)
                         input_process_map[input_node_index] = unique_process_name
                         output_process_map[output_node_index] = unique_process_name
+
+                        #Add parameters
+                        parameter_headers = []
+                        for parameter_index in parameters_indices:
+                            parameter_header = headers[hgroups[parameter_index][0]]
+                            parameter_headers.append(parameter_header)
+                            process_node.parameters.append(parameter_header)
 
                         max_number = max(len(process_node.inputs), len(process_node.outputs))
                         line_number += 1
@@ -589,9 +612,9 @@ class ProcessNodeRecord:
         self.ntype = ntype
         self.study_assay = study_assay
         self.name = name
+        self.protocol = protocol
         self.inputs = []
         self.outputs = []
-        self.protocol = protocol
         self.parameters = []
 
     def __str__(self):
@@ -601,3 +624,4 @@ class ProcessNodeRecord:
                                 type=self.ntype,
                                 protocol=self.protocol,
                                 parameters=pprint.pformat(self.parameters).replace("\n","\n"+" "*9))
+

@@ -308,7 +308,7 @@ class ISATab2ISAjson_v1:
 
             json_item = dict([
                     ("executesProtocol", self.createExecuteStudyProtocol(process_node_name, process_nodes[process_node_name])),
-                    ("parameters", self.createProcessParameterValueList(process_node_name, process_nodes[process_node_name])),
+                    ("parameterValues", self.createValueList("Parameter Value", process_node_name, process_nodes[process_node_name])),
                     ("inputs", self.createInputList(process_nodes[process_node_name].inputs, source_dict, sample_dict)),
                     ("outputs", self.createOutputList(process_nodes[process_node_name].outputs, sample_dict) )
             ])
@@ -349,14 +349,6 @@ class ISATab2ISAjson_v1:
                 ])
         return json_item
 
-
-    def createProcessParameterValueList(self, process_node_name, process_node):
-        json_list = []
-        json_item = dict([
-            ("value", ""),
-        ])
-        json_list.append(json_item)
-        return json_list
 
     def createStudyAssaysList(self, assays):
         json_list = []
@@ -465,7 +457,15 @@ class ISATab2ISAjson_v1:
 
     def createValueList(self, column_name, node_name, node):
         json_list = []
-        for header in node.metadata:
+        if column_name.strip()=="Parameter Value":
+            json_list = []
+            value_json = dict([
+                 ("value", ""),
+            ])
+            json_list.append(value_json)
+            return json_list
+        else:
+          for header in node.metadata:
             if header.startswith(column_name):
                  value_header = header.replace("]", "").split("[")[-1]
                  value_attributes = node.metadata[header][0]

@@ -11,7 +11,7 @@
         "executesProtocol": {
                 "$ref": "protocol_schema.json#"
         },
-        "parameters": {
+        "parameterValues": {
             "type": "array",
             "items": {
                   "$ref" : "process_parameter_value_schema.json#"

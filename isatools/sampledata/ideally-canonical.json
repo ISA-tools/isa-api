@@ -143,15 +143,17 @@
                 {  
                     "name":"source-source2",
                     "characteristics":[  
-                        {  
-                            "value":"4",
+                        {
+                            "category": "Intervention time",
+                            "value": 4,
                             "unit":{  
                                 "name":"year",
                                 "termAccession":"http://purl.obolibrary.org/obo/UO_000124",
                                 "termSource":"UO"
                             }
                         },
-                        {  
+                        {
+                            "category": "Stuff",
                             "value":{  
                                 "name":"blood",
                                 "termAccession":"http://purl.obolibrary.org/obo/UBERON_0000178",
@@ -168,7 +170,8 @@
                 {  
                     "name":"sample-sample4",
                     "characteristics":[  
-                        {  
+                        {
+                            "category": "Stuff",
                             "value":{  
                                 "name":"blood",
                                 "termAccession":"http://purl.obolibrary.org/obo/UBERON_0000178",

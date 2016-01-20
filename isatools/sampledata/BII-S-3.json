@@ -1,12 +1,14 @@
 {
-    "commentCreatedWithConfiguration": {
-        "name": "Created With Configuration",
-        "value": ""
-    },
-    "commentLastOpenedWithConfiguration": {
-        "name": "Last Opened With Configuration",
-        "value": "GSC MIxS human gut"
-    },
+    "comments": [
+        {
+            "name": "Created With Configuration",
+            "value": ""
+        },
+        {
+            "name": "Last Opened With Configuration",
+            "value": "GSC MIxS human gut"
+        }
+    ],
     "description": "",
     "identifier": "1406894706246",
     "ontologySourceReferences": [
