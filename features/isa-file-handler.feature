@@ -11,16 +11,33 @@ Feature: ISA file management
     Then it should instantiate an authenticated connector instance
 
   Scenario: resource retrieval with file download
-    Given a valid path in the remote repository "/path/to/source"
-    And an (optional) destination directory "/path/to/destination"
-    When the source path points to directory
+    Given an authenticated storage adapter
+    And a file object named "remote_source" in the remote repository
+    And an (optional) destination directory "destination_dir" in your home folder
+    When the file object is a directory
     Then it should download the whole directory it as an archived file
-    When the source path points to an archive
-    Then it should save it as it is (i.e. an archive)
+
+    Given an authenticated storage adapter
+    And a file object named "remote_source.zip" in the remote repository
+    And an (optional) destination directory "destination_dir" in your home folder
+    When the file object is an archive (i.e. a ZIP file)
+    Then it should download it as an archive (i.e. a ZIP file)
+
+    Given an authenticated storage adapter
+    And a file object named "remote_source.json" in the remote repository
+    And an (optional) destination directory "destination_dir" in your home folder
     When the source file points to an (ISA-TAB) JSON file
     Then it should download it as a JSON file
+
+    Given an authenticated storage adapter
+    And a file object named "remote_source.xsd" in the remote repository
+    And an (optional) destination directory "destination_dir" in your home folder
     When the source file points to an (ISA-TAB) XML configuration file
     Then it should download it as an XML file
+
+    Given an authenticated storage adapter
+    And a file object named "remote_source.txt" in the remote repository
+    And an (optional) destination directory "destination_dir" in your home folder
     When it is a different file
     Then it should raise an error (validation error)
 
