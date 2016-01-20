@@ -3,3 +3,5 @@ jsonschema
 pandas
 networkx
 behave
+httpretty
+sure
