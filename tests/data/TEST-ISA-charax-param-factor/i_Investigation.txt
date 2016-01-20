@@ -4,7 +4,7 @@ Term Source File	"http://data.bioontology.org/ontologies/NCBITAXON"	"http://data
 Term Source Version	"2"	"111"	"42"	"21"	"191"	"78"	
 Term Source Description	"National Center for Biotechnology Information (NCBI) Organismal Classification"	"Experimental Factor Ontology"	"Units of Measurement Ontology"	"Ontology for Biomedical Investigations"	"Uber Anatomy Ontology"	"Chemical Entities of Biological Interest Ontology"	
 INVESTIGATION
-Investigation Identifier	"1452186582328"
+Investigation Identifier	"TEST-ISA-charac-param-factor"
 Investigation Title	"Investigation"
 Investigation Description	""
 Investigation Submission Date	""
