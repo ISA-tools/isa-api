@@ -60,7 +60,8 @@ def step_impl(context):
     :type context: behave.runner.Context
     """
 
-    httpretty.register_uri(httpretty.POST, AUTH_URL, body=json.dumps(AUTH_RES_BODY), content_type='application/json')
+    httpretty.register_uri(httpretty.POST, AUTH_URL, body=json.dumps(AUTH_RES_BODY), content_type='application/json',
+                           status=201)
     context.isa_adapter = IsaGitHubStorageAdapter(context.username, context.password)
     expect(httpretty.has_request()).to.be.true
 
@@ -71,7 +72,7 @@ def step_impl(context):
     :type context: behave.runner.Context
     """
     expect(context.isa_adapter.is_authenticated).to.be.true
-    expect(context.isa_adapter.token).to.be(AUTH_TOKEN)
+    expect(context.isa_adapter.token).to.equal(AUTH_TOKEN)
 
 
 @given('a valid path in the remote repository "/path/to/source"')
