@@ -37,3 +37,10 @@ class ISATabConfiguratorTest(TestCase):
         self.assertEqual(len(config_obj.get_isatab_configuration()[0].get_protocol_field()), 4)
         self.assertEqual(config_obj.get_isatab_configuration()[0].get_protocol_field()[0].get_protocol_type(),
                          'nucleic acid extraction')
+
+    def test_load_configs(self):
+        from isatools.io import isatab_configurator as configurator
+        config_dict = configurator.load(self._config_dir)
+        self.assertEqual(len(config_dict), 30)
+        self.assertEqual(config_dict[('metagenome sequencing', 'nucleotide sequencing')].get_isatab_configuration()[0]
+                         .get_table_name(),'metagenome_seq')
