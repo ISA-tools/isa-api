@@ -4,5 +4,5 @@ pandas
 networkx
 behave
 httpretty
-surenetworkx
+sure
 lxml
