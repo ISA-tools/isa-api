@@ -1,5 +1,5 @@
 from .model.v1 import *
-from isatools.io import isatab_parser
+from isatools.io import isatab_parser, isatab_configurator
 import os
 import sys
 import io
@@ -809,7 +809,10 @@ def dump(isa_obj, path):
                 study_fp.close()
                 for assay in study.assays:
                     assay_fp = open(os.path.join(path, assay.file_name), 'w')
-                    #  FIXME: Not yet implemented - parser doesn't seem to load into assay nodes (related to issue #37)
+                    # Get correct configuration based on measurement and technology
+                    configs = isatab_configurator.load('/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02')
+                    config = configs[(assay.measurement_type, assay.technology_type)].isatab_configuration[0]
+                    config
                     assay_fp.close()
         fp.close()
 
@@ -970,8 +973,8 @@ def read_study_file(fp):
             if value == 'Material Type':
                 pass
             if value == 'Protocol REF':
-                processing_event_ = ProcessingEvent(
-                    protocol_ref=row_[index],
+                processing_event_ = Process(
+                    executes_protocol=row_[index],
                 )
                 try:
                     peek_column = column_names[index+1]
