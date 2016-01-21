@@ -4,17 +4,7 @@
 #
 # Generated Thu Jan 21 10:45:32 2016 by generateDS.py version 2.18a.
 #
-# Command line options:
-#   ('-o', 'isatab_config.py')
-#
-# Command line arguments:
-#   /Users/dj/PycharmProjects/isa-api/isatools/schemas/isatab_configurator.xsd
-#
-# Command line:
-#   generateDS.py -o "isatab_config.py" /Users/dj/PycharmProjects/isa-api/isatools/schemas/isatab_configurator.xsd
-#
-# Current working directory (os.getcwd()):
-#   generateDS-2.18a0
+# Updated with 2to3 for Python 3 compatibility
 #
 
 import sys
