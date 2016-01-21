@@ -1,6 +1,9 @@
 from abc import ABCMeta, abstractmethod
+from urllib.parse import urljoin
+from xml.dom.minidom import parseString, Node
 import requests
 import json
+import os
 
 __author__ = 'massi'
 
@@ -8,7 +11,7 @@ __author__ = 'massi'
 class IsaStorageAdapter(metaclass=ABCMeta):
 
     @abstractmethod
-    def download(self, source, destination):
+    def download(self, source, destination, owner=None, repository=None):
         pass
 
     @abstractmethod
@@ -30,7 +33,9 @@ class IsaStorageAdapter(metaclass=ABCMeta):
 
 class IsaGitHubStorageAdapter(IsaStorageAdapter):
 
-    AUTH_ENDPOINT = 'https://api.github.com/authorizations'
+    GITHUB_API_BASE_URL = 'https://api.github.com'
+    AUTH_ENDPOINT = urljoin(GITHUB_API_BASE_URL, 'authorizations')
+    GITHUB_RAW_MEDIA_TYPE = 'application/vnd.github.VERSION.raw'
 
     def __init__(self, username=None, password=None, note=None, scopes=('gist', 'repo')):
         """
@@ -80,13 +85,58 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         else:
             return False
 
-    def download(self, source, destination):
+    def download(self, source, destination, owner=None, repository=None):
         """
         Call to download a resource from a remote GitHub repository
-        :type source: str
+        :type source: str - URLish path to the source (within the GitHub repository)
         :type destination str
+        :type owner str
+        :type repository str
         """
-        pass
+        # get the content at source as raw data
+        get_content_frag = '/'.join(['repos', owner, repository, 'contents', source])
+        headers = {
+            'Authorization': 'token %s' % self.token,
+            'Accept': self.GITHUB_RAW_MEDIA_TYPE
+        }
+        res = requests.get(urljoin(self.GITHUB_API_BASE_URL, get_content_frag), headers=headers)
+
+        if res.status_code == requests.codes.ok:
+            # try to parse the response payload as JSON
+            try:
+                res_payload = json.loads(res.text)
+
+                # if it is a directory
+                if isinstance(res_payload, list):
+                    # then download it as an archive
+                    self._download_dir_as_archive(source, destination, owner, repository)
+                # if it is an object it's the file content to be stored
+
+                else:
+                    # TODO add validation against JSON schema
+                    # save it to disk
+                    with open(os.path.join(destination, source.split('/')[0]), 'w') as out_file:
+                        json.dump(res_payload, out_file)
+            # if it is not a JSON
+            except ValueError:
+                # try to parse the response payload as XML
+                try:
+                    res_payload = parseString(res.text)
+                    # TODO additional checks on the XML??
+                    # if it is a valid XML save it to disk
+                    with open(os.path.join(destination, source.split('/')[0]), 'w') as out_file:
+                        res_payload.writexml(out_file)
+
+                except ValueError:
+                    pass
+
+
+
+
+
+
+        else:
+            print("The request was not successfully fulfilled: ", res.status_code)
 
     def retrieve(self):
         pass
@@ -98,6 +148,9 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         pass
 
     def delete(self):
+        pass
+
+    def _download_dir_as_archive(self, source, destination, owner, repository):
         pass
 
 
