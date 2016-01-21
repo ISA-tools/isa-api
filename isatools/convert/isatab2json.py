@@ -255,7 +255,7 @@ class ISATab2ISAjson_v1:
                 ("samples",list(sample_dict.values())),
                 ("materials",list(material_dict.values())),
                 ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
-                ("assays", self.createStudyAssaysList(study.assays)),
+                ("assays", self.createStudyAssaysList(study.assays, sample_dict)),
                 ("filename", study.metadata['Study File Name']),
             ])
             study_array.append(studyJson)
@@ -354,11 +354,11 @@ class ISATab2ISAjson_v1:
         return json_item
 
 
-    def createStudyAssaysList(self, assays):
+    def createStudyAssaysList(self, assays, sample_dict):
         json_list = []
         for assay in assays:
             source_dict = self.createSourcesDictionary(assay.nodes)
-            sample_dict = self.createSampleDictionary(assay.nodes)
+            sample_list = self.createSampleReferenceDict(assay.nodes)
             material_dict = self.createMaterialDictionary(assay.nodes)
             data_dict = self.createDataFiles(assay.nodes)
             assay_identifier = self.generateIdentifier("assay")
@@ -374,7 +374,7 @@ class ISATab2ISAjson_v1:
                                                                  assay.metadata['Study Assay Technology Type Term Source REF'],
                                                                  assay.metadata['Study Assay Technology Type Term Accession Number'])),
                 ("technologyPlatform", assay.metadata['Study Assay Technology Platform']),
-                ("samples", list(sample_dict.values())),
+                ("samples", sample_list),
                 ("materials", list(material_dict.values())),
                 ("dataFiles", list(data_dict.values())),
                 ("processSequence", self.createProcessSequence(assay.process_nodes, source_dict, sample_dict, data_dict))
@@ -401,20 +401,37 @@ class ISATab2ISAjson_v1:
         json_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype == "Sample Name":
-              try:
                 sample_identifier = self.generateIdentifier("sample")
                 self.setIdentifier("sample", node_index, sample_identifier)
+
+                source_json = dict([])
+
+                try:
+                    source_json = nodes[node_index].metadata["Source Name"]
+                except KeyError:
+                    print("There is no source declared for sample ", node_index)
+
                 json_item = dict([
-                    ("@id", sample_identifier),
-                    ("name", node_index),
-                    ("factorValues", self.createValueList("Factor Value", node_index, nodes[node_index])),
-                    ("characteristics", self.createValueList("Characteristics",node_index, nodes[node_index])),
-                    ("derivesFrom", nodes[node_index].metadata["Source Name"])
-                ])
+                        ("@id", sample_identifier),
+                        ("name", node_index),
+                        ("factorValues", self.createValueList("Factor Value", node_index, nodes[node_index])),
+                        ("characteristics", self.createValueList("Characteristics",node_index, nodes[node_index])),
+                        ("derivesFrom", source_json)
+                    ])
                 json_dict.update({node_index: json_item})
-              except KeyError:
-                  print("KeyError in createSampleDictionary")
-                  pass
+
+        return json_dict
+
+
+    def createSampleReferenceDict(self, nodes):
+        json_dict = []
+        for node_index in nodes:
+             if nodes[node_index].ntype == "Sample Name":
+                sample_identifier = self.getIdentifier("sample", node_index)
+                if sample_identifier:
+                    json_dict.append(dict([("@id", sample_identifier)]))
+                else:
+                    print("Warning: sample identifier has not been defined before", node_index)
         return json_dict
 
 

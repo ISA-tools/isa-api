@@ -499,7 +499,10 @@ class StudyAssayParser:
                             if type=="Acquisiton Parameter Data File":
                                 return "acquisitionparameterfile-"+name
                             else:
-                                "ERROR - Type not being considered! ", type
+                                 if type=="Image File":
+                                    return "imagefile-"+name
+                                 else:
+                                    "ERROR - Type not being considered! ", type
 
 
 _record_str = \
