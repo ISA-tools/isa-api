@@ -812,7 +812,27 @@ def dump(isa_obj, path):
                     # Get correct configuration based on measurement and technology
                     configs = isatab_configurator.load('/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02')
                     config = configs[(assay.measurement_type, assay.technology_type)].isatab_configuration[0]
-                    config
+                    # Build headers
+                    fields = dict()
+                    for field in config.field:
+                        fields[field.pos] = field
+                    for protocol_field in config.protocol_field:
+                        fields[protocol_field.pos] = protocol_field
+                    for structured_field in config.structured_field:
+                        fields[structured_field.pos] = structured_field
+                    for unit_field in config.unit_field:
+                        fields[unit_field.pos] = unit_field
+                    from collections import OrderedDict
+                    ordered_fields = OrderedDict(sorted(fields.items())).values()
+                    headers = list()
+                    for k, v in ordered_fields:
+                        if isinstance(v, isatab_configurator.FieldType):
+                            headers.append(v.header)
+                            if v.data_type == 'Ontology term':
+                                headers.append('Term Source REF')
+                                headers.append('Term Accession Number')
+                        if isinstance(v, isatab_configurator.ProtocolFieldType):
+                            headers.append('Protocol REF')
                     assay_fp.close()
         fp.close()
 
