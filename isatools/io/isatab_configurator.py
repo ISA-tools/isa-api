@@ -619,7 +619,6 @@ def _cast(typ, value):
 # Data representation classes.
 #
 
-
 class FieldType(GeneratedsSuper):
     subclass = None
     superclass = None
@@ -1614,9 +1613,12 @@ class IsaTabConfigurationType(GeneratedsSuper):
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
+        pos = 0
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
-            self.buildChildren(child, node, nodeName_)
+            self.buildChildren(child, node, nodeName_, pos)
+            if not ((nodeName_ == 'measurement') or (nodeName_ == 'technology')):
+                pos += 1
         return self
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('table-name', node)
@@ -1631,7 +1633,7 @@ class IsaTabConfigurationType(GeneratedsSuper):
         if value is not None and 'isatab-assay-type' not in already_processed:
             already_processed.add('isatab-assay-type')
             self.isatab_assay_type = value
-    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+    def buildChildren(self, child_, node, nodeName_, pos, fromsubclass_=False):
         if nodeName_ == 'measurement':
             obj_ = OntologyEntryType.factory()
             obj_.build(child_)
@@ -1647,21 +1649,25 @@ class IsaTabConfigurationType(GeneratedsSuper):
             obj_.build(child_)
             self.field.append(obj_)
             obj_.original_tagname_ = 'field'
+            obj_.pos = pos
         elif nodeName_ == 'protocol-field':
             obj_ = ProtocolFieldType.factory()
             obj_.build(child_)
             self.protocol_field.append(obj_)
             obj_.original_tagname_ = 'protocol-field'
+            obj_.pos = pos
         elif nodeName_ == 'structured-field':
             obj_ = StructuredFieldType.factory()
             obj_.build(child_)
             self.structured_field.append(obj_)
             obj_.original_tagname_ = 'structured-field'
+            obj_.pos = pos
         elif nodeName_ == 'unit-field':
             obj_ = UnitFieldType.factory()
             obj_.build(child_)
             self.unit_field.append(obj_)
             obj_.original_tagname_ = 'unit-field'
+            obj_.pos = pos
 # end class IsaTabConfigurationType
 
 
