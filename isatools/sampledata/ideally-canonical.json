@@ -13,11 +13,11 @@
     "comments":[  
         {  
             "name":"Created With Configuration",
-            "value":""
+            "value":"https://github.com/ISA-tools/Configuration-Files/tree/master/isaconfig-default_v2015-07-02"
         },
         {  
             "name":"Last Opened With Configuration",
-            "value":"GSC MIxS human gut"
+            "value":"https://github.com/ISA-tools/Configuration-Files/tree/master/isaconfig-default_v2015-07-02"
         }
     ],
     "ontologySourceReferences":[  
@@ -97,27 +97,101 @@
                     ]
                 },
                 {  
-                    "name":"data acquisition",
+                    "name":"nucleic acid extraction",
+                    "protocolType":{  
+                        "name":"nucleic acid extraction",
+                        "termAccession":"",
+                        "termSource":""
+                    },
+                    "description":"a nucleic acid extraction protocol description",
+                    "uri":"http://www.research.org/protocol2.pdf",
+                    "version":"2.0"
+                },
+                {  
+                    "name":"library construction",
+                    "protocolType":{  
+                        "name":"library construction",
+                        "termAccession":"",
+                        "termSource":""
+                    },
+                    "description":"a library construction protocol description",
+                    "uri":"http://www.research.org/protocol2.pdf",
+                    "version":"2.0",
+                    "parameters":[  
+                        {  
+                            "parameterName":{  
+                                "name":"library strategy",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        },
+                        {
+                            "parameterName":{  
+                                "name":"library selection",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        },    
+                        { 
+                         "parameterName":{  
+                                "name":"library layout",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        },
+                        {    "parameterName":{  
+                                "name":"mid",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        }    
+                    ]
+                },                 
+                {  
+                    "name":"nucleic acid sequencing",
                     "protocolType":{  
                         "name":"data acquisition",
                         "termAccession":"",
                         "termSource":""
                     },
-                    "description":"a data acquisition protocol description",
+                    "description":"a nucleic acid sequencing protocol description",
                     "uri":"http://www.research.org/protocol2.pdf",
-                    "version":"2.0"
+                    "version":"2.0",
+                    "parameters":[  
+                        {  
+                            "parameterName":{  
+                                "name":"sequencing instrument",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                         },   
+                        {
+                            "parameterName":{  
+                                "name":"base caller",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        },
+                        {
+                           "parameterName":{  
+                                "name":"quality scorer",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        }
+                    ]
                 },
                 {  
-                    "name":"data transformation",
+                    "name":"sequence analysis data transformation",
                     "protocolType":{  
-                        "name":"data transformation",
+                        "name":"sequence analysis data transformation",
                         "termAccession":"",
                         "termSource":""
                     },
-                    "description":"a data transformation protocol description",
-                    "uri":"http://www.research.org/protocol3.pdf",
-                    "version":"1.0"
-                }
+                    "description":"a sequence analysis data transformation protocol description",
+                    "uri":"http://www.research.org/protocol2.pdf",
+                    "version":"2.0"
+                },
             ],
             "people":[  
                 {  
@@ -138,10 +212,10 @@
                     ]
                 }
             ],
-            "filename":"s_TEST-Template5-repeatedmeasure.txt",
+            "filename":"s_ideally_canonical.txt",
             "sources":[  
                 {  
-                    "name":"source-source2",
+                    "name":"source1",
                     "characteristics":[  
                         {
                             "category": "Intervention time",
@@ -168,7 +242,7 @@
             ],
             "samples":[  
                 {  
-                    "name":"sample-sample4",
+                    "name":"sample1",
                     "characteristics":[  
                         {
                             "category": "Stuff",
@@ -180,10 +254,29 @@
                         }
                     ],
                     "derivesFrom":[  
-                        "source-source2"
+                        "source1"
                     ],
                     "factorValues":[  
 
+                    ]
+                }
+            ],
+            "materials":[
+                {
+                   "name":"extract1",
+                   "type":"Extract Name",
+                    "characteristics":[  
+                        {
+                            "category": "material type",
+                            "value":{  
+                                "name":"genomic DNA",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        }
+                    ],
+                    "derivesFrom":[  
+                        "sample1"
                     ]
                 }
             ],
@@ -206,12 +299,12 @@
                     "performer":"john smith",
                     "inputs":[  
                         {  
-                            "name":"source-source2"
+                            "name":"source1"
                         }
                     ],
                     "outputs":[  
                         {  
-                            "name":"sample-sample4"
+                            "name":"sample1"
                         }
                     ],
                     "parameters":[  
@@ -243,11 +336,78 @@
                     "processSequence":[  
                         {  
                             "executesProtocol":{  
-                                "name":"data collection"
+                                "name":"nucleic acid extraction"
                             },
                             "inputs":[  
                                 {  
-                                    "name":"sample-sample4"
+                                    "name":"sample1"
+                                }
+                            ],
+                            "outputs":[  
+                                {  
+                                    "name":"extract1"
+                                }
+                            ],
+                            "parameters":[  
+
+                            ]
+                        },
+                        {  
+                            "executesProtocol":{  
+                                "name":"library construction"
+                            },
+                            "inputs":[  
+                                {  
+                                    "name":"extract1"
+                                }
+                            ],
+                            "outputs":[  
+                                {  
+                                    "name":"extract1"
+                                }
+                            ],
+                            "parameters":[ 
+                               {  
+                                     "name":"library selection",
+                                     "parameterValue":{  
+                                         "name":"PCR",
+                                         "termAccession":"",
+                                         "termSource":""
+                                     }
+                                 },
+                                {  
+                                    "name":"library layout",
+                                    "parameterValue":{  
+                                        "name":"SINGLE",
+                                        "termAccession":"",
+                                        "termSource":""
+                                    }
+                                },
+                                {  
+                                    "name":"library strategy",
+                                    "parameterValue":{  
+                                        "name":"AMPLICON",
+                                        "termAccession":"",
+                                        "termSource":""
+                                    }
+                                },
+                                 {  
+                                    "name":"mid",
+                                    "parameterValue":{  
+                                        "name":"ATTGCC",
+                                        "termAccession":"",
+                                        "termSource":""
+                                    }
+                                }                                                              
+                            ]
+                        },                        
+                        {  
+                            "executesProtocol":{  
+                                "name":"nucleic acid sequencing"
+                            },
+                            "inputs":[  
+                                {  
+                                    "name":"extract1"
                                 }
                             ],
                             "outputs":[  
@@ -256,7 +416,30 @@
                                 }
                             ],
                             "parameters":[  
-
+                            {  
+                                     "name":"sequencing instrument",
+                                     "parameterValue":{  
+                                         "name":"Illumina Genome Analyzer II",
+                                         "termAccession":"",
+                                         "termSource":""
+                                     }
+                                 },
+                                {  
+                                    "name":"base caller",
+                                    "parameterValue":{  
+                                        "name":"Illumina-caller",
+                                        "termAccession":"",
+                                        "termSource":""
+                                    }
+                                },
+                                {  
+                                    "name":"quality scorer",
+                                    "parameterValue":{  
+                                        "name":"illumina-scorer",
+                                        "termAccession":"",
+                                        "termSource":""
+                                    }
+                                }
                             ]
                         },
                         {  
