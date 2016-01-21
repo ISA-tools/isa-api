@@ -342,30 +342,12 @@
                                 {  
                                     "name":"sample1"
                                 }
-                            ],
-                            "outputs":[  
-                                {  
-                                    "name":"extract1"
-                                }
-                            ],
-                            "parameters":[  
-
                             ]
                         },
                         {  
                             "executesProtocol":{  
                                 "name":"library construction"
                             },
-                            "inputs":[  
-                                {  
-                                    "name":"extract1"
-                                }
-                            ],
-                            "outputs":[  
-                                {  
-                                    "name":"extract1"
-                                }
-                            ],
                             "parameters":[ 
                                {  
                                      "name":"library selection",
@@ -405,11 +387,6 @@
                             "executesProtocol":{  
                                 "name":"nucleic acid sequencing"
                             },
-                            "inputs":[  
-                                {  
-                                    "name":"extract1"
-                                }
-                            ],
                             "outputs":[  
                                 {  
                                     "name":"my_favourite_raw_data_file.cdf"
@@ -459,7 +436,22 @@
                             "parameters":[  
 
                             ]
-                        }
+                        },
+                          {  
+                            "executesProtocol":{  
+                                "name":"data transformation"
+                            },
+                            "parameters":[  
+                            {  
+                                    "name":"quality scorer",
+                                    "parameterValue":{  
+                                        "name":"illumina-scorer",
+                                        "termAccession":"",
+                                        "termSource":""
+                                    }
+                                }
+                            ]
+                        }                       
                     ]
                 }
             ]
