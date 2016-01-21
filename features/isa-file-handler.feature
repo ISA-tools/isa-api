@@ -12,32 +12,32 @@ Feature: ISA file management
 
   Scenario: resource retrieval with file download
     Given an authenticated storage adapter
-    And a file object named "remote_source" in the remote repository
-    And an (optional) destination directory "destination_dir" in your home folder
+    And a file object named "tests/data/BII-I-1" in the remote repository "isa-api" owned by "ISA-tools"
+    And a destination directory "destination_dir_0" in your home folder
     When the file object is a directory
     Then it should download the whole directory it as an archived file
 
     Given an authenticated storage adapter
-    And a file object named "remote_source.zip" in the remote repository
-    And an (optional) destination directory "destination_dir" in your home folder
+    And a file object named "remote_source.zip" in the remote repository "isa-api" owned by "ISA-tools"
+    And a destination directory "destination_dir_1" in your home folder
     When the file object is an archive (i.e. a ZIP file)
     Then it should download it as an archive (i.e. a ZIP file)
 
     Given an authenticated storage adapter
-    And a file object named "remote_source.json" in the remote repository
-    And an (optional) destination directory "destination_dir" in your home folder
+    And a file object named "remote_source.json" in the remote repository "isa-api" owned by "ISA-tools"
+    And a destination directory "destination_dir_2" in your home folder
     When the source file points to an (ISA-TAB) JSON file
     Then it should download it as a JSON file
 
     Given an authenticated storage adapter
-    And a file object named "remote_source.xsd" in the remote repository
-    And an (optional) destination directory "destination_dir" in your home folder
+    And a file object named "remote_source.xsd" in the remote repository "isa-api" owned by "ISA-tools"
+    And a destination directory "destination_dir_3" in your home folder
     When the source file points to an (ISA-TAB) XML configuration file
     Then it should download it as an XML file
 
     Given an authenticated storage adapter
-    And a file object named "remote_source.txt" in the remote repository
-    And an (optional) destination directory "destination_dir" in your home folder
+    And a file object named "remote_source.txt" in the remote repository "isa-api" owned by "ISA-tools"
+    And a destination directory "destination_dir_4" in your home folder
     When it is a different file
     Then it should raise an error (validation error)
 

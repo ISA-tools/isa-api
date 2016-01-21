@@ -10,8 +10,7 @@ from zipfile import is_zipfile
 from urllib.parse import urljoin
 from isatools.io.storage_adapter import IsaGitHubStorageAdapter
 
-
-use_step_matcher("re")
+use_step_matcher("parse")
 
 AUTH_ID = 1
 GITHUB_API_URL = 'https://api.github.com'
@@ -41,9 +40,10 @@ auth_res_body = {
     ],
     'fingerprint': None
 }
+get_content_url = urljoin(GITHUB_API_URL, '')
 
 
-@given('an optional user login (?P<test_user>.+)')
+@given('an optional user login "{test_user}"')
 def step_impl(context, test_user):
     """
     :type test_user: str
@@ -52,7 +52,7 @@ def step_impl(context, test_user):
     context.username = test_user
 
 
-@step('an optional user password (?P<test_password>.+)')
+@step('an optional user password "{test_password}"')
 def step_impl(context, test_password):
     """
     :type test_password: str
@@ -101,31 +101,48 @@ def step_impl(context):
     expect(context.isa_adapter.token).to.equal(AUTH_TOKEN)
 
 
-@step('a file object named (?P<remote_source>.+) in the remote repository')
-def step_impl(context, remote_source):
+@step('a file object named "{remote_source}" in the remote repository "{repo_name}" owned by "{owner_name}"')
+def step_impl(context, remote_source, repo_name, owner_name):
     """
+    :type owner_name: str
+    :type repo_name: str
     :type remote_source: str
     :type context: behave.runner.Context
     """
-    context.source_name = remote_source
-    context.source_path = urljoin(GITHUB_API_URL, '' + remote_source)
+    context.source_path = remote_source
+    context.repo_name = repo_name
+    context.owner_name = owner_name
 
 
-@step('an \(optional\) destination directory (?P<destination_dir>.+) in your home folder')
+@step('a destination directory "{destination_dir}" in your home folder')
 def step_impl(context, destination_dir):
     """
     :type destination_dir: str
     :type context: behave.runner.Context
     """
     context.destination_path = os.path.join(os.path.expanduser('~'), destination_dir)
+    print(context.destination_path)
 
 
 @when("the file object is a directory")
+@httpretty.activate
 def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    context.isa_adapter.download(context.source_path, context.destination_path)
+    file_name = '_'.join([context.owner_name, context.repo_name, context.source_path]).replace('/', '_')
+    file_name += '.json'
+    print("file_name: ", file_name)
+    file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures', file_name))
+    print(file_path)
+    with open(file_path) as json_file:
+        payload = json.load(json_file)
+        download_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name,
+                                'contents', context.source_path])
+        httpretty.register_uri(httpretty.GET, download_url, content_type='application/json', body=json.dumps(payload))
+        context.isa_adapter.download(context.source_path, context.destination_path, context.owner_name,
+                                     context.repo_name)
+    expect(httpretty.has_request()).to.be.true
 
 
 @then("it should download the whole directory it as an archived file")
@@ -133,7 +150,8 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    file_path = os.path.join(context.destination_path, context.source_name)
+    source_name = context.source_path.split('/')[-1] + '.zip'
+    file_path = os.path.join(context.destination_path, source_name)
     expect(os.path.exists(file_path)).to.be.true
     file_stat = os.stat(file_path)
     expect(file_stat.st_size).to.be.greater_than(0)
@@ -266,5 +284,3 @@ def step_impl(context):
     :type context: behave.runner.Context
     """
     pass
-
-
