@@ -132,16 +132,14 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    file_name = '_'.join([context.owner_name, context.repo_name, context.source_path]).replace('/', '_')
-    file_name += '.json'
-    print("file_name: ", file_name)
-    file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures', file_name))
-    print(file_path)
-    with open(file_path) as json_file:
+    fixture_file_name = '_'.join([context.owner_name, context.repo_name, context.source_path]).replace('/', '_')
+    fixture_file_name += '.json'
+    fixture_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures', fixture_file_name))
+    with open(fixture_file_path) as json_file:
         items_in_dir = json.load(json_file)
         download_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name,
                                 'contents', context.source_path])
-        httpretty.register_uri(httpretty.GET, download_url, content_type='application/json', body=json.dumps(items_in_dir))
+        httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(items_in_dir))
 
         for item in items_in_dir:
             httpretty.register_uri(httpretty.GET, item['download_url'], body='test data\tfile\t'+item['name'],
@@ -167,7 +165,7 @@ def step_impl(context):
     [expect(os.path.isfile(os.path.join(out_dir, item['name']))).to.be.true for item in context.items_in_dir]
 
 
-@when("the file object is an archive \(i.e. a ZIP file\)")
+@when("the file object is a ZIP archive")
 def step_impl(context):
     """
     :type context: behave.runner.Context
@@ -175,7 +173,7 @@ def step_impl(context):
     pass
 
 
-@then("it should download it as an archive \(i\.e\. a ZIP file\)")
+@then("it should download it as it is")
 def step_impl(context):
     """
     :type context: behave.runner.Context
@@ -183,12 +181,25 @@ def step_impl(context):
     pass
 
 
-@when("the source file points to an \(ISA-TAB\) JSON file")
+@when("the source file points to an ISA-TAB JSON file")
+@httpretty.activate
 def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    pass
+    fixture_file_name = context.source_path.split('/')[-1]
+    fixture_file_path = os.path.abspath(os.path.join('isatools', 'sampledata', fixture_file_name))
+    download_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name,
+                                'contents', context.source_path])
+    with open(fixture_file_path) as json_file:
+        context.json_isa_dataset = json.load(json_file)
+        httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.json_isa_dataset))
+
+        res = context.isa_adapter.download(context.source_path, context.destination_path, context.owner_name,
+                                           context.repo_name)
+
+    expect(res).to.be.true
+    expect(httpretty.has_request()).to.be.true
 
 
 @then("it should download it as a JSON file")
@@ -196,10 +207,15 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    pass
+    out_file = os.path.join(context.destination_path, context.source_path.split('/')[-1])
+    expect(os.path.isfile(out_file)).to.be.true
+    with open(out_file) as json_file:
+        written_json_dataset = json.load(json_file)
+
+    expect(written_json_dataset).to.equal(context.json_isa_dataset)
 
 
-@when("the source file points to an \(ISA-TAB\) XML configuration file")
+@when("the source file points to an ISA-TAB XML configuration file")
 def step_impl(context):
     """
     :type context: behave.runner.Context
@@ -223,7 +239,7 @@ def step_impl(context):
     pass
 
 
-@then("it should raise an error \(validation error\)")
+@then("it should raise an error")
 def step_impl(context):
     """
     :type context: behave.runner.Context
@@ -272,14 +288,6 @@ def step_impl(context):
 
 
 @when("it is a different file or a directory")
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    pass
-
-
-@then("it should raise an error")
 def step_impl(context):
     """
     :type context: behave.runner.Context
