@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from urllib.parse import urljoin
 from xml.dom.minidom import parseString, Node
+from xml.parsers.expat import ExpatError
 import requests
 import json
 import os
@@ -108,15 +109,18 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
 
                 # if it is a directory
                 if isinstance(res_payload, list):
-                    # then download it as an archive
-                    self._download_dir_as_archive(source, destination, owner, repository)
-                # if it is an object it's the file content to be stored
+                    # then download all the items in the directory
+                    self._download_dir(source.split('/')[-1], destination, res_payload)
+                    return True
 
+                # if it is an object it's the file content to be stored
                 else:
                     # TODO add validation against JSON schema
                     # save it to disk
-                    with open(os.path.join(destination, source.split('/')[0]), 'w') as out_file:
+                    os.makedirs(destination, exist_ok=True)
+                    with open(os.path.join(destination, source.split('/')[0]), 'w+') as out_file:
                         json.dump(res_payload, out_file)
+                    return True
             # if it is not a JSON
             except ValueError:
                 # try to parse the response payload as XML
@@ -124,19 +128,15 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                     res_payload = parseString(res.text)
                     # TODO additional checks on the XML??
                     # if it is a valid XML save it to disk
-                    with open(os.path.join(destination, source.split('/')[0]), 'w') as out_file:
+                    os.makedirs(destination, exist_ok=True)
+                    with open(os.path.join(destination, source.split('/')[0]), 'w+') as out_file:
                         res_payload.writexml(out_file)
-
-                except ValueError:
-                    pass
-
-
-
-
-
-
+                    return True
+                except ExpatError:
+                    return False
         else:
             print("The request was not successfully fulfilled: ", res.status_code)
+            return False
 
     def retrieve(self):
         pass
@@ -150,8 +150,25 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
     def delete(self):
         pass
 
-    def _download_dir_as_archive(self, source, destination, owner, repository):
-        pass
+    def _download_dir(self, directory, destination, dir_items):
+        headers = {
+            'Authorization': 'token %s' % self.token
+        }
+        # filter the items to keep only files
+        files = [item for item in dir_items if item['type'] == 'file']
+
+        for file in files:
+            file_name = file["name"]
+            res = requests.get(file['download_url'], headers=headers)
+            # if request went fine and the payload is a regular (ISA) text file write it to file
+            if res.status_code == requests.codes.ok and res.headers['Content-Type'].split(";")[0] == 'text/plain':
+                dir_path = os.path.join(destination, directory)
+                os.makedirs(dir_path, exist_ok=True)
+                with open(os.path.join(dir_path, file_name), 'w+') as out_file:
+                    out_file.write(res.text)
+
+
+
 
 
 
