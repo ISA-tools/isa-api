@@ -833,6 +833,10 @@ def dump(isa_obj, path):
                                 headers.append('Term Accession Number')
                         if isinstance(v, isatab_configurator.ProtocolFieldType):
                             headers.append('Protocol REF')
+                        if isinstance(v, isatab_configurator.StructuredFieldType) and (v.name == 'factors'):
+                            headers.append('Factor Value[]')
+                            headers.append('Term Source REF')
+                            headers.append('Term Accession Number')
                     assay_fp.close()
         fp.close()
 
