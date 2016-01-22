@@ -118,7 +118,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                     # TODO add validation against JSON schema
                     # save it to disk
                     os.makedirs(destination, exist_ok=True)
-                    with open(os.path.join(destination, source.split('/')[0]), 'w+') as out_file:
+                    with open(os.path.join(destination, source.split('/')[-1]), 'w+') as out_file:
                         json.dump(res_payload, out_file)
                     return True
             # if it is not a JSON
