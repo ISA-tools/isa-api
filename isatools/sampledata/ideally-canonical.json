@@ -26,6 +26,30 @@
             "file":"http://data.bioontology.org/ontologies/CHEBI",
             "name":"CHEBI",
             "version":"78"
+        },
+        {  
+            "description":"Unit Ontology",
+            "file":"http://data.bioontology.org/ontologies/UO",
+            "name":"UO",
+            "version":"43"
+        },
+        {  
+            "description":"Ontology for BioMedical Investigation",
+            "file":"http://data.bioontology.org/ontologies/OBI",
+            "name":"OBI",
+            "version":"234"
+        },
+          {  
+            "description":"Stastical Ontology",
+            "file":"http://data.bioontology.org/ontologies/STATO",
+            "name":"STATO",
+            "version":"1.3"
+        },
+        {  
+            "description":"NCBI Taxonomy",
+            "file":"http://data.bioontology.org/ontologies/NCBITax",
+            "name":"UBERON",
+            "version":"31"
         }
     ],
     "studies":[  
@@ -227,16 +251,23 @@
                             }
                         },
                         {
-                            "category": "Stuff",
+                            "category": "organism",
                             "value":{  
-                                "name":"blood",
-                                "termAccession":"http://purl.obolibrary.org/obo/UBERON_0000178",
-                                "termSource":"UBERON"
+                                "name":"water metagenome",
+                                "termAccession":"http://purl.obolibrary.org/obo/NCBITax001242",
+                                "termSource":"NCBITax"
                             }
                         }
                     ],
                     "factorValues":[  
-
+{
+                            "category": "geographical location",
+                            "value":{  
+                                "name":"Bergen",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        }
                     ]
                 }
             ],
@@ -245,11 +276,11 @@
                     "name":"sample1",
                     "characteristics":[  
                         {
-                            "category": "Stuff",
+                            "category": "Material Type",
                             "value":{  
-                                "name":"blood",
-                                "termAccession":"http://purl.obolibrary.org/obo/UBERON_0000178",
-                                "termSource":"UBERON"
+                                "name":"sea water",
+                                "termAccession":"",
+                                "termSource":""
                             }
                         }
                     ],
@@ -273,7 +304,17 @@
                                 "termAccession":"",
                                 "termSource":""
                             }
+                        },
+                        {
+                            "category": "concentration",
+                            "value":  "74.5",
+                            "unit":{
+                                "name":"microgram per liter",
+                                "termAccession":"http://purl.obolibrary.org/obo/UO_000001",
+                                "termSource":"UO"
+                            }
                         }
+                        
                     ],
                     "derivesFrom":[  
                         "sample1"
@@ -323,7 +364,7 @@
             ],
             "assays":[  
                 {  
-                    "fileName":"a_gilbert-assay-Gx.txt",
+                    "fileName":"a_ideally_canonical-Gx.txt",
                     "measurementType":{  
                         "name":"metagenome sequencing",
                         "termAccession":"",
