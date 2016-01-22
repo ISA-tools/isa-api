@@ -120,7 +120,9 @@ def step_impl(context, destination_dir):
     :type destination_dir: str
     :type context: behave.runner.Context
     """
-    context.destination_path = os.path.join(os.path.expanduser('~'), destination_dir)
+    # set as a destination path a subfolder of 'features' where all the output will be collected
+    destination_path = os.path.join(os.path.dirname(__file__), '..', 'test_outputs', destination_dir)
+    context.destination_path = os.path.abspath(destination_path)
     print(context.destination_path)
 
 
@@ -136,26 +138,33 @@ def step_impl(context):
     file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures', file_name))
     print(file_path)
     with open(file_path) as json_file:
-        payload = json.load(json_file)
+        items_in_dir = json.load(json_file)
         download_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name,
                                 'contents', context.source_path])
-        httpretty.register_uri(httpretty.GET, download_url, content_type='application/json', body=json.dumps(payload))
-        context.isa_adapter.download(context.source_path, context.destination_path, context.owner_name,
+        httpretty.register_uri(httpretty.GET, download_url, content_type='application/json', body=json.dumps(items_in_dir))
+
+        for item in items_in_dir:
+            httpretty.register_uri(httpretty.GET, item['download_url'], body='test data\tfile\t'+item['name'],
+                                   content_type='text/plain; charset=utf-8')
+
+        context.items_in_dir = items_in_dir
+        res = context.isa_adapter.download(context.source_path, context.destination_path, context.owner_name,
                                      context.repo_name)
+
+    expect(res).to.be.true
     expect(httpretty.has_request()).to.be.true
 
 
-@then("it should download the whole directory it as an archived file")
+@then("it should download the files contained within the directory")
 def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    source_name = context.source_path.split('/')[-1] + '.zip'
-    file_path = os.path.join(context.destination_path, source_name)
-    expect(os.path.exists(file_path)).to.be.true
-    file_stat = os.stat(file_path)
-    expect(file_stat.st_size).to.be.greater_than(0)
-    expect(is_zipfile(file_path)).to.be.true
+    out_dir = os.path.join(context.destination_path, context.source_path.split('/')[-1])
+    # expect the destination to have been saved as a directory
+    expect(os.path.isdir(out_dir)).to.be.true
+    # expect each item in the directory to have been saved as a file
+    [expect(os.path.isfile(os.path.join(out_dir, item['name']))).to.be.true for item in context.items_in_dir]
 
 
 @when("the file object is an archive \(i.e. a ZIP file\)")
