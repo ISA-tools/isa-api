@@ -282,12 +282,14 @@
             ],
             "data":[  
                 {  
-                    "name":"my_favourite_raw_data_file.cdf",
-                    "type":"raw data file"
+                    "name":"my_favourite_raw_data_file.fastq.gz",
+                    "type":"raw data file",
+                    "process_node":"Assay Name"
                 },
                 {  
                     "name":"my_prefered_derived_data_file.txt",
-                    "type":"derived data file"
+                    "type":"derived data file",
+                    "process_node":"Normalization Name"
                 }
             ],
             "processSequence":[  
@@ -338,6 +340,8 @@
                             "executesProtocol":{  
                                 "name":"nucleic acid extraction"
                             },
+                            "date":"2016-01-15+T15:30:45",
+                            "performer":"john smith",
                             "inputs":[  
                                 {  
                                     "name":"sample1"
@@ -348,6 +352,8 @@
                             "executesProtocol":{  
                                 "name":"library construction"
                             },
+                            "date":"2016-01-16+T15:30:45",
+                            "performer":"john smith",
                             "parameters":[ 
                                {  
                                      "name":"library selection",
@@ -387,9 +393,11 @@
                             "executesProtocol":{  
                                 "name":"nucleic acid sequencing"
                             },
+                            "date":"2016-01-17+T15:30:45",
+                            "performer":"john smith",
                             "outputs":[  
                                 {  
-                                    "name":"my_favourite_raw_data_file.cdf"
+                                    "name":"my_favourite_raw_data_file.fastq.gz"
                                 }
                             ],
                             "parameters":[  
@@ -423,35 +431,32 @@
                             "executesProtocol":{  
                                 "name":"data transformation"
                             },
+                            "date":"2016-01-18+T17:30:45",
+                            "performer":"john smith",                            
                             "inputs":[  
                                 {  
-                                    "name":"my_favourite_raw_data_file.cdf"
+                                    "filename":"my_favourite_raw_data_file.fastq.gz",
+                                    "nodename" : ""
+                              
                                 }
                             ],
                             "outputs":[  
                                 {  
-                                    "name":"my_prefered_derived_data_file.txt"
+                                    "filename":"my_prefered_derived_data_file.txt",
+                                     "nodename" : ""
                                 }
                             ],
                             "parameters":[  
-
-                            ]
-                        },
-                          {  
-                            "executesProtocol":{  
-                                "name":"data transformation"
-                            },
-                            "parameters":[  
                             {  
-                                    "name":"quality scorer",
+                                    "name":"error rate cut-off",
                                     "parameterValue":{  
-                                        "name":"illumina-scorer",
-                                        "termAccession":"",
-                                        "termSource":""
+                                        "name":"5 % error rate",
+                                        "termAccession":"http://purl.obolibrary.org/obo/STATO_00000100",
+                                        "termSource":"STATO"
                                     }
                                 }
                             ]
-                        }                       
+                        },                       
                     ]
                 }
             ]
