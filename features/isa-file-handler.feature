@@ -15,7 +15,7 @@ Feature: ISA file management
     And a file object named "tests/data/BII-I-1" in the remote repository "isa-api" owned by "ISA-tools"
     And a destination directory "destination_dir_0" in your home folder
     When the file object is a directory
-    Then it should download the whole directory it as an archived file
+    Then it should download the files contained within the directory
 
     Given an authenticated storage adapter
     And a file object named "remote_source.zip" in the remote repository "isa-api" owned by "ISA-tools"
