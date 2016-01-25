@@ -1,7 +1,8 @@
 from abc import ABCMeta, abstractmethod
 from urllib.parse import urljoin
-from xml.dom.minidom import parseString, Node
-from xml.parsers.expat import ExpatError
+# from xml.dom.minidom import parseString, Node
+# from xml.parsers.expat import ExpatError
+from lxml import etree
 import requests
 import json
 import os
@@ -34,6 +35,7 @@ class IsaStorageAdapter(metaclass=ABCMeta):
 
 class IsaGitHubStorageAdapter(IsaStorageAdapter):
 
+    CONFIGURATION_SCHEMA_FILE = os.path.join('isatools', 'schemas', 'isatab_configurator.xsd')
     GITHUB_API_BASE_URL = 'https://api.github.com'
     AUTH_ENDPOINT = urljoin(GITHUB_API_BASE_URL, 'authorizations')
     GITHUB_RAW_MEDIA_TYPE = 'application/vnd.github.VERSION.raw'
@@ -125,14 +127,18 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             except ValueError:
                 # try to parse the response payload as XML
                 try:
-                    res_payload = parseString(res.text)
-                    # TODO additional checks on the XML??
+                    with open(self.CONFIGURATION_SCHEMA_FILE, 'rb') as schema_file:
+                        schema_root = etree.XML(schema_file.read())
+                    xml_parser = etree.XMLParser(schema=etree.XMLSchema(schema_root))
+                    # try to parse XML to validate against schema
+                    etree.fromstring(res.text, xml_parser)
+
                     # if it is a valid XML save it to disk
                     os.makedirs(destination, exist_ok=True)
-                    with open(os.path.join(destination, source.split('/')[0]), 'w+') as out_file:
-                        res_payload.writexml(out_file)
+                    with open(os.path.join(destination, source.split('/')[-1]), 'w+') as out_file:
+                        out_file.write(res.text)
                     return True
-                except ExpatError:
+                except etree.XMLSyntaxError:
                     return False
         else:
             print("The request was not successfully fulfilled: ", res.status_code)
