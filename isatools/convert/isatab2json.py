@@ -251,9 +251,11 @@ class ISATab2ISAjson_v1:
                 ("protocols", self.createProtocols(study.protocols)),
                 ("factors", factors_list),
                 ("characteristicCategories", characteristics_categories_list),
-                ("sources", list(source_dict.values())),
-                ("samples",list(sample_dict.values())),
-                ("materials",list(material_dict.values())),
+                ("materials", dict([
+                        ("sources", list(source_dict.values())),
+                        ("samples",list(sample_dict.values())),
+                        ("otherMaterials",list(material_dict.values()))
+                ])),
                 ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
                 ("assays", self.createStudyAssaysList(study.assays, sample_dict)),
                 ("filename", study.metadata['Study File Name']),
@@ -374,8 +376,10 @@ class ISATab2ISAjson_v1:
                                                                  assay.metadata['Study Assay Technology Type Term Source REF'],
                                                                  assay.metadata['Study Assay Technology Type Term Accession Number'])),
                 ("technologyPlatform", assay.metadata['Study Assay Technology Platform']),
-                ("samples", sample_list),
-                ("materials", list(material_dict.values())),
+                ("materials", dict([
+                    ("samples", sample_list),
+                    ("otherMaterials", list(material_dict.values()))
+                ])),
                 ("dataFiles", list(data_dict.values())),
                 ("processSequence", self.createProcessSequence(assay.process_nodes, source_dict, sample_dict, data_dict))
                 ])
