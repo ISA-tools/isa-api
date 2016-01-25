@@ -76,7 +76,7 @@
         "$ref": "factor_schema.json#"
       }
     },
-    "charactersitics": {
+    "characteristicCategories": {
       "description": "List of all the characteristics (or material attributes) defined in the study, used to avoid duplication of their declaration when each material_attribute_value is created. ",
       "type": "array",
       "items": {

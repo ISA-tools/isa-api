@@ -105,7 +105,9 @@ class ISATab2ISAjson_v1:
     def createContacts(self, contacts, inv_or_study):
         people_json = []
         for contact in contacts:
+            person_identifier = self.generateIdentifier("person")
             person_json = dict([
+                ("@id", person_identifier),
                 ("lastName", contact[inv_or_study+" Person Last Name"]),
                 ("firstName", contact[inv_or_study+" Person First Name"]),
                 ("midInitials", contact[inv_or_study+" Person Mid Initials"]),
@@ -160,7 +162,7 @@ class ISATab2ISAjson_v1:
         parameters_json = self.createOntologyAnnotationsFromStringList(protocol, "Study", " Protocol Parameters Name")
         for parameter_json in parameters_json:
             parameter_identifier = self.generateIdentifier("parameter")
-            self.setIdentifier("parameter", parameters_json[0]["name"], parameter_identifier)
+            self.setIdentifier("parameter", parameters_json[0]["annotationValue"], parameter_identifier)
             json_item = dict([
                 ("@id", parameter_identifier),
                 ("parameterName",  parameter_json)
@@ -171,7 +173,7 @@ class ISATab2ISAjson_v1:
 
     def createOntologyAnnotationForInvOrStudy(self, object, inv_or_study, type):
         onto_ann = dict([
-                ("name", object[inv_or_study+type]),
+                ("annotationValue", object[inv_or_study+type]),
                 ("termSource", object[inv_or_study+type+" Term Source REF"]),
                 ("termAccession", object[inv_or_study+type+" Term Accession Number"])
         ])
@@ -180,7 +182,7 @@ class ISATab2ISAjson_v1:
 
     def createOntologyAnnotation(self, name, termSource, termAccesssion):
         onto_ann = dict([
-            ("name", name),
+            ("annotationValue", name),
             ("termSource", termSource),
             ("termAccession", termAccesssion)
         ])
@@ -193,11 +195,9 @@ class ISATab2ISAjson_v1:
         term_accession_array = object[inv_or_study+type+" Term Accession Number"].split(";")
         onto_annotations = []
         for i in range(0,len(name_array)):
-             onto_ann = dict([
-                 ("name", name_array[i]),
-                 ("termSource", term_source_array[i]),
-                 ("termAccession", term_accession_array[i])
-             ])
+             onto_ann = self.createOntologyAnnotation(name_array[i],
+                                                      term_source_array[i],
+                                                      term_accession_array[i] )
              onto_annotations.append(onto_ann)
         return onto_annotations
 
@@ -205,11 +205,9 @@ class ISATab2ISAjson_v1:
     def createOntologyAnnotationListForInvOrStudy(self, array, inv_or_study, type):
         onto_annotations = []
         for object in array:
-            onto_ann = dict([
-                ("name", object[inv_or_study+type]),
-                ("termSource", object[inv_or_study+type+" Term Source REF"]),
-                ("termAccession", object[inv_or_study+type+" Term Accession Number"])
-            ])
+            onto_ann = self.createOntologyAnnotation(object[inv_or_study+type],
+                                                     object[inv_or_study+type+" Term Source REF"],
+                                                     object[inv_or_study+type+" Term Accession Number"])
             onto_annotations.append(onto_ann)
         return onto_annotations
 
@@ -251,6 +249,7 @@ class ISATab2ISAjson_v1:
                 ("people", self.createContacts(study.contacts, "Study")),
                 ("protocols", self.createProtocols(study.protocols)),
                 ("factors", factors_list),
+                ("characteristicCategories", self.createCharacteristicsCategories(study.nodes)),
                 ("sources", list(source_dict.values())),
                 ("samples",list(sample_dict.values())),
                 ("materials",list(material_dict.values())),
@@ -404,20 +403,22 @@ class ISATab2ISAjson_v1:
                 sample_identifier = self.generateIdentifier("sample")
                 self.setIdentifier("sample", node_index, sample_identifier)
 
-                source_json = dict([])
-
-                try:
-                    source_json = nodes[node_index].metadata["Source Name"]
-                except KeyError:
-                    print("There is no source declared for sample ", node_index)
-
                 json_item = dict([
                         ("@id", sample_identifier),
                         ("name", node_index),
                         ("factorValues", self.createValueList("Factor Value", node_index, nodes[node_index])),
-                        ("characteristics", self.createValueList("Characteristics",node_index, nodes[node_index])),
-                        ("derivesFrom", source_json)
+                        ("characteristics", self.createValueList("Characteristics",node_index, nodes[node_index]))
                     ])
+
+                #derivesFrom source
+                try:
+                    source_name = nodes[node_index].metadata["Source Name"][0]
+                    source_index = "source-"+source_name
+                    source_identifier = self.getIdentifier("source", source_index)
+                    json_item["derivesFrom"] = dict([ ("@id", source_identifier)])
+                except KeyError:
+                    print("There is no source declared for sample ", node_index)
+
                 json_dict.update({node_index: json_item})
 
         return json_dict
@@ -465,6 +466,28 @@ class ISATab2ISAjson_v1:
         return json_dict
 
 
+    def createCharacteristicsCategories(self, nodes):
+        json_list = []
+        for node_index in nodes:
+            node = nodes[node_index]
+            for header in node.metadata:
+                 if not header.startswith("Characteristics"):
+                    continue
+                 value_header = header.replace("]", "").split("[")[-1]
+                 characteristic_category_identifier = self.generateIdentifier("charactersitic_category")
+
+                 json_item = dict([])
+                 #the header has an ontology annotation TODO - get a test dataset
+                 if value_header.startswith("http"):
+                    self.setIdentifier("characteristics_category", value_header, characteristic_category_identifier)
+                 else:
+                    json_item = dict([
+                        ("@id", characteristic_category_identifier),
+                        ("characteristicType", self.createOntologyAnnotation(value_header, "", ""))
+                    ])
+
+                 json_list.append(json_item)
+        return json_list
 
     def convert_num(self, s):
         try:

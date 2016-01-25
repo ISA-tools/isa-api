@@ -4,7 +4,7 @@ Term Source File	"http://data.bioontology.org/ontologies/ENVO"	"http://data.bioo
 Term Source Version	"27"	"2"	"22"	"162"	"9"	"3"	"43"	
 Term Source Description	"Environment Ontology"	"National Center for Biotechnology Information (NCBI) Organismal Classification"	"Ontology for Biomedical Investigations"	"Phenotypic Quality Ontology"	"Systematized Nomenclature of Medicine - Clinical Terms"	"Foundational Model of Anatomy"	"Units of Measurement Ontology"	
 INVESTIGATION
-Investigation Identifier	"1406894715587"
+Investigation Identifier	"BII-S-7"
 Investigation Title	""
 Investigation Description	""
 Investigation Submission Date	""
