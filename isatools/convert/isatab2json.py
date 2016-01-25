@@ -231,6 +231,7 @@ class ISATab2ISAjson_v1:
             study_identifier = self.generateIdentifier("study")
             study_name = study.metadata['Study Identifier']
             self.setIdentifier("study", study_name, study_identifier)
+            characteristics_categories_list = self.createCharacteristicsCategories(study.nodes)
             factors_list = self.createStudyFactorsList(study.factors)
             source_dict = self.createSourcesDictionary(study.nodes)
             sample_dict = self.createSampleDictionary(study.nodes)
@@ -249,7 +250,7 @@ class ISATab2ISAjson_v1:
                 ("people", self.createContacts(study.contacts, "Study")),
                 ("protocols", self.createProtocols(study.protocols)),
                 ("factors", factors_list),
-                ("characteristicCategories", self.createCharacteristicsCategories(study.nodes)),
+                ("characteristicCategories", characteristics_categories_list),
                 ("sources", list(source_dict.values())),
                 ("samples",list(sample_dict.values())),
                 ("materials",list(material_dict.values())),
@@ -509,20 +510,12 @@ class ISATab2ISAjson_v1:
         for header in node.metadata:
             if header.startswith(column_name):
                  value_header = header.replace("]", "").split("[")[-1]
-
-                 #try:
                  value_attributes = node.metadata[header][0]
-                 #except TypeError:
-                 #   value_attributes = node.metadata[header]
-
-                 #try:
                  value  = self.convert_num(value_attributes[0])
-                 #except TypeError:
-                 #    value  = self.convert_num(value_attributes[0][0])
                  header_type = None
-                 #TODO use objects and unify the call below, adding the declaration of characteristics to the Study object
+
                  if column_name.strip()=="Characteristics":
-                     header_type = "characteristic"
+                     header_type = "characteristics_category"
                  if column_name.strip()=="Factor Value":
                      header_type = "factor"
 
