@@ -1,12 +1,21 @@
 from abc import ABCMeta, abstractmethod
 from urllib.parse import urljoin
-from xml.dom.minidom import parseString, Node
-from xml.parsers.expat import ExpatError
+from lxml import etree
+from jsonschema import RefResolver, Draft4Validator
 import requests
 import json
 import os
+import pathlib
 
 __author__ = 'massi'
+
+
+def validate_json_against_schema(schema_src, json_dict):
+    with open(schema_src) as schema_file:
+        schema = json.load(schema_file)
+    resolver = RefResolver(pathlib.Path(os.path.abspath(schema_src)).as_uri(), schema)
+    validator = Draft4Validator(schema, resolver=resolver)
+    return validator.validate(json_dict, schema)
 
 
 class IsaStorageAdapter(metaclass=ABCMeta):
@@ -34,6 +43,9 @@ class IsaStorageAdapter(metaclass=ABCMeta):
 
 class IsaGitHubStorageAdapter(IsaStorageAdapter):
 
+    INVESTIGATION_SCHEMA_FILE = os.path.abspath(os.path.join('isatools', 'schemas', 'isa_model_version_1_0_schemas',
+                                                             'core', 'investigation_schema.json'))
+    CONFIGURATION_SCHEMA_FILE = os.path.join('isatools', 'schemas', 'isatab_configurator.xsd')
     GITHUB_API_BASE_URL = 'https://api.github.com'
     AUTH_ENDPOINT = urljoin(GITHUB_API_BASE_URL, 'authorizations')
     GITHUB_RAW_MEDIA_TYPE = 'application/vnd.github.VERSION.raw'
@@ -86,13 +98,15 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         else:
             return False
 
-    def download(self, source, destination, owner=None, repository=None):
+    def download(self, source, destination, owner=None, repository=None, validate_json=False):
         """
         Call to download a resource from a remote GitHub repository
         :type source: str - URLish path to the source (within the GitHub repository)
         :type destination str
         :type owner str
         :type repository str
+        :type validate_json bool - if True perform validation against a JSON schema (i.e. investigation schema).
+                                   Valid only for JSON datasets
         """
         # get the content at source as raw data
         get_content_frag = '/'.join(['repos', owner, repository, 'contents', source])
@@ -115,7 +129,10 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
 
                 # if it is an object it's the file content to be stored
                 else:
-                    # TODO add validation against JSON schema
+                    # validate against JSON schema
+                    if validate_json:
+                        validate_json_against_schema(self.INVESTIGATION_SCHEMA_FILE, res_payload)
+
                     # save it to disk
                     os.makedirs(destination, exist_ok=True)
                     with open(os.path.join(destination, source.split('/')[-1]), 'w+') as out_file:
@@ -125,14 +142,18 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             except ValueError:
                 # try to parse the response payload as XML
                 try:
-                    res_payload = parseString(res.text)
-                    # TODO additional checks on the XML??
+                    with open(self.CONFIGURATION_SCHEMA_FILE, 'rb') as schema_file:
+                        schema_root = etree.XML(schema_file.read())
+                    xml_parser = etree.XMLParser(schema=etree.XMLSchema(schema_root))
+                    # try to parse XML to validate against schema
+                    etree.fromstring(res.text, xml_parser)
+
                     # if it is a valid XML save it to disk
                     os.makedirs(destination, exist_ok=True)
-                    with open(os.path.join(destination, source.split('/')[0]), 'w+') as out_file:
-                        res_payload.writexml(out_file)
+                    with open(os.path.join(destination, source.split('/')[-1]), 'w+') as out_file:
+                        out_file.write(res.text)
                     return True
-                except ExpatError:
+                except etree.XMLSyntaxError:
                     return False
         else:
             print("The request was not successfully fulfilled: ", res.status_code)
