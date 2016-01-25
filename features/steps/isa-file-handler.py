@@ -9,6 +9,8 @@ from sure import expect
 from zipfile import is_zipfile
 from urllib.parse import urljoin
 from isatools.io.storage_adapter import IsaGitHubStorageAdapter
+from lxml import etree
+from io import StringIO
 
 use_step_matcher("parse")
 
@@ -187,8 +189,8 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    fixture_file_name = context.source_path.split('/')[-1]
-    fixture_file_path = os.path.abspath(os.path.join('isatools', 'sampledata', fixture_file_name))
+    fixture_file_frags = context.source_path.split('/')
+    fixture_file_path = os.path.abspath(os.path.join(*fixture_file_frags))
     download_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name,
                                 'contents', context.source_path])
     with open(fixture_file_path) as json_file:
@@ -216,11 +218,26 @@ def step_impl(context):
 
 
 @when("the source file points to an ISA-TAB XML configuration file")
+@httpretty.activate
 def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    pass
+    download_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name,
+                             'contents', context.source_path])
+    # with open(context.source_path) as xml_file:
+    #    context.config_xml_content = etree.parse(xml_file)
+    fixture_file_frags = context.source_path.split('/')
+    fixture_file_path = os.path.abspath(os.path.join(*fixture_file_frags))
+    # context.config_xml_content = etree.parse(fixture_file_path)
+    with open(fixture_file_path) as xml_file:
+        context.xml_str = xml_file.read()
+    # httpretty.register_uri(httpretty.GET, download_url, body=etree.tostring(context.config_xml_content.getroot()))
+    httpretty.register_uri(httpretty.GET, download_url, body=context.xml_str)
+    res = context.isa_adapter.download(context.source_path, context.destination_path, context.owner_name,
+                                       context.repo_name)
+    expect(res).to.be.true
+    expect(httpretty.has_request()).to.be.true
 
 
 @then("it should download it as an XML file")
@@ -228,7 +245,17 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    pass
+    out_file_path = os.path.join(context.destination_path, context.source_path.split('/')[-1])
+    # written_xml_config_content = etree.parse(out_file)
+    # expect(set(written_xml_config_content.getroot().itertext()))\
+    #    .to.equal(set(context.config_xml_content.getroot().itertext()))
+    with open(out_file_path) as xml_file:
+        written_xml_str = xml_file.read()
+    # test equality of input and output
+    expect(written_xml_str).to.equal(context.xml_str)
+    # test that the stored output is valid XML
+    xml = etree.parse(StringIO(written_xml_str))
+    expect(xml).to.be.an(etree._ElementTree)
 
 
 @when("it is a different file")
