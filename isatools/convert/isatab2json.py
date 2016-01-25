@@ -256,7 +256,7 @@ class ISATab2ISAjson_v1:
                         ("samples",list(sample_dict.values())),
                         ("otherMaterials",list(material_dict.values()))
                 ])),
-                ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
+                ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, material_dict, data_dict)),
                 ("assays", self.createStudyAssaysList(study.assays, sample_dict)),
                 ("filename", study.metadata['Study File Name']),
             ])
@@ -294,7 +294,7 @@ class ISATab2ISAjson_v1:
         return json_list
 
 
-    def createProcessSequence(self, process_nodes, source_dict, sample_dict, data_dict):
+    def createProcessSequence(self, process_nodes, source_dict, sample_dict, material_dict, data_dict):
         json_list = []
         for process_node_name in process_nodes:
             try:
@@ -315,13 +315,13 @@ class ISATab2ISAjson_v1:
             json_item = dict([
                     ("executesProtocol", self.createExecuteStudyProtocol(process_node_name, process_nodes[process_node_name])),
                     ("parameterValues", self.createValueList("Parameter Value", process_node_name, process_nodes[process_node_name])),
-                    ("inputs", self.createInputList(process_nodes[process_node_name].inputs, source_dict, sample_dict)),
-                    ("outputs", self.createOutputList(process_nodes[process_node_name].outputs, sample_dict) )
+                    ("inputs", self.createInputList(process_nodes[process_node_name].inputs, source_dict, sample_dict, material_dict)),
+                    ("outputs", self.createOutputList(process_nodes[process_node_name].outputs, sample_dict, material_dict) )
             ])
             json_list.append(json_item)
         return json_list
 
-    def createInputList(self, inputs, source_dict, sample_dict):
+    def createInputList(self, inputs, source_dict, sample_dict, material_dict):
         json_list = []
         for argument in inputs:
             try:
@@ -336,15 +336,28 @@ class ISATab2ISAjson_v1:
                 json_list.append(sample_id)
             except KeyError:
                 pass
+            try:
+                json_item = material_dict[argument]
+                material_id = dict([("@id", json_item["@id"])])
+                json_list.append(material_id)
+            except KeyError:
+                pass
         return json_list
 
-    def createOutputList(self, arguments, sample_dict):
+    def createOutputList(self, arguments, sample_dict, material_dict):
         json_list = []
         for argument in arguments:
             try:
                 json_item = sample_dict[argument]
                 sample_id = dict([("@id", json_item["@id"])])
                 json_list.append(sample_id)
+            except KeyError:
+                pass
+
+            try:
+                json_item = material_dict[argument]
+                material_id = dict([("@id", json_item["@id"])])
+                json_list.append(material_id)
             except KeyError:
                 pass
         return json_list
@@ -381,7 +394,7 @@ class ISATab2ISAjson_v1:
                     ("otherMaterials", list(material_dict.values()))
                 ])),
                 ("dataFiles", list(data_dict.values())),
-                ("processSequence", self.createProcessSequence(assay.process_nodes, source_dict, sample_dict, data_dict))
+                ("processSequence", self.createProcessSequence(assay.process_nodes, source_dict, sample_dict, material_dict, data_dict))
                 ])
             json_list.append(json_item)
         return json_list
