@@ -474,12 +474,17 @@ class ISATab2ISAjson_v1:
                  if not header.startswith("Characteristics"):
                     continue
                  value_header = header.replace("]", "").split("[")[-1]
+                 characteristic_category_identifier = self.getIdentifier("characteristics_category", value_header)
+                 if characteristic_category_identifier:
+                     continue
+
                  characteristic_category_identifier = self.generateIdentifier("charactersitic_category")
+                 self.setIdentifier("characteristics_category", value_header, characteristic_category_identifier)
 
                  json_item = dict([])
                  #the header has an ontology annotation TODO - get a test dataset
                  if value_header.startswith("http"):
-                    self.setIdentifier("characteristics_category", value_header, characteristic_category_identifier)
+                    pass
                  else:
                     json_item = dict([
                         ("@id", characteristic_category_identifier),

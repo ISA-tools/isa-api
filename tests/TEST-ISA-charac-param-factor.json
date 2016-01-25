@@ -61,8 +61,8 @@
                     "dataFiles": [
                         {
                             "@id": "http://data.isa-tools.org/data/1",
-                            "name": "Derived Array Data File",
-                            "type": "Derived Data File"
+                            "name": "1.cel",
+                            "type": "Raw Data File"
                         },
                         {
                             "@id": "http://data.isa-tools.org/data/3",
@@ -71,8 +71,8 @@
                         },
                         {
                             "@id": "http://data.isa-tools.org/data/2",
-                            "name": "1.cel",
-                            "type": "Raw Data File"
+                            "name": "Derived Array Data File",
+                            "type": "Derived Data File"
                         }
                     ],
                     "filename": "a_test-template1-splitting_transcription_profiling_DNA_microarray.txt",
@@ -129,6 +129,48 @@
                         "annotationValue": "DNA microarray",
                         "termAccession": "http://purl.obolibrary.org/obo/OBI_0400148",
                         "termSource": "OBI"
+                    }
+                }
+            ],
+            "characteristicCategories": [
+                {
+                    "@id": "http://data.isa-tools.org/charactersitic_category/1",
+                    "characteristicType": {
+                        "annotationValue": "reference descriptor",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "http://data.isa-tools.org/charactersitic_category/2",
+                    "characteristicType": {
+                        "annotationValue": "organism part",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "http://data.isa-tools.org/charactersitic_category/3",
+                    "characteristicType": {
+                        "annotationValue": "organism",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "http://data.isa-tools.org/charactersitic_category/4",
+                    "characteristicType": {
+                        "annotationValue": "specimen mass",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "http://data.isa-tools.org/charactersitic_category/5",
+                    "characteristicType": {
+                        "annotationValue": "body weight",
+                        "termAccession": "",
+                        "termSource": ""
                     }
                 }
             ],
@@ -391,19 +433,7 @@
                     "@id": "http://data.isa-tools.org/sample/1",
                     "characteristics": [
                         {
-                            "unit": {
-                                "annotationValue": "milligram",
-                                "termAccession": "http://purl.obolibrary.org/obo/UO_0000022",
-                                "termSource": "UO"
-                            },
-                            "value": 450
-                        },
-                        {
-                            "value": {
-                                "annotationValue": "Human",
-                                "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
-                                "termSource": "NCBITAXON"
-                            }
+                            "value": "not applicable"
                         },
                         {
                             "value": {
@@ -413,31 +443,33 @@
                             }
                         },
                         {
+                            "value": {
+                                "annotationValue": "Human",
+                                "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
+                                "termSource": "NCBITAXON"
+                            }
+                        },
+                        {
+                            "unit": {
+                                "annotationValue": "milligram",
+                                "termAccession": "http://purl.obolibrary.org/obo/UO_0000022",
+                                "termSource": "UO"
+                            },
+                            "value": 450
+                        },
+                        {
                             "unit": {
                                 "annotationValue": "kilogram",
                                 "termAccession": "http://purl.obolibrary.org/obo/UO_0000009",
                                 "termSource": "UO"
                             },
                             "value": 72
-                        },
-                        {
-                            "value": "not applicable"
                         }
                     ],
                     "derivesFrom": {
                         "@id": "http://data.isa-tools.org/source/1"
                     },
                     "factorValues": [
-                        {
-                            "category": {
-                                "@id": "http://data.isa-tools.org/factor/1"
-                            },
-                            "value": {
-                                "annotationValue": "beach",
-                                "termAccession": "",
-                                "termSource": ""
-                            }
-                        },
                         {
                             "category": {
                                 "@id": "http://data.isa-tools.org/factor/2"
@@ -448,6 +480,16 @@
                                 "termSource": "UO"
                             },
                             "value": 12
+                        },
+                        {
+                            "category": {
+                                "@id": "http://data.isa-tools.org/factor/1"
+                            },
+                            "value": {
+                                "annotationValue": "beach",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
                         }
                     ],
                     "name": "sample-sample1"
@@ -458,19 +500,7 @@
                     "@id": "http://data.isa-tools.org/source/1",
                     "characteristics": [
                         {
-                            "unit": {
-                                "annotationValue": "milligram",
-                                "termAccession": "http://purl.obolibrary.org/obo/UO_0000022",
-                                "termSource": "UO"
-                            },
-                            "value": 450
-                        },
-                        {
-                            "value": {
-                                "annotationValue": "Human",
-                                "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
-                                "termSource": "NCBITAXON"
-                            }
+                            "value": "not applicable"
                         },
                         {
                             "value": {
@@ -480,15 +510,27 @@
                             }
                         },
                         {
+                            "value": {
+                                "annotationValue": "Human",
+                                "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
+                                "termSource": "NCBITAXON"
+                            }
+                        },
+                        {
+                            "unit": {
+                                "annotationValue": "milligram",
+                                "termAccession": "http://purl.obolibrary.org/obo/UO_0000022",
+                                "termSource": "UO"
+                            },
+                            "value": 450
+                        },
+                        {
                             "unit": {
                                 "annotationValue": "kilogram",
                                 "termAccession": "http://purl.obolibrary.org/obo/UO_0000009",
                                 "termSource": "UO"
                             },
                             "value": 72
-                        },
-                        {
-                            "value": "not applicable"
                         }
                     ],
                     "name": "source-source1"
