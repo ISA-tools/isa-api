@@ -11,7 +11,12 @@
                  "$ref": "comment_schema.json#"
             }
         },
-        "name": { "type" : "string" },
+        "annotationValue": {
+              "anyOf": [
+                { "type": "string" },
+                { "type": "number"}
+               ]
+        },
         "termSource" : {
             "type" : "string",
             "description" : "The abbreviated ontology name. It should correspond to one of the sources as specified in the ontologySourceReference section of the Investigation."

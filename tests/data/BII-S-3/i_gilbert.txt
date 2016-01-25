@@ -4,7 +4,7 @@ Term Source File	"http://data.bioontology.org/ontologies/CHEBI"	"http://data.bio
 Term Source Version	"78"	"111"	"21"	"2"	"160"	
 Term Source Description	"Chemical Entities of Biological Interest Ontology"	"Experimental Factor Ontology"	"Ontology for Biomedical Investigations"	"National Center for Biotechnology Information (NCBI) Organismal Classification"	"Phenotypic Quality Ontology"	
 INVESTIGATION
-Investigation Identifier	"1406894706246"
+Investigation Identifier	"BII-S-3"
 Investigation Title	""
 Investigation Description	""
 Investigation Submission Date	""
