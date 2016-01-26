@@ -19,7 +19,7 @@ Feature: ISA file management
 
   Scenario: resource retrieval with ZIP archive download
     Given an authenticated storage adapter
-    And a file object named "remote_source.zip" in the remote repository "isa-api" owned by "ISA-tools"
+    And a file object named "features/fixtures/testdata-isa.zip" in the remote repository "isa-api" owned by "ISA-tools"
     And a destination directory "destination_dir_1" in your home folder
     When the file object is a ZIP archive
     Then it should download it as it is
@@ -30,6 +30,7 @@ Feature: ISA file management
     And a destination directory "destination_dir_2" in your home folder
     When the source file points to an ISA-TAB JSON file
     Then it should download it as a JSON file
+    And it should return the JSON content as a dictionary
 
   Scenario: resource retrieval with XML configuration file download
     Given an authenticated storage adapter

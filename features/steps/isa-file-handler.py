@@ -4,11 +4,12 @@ import hashlib
 import httpretty
 import json
 import os
+from zipfile import ZipFile
 from behave import *
 from sure import expect
 from zipfile import is_zipfile
 from urllib.parse import urljoin
-from isatools.io.storage_adapter import IsaGitHubStorageAdapter
+from isatools.io.storage_adapter import IsaGitHubStorageAdapter, REPOS, CONTENTS
 from lxml import etree
 from io import StringIO
 
@@ -139,8 +140,8 @@ def step_impl(context):
     fixture_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures', fixture_file_name))
     with open(fixture_file_path) as json_file:
         items_in_dir = json.load(json_file)
-        download_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name,
-                                'contents', context.source_path])
+        download_url = '/'.join([GITHUB_API_URL, REPOS, context.owner_name, context.repo_name,
+                                CONTENTS, context.source_path])
         httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(items_in_dir))
 
         for item in items_in_dir:
@@ -148,7 +149,7 @@ def step_impl(context):
                                    content_type='text/plain; charset=utf-8')
 
         context.items_in_dir = items_in_dir
-        res = context.isa_adapter.download(context.source_path, context.destination_path, context.owner_name,
+        res = context.isa_adapter.retrieve(context.source_path, context.destination_path, context.owner_name,
                                      context.repo_name)
 
     expect(res).to.be.true
@@ -168,11 +169,24 @@ def step_impl(context):
 
 
 @when("the file object is a ZIP archive")
+@httpretty.activate
 def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    pass
+    fixture_file_frags = context.source_path.split('/')
+    fixture_file_path = os.path.abspath(os.path.join(*fixture_file_frags))
+    download_url = '/'.join([GITHUB_API_URL, REPOS, context.owner_name, context.repo_name,
+                             CONTENTS, context.source_path])
+    with open(fixture_file_path, 'rb') as zip_file:
+        zip_content = zip_file.read()
+        httpretty.register_uri(httpretty.GET, download_url, body=zip_content)
+
+        res = context.isa_adapter.retrieve(context.source_path, context.destination_path, context.owner_name,
+                                           context.repo_name)
+
+    expect(res).to.be.true
+    expect(httpretty.has_request()).to.be.true
 
 
 @then("it should download it as it is")
@@ -180,7 +194,9 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    pass
+    out_file = os.path.join(context.destination_path, context.source_path.split('/')[-1])
+    # file should have been saved
+    expect(os.path.isfile(out_file)).to.be.true
 
 
 @when("the source file points to an ISA-TAB JSON file")
@@ -191,16 +207,22 @@ def step_impl(context):
     """
     fixture_file_frags = context.source_path.split('/')
     fixture_file_path = os.path.abspath(os.path.join(*fixture_file_frags))
-    download_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name,
-                                'contents', context.source_path])
+    download_url = '/'.join([GITHUB_API_URL, REPOS, context.owner_name, context.repo_name,
+                             CONTENTS, context.source_path])
     with open(fixture_file_path) as json_file:
-        context.json_isa_dataset = json.load(json_file)
-        httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.json_isa_dataset))
+        context.json_isa_dataset_encoded = json.load(json_file)
+        httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.json_isa_dataset_encoded))
 
-        res = context.isa_adapter.download(context.source_path, context.destination_path, context.owner_name,
-                                           context.repo_name)
+    fixture_file_frags[-1] = '-RAW.'.join(fixture_file_frags[-1].split('.'))
+    fixture_file_path_raw = os.path.abspath(os.path.join(*fixture_file_frags))
+    download_url = context.json_isa_dataset_encoded['download_url']
+    with open(fixture_file_path_raw) as json_file:
+        context.json_isa_dataset_raw = json.load(json_file)
+        httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.json_isa_dataset_raw))
 
-    expect(res).to.be.true
+    context.res = context.isa_adapter.retrieve(context.source_path, context.destination_path, context.owner_name,
+                                               context.repo_name)
+
     expect(httpretty.has_request()).to.be.true
 
 
@@ -214,7 +236,16 @@ def step_impl(context):
     with open(out_file) as json_file:
         written_json_dataset = json.load(json_file)
 
-    expect(written_json_dataset).to.equal(context.json_isa_dataset)
+    expect(written_json_dataset).to.equal(context.json_isa_dataset_raw)
+
+
+@step("it should return the JSON content as a dictionary")
+def step_impl(context):
+    """
+    :type context: behave.runner.Context
+    """
+    expect(context.res).to.be.a(dict)
+    expect(context.res).to.equal(context.json_isa_dataset_raw)
 
 
 @when("the source file points to an ISA-TAB XML configuration file")
@@ -234,7 +265,7 @@ def step_impl(context):
         context.xml_str = xml_file.read()
     # httpretty.register_uri(httpretty.GET, download_url, body=etree.tostring(context.config_xml_content.getroot()))
     httpretty.register_uri(httpretty.GET, download_url, body=context.xml_str)
-    res = context.isa_adapter.download(context.source_path, context.destination_path, context.owner_name,
+    res = context.isa_adapter.retrieve(context.source_path, context.destination_path, context.owner_name,
                                        context.repo_name)
     expect(res).to.be.true
     expect(httpretty.has_request()).to.be.true
