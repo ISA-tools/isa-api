@@ -312,11 +312,13 @@ class ISATab2ISAjson_v1:
             except:
                 technology = ""
 
+            process_node = process_nodes[process_node_name]
+
             json_item = dict([
-                    ("executesProtocol", self.createExecuteStudyProtocol(process_node_name, process_nodes[process_node_name])),
-                    ("parameterValues", self.createValueList("Parameter Value", process_node_name, process_nodes[process_node_name])),
-                    ("inputs", self.createInputList(process_nodes[process_node_name].inputs, source_dict, sample_dict, material_dict)),
-                    ("outputs", self.createOutputList(process_nodes[process_node_name].outputs, sample_dict, material_dict) )
+                    ("executesProtocol", self.createExecuteStudyProtocol(process_node_name, process_node)),
+                    ("parameterValues", self.createValueList("Parameter Value", process_node_name, process_node)),
+                    ("inputs", self.createInputList(process_node.inputs, source_dict, sample_dict, material_dict)),
+                    ("outputs", self.createOutputList(process_node.outputs, sample_dict, material_dict) )
             ])
             json_list.append(json_item)
         return json_list
@@ -489,9 +491,12 @@ class ISATab2ISAjson_v1:
         for node_index in nodes:
             node = nodes[node_index]
             for header in node.metadata:
-                 if not header.startswith("Characteristics"):
+                 if (not header.startswith("Characteristics")) and (not header=="Material Type"):
                     continue
                  value_header = header.replace("]", "").split("[")[-1]
+                 if header == "Material Type":
+                     value_header = "Material Type"
+
                  characteristic_category_identifier = self.getIdentifier("characteristics_category", value_header)
                  if characteristic_category_identifier:
                      continue
@@ -522,19 +527,33 @@ class ISATab2ISAjson_v1:
                 return s
 
 
+
     def createValueList(self, column_name, node_name, node):
+        """Method for the creation of factor, characteristics and parameter values"""
         json_list = []
         for header in node.metadata:
-            if header.startswith(column_name):
+            if header.startswith(column_name) or header == "Material Type":
                  value_header = header.replace("]", "").split("[")[-1]
+                 if header == "Material Type":
+                     value_header = "Material Type"
                  value_attributes = node.metadata[header][0]
                  value  = self.convert_num(value_attributes[0])
                  header_type = None
 
                  if column_name.strip()=="Characteristics":
+                     if header not in node.attributes:
+                         continue
                      header_type = "characteristics_category"
+
                  if column_name.strip()=="Factor Value":
+                     if header not in node.attributes:
+                         continue
                      header_type = "factor"
+
+                 if column_name.strip()=="Parameter Value":
+                     if header not in node.parameters:
+                         continue
+                     header_type = "parameter"
 
                  category_identifier =  self.getIdentifier(header_type, value_header)
 

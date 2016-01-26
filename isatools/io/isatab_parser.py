@@ -50,13 +50,32 @@ def find_gt(a, x):
 
 def find_in_between(a, x, y):
     result = []
-    element_gt = find_gt(a, x)
-    if (element_gt > x and element_gt < y):
-        result.append(element_gt)
-    element_lt = find_lt(a, y)
-    if element_lt not in result:
-        if (element_lt < y and element_lt > x):
-           result.append(element_lt)
+    while True:
+        try:
+            element_gt = find_gt(a, x)
+        except ValueError:
+            return result
+
+        if (element_gt > x and y==-1) or (element_gt > x and element_gt < y):
+            result.append(element_gt)
+            x = element_gt
+        else:
+            break
+
+    while True:
+        try:
+            element_lt = find_lt(a, y)
+        except ValueError:
+            return result
+        if element_lt not in result:
+            if (element_lt < y and element_lt > x):
+                result.append(element_lt)
+                y = element_lt
+            else:
+                break
+        else:
+            break
+
     return result
 
 
@@ -279,8 +298,6 @@ class StudyAssayParser:
                 except ValueError:
                     parameters_indices = []
 
-
-
                 input_header = headers[hgroups[input_index][0]]
                 output_header = headers[hgroups[output_index][0]]
                 processing_header = headers[hgroups[processing_index][0]]
@@ -354,28 +371,47 @@ class StudyAssayParser:
         nodes = {}
         with open(os.path.join(self._dir, fname), "rU") as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
-            header = self._swap_synonyms(next(reader))
-            hgroups = self._collapse_header(header)
-            htypes = self._characterize_header(header, hgroups)
+            headers = self._swap_synonyms(next(reader))
+            hgroups = self._collapse_header(headers)
+            htypes = self._characterize_header(headers, hgroups)
 
-            for node_type in node_types:
+            node_indices = [i for i, x in enumerate(htypes) if x == "node" or x=="node_assay"]
+            all_attribute_indices = [i for i, x in enumerate(htypes) if x == "attribute"]
+
+            for node_index in node_indices:
+
+                node_type = headers[hgroups[node_index][0]]
+
+                if node_type not in node_types:
+                    continue
+
                 try:
-                    name_index = header.index(node_type)
+                    header_index = headers.index(node_type)
                 except ValueError:
-                    name_index = None
+                    header_index = None
 
-                if name_index is None:
+                if header_index is None:
                     #print "Could not find standard header name: %s in %s" \
                     #                        % (node_type, header)
                     continue
 
+                try:
+                    next_node_index = find_gt(node_indices, header_index)
+                except ValueError:
+                    next_node_index = -1
+
+                try:
+                    attribute_indices = find_in_between(all_attribute_indices, node_index, next_node_index)
+                except ValueError:
+                    attribute_indices = []
+
                 in_handle.seek(0, 0)
                 for line in reader:
-                    name = line[name_index]
+                    name = line[header_index]
                     #to deal with same name used for different node types (e.g. Source Name and Sample Name using the same string)
                     node_index = self._build_node_index(node_type,name)
                     #skip the header line and empty lines
-                    if name in header:
+                    if name in headers:
                         continue
                     if (not name):
                         continue
@@ -385,8 +421,15 @@ class StudyAssayParser:
                         node = NodeRecord(name, node_type, node_index)
                         node.metadata = collections.defaultdict(set)
                         nodes[node_index] = node
-                        attrs = self._line_keyvals(line, header, hgroups, htypes, node.metadata)
+                        attrs = self._line_keyvals(line, headers, hgroups, htypes, node.metadata)
                         nodes[node_index].metadata = attrs
+
+                        attribute_headers = []
+                        for attribute_index in attribute_indices:
+                            attribute_header = headers[hgroups[attribute_index][0]]
+                            attribute_headers.append(attribute_header)
+
+                        node.attributes = attribute_headers
 
         return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
 
@@ -538,6 +581,7 @@ _assay_str = \
 
 _node_str = \
 """       * Node -> {name} {type} {index}
+         attributes: {attributes}
          metadata: {md}"""
 
 _process_node_str = \
@@ -620,12 +664,14 @@ class NodeRecord:
         self.name = name
         self.index = nindex
         self.metadata = {}
+        self.attributes = []
 
     def __str__(self):
         return _node_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 9),
                                 index=self.index,
                                 name=self.name,
-                                type=self.ntype)
+                                type=self.ntype,
+                                attributes=pprint.pformat(self.attributes).replace("\n","\n"+" "*9))
 
 
 class ProcessNodeRecord:
