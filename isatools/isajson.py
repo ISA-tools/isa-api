@@ -302,6 +302,8 @@ def load(fp):
                                 )
                             )
                             material.characteristics.append(characteristic)
+                        assay.materials['other_material'].append(material)
+                        other_materials_dict[material.id] = material
                     for assay_process_json in assay_json['processSequence']:
                         process = Process(
                             executes_protocol=assay_process_json['executesProtocol']['@id']
@@ -332,6 +334,11 @@ def load(fp):
                                     output = other_materials_dict[output_json['@id']]
                                 except KeyError:
                                     pass
+                                finally:
+                                    try:
+                                        output = other_materials_dict[output_json['@id']]
+                                    except KeyError:
+                                        pass
                             if output is None:
                                 raise IOError("Could not find output node in samples or other materials dicts: " +
                                               output_json['@id'])
