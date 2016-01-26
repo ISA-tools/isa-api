@@ -491,9 +491,12 @@ class ISATab2ISAjson_v1:
         for node_index in nodes:
             node = nodes[node_index]
             for header in node.metadata:
-                 if not header.startswith("Characteristics"):
+                 if (not header.startswith("Characteristics")) and (not header=="Material Type"):
                     continue
                  value_header = header.replace("]", "").split("[")[-1]
+                 if header == "Material Type":
+                     value_header = "Material Type"
+
                  characteristic_category_identifier = self.getIdentifier("characteristics_category", value_header)
                  if characteristic_category_identifier:
                      continue
@@ -529,8 +532,10 @@ class ISATab2ISAjson_v1:
         """Method for the creation of factor, characteristics and parameter values"""
         json_list = []
         for header in node.metadata:
-            if header.startswith(column_name):
+            if header.startswith(column_name) or header == "Material Type":
                  value_header = header.replace("]", "").split("[")[-1]
+                 if header == "Material Type":
+                     value_header = "Material Type"
                  value_attributes = node.metadata[header][0]
                  value  = self.convert_num(value_attributes[0])
                  header_type = None

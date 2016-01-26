@@ -60,19 +60,19 @@
                     "@id": "http://data.isa-tools.org/assay/1",
                     "dataFiles": [
                         {
-                            "@id": "http://data.isa-tools.org/data/2",
+                            "@id": "http://data.isa-tools.org/data/3",
                             "name": "1.cel",
                             "type": "Raw Data File"
                         },
                         {
                             "@id": "http://data.isa-tools.org/data/1",
-                            "name": "Array Data File",
-                            "type": "Raw Data File"
-                        },
-                        {
-                            "@id": "http://data.isa-tools.org/data/3",
                             "name": "Derived Array Data File",
                             "type": "Derived Data File"
+                        },
+                        {
+                            "@id": "http://data.isa-tools.org/data/2",
+                            "name": "Array Data File",
+                            "type": "Raw Data File"
                         }
                     ],
                     "filename": "a_test-template1-splitting_transcription_profiling_DNA_microarray.txt",
@@ -138,7 +138,7 @@
                 {
                     "@id": "http://data.isa-tools.org/charactersitic_category/1",
                     "characteristicType": {
-                        "annotationValue": "organism part",
+                        "annotationValue": "organism",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -154,7 +154,7 @@
                 {
                     "@id": "http://data.isa-tools.org/charactersitic_category/3",
                     "characteristicType": {
-                        "annotationValue": "specimen mass",
+                        "annotationValue": "Material Type",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -162,7 +162,7 @@
                 {
                     "@id": "http://data.isa-tools.org/charactersitic_category/4",
                     "characteristicType": {
-                        "annotationValue": "organism",
+                        "annotationValue": "reference descriptor",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -170,7 +170,15 @@
                 {
                     "@id": "http://data.isa-tools.org/charactersitic_category/5",
                     "characteristicType": {
-                        "annotationValue": "reference descriptor",
+                        "annotationValue": "specimen mass",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "http://data.isa-tools.org/charactersitic_category/6",
+                    "characteristicType": {
+                        "annotationValue": "organism part",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -207,28 +215,7 @@
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "http://data.isa-tools.org/charactersitic_category/1"
-                                },
-                                "value": {
-                                    "annotationValue": "liver",
-                                    "termAccession": "http://purl.obolibrary.org/obo/UBERON_0002107",
-                                    "termSource": "UBERON"
-                                }
-                            },
-                            {
-                                "category": {
-                                    "@id": "http://data.isa-tools.org/charactersitic_category/2"
-                                },
-                                "unit": {
-                                    "annotationValue": "kilogram",
-                                    "termAccession": "http://purl.obolibrary.org/obo/UO_0000009",
-                                    "termSource": "UO"
-                                },
-                                "value": 72
-                            },
-                            {
-                                "category": {
-                                    "@id": "http://data.isa-tools.org/charactersitic_category/3"
+                                    "@id": "http://data.isa-tools.org/charactersitic_category/5"
                                 },
                                 "unit": {
                                     "annotationValue": "milligram",
@@ -239,35 +226,19 @@
                             },
                             {
                                 "category": {
-                                    "@id": "http://data.isa-tools.org/charactersitic_category/4"
+                                    "@id": "http://data.isa-tools.org/charactersitic_category/6"
                                 },
                                 "value": {
-                                    "annotationValue": "Human",
-                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
-                                    "termSource": "NCBITAXON"
+                                    "annotationValue": "liver",
+                                    "termAccession": "http://purl.obolibrary.org/obo/UBERON_0002107",
+                                    "termSource": "UBERON"
                                 }
-                            },
-                            {
-                                "category": {
-                                    "@id": "http://data.isa-tools.org/charactersitic_category/5"
-                                },
-                                "value": "not applicable"
                             }
                         ],
                         "derivesFrom": {
                             "@id": "http://data.isa-tools.org/source/1"
                         },
                         "factorValues": [
-                            {
-                                "category": {
-                                    "@id": "http://data.isa-tools.org/factor/1"
-                                },
-                                "value": {
-                                    "annotationValue": "beach",
-                                    "termAccession": "",
-                                    "termSource": ""
-                                }
-                            },
                             {
                                 "category": {
                                     "@id": "http://data.isa-tools.org/factor/2"
@@ -278,6 +249,16 @@
                                     "termSource": "UO"
                                 },
                                 "value": 12
+                            },
+                            {
+                                "category": {
+                                    "@id": "http://data.isa-tools.org/factor/1"
+                                },
+                                "value": {
+                                    "annotationValue": "beach",
+                                    "termAccession": "",
+                                    "termSource": ""
+                                }
                             }
                         ],
                         "name": "sample-sample1"
@@ -292,9 +273,9 @@
                                     "@id": "http://data.isa-tools.org/charactersitic_category/1"
                                 },
                                 "value": {
-                                    "annotationValue": "liver",
-                                    "termAccession": "http://purl.obolibrary.org/obo/UBERON_0002107",
-                                    "termSource": "UBERON"
+                                    "annotationValue": "Human",
+                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
+                                    "termSource": "NCBITAXON"
                                 }
                             },
                             {
@@ -312,26 +293,11 @@
                                 "category": {
                                     "@id": "http://data.isa-tools.org/charactersitic_category/3"
                                 },
-                                "unit": {
-                                    "annotationValue": "milligram",
-                                    "termAccession": "http://purl.obolibrary.org/obo/UO_0000022",
-                                    "termSource": "UO"
-                                },
-                                "value": 450
+                                "value": "specimen"
                             },
                             {
                                 "category": {
                                     "@id": "http://data.isa-tools.org/charactersitic_category/4"
-                                },
-                                "value": {
-                                    "annotationValue": "Human",
-                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
-                                    "termSource": "NCBITAXON"
-                                }
-                            },
-                            {
-                                "category": {
-                                    "@id": "http://data.isa-tools.org/charactersitic_category/5"
                                 },
                                 "value": "not applicable"
                             }
@@ -375,7 +341,26 @@
                             "@id": "http://data.isa-tools.org/sample/1"
                         }
                     ],
-                    "parameterValues": []
+                    "parameterValues": [
+                        {
+                            "value": {
+                                "annotationValue": "eppendorf tube",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "category": {
+                                "@id": "http://data.isa-tools.org/parameter/1"
+                            },
+                            "unit": {
+                                "annotationValue": "degree Celsius",
+                                "termAccession": "http://purl.obolibrary.org/obo/UO_0000027",
+                                "termSource": "UO"
+                            },
+                            "value": -20
+                        }
+                    ]
                 }
             ],
             "protocols": [
