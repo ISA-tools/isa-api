@@ -2,9 +2,8 @@ from .model.v1 import *
 from isatools.io import isatab_parser, isatab_configurator
 import os
 import sys
-import io
 import pandas as pd
-import numpy as np
+import networkx as nx
 
 
 def validate(isatab_dir, config_dir):
@@ -808,36 +807,75 @@ def dump(isa_obj, path):
                         study_file_writer.writerow(row)
                 study_fp.close()
                 for assay in study.assays:
-                    assay_fp = open(os.path.join(path, assay.file_name), 'w')
-                    # Get correct configuration based on measurement and technology
-                    configs = isatab_configurator.load('/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02')
-                    config = configs[(assay.measurement_type, assay.technology_type)].isatab_configuration[0]
-                    # Build headers
-                    fields = dict()
-                    for field in config.field:
-                        fields[field.pos] = field
-                    for protocol_field in config.protocol_field:
-                        fields[protocol_field.pos] = protocol_field
-                    for structured_field in config.structured_field:
-                        fields[structured_field.pos] = structured_field
-                    for unit_field in config.unit_field:
-                        fields[unit_field.pos] = unit_field
-                    from collections import OrderedDict
-                    ordered_fields = OrderedDict(sorted(fields.items())).values()
-                    headers = list()
-                    for k, v in ordered_fields:
-                        if isinstance(v, isatab_configurator.FieldType):
-                            headers.append(v.header)
-                            if v.data_type == 'Ontology term':
-                                headers.append('Term Source REF')
-                                headers.append('Term Accession Number')
-                        if isinstance(v, isatab_configurator.ProtocolFieldType):
-                            headers.append('Protocol REF')
-                        if isinstance(v, isatab_configurator.StructuredFieldType) and (v.name == 'factors'):
-                            headers.append('Factor Value[]')
-                            headers.append('Term Source REF')
-                            headers.append('Term Accession Number')
-                    assay_fp.close()
+                    # First, build the length of one path in the graph, as our sample for headers
+                    graph = nx.DiGraph()
+                    prev_process_node = None
+                    for process in assay.process_sequence:
+                        if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
+                            graph.add_edge(prev_process_node, process)
+                        for input_ in process.inputs:
+                            graph.add_edge(input_, process)
+                        for output in process.outputs:
+                            graph.add_edge(process, output)
+                        prev_process_node = process
+                    # Find all the start and end nodes by looking for nodes with zero in or out edges
+                    start_nodes = list()
+                    end_nodes = list()
+                    for node in graph.nodes():
+                        if len(graph.in_edges(node)) == 0:
+                            start_nodes.append(node)
+                        if len(graph.out_edges(node)) == 0:
+                            end_nodes.append(node)
+                    # Start building headers by traversing all end-to-end paths; assumes correct experimental graphs
+                    assay_col_headers = list()
+                    from networkx.algorithms import all_simple_paths
+                    for start_node in start_nodes:
+                        for end_node in end_nodes:
+                            paths = all_simple_paths(graph, start_node, end_node)
+                            for path in list(paths):
+                                for node in path:
+                                    # cycle through nodes in each path
+                                    if isinstance(node, Sample):
+                                        assay_col_headers.append('Sample Name')
+                                    if isinstance(node, Data):
+                                        if node.type_ == 'raw data file':
+                                            assay_col_headers.append('Raw Data File')
+                                        elif node.type_ == 'derived data file':
+                                            assay_col_headers.append('Derived Data File')
+                                        else:
+                                            assay_col_headers.append('Data File')
+                                    if isinstance(node, Process):
+                                        assay_col_headers.append('Protocol REF')
+                    print(assay_col_headers)
+                    # # Get correct configuration based on measurement and technology
+                    # isatab_configurator.load('/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02')
+                    # config = isatab_configurator.get_config(assay.measurement_type, assay.technology_type)
+                    # # Build headers
+                    # fields = dict()
+                    # for field in config.field:
+                    #     fields[field.pos] = field
+                    # for protocol_field in config.protocol_field:
+                    #     fields[protocol_field.pos] = protocol_field
+                    # for structured_field in config.structured_field:
+                    #     fields[structured_field.pos] = structured_field
+                    # for unit_field in config.unit_field:
+                    #     fields[unit_field.pos] = unit_field
+                    # from collections import OrderedDict
+                    # ordered_fields = OrderedDict(sorted(fields.items())).values()
+                    #
+                    # headers = list()
+                    # for k, v in ordered_fields:
+                    #     if isinstance(v, isatab_configurator.FieldType):
+                    #         headers.append(v.header)
+                    #         if v.data_type == 'Ontology term':
+                    #             headers.append('Term Source REF')
+                    #             headers.append('Term Accession Number')
+                    #     if isinstance(v, isatab_configurator.ProtocolFieldType):
+                    #         headers.append('Protocol REF')
+                    #     if isinstance(v, isatab_configurator.StructuredFieldType) and (v.name == 'factors'):
+                    #         headers.append('Factor Value[]')
+                    #         headers.append('Term Source REF')
+                    #         headers.append('Term Accession Number')
         fp.close()
 
     else:
