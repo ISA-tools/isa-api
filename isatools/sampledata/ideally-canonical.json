@@ -215,7 +215,7 @@
                     "description":"a sequence analysis data transformation protocol description",
                     "uri":"http://www.research.org/protocol2.pdf",
                     "version":"2.0"
-                },
+                }
             ],
             "people":[  
                 {  
@@ -497,7 +497,7 @@
                                     }
                                 }
                             ]
-                        },                       
+                        }                       
                     ]
                 }
             ]
