@@ -48,7 +48,20 @@ def find_gt(a, x):
         return a[i]
     raise ValueError
 
+def find_in_between(a, x, y):
+    result = []
+    element_gt = find_gt(a, x)
+    if (element_gt > x and element_gt < y):
+        result.append(element_gt)
+    element_lt = find_lt(a, y)
+    if element_lt not in result:
+        if (element_lt < y and element_lt > x):
+           result.append(element_lt)
+    return result
+
+
 def find_between(a, x, y):
+    """Find value a between x and y"""
     result = []
     i = bisect.bisect_right(a, x)
     if i!= len(a):
@@ -217,19 +230,22 @@ class StudyAssayParser:
                     assay_data = self._parse_study(assay["Study Assay File Name"],
                                                    ["Sample Name","Extract Name","Raw Data File","Derived Data File", "Image File", "Acquisition Parameter Data File", "Free Induction Decay Data File"])
                     cur_assay.nodes = assay_data
-                    self._get_process_nodes(assay["Study Assay File Name"], cur_assay)
+                    assay_process_nodes = self._get_process_nodes(assay["Study Assay File Name"], cur_assay)
+
+                    cur_assay.process_nodes = assay_process_nodes
                     final_assays.append(cur_assay)
                 study.assays = final_assays
 
                 #get process nodes
-                self._get_process_nodes(study.metadata["Study File Name"], study)
+                study_process_nodes = self._get_process_nodes(study.metadata["Study File Name"], study)
+                study.process_nodes = study_process_nodes
                 final_studies.append(study)
         rec.studies = final_studies
         return rec
 
     def _get_process_nodes(self, fname, study):
         if not os.path.exists(os.path.join(self._dir, fname)):
-            return None
+            return {}
         process_nodes = {}
 
         with open(os.path.join(self._dir, fname), "rU") as in_handle:
@@ -245,13 +261,26 @@ class StudyAssayParser:
             for processing_index in processing_indices:
                 try:
                     input_index = find_lt(node_indices, processing_index)
-                    output_index = find_gt(node_indices, processing_index)
-                    #next_processing_index =
-                    #parameters_indices = find_between(all_parameters_indices, processing_index)
-
                 except ValueError:
-                    # print "Invalid indices for process nodes"
-                    break
+                    input_index = -1
+
+                try:
+                    output_index = find_gt(node_indices, processing_index)
+                except ValueError:
+                    output_index = -1
+
+                try:
+                    next_processing_index = find_gt(processing_indices, processing_index)
+                except ValueError:
+                    next_processing_index = -1
+
+                try:
+                    parameters_indices = find_in_between(all_parameters_indices, processing_index, next_processing_index)
+                except ValueError:
+                    parameters_indices = []
+
+
+
                 input_header = headers[hgroups[input_index][0]]
                 output_header = headers[hgroups[output_index][0]]
                 processing_header = headers[hgroups[processing_index][0]]
@@ -273,6 +302,7 @@ class StudyAssayParser:
                         #if both input_name and output_name are empty, ignore the row
                         if (not input_name and not output_name):
                             continue
+
                         try:
                             unique_process_name = input_process_map[input_node_index]
                         except KeyError:
@@ -296,12 +326,24 @@ class StudyAssayParser:
                         input_process_map[input_node_index] = unique_process_name
                         output_process_map[output_node_index] = unique_process_name
 
+                        #Add parameters
+                        parameter_headers = []
+                        for parameter_index in parameters_indices:
+                            parameter_header = headers[hgroups[parameter_index][0]]
+                            parameter_headers.append(parameter_header)
+                            process_node.parameters.append(parameter_header)
+                            #creating the metadata object
+                            process_node.metadata = collections.defaultdict(set)
+                            attrs = self._line_keyvals(line, headers, hgroups, htypes, process_node.metadata)
+                            process_node.metadata = attrs
+
                         max_number = max(len(process_node.inputs), len(process_node.outputs))
                         line_number += 1
                         process_nodes[unique_process_name] = process_node
                     else:
                         line_number += 1
-                study.process_nodes = process_nodes
+                #study.process_nodes = process_nodes
+                return dict([(k, self._finalize_metadata(v)) for k, v in process_nodes.items()])
 
 
     def _parse_study(self, fname, node_types):
@@ -340,7 +382,6 @@ class StudyAssayParser:
                     try:
                         node = nodes[node_index]
                     except KeyError:
-                        #print("creating node ", name, "  index", node_index)
                         node = NodeRecord(name, node_type, node_index)
                         node.metadata = collections.defaultdict(set)
                         nodes[node_index] = node
@@ -366,6 +407,8 @@ class StudyAssayParser:
         out = self._line_by_type(line, header, hgroups, htypes, out, "attribute",
                                  self._collapse_attributes)
         out = self._line_by_type(line, header, hgroups, htypes, out, "processing",
+                                 self._collapse_attributes)
+        out = self._line_by_type(line, header, hgroups, htypes, out, "parameter",
                                  self._collapse_attributes)
         return out
 
@@ -456,7 +499,10 @@ class StudyAssayParser:
                             if type=="Acquisiton Parameter Data File":
                                 return "acquisitionparameterfile-"+name
                             else:
-                                "ERROR - Type not being considered! ", type
+                                 if type=="Image File":
+                                    return "imagefile-"+name
+                                 else:
+                                    "ERROR - Type not being considered! ", type
 
 
 _record_str = \
@@ -499,7 +545,7 @@ _process_node_str = \
          inputs: {inputs}
          outputs: {outputs}
          parameters: {parameters}
-         """
+         metadata: {md}"""
 
 
 class ISATabRecord:
@@ -589,15 +635,18 @@ class ProcessNodeRecord:
         self.ntype = ntype
         self.study_assay = study_assay
         self.name = name
+        self.protocol = protocol
         self.inputs = []
         self.outputs = []
-        self.protocol = protocol
+        self.metadata = {}
         self.parameters = []
 
     def __str__(self):
-        return _process_node_str.format(inputs=pprint.pformat(self.inputs).replace("\n", "\n" + " " * 9),
-                                outputs=pprint.pformat(self.outputs).replace("\n", "\n" + " " * 9),
-                                name=self.name,
-                                type=self.ntype,
-                                protocol=self.protocol,
-                                parameters=pprint.pformat(self.parameters).replace("\n","\n"+" "*9))
+        return _process_node_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 9),
+                                        inputs=pprint.pformat(self.inputs).replace("\n", "\n" + " " * 9),
+                                        outputs=pprint.pformat(self.outputs).replace("\n", "\n" + " " * 9),
+                                        name=self.name,
+                                        type=self.ntype,
+                                        protocol=self.protocol,
+                                        parameters=pprint.pformat(self.parameters).replace("\n","\n"+" "*9))
+

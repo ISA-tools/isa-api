@@ -1,0 +1,586 @@
+{
+    "comments": [
+        {
+            "name": "Created With Configuration",
+            "value": ""
+        },
+        {
+            "name": "Last Opened With Configuration",
+            "value": ""
+        }
+    ],
+    "description": "",
+    "identifier": "TEST-ISA-charac-param-factor",
+    "ontologySourceReferences": [
+        {
+            "description": "National Center for Biotechnology Information (NCBI) Organismal Classification",
+            "file": "http://data.bioontology.org/ontologies/NCBITAXON",
+            "name": "NCBITAXON",
+            "version": "2"
+        },
+        {
+            "description": "Experimental Factor Ontology",
+            "file": "http://data.bioontology.org/ontologies/EFO",
+            "name": "EFO",
+            "version": "111"
+        },
+        {
+            "description": "Units of Measurement Ontology",
+            "file": "http://data.bioontology.org/ontologies/UO",
+            "name": "UO",
+            "version": "42"
+        },
+        {
+            "description": "Ontology for Biomedical Investigations",
+            "file": "http://data.bioontology.org/ontologies/OBI",
+            "name": "OBI",
+            "version": "21"
+        },
+        {
+            "description": "Uber Anatomy Ontology",
+            "file": "http://data.bioontology.org/ontologies/UBERON",
+            "name": "UBERON",
+            "version": "191"
+        },
+        {
+            "description": "Chemical Entities of Biological Interest Ontology",
+            "file": "http://data.bioontology.org/ontologies/CHEBI",
+            "name": "CHEBI",
+            "version": "78"
+        }
+    ],
+    "people": [],
+    "publicReleaseDate": "",
+    "publications": [],
+    "studies": [
+        {
+            "@id": "http://data.isa-tools.org/study/1",
+            "assays": [
+                {
+                    "@id": "http://data.isa-tools.org/assay/1",
+                    "dataFiles": [
+                        {
+                            "@id": "http://data.isa-tools.org/data/2",
+                            "name": "1.cel",
+                            "type": "Raw Data File"
+                        },
+                        {
+                            "@id": "http://data.isa-tools.org/data/1",
+                            "name": "Array Data File",
+                            "type": "Raw Data File"
+                        },
+                        {
+                            "@id": "http://data.isa-tools.org/data/3",
+                            "name": "Derived Array Data File",
+                            "type": "Derived Data File"
+                        }
+                    ],
+                    "filename": "a_test-template1-splitting_transcription_profiling_DNA_microarray.txt",
+                    "materials": {
+                        "otherMaterials": [
+                            {
+                                "@id": "http://data.isa-tools.org/material/1",
+                                "characteristics": [],
+                                "name": "extract-extract1",
+                                "type": "Extract Name"
+                            }
+                        ],
+                        "samples": [
+                            {
+                                "@id": "http://data.isa-tools.org/sample/1"
+                            }
+                        ]
+                    },
+                    "measurementType": {
+                        "annotationValue": "transcription profiling",
+                        "termAccession": "http://purl.obolibrary.org/obo/OBI_0000424",
+                        "termSource": "OBI"
+                    },
+                    "processSequence": [
+                        {
+                            "executesProtocol": {
+                                "@id": "http://data.isa-tools.org/protocol/2"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "http://data.isa-tools.org/sample/1"
+                                }
+                            ],
+                            "outputs": [
+                                {
+                                    "@id": "http://data.isa-tools.org/material/1"
+                                }
+                            ],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "http://data.isa-tools.org/parameter/1"
+                                    },
+                                    "unit": {
+                                        "annotationValue": "degree Celsius",
+                                        "termAccession": "http://purl.obolibrary.org/obo/UO_0000027",
+                                        "termSource": "UO"
+                                    },
+                                    "value": -80
+                                }
+                            ]
+                        }
+                    ],
+                    "technologyPlatform": "",
+                    "technologyType": {
+                        "annotationValue": "DNA microarray",
+                        "termAccession": "http://purl.obolibrary.org/obo/OBI_0400148",
+                        "termSource": "OBI"
+                    }
+                }
+            ],
+            "characteristicCategories": [
+                {
+                    "@id": "http://data.isa-tools.org/charactersitic_category/1",
+                    "characteristicType": {
+                        "annotationValue": "organism part",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "http://data.isa-tools.org/charactersitic_category/2",
+                    "characteristicType": {
+                        "annotationValue": "body weight",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "http://data.isa-tools.org/charactersitic_category/3",
+                    "characteristicType": {
+                        "annotationValue": "specimen mass",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "http://data.isa-tools.org/charactersitic_category/4",
+                    "characteristicType": {
+                        "annotationValue": "organism",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "http://data.isa-tools.org/charactersitic_category/5",
+                    "characteristicType": {
+                        "annotationValue": "reference descriptor",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                }
+            ],
+            "description": "TEST-Template6-charax-param-factors",
+            "factors": [
+                {
+                    "@id": "http://data.isa-tools.org/factor/1",
+                    "factorName": "location",
+                    "factorType": {
+                        "annotationValue": "geographical location",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "http://data.isa-tools.org/factor/2",
+                    "factorName": "duration",
+                    "factorType": {
+                        "annotationValue": "time",
+                        "termAccession": "http://www.ebi.ac.uk/efo/EFO_0000721",
+                        "termSource": "EFO"
+                    }
+                }
+            ],
+            "filename": "s_TEST-Template1-Splitting.txt",
+            "identifier": "TEST-Template6-charax-param-factors",
+            "materials": {
+                "otherMaterials": [],
+                "samples": [
+                    {
+                        "@id": "http://data.isa-tools.org/sample/1",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "http://data.isa-tools.org/charactersitic_category/1"
+                                },
+                                "value": {
+                                    "annotationValue": "liver",
+                                    "termAccession": "http://purl.obolibrary.org/obo/UBERON_0002107",
+                                    "termSource": "UBERON"
+                                }
+                            },
+                            {
+                                "category": {
+                                    "@id": "http://data.isa-tools.org/charactersitic_category/2"
+                                },
+                                "unit": {
+                                    "annotationValue": "kilogram",
+                                    "termAccession": "http://purl.obolibrary.org/obo/UO_0000009",
+                                    "termSource": "UO"
+                                },
+                                "value": 72
+                            },
+                            {
+                                "category": {
+                                    "@id": "http://data.isa-tools.org/charactersitic_category/3"
+                                },
+                                "unit": {
+                                    "annotationValue": "milligram",
+                                    "termAccession": "http://purl.obolibrary.org/obo/UO_0000022",
+                                    "termSource": "UO"
+                                },
+                                "value": 450
+                            },
+                            {
+                                "category": {
+                                    "@id": "http://data.isa-tools.org/charactersitic_category/4"
+                                },
+                                "value": {
+                                    "annotationValue": "Human",
+                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
+                                    "termSource": "NCBITAXON"
+                                }
+                            },
+                            {
+                                "category": {
+                                    "@id": "http://data.isa-tools.org/charactersitic_category/5"
+                                },
+                                "value": "not applicable"
+                            }
+                        ],
+                        "derivesFrom": {
+                            "@id": "http://data.isa-tools.org/source/1"
+                        },
+                        "factorValues": [
+                            {
+                                "category": {
+                                    "@id": "http://data.isa-tools.org/factor/1"
+                                },
+                                "value": {
+                                    "annotationValue": "beach",
+                                    "termAccession": "",
+                                    "termSource": ""
+                                }
+                            },
+                            {
+                                "category": {
+                                    "@id": "http://data.isa-tools.org/factor/2"
+                                },
+                                "unit": {
+                                    "annotationValue": "hour",
+                                    "termAccession": "http://purl.obolibrary.org/obo/UO_0000032",
+                                    "termSource": "UO"
+                                },
+                                "value": 12
+                            }
+                        ],
+                        "name": "sample-sample1"
+                    }
+                ],
+                "sources": [
+                    {
+                        "@id": "http://data.isa-tools.org/source/1",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "http://data.isa-tools.org/charactersitic_category/1"
+                                },
+                                "value": {
+                                    "annotationValue": "liver",
+                                    "termAccession": "http://purl.obolibrary.org/obo/UBERON_0002107",
+                                    "termSource": "UBERON"
+                                }
+                            },
+                            {
+                                "category": {
+                                    "@id": "http://data.isa-tools.org/charactersitic_category/2"
+                                },
+                                "unit": {
+                                    "annotationValue": "kilogram",
+                                    "termAccession": "http://purl.obolibrary.org/obo/UO_0000009",
+                                    "termSource": "UO"
+                                },
+                                "value": 72
+                            },
+                            {
+                                "category": {
+                                    "@id": "http://data.isa-tools.org/charactersitic_category/3"
+                                },
+                                "unit": {
+                                    "annotationValue": "milligram",
+                                    "termAccession": "http://purl.obolibrary.org/obo/UO_0000022",
+                                    "termSource": "UO"
+                                },
+                                "value": 450
+                            },
+                            {
+                                "category": {
+                                    "@id": "http://data.isa-tools.org/charactersitic_category/4"
+                                },
+                                "value": {
+                                    "annotationValue": "Human",
+                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
+                                    "termSource": "NCBITAXON"
+                                }
+                            },
+                            {
+                                "category": {
+                                    "@id": "http://data.isa-tools.org/charactersitic_category/5"
+                                },
+                                "value": "not applicable"
+                            }
+                        ],
+                        "name": "source-source1"
+                    }
+                ]
+            },
+            "people": [
+                {
+                    "@id": "http://data.isa-tools.org/person/1",
+                    "address": "34, Beaumont Street",
+                    "affiliation": "University of Oxford",
+                    "email": "john.f.smith@research.org",
+                    "fax": "+44 (0) 1865 645 000",
+                    "firstName": "John",
+                    "lastName": "Smith",
+                    "midInitials": "F",
+                    "phone": "+44 (0) 1865 645 234",
+                    "roles": [
+                        {
+                            "annotationValue": "principale investigator",
+                            "termAccession": "",
+                            "termSource": ""
+                        }
+                    ]
+                }
+            ],
+            "processSequence": [
+                {
+                    "executesProtocol": {
+                        "@id": "http://data.isa-tools.org/protocol/1"
+                    },
+                    "inputs": [
+                        {
+                            "@id": "http://data.isa-tools.org/source/1"
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "@id": "http://data.isa-tools.org/sample/1"
+                        }
+                    ],
+                    "parameterValues": []
+                }
+            ],
+            "protocols": [
+                {
+                    "@id": "http://data.isa-tools.org/protocol/1",
+                    "components": [
+                        {
+                            "componentName": "barcode reader",
+                            "componentType": {
+                                "annotationValue": "device",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "componentName": "handling automat",
+                            "componentType": {
+                                "annotationValue": "device",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "description": "a sample collection protocol description",
+                    "name": "sample collection",
+                    "parameters": [
+                        {
+                            "@id": "http://data.isa-tools.org/parameter/1",
+                            "parameterName": {
+                                "annotationValue": "storage temperature",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "http://data.isa-tools.org/parameter/2",
+                            "parameterName": {
+                                "annotationValue": "vessel",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "annotationValue": "sample collection",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "http://www.research.org/protocol1.pdf",
+                    "version": "1.0"
+                },
+                {
+                    "@id": "http://data.isa-tools.org/protocol/2",
+                    "components": [
+                        {
+                            "componentName": "",
+                            "componentType": {
+                                "annotationValue": "",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "description": "",
+                    "name": "RNA extraction",
+                    "parameters": [
+                        {
+                            "@id": "http://data.isa-tools.org/parameter/3",
+                            "parameterName": {
+                                "annotationValue": "storage temperature",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "annotationValue": "RNA extraction",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "http://data.isa-tools.org/protocol/3",
+                    "components": [
+                        {
+                            "componentName": "",
+                            "componentType": {
+                                "annotationValue": "",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "description": "",
+                    "name": "labeling",
+                    "parameters": [
+                        {
+                            "@id": "http://data.isa-tools.org/parameter/4",
+                            "parameterName": {
+                                "annotationValue": "",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "annotationValue": "labeling",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "http://data.isa-tools.org/protocol/4",
+                    "components": [
+                        {
+                            "componentName": "",
+                            "componentType": {
+                                "annotationValue": "",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "description": "",
+                    "name": "nucleic acid hybridization",
+                    "parameters": [
+                        {
+                            "@id": "http://data.isa-tools.org/parameter/5",
+                            "parameterName": {
+                                "annotationValue": "",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "annotationValue": "nucleic acid hybridization",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "http://data.isa-tools.org/protocol/5",
+                    "components": [
+                        {
+                            "componentName": "",
+                            "componentType": {
+                                "annotationValue": "",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "description": "",
+                    "name": "data collection",
+                    "parameters": [
+                        {
+                            "@id": "http://data.isa-tools.org/parameter/6",
+                            "parameterName": {
+                                "annotationValue": "scanner",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "annotationValue": "data collection",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                }
+            ],
+            "publicReleaseDate": "",
+            "publications": [
+                {
+                    "authorList": "el-Attar A, Adu-Gyamfi Y, Tawfique K.",
+                    "doi": "",
+                    "pubMedID": "1435624",
+                    "status": {
+                        "annotationValue": "Published",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "title": "Flumazenil reversal of midazolam sedation for dental procedures."
+                }
+            ],
+            "studyDesignDescriptors": [
+                {
+                    "annotationValue": "parallel group design",
+                    "termAccession": "http://purl.obolibrary.org/obo/OBI_0500006",
+                    "termSource": "OBI"
+                }
+            ],
+            "submissionDate": "",
+            "title": "TEST-Template6-charax-param-factors"
+        }
+    ],
+    "submissionDate": "",
+    "title": "Investigation"
+}

@@ -4,7 +4,7 @@ Term Source File	"http://data.bioontology.org/ontologies/NCBITAXON"	"http://data
 Term Source Version	"2"	"9"	"84"	"216"	"22"	
 Term Source Description	"National Center for Biotechnology Information (NCBI) Organismal Classification"	"Beta Cell Genomics Ontology"	"Chemical Entities of Biological Interest Ontology"	"Uber Anatomy Ontology"	"Ontology for Biomedical Investigations"	
 INVESTIGATION
-Investigation Identifier	"1452186582328"
+Investigation Identifier	"TEST-ISA-repeated-measure"
 Investigation Title	"Investigation"
 Investigation Description	""
 Investigation Submission Date	""
