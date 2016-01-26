@@ -828,6 +828,7 @@ def dump(isa_obj, path):
                             end_nodes.append(node)
                     # Start building headers by traversing all end-to-end paths; assumes correct experimental graphs
                     assay_col_headers = list()
+                    line_out = list()
                     from networkx.algorithms import all_simple_paths
                     for start_node in start_nodes:
                         for end_node in end_nodes:
@@ -837,6 +838,7 @@ def dump(isa_obj, path):
                                     # cycle through nodes in each path
                                     if isinstance(node, Sample):
                                         assay_col_headers.append('Sample Name')
+                                        line_out.append(node.name)
                                     if isinstance(node, Data):
                                         if node.type_ == 'raw data file':
                                             assay_col_headers.append('Raw Data File')
@@ -844,9 +846,12 @@ def dump(isa_obj, path):
                                             assay_col_headers.append('Derived Data File')
                                         else:
                                             assay_col_headers.append('Data File')
+                                        line_out.append(node.name)
                                     if isinstance(node, Process):
                                         assay_col_headers.append('Protocol REF')
+                                        line_out.append(node.executes_protocol)
                     print(assay_col_headers)
+                    print(line_out)
                     # # Get correct configuration based on measurement and technology
                     # isatab_configurator.load('/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02')
                     # config = isatab_configurator.get_config(assay.measurement_type, assay.technology_type)
