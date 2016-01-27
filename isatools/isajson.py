@@ -66,6 +66,7 @@ def load(fp):
         sources_dict = dict()
         categories_dict = dict()
         protocols_dict = dict()
+        factors_dict = dict()
         for study_json in isajson['studies']:
             logger.debug('Start building Study object')
             study = Study(
@@ -136,6 +137,7 @@ def load(fp):
             for factor_json in study_json['factors']:
                 logger.debug('Build Study Factor object')
                 factor = StudyFactor(
+                    id_=factor_json['@id'],
                     name=factor_json['factorName'],
                     factor_type=OntologyAnnotation(
                         name=factor_json['factorType']['annotationValue'],
@@ -144,6 +146,7 @@ def load(fp):
                     )
                 )
                 study.factors.append(factor)
+                factors_dict[factor.id] = factor
             for source_json in study_json['materials']['sources']:
                 logger.debug('Build Source object')
                 source = Source(
@@ -154,7 +157,11 @@ def load(fp):
                     logger.debug('Build Ontology Annotation object (Source Characteristic)')
                     characteristic = Characteristic(
                         category=categories_dict[characteristic_json['category']['@id']],
-                        value=None
+                        value=OntologyAnnotation(
+                            name=characteristic_json['value']['annotationValue'],
+                            term_source=characteristic_json['value']['termSource'],
+                            term_accession=characteristic_json['value']['termAccession']
+                        )
                     )
                     source.characteristics.append(characteristic)
                 sources_dict[source.id] = source
@@ -170,13 +177,18 @@ def load(fp):
                     logger.debug('Build Ontology Annotation object (Source Characteristic)')
                     characteristic = Characteristic(
                         category=categories_dict[characteristic_json['category']['@id']],
-                        value=None
+                        value=OntologyAnnotation(
+                            name=characteristic_json['value']['annotationValue'],
+                            term_source=characteristic_json['value']['termSource'],
+                            term_accession=characteristic_json['value']['termAccession']
+                        )
                     )
                     sample.characteristics.append(characteristic)
                 for factor_value_json in sample_json['factorValues']:
                     logger.debug('Build Ontology Annotation object (Sample Factor Value)')
                     try:
                         factor_value = FactorValue(
+                            factor_name=factors_dict[factor_value_json['category']['@id']],
                             value=OntologyAnnotation(
                                 name=factor_value_json['value']['annotationValue'],
                                 term_accession=factor_value_json['value']['termAccession'],
@@ -186,6 +198,7 @@ def load(fp):
                         )
                     except TypeError:
                         factor_value = FactorValue(
+                            factor_name=factors_dict[factor_value_json['category']['@id']],
                             value=factor_value_json['value'],
                             unit=OntologyAnnotation(
                                 name=factor_value_json['unit']['annotationValue'],
