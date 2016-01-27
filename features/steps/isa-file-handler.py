@@ -174,18 +174,32 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    fixture_file_frags = context.source_path.split('/')
-    fixture_file_path = os.path.abspath(os.path.join(*fixture_file_frags))
+    # build up the path to the fixture file (for the encoded data)
+    fixture_file_name = '_'.join([context.owner_name, context.repo_name, context.source_path]).replace('/', '_')\
+        .replace(' ', '_').replace('.zip', '.json')
+
+    destination_name = context.source_path.split('/')[-1]
+    fixture_file_path = os.path.abspath(os.path.join('features', 'fixtures', fixture_file_name))
     download_url = '/'.join([GITHUB_API_URL, REPOS, context.owner_name, context.repo_name,
                              CONTENTS, context.source_path])
-    with open(fixture_file_path, 'rb') as zip_file:
-        zip_content = zip_file.read()
-        httpretty.register_uri(httpretty.GET, download_url, body=zip_content)
 
-        res = context.isa_adapter.retrieve(context.source_path, context.destination_path, context.owner_name,
-                                           context.repo_name)
+    # get the encoded description
+    with open(fixture_file_path) as json_file:
+        context.zipped_dataset_encoded = json.load(json_file)
+        httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.zipped_dataset_encoded))
 
-    expect(res).to.be.true
+    fixture_file_path_raw = os.path.abspath(os.path.join('features', 'fixtures', destination_name))
+    download_url = context.zipped_dataset_encoded['download_url']
+
+    # get the raw zipped file
+    with open(fixture_file_path_raw, 'rb') as zip_file:
+        context.zip_content = zip_file.read()
+        httpretty.register_uri(httpretty.GET, download_url, body=context.zip_content, content_type='application/zip')
+
+    context.res = context.isa_adapter.retrieve(context.source_path, context.destination_path, context.owner_name,
+                                               context.repo_name)
+
+    expect(context.res).to.be.true
     expect(httpretty.has_request()).to.be.true
 
 
@@ -197,6 +211,10 @@ def step_impl(context):
     out_file = os.path.join(context.destination_path, context.source_path.split('/')[-1])
     # file should have been saved
     expect(os.path.isfile(out_file)).to.be.true
+    with open(out_file, 'rb') as zip_file:
+        written_zip_content = zip_file.read()
+
+    expect(written_zip_content).to.equal(context.zip_content)
 
 
 @when("the source file points to an ISA-TAB JSON file")
@@ -205,16 +223,23 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
+
+    # build up the path to the file with the encoded dataset
+    fixture_file_name = '_'.join([context.owner_name, context.repo_name, context.source_path]).replace('/', '_')
+    fixture_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures', fixture_file_name))
+
+    # build up the path to the fixtures RAW file
     fixture_file_frags = context.source_path.split('/')
-    fixture_file_path = os.path.abspath(os.path.join(*fixture_file_frags))
+    fixture_file_path_raw = os.path.abspath(os.path.join(*fixture_file_frags))
+
+    # create the url to GET the encoded dataset
     download_url = '/'.join([GITHUB_API_URL, REPOS, context.owner_name, context.repo_name,
                              CONTENTS, context.source_path])
     with open(fixture_file_path) as json_file:
         context.json_isa_dataset_encoded = json.load(json_file)
         httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.json_isa_dataset_encoded))
 
-    fixture_file_frags[-1] = '-RAW.'.join(fixture_file_frags[-1].split('.'))
-    fixture_file_path_raw = os.path.abspath(os.path.join(*fixture_file_frags))
+    # retrieve the url to GET the raw dataset
     download_url = context.json_isa_dataset_encoded['download_url']
     with open(fixture_file_path_raw) as json_file:
         context.json_isa_dataset_raw = json.load(json_file)
@@ -254,20 +279,34 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
+    # build up the path to the file with the encoded dataset
+    file_name = context.source_path.split('/')[-1].replace('.xml', '.json')
+    fixture_file_name = '_'.join([context.owner_name, context.repo_name, file_name]).replace('/', '_')
+
     download_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name,
                              'contents', context.source_path])
-    # with open(context.source_path) as xml_file:
-    #    context.config_xml_content = etree.parse(xml_file)
-    fixture_file_frags = context.source_path.split('/')
-    fixture_file_path = os.path.abspath(os.path.join(*fixture_file_frags))
-    # context.config_xml_content = etree.parse(fixture_file_path)
-    with open(fixture_file_path) as xml_file:
-        context.xml_str = xml_file.read()
+
+    fixture_file_path = os.path.abspath(os.path.join('features', 'fixtures', fixture_file_name))
+    # open the json file containg the encoded xml
+    with open(fixture_file_path) as json_file:
+        context.xml_encoded = json.load(json_file)
     # httpretty.register_uri(httpretty.GET, download_url, body=etree.tostring(context.config_xml_content.getroot()))
-    httpretty.register_uri(httpretty.GET, download_url, body=context.xml_str)
-    res = context.isa_adapter.retrieve(context.source_path, context.destination_path, context.owner_name,
-                                       context.repo_name)
-    expect(res).to.be.true
+        httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.xml_encoded))
+
+    # build up the path to the fixtures RAW XML file
+    fixture_file_frags = context.source_path.split('/')
+    fixture_file_path_raw = os.path.abspath(os.path.join(*fixture_file_frags))
+    download_url = context.xml_encoded['download_url']
+
+    # get the raw zipped file
+    with open(fixture_file_path_raw) as xml_file:
+        context.xml_text = xml_file.read()
+        httpretty.register_uri(httpretty.GET, download_url, body=context.xml_text, content_type='text/plain')
+        context.xml = etree.parse(StringIO(context.xml_text))
+
+    context.res = context.isa_adapter.retrieve(context.source_path, context.destination_path, context.owner_name,
+                                               context.repo_name)
+
     expect(httpretty.has_request()).to.be.true
 
 
@@ -281,81 +320,63 @@ def step_impl(context):
     # expect(set(written_xml_config_content.getroot().itertext()))\
     #    .to.equal(set(context.config_xml_content.getroot().itertext()))
     with open(out_file_path) as xml_file:
-        written_xml_str = xml_file.read()
+        written_xml_text = xml_file.read()
     # test equality of input and output
-    expect(written_xml_str).to.equal(context.xml_str)
+    expect(written_xml_text).to.equal(context.xml_text)
     # test that the stored output is valid XML
-    xml = etree.parse(StringIO(written_xml_str))
+    xml = etree.parse(StringIO(written_xml_text))
     expect(xml).to.be.an(etree._ElementTree)
 
 
-@when("it is a different file")
+@step("it should return it as an XML object")
 def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    pass
+    expect(etree.tostring(context.res)).to.equal(etree.tostring(context.xml))
 
 
-@then("it should raise an error")
+@when("it is none of the allowed file types - JSON, XML, ZIP - nor a directory")
 def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    pass
+    file_name = context.source_path.split('/')[-1].replace('.py', '.json')
+    fixture_file_name = '_'.join([context.owner_name, context.repo_name, file_name]).replace('/', '_')
+
+    download_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name,
+                             'contents', context.source_path])
+    fixture_file_path = os.path.abspath(os.path.join('features', 'fixtures', fixture_file_name))
+
+    with open(fixture_file_path) as json_file:
+        context.text_encoded = json.load(json_file)
+        httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.text_encoded),
+                               content_type='text/plain')
+
+    fixture_file_frags = context.source_path.split('/')
+    fixture_file_path_raw = os.path.abspath(os.path.join(*fixture_file_frags))
+    download_url = context.text_encoded['download_url']
+
+    with open(fixture_file_path_raw) as text_file:
+        context.text_file = text_file.read()
+        httpretty.register_uri(httpretty.GET, download_url, body=context.text_file, content_type='text/plain')
+
+    context.res = context.isa_adapter.retrieve(context.source_path, context.destination_path, context.owner_name,
+                                               context.repo_name)
 
 
-@given('a valid path in the in the remote repository "/path/to/source"')
+@then("it should not save the file")
 def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    pass
+    out_file_path = os.path.join(context.destination_path, context.source_path.split('/')[-1])
+    expect(os.path.exists(out_file_path)).to.be.false
 
 
-@when("the source path points to a JSON file")
+@step("it should return a falsey value")
 def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    pass
-
-
-@then("it should store/load a Python dictionary containing the whole ISA dataset")
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    pass
-
-
-@when("the source points to an XML configuration file")
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    pass
-
-
-@then("it should load the XML document in memory")
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    pass
-
-
-@when("it is a different file or a directory")
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    pass
-
-
-@when("the source path is not correct")
-def step_impl(context):
-    """
-    :type context: behave.runner.Context
-    """
-    pass
+    expect(context.res).to.be.false
