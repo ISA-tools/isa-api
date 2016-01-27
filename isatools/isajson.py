@@ -260,78 +260,83 @@ def load(fp):
                         raise IOError("Could not find output node in sources or samples dicts: " + output_json['@id'])
                     process.outputs.append(output)
                 study.process_sequence.append(process)
-                for assay_json in study_json['assays']:
-                    logger.debug('Start building Assay object')
-                    logger.debug('Build Study Assay object')
-                    assay = Assay(
-                        measurement_type=OntologyAnnotation(
-                            name=assay_json['measurementType']['annotationValue'],
-                            term_accession=assay_json['measurementType']['termAccession'],
-                            term_source=assay_json['measurementType']['termSource']
-                        ),
-                        technology_type=OntologyAnnotation(
-                            name=assay_json['technologyType']['annotationValue'],
-                            term_accession=assay_json['technologyType']['termAccession'],
-                            term_source=assay_json['technologyType']['termSource']
-                        ),
-                        technology_platform=assay_json['technologyPlatform'],
-                        filename=assay_json['filename']
+            for assay_json in study_json['assays']:
+                logger.debug('Start building Assay object')
+                logger.debug('Build Study Assay object')
+                assay = Assay(
+                    measurement_type=OntologyAnnotation(
+                        name=assay_json['measurementType']['annotationValue'],
+                        term_accession=assay_json['measurementType']['termAccession'],
+                        term_source=assay_json['measurementType']['termSource']
+                    ),
+                    technology_type=OntologyAnnotation(
+                        name=assay_json['technologyType']['annotationValue'],
+                        term_accession=assay_json['technologyType']['termAccession'],
+                        term_source=assay_json['technologyType']['termSource']
+                    ),
+                    technology_platform=assay_json['technologyPlatform'],
+                    filename=assay_json['filename']
+                )
+                data_dict = dict()
+                for data_json in assay_json['dataFiles']:
+                    logger.debug('Build Data object')
+                    data = Data(
+                        name=data_json['name'],
+                        type_=data_json['type'],
                     )
-                    data_dict = dict()
-                    for data_json in assay_json['dataFiles']:
-                        logger.debug('Build Data object')
-                        data = Data(
-                            name=data_json['name'],
-                            type_=data_json['type'],
-                        )
-                        data_dict[data.name] = data
-                        assay.data_files.append(data)
-                    for sample_json in assay_json['materials']['samples']:
-                        sample = samples_dict[sample_json['@id']]
-                        assay.materials['samples'].append(sample)
-                    other_materials_dict = dict()
-                    for other_material_json in assay_json['materials']['otherMaterials']:
-                        logger.debug('Build Material object')
-                        material = Material(
-                            id_=other_material_json['@id'],
-                            name=other_material_json['name'],
-                            type_=other_material_json['type'],
-                        )
-                        for characteristic_json in other_material_json['characteristics']:
-                            characteristic = Characteristic(
-                                category=categories_dict[characteristic_json['category']['@id']],
-                                value=OntologyAnnotation(
-                                    name=characteristic_json['value']['annotationValue'],
-                                    term_source=characteristic_json['value']['termSource'],
-                                    term_accession=characteristic_json['value']['termAccession'],
-                                )
+                    data_dict[data.name] = data
+                    assay.data_files.append(data)
+                for sample_json in assay_json['materials']['samples']:
+                    sample = samples_dict[sample_json['@id']]
+                    assay.materials['samples'].append(sample)
+                other_materials_dict = dict()
+                for other_material_json in assay_json['materials']['otherMaterials']:
+                    logger.debug('Build Material object')
+                    material = Material(
+                        id_=other_material_json['@id'],
+                        name=other_material_json['name'],
+                        type_=other_material_json['type'],
+                    )
+                    for characteristic_json in other_material_json['characteristics']:
+                        characteristic = Characteristic(
+                            category=categories_dict[characteristic_json['category']['@id']],
+                            value=OntologyAnnotation(
+                                name=characteristic_json['value']['annotationValue'],
+                                term_source=characteristic_json['value']['termSource'],
+                                term_accession=characteristic_json['value']['termAccession'],
                             )
-                            material.characteristics.append(characteristic)
-                        assay.materials['other_material'].append(material)
-                        other_materials_dict[material.id] = material
-                    for assay_process_json in assay_json['processSequence']:
-                        process = Process(
-                            executes_protocol=protocols_dict[assay_process_json['executesProtocol']['@id']]
                         )
-                        for input_json in assay_process_json['inputs']:
-                            input_ = None
+                        material.characteristics.append(characteristic)
+                    assay.materials['other_material'].append(material)
+                    other_materials_dict[material.id] = material
+                for assay_process_json in assay_json['processSequence']:
+                    process = Process(
+                        executes_protocol=protocols_dict[assay_process_json['executesProtocol']['@id']]
+                    )
+                    for input_json in assay_process_json['inputs']:
+                        input_ = None
+                        try:
+                            input_ = sources_dict[input_json['@id']]
+                        except KeyError:
+                            pass
+                        finally:
                             try:
-                                input_ = sources_dict[input_json['@id']]
+                                input_ = samples_dict[input_json['@id']]
                             except KeyError:
                                 pass
-                            finally:
-                                try:
-                                    input_ = samples_dict[input_json['@id']]
-                                except KeyError:
-                                    pass
-                            if input_ is None:
-                                raise IOError("Could not find input node in sources or samples dicts: " +
-                                              input_json['@id'])
-                            process.inputs.append(input_)
-                        for output_json in assay_process_json['outputs']:
-                            output = None
+                        if input_ is None:
+                            raise IOError("Could not find input node in sources or samples dicts: " +
+                                          input_json['@id'])
+                        process.inputs.append(input_)
+                    for output_json in assay_process_json['outputs']:
+                        output = None
+                        try:
+                            output = samples_dict[output_json['@id']]
+                        except KeyError:
+                            pass
+                        finally:
                             try:
-                                output = samples_dict[output_json['@id']]
+                                output = other_materials_dict[output_json['@id']]
                             except KeyError:
                                 pass
                             finally:
@@ -339,16 +344,11 @@ def load(fp):
                                     output = other_materials_dict[output_json['@id']]
                                 except KeyError:
                                     pass
-                                finally:
-                                    try:
-                                        output = other_materials_dict[output_json['@id']]
-                                    except KeyError:
-                                        pass
-                            if output is None:
-                                raise IOError("Could not find output node in samples or other materials dicts: " +
-                                              output_json['@id'])
-                            process.outputs.append(output)
-                        assay.process_sequence.append(process)
+                        if output is None:
+                            raise IOError("Could not find output node in samples or other materials dicts: " +
+                                          output_json['@id'])
+                        process.outputs.append(output)
+                    assay.process_sequence.append(process)
                 study.assays.append(assay)
             logger.debug('End building Study object')
             investigation.studies.append(study)
