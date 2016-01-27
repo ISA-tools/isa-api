@@ -729,19 +729,19 @@ def dump(isa_obj, output_path):
                     source_headers.extend(('Term Source REF', 'Term Accession', ))
                 process_headers = ['Protocol REF']
                 for parameter_value in study.process_sequence[0].parameter_values:
-                    process_headers.append('Parameter Value[' + parameter_value.parameter_name + ']')
+                    process_headers.append('Parameter Value[' + parameter_value.parameter_value.name + ']')
                     if not (parameter_value.unit is None):
                         process_headers.append('Unit')
                     process_headers.extend(('Term Source REF', 'Term Accession', ))
                 source_headers.extend(process_headers)
                 sample_headers = ['Sample Name']
                 for characteristic in study.materials['samples'][0].characteristics:
-                    sample_headers.append('Characteristics[' + characteristic.category + ']')
+                    sample_headers.append('Characteristics[' + characteristic.category.characteristic_type.name + ']')
                     if not (characteristic.unit is None):
                         sample_headers.append('Unit')
                     sample_headers.extend(('Term Source REF', 'Term Accession'))
                 for factor_value in study.materials['samples'][0].factor_values:
-                    sample_headers.append('Factor Value[' + factor_value.factorName + ']')
+                    sample_headers.append('Factor Value[' + factor_value.factor_name.name + ']')
                     if not (factor_value.unit is None):
                         sample_headers.append('Unit')
                     sample_headers.extend(('Term Source REF', 'Term Accession'))
@@ -772,7 +772,8 @@ def dump(isa_obj, output_path):
                                         row.append(characteristic.value.term_accession)
                             row.append(process.executes_protocol)
                             for parameter_value in process.parameter_values:
-                                if isinstance(parameter_value.parameter_value, int) or isinstance(parameter_value.parameter_value, float):
+                                if isinstance(parameter_value.parameter_value, int) or \
+                                        isinstance(parameter_value.parameter_value, float):
                                     row.append(parameter_value.parameter_value)
                                     row.append(parameter_value.unit.name)
                                     row.append(parameter_value.unit.term_source)
@@ -816,6 +817,7 @@ def dump(isa_obj, output_path):
                         for output in process.outputs:
                             graph.add_edge(process, output)
                         prev_process_node = process
+                    assay.graph = graph
                     # Find all the start and end nodes by looking for nodes with zero in or out edges
                     start_nodes = list()
                     end_nodes = list()
@@ -825,25 +827,26 @@ def dump(isa_obj, output_path):
                         if len(graph.out_edges(node)) == 0:
                             end_nodes.append(node)
                     # Start building headers by traversing all end-to-end paths; assumes correct experimental graphs
-                    assay_col_headers = list()
-                    line_out = list()
                     from networkx.algorithms import all_simple_paths
                     for start_node in start_nodes:
                         for end_node in end_nodes:
-                            paths = all_simple_paths(graph, start_node, end_node)
-                            for path in list(paths):
+                            paths = list(all_simple_paths(graph, start_node, end_node))
+                            if len(paths) > 0:
+                                path = paths[0]
+                                assay_col_headers = list()
                                 for node in path:
-                                    # cycle through nodes in each path
+                                    # go through nodes in path
                                     if isinstance(node, Sample):
                                         assay_col_headers.append('Sample Name')
                                         for characteristic in node.characteristics:
-                                            if characteristic.category.characteristic_type.annotationValue\
-                                                    == 'Material Type':
-                                                assay_col_headers.append('Material Type')
-                                        line_out.append(node.name)
+                                            # if characteristic.category.characteristic_type.annotationValue\
+                                            #         == 'Material Type':
+                                            #     assay_col_headers.append('Material Type')
+                                            assay_col_headers.append('Characteristic[' +
+                                                                     characteristic.category.characteristic_type.name +
+                                                                     ']')
                                     elif isinstance(node, Material):
                                         assay_col_headers.append(node.type)
-                                        line_out.append(node.name)
                                     elif isinstance(node, Data):
                                         if node.type_ == 'raw data file':
                                             assay_col_headers.append('Raw Data File')
@@ -851,14 +854,41 @@ def dump(isa_obj, output_path):
                                             assay_col_headers.append('Derived Data File')
                                         else:
                                             assay_col_headers.append('Data File')
-                                        line_out.append(node.name)
                                     elif isinstance(node, Process):
                                         assay_col_headers.append('Protocol REF')
-                                        line_out.append(node.executes_protocol.name)
+                                        for parameter_value in node.parameter_values:
+                                            assay_col_headers.append('Parameter Value[' + parameter_value + ']')
                                     else:
                                         raise IOError("Unexpected node: " + str(node))
-                    # print(assay_col_headers)
-                    # print(line_out)
+                                break
+                    print(assay_col_headers)
+                    for start_node in start_nodes:
+                        for end_node in end_nodes:
+                            paths = list(all_simple_paths(graph, start_node, end_node))
+                            for path in paths:
+                                assay_line_out = list()
+                                for node in path:
+                                    # cycle through nodes in each path
+                                    if isinstance(node, Sample):
+                                        assay_line_out.append(node.name)
+                                        for characteristic in node.characteristics:
+                                            # if characteristic.category.characteristic_type.annotationValue\
+                                            #         == 'Material Type':
+                                            #     assay_col_headers.append('Material Type')
+                                            assay_line_out.append(characteristic.value.name)
+                                            assay_line_out.append(characteristic.value.term_source)
+                                            assay_line_out.append(characteristic.value.term_accession)
+                                    elif isinstance(node, Material):
+                                        assay_line_out.append(node.name)
+                                    elif isinstance(node, Data):
+                                        assay_line_out.append(node.name)
+                                    elif isinstance(node, Process):
+                                        assay_line_out.append(node.executes_protocol.name)
+                                        for parameter_value in node.parameter_values:
+                                            assay_line_out.append(parameter_value.parameter_value.name)
+                                    else:
+                                        raise IOError("Unexpected node: " + str(node))
+                                print(assay_line_out)
                     # # Get correct configuration based on measurement and technology
                     # isatab_configurator.load('/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02')
                     # config = isatab_configurator.get_config(assay.measurement_type, assay.technology_type)
@@ -892,7 +922,7 @@ def dump(isa_obj, output_path):
 
     else:
         raise NotImplementedError("Dumping this ISA object to ISA Tab is not yet supported")
-    return fp
+    return investigation
 
 
 # def read_investigation_file(fp):
