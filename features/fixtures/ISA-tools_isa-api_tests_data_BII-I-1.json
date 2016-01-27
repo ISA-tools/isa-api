@@ -1,114 +1,114 @@
 [
-    {
-        "name": "a_metabolome.txt",
-        "path": "tests/data/BII-I-1/a_metabolome.txt",
-        "sha": "5bd6ff790f632eeebe52704aab31304232330921",
-        "size": 36082,
-        "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_metabolome.txt?ref=master",
-        "html_url": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_metabolome.txt",
-        "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/5bd6ff790f632eeebe52704aab31304232330921",
-        "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/tests/data/BII-I-1/a_metabolome.txt",
-        "type": "file",
-        "_links": {
-            "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_metabolome.txt?ref=master",
-            "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/5bd6ff790f632eeebe52704aab31304232330921",
-            "html": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_metabolome.txt"
-        }
-    },
-    {
-        "name": "a_microarray.txt",
-        "path": "tests/data/BII-I-1/a_microarray.txt",
-        "sha": "7aa9b6c59b056abdfba12fb63ebe331aaa8c1827",
-        "size": 7409,
-        "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_microarray.txt?ref=master",
-        "html_url": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_microarray.txt",
-        "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/7aa9b6c59b056abdfba12fb63ebe331aaa8c1827",
-        "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/tests/data/BII-I-1/a_microarray.txt",
-        "type": "file",
-        "_links": {
-            "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_microarray.txt?ref=master",
-            "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/7aa9b6c59b056abdfba12fb63ebe331aaa8c1827",
-            "html": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_microarray.txt"
-        }
-    },
-    {
-        "name": "a_proteome.txt",
-        "path": "tests/data/BII-I-1/a_proteome.txt",
-        "sha": "189f61d19978d3de72a3303189703e4568ef9683",
-        "size": 5465,
-        "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_proteome.txt?ref=master",
-        "html_url": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_proteome.txt",
-        "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/189f61d19978d3de72a3303189703e4568ef9683",
-        "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/tests/data/BII-I-1/a_proteome.txt",
-        "type": "file",
-        "_links": {
-            "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_proteome.txt?ref=master",
-            "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/189f61d19978d3de72a3303189703e4568ef9683",
-            "html": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_proteome.txt"
-        }
-    },
-    {
-        "name": "a_transcriptome.txt",
-        "path": "tests/data/BII-I-1/a_transcriptome.txt",
-        "sha": "8203a5b98d8eabb97e182e1e1f0af96784279efa",
-        "size": 16932,
-        "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_transcriptome.txt?ref=master",
-        "html_url": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_transcriptome.txt",
-        "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/8203a5b98d8eabb97e182e1e1f0af96784279efa",
-        "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/tests/data/BII-I-1/a_transcriptome.txt",
-        "type": "file",
-        "_links": {
-            "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_transcriptome.txt?ref=master",
-            "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/8203a5b98d8eabb97e182e1e1f0af96784279efa",
-            "html": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_transcriptome.txt"
-        }
-    },
-    {
-        "name": "i_Investigation.txt",
-        "path": "tests/data/BII-I-1/i_Investigation.txt",
-        "sha": "97fd5b27e6e58389a32d43f1e2a748972374cb21",
-        "size": 22600,
-        "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/i_Investigation.txt?ref=master",
-        "html_url": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/i_Investigation.txt",
-        "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/97fd5b27e6e58389a32d43f1e2a748972374cb21",
-        "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/tests/data/BII-I-1/i_Investigation.txt",
-        "type": "file",
-        "_links": {
-            "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/i_Investigation.txt?ref=master",
-            "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/97fd5b27e6e58389a32d43f1e2a748972374cb21",
-            "html": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/i_Investigation.txt"
-        }
-    },
-    {
-        "name": "s_BII-S-1.txt",
-        "path": "tests/data/BII-I-1/s_BII-S-1.txt",
-        "sha": "1916a347d5c7742859c4721573bef709bb8a1c12",
-        "size": 40013,
-        "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/s_BII-S-1.txt?ref=master",
-        "html_url": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/s_BII-S-1.txt",
-        "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/1916a347d5c7742859c4721573bef709bb8a1c12",
-        "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/tests/data/BII-I-1/s_BII-S-1.txt",
-        "type": "file",
-        "_links": {
-            "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/s_BII-S-1.txt?ref=master",
-            "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/1916a347d5c7742859c4721573bef709bb8a1c12",
-            "html": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/s_BII-S-1.txt"
-        }
-    },
-    {
-        "name": "s_BII-S-2.txt",
-        "path": "tests/data/BII-I-1/s_BII-S-2.txt",
-        "sha": "4f22582c5e23144a5388b8afcf1fb3e9160e724f",
-        "size": 812,
-        "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/s_BII-S-2.txt?ref=master",
-        "html_url": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/s_BII-S-2.txt",
-        "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/4f22582c5e23144a5388b8afcf1fb3e9160e724f",
-        "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/tests/data/BII-I-1/s_BII-S-2.txt",
-        "type": "file",
-        "_links": {
-            "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/s_BII-S-2.txt?ref=master",
-            "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/4f22582c5e23144a5388b8afcf1fb3e9160e724f",
-            "html": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/s_BII-S-2.txt"
-        }
+  {
+    "name": "a_metabolome.txt",
+    "path": "tests/data/BII-I-1/a_metabolome.txt",
+    "sha": "5bd6ff790f632eeebe52704aab31304232330921",
+    "size": 36082,
+    "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_metabolome.txt?ref=master",
+    "html_url": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_metabolome.txt",
+    "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/5bd6ff790f632eeebe52704aab31304232330921",
+    "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/tests/data/BII-I-1/a_metabolome.txt",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_metabolome.txt?ref=master",
+      "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/5bd6ff790f632eeebe52704aab31304232330921",
+      "html": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_metabolome.txt"
     }
+  },
+  {
+    "name": "a_microarray.txt",
+    "path": "tests/data/BII-I-1/a_microarray.txt",
+    "sha": "7aa9b6c59b056abdfba12fb63ebe331aaa8c1827",
+    "size": 7409,
+    "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_microarray.txt?ref=master",
+    "html_url": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_microarray.txt",
+    "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/7aa9b6c59b056abdfba12fb63ebe331aaa8c1827",
+    "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/tests/data/BII-I-1/a_microarray.txt",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_microarray.txt?ref=master",
+      "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/7aa9b6c59b056abdfba12fb63ebe331aaa8c1827",
+      "html": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_microarray.txt"
+    }
+  },
+  {
+    "name": "a_proteome.txt",
+    "path": "tests/data/BII-I-1/a_proteome.txt",
+    "sha": "189f61d19978d3de72a3303189703e4568ef9683",
+    "size": 5465,
+    "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_proteome.txt?ref=master",
+    "html_url": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_proteome.txt",
+    "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/189f61d19978d3de72a3303189703e4568ef9683",
+    "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/tests/data/BII-I-1/a_proteome.txt",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_proteome.txt?ref=master",
+      "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/189f61d19978d3de72a3303189703e4568ef9683",
+      "html": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_proteome.txt"
+    }
+  },
+  {
+    "name": "a_transcriptome.txt",
+    "path": "tests/data/BII-I-1/a_transcriptome.txt",
+    "sha": "8203a5b98d8eabb97e182e1e1f0af96784279efa",
+    "size": 16932,
+    "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_transcriptome.txt?ref=master",
+    "html_url": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_transcriptome.txt",
+    "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/8203a5b98d8eabb97e182e1e1f0af96784279efa",
+    "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/tests/data/BII-I-1/a_transcriptome.txt",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/a_transcriptome.txt?ref=master",
+      "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/8203a5b98d8eabb97e182e1e1f0af96784279efa",
+      "html": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/a_transcriptome.txt"
+    }
+  },
+  {
+    "name": "i_Investigation.txt",
+    "path": "tests/data/BII-I-1/i_Investigation.txt",
+    "sha": "97fd5b27e6e58389a32d43f1e2a748972374cb21",
+    "size": 22600,
+    "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/i_Investigation.txt?ref=master",
+    "html_url": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/i_Investigation.txt",
+    "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/97fd5b27e6e58389a32d43f1e2a748972374cb21",
+    "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/tests/data/BII-I-1/i_Investigation.txt",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/i_Investigation.txt?ref=master",
+      "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/97fd5b27e6e58389a32d43f1e2a748972374cb21",
+      "html": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/i_Investigation.txt"
+    }
+  },
+  {
+    "name": "s_BII-S-1.txt",
+    "path": "tests/data/BII-I-1/s_BII-S-1.txt",
+    "sha": "1916a347d5c7742859c4721573bef709bb8a1c12",
+    "size": 40013,
+    "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/s_BII-S-1.txt?ref=master",
+    "html_url": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/s_BII-S-1.txt",
+    "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/1916a347d5c7742859c4721573bef709bb8a1c12",
+    "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/tests/data/BII-I-1/s_BII-S-1.txt",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/s_BII-S-1.txt?ref=master",
+      "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/1916a347d5c7742859c4721573bef709bb8a1c12",
+      "html": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/s_BII-S-1.txt"
+    }
+  },
+  {
+    "name": "s_BII-S-2.txt",
+    "path": "tests/data/BII-I-1/s_BII-S-2.txt",
+    "sha": "4f22582c5e23144a5388b8afcf1fb3e9160e724f",
+    "size": 812,
+    "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/s_BII-S-2.txt?ref=master",
+    "html_url": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/s_BII-S-2.txt",
+    "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/4f22582c5e23144a5388b8afcf1fb3e9160e724f",
+    "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/tests/data/BII-I-1/s_BII-S-2.txt",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/BII-I-1/s_BII-S-2.txt?ref=master",
+      "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/4f22582c5e23144a5388b8afcf1fb3e9160e724f",
+      "html": "https://github.com/ISA-tools/isa-api/blob/master/tests/data/BII-I-1/s_BII-S-2.txt"
+    }
+  }
 ]
