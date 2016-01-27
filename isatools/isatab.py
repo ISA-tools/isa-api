@@ -227,7 +227,7 @@ def load(isatab_dir):
             sample_dict = _createSampleDictionary(assay.nodes)
             data_dict = _createDataFiles(assay.nodes)
             json_item = Assay(
-                file_name=assay.metadata['Study Assay File Name'],
+                filename=assay.metadata['Study Assay File Name'],
                 measurement_type=OntologyAnnotation(
                     name=assay.metadata['Study Assay Measurement Type'],
                     term_source=assay.metadata['Study Assay Measurement Type Term Source REF'],
@@ -354,7 +354,7 @@ def load(isatab_dir):
                 submission_date=study.metadata['Study Submission Date'],
                 public_release_date=study.metadata['Study Public Release Date'],
                 factors=None,
-                file_name=study.metadata['Study File Name'],
+                filename=study.metadata['Study File Name'],
                 design_descriptors=_createOntologyAnnotationListForInvOrStudy(study.design_descriptors, "Study",
                                                                               " Design Type"),
                 publications=_createPublications(study.publications, "Study"),
@@ -389,10 +389,10 @@ def load(isatab_dir):
     return investigation
 
 
-def dump(isa_obj, path):
+def dump(isa_obj, output_path):
     fp = None
-    if os.path.exists(path):
-        fp = open(os.path.join(path, 'i_investigation.txt'), 'w')
+    if os.path.exists(output_path):
+        fp = open(os.path.join(output_path, 'i_investigation.txt'), 'w')
     if isinstance(isa_obj, Investigation):
         # Process Investigation object first to write the investigation file
         investigation = isa_obj
@@ -523,7 +523,7 @@ def dump(isa_obj, path):
                 study.description,
                 study.submission_date,
                 study.public_release_date,
-                study.file_name
+                study.filename
             ]
             study_df = study_df.set_index('Study Identifier').T
             fp.write('STUDY\n')
@@ -614,7 +614,7 @@ def dump(isa_obj, path):
                     assay.technology_type.term_accession,
                     assay.technology_type.term_source,
                     assay.technology_platform,
-                    assay.file_name
+                    assay.filename
                 ]
                 j += 1
             study_assays_df = study_assays_df.set_index('Study Assay Measurement Type').T
@@ -720,29 +720,27 @@ def dump(isa_obj, path):
             fp.write('STUDY CONTACTS\n')
             study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                      index_label='Study Person Last Name')
-            if os.path.exists(path):
-                study_fp = open(os.path.join(path, study.file_name), 'w')
+            if os.path.exists(output_path):
+                study_fp = open(os.path.join(output_path, study.filename), 'w')
                 #  Calculate and write out the header row first
                 source_headers = ['Source Name']
-                for characteristic in study.sources[0].characteristics:
-                    source_headers.append('Characteristics[' + characteristic.category + ']')
-                    if not (characteristic.unit is None):
-                        source_headers.append('Unit')
+                for characteristic in study.materials['sources'][0].characteristics:
+                    source_headers.append('Characteristics[' + characteristic.category.characteristic_type.name + ']')
                     source_headers.extend(('Term Source REF', 'Term Accession', ))
                 process_headers = ['Protocol REF']
-                for parameter in study.process_sequence[0].parameters:
-                    process_headers.append('Parameter Value[' + parameter.parameter_name + ']')
-                    if not (parameter.unit is None):
+                for parameter_value in study.process_sequence[0].parameter_values:
+                    process_headers.append('Parameter Value[' + parameter_value.parameter_name + ']')
+                    if not (parameter_value.unit is None):
                         process_headers.append('Unit')
                     process_headers.extend(('Term Source REF', 'Term Accession', ))
                 source_headers.extend(process_headers)
                 sample_headers = ['Sample Name']
-                for characteristic in study.samples[0].characteristics:
+                for characteristic in study.materials['samples'][0].characteristics:
                     sample_headers.append('Characteristics[' + characteristic.category + ']')
                     if not (characteristic.unit is None):
                         sample_headers.append('Unit')
                     sample_headers.extend(('Term Source REF', 'Term Accession'))
-                for factor_value in study.samples[0].factor_values:
+                for factor_value in study.materials['samples'][0].factor_values:
                     sample_headers.append('Factor Value[' + factor_value.factorName + ']')
                     if not (factor_value.unit is None):
                         sample_headers.append('Unit')
@@ -755,15 +753,15 @@ def dump(isa_obj, path):
                 for process in study.process_sequence:
                     inputs_dict = dict()
                     for input_ in process.inputs:
-                        inputs_dict[input_.name] = input_
+                        inputs_dict[input_.id] = input_
                     for output in process.outputs:
                         row = list()
                         if isinstance(output, Sample):
-                            derived_from_obj = inputs_dict[output.derives_from[0]]
+                            derived_from_obj = inputs_dict[output.derives_from['@id']]
                             if isinstance(derived_from_obj, Source):
                                 row.append(derived_from_obj.name)
                                 for characteristic in derived_from_obj.characteristics:
-                                    if isinstance(characteristic.value, int or float):
+                                    if isinstance(characteristic.value, int) or isinstance(characteristic.value, float):
                                         row.append(characteristic.value)
                                         row.append(characteristic.unit.name)
                                         row.append(characteristic.unit.term_source)
@@ -773,19 +771,19 @@ def dump(isa_obj, path):
                                         row.append(characteristic.value.term_source)
                                         row.append(characteristic.value.term_accession)
                             row.append(process.executes_protocol)
-                            for parameter in process.parameters:
-                                if isinstance(parameter.parameter_value, int or float):
-                                    row.append(parameter.parameter_value)
-                                    row.append(parameter.unit.name)
-                                    row.append(parameter.unit.term_source)
-                                    row.append(parameter.unit.term_accession)
-                                elif isinstance(parameter.parameter_value, OntologyAnnotation):
-                                    row.append(parameter.parameter_value.name)
-                                    row.append(parameter.parameter_value.term_source)
-                                    row.append(parameter.parameter_value.term_accession)
+                            for parameter_value in process.parameter_values:
+                                if isinstance(parameter_value.parameter_value, int) or isinstance(parameter_value.parameter_value, float):
+                                    row.append(parameter_value.parameter_value)
+                                    row.append(parameter_value.unit.name)
+                                    row.append(parameter_value.unit.term_source)
+                                    row.append(parameter_value.unit.term_accession)
+                                elif isinstance(parameter_value.parameter_value, OntologyAnnotation):
+                                    row.append(parameter_value.parameter_value.name)
+                                    row.append(parameter_value.parameter_value.term_source)
+                                    row.append(parameter_value.parameter_value.term_accession)
                             row.append(output.name)
                             for characteristic in output.characteristics:
-                                if isinstance(characteristic.value, int or float):
+                                if isinstance(characteristic.value, int) or isinstance(characteristic.value, float):
                                     row.append(characteristic.value)
                                     row.append(characteristic.unit.name)
                                     row.append(characteristic.unit.term_source)
@@ -795,7 +793,7 @@ def dump(isa_obj, path):
                                     row.append(characteristic.value.term_source)
                                     row.append(characteristic.value.term_accession)
                             for factor_value in output.factor_values:
-                                if isinstance(factor_value.value, int or float):
+                                if isinstance(factor_value.value, int) or isinstance(factor_value.value, float):
                                     row.append(factor_value.value)
                                     row.append(factor_value.unit.name)
                                     row.append(factor_value.unit.term_source)
@@ -838,8 +836,15 @@ def dump(isa_obj, path):
                                     # cycle through nodes in each path
                                     if isinstance(node, Sample):
                                         assay_col_headers.append('Sample Name')
+                                        for characteristic in node.characteristics:
+                                            if characteristic.category.characteristic_type.annotationValue\
+                                                    == 'Material Type':
+                                                assay_col_headers.append('Material Type')
                                         line_out.append(node.name)
-                                    if isinstance(node, Data):
+                                    elif isinstance(node, Material):
+                                        assay_col_headers.append(node.type)
+                                        line_out.append(node.name)
+                                    elif isinstance(node, Data):
                                         if node.type_ == 'raw data file':
                                             assay_col_headers.append('Raw Data File')
                                         elif node.type_ == 'derived data file':
@@ -847,11 +852,13 @@ def dump(isa_obj, path):
                                         else:
                                             assay_col_headers.append('Data File')
                                         line_out.append(node.name)
-                                    if isinstance(node, Process):
+                                    elif isinstance(node, Process):
                                         assay_col_headers.append('Protocol REF')
-                                        line_out.append(node.executes_protocol)
-                    print(assay_col_headers)
-                    print(line_out)
+                                        line_out.append(node.executes_protocol.name)
+                                    else:
+                                        raise IOError("Unexpected node: " + str(node))
+                    # print(assay_col_headers)
+                    # print(line_out)
                     # # Get correct configuration based on measurement and technology
                     # isatab_configurator.load('/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02')
                     # config = isatab_configurator.get_config(assay.measurement_type, assay.technology_type)
