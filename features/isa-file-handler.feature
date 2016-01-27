@@ -19,7 +19,7 @@ Feature: ISA file management
 
   Scenario: resource retrieval with ZIP archive download
     Given an authenticated storage adapter
-    And a file object named "features/fixtures/testdata-isa.zip" in the remote repository "isa-api" owned by "ISA-tools"
+    And a file object named "ISA-tab records/sdata2014-isa1.zip" in the remote repository "ISA-tab" owned by "ScientificDataLabs"
     And a destination directory "destination_dir_1" in your home folder
     When the file object is a ZIP archive
     Then it should download it as it is
@@ -38,22 +38,15 @@ Feature: ISA file management
     And a destination directory "destination_dir_3" in your home folder
     When the source file points to an ISA-TAB XML configuration file
     Then it should download it as an XML file
+    And it should return it as an XML object
 
   Scenario: resource retrieval of any other file
     Given an authenticated storage adapter
-    And a file object named "remote_source.txt" in the remote repository "isa-api" owned by "ISA-tools"
+    And a file object named "setup.py" in the remote repository "isa-api" owned by "ISA-tools"
     And a destination directory "destination_dir_4" in your home folder
-    When it is a different file
-    Then it should raise an error
-
-  Scenario: resource retrieval with in-memory storage
-    Given a valid path in the in the remote repository "/path/to/source"
-    When the source path points to a JSON file
-    Then it should store/load a Python dictionary containing the whole ISA dataset
-    When the source points to an XML configuration file
-    Then it should load the XML document in memory
-    When it is a different file or a directory
-    Then it should raise an error
+    When it is none of the allowed file types - JSON, XML, ZIP - nor a directory
+    Then it should not save the file
+    And it should return a falsey value
 
   # Future scenarios: create, update, delete
 
