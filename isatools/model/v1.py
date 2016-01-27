@@ -309,9 +309,10 @@ class Assay(IsaObject):
             'samples': list(),
             'other_material': list()
         }
-        self.materials['samples'].append(samples)
-        self.materials['other_material'].append(other_material)
-
+        if not (samples is None):
+            self.materials['samples'].append(samples)
+        if not (other_material is None):
+            self.materials['other_material'].append(other_material)
 
 
 class Protocol(IsaObject):
@@ -393,13 +394,16 @@ class Source(IsaObject):
 
 
 class Characteristic(IsaObject):
-    def __init__(self, id_='', characteristic_type=None, comments=None):
+    def __init__(self, category=None, value=None, comments=None):
         super().__init__(comments)
-        self.id = id_
-        if characteristic_type is None:
-            self.characteristic_type = OntologyAnnotation()
+        if category is None:
+            self.category = CharacteristicCategory()
         else:
-            self.characteristic_type = characteristic_type
+            self.category = category
+        if value is None:
+            self.value = OntologyAnnotation()
+        else:
+            self.value = value
 
 
 class Sample(IsaObject):

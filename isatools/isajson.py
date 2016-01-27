@@ -65,6 +65,7 @@ def load(fp):
         samples_dict = dict()
         sources_dict = dict()
         categories_dict = dict()
+        protocols_dict = dict()
         for study_json in isajson['studies']:
             logger.debug('Start building Study object')
             study = Study(
@@ -131,6 +132,7 @@ def load(fp):
                     )
                 )
                 study.protocols.append(protocol)
+                protocols_dict[protocol.id] = protocol
             for factor_json in study_json['factors']:
                 logger.debug('Build Study Factor object')
                 factor = StudyFactor(
@@ -151,8 +153,8 @@ def load(fp):
                 for characteristic_json in source_json['characteristics']:
                     logger.debug('Build Ontology Annotation object (Source Characteristic)')
                     characteristic = Characteristic(
-                        characteristic_type=categories_dict[characteristic_json['category']['@id']],
-                        # value=''
+                        category=categories_dict[characteristic_json['category']['@id']],
+                        value=None
                     )
                     source.characteristics.append(characteristic)
                 sources_dict[source.id] = source
@@ -167,8 +169,8 @@ def load(fp):
                 for characteristic_json in sample_json['characteristics']:
                     logger.debug('Build Ontology Annotation object (Source Characteristic)')
                     characteristic = Characteristic(
-                        characteristic_type=categories_dict[characteristic_json['category']['@id']],
-                        # value=''
+                        category=categories_dict[characteristic_json['category']['@id']],
+                        value=None
                     )
                     sample.characteristics.append(characteristic)
                 for factor_value_json in sample_json['factorValues']:
@@ -197,7 +199,7 @@ def load(fp):
             for study_process_json in study_json['processSequence']:
                 logger.debug('Build Process object')
                 process = Process(
-                    executes_protocol=study_process_json['executesProtocol']['@id'],
+                    executes_protocol=protocols_dict[study_process_json['executesProtocol']['@id']],
                 )
                 try:
                     process.date = study_process_json['date']
@@ -208,12 +210,12 @@ def load(fp):
                 except KeyError:
                     pass
                 for parameter_json in study_process_json['parameterValues']:
-                    if isinstance(parameter_json['value'], int or float):
+                    if isinstance(parameter_json['value'], int) or isinstance(parameter_json['value'], float):
                         parameter_value = ParameterValue(
                             category=parameter_json['category']['@id'],
                             value=parameter_json['value'],
                             unit=OntologyAnnotation(
-                                name=parameter_json['unit']['name'],
+                                name=parameter_json['unit']['annotationValue'],
                                 term_accession=parameter_json['unit']['termAccession'],
                                 term_source=parameter_json['unit']['termSource'],
                             )
@@ -222,7 +224,7 @@ def load(fp):
                         parameter_value = ParameterValue(
                             category=parameter_json['category']['@id'],
                             value=OntologyAnnotation(
-                                name=parameter_json['value']['name'],
+                                name=parameter_json['parameterValue']['annotationValue'],
                                 term_accession=parameter_json['parameterValue']['termAccession'],
                                 term_source=parameter_json['parameterValue']['termSource'],
                             )
@@ -284,6 +286,9 @@ def load(fp):
                         )
                         data_dict[data.name] = data
                         assay.data_files.append(data)
+                    for sample_json in assay_json['materials']['samples']:
+                        sample = samples_dict[sample_json['@id']]
+                        assay.materials['samples'].append(sample)
                     other_materials_dict = dict()
                     for other_material_json in assay_json['materials']['otherMaterials']:
                         logger.debug('Build Material object')
@@ -294,11 +299,11 @@ def load(fp):
                         )
                         for characteristic_json in other_material_json['characteristics']:
                             characteristic = Characteristic(
-                                id_=characteristic_json['@id'],
-                                characteristic_type=OntologyAnnotation(
-                                    name=characteristic_json['characteristicType']['annotationValue'],
-                                    term_source=characteristic_json['characteristicType']['termSource'],
-                                    term_accession=characteristic_json['characteristicType']['termAccession'],
+                                category=categories_dict[characteristic_json['category']['@id']],
+                                value=OntologyAnnotation(
+                                    name=characteristic_json['value']['annotationValue'],
+                                    term_source=characteristic_json['value']['termSource'],
+                                    term_accession=characteristic_json['value']['termAccession'],
                                 )
                             )
                             material.characteristics.append(characteristic)
@@ -306,7 +311,7 @@ def load(fp):
                         other_materials_dict[material.id] = material
                     for assay_process_json in assay_json['processSequence']:
                         process = Process(
-                            executes_protocol=assay_process_json['executesProtocol']['@id']
+                            executes_protocol=protocols_dict[assay_process_json['executesProtocol']['@id']]
                         )
                         for input_json in assay_process_json['inputs']:
                             input_ = None
