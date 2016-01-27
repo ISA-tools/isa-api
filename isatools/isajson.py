@@ -208,10 +208,10 @@ def load(fp):
                 except KeyError:
                     pass
                 for parameter_json in study_process_json['parameterValues']:
-                    if isinstance(parameter_json['parameterValue'], int or float):
+                    if isinstance(parameter_json['value'], int or float):
                         parameter_value = ParameterValue(
-                            category=parameter_json['name'],
-                            parameter_value=parameter_json['parameterValue'],
+                            category=parameter_json['category']['@id'],
+                            value=parameter_json['value'],
                             unit=OntologyAnnotation(
                                 name=parameter_json['unit']['name'],
                                 term_accession=parameter_json['unit']['termAccession'],
@@ -220,9 +220,9 @@ def load(fp):
                         )
                     else:
                         parameter_value = ParameterValue(
-                            category=parameter_json['name'],
-                            parameter_value=OntologyAnnotation(
-                                name=parameter_json['parameterValue']['name'],
+                            category=parameter_json['category']['@id'],
+                            value=OntologyAnnotation(
+                                name=parameter_json['value']['name'],
                                 term_accession=parameter_json['parameterValue']['termAccession'],
                                 term_source=parameter_json['parameterValue']['termSource'],
                             )
