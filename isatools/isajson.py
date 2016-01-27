@@ -193,7 +193,7 @@ def load(fp):
                                 term_source=factor_value_json['unit']['termSource'],
                             ),
                         )
-                    sample.characteristics.append(factor_value)
+                    sample.factor_values.append(factor_value)
                 samples_dict[sample.id] = sample
                 study.materials['samples'].append(sample)
             for study_process_json in study_json['processSequence']:
