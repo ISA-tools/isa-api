@@ -490,11 +490,11 @@ class Process(IsaObject):
 class ParameterValue(object):
     """A Parameter Value
     """
-    def __init__(self, category="", parameter_value=None, unit=None):
+    def __init__(self, category="", value=None, unit=None):
         self.category = category
-        self.parameter_value = parameter_value
+        self.value = value
         # Only makes sense to set unit if value is numeric
-        if isinstance(parameter_value, int or float):
+        if isinstance(value, int or float):
             if unit is None:
                 self.unit = OntologyAnnotation()
             else:
