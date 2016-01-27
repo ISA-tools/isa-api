@@ -49,11 +49,18 @@
         }
       }
     },
-    "charactersitics": {
-      "description": "List of all the characteristics (or material attributes) defined in the study, used to avoid duplication of their declaration when each material_attribute_value is created. ",
+    "characteristicCategories": {
+      "description": "List of all the characteristics categories (or material attributes) defined in the study, used to avoid duplication of their declaration when each material_attribute_value is created. ",
       "type": "array",
       "items": {
         "$ref": "material_attribute_schema.json#"
+      }
+    },
+    "unitCategories": {
+      "description": "List of all the unitsdefined in the study, used to avoid duplication of their declaration when each value is created. ",
+      "type": "array",
+      "items": {
+        "$ref": "ontology_annotation_schema.json#"
       }
     },
     "processSequence": {

@@ -18,6 +18,11 @@ def convert(work_dir, json_dir):
 
 class ISATab2ISAjson_v1:
 
+    MATERIAL_TYPE = "Material Type"
+    CHARACTERISTICS = "Characteristics"
+    CHARACTERISTIC_CATEGORY = "characteristic_category"
+    FACTOR_VALUE = "Factor Value"
+
     def __init__(self):
         self.identifiers = list() #list of dictionaries
         self.counters = dict()
@@ -374,6 +379,7 @@ class ISATab2ISAjson_v1:
     def createStudyAssaysList(self, assays, sample_dict):
         json_list = []
         for assay in assays:
+            characteristics_categories_list = self.createCharacteristicsCategories(assay.nodes)
             source_dict = self.createSourcesDictionary(assay.nodes)
             sample_list = self.createSampleReferenceDict(assay.nodes)
             material_dict = self.createMaterialDictionary(assay.nodes)
@@ -391,6 +397,7 @@ class ISATab2ISAjson_v1:
                                                                  assay.metadata['Study Assay Technology Type Term Source REF'],
                                                                  assay.metadata['Study Assay Technology Type Term Accession Number'])),
                 ("technologyPlatform", assay.metadata['Study Assay Technology Platform']),
+                ("characteristicCategories", characteristics_categories_list),
                 ("materials", dict([
                     ("samples", sample_list),
                     ("otherMaterials", list(material_dict.values()))
@@ -426,8 +433,8 @@ class ISATab2ISAjson_v1:
                 json_item = dict([
                         ("@id", sample_identifier),
                         ("name", node_index),
-                        ("factorValues", self.createValueList("Factor Value", node_index, nodes[node_index])),
-                        ("characteristics", self.createValueList("Characteristics",node_index, nodes[node_index]))
+                        ("factorValues", self.createValueList(self.FACTOR_VALUE, node_index, nodes[node_index])),
+                        ("characteristics", self.createValueList(self.CHARACTERISTICS,node_index, nodes[node_index]))
                     ])
 
                 #derivesFrom source
@@ -465,7 +472,7 @@ class ISATab2ISAjson_v1:
                 json_item = dict([
                     ("@id", source_identifier),
                     ("name", node_index),
-                    ("characteristics", self.createValueList("Characteristics", node_index, nodes[node_index])),
+                    ("characteristics", self.createValueList(self.CHARACTERISTICS, node_index, nodes[node_index])),
                 ])
                 json_dict.update({node_index: json_item})
         return json_dict
@@ -480,7 +487,7 @@ class ISATab2ISAjson_v1:
                     ("@id", material_identifier),
                     ("name", node_index),
                     ("type", nodes[node_index].ntype),
-                    ("characteristics", self.createValueList("Characteristics", node_index, nodes[node_index])),
+                    ("characteristics", self.createValueList(self.CHARACTERISTICS, node_index, nodes[node_index])),
                 ])
                 json_dict.update({node_index: json_item})
         return json_dict
@@ -491,22 +498,22 @@ class ISATab2ISAjson_v1:
         for node_index in nodes:
             node = nodes[node_index]
             for header in node.metadata:
-                 if (not header.startswith("Characteristics")) and (not header=="Material Type"):
+                 if (not header.startswith(self.CHARACTERISTICS)) and (not header==self.MATERIAL_TYPE):
                     continue
                  value_header = header.replace("]", "").split("[")[-1]
-                 if header == "Material Type":
-                     value_header = "Material Type"
+                 if header == self.MATERIAL_TYPE:
+                     value_header = self.MATERIAL_TYPE
 
-                 characteristic_category_identifier = self.getIdentifier("characteristics_category", value_header)
+                 characteristic_category_identifier = self.getIdentifier(self.CHARACTERISTIC_CATEGORY, value_header)
                  if characteristic_category_identifier:
                      continue
 
-                 characteristic_category_identifier = self.generateIdentifier("charactersitic_category")
-                 self.setIdentifier("characteristics_category", value_header, characteristic_category_identifier)
+                 characteristic_category_identifier = self.generateIdentifier(self.CHARACTERISTIC_CATEGORY)
+                 self.setIdentifier(self.CHARACTERISTIC_CATEGORY, value_header, characteristic_category_identifier)
 
                  json_item = dict([])
-                 #the header has an ontology annotation TODO - get a test dataset
                  if value_header.startswith("http"):
+                    #the header has an ontology annotation TODO - get a test dataset
                     pass
                  else:
                     json_item = dict([
@@ -532,20 +539,20 @@ class ISATab2ISAjson_v1:
         """Method for the creation of factor, characteristics and parameter values"""
         json_list = []
         for header in node.metadata:
-            if header.startswith(column_name) or header == "Material Type":
+            if header.startswith(column_name) or header == self.MATERIAL_TYPE:
                  value_header = header.replace("]", "").split("[")[-1]
-                 if header == "Material Type":
-                     value_header = "Material Type"
+                 if header == self.MATERIAL_TYPE:
+                     value_header = self.MATERIAL_TYPE
                  value_attributes = node.metadata[header][0]
                  value  = self.convert_num(value_attributes[0])
                  header_type = None
 
-                 if column_name.strip()=="Characteristics":
+                 if column_name.strip()==self.CHARACTERISTICS:
                      if header not in node.attributes:
                          continue
-                     header_type = "characteristics_category"
+                     header_type = self.CHARACTERISTIC_CATEGORY
 
-                 if column_name.strip()=="Factor Value":
+                 if column_name.strip()==self.FACTOR_VALUE:
                      if header not in node.attributes:
                          continue
                      header_type = "factor"
