@@ -29,12 +29,8 @@ def validate_xml_against_schema(xml_str, xml_schema_file):
         schema_root = etree.XML(schema_file.read())
     xml_parser = etree.XMLParser(schema=etree.XMLSchema(schema_root))
 
-    try:
-        # try to parse XML to validate against schema
-        etree.fromstring(xml_str, xml_parser)
-        return True
-    except etree.XMLSyntaxError:
-        return False
+    # parse XML to validate against schema
+    return etree.fromstring(xml_str, xml_parser)
 
 
 def validate_json_against_schema(json_dict, schema_src):
@@ -201,13 +197,14 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
 
             # if it is an object the retrieve or download it
             else:
-                processed_payload = self._retrieve_file(res_payload['download_url'], destination)
+                processed_payload = self._retrieve_file(res_payload['download_url'])
 
-            if write_to_file:
-                modality = 'w+' if 'text' in processed_payload else 'wb+'
+            if write_to_file and ('content' in processed_payload or 'text' in processed_payload):
+                (out_data, modality) = (processed_payload['text'], 'w+') if 'text' in processed_payload \
+                    else (processed_payload['content'], 'wb+')
                 os.makedirs(destination, exist_ok=True)
                 with open(os.path.join(destination, source.split('/')[-1]), modality) as out_file:
-                    out_file.write(processed_payload['content'])
+                    out_file.write(out_data)
 
             # return the JSON or XML content if available
             if isinstance(processed_payload, dict):
@@ -292,10 +289,10 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                     json_payload = json.loads(r.text or r.content)
                     if validate_json:
                         validate_json_against_schema(json_payload, INVESTIGATION_SCHEMA_FILE)
-                        return {
-                            'json': json_payload,
-                            'text': r.text or r.content
-                        }
+                    return {
+                        'json': json_payload,
+                        'text': r.text or r.content
+                    }
                 except ValueError:
                     try:
                         xml_payload = validate_xml_against_schema(r.text or r.content, CONFIGURATION_SCHEMA_FILE)
@@ -304,7 +301,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                             'text': r.text or r.content
                         }
                     except etree.XMLSyntaxError:
-                        return {}
+                        pass
 
             # if content is a zip file
             elif content_type == 'application/zip':
@@ -312,8 +309,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                     'content': r.content
                 }
 
-            else:
-                return {}
+        return {}
 
 
 
