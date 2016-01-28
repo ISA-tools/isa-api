@@ -67,6 +67,7 @@ def load(fp):
         categories_dict = dict()
         protocols_dict = dict()
         factors_dict = dict()
+        parameters_dict = dict()
         for study_json in isajson['studies']:
             logger.debug('Start building Study object')
             study = Study(
@@ -132,6 +133,18 @@ def load(fp):
                         term_source=protocol_json['protocolType']['termSource']
                     )
                 )
+                for parameter_json in protocol_json['parameters']:
+                    parameter = ProtocolParameter(
+                        id_=parameter_json['@id'],
+                        parameter_name=OntologyAnnotation(
+                            name=parameter_json['parameterName']['annotationValue'],
+                            term_source=parameter_json['parameterName']['termSource'],
+                            term_accession=parameter_json['parameterName']['termAccession']
+                        )
+                    )
+                    protocol.parameters.append(parameter)
+                    parameters_dict[parameter.id] = parameter
+                # TODO add protocol parameter and component declarations here
                 study.protocols.append(protocol)
                 protocols_dict[protocol.id] = protocol
             for factor_json in study_json['factors']:
@@ -253,24 +266,24 @@ def load(fp):
                     process.performer = study_process_json['performer']
                 except KeyError:
                     pass
-                for parameter_json in study_process_json['parameterValues']:
-                    if isinstance(parameter_json['value'], int) or isinstance(parameter_json['value'], float):
+                for parameter_value_json in study_process_json['parameterValues']:
+                    if isinstance(parameter_value_json['value'], int) or isinstance(parameter_value_json['value'], float):
                         parameter_value = ParameterValue(
-                            # category=parameter_json['category']['@id'],
-                            value=parameter_json['value'],
+                            # category=parameter_value_json['category']['@id'],
+                            value=parameter_value_json['value'],
                             unit=OntologyAnnotation(
-                                name=parameter_json['unit']['annotationValue'],
-                                term_accession=parameter_json['unit']['termAccession'],
-                                term_source=parameter_json['unit']['termSource'],
+                                name=parameter_value_json['unit']['annotationValue'],
+                                term_accession=parameter_value_json['unit']['termAccession'],
+                                term_source=parameter_value_json['unit']['termSource'],
                             )
                         )
                     else:
                         parameter_value = ParameterValue(
-                            # category=parameter_json['category']['@id'],
+                            # category=parameter_value_json['category']['@id'],
                             value=OntologyAnnotation(
-                                name=parameter_json['value']['annotationValue'],
-                                term_accession=parameter_json['value']['termAccession'],
-                                term_source=parameter_json['value']['termSource'],
+                                name=parameter_value_json['value']['annotationValue'],
+                                term_accession=parameter_value_json['value']['termAccession'],
+                                term_source=parameter_value_json['value']['termSource'],
                             )
                         )
                     process.parameter_values.append(parameter_value)
@@ -393,6 +406,27 @@ def load(fp):
                             raise IOError("Could not find output node in samples or other materials dicts: " +
                                           output_json['@id'])
                         process.outputs.append(output)
+                    for parameter_value_json in assay_process_json['parameterValues']:
+                        if isinstance(parameter_value_json['value'], int) or isinstance(parameter_value_json['value'], float):
+                            parameter_value = ParameterValue(
+                                category=parameters_dict[parameter_value_json['category']['@id']],
+                                value=parameter_value_json['value'],
+                                unit=OntologyAnnotation(
+                                    name=parameter_value_json['unit']['annotationValue'],
+                                    term_accession=parameter_value_json['unit']['termAccession'],
+                                    term_source=parameter_value_json['unit']['termSource'],
+                                )
+                            )
+                        else:
+                            parameter_value = ParameterValue(
+                                category=parameters_dict[parameter_value_json['category']['@id']],
+                                value=OntologyAnnotation(
+                                    name=parameter_value_json['value']['annotationValue'],
+                                    term_accession=parameter_value_json['value']['termAccession'],
+                                    term_source=parameter_value_json['value']['termSource'],
+                                )
+                            )
+                        process.parameter_values.append(parameter_value)
                     assay.process_sequence.append(process)
                 study.assays.append(assay)
             logger.debug('End building Study object')
