@@ -219,17 +219,18 @@ class StudyAssayParser:
         self._col_types = {"attribute": ("Characteristics", "Factor Type",
                                          "Comment", "Label", "Material Type", "Factor Value"),
                            "node" : ("Sample Name", "Source Name", "Image File",
-                                     "Raw Data File", "Derived Data File", "Acquisition Parameter Data File"),
-                           "node_assay" : ("Extract Name", "Labeled Extract Name",
-                                           "Assay Name", "Data Transformation Name",
+                                     "Raw Data File", "Derived Data File", "Acquisition Parameter Data File",
+                                     "Extract Name", "Labeled Extract Name"),
+                           "node_assay" : ("Assay Name", "Data Transformation Name",
                                            "Normalization Name"),
                            "processing": ("Protocol REF"),
-                           "parameter": ("Parameter Value")
+                           "parameter": ("Parameter Value", "Array Design REF")
                            }
         self._synonyms = {"Array Data File" : "Raw Data File",
                           "Free Induction Decay Data File": "Raw Data File",
                           "Derived Array Data File" : "Derived Data File",
                           "Hybridization Assay Name": "Assay Name",
+                          "Scan Name": "Assay Name",
                           "Derived Array Data Matrix File": "Derived Data File",
                           "Raw Spectral Data File": "Raw Data File",
                           "Derived Spectral Data File": "Derived Data File"}
@@ -247,7 +248,8 @@ class StudyAssayParser:
                 for assay in study.assays:
                     cur_assay = ISATabAssayRecord(assay)
                     assay_data = self._parse_study(assay["Study Assay File Name"],
-                                                   ["Sample Name","Extract Name","Raw Data File","Derived Data File", "Image File", "Acquisition Parameter Data File", "Free Induction Decay Data File"])
+                                                   self._col_types["node"])
+                                                   #["Sample Name","Extract Name","Raw Data File","Derived Data File", "Image File", "Acquisition Parameter Data File", "Free Induction Decay Data File"])
                     cur_assay.nodes = assay_data
                     assay_process_nodes = self._get_process_nodes(assay["Study Assay File Name"], cur_assay)
 
@@ -275,41 +277,43 @@ class StudyAssayParser:
 
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
             all_parameters_indices = [i for i, x in enumerate(htypes) if x == "parameter"]
-            node_indices = [i for i, x in enumerate(htypes) if x == "node" or x=="node_assay"]
+            node_indices = [i for i, x in enumerate(htypes) if x == "node"] #or x=="node_assay"]
+            node_assay_indices =  [i for i, x in enumerate(htypes) if x == "node_assay"]
 
-            for processing_index in processing_indices:
-                try:
-                    input_index = find_lt(node_indices, processing_index)
-                except ValueError:
-                    input_index = -1
+            line_number = 0
+            max_number = 0
 
-                try:
-                    output_index = find_gt(node_indices, processing_index)
-                except ValueError:
-                    output_index = -1
+            for line in reader:
+                if line_number >=  max_number:
 
-                try:
-                    next_processing_index = find_gt(processing_indices, processing_index)
-                except ValueError:
-                    next_processing_index = -1
+                    for processing_index in processing_indices:
+                        try:
+                            input_index = find_lt(node_indices, processing_index)
+                        except ValueError:
+                            input_index = -1
+                        try:
+                            output_index = find_gt(node_indices, processing_index)
+                        except ValueError:
+                            output_index = -1
+                        try:
+                            next_processing_index = find_gt(processing_indices, processing_index)
+                        except ValueError:
+                            next_processing_index = -1
 
-                try:
-                    parameters_indices = find_in_between(all_parameters_indices, processing_index, next_processing_index)
-                except ValueError:
-                    parameters_indices = []
+                        try:
+                            parameters_indices = find_in_between(all_parameters_indices, processing_index, next_processing_index)
+                        except ValueError:
+                            parameters_indices = []
 
-                input_header = headers[hgroups[input_index][0]]
-                output_header = headers[hgroups[output_index][0]]
-                processing_header = headers[hgroups[processing_index][0]]
-                line_number = 0
-                max_number = 0
+                        input_header = headers[hgroups[input_index][0]]
+                        output_header = headers[hgroups[output_index][0]]
+                        processing_header = headers[hgroups[processing_index][0]]
 
-                #reading line by line and identifying inputs outputs and creating process_node
-                process_number = 1
-                input_process_map = {}
-                output_process_map = {}
-                for line in reader:
-                    if line_number >=  max_number:
+                        #reading line by line and identifying inputs outputs and creating process_node
+                        process_number = 1
+                        input_process_map = {}
+                        output_process_map = {}
+
                         input_name = line[hgroups[input_index][0]]
                         input_node_index = self._build_node_index(input_header,input_name)
 
@@ -327,6 +331,8 @@ class StudyAssayParser:
                                 unique_process_name = output_process_map[output_node_index]
                             except KeyError:
                                 processing_name = line[hgroups[processing_index][0]]
+                                if not processing_name:
+                                    continue
                                 unique_process_name = processing_name+str(process_number)
 
                         try:
@@ -360,7 +366,7 @@ class StudyAssayParser:
                     else:
                         line_number += 1
                 #study.process_nodes = process_nodes
-                return dict([(k, self._finalize_metadata(v)) for k, v in process_nodes.items()])
+        return dict([(k, self._finalize_metadata(v)) for k, v in process_nodes.items()])
 
 
     def _parse_study(self, fname, node_types):
@@ -375,7 +381,7 @@ class StudyAssayParser:
             hgroups = self._collapse_header(headers)
             htypes = self._characterize_header(headers, hgroups)
 
-            node_indices = [i for i, x in enumerate(htypes) if x == "node" or x=="node_assay"]
+            node_indices = [i for i, x in enumerate(htypes) if x == "node"] #or x=="node_assay"]
             all_attribute_indices = [i for i, x in enumerate(htypes) if x == "attribute"]
 
             for node_index in node_indices:
@@ -546,19 +552,22 @@ class StudyAssayParser:
                 if type == "Extract Name":
                     return "extract-"+name
                 else:
-                    if type == "Raw Data File":
-                       return "rawdatafile-"+name
+                    if type == "Labeled Extract Name":
+                        return "labeledextract-"+name
                     else:
-                        if type=="Derived Data File":
-                            return "deriveddatafile-"+name
+                        if type == "Raw Data File":
+                            return "rawdatafile-"+name
                         else:
-                            if type=="Acquisiton Parameter Data File":
-                                return "acquisitionparameterfile-"+name
+                            if type=="Derived Data File":
+                                return "deriveddatafile-"+name
                             else:
-                                 if type=="Image File":
-                                    return "imagefile-"+name
-                                 else:
-                                    "ERROR - Type not being considered! ", type
+                                if type=="Acquisiton Parameter Data File":
+                                    return "acquisitionparameterfile-"+name
+                                else:
+                                     if type=="Image File":
+                                        return "imagefile-"+name
+                                     else:
+                                        "ERROR - Type not being considered! ", type
 
 
 _record_str = \
@@ -599,6 +608,7 @@ _node_str = \
 
 _process_node_str = \
 """       * Process Node ->  {name} {type}
+         assay_name: {assay_name}
          inputs: {inputs}
          outputs: {outputs}
          parameters: {parameters}
@@ -699,12 +709,14 @@ class ProcessNodeRecord:
         self.outputs = []
         self.metadata = {}
         self.parameters = []
+        self.assay_name = "" #used when there is an associated 'Assay Name' for a 'Protocol REF'
 
     def __str__(self):
         return _process_node_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 9),
                                         inputs=pprint.pformat(self.inputs).replace("\n", "\n" + " " * 9),
                                         outputs=pprint.pformat(self.outputs).replace("\n", "\n" + " " * 9),
                                         name=self.name,
+                                        assay_name=self.assay_name,
                                         type=self.ntype,
                                         protocol=self.protocol,
                                         parameters=pprint.pformat(self.parameters).replace("\n","\n"+" "*9))
