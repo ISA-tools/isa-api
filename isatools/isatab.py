@@ -720,35 +720,68 @@ def dump(isa_obj, output_path):
             fp.write('STUDY CONTACTS\n')
             study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                      index_label='Study Person Last Name')
+
+            # First, build the length of one path in the graph, as our sample for headers
+            graph = nx.DiGraph()
+            prev_process_node = None
+            for process in study.process_sequence:
+                if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
+                    graph.add_edge(prev_process_node, process)
+                for input_ in process.inputs:
+                    graph.add_edge(input_, process)
+                for output in process.outputs:
+                    graph.add_edge(process, output)
+                prev_process_node = process
+            study.graph = graph
+            # Find all the start and end nodes by looking for nodes with zero in or out edges
+            start_nodes = list()
+            end_nodes = list()
+            for node in graph.nodes():
+                if len(graph.in_edges(node)) == 0:
+                    start_nodes.append(node)
+                if len(graph.out_edges(node)) == 0:
+                    end_nodes.append(node)
+            from networkx.algorithms import all_simple_paths
+            for start_node in start_nodes:
+                for end_node in end_nodes:
+                    paths = list(all_simple_paths(graph, start_node, end_node))
+                    if len(paths) > 0:
+                        path = paths[0]
+                        study_col_headers = list()
+                        for node in path:
+                            if isinstance(node, Source):
+                                study_col_headers.append('Source Name')
+                                for characteristic in node.characteristics:
+                                    study_col_headers.append('Characteristics[' +
+                                                             characteristic.category.characteristic_type.name + ']')
+                                    if not (characteristic.unit is None):
+                                        study_col_headers.append('Unit')
+                                    if isinstance(characteristic.value, OntologyAnnotation):
+                                        study_col_headers.extend(('Term Source REF', 'Term Accession'))
+                            if isinstance(node, Process):
+                                study_col_headers.append('Protocol REF')
+                                for parameter_value in study.process_sequence[0].parameter_values:
+                                    study_col_headers.append('Parameter Value[' + 'parameter_value.category' + ']')
+                                    if not (parameter_value.unit is None):
+                                        study_col_headers.append('Unit')
+                                    study_col_headers.extend(('Term Source REF', 'Term Accession', ))
+                            if isinstance(node, Sample):
+                                study_col_headers.append('Sample Name')
+                                for characteristic in node.characteristics:
+                                    study_col_headers.append('Characteristics[' + characteristic.category.characteristic_type.name + ']')
+                                    if not (characteristic.unit is None):
+                                        study_col_headers.append('Unit')
+                                    study_col_headers.extend(('Term Source REF', 'Term Accession'))
+                                for factor_value in node.factor_values:
+                                    study_col_headers.append('Factor Value[' + factor_value.factor_name.name + ']')
+                                    if not (factor_value.unit is None):
+                                        study_col_headers.append('Unit')
+                                    study_col_headers.extend(('Term Source REF', 'Term Accession'))
             if os.path.exists(output_path):
                 study_fp = open(os.path.join(output_path, study.filename), 'w')
-                #  Calculate and write out the header row first
-                source_headers = ['Source Name']
-                for characteristic in study.materials['sources'][0].characteristics:
-                    source_headers.append('Characteristics[' + characteristic.category.characteristic_type.name + ']')
-                    source_headers.extend(('Term Source REF', 'Term Accession', ))
-                process_headers = ['Protocol REF']
-                for parameter_value in study.process_sequence[0].parameter_values:
-                    process_headers.append('Parameter Value[' + 'parameter_value.category' + ']')
-                    if not (parameter_value.unit is None):
-                        process_headers.append('Unit')
-                    process_headers.extend(('Term Source REF', 'Term Accession', ))
-                source_headers.extend(process_headers)
-                sample_headers = ['Sample Name']
-                for characteristic in study.materials['samples'][0].characteristics:
-                    sample_headers.append('Characteristics[' + characteristic.category.characteristic_type.name + ']')
-                    if not (characteristic.unit is None):
-                        sample_headers.append('Unit')
-                    sample_headers.extend(('Term Source REF', 'Term Accession'))
-                for factor_value in study.materials['samples'][0].factor_values:
-                    sample_headers.append('Factor Value[' + factor_value.factor_name.name + ']')
-                    if not (factor_value.unit is None):
-                        sample_headers.append('Unit')
-                    sample_headers.extend(('Term Source REF', 'Term Accession'))
-                source_headers.extend(sample_headers)
                 import csv
                 study_file_writer = csv.writer(study_fp, delimiter='\t')
-                study_file_writer.writerow(source_headers)
+                study_file_writer.writerow(study_col_headers)
                 # Now write out the row content
                 for process in study.process_sequence:
                     inputs_dict = dict()
@@ -770,7 +803,9 @@ def dump(isa_obj, output_path):
                                         row.append(characteristic.value.name)
                                         row.append(characteristic.value.term_source)
                                         row.append(characteristic.value.term_accession)
-                            row.append(process.executes_protocol)
+                                    else:
+                                        row.append(characteristic.value)
+                            row.append(process.executes_protocol.name)
                             for parameter_value in process.parameter_values:
                                 if isinstance(parameter_value.value, int) or \
                                         isinstance(parameter_value.value, float):
@@ -782,6 +817,8 @@ def dump(isa_obj, output_path):
                                     row.append(parameter_value.value.name)
                                     row.append(parameter_value.value.term_source)
                                     row.append(parameter_value.value.term_accession)
+                                else:
+                                    row.append(parameter_value.value)
                             row.append(output.name)
                             for characteristic in output.characteristics:
                                 if isinstance(characteristic.value, int) or isinstance(characteristic.value, float):
@@ -793,6 +830,8 @@ def dump(isa_obj, output_path):
                                     row.append(characteristic.value.name)
                                     row.append(characteristic.value.term_source)
                                     row.append(characteristic.value.term_accession)
+                                else:
+                                    row.append(characteristic.value)
                             for factor_value in output.factor_values:
                                 if isinstance(factor_value.value, int) or isinstance(factor_value.value, float):
                                     row.append(factor_value.value)
@@ -803,6 +842,8 @@ def dump(isa_obj, output_path):
                                     row.append(factor_value.value.name)
                                     row.append(factor_value.value.term_source)
                                     row.append(factor_value.value.term_accession)
+                                else:
+                                    row.append(factor_value.value)
                         study_file_writer.writerow(row)
                 study_fp.close()
                 for assay in study.assays:
@@ -828,7 +869,6 @@ def dump(isa_obj, output_path):
                         if len(graph.out_edges(node)) == 0:
                             end_nodes.append(node)
                     # Start building headers by traversing all end-to-end paths; assumes correct experimental graphs
-                    from networkx.algorithms import all_simple_paths
                     for start_node in start_nodes:
                         for end_node in end_nodes:
                             paths = list(all_simple_paths(graph, start_node, end_node))
@@ -859,8 +899,7 @@ def dump(isa_obj, output_path):
                                                                      parameter_value.category.parameter_name.name + ']')
                                             if not (parameter_value.unit is None):
                                                 assay_col_headers.append('Unit')
-                                                assay_col_headers.append('Term Source REF')
-                                                assay_col_headers.append('Term Accession Number')
+                                                assay_col_headers.extend(('Term Source REF', 'Term Accession Number'))
                                     else:
                                         raise IOError("Unexpected node: " + str(node))
                                 break
