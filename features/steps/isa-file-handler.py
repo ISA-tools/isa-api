@@ -117,6 +117,15 @@ def step_impl(context, remote_source, repo_name, owner_name):
     context.owner_name = owner_name
 
 
+@step('a branch named "{branch_name}"')
+def step_impl(context, branch_name):
+    """
+    :type branch_name: str
+    :type context: behave.runner.Context
+    """
+    context.branch_name = branch_name
+
+
 @step('a destination directory "{destination_dir}" in your home folder')
 def step_impl(context, destination_dir):
     """
@@ -149,10 +158,11 @@ def step_impl(context):
                                    content_type='text/plain; charset=utf-8')
 
         context.items_in_dir = items_in_dir
-        res = context.isa_adapter.retrieve(context.source_path, context.destination_path, context.owner_name,
-                                     context.repo_name)
+    branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
+    context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
+                                               owner=context.owner_name, repository=context.repo_name, branch=branch)
 
-    expect(res).to.be.true
+    expect(context.res).to.be.true
     expect(httpretty.has_request()).to.be.true
 
 
@@ -196,8 +206,9 @@ def step_impl(context):
         context.zip_content = zip_file.read()
         httpretty.register_uri(httpretty.GET, download_url, body=context.zip_content, content_type='application/zip')
 
-    context.res = context.isa_adapter.retrieve(context.source_path, context.destination_path, context.owner_name,
-                                               context.repo_name)
+    branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
+    context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
+                                               owner=context.owner_name, repository=context.repo_name, branch=branch)
 
     expect(context.res).to.be.true
     expect(httpretty.has_request()).to.be.true
@@ -232,11 +243,11 @@ def step_impl(context):
     fixture_file_path_raw = os.path.abspath(os.path.join('features', 'fixtures', fixture_file_name_raw))
 
     # create the url to GET the encoded dataset
-    download_url = '/'.join([GITHUB_API_URL, REPOS, context.owner_name, context.repo_name,
+    encoded_file_url = '/'.join([GITHUB_API_URL, REPOS, context.owner_name, context.repo_name,
                              CONTENTS, context.source_path])
     with open(fixture_file_path_encoded) as json_file:
         context.json_isa_dataset_encoded = json.load(json_file)
-        httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.json_isa_dataset_encoded))
+        httpretty.register_uri(httpretty.GET, encoded_file_url, body=json.dumps(context.json_isa_dataset_encoded))
 
     # retrieve the url to GET the raw dataset
     download_url = context.json_isa_dataset_encoded['download_url']
@@ -244,10 +255,15 @@ def step_impl(context):
         context.json_isa_dataset_raw = json.load(json_file)
         httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.json_isa_dataset_raw))
 
-    context.res = context.isa_adapter.retrieve(context.source_path, context.destination_path, context.owner_name,
-                                               context.repo_name)
+    branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
+    context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
+                                               owner=context.owner_name, repository=context.repo_name, branch=branch)
 
     expect(httpretty.has_request()).to.be.true
+    expect(httpretty.last_request().method).to.equal('GET')
+    branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
+    path = encoded_file_url.replace(GITHUB_API_URL, '') + '?ref=' + branch
+    expect(httpretty.last_request().path).to.equal(path)
 
 
 @then("it should download it as a JSON file")
@@ -282,7 +298,7 @@ def step_impl(context):
     file_name = context.source_path.split('/')[-1].replace('.xml', '.json')
     fixture_file_name = '_'.join([context.owner_name, context.repo_name, file_name]).replace('/', '_')
 
-    download_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name,
+    encoded_file_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name,
                              'contents', context.source_path])
 
     fixture_file_path = os.path.abspath(os.path.join('features', 'fixtures', fixture_file_name))
@@ -290,7 +306,7 @@ def step_impl(context):
     with open(fixture_file_path) as json_file:
         context.xml_encoded = json.load(json_file)
     # httpretty.register_uri(httpretty.GET, download_url, body=etree.tostring(context.config_xml_content.getroot()))
-        httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.xml_encoded))
+        httpretty.register_uri(httpretty.GET, encoded_file_url, body=json.dumps(context.xml_encoded))
 
     # build up the path to the fixtures RAW XML file
     fixture_file_frags = context.source_path.split('/')
@@ -303,10 +319,15 @@ def step_impl(context):
         httpretty.register_uri(httpretty.GET, download_url, body=context.xml_text, content_type='text/plain')
         context.xml = etree.parse(StringIO(context.xml_text))
 
-    context.res = context.isa_adapter.retrieve(context.source_path, context.destination_path, context.owner_name,
-                                               context.repo_name)
+    branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
+    context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
+                                               owner=context.owner_name, repository=context.repo_name, branch=branch)
 
     expect(httpretty.has_request()).to.be.true
+    expect(httpretty.last_request().method).to.equal('GET')
+    branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
+    path = encoded_file_url.replace(GITHUB_API_URL, '') + '?ref=' + branch
+    expect(httpretty.last_request().path).to.equal(path)
 
 
 @then("it should download it as an XML file")
@@ -360,8 +381,9 @@ def step_impl(context):
         context.text_file = text_file.read()
         httpretty.register_uri(httpretty.GET, download_url, body=context.text_file, content_type='text/plain')
 
-    context.res = context.isa_adapter.retrieve(context.source_path, context.destination_path, context.owner_name,
-                                               context.repo_name)
+    branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
+    context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
+                                               owner=context.owner_name, repository=context.repo_name, branch=branch)
 
 
 @then("it should not save the file")
