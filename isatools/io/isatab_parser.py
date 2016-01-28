@@ -409,27 +409,40 @@ class StudyAssayParser:
                 for line in reader:
                     name = line[header_index]
                     #to deal with same name used for different node types (e.g. Source Name and Sample Name using the same string)
-                    node_index = self._build_node_index(node_type,name)
+                    node_index_name = self._build_node_index(node_type,name)
                     #skip the header line and empty lines
                     if name in headers:
                         continue
                     if (not name):
                         continue
                     try:
-                        node = nodes[node_index]
-                    except KeyError:
-                        node = NodeRecord(name, node_type, node_index)
-                        node.metadata = collections.defaultdict(set)
-                        nodes[node_index] = node
-                        attrs = self._line_keyvals(line, headers, hgroups, htypes, node.metadata)
-                        nodes[node_index].metadata = attrs
+                        node = nodes[node_index_name]
 
                         attribute_headers = []
                         for attribute_index in attribute_indices:
                             attribute_header = headers[hgroups[attribute_index][0]]
-                            attribute_headers.append(attribute_header)
+                            if attribute_header.startswith("Factor Value") and node_type != "Sample Name":
+                                continue
+                            if attribute_header not in node.attributes:
+                                attribute_headers.append(attribute_header)
+                                node.attributes.append(attribute_header)
 
-                        node.attributes = attribute_headers
+                    except KeyError:
+                        node = NodeRecord(name, node_type, node_index_name)
+                        node.metadata = collections.defaultdict(set)
+                        nodes[node_index_name] = node
+                        attrs = self._line_keyvals(line, headers, hgroups, htypes, node.metadata)
+                        nodes[node_index_name].metadata = attrs
+
+                        attribute_headers = []
+                        for attribute_index in attribute_indices:
+                            attribute_header = headers[hgroups[attribute_index][0]]
+                            if attribute_header.startswith("Factor Value") and node_type != "Sample Name":
+                                continue
+                            if attribute_header not in node.attributes:
+                                attribute_headers.append(attribute_header)
+                                node.attributes.append(attribute_header)
+
 
         return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
 
