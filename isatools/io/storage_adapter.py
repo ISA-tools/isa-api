@@ -9,8 +9,31 @@ import pathlib
 
 __author__ = 'massi'
 
+INVESTIGATION_SCHEMA_FILE = os.path.abspath(os.path.join('isatools', 'schemas', 'isa_model_version_1_0_schemas',
+                                                             'core', 'investigation_schema.json'))
+CONFIGURATION_SCHEMA_FILE = os.path.join('isatools', 'schemas', 'isatab_configurator.xsd')
 
-def validate_json_against_schema(schema_src, json_dict):
+GITHUB_API_BASE_URL = 'https://api.github.com'
+GITHUB_RAW_MEDIA_TYPE = 'application/vnd.github.VERSION.raw'
+REPOS = 'repos'
+CONTENTS = 'contents'
+
+
+def validate_xml_against_schema(xml_str, xml_schema_file):
+    """
+    Validate an XML string against an XML schema definition
+    :type xml_str str
+    :type xml_schema_file str - valid file path to the XSD file
+    """
+    with open(xml_schema_file, 'rb') as schema_file:
+        schema_root = etree.XML(schema_file.read())
+    xml_parser = etree.XMLParser(schema=etree.XMLSchema(schema_root))
+
+    # parse XML to validate against schema
+    return etree.fromstring(xml_str, xml_parser)
+
+
+def validate_json_against_schema(json_dict, schema_src):
     with open(schema_src) as schema_file:
         schema = json.load(schema_file)
     resolver = RefResolver(pathlib.Path(os.path.abspath(schema_src)).as_uri(), schema)
@@ -43,12 +66,7 @@ class IsaStorageAdapter(metaclass=ABCMeta):
 
 class IsaGitHubStorageAdapter(IsaStorageAdapter):
 
-    INVESTIGATION_SCHEMA_FILE = os.path.abspath(os.path.join('isatools', 'schemas', 'isa_model_version_1_0_schemas',
-                                                             'core', 'investigation_schema.json'))
-    CONFIGURATION_SCHEMA_FILE = os.path.join('isatools', 'schemas', 'isatab_configurator.xsd')
-    GITHUB_API_BASE_URL = 'https://api.github.com'
     AUTH_ENDPOINT = urljoin(GITHUB_API_BASE_URL, 'authorizations')
-    GITHUB_RAW_MEDIA_TYPE = 'application/vnd.github.VERSION.raw'
 
     def __init__(self, username=None, password=None, note=None, scopes=('gist', 'repo')):
         """
@@ -109,12 +127,12 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                                    Valid only for JSON datasets
         """
         # get the content at source as raw data
-        get_content_frag = '/'.join(['repos', owner, repository, 'contents', source])
+        get_content_frag = '/'.join([REPOS, owner, repository, CONTENTS, source])
         headers = {
             'Authorization': 'token %s' % self.token,
-            'Accept': self.GITHUB_RAW_MEDIA_TYPE
+            'Accept': GITHUB_RAW_MEDIA_TYPE
         }
-        res = requests.get(urljoin(self.GITHUB_API_BASE_URL, get_content_frag), headers=headers)
+        res = requests.get(urljoin(GITHUB_API_BASE_URL, get_content_frag), headers=headers)
 
         if res.status_code == requests.codes.ok:
             # try to parse the response payload as JSON
@@ -124,14 +142,13 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                 # if it is a directory
                 if isinstance(res_payload, list):
                     # then download all the items in the directory
-                    self._download_dir(source.split('/')[-1], destination, res_payload)
-                    return True
+                    return self._download_dir(source.split('/')[-1], destination, res_payload)
 
                 # if it is an object it's the file content to be stored
                 else:
                     # validate against JSON schema
                     if validate_json:
-                        validate_json_against_schema(self.INVESTIGATION_SCHEMA_FILE, res_payload)
+                        validate_json_against_schema(res_payload, INVESTIGATION_SCHEMA_FILE)
 
                     # save it to disk
                     os.makedirs(destination, exist_ok=True)
@@ -142,7 +159,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             except ValueError:
                 # try to parse the response payload as XML
                 try:
-                    with open(self.CONFIGURATION_SCHEMA_FILE, 'rb') as schema_file:
+                    with open(CONFIGURATION_SCHEMA_FILE, 'rb') as schema_file:
                         schema_root = etree.XML(schema_file.read())
                     xml_parser = etree.XMLParser(schema=etree.XMLSchema(schema_root))
                     # try to parse XML to validate against schema
@@ -159,8 +176,42 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             print("The request was not successfully fulfilled: ", res.status_code)
             return False
 
-    def retrieve(self):
-        pass
+    def retrieve(self, source, destination, owner=None, repository=None, validate_json=False, decode_content=False,
+                 write_to_file=True):
+        get_content_frag = '/'.join([REPOS, owner, repository, CONTENTS, source])
+        headers = {
+            'Authorization': 'token %s' % self.token,
+            'cache-control': 'no-cache'
+        }
+        r = requests.get(urljoin(GITHUB_API_BASE_URL, get_content_frag), headers=headers)
+        if r.status_code == requests.codes.ok:
+            res_payload = json.loads(r.text)
+
+            # if it is a directory
+            if isinstance(res_payload, list):
+                return self._download_dir(source.split('/')[-1], destination, res_payload)
+
+            # if it is an object decode the content (if the option is available)
+            elif decode_content:
+                processed_payload =  self._handle_content(res_payload)
+
+            # if it is an object the retrieve or download it
+            else:
+                processed_payload = self._retrieve_file(res_payload['download_url'])
+
+            if write_to_file and ('content' in processed_payload or 'text' in processed_payload):
+                (out_data, modality) = (processed_payload['text'], 'w+') if 'text' in processed_payload \
+                    else (processed_payload['content'], 'wb+')
+                os.makedirs(destination, exist_ok=True)
+                with open(os.path.join(destination, source.split('/')[-1]), modality) as out_file:
+                    out_file.write(out_data)
+
+            # return the JSON or XML content if available
+            if isinstance(processed_payload, dict):
+                return processed_payload['json'] if 'json' in processed_payload else processed_payload['xml'] \
+                    if 'xml' in processed_payload else True
+
+        return False
 
     def create(self):
         pass
@@ -172,6 +223,9 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         pass
 
     def _download_dir(self, directory, destination, dir_items):
+        """
+        Retrieves the full content of a directory
+        """
         headers = {
             'Authorization': 'token %s' % self.token
         }
@@ -187,6 +241,76 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                 os.makedirs(dir_path, exist_ok=True)
                 with open(os.path.join(dir_path, file_name), 'w+') as out_file:
                     out_file.write(res.text)
+        return True
+
+    def _handle_content(self, payload, content_type, validate_json=False):
+        """
+        Handle file content
+        """
+        content = payload['content'].decode(payload['encoding'])
+        try:
+            # try to parse the content as JSON and validate (if required)
+            json_content = json.loads(content)
+            if validate_json:
+                validate_json_against_schema(json_content, INVESTIGATION_SCHEMA_FILE)
+            return {
+                'json': json_content,
+                'text': content
+            }
+
+        except ValueError:
+            try:
+                # try to parse the content as XML against configuration schema
+                xml = validate_xml_against_schema(content, CONFIGURATION_SCHEMA_FILE)
+                return {
+                    'xml': xml,
+                    'text': content
+                }
+            except etree.XMLSyntaxError:
+                return {
+                    'content': content
+                }
+
+    def _retrieve_file(self, file_uri, validate_json=False):
+        """
+        Retrieve the raw file for further processing
+        """
+        headers = {
+            'Authorization': 'token %s' % self.token
+        }
+        r = requests.get(file_uri, headers=headers)
+        if r.status_code == requests.codes.ok:
+
+            content_type = r.headers['content-type'].split(';')[0]
+
+            # if content is a text file it might be a JSON or XML
+            if content_type == 'text/plain':
+                try:
+                    json_payload = json.loads(r.text or r.content)
+                    if validate_json:
+                        validate_json_against_schema(json_payload, INVESTIGATION_SCHEMA_FILE)
+                    return {
+                        'json': json_payload,
+                        'text': r.text or r.content
+                    }
+                except ValueError:
+                    try:
+                        xml_payload = validate_xml_against_schema(r.text or r.content, CONFIGURATION_SCHEMA_FILE)
+                        return {
+                            'xml': xml_payload,
+                            'text': r.text or r.content
+                        }
+                    except etree.XMLSyntaxError:
+                        pass
+
+            # if content is a zip file
+            elif content_type == 'application/zip':
+                return {
+                    'content': r.content
+                }
+
+        return {}
+
 
 
 
