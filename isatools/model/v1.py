@@ -553,3 +553,11 @@ class CharacteristicCategory(IsaObject):
             self.characteristic_type = OntologyAnnotation()
         else:
             self.characteristic_type = characteristic_type
+
+
+def batch_create_source(obj=None, n=1):
+    obj_list = list()
+    if isinstance(obj, Source):
+        for x in range(0, n):
+            obj_list.append(Source(obj.name + '-' + str(x), characteristics=obj.characteristics, comments=obj.comments))
+    return obj_list
