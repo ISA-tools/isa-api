@@ -226,16 +226,15 @@ def step_impl(context):
 
     # build up the path to the file with the encoded dataset
     fixture_file_name = '_'.join([context.owner_name, context.repo_name, context.source_path]).replace('/', '_')
-    fixture_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures', fixture_file_name))
-
-    # build up the path to the fixtures RAW file
-    fixture_file_frags = context.source_path.split('/')
-    fixture_file_path_raw = os.path.abspath(os.path.join(*fixture_file_frags))
+    fixture_file_name_encoded = fixture_file_name.replace('.json', '_encoded.json')
+    fixture_file_name_raw = fixture_file_name.replace('.json', '_raw.json')
+    fixture_file_path_encoded = os.path.abspath(os.path.join('features', 'fixtures', fixture_file_name_encoded))
+    fixture_file_path_raw = os.path.abspath(os.path.join('features', 'fixtures', fixture_file_name_raw))
 
     # create the url to GET the encoded dataset
     download_url = '/'.join([GITHUB_API_URL, REPOS, context.owner_name, context.repo_name,
                              CONTENTS, context.source_path])
-    with open(fixture_file_path) as json_file:
+    with open(fixture_file_path_encoded) as json_file:
         context.json_isa_dataset_encoded = json.load(json_file)
         httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.json_isa_dataset_encoded))
 

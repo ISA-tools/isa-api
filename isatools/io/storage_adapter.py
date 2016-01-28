@@ -6,6 +6,7 @@ import requests
 import json
 import os
 import pathlib
+import base64
 
 __author__ = 'massi'
 
@@ -44,11 +45,12 @@ def validate_json_against_schema(json_dict, schema_src):
 class IsaStorageAdapter(metaclass=ABCMeta):
 
     @abstractmethod
-    def download(self, source, destination, owner=None, repository=None):
+    def download(self, source, destination=None, owner=None, repository=None):
         pass
 
     @abstractmethod
-    def retrieve(self):
+    def retrieve(self, source, destination=None, owner=None, repository=None, decode_content=True, validate_json=False,
+                 write_to_file=True):
         pass
 
     @abstractmethod
@@ -116,7 +118,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         else:
             return False
 
-    def download(self, source, destination, owner=None, repository=None, validate_json=False):
+    def download(self, source, destination, owner='ISA-tools', repository='isa-api', validate_json=False):
         """
         Call to download a resource from a remote GitHub repository
         :type source: str - URLish path to the source (within the GitHub repository)
@@ -176,8 +178,9 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             print("The request was not successfully fulfilled: ", res.status_code)
             return False
 
-    def retrieve(self, source, destination, owner=None, repository=None, validate_json=False, decode_content=False,
-                 write_to_file=True):
+    def retrieve(self, source, destination='isa-target', owner='ISA-tools', repository='isa-api', validate_json=False,
+                 decode_content=True, write_to_file=True):
+
         get_content_frag = '/'.join([REPOS, owner, repository, CONTENTS, source])
         headers = {
             'Authorization': 'token %s' % self.token,
@@ -243,33 +246,50 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                     out_file.write(res.text)
         return True
 
-    def _handle_content(self, payload, content_type, validate_json=False):
+    def _handle_content(self, payload, validate_json=False, char_set='utf-8'):
         """
-        Handle file content
+        Handle file content, decoding its 'content' property, without firing another GET request to GitHub
         """
-        content = payload['content'].decode(payload['encoding'])
-        try:
+        # determine decoding strategy
+        if payload['encoding'] == 'base64':
+            decode_cmd = base64.b64decode
+        elif payload['encoding'] == 'base32':
+            decode_cmd = base64.b32decode
+
+        decoded_content = decode_cmd(payload['content'])
+        file_name = payload['name']
+        file_ext = file_name.split('.')[-1]
+
+        # if file is JSON
+        if file_ext == 'json':
             # try to parse the content as JSON and validate (if required)
-            json_content = json.loads(content)
+            decoded_content = decoded_content.decode(char_set)
+            json_content = json.loads(decoded_content)
             if validate_json:
                 validate_json_against_schema(json_content, INVESTIGATION_SCHEMA_FILE)
             return {
                 'json': json_content,
-                'text': content
+                'text': decoded_content
             }
 
-        except ValueError:
-            try:
-                # try to parse the content as XML against configuration schema
-                xml = validate_xml_against_schema(content, CONFIGURATION_SCHEMA_FILE)
-                return {
-                    'xml': xml,
-                    'text': content
-                }
-            except etree.XMLSyntaxError:
-                return {
-                    'content': content
-                }
+        # if file is XML
+        elif file_ext == 'xml':
+            # try to parse the content as XML against configuration schema
+            decoded_content = decoded_content.decode(char_set)
+            xml = validate_xml_against_schema(decoded_content, CONFIGURATION_SCHEMA_FILE)
+            return {
+                'xml': xml,
+                'text': decoded_content
+            }
+
+        # if ZIP file return raw content
+        elif file_ext == 'zip':
+            return {
+                'content': decoded_content
+            }
+
+        else:
+            return {}
 
     def _retrieve_file(self, file_uri, validate_json=False):
         """
