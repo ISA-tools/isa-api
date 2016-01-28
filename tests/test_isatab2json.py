@@ -16,13 +16,55 @@ class ISAtab2jsonTest(TestCase):
     def tearDown(self):
         shutil.rmtree(self._tmp, ignore_errors=True)
 
+
+    def test_isa_charac_param_factor(self):
+        isatab2json.convert(os.path.join(self._dir, './data/TEST-ISA-charax-param-factor/'), self._dir, isatab2json.IdentifierType.name)
+        isa_json = json.load(open(os.path.join(self._dir, 'TEST-ISA-charac-param-factor.json')))
+        self.assertEqual(isa_json["identifier"], "TEST-ISA-charac-param-factor")
+
+
     def test_isa_repeated_measure_conversion(self):
-        isatab2json.convert(os.path.join(self._dir, './data/TEST-ISA-repeated-measure/'), self._dir)
+        isatab2json.convert(os.path.join(self._dir, './data/TEST-ISA-repeated-measure/'), self._dir, isatab2json.IdentifierType.name)
         #isa_json = json.load(open(os.path.join(self._dir, 'TEST-ISA-repeated-measure.json')))
 
+
+    def test_isa_sample_pool_conversion(self):
+        isatab2json.convert(os.path.join(self._dir, './data/TEST-ISA-sample-pool/'), self._dir, isatab2json.IdentifierType.name)
+        #isa_json = json.load(open(os.path.join(self._dir, 'TEST-ISA-repeated-measure.json')))
+
+
+    def test_isa_sample_pool_with_error_conversion(self):
+        isatab2json.convert(os.path.join(self._dir, './data/TEST-ISA-sample-pool-with-error/'), self._dir, isatab2json.IdentifierType.name)
+        #isa_json = json.load(open(os.path.join(self._dir, 'TEST-ISA-repeated-measure.json')))
+
+
+    def test_isa_source_split_conversion(self):
+        isatab2json.convert(os.path.join(self._dir, './data/TEST-ISA-source-split/'), self._dir, isatab2json.IdentifierType.name)
+        #isa_json = json.load(open(os.path.join(self._dir, 'TEST-ISA-repeated-measure.json')))
+
+
+    def test_isa_source_split_with_error_conversion(self):
+        isatab2json.convert(os.path.join(self._dir, './data/TEST-ISA-source-split-with-error/'), self._dir, isatab2json.IdentifierType.name)
+        #isa_json = json.load(open(os.path.join(self._dir, 'TEST-ISA-repeated-measure.json')))
+
+
+    def test_bii_s_3_conversion(self):
+        self.sample_data_dir = os.path.join(self._dir, "../isatools/sampledata/")
+        test_data_dir = os.path.join(self._dir, "./data/BII-S-3")
+        #isatab2json.convert(test_data_dir, self.sample_data_dir, isatab2json.IdentifierType.name)
+
+    def test_bii_s_7_conversion(self):
+        self.sample_data_dir = os.path.join(self._dir, "../isatools/sampledata/")
+        test_data_dir = os.path.join(self._dir, "./data/BII-S-7")
+        #isatab2json.convert(test_data_dir, self.sample_data_dir, isatab2json.IdentifierType.name)
+
     def test_bii_i_1_conversion(self):
-        isatab2json.convert(os.path.join(self._dir, './data/BII-I-1/'), self._tmp)
+        isatab2json.convert(os.path.join(self._dir, './data/BII-I-1/'), self._tmp, isatab2json.IdentifierType.name)
         isa_json = json.load(open(os.path.join(self._tmp, 'BII-I-1.json')))
+        #test_data_dir = os.path.join(self._dir, "./data/BII-I-1")
+        #self.sample_data_dir = os.path.join(self._dir, "../isatools/sampledata/")
+        #isatab2json.convert(test_data_dir, self.sample_data_dir, isatab2json.IdentifierType.name)
+
         self.assertEqual(isa_json["identifier"], "BII-I-1")
         self.assertEqual(isa_json["title"], "Growth control of the eukaryote cell: a systems biology study in yeast")
         self.assertEqual(isa_json["description"], "Background Cell growth underlies many key cellular and "
@@ -75,7 +117,7 @@ class ISAtab2jsonTest(TestCase):
                                                                     "NW, Lilley KS, Kell DB, Oliver SG.")
         self.assertEqual(isa_json["publications"][0]["title"], "Growth control of the eukaryote cell: a systems "
                                                                "biology study in yeast.")
-        self.assertEqual(isa_json["publications"][0]["status"]["name"], "indexed in Pubmed")
+        self.assertEqual(isa_json["publications"][0]["status"]["annotationValue"], "indexed in Pubmed")
 
         self.assertEqual(len(isa_json["people"]), 3)
         self.assertEqual(isa_json["people"][0]["firstName"], "Oliver")
@@ -104,18 +146,11 @@ class ISAtab2jsonTest(TestCase):
         self.assertEqual(len(isa_json["studies"][0]["factors"]), 2)
         self.assertEqual(isa_json["studies"][0]["factors"][0]["factorName"], "limiting nutrient")
         self.assertEqual(isa_json["studies"][0]["factors"][1]["factorName"], "rate")
-        self.assertEqual(isa_json["studies"][0]["factors"][0]["factorType"]["name"], "chemical compound")
-        self.assertEqual(isa_json["studies"][0]["factors"][1]["factorType"]["name"], "rate")
+        self.assertEqual(isa_json["studies"][0]["factors"][0]["factorType"]["annotationValue"], "chemical compound")
+        self.assertEqual(isa_json["studies"][0]["factors"][1]["factorType"]["annotationValue"], "rate")
 
-        self.assertEqual(len(isa_json["studies"][0]["sources"]), 18)
-        self.assertEqual(len(isa_json["studies"][0]["samples"]), 163)
-        self.assertEqual(len(isa_json["studies"][1]["sources"]), 1)
-        self.assertEqual(len(isa_json["studies"][1]["samples"]), 2)
+        self.assertEqual(len(isa_json["studies"][0]["materials"]["sources"]), 18)
+        self.assertEqual(len(isa_json["studies"][0]["materials"]["samples"]), 163)
+        self.assertEqual(len(isa_json["studies"][1]["materials"]["sources"]), 1)
+        self.assertEqual(len(isa_json["studies"][1]["materials"]["samples"]), 2)
 
-
-    # def test_bii_s_3_conversion(self):
-    #   self.isatab2json = ISATab2ISAjson_v1()
-    #   test_data_dir = os.path.join(self._dir, "./data/BII-S-3")
-    #   self.sample_data_dir = os.path.join(self._dir, "../isatools/sampledata/")
-    #   isa_json = self.isatab2json.convert(test_data_dir, self.sample_data_dir)
-    #   assert(isa_json["identifier"] == "BII-S-3")
