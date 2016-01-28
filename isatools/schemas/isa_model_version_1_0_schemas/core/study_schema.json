@@ -40,22 +40,25 @@
         "$ref": "protocol_schema.json#"
       }
     },
-    "sources": {
-      "type": "array",
-      "items" : {
-        "$ref": "source_schema.json#"
-      }
-    },
-    "samples": {
-      "type": "array",
-      "items" : {
-        "$ref": "sample_schema.json#"
-      }
-    },
+
     "materials": {
-      "type": "array",
-      "items" : {
-        "$ref": "material_schema.json#"
+      "sources": {
+        "type": "array",
+        "items" : {
+          "$ref": "source_schema.json#"
+        }
+      },
+      "samples": {
+        "type": "array",
+        "items" : {
+          "$ref": "sample_schema.json#"
+        }
+      },
+      "otherMaterials": {
+        "type": "array",
+        "items" : {
+          "$ref": "material_schema.json#"
+        }
       }
     },
     "processSequence": {
@@ -76,11 +79,18 @@
         "$ref": "factor_schema.json#"
       }
     },
-    "charactersitics": {
-      "description": "List of all the characteristics (or material attributes) defined in the study, used to avoid duplication of their declaration when each material_attribute_value is created. ",
+    "characteristicCategories": {
+      "description": "List of all the characteristics categories (or material attributes) defined in the study, used to avoid duplication of their declaration when each material_attribute_value is created. ",
       "type": "array",
       "items": {
         "$ref": "material_attribute_schema.json#"
+      }
+    },
+    "unitCategories": {
+      "description": "List of all the unitsdefined in the study, used to avoid duplication of their declaration when each value is created. ",
+      "type": "array",
+      "items": {
+        "$ref": "ontology_annotation_schema.json#"
       }
     },
     "comments" : {

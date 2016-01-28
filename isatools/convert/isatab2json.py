@@ -18,6 +18,11 @@ def convert(work_dir, json_dir):
 
 class ISATab2ISAjson_v1:
 
+    MATERIAL_TYPE = "Material Type"
+    CHARACTERISTICS = "Characteristics"
+    CHARACTERISTIC_CATEGORY = "characteristic_category"
+    FACTOR_VALUE = "Factor Value"
+
     def __init__(self):
         self.identifiers = list() #list of dictionaries
         self.counters = dict()
@@ -105,7 +110,9 @@ class ISATab2ISAjson_v1:
     def createContacts(self, contacts, inv_or_study):
         people_json = []
         for contact in contacts:
+            person_identifier = self.generateIdentifier("person")
             person_json = dict([
+                ("@id", person_identifier),
                 ("lastName", contact[inv_or_study+" Person Last Name"]),
                 ("firstName", contact[inv_or_study+" Person First Name"]),
                 ("midInitials", contact[inv_or_study+" Person Mid Initials"]),
@@ -160,7 +167,7 @@ class ISATab2ISAjson_v1:
         parameters_json = self.createOntologyAnnotationsFromStringList(protocol, "Study", " Protocol Parameters Name")
         for parameter_json in parameters_json:
             parameter_identifier = self.generateIdentifier("parameter")
-            self.setIdentifier("parameter", parameters_json[0]["name"], parameter_identifier)
+            self.setIdentifier("parameter", parameters_json[0]["annotationValue"], parameter_identifier)
             json_item = dict([
                 ("@id", parameter_identifier),
                 ("parameterName",  parameter_json)
@@ -171,7 +178,7 @@ class ISATab2ISAjson_v1:
 
     def createOntologyAnnotationForInvOrStudy(self, object, inv_or_study, type):
         onto_ann = dict([
-                ("name", object[inv_or_study+type]),
+                ("annotationValue", object[inv_or_study+type]),
                 ("termSource", object[inv_or_study+type+" Term Source REF"]),
                 ("termAccession", object[inv_or_study+type+" Term Accession Number"])
         ])
@@ -180,7 +187,7 @@ class ISATab2ISAjson_v1:
 
     def createOntologyAnnotation(self, name, termSource, termAccesssion):
         onto_ann = dict([
-            ("name", name),
+            ("annotationValue", name),
             ("termSource", termSource),
             ("termAccession", termAccesssion)
         ])
@@ -193,11 +200,9 @@ class ISATab2ISAjson_v1:
         term_accession_array = object[inv_or_study+type+" Term Accession Number"].split(";")
         onto_annotations = []
         for i in range(0,len(name_array)):
-             onto_ann = dict([
-                 ("name", name_array[i]),
-                 ("termSource", term_source_array[i]),
-                 ("termAccession", term_accession_array[i])
-             ])
+             onto_ann = self.createOntologyAnnotation(name_array[i],
+                                                      term_source_array[i],
+                                                      term_accession_array[i] )
              onto_annotations.append(onto_ann)
         return onto_annotations
 
@@ -205,11 +210,9 @@ class ISATab2ISAjson_v1:
     def createOntologyAnnotationListForInvOrStudy(self, array, inv_or_study, type):
         onto_annotations = []
         for object in array:
-            onto_ann = dict([
-                ("name", object[inv_or_study+type]),
-                ("termSource", object[inv_or_study+type+" Term Source REF"]),
-                ("termAccession", object[inv_or_study+type+" Term Accession Number"])
-            ])
+            onto_ann = self.createOntologyAnnotation(object[inv_or_study+type],
+                                                     object[inv_or_study+type+" Term Source REF"],
+                                                     object[inv_or_study+type+" Term Accession Number"])
             onto_annotations.append(onto_ann)
         return onto_annotations
 
@@ -233,6 +236,7 @@ class ISATab2ISAjson_v1:
             study_identifier = self.generateIdentifier("study")
             study_name = study.metadata['Study Identifier']
             self.setIdentifier("study", study_name, study_identifier)
+            characteristics_categories_list = self.createCharacteristicsCategories(study.nodes)
             factors_list = self.createStudyFactorsList(study.factors)
             source_dict = self.createSourcesDictionary(study.nodes)
             sample_dict = self.createSampleDictionary(study.nodes)
@@ -251,10 +255,13 @@ class ISATab2ISAjson_v1:
                 ("people", self.createContacts(study.contacts, "Study")),
                 ("protocols", self.createProtocols(study.protocols)),
                 ("factors", factors_list),
-                ("sources", list(source_dict.values())),
-                ("samples",list(sample_dict.values())),
-                ("materials",list(material_dict.values())),
-                ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, data_dict)),
+                ("characteristicCategories", characteristics_categories_list),
+                ("materials", dict([
+                        ("sources", list(source_dict.values())),
+                        ("samples",list(sample_dict.values())),
+                        ("otherMaterials",list(material_dict.values()))
+                ])),
+                ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, material_dict, data_dict)),
                 ("assays", self.createStudyAssaysList(study.assays, sample_dict)),
                 ("filename", study.metadata['Study File Name']),
             ])
@@ -292,7 +299,7 @@ class ISATab2ISAjson_v1:
         return json_list
 
 
-    def createProcessSequence(self, process_nodes, source_dict, sample_dict, data_dict):
+    def createProcessSequence(self, process_nodes, source_dict, sample_dict, material_dict, data_dict):
         json_list = []
         for process_node_name in process_nodes:
             try:
@@ -310,16 +317,18 @@ class ISATab2ISAjson_v1:
             except:
                 technology = ""
 
+            process_node = process_nodes[process_node_name]
+
             json_item = dict([
-                    ("executesProtocol", self.createExecuteStudyProtocol(process_node_name, process_nodes[process_node_name])),
-                    ("parameterValues", self.createValueList("Parameter Value", process_node_name, process_nodes[process_node_name])),
-                    ("inputs", self.createInputList(process_nodes[process_node_name].inputs, source_dict, sample_dict)),
-                    ("outputs", self.createOutputList(process_nodes[process_node_name].outputs, sample_dict) )
+                    ("executesProtocol", self.createExecuteStudyProtocol(process_node_name, process_node)),
+                    ("parameterValues", self.createValueList("Parameter Value", process_node_name, process_node)),
+                    ("inputs", self.createInputList(process_node.inputs, source_dict, sample_dict, material_dict)),
+                    ("outputs", self.createOutputList(process_node.outputs, sample_dict, material_dict) )
             ])
             json_list.append(json_item)
         return json_list
 
-    def createInputList(self, inputs, source_dict, sample_dict):
+    def createInputList(self, inputs, source_dict, sample_dict, material_dict):
         json_list = []
         for argument in inputs:
             try:
@@ -334,15 +343,28 @@ class ISATab2ISAjson_v1:
                 json_list.append(sample_id)
             except KeyError:
                 pass
+            try:
+                json_item = material_dict[argument]
+                material_id = dict([("@id", json_item["@id"])])
+                json_list.append(material_id)
+            except KeyError:
+                pass
         return json_list
 
-    def createOutputList(self, arguments, sample_dict):
+    def createOutputList(self, arguments, sample_dict, material_dict):
         json_list = []
         for argument in arguments:
             try:
                 json_item = sample_dict[argument]
                 sample_id = dict([("@id", json_item["@id"])])
                 json_list.append(sample_id)
+            except KeyError:
+                pass
+
+            try:
+                json_item = material_dict[argument]
+                material_id = dict([("@id", json_item["@id"])])
+                json_list.append(material_id)
             except KeyError:
                 pass
         return json_list
@@ -357,6 +379,7 @@ class ISATab2ISAjson_v1:
     def createStudyAssaysList(self, assays, sample_dict):
         json_list = []
         for assay in assays:
+            characteristics_categories_list = self.createCharacteristicsCategories(assay.nodes)
             source_dict = self.createSourcesDictionary(assay.nodes)
             sample_list = self.createSampleReferenceDict(assay.nodes)
             material_dict = self.createMaterialDictionary(assay.nodes)
@@ -374,10 +397,13 @@ class ISATab2ISAjson_v1:
                                                                  assay.metadata['Study Assay Technology Type Term Source REF'],
                                                                  assay.metadata['Study Assay Technology Type Term Accession Number'])),
                 ("technologyPlatform", assay.metadata['Study Assay Technology Platform']),
-                ("samples", sample_list),
-                ("materials", list(material_dict.values())),
+                ("characteristicCategories", characteristics_categories_list),
+                ("materials", dict([
+                    ("samples", sample_list),
+                    ("otherMaterials", list(material_dict.values()))
+                ])),
                 ("dataFiles", list(data_dict.values())),
-                ("processSequence", self.createProcessSequence(assay.process_nodes, source_dict, sample_dict, data_dict))
+                ("processSequence", self.createProcessSequence(assay.process_nodes, source_dict, sample_dict, material_dict, data_dict))
                 ])
             json_list.append(json_item)
         return json_list
@@ -404,20 +430,22 @@ class ISATab2ISAjson_v1:
                 sample_identifier = self.generateIdentifier("sample")
                 self.setIdentifier("sample", node_index, sample_identifier)
 
-                source_json = dict([])
-
-                try:
-                    source_json = nodes[node_index].metadata["Source Name"]
-                except KeyError:
-                    print("There is no source declared for sample ", node_index)
-
                 json_item = dict([
                         ("@id", sample_identifier),
                         ("name", node_index),
-                        ("factorValues", self.createValueList("Factor Value", node_index, nodes[node_index])),
-                        ("characteristics", self.createValueList("Characteristics",node_index, nodes[node_index])),
-                        ("derivesFrom", source_json)
+                        ("factorValues", self.createValueList(self.FACTOR_VALUE, node_index, nodes[node_index])),
+                        ("characteristics", self.createValueList(self.CHARACTERISTICS,node_index, nodes[node_index]))
                     ])
+
+                #derivesFrom source
+                try:
+                    source_name = nodes[node_index].metadata["Source Name"][0]
+                    source_index = "source-"+source_name
+                    source_identifier = self.getIdentifier("source", source_index)
+                    json_item["derivesFrom"] = dict([ ("@id", source_identifier)])
+                except KeyError:
+                    print("There is no source declared for sample ", node_index)
+
                 json_dict.update({node_index: json_item})
 
         return json_dict
@@ -444,7 +472,7 @@ class ISATab2ISAjson_v1:
                 json_item = dict([
                     ("@id", source_identifier),
                     ("name", node_index),
-                    ("characteristics", self.createValueList("Characteristics", node_index, nodes[node_index])),
+                    ("characteristics", self.createValueList(self.CHARACTERISTICS, node_index, nodes[node_index])),
                 ])
                 json_dict.update({node_index: json_item})
         return json_dict
@@ -459,12 +487,42 @@ class ISATab2ISAjson_v1:
                     ("@id", material_identifier),
                     ("name", node_index),
                     ("type", nodes[node_index].ntype),
-                    ("characteristics", self.createValueList("Characteristics", node_index, nodes[node_index])),
+                    ("characteristics", self.createValueList(self.CHARACTERISTICS, node_index, nodes[node_index])),
                 ])
                 json_dict.update({node_index: json_item})
         return json_dict
 
 
+    def createCharacteristicsCategories(self, nodes):
+        json_list = []
+        for node_index in nodes:
+            node = nodes[node_index]
+            for header in node.metadata:
+                 if (not header.startswith(self.CHARACTERISTICS)) and (not header==self.MATERIAL_TYPE):
+                    continue
+                 value_header = header.replace("]", "").split("[")[-1]
+                 if header == self.MATERIAL_TYPE:
+                     value_header = self.MATERIAL_TYPE
+
+                 characteristic_category_identifier = self.getIdentifier(self.CHARACTERISTIC_CATEGORY, value_header)
+                 if characteristic_category_identifier:
+                     continue
+
+                 characteristic_category_identifier = self.generateIdentifier(self.CHARACTERISTIC_CATEGORY)
+                 self.setIdentifier(self.CHARACTERISTIC_CATEGORY, value_header, characteristic_category_identifier)
+
+                 json_item = dict([])
+                 if value_header.startswith("http"):
+                    #the header has an ontology annotation TODO - get a test dataset
+                    pass
+                 else:
+                    json_item = dict([
+                        ("@id", characteristic_category_identifier),
+                        ("characteristicType", self.createOntologyAnnotation(value_header, "", ""))
+                    ])
+
+                 json_list.append(json_item)
+        return json_list
 
     def convert_num(self, s):
         try:
@@ -476,27 +534,33 @@ class ISATab2ISAjson_v1:
                 return s
 
 
+
     def createValueList(self, column_name, node_name, node):
+        """Method for the creation of factor, characteristics and parameter values"""
         json_list = []
         for header in node.metadata:
-            if header.startswith(column_name):
+            if header.startswith(column_name) or header == self.MATERIAL_TYPE:
                  value_header = header.replace("]", "").split("[")[-1]
-
-                 #try:
+                 if header == self.MATERIAL_TYPE:
+                     value_header = self.MATERIAL_TYPE
                  value_attributes = node.metadata[header][0]
-                 #except TypeError:
-                 #   value_attributes = node.metadata[header]
-
-                 #try:
                  value  = self.convert_num(value_attributes[0])
-                 #except TypeError:
-                 #    value  = self.convert_num(value_attributes[0][0])
                  header_type = None
-                 #TODO use objects and unify the call below, adding the declaration of characteristics to the Study object
-                 if column_name.strip()=="Characteristics":
-                     header_type = "characteristic"
-                 if column_name.strip()=="Factor Value":
+
+                 if column_name.strip()==self.CHARACTERISTICS:
+                     if header not in node.attributes:
+                         continue
+                     header_type = self.CHARACTERISTIC_CATEGORY
+
+                 if column_name.strip()==self.FACTOR_VALUE:
+                     if header not in node.attributes:
+                         continue
                      header_type = "factor"
+
+                 if column_name.strip()=="Parameter Value":
+                     if header not in node.parameters:
+                         continue
+                     header_type = "parameter"
 
                  category_identifier =  self.getIdentifier(header_type, value_header)
 

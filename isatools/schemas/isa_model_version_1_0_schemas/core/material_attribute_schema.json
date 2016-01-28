@@ -5,7 +5,7 @@
     "type" : "object",
     "properties" : {
         "@id": { "type": "string", "format": "uri" },
-        "characteristicName": {
+        "characteristicType": {
             "$ref": "ontology_annotation_schema.json#"
         }
     },

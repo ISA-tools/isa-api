@@ -5,13 +5,13 @@
     "description" : "JSON-schema representing an ontology reference or annotation in the ISA model (for fields that are required to be ontology annotations)",
     "type" : "object",
     "properties" : {
-        "comments" : {
-            "type": "array",
-            "items": {
-                 "$ref": "comment_schema.json#"
-            }
+        "@id": { "type": "string", "format": "uri" },
+        "annotationValue": {
+            "anyOf": [
+                { "type": "string" },
+                { "type": "number"}
+            ]
         },
-        "name": { "type" : "string" },
         "termSource" : {
             "type" : "string",
             "description" : "The abbreviated ontology name. It should correspond to one of the sources as specified in the ontologySourceReference section of the Investigation."
@@ -19,6 +19,12 @@
         "termAccession" : {
             "type" : "string",
             "format" : "uri"
+        },
+        "comments" : {
+            "type": "array",
+            "items": {
+                "$ref": "comment_schema.json#"
+            }
         }
     },
     "additionalProperties": false

@@ -24,3 +24,6 @@ class ValidateJsonTest(TestCase):
 
     def test_sampledata_bii_s_7(self):
         validateJsonAgainstSchemas(self.investigation_schema_dir, "../isatools/sampledata/BII-S-7.json")
+
+    def test_ideally_canonical(self):
+        validateJsonAgainstSchemas(self.investigation_schema_dir, "../isatools/sampledata/ideally-canonical.json")
