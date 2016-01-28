@@ -49,8 +49,7 @@ class IsaStorageAdapter(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def retrieve(self, source, destination=None, owner=None, repository=None, decode_content=True, validate_json=False,
-                 write_to_file=True):
+    def retrieve(self, source, destination=None):
         pass
 
     @abstractmethod
@@ -118,7 +117,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         else:
             return False
 
-    def download(self, source, destination, owner='ISA-tools', repository='isa-api', validate_json=False):
+    def download(self, source, destination='isa-target', owner='ISA-tools', repository='isa-api', validate_json=False):
         """
         Call to download a resource from a remote GitHub repository
         :type source: str - URLish path to the source (within the GitHub repository)
@@ -178,15 +177,18 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             print("The request was not successfully fulfilled: ", res.status_code)
             return False
 
-    def retrieve(self, source, destination='isa-target', owner='ISA-tools', repository='isa-api', validate_json=False,
-                 decode_content=True, write_to_file=True):
+    def retrieve(self, source, destination='isa-target', owner='ISA-tools', repository='isa-api', branch='master',
+                 validate_json=False, decode_content=True, write_to_file=True):
 
         get_content_frag = '/'.join([REPOS, owner, repository, CONTENTS, source])
         headers = {
             'Authorization': 'token %s' % self.token,
             'cache-control': 'no-cache'
         }
-        r = requests.get(urljoin(GITHUB_API_BASE_URL, get_content_frag), headers=headers)
+        req_payload = {
+            'ref': branch
+        }
+        r = requests.get(urljoin(GITHUB_API_BASE_URL, get_content_frag), headers=headers, params=req_payload)
         if r.status_code == requests.codes.ok:
             res_payload = json.loads(r.text)
 
