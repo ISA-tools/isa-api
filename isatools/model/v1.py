@@ -230,10 +230,12 @@ class Study(IsaObject):
             'samples': list(),
             'other_material': list()
         }
-
-        self.materials['sources'].append(sources)
-        self.materials['samples'].append(samples)
-        self.materials['other_material'].append(other_material)
+        if not (sources is None):
+            self.materials['sources'].append(sources)
+        if not (samples is None):
+            self.materials['samples'].append(samples)
+        if not (other_material is None):
+            self.materials['other_material'].append(other_material)
 
         if process_sequence is None:
             self.process_sequence = list()
@@ -264,8 +266,9 @@ class StudyFactor(IsaObject):
         ontology_annotation: A representation of an ontology source reference
     """
 
-    def __init__(self, name="", factor_type=None, comments=None):
+    def __init__(self, id_='', name="", factor_type=None, comments=None):
         super().__init__(comments)
+        self.id = id_
         self.name = name
         if factor_type is None:
             self.factor_type = OntologyAnnotation()
@@ -394,7 +397,7 @@ class Source(IsaObject):
 
 
 class Characteristic(IsaObject):
-    def __init__(self, category=None, value=None, comments=None):
+    def __init__(self, category=None, value=None, unit=None, comments=None):
         super().__init__(comments)
         if category is None:
             self.category = CharacteristicCategory()
@@ -404,6 +407,7 @@ class Characteristic(IsaObject):
             self.value = OntologyAnnotation()
         else:
             self.value = value
+        self.unit = unit
 
 
 class Sample(IsaObject):
@@ -449,9 +453,9 @@ class Material(IsaObject):
 
 
 class FactorValue(IsaObject):
-    def __init__(self, factorName="", value=None, unit=None, comments=None):
+    def __init__(self, factor_name=None, value=None, unit=None, comments=None):
         super().__init__(comments)
-        self.factorName = factorName
+        self.factor_name = factor_name
         self.value = value
         self.unit = unit
 
@@ -497,12 +501,7 @@ class ParameterValue(object):
     def __init__(self, category="", value=None, unit=None):
         self.category = category
         self.value = value
-        # Only makes sense to set unit if value is numeric
-        if isinstance(value, int or float):
-            if unit is None:
-                self.unit = OntologyAnnotation()
-            else:
-                self.unit = unit
+        self.unit = unit
 
 
 class DataFileType(Enum):
