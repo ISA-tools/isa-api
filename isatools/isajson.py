@@ -196,7 +196,7 @@ def load(fp):
                 sources_dict[source.id] = source
                 study.materials['sources'].append(source)
             for sample_json in study_json['materials']['samples']:
-                logger.debug('Build Source object')
+                logger.debug('Build Sample object')
                 sample = Sample(
                     id_=sample_json['@id'],
                     name=sample_json['name'][7:],
@@ -228,6 +228,7 @@ def load(fp):
                         raise IOError("Unexpected type in characteristic value")
                     characteristic.value = value
                     characteristic.unit = unit
+                    sample.characteristics.append(characteristic)
                 for factor_value_json in sample_json['factorValues']:
                     logger.debug('Build Ontology Annotation object (Sample Factor Value)')
                     try:
