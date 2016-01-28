@@ -54,24 +54,33 @@
     "publications": [],
     "studies": [
         {
-            "@id": "http://data.isa-tools.org/study/1",
+            "@id": "#study/TEST-Template6-charax-param-factors",
             "assays": [
                 {
-                    "@id": "http://data.isa-tools.org/assay/1",
-                    "characteristicCategories": [],
+                    "@id": "#assay/a_test-template1-splitting_transcription_profiling_DNA_microarray.txt",
+                    "characteristicCategories": [
+                        {
+                            "@id": "#characteristic_category/Test",
+                            "characteristicType": {
+                                "annotationValue": "Test",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
                     "dataFiles": [
                         {
-                            "@id": "http://data.isa-tools.org/data/1",
+                            "@id": "#data/rawdatafile-Array_Data_File",
                             "name": "Array Data File",
                             "type": "Raw Data File"
                         },
                         {
-                            "@id": "http://data.isa-tools.org/data/2",
+                            "@id": "#data/rawdatafile-1.cel",
                             "name": "1.cel",
                             "type": "Raw Data File"
                         },
                         {
-                            "@id": "http://data.isa-tools.org/data/3",
+                            "@id": "#data/deriveddatafile-Derived_Array_Data_File",
                             "name": "Derived Array Data File",
                             "type": "Derived Data File"
                         }
@@ -80,7 +89,7 @@
                     "materials": {
                         "otherMaterials": [
                             {
-                                "@id": "http://data.isa-tools.org/material/1",
+                                "@id": "#material/extract-extract1",
                                 "characteristics": [],
                                 "name": "extract-extract1",
                                 "type": "Extract Name"
@@ -88,7 +97,7 @@
                         ],
                         "samples": [
                             {
-                                "@id": "http://data.isa-tools.org/sample/1"
+                                "@id": "#sample/sample-sample1"
                             }
                         ]
                     },
@@ -100,22 +109,22 @@
                     "processSequence": [
                         {
                             "executesProtocol": {
-                                "@id": "http://data.isa-tools.org/protocol/2"
+                                "@id": "#protocol/RNA_extraction"
                             },
                             "inputs": [
                                 {
-                                    "@id": "http://data.isa-tools.org/sample/1"
+                                    "@id": "#sample/sample-sample1"
                                 }
                             ],
                             "outputs": [
                                 {
-                                    "@id": "http://data.isa-tools.org/material/1"
+                                    "@id": "#material/extract-extract1"
                                 }
                             ],
                             "parameterValues": [
                                 {
                                     "category": {
-                                        "@id": "http://data.isa-tools.org/parameter/1"
+                                        "@id": "#parameter/storage_temperature"
                                     },
                                     "unit": {
                                         "annotationValue": "degree Celsius",
@@ -132,12 +141,13 @@
                         "annotationValue": "DNA microarray",
                         "termAccession": "http://purl.obolibrary.org/obo/OBI_0400148",
                         "termSource": "OBI"
-                    }
+                    },
+                    "unitCategories": []
                 }
             ],
             "characteristicCategories": [
                 {
-                    "@id": "http://data.isa-tools.org/characteristic_category/1",
+                    "@id": "#characteristic_category/body_weight",
                     "characteristicType": {
                         "annotationValue": "body weight",
                         "termAccession": "",
@@ -145,15 +155,7 @@
                     }
                 },
                 {
-                    "@id": "http://data.isa-tools.org/characteristic_category/2",
-                    "characteristicType": {
-                        "annotationValue": "reference descriptor",
-                        "termAccession": "",
-                        "termSource": ""
-                    }
-                },
-                {
-                    "@id": "http://data.isa-tools.org/characteristic_category/3",
+                    "@id": "#characteristic_category/organism_part",
                     "characteristicType": {
                         "annotationValue": "organism part",
                         "termAccession": "",
@@ -161,15 +163,7 @@
                     }
                 },
                 {
-                    "@id": "http://data.isa-tools.org/characteristic_category/4",
-                    "characteristicType": {
-                        "annotationValue": "specimen mass",
-                        "termAccession": "",
-                        "termSource": ""
-                    }
-                },
-                {
-                    "@id": "http://data.isa-tools.org/characteristic_category/5",
+                    "@id": "#characteristic_category/organism",
                     "characteristicType": {
                         "annotationValue": "organism",
                         "termAccession": "",
@@ -177,9 +171,25 @@
                     }
                 },
                 {
-                    "@id": "http://data.isa-tools.org/characteristic_category/6",
+                    "@id": "#characteristic_category/Material_Type",
                     "characteristicType": {
                         "annotationValue": "Material Type",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/specimen_mass",
+                    "characteristicType": {
+                        "annotationValue": "specimen mass",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/reference_descriptor",
+                    "characteristicType": {
+                        "annotationValue": "reference descriptor",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -188,7 +198,7 @@
             "description": "TEST-Template6-charax-param-factors",
             "factors": [
                 {
-                    "@id": "http://data.isa-tools.org/factor/1",
+                    "@id": "#factor/location",
                     "factorName": "location",
                     "factorType": {
                         "annotationValue": "geographical location",
@@ -197,7 +207,7 @@
                     }
                 },
                 {
-                    "@id": "http://data.isa-tools.org/factor/2",
+                    "@id": "#factor/duration",
                     "factorName": "duration",
                     "factorType": {
                         "annotationValue": "time",
@@ -212,11 +222,11 @@
                 "otherMaterials": [],
                 "samples": [
                     {
-                        "@id": "http://data.isa-tools.org/sample/1",
+                        "@id": "#sample/sample-sample1",
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "http://data.isa-tools.org/characteristic_category/3"
+                                    "@id": "#characteristic_category/organism_part"
                                 },
                                 "value": {
                                     "annotationValue": "liver",
@@ -226,7 +236,7 @@
                             },
                             {
                                 "category": {
-                                    "@id": "http://data.isa-tools.org/characteristic_category/4"
+                                    "@id": "#characteristic_category/specimen_mass"
                                 },
                                 "unit": {
                                     "annotationValue": "milligram",
@@ -234,15 +244,31 @@
                                     "termSource": "UO"
                                 },
                                 "value": 450
+                            },
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/Test"
+                                },
+                                "value": "test"
                             }
                         ],
                         "derivesFrom": {
-                            "@id": "http://data.isa-tools.org/source/1"
+                            "@id": "#source/source-source1"
                         },
                         "factorValues": [
                             {
                                 "category": {
-                                    "@id": "http://data.isa-tools.org/factor/2"
+                                    "@id": "#factor/location"
+                                },
+                                "value": {
+                                    "annotationValue": "beach",
+                                    "termAccession": "",
+                                    "termSource": ""
+                                }
+                            },
+                            {
+                                "category": {
+                                    "@id": "#factor/duration"
                                 },
                                 "unit": {
                                     "annotationValue": "hour",
@@ -250,16 +276,6 @@
                                     "termSource": "UO"
                                 },
                                 "value": 12
-                            },
-                            {
-                                "category": {
-                                    "@id": "http://data.isa-tools.org/factor/1"
-                                },
-                                "value": {
-                                    "annotationValue": "beach",
-                                    "termAccession": "",
-                                    "termSource": ""
-                                }
                             }
                         ],
                         "name": "sample-sample1"
@@ -267,11 +283,11 @@
                 ],
                 "sources": [
                     {
-                        "@id": "http://data.isa-tools.org/source/1",
+                        "@id": "#source/source-source1",
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "http://data.isa-tools.org/characteristic_category/1"
+                                    "@id": "#characteristic_category/body_weight"
                                 },
                                 "unit": {
                                     "annotationValue": "kilogram",
@@ -282,13 +298,7 @@
                             },
                             {
                                 "category": {
-                                    "@id": "http://data.isa-tools.org/characteristic_category/2"
-                                },
-                                "value": "not applicable"
-                            },
-                            {
-                                "category": {
-                                    "@id": "http://data.isa-tools.org/characteristic_category/5"
+                                    "@id": "#characteristic_category/organism"
                                 },
                                 "value": {
                                     "annotationValue": "Human",
@@ -298,9 +308,15 @@
                             },
                             {
                                 "category": {
-                                    "@id": "http://data.isa-tools.org/characteristic_category/6"
+                                    "@id": "#characteristic_category/Material_Type"
                                 },
                                 "value": "specimen"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/reference_descriptor"
+                                },
+                                "value": "not applicable"
                             }
                         ],
                         "name": "source-source1"
@@ -309,7 +325,7 @@
             },
             "people": [
                 {
-                    "@id": "http://data.isa-tools.org/person/1",
+                    "@id": "#person/Smith",
                     "address": "34, Beaumont Street",
                     "affiliation": "University of Oxford",
                     "email": "john.f.smith@research.org",
@@ -330,29 +346,22 @@
             "processSequence": [
                 {
                     "executesProtocol": {
-                        "@id": "http://data.isa-tools.org/protocol/1"
+                        "@id": "#protocol/sample_collection"
                     },
                     "inputs": [
                         {
-                            "@id": "http://data.isa-tools.org/source/1"
+                            "@id": "#source/source-source1"
                         }
                     ],
                     "outputs": [
                         {
-                            "@id": "http://data.isa-tools.org/sample/1"
+                            "@id": "#sample/sample-sample1"
                         }
                     ],
                     "parameterValues": [
                         {
-                            "value": {
-                                "annotationValue": "eppendorf tube",
-                                "termAccession": "",
-                                "termSource": ""
-                            }
-                        },
-                        {
                             "category": {
-                                "@id": "http://data.isa-tools.org/parameter/1"
+                                "@id": "#parameter/storage_temperature"
                             },
                             "unit": {
                                 "annotationValue": "degree Celsius",
@@ -360,13 +369,23 @@
                                 "termSource": "UO"
                             },
                             "value": -20
+                        },
+                        {
+                            "category": {
+                                "@id": "#parameter/vessel"
+                            },
+                            "value": {
+                                "annotationValue": "eppendorf tube",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
                         }
                     ]
                 }
             ],
             "protocols": [
                 {
-                    "@id": "http://data.isa-tools.org/protocol/1",
+                    "@id": "#protocol/sample_collection",
                     "components": [
                         {
                             "componentName": "barcode reader",
@@ -389,7 +408,7 @@
                     "name": "sample collection",
                     "parameters": [
                         {
-                            "@id": "http://data.isa-tools.org/parameter/1",
+                            "@id": "#parameter/storage_temperature",
                             "parameterName": {
                                 "annotationValue": "storage temperature",
                                 "termAccession": "",
@@ -397,7 +416,7 @@
                             }
                         },
                         {
-                            "@id": "http://data.isa-tools.org/parameter/2",
+                            "@id": "#parameter/vessel",
                             "parameterName": {
                                 "annotationValue": "vessel",
                                 "termAccession": "",
@@ -414,7 +433,7 @@
                     "version": "1.0"
                 },
                 {
-                    "@id": "http://data.isa-tools.org/protocol/2",
+                    "@id": "#protocol/RNA_extraction",
                     "components": [
                         {
                             "componentName": "",
@@ -429,7 +448,7 @@
                     "name": "RNA extraction",
                     "parameters": [
                         {
-                            "@id": "http://data.isa-tools.org/parameter/3",
+                            "@id": "#parameter/storage_temperature",
                             "parameterName": {
                                 "annotationValue": "storage temperature",
                                 "termAccession": "",
@@ -446,7 +465,7 @@
                     "version": ""
                 },
                 {
-                    "@id": "http://data.isa-tools.org/protocol/3",
+                    "@id": "#protocol/labeling",
                     "components": [
                         {
                             "componentName": "",
@@ -461,7 +480,7 @@
                     "name": "labeling",
                     "parameters": [
                         {
-                            "@id": "http://data.isa-tools.org/parameter/4",
+                            "@id": "#parameter/",
                             "parameterName": {
                                 "annotationValue": "",
                                 "termAccession": "",
@@ -478,7 +497,7 @@
                     "version": ""
                 },
                 {
-                    "@id": "http://data.isa-tools.org/protocol/4",
+                    "@id": "#protocol/nucleic_acid_hybridization",
                     "components": [
                         {
                             "componentName": "",
@@ -493,7 +512,7 @@
                     "name": "nucleic acid hybridization",
                     "parameters": [
                         {
-                            "@id": "http://data.isa-tools.org/parameter/5",
+                            "@id": "#parameter/",
                             "parameterName": {
                                 "annotationValue": "",
                                 "termAccession": "",
@@ -510,7 +529,7 @@
                     "version": ""
                 },
                 {
-                    "@id": "http://data.isa-tools.org/protocol/5",
+                    "@id": "#protocol/data_collection",
                     "components": [
                         {
                             "componentName": "",
@@ -525,7 +544,7 @@
                     "name": "data collection",
                     "parameters": [
                         {
-                            "@id": "http://data.isa-tools.org/parameter/6",
+                            "@id": "#parameter/scanner",
                             "parameterName": {
                                 "annotationValue": "scanner",
                                 "termAccession": "",
@@ -564,7 +583,8 @@
                 }
             ],
             "submissionDate": "",
-            "title": "TEST-Template6-charax-param-factors"
+            "title": "TEST-Template6-charax-param-factors",
+            "unitCategories": []
         }
     ],
     "submissionDate": "",
