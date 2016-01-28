@@ -645,18 +645,18 @@ def dump(isa_obj, output_path):
                 parameters_accession_numbers = ''
                 parameters_source_refs = ''
                 for parameter in protocol.parameters:
-                    parameters_names += parameter.parameterName.name + ';'
-                    parameters_accession_numbers += parameter.parameterName.term_accession + ';'
-                    parameters_source_refs += parameter.parameterName.term_source + ';'
+                    parameters_names += parameter.parameter_name.name + ';'
+                    parameters_accession_numbers += parameter.parameter_name.term_accession + ';'
+                    parameters_source_refs += parameter.parameter_name.term_source + ';'
                 component_names = ''
                 component_types = ''
                 component_types_accession_numbers = ''
                 component_types_source_refs = ''
                 for component in protocol.components:
                     component_names += component.name + ';'
-                    component_types += component.componentType + ';'
-                    component_types_accession_numbers += component.componentType.term_accession + ';'
-                    component_types_source_refs += component.componentType.term_source.name + ';'
+                    component_types += component.component_type + ';'
+                    component_types_accession_numbers += component.component_type.term_accession + ';'
+                    component_types_source_refs += component.component_type.term_source.name + ';'
                 study_protocols_df.loc[j] = [
                     protocol.name,
                     protocol.protocol_type.name,
@@ -729,7 +729,7 @@ def dump(isa_obj, output_path):
                     source_headers.extend(('Term Source REF', 'Term Accession', ))
                 process_headers = ['Protocol REF']
                 for parameter_value in study.process_sequence[0].parameter_values:
-                    process_headers.append('Parameter Value[' + parameter_value.parameter_value.name + ']')
+                    process_headers.append('Parameter Value[' + 'parameter_value.category' + ']')
                     if not (parameter_value.unit is None):
                         process_headers.append('Unit')
                     process_headers.extend(('Term Source REF', 'Term Accession', ))
@@ -772,16 +772,16 @@ def dump(isa_obj, output_path):
                                         row.append(characteristic.value.term_accession)
                             row.append(process.executes_protocol)
                             for parameter_value in process.parameter_values:
-                                if isinstance(parameter_value.parameter_value, int) or \
-                                        isinstance(parameter_value.parameter_value, float):
-                                    row.append(parameter_value.parameter_value)
+                                if isinstance(parameter_value.value, int) or \
+                                        isinstance(parameter_value.value, float):
+                                    row.append(parameter_value.value)
                                     row.append(parameter_value.unit.name)
                                     row.append(parameter_value.unit.term_source)
                                     row.append(parameter_value.unit.term_accession)
-                                elif isinstance(parameter_value.parameter_value, OntologyAnnotation):
-                                    row.append(parameter_value.parameter_value.name)
-                                    row.append(parameter_value.parameter_value.term_source)
-                                    row.append(parameter_value.parameter_value.term_accession)
+                                elif isinstance(parameter_value.value, OntologyAnnotation):
+                                    row.append(parameter_value.value.name)
+                                    row.append(parameter_value.value.term_source)
+                                    row.append(parameter_value.value.term_accession)
                             row.append(output.name)
                             for characteristic in output.characteristics:
                                 if isinstance(characteristic.value, int) or isinstance(characteristic.value, float):
@@ -817,6 +817,7 @@ def dump(isa_obj, output_path):
                         for output in process.outputs:
                             graph.add_edge(process, output)
                         prev_process_node = process
+                    # nx.draw_networkx(graph, arrows=True)
                     assay.graph = graph
                     # Find all the start and end nodes by looking for nodes with zero in or out edges
                     start_nodes = list()
@@ -857,7 +858,8 @@ def dump(isa_obj, output_path):
                                     elif isinstance(node, Process):
                                         assay_col_headers.append('Protocol REF')
                                         for parameter_value in node.parameter_values:
-                                            assay_col_headers.append('Parameter Value[' + parameter_value + ']')
+                                            assay_col_headers.append('Parameter Value[' +
+                                                                     parameter_value.category.parameter_name.name + ']')
                                     else:
                                         raise IOError("Unexpected node: " + str(node))
                                 break
@@ -885,7 +887,7 @@ def dump(isa_obj, output_path):
                                     elif isinstance(node, Process):
                                         assay_line_out.append(node.executes_protocol.name)
                                         for parameter_value in node.parameter_values:
-                                            assay_line_out.append(parameter_value.parameter_value.name)
+                                            assay_line_out.append(parameter_value.value.name)
                                     else:
                                         raise IOError("Unexpected node: " + str(node))
                                 print(assay_line_out)
