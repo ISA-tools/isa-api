@@ -783,68 +783,69 @@ def dump(isa_obj, output_path):
                 study_file_writer = csv.writer(study_fp, delimiter='\t')
                 study_file_writer.writerow(study_col_headers)
                 # Now write out the row content
-                for process in study.process_sequence:
-                    inputs_dict = dict()
-                    for input_ in process.inputs:
-                        inputs_dict[input_.id] = input_
-                    for output in process.outputs:
-                        row = list()
-                        if isinstance(output, Sample):
-                            derived_from_obj = inputs_dict[output.derives_from['@id']]
-                            if isinstance(derived_from_obj, Source):
-                                row.append(derived_from_obj.name)
-                                for characteristic in derived_from_obj.characteristics:
-                                    if isinstance(characteristic.value, int) or isinstance(characteristic.value, float):
-                                        row.append(characteristic.value)
-                                        row.append(characteristic.unit.name)
-                                        row.append(characteristic.unit.term_source)
-                                        row.append(characteristic.unit.term_accession)
-                                    elif isinstance(characteristic.value, OntologyAnnotation):
-                                        row.append(characteristic.value.name)
-                                        row.append(characteristic.value.term_source)
-                                        row.append(characteristic.value.term_accession)
-                                    else:
-                                        row.append(characteristic.value)
-                            row.append(process.executes_protocol.name)
-                            for parameter_value in process.parameter_values:
-                                if isinstance(parameter_value.value, int) or \
-                                        isinstance(parameter_value.value, float):
-                                    row.append(parameter_value.value)
-                                    row.append(parameter_value.unit.name)
-                                    row.append(parameter_value.unit.term_source)
-                                    row.append(parameter_value.unit.term_accession)
-                                elif isinstance(parameter_value.value, OntologyAnnotation):
-                                    row.append(parameter_value.value.name)
-                                    row.append(parameter_value.value.term_source)
-                                    row.append(parameter_value.value.term_accession)
-                                else:
-                                    row.append(parameter_value.value)
-                            row.append(output.name)
-                            for characteristic in output.characteristics:
-                                if isinstance(characteristic.value, int) or isinstance(characteristic.value, float):
-                                    row.append(characteristic.value)
-                                    row.append(characteristic.unit.name)
-                                    row.append(characteristic.unit.term_source)
-                                    row.append(characteristic.unit.term_accession)
-                                elif isinstance(characteristic.value, OntologyAnnotation):
-                                    row.append(characteristic.value.name)
-                                    row.append(characteristic.value.term_source)
-                                    row.append(characteristic.value.term_accession)
-                                else:
-                                    row.append(characteristic.value)
-                            for factor_value in output.factor_values:
-                                if isinstance(factor_value.value, int) or isinstance(factor_value.value, float):
-                                    row.append(factor_value.value)
-                                    row.append(factor_value.unit.name)
-                                    row.append(factor_value.unit.term_source)
-                                    row.append(factor_value.unit.term_accession)
-                                elif isinstance(factor_value.value, OntologyAnnotation):
-                                    row.append(factor_value.value.name)
-                                    row.append(factor_value.value.term_source)
-                                    row.append(factor_value.value.term_accession)
-                                else:
-                                    row.append(factor_value.value)
-                        study_file_writer.writerow(row)
+                for start_node in start_nodes:
+                    for end_node in end_nodes:
+                        paths = list(all_simple_paths(graph, start_node, end_node))
+                        for path in paths:
+                            assay_line_out = list()
+                            for node in path:
+                                # cycle through nodes in each path
+                                if isinstance(node, Source):
+                                    assay_line_out.append(node.name)
+                                    for characteristic in node.characteristics:
+                                        if isinstance(characteristic.value, int) or isinstance(characteristic.value, float):
+                                            assay_line_out.append(characteristic.value)
+                                            assay_line_out.append(characteristic.unit.name)
+                                            assay_line_out.append(characteristic.unit.term_source)
+                                            assay_line_out.append(characteristic.unit.term_accession)
+                                        elif isinstance(characteristic.value, OntologyAnnotation):
+                                            assay_line_out.append(characteristic.value.name)
+                                            assay_line_out.append(characteristic.value.term_source)
+                                            assay_line_out.append(characteristic.value.term_accession)
+                                        else:
+                                            assay_line_out.append(characteristic.value)
+                                elif isinstance(node, Process):
+                                    assay_line_out.append(node.executes_protocol.name)
+                                    for parameter_value in node.parameter_values:
+                                        if isinstance(parameter_value.value, int) or \
+                                                isinstance(parameter_value.value, float):
+                                            assay_line_out.append(parameter_value.value)
+                                            assay_line_out.append(parameter_value.unit.name)
+                                            assay_line_out.append(parameter_value.unit.term_source)
+                                            assay_line_out.append(parameter_value.unit.term_accession)
+                                        elif isinstance(parameter_value.value, OntologyAnnotation):
+                                            assay_line_out.append(parameter_value.value.name)
+                                            assay_line_out.append(parameter_value.value.term_source)
+                                            assay_line_out.append(parameter_value.value.term_accession)
+                                        else:
+                                            assay_line_out.append(parameter_value.value)
+                                elif isinstance(node, Sample):
+                                    assay_line_out.append(node.name)
+                                    for characteristic in node.characteristics:
+                                        if isinstance(characteristic.value, int) or isinstance(characteristic.value, float):
+                                            assay_line_out.append(characteristic.value)
+                                            assay_line_out.append(characteristic.unit.name)
+                                            assay_line_out.append(characteristic.unit.term_source)
+                                            assay_line_out.append(characteristic.unit.term_accession)
+                                        elif isinstance(characteristic.value, OntologyAnnotation):
+                                            assay_line_out.append(characteristic.value.name)
+                                            assay_line_out.append(characteristic.value.term_source)
+                                            assay_line_out.append(characteristic.value.term_accession)
+                                        else:
+                                            assay_line_out.append(characteristic.value)
+                                    for factor_value in node.factor_values:
+                                        if isinstance(factor_value.value, int) or isinstance(factor_value.value, float):
+                                            assay_line_out.append(factor_value.value)
+                                            assay_line_out.append(factor_value.unit.name)
+                                            assay_line_out.append(factor_value.unit.term_source)
+                                            assay_line_out.append(factor_value.unit.term_accession)
+                                        elif isinstance(factor_value.value, OntologyAnnotation):
+                                            assay_line_out.append(factor_value.value.name)
+                                            assay_line_out.append(factor_value.value.term_source)
+                                            assay_line_out.append(factor_value.value.term_accession)
+                                        else:
+                                            assay_line_out.append(factor_value.value)
+                        study_file_writer.writerow(assay_line_out)
                 study_fp.close()
                 for assay in study.assays:
                     # First, build the length of one path in the graph, as our sample for headers
@@ -937,35 +938,6 @@ def dump(isa_obj, output_path):
                                 print(assay_line_out)
                                 assay_file_writer.writerow(assay_line_out)
                     assay_fp.close()
-                    # # Get correct configuration based on measurement and technology
-                    # isatab_configurator.load('/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02')
-                    # config = isatab_configurator.get_config(assay.measurement_type, assay.technology_type)
-                    # # Build headers
-                    # fields = dict()
-                    # for field in config.field:
-                    #     fields[field.pos] = field
-                    # for protocol_field in config.protocol_field:
-                    #     fields[protocol_field.pos] = protocol_field
-                    # for structured_field in config.structured_field:
-                    #     fields[structured_field.pos] = structured_field
-                    # for unit_field in config.unit_field:
-                    #     fields[unit_field.pos] = unit_field
-                    # from collections import OrderedDict
-                    # ordered_fields = OrderedDict(sorted(fields.items())).values()
-                    #
-                    # headers = list()
-                    # for k, v in ordered_fields:
-                    #     if isinstance(v, isatab_configurator.FieldType):
-                    #         headers.append(v.header)
-                    #         if v.data_type == 'Ontology term':
-                    #             headers.append('Term Source REF')
-                    #             headers.append('Term Accession Number')
-                    #     if isinstance(v, isatab_configurator.ProtocolFieldType):
-                    #         headers.append('Protocol REF')
-                    #     if isinstance(v, isatab_configurator.StructuredFieldType) and (v.name == 'factors'):
-                    #         headers.append('Factor Value[]')
-                    #         headers.append('Term Source REF')
-                    #         headers.append('Term Accession Number')
         fp.close()
 
     else:
