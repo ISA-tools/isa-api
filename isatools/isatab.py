@@ -839,13 +839,10 @@ def dump(isa_obj, output_path):
                                     # go through nodes in path
                                     if isinstance(node, Sample):
                                         assay_col_headers.append('Sample Name')
-                                        for characteristic in node.characteristics:
-                                            # if characteristic.category.characteristic_type.annotationValue\
-                                            #         == 'Material Type':
-                                            #     assay_col_headers.append('Material Type')
-                                            assay_col_headers.append('Characteristic[' +
-                                                                     characteristic.category.characteristic_type.name +
-                                                                     ']')
+                                        # for characteristic in node.characteristics:
+                                        #     if characteristic.category.characteristic_type.annotationValue\
+                                        #             == 'Material Type':
+                                        #         assay_col_headers.append('Material Type')
                                     elif isinstance(node, Material):
                                         assay_col_headers.append(node.type)
                                     elif isinstance(node, Data):
@@ -860,6 +857,10 @@ def dump(isa_obj, output_path):
                                         for parameter_value in node.parameter_values:
                                             assay_col_headers.append('Parameter Value[' +
                                                                      parameter_value.category.parameter_name.name + ']')
+                                            if not (parameter_value.unit is None):
+                                                assay_col_headers.append('Unit')
+                                                assay_col_headers.append('Term Source REF')
+                                                assay_col_headers.append('Term Accession Number')
                                     else:
                                         raise IOError("Unexpected node: " + str(node))
                                 break
@@ -873,13 +874,10 @@ def dump(isa_obj, output_path):
                                     # cycle through nodes in each path
                                     if isinstance(node, Sample):
                                         assay_line_out.append(node.name)
-                                        for characteristic in node.characteristics:
-                                            # if characteristic.category.characteristic_type.annotationValue\
-                                            #         == 'Material Type':
-                                            #     assay_col_headers.append('Material Type')
-                                            assay_line_out.append(characteristic.value.name)
-                                            assay_line_out.append(characteristic.value.term_source)
-                                            assay_line_out.append(characteristic.value.term_accession)
+                                        # for characteristic in node.characteristics:
+                                        #     assay_line_out.append(characteristic.value.name)
+                                        #     assay_line_out.append(characteristic.value.term_source)
+                                        #     assay_line_out.append(characteristic.value.term_accession)
                                     elif isinstance(node, Material):
                                         assay_line_out.append(node.name)
                                     elif isinstance(node, Data):
@@ -887,7 +885,11 @@ def dump(isa_obj, output_path):
                                     elif isinstance(node, Process):
                                         assay_line_out.append(node.executes_protocol.name)
                                         for parameter_value in node.parameter_values:
-                                            assay_line_out.append(parameter_value.value.name)
+                                            assay_line_out.append(parameter_value.value)
+                                            if not (parameter_value.unit is None):
+                                                assay_line_out.append(parameter_value.unit.name)
+                                                assay_line_out.append(parameter_value.unit.term_source)
+                                                assay_line_out.append(parameter_value.unit.term_accession)
                                     else:
                                         raise IOError("Unexpected node: " + str(node))
                                 print(assay_line_out)
