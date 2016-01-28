@@ -865,6 +865,9 @@ def dump(isa_obj, output_path):
                                         raise IOError("Unexpected node: " + str(node))
                                 break
                     print(assay_col_headers)
+                    assay_fp = open(os.path.join(output_path, assay.filename), 'w')
+                    assay_file_writer = csv.writer(assay_fp, delimiter='\t')
+                    assay_file_writer.writerow(assay_col_headers)
                     for start_node in start_nodes:
                         for end_node in end_nodes:
                             paths = list(all_simple_paths(graph, start_node, end_node))
@@ -893,6 +896,8 @@ def dump(isa_obj, output_path):
                                     else:
                                         raise IOError("Unexpected node: " + str(node))
                                 print(assay_line_out)
+                                assay_file_writer.writerow(assay_line_out)
+                    assay_fp.close()
                     # # Get correct configuration based on measurement and technology
                     # isatab_configurator.load('/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02')
                     # config = isatab_configurator.get_config(assay.measurement_type, assay.technology_type)
