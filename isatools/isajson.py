@@ -151,18 +151,34 @@ def load(fp):
                 logger.debug('Build Source object')
                 source = Source(
                     id_=source_json['@id'],
-                    name=source_json['name'],
+                    name=source_json['name'][7:],
                 )
                 for characteristic_json in source_json['characteristics']:
-                    logger.debug('Build Ontology Annotation object (Source Characteristic)')
+                    logger.debug('Build Ontology Annotation object (Characteristic)')
+                    value = characteristic_json['value']
+                    unit = None
                     characteristic = Characteristic(
-                        category=categories_dict[characteristic_json['category']['@id']],
-                        value=OntologyAnnotation(
-                            name=characteristic_json['value']['annotationValue'],
-                            term_source=characteristic_json['value']['termSource'],
-                            term_accession=characteristic_json['value']['termAccession']
-                        )
-                    )
+                            category=categories_dict[characteristic_json['category']['@id']],)
+                    if isinstance(value, dict):
+                        try:
+                            value = OntologyAnnotation(
+                                name=characteristic_json['value']['annotationValue'],
+                                term_source=characteristic_json['value']['termSource'],
+                                term_accession=characteristic_json['value']['termAccession'])
+                        except KeyError:
+                            raise IOError("Can't create value as annotation")
+                    elif isinstance(value, int) or isinstance(value, float):
+                        try:
+                            unit = OntologyAnnotation(
+                                name=characteristic_json['unit']['annotationValue'],
+                                term_source=characteristic_json['unit']['termSource'],
+                                term_accession=characteristic_json['unit']['termAccession'])
+                        except KeyError:
+                            raise IOError("Can't create unit annotation")
+                    elif not isinstance(value, str):
+                        raise IOError("Unexpected type in characteristic value")
+                    characteristic.value = value
+                    characteristic.unit = unit
                     source.characteristics.append(characteristic)
                 sources_dict[source.id] = source
                 study.materials['sources'].append(source)
@@ -170,20 +186,35 @@ def load(fp):
                 logger.debug('Build Source object')
                 sample = Sample(
                     id_=sample_json['@id'],
-                    name=sample_json['name'],
+                    name=sample_json['name'][7:],
                     derives_from=sample_json['derivesFrom']
                 )
                 for characteristic_json in sample_json['characteristics']:
-                    logger.debug('Build Ontology Annotation object (Source Characteristic)')
+                    logger.debug('Build Ontology Annotation object (Characteristic)')
+                    value = characteristic_json['value']
+                    unit = None
                     characteristic = Characteristic(
-                        category=categories_dict[characteristic_json['category']['@id']],
-                        value=OntologyAnnotation(
-                            name=characteristic_json['value']['annotationValue'],
-                            term_source=characteristic_json['value']['termSource'],
-                            term_accession=characteristic_json['value']['termAccession']
-                        )
-                    )
-                    sample.characteristics.append(characteristic)
+                            category=categories_dict[characteristic_json['category']['@id']],)
+                    if isinstance(value, dict):
+                        try:
+                            value = OntologyAnnotation(
+                                name=characteristic_json['value']['annotationValue'],
+                                term_source=characteristic_json['value']['termSource'],
+                                term_accession=characteristic_json['value']['termAccession'])
+                        except KeyError:
+                            raise IOError("Can't create value as annotation")
+                    elif isinstance(value, int) or isinstance(value, float):
+                        try:
+                            unit = OntologyAnnotation(
+                                name=characteristic_json['unit']['annotationValue'],
+                                term_source=characteristic_json['unit']['termSource'],
+                                term_accession=characteristic_json['unit']['termAccession'])
+                        except KeyError:
+                            raise IOError("Can't create unit annotation")
+                    elif not isinstance(value, str):
+                        raise IOError("Unexpected type in characteristic value")
+                    characteristic.value = value
+                    characteristic.unit = unit
                 for factor_value_json in sample_json['factorValues']:
                     logger.debug('Build Ontology Annotation object (Sample Factor Value)')
                     try:
@@ -225,7 +256,7 @@ def load(fp):
                 for parameter_json in study_process_json['parameterValues']:
                     if isinstance(parameter_json['value'], int) or isinstance(parameter_json['value'], float):
                         parameter_value = ParameterValue(
-                            category=parameter_json['category']['@id'],
+                            # category=parameter_json['category']['@id'],
                             value=parameter_json['value'],
                             unit=OntologyAnnotation(
                                 name=parameter_json['unit']['annotationValue'],
@@ -235,11 +266,11 @@ def load(fp):
                         )
                     else:
                         parameter_value = ParameterValue(
-                            category=parameter_json['category']['@id'],
+                            # category=parameter_json['category']['@id'],
                             value=OntologyAnnotation(
-                                name=parameter_json['parameterValue']['annotationValue'],
-                                term_accession=parameter_json['parameterValue']['termAccession'],
-                                term_source=parameter_json['parameterValue']['termSource'],
+                                name=parameter_json['value']['annotationValue'],
+                                term_accession=parameter_json['value']['termAccession'],
+                                term_source=parameter_json['value']['termSource'],
                             )
                         )
                     process.parameter_values.append(parameter_value)
@@ -305,9 +336,10 @@ def load(fp):
                 other_materials_dict = dict()
                 for other_material_json in assay_json['materials']['otherMaterials']:
                     logger.debug('Build Material object')
+                    material_name = other_material_json['name'][8:]
                     material = Material(
                         id_=other_material_json['@id'],
-                        name=other_material_json['name'],
+                        name=material_name,
                         type_=other_material_json['type'],
                     )
                     for characteristic_json in other_material_json['characteristics']:
