@@ -27,6 +27,7 @@ class ISATab2ISAjson_v1:
     CHARACTERISTICS = "Characteristics"
     CHARACTERISTIC_CATEGORY = "characteristic_category"
     FACTOR_VALUE = "Factor Value"
+    UNIT = "Unit"
 
     def __init__(self, identifier_type):
         self.identifiers = list() #list of dictionaries
@@ -178,13 +179,15 @@ class ISATab2ISAjson_v1:
     def createProtocolParameterList(self, protocol):
         json_list = []
         parameters_json = self.createOntologyAnnotationsFromStringList(protocol, "Study", " Protocol Parameters Name")
+        i = 0
         for parameter_json in parameters_json:
-            parameter_identifier = self.generateIdentifier("parameter", parameters_json[0]["annotationValue"])
+            parameter_identifier = self.generateIdentifier("parameter", parameters_json[i]["annotationValue"])
             json_item = dict([
                 ("@id", parameter_identifier),
                 ("parameterName",  parameter_json)
             ])
             json_list.append(json_item)
+            i += 1
         return json_list
 
 
@@ -248,10 +251,13 @@ class ISATab2ISAjson_v1:
             study_name = study.metadata['Study Identifier']
             study_identifier = self.generateIdentifier("study", study_name)
             characteristics_categories_list = self.createCharacteristicsCategories(study.nodes)
+            unit_categories_list = self.createUnitsCategories(study.nodes)
             factors_list = self.createStudyFactorsList(study.factors)
             source_dict = self.createSourcesDictionary(study.nodes)
             sample_dict = self.createSampleDictionary(study.nodes)
             material_dict = self.createMaterialDictionary(study.nodes)
+            protocol_list = self.createProtocols(study.protocols)
+            assay_list = self.createStudyAssaysList(study.assays, sample_dict)
             #This data_dict should be empty on the studies - it is only used in the assays
             data_dict = self.createDataFiles(study.nodes)
             studyJson = dict([
@@ -264,16 +270,17 @@ class ISATab2ISAjson_v1:
                 ("studyDesignDescriptors",self.createOntologyAnnotationListForInvOrStudy(study.design_descriptors, "Study", " Design Type")),
                 ("publications", self.createPublications(study.publications, "Study")),
                 ("people", self.createContacts(study.contacts, "Study")),
-                ("protocols", self.createProtocols(study.protocols)),
+                ("protocols", protocol_list),
                 ("factors", factors_list),
                 ("characteristicCategories", characteristics_categories_list),
+                ("unitCategories", unit_categories_list),
                 ("materials", dict([
                         ("sources", list(source_dict.values())),
                         ("samples",list(sample_dict.values())),
                         ("otherMaterials",list(material_dict.values()))
                 ])),
                 ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, material_dict, data_dict)),
-                ("assays", self.createStudyAssaysList(study.assays, sample_dict)),
+                ("assays", assay_list),
                 ("filename", study.metadata['Study File Name']),
             ])
             study_array.append(studyJson)
@@ -390,8 +397,9 @@ class ISATab2ISAjson_v1:
         json_list = []
         for assay in assays:
             characteristics_categories_list = self.createCharacteristicsCategories(assay.nodes)
+            unit_categories_list = self.createUnitsCategories(assay.nodes)
             source_dict = self.createSourcesDictionary(assay.nodes)
-            sample_list = self.createSampleReferenceDict(assay.nodes)
+            sample_list = self.createSampleReferenceDict(assay.nodes, sample_dict)
             material_dict = self.createMaterialDictionary(assay.nodes)
             data_dict = self.createDataFiles(assay.nodes)
             assay_name = assay.metadata['Study Assay File Name']
@@ -407,6 +415,7 @@ class ISATab2ISAjson_v1:
                                                                  assay.metadata['Study Assay Technology Type Term Accession Number'])),
                 ("technologyPlatform", assay.metadata['Study Assay Technology Platform']),
                 ("characteristicCategories", characteristics_categories_list),
+                ("unitCategories", unit_categories_list),
                 ("materials", dict([
                     ("samples", sample_list),
                     ("otherMaterials", list(material_dict.values()))
@@ -459,15 +468,26 @@ class ISATab2ISAjson_v1:
         return json_dict
 
 
-    def createSampleReferenceDict(self, nodes):
+    def createSampleReferenceDict(self, nodes, sample_dict):
         json_dict = []
         for node_index in nodes:
-             if nodes[node_index].ntype == "Sample Name":
+             node = nodes[node_index]
+             if node.ntype == "Sample Name":
                 sample_identifier = self.getIdentifier("sample", node_index)
                 if sample_identifier:
                     json_dict.append(dict([("@id", sample_identifier)]))
                 else:
                     print("Warning: sample identifier has not been defined before", node_index)
+
+                #adding sample attributes that may have been defined at the assay level
+                try:
+                    sample_json = sample_dict[node_index]
+                    new_characteristics = self.createValueList(self.CHARACTERISTICS,node_index, node)
+                    sample_json["characteristics"].append(new_characteristics)
+                    sample_dict[node_index] = sample_json
+                except KeyError:
+                    print("Key ", node_index, " not available in sample_dict=", sample_dict)
+
         return json_dict
 
 
@@ -529,6 +549,31 @@ class ISATab2ISAjson_v1:
                  json_list.append(json_item)
         return json_list
 
+
+    def createUnitsCategories(self, nodes):
+        json_list = []
+        for node_index in nodes:
+            node = nodes[node_index]
+            for header in node.metadata:
+                 if not header.startswith(self.UNIT):
+                    continue
+
+                #  characteristic_category_identifier = self.getIdentifier(self.UNIT, value_header)
+                #  if characteristic_category_identifier:
+                #      continue
+                #
+                #  characteristic_category_identifier = self.generateIdentifier(self.CHARACTERISTIC_CATEGORY, value_header)
+                #
+                #  json_item = dict([])
+                #
+                # json_item = dict([
+                #         ("@id", characteristic_category_identifier),
+                #         ("characteristicType", self.createOntologyAnnotation(value_header, "", ""))
+                #     ])
+                #
+                #  json_list.append(json_item)
+        return json_list
+
     def convert_num(self, s):
         try:
             return int(s)
@@ -546,13 +591,14 @@ class ISATab2ISAjson_v1:
         for header in node.metadata:
             if header.startswith(column_name) or header == self.MATERIAL_TYPE:
                  value_header = header.replace("]", "").split("[")[-1]
-                 if header == self.MATERIAL_TYPE:
-                     value_header = self.MATERIAL_TYPE
+
                  value_attributes = node.metadata[header][0]
                  value  = self.convert_num(value_attributes[0])
                  header_type = None
 
                  if column_name.strip()==self.CHARACTERISTICS:
+                     if header == self.MATERIAL_TYPE:
+                        value_header = self.MATERIAL_TYPE
                      if header not in node.attributes:
                          continue
                      header_type = self.CHARACTERISTIC_CATEGORY
