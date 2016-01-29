@@ -50,6 +50,14 @@ Feature: ISA file management
     Then it should not save the file
     And it should return a falsey value
 
+  Scenario: wrong Github path
+    Given an authenticated storage adapter
+    And a file object named "nonexistant/file_object.o" in the remote repository "isa-api" owned by "ISA-tools"
+    And a destination directory "destination_dir_5" in your home folder
+    When the remote source does not exist
+    Then it should not save the file
+    And it should raise an error
+
   # Future scenarios: create, update, delete
 
 
