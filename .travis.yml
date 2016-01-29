@@ -13,4 +13,4 @@ script:
 
 branches:
     only:
-      - citest
+      - enhance/ci
