@@ -555,9 +555,25 @@ class CharacteristicCategory(IsaObject):
             self.characteristic_type = characteristic_type
 
 
-def batch_create_source(obj=None, n=1):
+def batch_create_materials(obj=None, n=1):
     obj_list = list()
-    if isinstance(obj, Source):
+    if isinstance(obj, Source) or isinstance(obj, Sample) or isinstance(obj, Material):
+        from copy import deepcopy
         for x in range(0, n):
-            obj_list.append(Source(obj.name + '-' + str(x), characteristics=obj.characteristics, comments=obj.comments))
+            new_obj = deepcopy(obj)
+            new_obj.name = new_obj.name + '-' + str(x)
+            obj_list.append(new_obj)
+    return obj_list
+
+
+def batch_create_assays(materials=list(), type_='data acquisition'):
+    obj_list = list()
+    for obj in materials:
+        if isinstance(obj, Source) or isinstance(obj, Sample) or isinstance(obj, Material):
+            process = Process()
+            process.inputs.append(obj)
+            process.outputs.append(Material())
+            obj_list.append(process)
+        else:
+            raise IOError("Invalid object found in materials list")
     return obj_list
