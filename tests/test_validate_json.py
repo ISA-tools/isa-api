@@ -1,6 +1,7 @@
 from unittest import TestCase
 import os
 from isatools.validate.validate_json import validateJsonAgainstSchemas
+from jsonschema.exceptions import ValidationError
 
 
 class ValidateJsonTest(TestCase):
@@ -19,14 +20,26 @@ class ValidateJsonTest(TestCase):
     #   validateJsonAgainstSchemas("../isatools/schemas/cedar/InvestigationSchema.json","./data/BII-I-1.json")
 
     def test_sampledata_bii_i_1(self):
-        validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir, "BII-I-1.json"))
+        try:
+            validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir, "BII-I-1.json"))
+        except ValidationError:
+            self.fail('JSON Validation against schema failed')
 
     def test_sampledata_bii_s_3(self):
-        validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir, "BII-S-3.json"))
+        try:
+            validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir, "BII-S-3.json"))
+        except ValidationError:
+            self.fail('JSON Validation against schema failed')
 
     def test_sampledata_bii_s_7(self):
-        validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir, "BII-S-7.json"))
+        try:
+            validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir, "BII-S-7.json"))
+        except ValidationError:
+            self.fail('JSON Validation against schema failed')
 
     def test_ideally_canonical(self):
-        validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir,
-                                                                               "ideally-canonical.json"))
+        try:
+            validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir,
+                                                                                   "ideally-canonical.json"))
+        except ValidationError:
+            self.fail('JSON Validation against schema failed')
