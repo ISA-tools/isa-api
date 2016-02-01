@@ -266,7 +266,9 @@ class StudyAssayParser:
         rec.studies = final_studies
         return rec
 
+
     def _get_process_nodes(self, fname, study):
+        """Building the process nodes"""
         if not os.path.exists(os.path.join(self._dir, fname)):
             return {}
         process_nodes = {}
@@ -350,6 +352,15 @@ class StudyAssayParser:
                             process_node.outputs = process_node.outputs + output_node_indices
                         # input_process_map[input_node_indices] = unique_process_name
                         # output_process_map[output_node_indices] = unique_process_name
+
+                        #Add qualifiers (performer and date)
+                        qualifier_indices = hgroups[processing_index][1:]
+                        for qualifier_index in qualifier_indices:
+                            qualifier_header = headers[qualifier_index]
+                            if qualifier_header=="Date":
+                                process_node.date = line[qualifier_index]
+                            elif qualifier_header == "Perfomer":
+                                process_node.performer = line[qualifier_index]
 
                         #Add parameters
                         parameter_headers = []
@@ -597,6 +608,8 @@ _node_str = \
 _process_node_str = \
 """       * Process Node ->  {name} {type}
          assay_name: {assay_name}
+         performer: {performer}
+         date: {date}
          inputs: {inputs}
          outputs: {outputs}
          parameters: {parameters}
@@ -698,6 +711,8 @@ class ProcessNodeRecord:
         self.metadata = {}
         self.parameters = []
         self.assay_name = "" #used when there is an associated 'Assay Name' for a 'Protocol REF'
+        self.performer = ""
+        self.date = ""
 
     def __str__(self):
         return _process_node_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 9),
@@ -707,5 +722,7 @@ class ProcessNodeRecord:
                                         assay_name=self.assay_name,
                                         type=self.ntype,
                                         protocol=self.protocol,
+                                        performer=self.performer,
+                                        date=self.date,
                                         parameters=pprint.pformat(self.parameters).replace("\n","\n"+" "*9))
 

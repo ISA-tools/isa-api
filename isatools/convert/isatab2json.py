@@ -351,6 +351,8 @@ class ISATab2ISAjson_v1:
             json_item = dict([
                     ("@id", process_identifier),
                     ("executesProtocol", self.createExecuteStudyProtocol(process_node_name, process_node)),
+                    ("performer", process_node.performer),
+                    ("date", process_node.date),
                     ("parameterValues", self.createValueList("Parameter Value", process_node_name, process_node)),
                     ("inputs", self.createInputList(process_node.inputs, source_dict, sample_dict, material_dict, data_dict)),
                     ("outputs", self.createOutputList(process_node.outputs, sample_dict, material_dict, data_dict) )
