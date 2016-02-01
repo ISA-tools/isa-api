@@ -125,10 +125,13 @@ class ISATab2ISAjson_v1:
     def createContacts(self, contacts, inv_or_study):
         people_json = []
         for contact in contacts:
-            person_identifier = self.generateIdentifier("person", contact[inv_or_study+" Person Last Name"])
+            person_last_name = contact[inv_or_study+" Person Last Name"]
+            if not person_last_name:
+                continue
+            person_identifier = self.generateIdentifier("person", person_last_name)
             person_json = dict([
                 ("@id", person_identifier),
-                ("lastName", contact[inv_or_study+" Person Last Name"]),
+                ("lastName", person_last_name),
                 ("firstName", contact[inv_or_study+" Person First Name"]),
                 ("midInitials", contact[inv_or_study+" Person Mid Initials"]),
                 ("email", contact[inv_or_study+" Person Email"]),
@@ -161,6 +164,8 @@ class ISATab2ISAjson_v1:
         protocols_json = []
         for protocol in protocols:
             protocol_name = protocol['Study Protocol Name']
+            if not protocol_name:
+                continue
             protocol_identifier = self.generateIdentifier("protocol", protocol_name)
             protocol_json = dict([
                 ("@id", protocol_identifier),
@@ -215,6 +220,8 @@ class ISATab2ISAjson_v1:
         term_accession_array = object[inv_or_study+type+" Term Accession Number"].split(";")
         onto_annotations = []
         for i in range(0,len(name_array)):
+             if (not name_array[i]):
+                 continue
              onto_ann = self.createOntologyAnnotation(name_array[i],
                                                       term_source_array[i],
                                                       term_accession_array[i] )
