@@ -306,6 +306,7 @@ class StudyAssayParser:
 
                         #reading line by line and identifying inputs outputs and creating process_node
                         process_number = 1
+                        qualifier_process_map = {}
                         input_process_map = {}
                         output_process_map = {}
 
@@ -319,21 +320,36 @@ class StudyAssayParser:
                         if (not input_names and not output_names):
                             continue
 
+                        #Add qualifiers (performer and date)
+                        qualifier_indices = hgroups[processing_index][1:]
+                        for qualifier_index in qualifier_indices:
+                            qualifier_header = headers[qualifier_index]
+                            if qualifier_header=="Date":
+                                process_node.date = line[qualifier_index]
+                            elif qualifier_header == "Performer":
+                                process_node.performer = line[qualifier_index]
 
                         processing_name = line[hgroups[processing_index][0]]
                         if not processing_name:
                             continue
-                        unique_process_name = processing_name
-                        # try:
-                        #     unique_process_name = input_process_map[input_node_indices]
-                        # except KeyError:
-                        #     try:
-                        #         unique_process_name = output_process_map[output_node_indices]
-                        #     except KeyError:
-                        #         processing_name = line[hgroups[processing_index][0]]
-                        #         if not processing_name:
-                        #             continue
-                        #         unique_process_name = processing_name+str(process_number)
+
+                        qualifier_indices_string = '-'.join(qualifier_indices)
+                        input_node_indices_string = "-".join(input_node_indices)
+                        output_node_indices_string = "-".join(output_node_indices)
+
+                        try:
+                            unique_process_name = qualifier_process_map[qualifier_indices_string]
+                        except KeyError:
+                            try:
+                                unique_process_name = input_process_map[input_node_indices_string]
+                            except KeyError:
+                                try:
+                                     unique_process_name = output_process_map[output_node_indices_string]
+                                except KeyError:
+                                     processing_name = line[hgroups[processing_index][0]]
+                                     if not processing_name:
+                                         continue
+                                     unique_process_name = processing_name+str(process_number)
 
                         try:
                             process_node = process_nodes[unique_process_name]
@@ -350,17 +366,10 @@ class StudyAssayParser:
                             process_node.inputs = process_node.inputs + input_node_indices
                         if not (output_node_indices in process_node.outputs):
                             process_node.outputs = process_node.outputs + output_node_indices
-                        # input_process_map[input_node_indices] = unique_process_name
-                        # output_process_map[output_node_indices] = unique_process_name
 
-                        #Add qualifiers (performer and date)
-                        qualifier_indices = hgroups[processing_index][1:]
-                        for qualifier_index in qualifier_indices:
-                            qualifier_header = headers[qualifier_index]
-                            if qualifier_header=="Date":
-                                process_node.date = line[qualifier_index]
-                            elif qualifier_header == "Perfomer":
-                                process_node.performer = line[qualifier_index]
+                        qualifier_process_map[qualifier_indices_string] = unique_process_name
+                        input_process_map[input_node_indices_string] = unique_process_name
+                        output_process_map[output_node_indices_string] = unique_process_name
 
                         #Add parameters
                         parameter_headers = []
