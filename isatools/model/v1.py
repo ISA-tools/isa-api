@@ -555,15 +555,30 @@ class CharacteristicCategory(IsaObject):
             self.characteristic_type = characteristic_type
 
 
-def batch_create_materials(obj=None, n=1):
-    obj_list = list()
-    if isinstance(obj, Source) or isinstance(obj, Sample) or isinstance(obj, Material):
+def batch_create_materials(material=None, n=1):
+
+    """Creates a batch of material objects (Source, Sample or Material) from a prototype material object
+
+    :param material: existing material object to use as a prototype
+    :param n: Number of material objects to create in the batch
+    :returns: List of material objects
+
+    :Example:
+
+        # Create 10 sample materials derived from one source material
+
+        source = Source(name='source_material')
+        prototype_sample = Sample(name='sample_material', derived_from=source)
+        batch = batch_create_materials(sample, n=10)
+    """
+    material_list = list()
+    if isinstance(material, Source) or isinstance(material, Sample) or isinstance(material, Material):
         from copy import deepcopy
         for x in range(0, n):
-            new_obj = deepcopy(obj)
-            new_obj.name = new_obj.name + '-' + str(x)
-            obj_list.append(new_obj)
-    return obj_list
+            new_obj = deepcopy(material)
+            new_obj.name = material_list.name + '-' + str(x)
+            material_list.append(new_obj)
+    return material_list
 
 
 def batch_create_assays(materials=list(), type_='data acquisition'):
