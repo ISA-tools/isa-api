@@ -343,16 +343,22 @@ class ISATab2ISAjson_v1:
 
             process_node = process_nodes[process_node_name]
 
+            if (process_node.assay_name):
+                process_identifier = self.generateIdentifier("process", process_node.assay_name)
+            else:
+                process_identifier = self.generateIdentifier("process", process_node.name)
+
             json_item = dict([
+                    ("@id", process_identifier),
                     ("executesProtocol", self.createExecuteStudyProtocol(process_node_name, process_node)),
                     ("parameterValues", self.createValueList("Parameter Value", process_node_name, process_node)),
-                    ("inputs", self.createInputList(process_node.inputs, source_dict, sample_dict, material_dict)),
-                    ("outputs", self.createOutputList(process_node.outputs, sample_dict, material_dict) )
+                    ("inputs", self.createInputList(process_node.inputs, source_dict, sample_dict, material_dict, data_dict)),
+                    ("outputs", self.createOutputList(process_node.outputs, sample_dict, material_dict, data_dict) )
             ])
             json_list.append(json_item)
         return json_list
 
-    def createInputList(self, inputs, source_dict, sample_dict, material_dict):
+    def createInputList(self, inputs, source_dict, sample_dict, material_dict, data_dict):
         json_list = []
         for argument in inputs:
             try:
@@ -373,9 +379,16 @@ class ISATab2ISAjson_v1:
                 json_list.append(material_id)
             except KeyError:
                 pass
+
+            try:
+                json_item = data_dict[argument]
+                data_id = dict([("@id", json_item["@id"])])
+                json_list.append(data_id)
+            except KeyError:
+                pass
         return json_list
 
-    def createOutputList(self, arguments, sample_dict, material_dict):
+    def createOutputList(self, arguments, sample_dict, material_dict, data_dict):
         json_list = []
         for argument in arguments:
             try:
@@ -389,6 +402,13 @@ class ISATab2ISAjson_v1:
                 json_item = material_dict[argument]
                 material_id = dict([("@id", json_item["@id"])])
                 json_list.append(material_id)
+            except KeyError:
+                pass
+
+            try:
+                json_item = data_dict[argument]
+                data_id = dict([("@id", json_item["@id"])])
+                json_list.append(data_id)
             except KeyError:
                 pass
         return json_list
@@ -437,7 +457,7 @@ class ISATab2ISAjson_v1:
     def createDataFiles(self, nodes):
         json_dict = dict([])
         for node_index in nodes:
-            if nodes[node_index].ntype.endswith("Data File") :
+            if nodes[node_index].ntype.endswith(" File") :
                 data_identifier = self.generateIdentifier("data", node_index)
                 json_item = dict([
                     ("@id", data_identifier),
@@ -461,14 +481,14 @@ class ISATab2ISAjson_v1:
                         ("characteristics", self.createValueList(self.CHARACTERISTICS,node_index, nodes[node_index]))
                     ])
 
-                #derivesFrom source
-                try:
-                    source_name = nodes[node_index].metadata["Source Name"][0]
-                    source_index = "source-"+source_name
-                    source_identifier = self.getIdentifier("source", source_index)
-                    json_item["derivesFrom"] = dict([ ("@id", source_identifier)])
-                except KeyError:
-                    print("There is no source declared for sample ", node_index)
+                #derivesFrom sources TODO
+                # try:
+                #     source_name = nodes[node_index].metadata["Source Name"][0]
+                #     source_index = "source-"+source_name
+                #     source_identifier = self.getIdentifier("source", source_index)
+                #     json_item["derivesFrom"] = dict([ ("@id", source_identifier)])
+                # except KeyError:
+                #     print("There is no source declared for sample ", node_index)
 
                 json_dict.update({node_index: json_item})
 
