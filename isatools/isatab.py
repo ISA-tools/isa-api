@@ -1,10 +1,9 @@
 from .model.v1 import *
-from isatools.io import isatab_parser
+from isatools.io import isatab_parser, isatab_configurator
 import os
 import sys
-import io
 import pandas as pd
-import numpy as np
+import networkx as nx
 
 
 def validate(isatab_dir, config_dir):
@@ -228,7 +227,7 @@ def load(isatab_dir):
             sample_dict = _createSampleDictionary(assay.nodes)
             data_dict = _createDataFiles(assay.nodes)
             json_item = Assay(
-                file_name=assay.metadata['Study Assay File Name'],
+                filename=assay.metadata['Study Assay File Name'],
                 measurement_type=OntologyAnnotation(
                     name=assay.metadata['Study Assay Measurement Type'],
                     term_source=assay.metadata['Study Assay Measurement Type Term Source REF'],
@@ -355,7 +354,7 @@ def load(isatab_dir):
                 submission_date=study.metadata['Study Submission Date'],
                 public_release_date=study.metadata['Study Public Release Date'],
                 factors=None,
-                file_name=study.metadata['Study File Name'],
+                filename=study.metadata['Study File Name'],
                 design_descriptors=_createOntologyAnnotationListForInvOrStudy(study.design_descriptors, "Study",
                                                                               " Design Type"),
                 publications=_createPublications(study.publications, "Study"),
@@ -390,10 +389,10 @@ def load(isatab_dir):
     return investigation
 
 
-def dump(isa_obj, path):
+def dump(isa_obj, output_path):
     fp = None
-    if os.path.exists(path):
-        fp = open(os.path.join(path, 'i_investigation.txt'), 'w')
+    if os.path.exists(output_path):
+        fp = open(os.path.join(output_path, 'i_investigation.txt'), 'w')
     if isinstance(isa_obj, Investigation):
         # Process Investigation object first to write the investigation file
         investigation = isa_obj
@@ -524,7 +523,7 @@ def dump(isa_obj, path):
                 study.description,
                 study.submission_date,
                 study.public_release_date,
-                study.file_name
+                study.filename
             ]
             study_df = study_df.set_index('Study Identifier').T
             fp.write('STUDY\n')
@@ -615,7 +614,7 @@ def dump(isa_obj, path):
                     assay.technology_type.term_accession,
                     assay.technology_type.term_source,
                     assay.technology_platform,
-                    assay.file_name
+                    assay.filename
                 ]
                 j += 1
             study_assays_df = study_assays_df.set_index('Study Assay Measurement Type').T
@@ -646,18 +645,18 @@ def dump(isa_obj, path):
                 parameters_accession_numbers = ''
                 parameters_source_refs = ''
                 for parameter in protocol.parameters:
-                    parameters_names += parameter.parameterName.name + ';'
-                    parameters_accession_numbers += parameter.parameterName.term_accession + ';'
-                    parameters_source_refs += parameter.parameterName.term_source + ';'
+                    parameters_names += parameter.parameter_name.name + ';'
+                    parameters_accession_numbers += parameter.parameter_name.term_accession + ';'
+                    parameters_source_refs += parameter.parameter_name.term_source + ';'
                 component_names = ''
                 component_types = ''
                 component_types_accession_numbers = ''
                 component_types_source_refs = ''
                 for component in protocol.components:
                     component_names += component.name + ';'
-                    component_types += component.componentType + ';'
-                    component_types_accession_numbers += component.componentType.term_accession + ';'
-                    component_types_source_refs += component.componentType.term_source.name + ';'
+                    component_types += component.component_type + ';'
+                    component_types_accession_numbers += component.component_type.term_accession + ';'
+                    component_types_source_refs += component.component_type.term_source.name + ';'
                 study_protocols_df.loc[j] = [
                     protocol.name,
                     protocol.protocol_type.name,
@@ -721,101 +720,229 @@ def dump(isa_obj, path):
             fp.write('STUDY CONTACTS\n')
             study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                      index_label='Study Person Last Name')
-            if os.path.exists(path):
-                study_fp = open(os.path.join(path, study.file_name), 'w')
-                #  Calculate and write out the header row first
-                source_headers = ['Source Name']
-                for characteristic in study.sources[0].characteristics:
-                    source_headers.append('Characteristics[' + characteristic.category + ']')
-                    if not (characteristic.unit is None):
-                        source_headers.append('Unit')
-                    source_headers.extend(('Term Source REF', 'Term Accession', ))
-                process_headers = ['Protocol REF']
-                for parameter in study.process_sequence[0].parameters:
-                    process_headers.append('Parameter Value[' + parameter.parameter_name + ']')
-                    if not (parameter.unit is None):
-                        process_headers.append('Unit')
-                    process_headers.extend(('Term Source REF', 'Term Accession', ))
-                source_headers.extend(process_headers)
-                sample_headers = ['Sample Name']
-                for characteristic in study.samples[0].characteristics:
-                    sample_headers.append('Characteristics[' + characteristic.category + ']')
-                    if not (characteristic.unit is None):
-                        sample_headers.append('Unit')
-                    sample_headers.extend(('Term Source REF', 'Term Accession'))
-                for factor_value in study.samples[0].factor_values:
-                    sample_headers.append('Factor Value[' + factor_value.factorName + ']')
-                    if not (factor_value.unit is None):
-                        sample_headers.append('Unit')
-                    sample_headers.extend(('Term Source REF', 'Term Accession'))
-                source_headers.extend(sample_headers)
+
+            # First, build the length of one path in the graph, as our sample for headers
+            graph = nx.DiGraph()
+            prev_process_node = None
+            for process in study.process_sequence:
+                if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
+                    graph.add_edge(prev_process_node, process)
+                for input_ in process.inputs:
+                    graph.add_edge(input_, process)
+                for output in process.outputs:
+                    graph.add_edge(process, output)
+                prev_process_node = process
+            study.graph = graph
+            # Find all the start and end nodes by looking for nodes with zero in or out edges
+            start_nodes = list()
+            end_nodes = list()
+            for node in graph.nodes():
+                if len(graph.in_edges(node)) == 0:
+                    start_nodes.append(node)
+                if len(graph.out_edges(node)) == 0:
+                    end_nodes.append(node)
+            from networkx.algorithms import all_simple_paths
+            for start_node in start_nodes:
+                for end_node in end_nodes:
+                    paths = list(all_simple_paths(graph, start_node, end_node))
+                    if len(paths) > 0:
+                        path = paths[0]
+                        study_col_headers = list()
+                        for node in path:
+                            if isinstance(node, Source):
+                                study_col_headers.append('Source Name')
+                                for characteristic in node.characteristics:
+                                    study_col_headers.append('Characteristics[' +
+                                                             characteristic.category.characteristic_type.name + ']')
+                                    if not (characteristic.unit is None):
+                                        study_col_headers.append('Unit')
+                                    if isinstance(characteristic.value, OntologyAnnotation):
+                                        study_col_headers.extend(('Term Source REF', 'Term Accession'))
+                            if isinstance(node, Process):
+                                study_col_headers.append('Protocol REF')
+                                for parameter_value in study.process_sequence[0].parameter_values:
+                                    study_col_headers.append('Parameter Value[' + 'parameter_value.category' + ']')
+                                    if not (parameter_value.unit is None):
+                                        study_col_headers.append('Unit')
+                                    study_col_headers.extend(('Term Source REF', 'Term Accession', ))
+                            if isinstance(node, Sample):
+                                study_col_headers.append('Sample Name')
+                                for characteristic in node.characteristics:
+                                    study_col_headers.append('Characteristics[' + characteristic.category.characteristic_type.name + ']')
+                                    if not (characteristic.unit is None):
+                                        study_col_headers.append('Unit')
+                                    study_col_headers.extend(('Term Source REF', 'Term Accession'))
+                                for factor_value in node.factor_values:
+                                    study_col_headers.append('Factor Value[' + factor_value.factor_name.name + ']')
+                                    if not (factor_value.unit is None):
+                                        study_col_headers.append('Unit')
+                                    study_col_headers.extend(('Term Source REF', 'Term Accession'))
+            if os.path.exists(output_path):
+                study_fp = open(os.path.join(output_path, study.filename), 'w')
                 import csv
                 study_file_writer = csv.writer(study_fp, delimiter='\t')
-                study_file_writer.writerow(source_headers)
+                study_file_writer.writerow(study_col_headers)
                 # Now write out the row content
-                for process in study.process_sequence:
-                    inputs_dict = dict()
-                    for input_ in process.inputs:
-                        inputs_dict[input_.name] = input_
-                    for output in process.outputs:
-                        row = list()
-                        if isinstance(output, Sample):
-                            derived_from_obj = inputs_dict[output.derives_from[0]]
-                            if isinstance(derived_from_obj, Source):
-                                row.append(derived_from_obj.name)
-                                for characteristic in derived_from_obj.characteristics:
-                                    if isinstance(characteristic.value, int or float):
-                                        row.append(characteristic.value)
-                                        row.append(characteristic.unit.name)
-                                        row.append(characteristic.unit.term_source)
-                                        row.append(characteristic.unit.term_accession)
-                                    elif isinstance(characteristic.value, OntologyAnnotation):
-                                        row.append(characteristic.value.name)
-                                        row.append(characteristic.value.term_source)
-                                        row.append(characteristic.value.term_accession)
-                            row.append(process.executes_protocol)
-                            for parameter in process.parameters:
-                                if isinstance(parameter.parameter_value, int or float):
-                                    row.append(parameter.parameter_value)
-                                    row.append(parameter.unit.name)
-                                    row.append(parameter.unit.term_source)
-                                    row.append(parameter.unit.term_accession)
-                                elif isinstance(parameter.parameter_value, OntologyAnnotation):
-                                    row.append(parameter.parameter_value.name)
-                                    row.append(parameter.parameter_value.term_source)
-                                    row.append(parameter.parameter_value.term_accession)
-                            row.append(output.name)
-                            for characteristic in output.characteristics:
-                                if isinstance(characteristic.value, int or float):
-                                    row.append(characteristic.value)
-                                    row.append(characteristic.unit.name)
-                                    row.append(characteristic.unit.term_source)
-                                    row.append(characteristic.unit.term_accession)
-                                elif isinstance(characteristic.value, OntologyAnnotation):
-                                    row.append(characteristic.value.name)
-                                    row.append(characteristic.value.term_source)
-                                    row.append(characteristic.value.term_accession)
-                            for factor_value in output.factor_values:
-                                if isinstance(factor_value.value, int or float):
-                                    row.append(factor_value.value)
-                                    row.append(factor_value.unit.name)
-                                    row.append(factor_value.unit.term_source)
-                                    row.append(factor_value.unit.term_accession)
-                                elif isinstance(factor_value.value, OntologyAnnotation):
-                                    row.append(factor_value.value.name)
-                                    row.append(factor_value.value.term_source)
-                                    row.append(factor_value.value.term_accession)
-                        study_file_writer.writerow(row)
+                for start_node in start_nodes:
+                    for end_node in end_nodes:
+                        paths = list(all_simple_paths(graph, start_node, end_node))
+                        for path in paths:
+                            assay_line_out = list()
+                            for node in path:
+                                # cycle through nodes in each path
+                                if isinstance(node, Source):
+                                    assay_line_out.append(node.name)
+                                    for characteristic in node.characteristics:
+                                        if isinstance(characteristic.value, int) or isinstance(characteristic.value, float):
+                                            assay_line_out.append(characteristic.value)
+                                            assay_line_out.append(characteristic.unit.name)
+                                            assay_line_out.append(characteristic.unit.term_source)
+                                            assay_line_out.append(characteristic.unit.term_accession)
+                                        elif isinstance(characteristic.value, OntologyAnnotation):
+                                            assay_line_out.append(characteristic.value.name)
+                                            assay_line_out.append(characteristic.value.term_source)
+                                            assay_line_out.append(characteristic.value.term_accession)
+                                        else:
+                                            assay_line_out.append(characteristic.value)
+                                elif isinstance(node, Process):
+                                    assay_line_out.append(node.executes_protocol.name)
+                                    for parameter_value in node.parameter_values:
+                                        if isinstance(parameter_value.value, int) or \
+                                                isinstance(parameter_value.value, float):
+                                            assay_line_out.append(parameter_value.value)
+                                            assay_line_out.append(parameter_value.unit.name)
+                                            assay_line_out.append(parameter_value.unit.term_source)
+                                            assay_line_out.append(parameter_value.unit.term_accession)
+                                        elif isinstance(parameter_value.value, OntologyAnnotation):
+                                            assay_line_out.append(parameter_value.value.name)
+                                            assay_line_out.append(parameter_value.value.term_source)
+                                            assay_line_out.append(parameter_value.value.term_accession)
+                                        else:
+                                            assay_line_out.append(parameter_value.value)
+                                elif isinstance(node, Sample):
+                                    assay_line_out.append(node.name)
+                                    for characteristic in node.characteristics:
+                                        if isinstance(characteristic.value, int) or isinstance(characteristic.value, float):
+                                            assay_line_out.append(characteristic.value)
+                                            assay_line_out.append(characteristic.unit.name)
+                                            assay_line_out.append(characteristic.unit.term_source)
+                                            assay_line_out.append(characteristic.unit.term_accession)
+                                        elif isinstance(characteristic.value, OntologyAnnotation):
+                                            assay_line_out.append(characteristic.value.name)
+                                            assay_line_out.append(characteristic.value.term_source)
+                                            assay_line_out.append(characteristic.value.term_accession)
+                                        else:
+                                            assay_line_out.append(characteristic.value)
+                                    for factor_value in node.factor_values:
+                                        if isinstance(factor_value.value, int) or isinstance(factor_value.value, float):
+                                            assay_line_out.append(factor_value.value)
+                                            assay_line_out.append(factor_value.unit.name)
+                                            assay_line_out.append(factor_value.unit.term_source)
+                                            assay_line_out.append(factor_value.unit.term_accession)
+                                        elif isinstance(factor_value.value, OntologyAnnotation):
+                                            assay_line_out.append(factor_value.value.name)
+                                            assay_line_out.append(factor_value.value.term_source)
+                                            assay_line_out.append(factor_value.value.term_accession)
+                                        else:
+                                            assay_line_out.append(factor_value.value)
+                        study_file_writer.writerow(assay_line_out)
                 study_fp.close()
                 for assay in study.assays:
-                    assay_fp = open(os.path.join(path, assay.file_name), 'w')
-                    #  FIXME: Not yet implemented - parser doesn't seem to load into assay nodes (related to issue #37)
+                    # First, build the length of one path in the graph, as our sample for headers
+                    graph = nx.DiGraph()
+                    prev_process_node = None
+                    for process in assay.process_sequence:
+                        if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
+                            graph.add_edge(prev_process_node, process)
+                        for input_ in process.inputs:
+                            graph.add_edge(input_, process)
+                        for output in process.outputs:
+                            graph.add_edge(process, output)
+                        prev_process_node = process
+                    # nx.draw_networkx(graph, arrows=True)
+                    assay.graph = graph
+                    # Find all the start and end nodes by looking for nodes with zero in or out edges
+                    start_nodes = list()
+                    end_nodes = list()
+                    for node in graph.nodes():
+                        if len(graph.in_edges(node)) == 0:
+                            start_nodes.append(node)
+                        if len(graph.out_edges(node)) == 0:
+                            end_nodes.append(node)
+                    # Start building headers by traversing all end-to-end paths; assumes correct experimental graphs
+                    for start_node in start_nodes:
+                        for end_node in end_nodes:
+                            paths = list(all_simple_paths(graph, start_node, end_node))
+                            if len(paths) > 0:
+                                path = paths[0]
+                                assay_col_headers = list()
+                                for node in path:
+                                    # go through nodes in path
+                                    if isinstance(node, Sample):
+                                        assay_col_headers.append('Sample Name')
+                                        # for characteristic in node.characteristics:
+                                        #     if characteristic.category.characteristic_type.annotationValue\
+                                        #             == 'Material Type':
+                                        #         assay_col_headers.append('Material Type')
+                                    elif isinstance(node, Material):
+                                        assay_col_headers.append(node.type)
+                                    elif isinstance(node, Data):
+                                        if node.type_ == 'raw data file':
+                                            assay_col_headers.append('Raw Data File')
+                                        elif node.type_ == 'derived data file':
+                                            assay_col_headers.append('Derived Data File')
+                                        else:
+                                            assay_col_headers.append('Data File')
+                                    elif isinstance(node, Process):
+                                        assay_col_headers.append('Protocol REF')
+                                        for parameter_value in node.parameter_values:
+                                            assay_col_headers.append('Parameter Value[' +
+                                                                     parameter_value.category.parameter_name.name + ']')
+                                            if not (parameter_value.unit is None):
+                                                assay_col_headers.append('Unit')
+                                                assay_col_headers.extend(('Term Source REF', 'Term Accession Number'))
+                                    else:
+                                        raise IOError("Unexpected node: " + str(node))
+                                break
+                    print(assay_col_headers)
+                    assay_fp = open(os.path.join(output_path, assay.filename), 'w')
+                    assay_file_writer = csv.writer(assay_fp, delimiter='\t')
+                    assay_file_writer.writerow(assay_col_headers)
+                    for start_node in start_nodes:
+                        for end_node in end_nodes:
+                            paths = list(all_simple_paths(graph, start_node, end_node))
+                            for path in paths:
+                                assay_line_out = list()
+                                for node in path:
+                                    # cycle through nodes in each path
+                                    if isinstance(node, Sample):
+                                        assay_line_out.append(node.name)
+                                        # for characteristic in node.characteristics:
+                                        #     assay_line_out.append(characteristic.value.name)
+                                        #     assay_line_out.append(characteristic.value.term_source)
+                                        #     assay_line_out.append(characteristic.value.term_accession)
+                                    elif isinstance(node, Material):
+                                        assay_line_out.append(node.name)
+                                    elif isinstance(node, Data):
+                                        assay_line_out.append(node.name)
+                                    elif isinstance(node, Process):
+                                        assay_line_out.append(node.executes_protocol.name)
+                                        for parameter_value in node.parameter_values:
+                                            assay_line_out.append(parameter_value.value)
+                                            if not (parameter_value.unit is None):
+                                                assay_line_out.append(parameter_value.unit.name)
+                                                assay_line_out.append(parameter_value.unit.term_source)
+                                                assay_line_out.append(parameter_value.unit.term_accession)
+                                    else:
+                                        raise IOError("Unexpected node: " + str(node))
+                                print(assay_line_out)
+                                assay_file_writer.writerow(assay_line_out)
                     assay_fp.close()
         fp.close()
 
     else:
         raise NotImplementedError("Dumping this ISA object to ISA Tab is not yet supported")
-    return fp
+    return investigation
 
 
 # def read_investigation_file(fp):
@@ -970,8 +1097,8 @@ def read_study_file(fp):
             if value == 'Material Type':
                 pass
             if value == 'Protocol REF':
-                processing_event_ = ProcessingEvent(
-                    protocol_ref=row_[index],
+                processing_event_ = Process(
+                    executes_protocol=row_[index],
                 )
                 try:
                     peek_column = column_names[index+1]

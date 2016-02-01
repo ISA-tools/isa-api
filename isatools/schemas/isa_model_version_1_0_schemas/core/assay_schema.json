@@ -36,16 +36,19 @@
       }
     },
     "materials": {
-      "samples": {
-        "type": "array",
-        "items": {
-          "$ref": "sample_schema.json#"
-        }
-      },
-      "otherMaterials": {
-        "type": "array",
-        "items": {
-          "$ref": "material_schema.json#"
+      "type": "object",
+      "properties": {
+        "samples": {
+          "type": "array",
+          "items": {
+            "$ref": "sample_schema.json#"
+          }
+        },
+        "otherMaterials": {
+          "type": "array",
+          "items": {
+            "$ref": "material_schema.json#"
+          }
         }
       }
     },
