@@ -7,8 +7,10 @@ class ValidateJsonTest(TestCase):
 
     def setUp(self):
         self._dir = os.path.dirname(__file__)
-        self.investigation_schema_dir = os.path.join(self._dir, "../isatools/schemas/isa_model_version_1_0_"
-                                                                "schemas/core/investigation_schema.json")
+        self._test_json_dir = os.path.join(os.path.dirname(__file__), '..', 'isatools', 'sampledata',)
+        self.investigation_schema_dir = os.path.join(self._dir, "..", "isatools", "schemas",
+                                                     "isa_model_version_1_0_schemas", "core",
+                                                     "investigation_schema.json")
 
     # def test_cedar_example(self):
     #   validateJsonAgainstSchemas("../isatools/schemas/cedar/InvestigationSchema.json","../isatools/schemas/cedar/InvestigationExampleInstances.json")
@@ -17,13 +19,14 @@ class ValidateJsonTest(TestCase):
     #   validateJsonAgainstSchemas("../isatools/schemas/cedar/InvestigationSchema.json","./data/BII-I-1.json")
 
     def test_sampledata_bii_i_1(self):
-        validateJsonAgainstSchemas(self.investigation_schema_dir, "../isatools/sampledata/BII-I-1.json")
+        validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir, "BII-I-1.json"))
 
     def test_sampledata_bii_s_3(self):
-        validateJsonAgainstSchemas(self.investigation_schema_dir, "../isatools/sampledata/BII-S-3.json")
+        validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir, "BII-S-3.json"))
 
     def test_sampledata_bii_s_7(self):
-        validateJsonAgainstSchemas(self.investigation_schema_dir, "../isatools/sampledata/BII-S-7.json")
+        validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir, "BII-S-7.json"))
 
     def test_ideally_canonical(self):
-        validateJsonAgainstSchemas(self.investigation_schema_dir, "../isatools/sampledata/ideally-canonical.json")
+        validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir,
+                                                                               "ideally-canonical.json"))
