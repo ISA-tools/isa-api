@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='isatools',
@@ -14,4 +14,5 @@ setup(
         'Programming Language :: Python :: 3.4',
         ],
     url='http://www.isa-tools.org/',
+    test_suite='tests'
 )
