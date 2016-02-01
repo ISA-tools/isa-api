@@ -13,11 +13,11 @@
     "comments":[  
         {  
             "name":"Created With Configuration",
-            "value":""
+            "value":"https://github.com/ISA-tools/Configuration-Files/tree/master/isaconfig-default_v2015-07-02"
         },
         {  
             "name":"Last Opened With Configuration",
-            "value":"GSC MIxS human gut"
+            "value":"https://github.com/ISA-tools/Configuration-Files/tree/master/isaconfig-default_v2015-07-02"
         }
     ],
     "ontologySourceReferences":[  
@@ -26,6 +26,30 @@
             "file":"http://data.bioontology.org/ontologies/CHEBI",
             "name":"CHEBI",
             "version":"78"
+        },
+        {  
+            "description":"Unit Ontology",
+            "file":"http://data.bioontology.org/ontologies/UO",
+            "name":"UO",
+            "version":"43"
+        },
+        {  
+            "description":"Ontology for BioMedical Investigation",
+            "file":"http://data.bioontology.org/ontologies/OBI",
+            "name":"OBI",
+            "version":"234"
+        },
+          {  
+            "description":"Stastical Ontology",
+            "file":"http://data.bioontology.org/ontologies/STATO",
+            "name":"STATO",
+            "version":"1.3"
+        },
+        {  
+            "description":"NCBI Taxonomy",
+            "file":"http://data.bioontology.org/ontologies/NCBITax",
+            "name":"UBERON",
+            "version":"31"
         }
     ],
     "studies":[  
@@ -97,26 +121,100 @@
                     ]
                 },
                 {  
-                    "name":"data acquisition",
+                    "name":"nucleic acid extraction",
+                    "protocolType":{  
+                        "name":"nucleic acid extraction",
+                        "termAccession":"",
+                        "termSource":""
+                    },
+                    "description":"a nucleic acid extraction protocol description",
+                    "uri":"http://www.research.org/protocol2.pdf",
+                    "version":"2.0"
+                },
+                {  
+                    "name":"library construction",
+                    "protocolType":{  
+                        "name":"library construction",
+                        "termAccession":"",
+                        "termSource":""
+                    },
+                    "description":"a library construction protocol description",
+                    "uri":"http://www.research.org/protocol2.pdf",
+                    "version":"2.0",
+                    "parameters":[  
+                        {  
+                            "parameterName":{  
+                                "name":"library strategy",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        },
+                        {
+                            "parameterName":{  
+                                "name":"library selection",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        },    
+                        { 
+                         "parameterName":{  
+                                "name":"library layout",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        },
+                        {    "parameterName":{  
+                                "name":"mid",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        }    
+                    ]
+                },                 
+                {  
+                    "name":"nucleic acid sequencing",
                     "protocolType":{  
                         "name":"data acquisition",
                         "termAccession":"",
                         "termSource":""
                     },
-                    "description":"a data acquisition protocol description",
+                    "description":"a nucleic acid sequencing protocol description",
                     "uri":"http://www.research.org/protocol2.pdf",
-                    "version":"2.0"
+                    "version":"2.0",
+                    "parameters":[  
+                        {  
+                            "parameterName":{  
+                                "name":"sequencing instrument",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                         },   
+                        {
+                            "parameterName":{  
+                                "name":"base caller",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        },
+                        {
+                           "parameterName":{  
+                                "name":"quality scorer",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        }
+                    ]
                 },
                 {  
-                    "name":"data transformation",
+                    "name":"sequence analysis data transformation",
                     "protocolType":{  
-                        "name":"data transformation",
+                        "name":"sequence analysis data transformation",
                         "termAccession":"",
                         "termSource":""
                     },
-                    "description":"a data transformation protocol description",
-                    "uri":"http://www.research.org/protocol3.pdf",
-                    "version":"1.0"
+                    "description":"a sequence analysis data transformation protocol description",
+                    "uri":"http://www.research.org/protocol2.pdf",
+                    "version":"2.0"
                 }
             ],
             "people":[  
@@ -138,10 +236,10 @@
                     ]
                 }
             ],
-            "filename":"s_TEST-Template5-repeatedmeasure.txt",
+            "filename":"s_ideally_canonical.txt",
             "sources":[  
                 {  
-                    "name":"source-source2",
+                    "name":"source1",
                     "characteristics":[  
                         {
                             "category": "Intervention time",
@@ -153,48 +251,86 @@
                             }
                         },
                         {
-                            "category": "Stuff",
+                            "category": "organism",
                             "value":{  
-                                "name":"blood",
-                                "termAccession":"http://purl.obolibrary.org/obo/UBERON_0000178",
-                                "termSource":"UBERON"
+                                "name":"water metagenome",
+                                "termAccession":"http://purl.obolibrary.org/obo/NCBITax001242",
+                                "termSource":"NCBITax"
                             }
                         }
                     ],
                     "factorValues":[  
-
+{
+                            "category": "geographical location",
+                            "value":{  
+                                "name":"Bergen",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        }
                     ]
                 }
             ],
             "samples":[  
                 {  
-                    "name":"sample-sample4",
+                    "name":"sample1",
                     "characteristics":[  
                         {
-                            "category": "Stuff",
+                            "category": "Material Type",
                             "value":{  
-                                "name":"blood",
-                                "termAccession":"http://purl.obolibrary.org/obo/UBERON_0000178",
-                                "termSource":"UBERON"
+                                "name":"sea water",
+                                "termAccession":"",
+                                "termSource":""
                             }
                         }
                     ],
                     "derivesFrom":[  
-                        "source-source2"
+                        "source1"
                     ],
                     "factorValues":[  
 
                     ]
                 }
             ],
+            "materials":[
+                {
+                   "name":"extract1",
+                   "type":"Extract Name",
+                    "characteristics":[  
+                        {
+                            "category": "material type",
+                            "value":{  
+                                "name":"genomic DNA",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        },
+                        {
+                            "category": "concentration",
+                            "value":  "74.5",
+                            "unit":{
+                                "name":"microgram per liter",
+                                "termAccession":"http://purl.obolibrary.org/obo/UO_000001",
+                                "termSource":"UO"
+                            }
+                        }
+                        
+                    ],
+                    "derivesFrom":[  
+                        "sample1"
+                    ]
+                }
+            ],
             "data":[  
                 {  
-                    "name":"my_favourite_raw_data_file.cdf",
-                    "type":"raw data file"
+                    "name":"my_favourite_raw_data_file.fastq.gz",
+                    "type":"raw data file",
+                    "process_node":"Assay Name"
                 },
                 {  
                     "name":"my_prefered_derived_data_file.txt",
-                    "type":"derived data file"
+                    "type":"derived data file",
+                    "process_node":"Normalization Name"
                 }
             ],
             "processSequence":[  
@@ -206,12 +342,12 @@
                     "performer":"john smith",
                     "inputs":[  
                         {  
-                            "name":"source-source2"
+                            "name":"source1"
                         }
                     ],
                     "outputs":[  
                         {  
-                            "name":"sample-sample4"
+                            "name":"sample1"
                         }
                     ],
                     "parameters":[  
@@ -228,7 +364,7 @@
             ],
             "assays":[  
                 {  
-                    "fileName":"a_gilbert-assay-Gx.txt",
+                    "fileName":"a_ideally_canonical-Gx.txt",
                     "measurementType":{  
                         "name":"metagenome sequencing",
                         "termAccession":"",
@@ -243,40 +379,125 @@
                     "processSequence":[  
                         {  
                             "executesProtocol":{  
-                                "name":"data collection"
+                                "name":"nucleic acid extraction"
                             },
+                            "date":"2016-01-15+T15:30:45",
+                            "performer":"john smith",
                             "inputs":[  
                                 {  
-                                    "name":"sample-sample4"
+                                    "name":"sample1"
                                 }
-                            ],
+                            ]
+                        },
+                        {  
+                            "executesProtocol":{  
+                                "name":"library construction"
+                            },
+                            "date":"2016-01-16+T15:30:45",
+                            "performer":"john smith",
+                            "parameters":[ 
+                               {  
+                                     "name":"library selection",
+                                     "parameterValue":{  
+                                         "name":"PCR",
+                                         "termAccession":"",
+                                         "termSource":""
+                                     }
+                                 },
+                                {  
+                                    "name":"library layout",
+                                    "parameterValue":{  
+                                        "name":"SINGLE",
+                                        "termAccession":"",
+                                        "termSource":""
+                                    }
+                                },
+                                {  
+                                    "name":"library strategy",
+                                    "parameterValue":{  
+                                        "name":"AMPLICON",
+                                        "termAccession":"",
+                                        "termSource":""
+                                    }
+                                },
+                                 {  
+                                    "name":"mid",
+                                    "parameterValue":{  
+                                        "name":"ATTGCC",
+                                        "termAccession":"",
+                                        "termSource":""
+                                    }
+                                }                                                              
+                            ]
+                        },                        
+                        {  
+                            "executesProtocol":{  
+                                "name":"nucleic acid sequencing"
+                            },
+                            "date":"2016-01-17+T15:30:45",
+                            "performer":"john smith",
                             "outputs":[  
                                 {  
-                                    "name":"my_favourite_raw_data_file.cdf"
+                                    "name":"my_favourite_raw_data_file.fastq.gz"
                                 }
                             ],
                             "parameters":[  
-
+                            {  
+                                     "name":"sequencing instrument",
+                                     "parameterValue":{  
+                                         "name":"Illumina Genome Analyzer II",
+                                         "termAccession":"",
+                                         "termSource":""
+                                     }
+                                 },
+                                {  
+                                    "name":"base caller",
+                                    "parameterValue":{  
+                                        "name":"Illumina-caller",
+                                        "termAccession":"",
+                                        "termSource":""
+                                    }
+                                },
+                                {  
+                                    "name":"quality scorer",
+                                    "parameterValue":{  
+                                        "name":"illumina-scorer",
+                                        "termAccession":"",
+                                        "termSource":""
+                                    }
+                                }
                             ]
                         },
                         {  
                             "executesProtocol":{  
                                 "name":"data transformation"
                             },
+                            "date":"2016-01-18+T17:30:45",
+                            "performer":"john smith",                            
                             "inputs":[  
                                 {  
-                                    "name":"my_favourite_raw_data_file.cdf"
+                                    "filename":"my_favourite_raw_data_file.fastq.gz",
+                                    "nodename" : ""
+                              
                                 }
                             ],
                             "outputs":[  
                                 {  
-                                    "name":"my_prefered_derived_data_file.txt"
+                                    "filename":"my_prefered_derived_data_file.txt",
+                                     "nodename" : ""
                                 }
                             ],
                             "parameters":[  
-
+                            {  
+                                    "name":"error rate cut-off",
+                                    "parameterValue":{  
+                                        "name":"5 % error rate",
+                                        "termAccession":"http://purl.obolibrary.org/obo/STATO_00000100",
+                                        "termSource":"STATO"
+                                    }
+                                }
                             ]
-                        }
+                        }                       
                     ]
                 }
             ]

@@ -112,3 +112,6 @@ atlassian-ide-plugin.xml
 com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
+
+# Behaviour-driven-development output directory
+features/test_outputs
