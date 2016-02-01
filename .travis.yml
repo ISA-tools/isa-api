@@ -10,7 +10,7 @@ install:
 
 # command to run tests
 script:
-      -
+      - python setup.py test
       - behave --format=progress features/isa-file-handler.feature
 
 branches:
