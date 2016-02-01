@@ -38,7 +38,8 @@ def find_lt(a, x):
     i = bisect.bisect_left(a, x)
     if i:
         return a[i-1]
-    raise ValueError
+    else:
+        return -1
 
 
 def find_gt(a, x):
@@ -46,7 +47,8 @@ def find_gt(a, x):
     i = bisect.bisect_right(a, x)
     if i != len(a):
         return a[i]
-    raise ValueError
+    else:
+        return -1
 
 def find_in_between(a, x, y):
     result = []
@@ -241,7 +243,8 @@ class StudyAssayParser:
         final_studies = []
         for study in rec.studies:
             source_data = self._parse_study(study.metadata["Study File Name"],
-                                            ["Source Name", "Sample Name", "Comment[ENA_SAMPLE]"])
+                                            self._col_types["node"])
+                                            #["Source Name", "Sample Name", "Comment[ENA_SAMPLE]"])
             if source_data:
                 study.nodes = source_data
                 final_assays = []
@@ -249,7 +252,6 @@ class StudyAssayParser:
                     cur_assay = ISATabAssayRecord(assay)
                     assay_data = self._parse_study(assay["Study Assay File Name"],
                                                    self._col_types["node"])
-                                                   #["Sample Name","Extract Name","Raw Data File","Derived Data File", "Image File", "Acquisition Parameter Data File", "Free Induction Decay Data File"])
                     cur_assay.nodes = assay_data
                     assay_process_nodes = self._get_process_nodes(assay["Study Assay File Name"], cur_assay)
 
@@ -277,7 +279,7 @@ class StudyAssayParser:
 
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
             all_parameters_indices = [i for i, x in enumerate(htypes) if x == "parameter"]
-            node_indices = [i for i, x in enumerate(htypes) if x == "node"] #or x=="node_assay"]
+            node_indices = [i for i, x in enumerate(htypes) if x == "node"]
             node_assay_indices =  [i for i, x in enumerate(htypes) if x == "node_assay"]
 
             line_number = 0
@@ -287,26 +289,17 @@ class StudyAssayParser:
                 if line_number >=  max_number:
 
                     for processing_index in processing_indices:
-                        try:
-                            input_index = find_lt(node_indices, processing_index)
-                        except ValueError:
-                            input_index = -1
-                        try:
-                            output_index = find_gt(node_indices, processing_index)
-                        except ValueError:
-                            output_index = -1
-                        try:
-                            next_processing_index = find_gt(processing_indices, processing_index)
-                        except ValueError:
-                            next_processing_index = -1
 
-                        try:
-                            parameters_indices = find_in_between(all_parameters_indices, processing_index, next_processing_index)
-                        except ValueError:
-                            parameters_indices = []
+                        next_processing_index = find_gt(processing_indices, processing_index)
+                        previous_processing_index = find_lt(processing_indices, processing_index)
 
-                        input_header = headers[hgroups[input_index][0]]
-                        output_header = headers[hgroups[output_index][0]]
+                        input_indices = find_in_between(node_indices, previous_processing_index, processing_index)
+                        output_indices = find_in_between(node_indices, processing_index, next_processing_index)
+                        parameters_indices = find_in_between(all_parameters_indices, processing_index, next_processing_index)
+                        assay_name_indices = find_in_between(node_assay_indices, processing_index, next_processing_index)
+
+                        input_headers = [ headers[hgroups[x][0]] for i, x in enumerate(input_indices) ]
+                        output_headers = [  headers[hgroups[x][0]] for i, x in enumerate(output_indices) ]
                         processing_header = headers[hgroups[processing_index][0]]
 
                         #reading line by line and identifying inputs outputs and creating process_node
@@ -314,26 +307,31 @@ class StudyAssayParser:
                         input_process_map = {}
                         output_process_map = {}
 
-                        input_name = line[hgroups[input_index][0]]
-                        input_node_index = self._build_node_index(input_header,input_name)
+                        input_names = [ line[hgroups[x][0]] for i, x in enumerate(input_indices) ]
+                        input_node_indices = [ self._build_node_index(input_headers[i],input_names[i]) for i, x in enumerate(input_names) ]
 
-                        output_name = line[hgroups[output_index][0]]
-                        output_node_index = self._build_node_index(output_header, output_name)
+                        output_names = [ line[hgroups[x][0]] for i, x in enumerate(output_indices) ]
+                        output_node_indices = [ self._build_node_index(output_headers[i], output_names[i]) for i, x in enumerate(output_names)]
 
                         #if both input_name and output_name are empty, ignore the row
-                        if (not input_name and not output_name):
+                        if (not input_names and not output_names):
                             continue
 
-                        try:
-                            unique_process_name = input_process_map[input_node_index]
-                        except KeyError:
-                            try:
-                                unique_process_name = output_process_map[output_node_index]
-                            except KeyError:
-                                processing_name = line[hgroups[processing_index][0]]
-                                if not processing_name:
-                                    continue
-                                unique_process_name = processing_name+str(process_number)
+
+                        processing_name = line[hgroups[processing_index][0]]
+                        if not processing_name:
+                            continue
+                        unique_process_name = processing_name
+                        # try:
+                        #     unique_process_name = input_process_map[input_node_indices]
+                        # except KeyError:
+                        #     try:
+                        #         unique_process_name = output_process_map[output_node_indices]
+                        #     except KeyError:
+                        #         processing_name = line[hgroups[processing_index][0]]
+                        #         if not processing_name:
+                        #             continue
+                        #         unique_process_name = processing_name+str(process_number)
 
                         try:
                             process_node = process_nodes[unique_process_name]
@@ -342,12 +340,16 @@ class StudyAssayParser:
                             process_node = ProcessNodeRecord(unique_process_name, processing_header, study, processing_name)
                             process_number += 1
 
-                        if not (input_node_index in process_node.inputs):
-                            process_node.inputs.append(input_node_index)
-                        if not (output_node_index in process_node.outputs):
-                            process_node.outputs.append(output_node_index)
-                        input_process_map[input_node_index] = unique_process_name
-                        output_process_map[output_node_index] = unique_process_name
+                        if assay_name_indices:
+                            if len(assay_name_indices)==1:
+                                process_node.assay_name = line[hgroups[assay_name_indices[0]][0]]
+
+                        if not (input_node_indices in process_node.inputs):
+                            process_node.inputs = process_node.inputs + input_node_indices
+                        if not (output_node_indices in process_node.outputs):
+                            process_node.outputs = process_node.outputs + output_node_indices
+                        # input_process_map[input_node_indices] = unique_process_name
+                        # output_process_map[output_node_indices] = unique_process_name
 
                         #Add parameters
                         parameter_headers = []
@@ -381,16 +383,14 @@ class StudyAssayParser:
             hgroups = self._collapse_header(headers)
             htypes = self._characterize_header(headers, hgroups)
 
-            node_indices = [i for i, x in enumerate(htypes) if x == "node"] #or x=="node_assay"]
+            node_indices = [i for i, x in enumerate(htypes) if x == "node"]
             all_attribute_indices = [i for i, x in enumerate(htypes) if x == "attribute"]
 
             for node_index in node_indices:
 
                 node_type = headers[hgroups[node_index][0]]
-
                 if node_type not in node_types:
                     continue
-
                 try:
                     header_index = headers.index(node_type)
                 except ValueError:
@@ -401,36 +401,26 @@ class StudyAssayParser:
                     #                        % (node_type, header)
                     continue
 
-                try:
-                    next_node_index = find_gt(node_indices, header_index)
-                except ValueError:
-                    next_node_index = -1
-
-                try:
-                    attribute_indices = find_in_between(all_attribute_indices, node_index, next_node_index)
-                except ValueError:
-                    attribute_indices = []
+                next_node_index = find_gt(node_indices, header_index)
+                attribute_indices = find_in_between(all_attribute_indices, node_index, next_node_index)
 
                 in_handle.seek(0, 0)
                 for line in reader:
-                    name = line[header_index]
+                    name = self._swap_synonyms([line[header_index]])[0]
+                    #skip the header line and empty lines
+                    if (not name or name in headers):
+                        continue
                     #to deal with same name used for different node types (e.g. Source Name and Sample Name using the same string)
                     node_index_name = self._build_node_index(node_type,name)
-                    #skip the header line and empty lines
-                    if name in headers:
-                        continue
-                    if (not name):
-                        continue
+
                     try:
                         node = nodes[node_index_name]
 
-                        attribute_headers = []
                         for attribute_index in attribute_indices:
                             attribute_header = headers[hgroups[attribute_index][0]]
                             if attribute_header.startswith("Factor Value") and node_type != "Sample Name":
                                 continue
                             if attribute_header not in node.attributes:
-                                attribute_headers.append(attribute_header)
                                 node.attributes.append(attribute_header)
 
                     except KeyError:
@@ -440,13 +430,11 @@ class StudyAssayParser:
                         attrs = self._line_keyvals(line, headers, hgroups, htypes, node.metadata)
                         nodes[node_index_name].metadata = attrs
 
-                        attribute_headers = []
                         for attribute_index in attribute_indices:
                             attribute_header = headers[hgroups[attribute_index][0]]
                             if attribute_header.startswith("Factor Value") and node_type != "Sample Name":
                                 continue
                             if attribute_header not in node.attributes:
-                                attribute_headers.append(attribute_header)
                                 node.attributes.append(attribute_header)
 
 
