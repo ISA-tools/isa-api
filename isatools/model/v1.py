@@ -27,6 +27,15 @@ class IsaObject(object):
             self.comments = comments
 
 
+class IsaConfigurableObject(IsaObject):
+    def __init__(self, comments):
+        super().__init__(comments)
+        self.header = None
+        self.data_type = None
+        self.is_file_field = False
+        self.list_values = list()
+
+
 class Investigation(IsaObject):
     """An investigation maintains metadata about the project context and links to one or more studies. There can only
     be 1 Investigation in an ISA package. Investigations has the following properties:
@@ -47,7 +56,7 @@ class Investigation(IsaObject):
     def __init__(self, id_='', filename='', identifier="", title="", description="", submission_date=date.today(),
                  public_release_date=date.today(), ontology_source_references=None, publications=None,
                  contacts=None, studies=None, comments=None):
-        super().__init__()
+        super().__init__(comments)
         self.id = id_
         self.filename = filename
         self.identifier = identifier
@@ -71,8 +80,6 @@ class Investigation(IsaObject):
             self.studies = list()
         else:
             self.studies = studies
-        if comments is None:
-            self.comments = list()
 
 
 class OntologySourceReference(IsaObject):
@@ -499,10 +506,43 @@ class Process(IsaObject):
 class ParameterValue(object):
     """A Parameter Value
     """
-    def __init__(self, category="", value=None, unit=None):
+    def __init__(self, category="", value=None, unit=None, config=None):
         self.category = category
-        self.value = value
+        self._value = value
         self.unit = unit
+        self.config = config
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, v):
+        if self.config is None:
+            self._value = v
+        else:
+            import re
+            # Raise exception if value does not comply with config
+            parameter_value_regex = re.compile('Parameter Value\[(.*?)\]')
+            found_category = False
+            for field in self.config.field:
+                if len(parameter_value_regex.findall(field.header)) > 0:
+                    field_header_category = parameter_value_regex.findall(field.header)[0]
+                    if field_header_category == self.category:
+                        if field.data_type == 'String' and (not isinstance(v, str)):
+                            raise TypeError("Expected String")
+                        if field.data_type == 'Ontology Term' and (not isinstance(v, OntologyAnnotation)):
+                            raise TypeError("Expected Ontology Term")
+                        if field.data_type == 'List' and not (v in field.list_values.split(sep=',')):
+                            raise TypeError("Value not in list values: " + field.list_values)
+                        found_category = True
+            if not found_category:
+                raise TypeError("Parameter Value category '" + field_header_category + "' not found in configuration")
+            self._value = v
+
+    @value.deleter
+    def value(self):
+        self._value = None
 
 
 class DataFileType(Enum):
@@ -581,14 +621,39 @@ def batch_create_materials(material=None, n=1):
     return material_list
 
 
-def batch_create_assays(materials=list(), type_='data acquisition'):
-    obj_list = list()
-    for obj in materials:
-        if isinstance(obj, Source) or isinstance(obj, Sample) or isinstance(obj, Material):
-            process = Process()
-            process.inputs.append(obj)
-            process.outputs.append(Material())
-            obj_list.append(process)
-        else:
-            raise IOError("Invalid object found in materials list")
-    return obj_list
+def configure(assay_object, config_dir, measurement_type, technology_type):
+    if not isinstance(assay_object, Assay):
+        raise IOError("Cannot configure object of this type")
+    from isatools.io import isatab_configurator as configurator
+    configurator.load(config_dir)
+    config = configurator.get_config(measurement_type, technology_type)
+    from collections import OrderedDict
+    tab_headers_dict = OrderedDict()
+    import re
+    parameter_value_regex = re.compile('Parameter Value\[(.*?)\]')
+    comment_regex = re.compile('Comment\[(.*?)\]')
+    for field in config.field:
+        if field.header == 'Sample Name':
+            tab_headers_dict[field.pos] = Sample()
+        if field.header == 'Extract Name':
+            tab_headers_dict[field.pos] = Material(type_='Extract Name')
+        if parameter_value_regex.match(field.header):
+            parameter_category = parameter_value_regex.findall(field.header)[0]
+            tab_headers_dict[field.pos] = ParameterValue(category=parameter_category)
+        if field.header == 'Assay Name':
+            tab_headers_dict[field.pos] = Material()
+        if comment_regex.match(field.header):
+            tab_headers_dict[field.pos] = Comment(name=comment_regex.findall(field.header)[0])
+        if field.is_file_field:
+            tab_headers_dict[field.pos] = Data()
+    for protocol_field in config.protocol_field:
+        tab_headers_dict[protocol_field.pos] = \
+            Process(executes_protocol=OntologyAnnotation(name=protocol_field.protocol_type))
+    curr_context = None
+    for header_obj in tab_headers_dict.values:
+        if isinstance(header_obj, Source) or isinstance(header_obj, Sample) or isinstance(header_obj, Material) or isinstance(header_obj, Data):
+            curr_context = header_obj
+        elif isinstance(header_obj, ParameterValue):
+            curr_context.parameter_values.append(header_obj)
+
+
