@@ -299,6 +299,7 @@ class StudyAssayParser:
                         output_indices = find_in_between(node_indices, processing_index, next_processing_index)
                         parameters_indices = find_in_between(all_parameters_indices, processing_index, next_processing_index)
                         assay_name_indices = find_in_between(node_assay_indices, processing_index, next_processing_index)
+                        qualifier_indices = hgroups[processing_index][1:]
 
                         input_headers = [ headers[hgroups[x][0]] for i, x in enumerate(input_indices) ]
                         output_headers = [  headers[hgroups[x][0]] for i, x in enumerate(output_indices) ]
@@ -320,20 +321,11 @@ class StudyAssayParser:
                         if (not input_names and not output_names):
                             continue
 
-                        #Add qualifiers (performer and date)
-                        qualifier_indices = hgroups[processing_index][1:]
-                        for qualifier_index in qualifier_indices:
-                            qualifier_header = headers[qualifier_index]
-                            if qualifier_header=="Date":
-                                process_node.date = line[qualifier_index]
-                            elif qualifier_header == "Performer":
-                                process_node.performer = line[qualifier_index]
-
                         processing_name = line[hgroups[processing_index][0]]
                         if not processing_name:
                             continue
 
-                        qualifier_indices_string = '-'.join(qualifier_indices)
+                        qualifier_indices_string = '-'.join(str(x) for x in qualifier_indices)
                         input_node_indices_string = "-".join(input_node_indices)
                         output_node_indices_string = "-".join(output_node_indices)
 
@@ -358,14 +350,29 @@ class StudyAssayParser:
                             process_node = ProcessNodeRecord(unique_process_name, processing_header, study, processing_name)
                             process_number += 1
 
+
+                        #Add qualifiers (performer and date)
+                        for qualifier_index in qualifier_indices:
+                            qualifier_header = headers[qualifier_index]
+                            if qualifier_header=="Date":
+                                process_node.date = line[qualifier_index]
+                            elif qualifier_header == "Performer":
+                                process_node.performer = line[qualifier_index]
+
                         if assay_name_indices:
                             if len(assay_name_indices)==1:
                                 process_node.assay_name = line[hgroups[assay_name_indices[0]][0]]
 
                         if not (input_node_indices in process_node.inputs):
-                            process_node.inputs = process_node.inputs + input_node_indices
+                            in_first = set(process_node.inputs)
+                            in_second = set(input_node_indices)
+                            in_second_but_not_in_first = in_second - in_first
+                            process_node.inputs = process_node.inputs + list(in_second_but_not_in_first)
                         if not (output_node_indices in process_node.outputs):
-                            process_node.outputs = process_node.outputs + output_node_indices
+                            in_first = set(process_node.outputs)
+                            in_second = set(output_node_indices)
+                            in_second_but_not_in_first = in_second - in_first
+                            process_node.outputs = process_node.outputs + list(in_second_but_not_in_first)
 
                         qualifier_process_map[qualifier_indices_string] = unique_process_name
                         input_process_map[input_node_indices_string] = unique_process_name
@@ -421,7 +428,8 @@ class StudyAssayParser:
                     #                        % (node_type, header)
                     continue
 
-                next_node_index = find_gt(node_indices, header_index)
+                next_node_index = find_gt(node_indices, node_index)
+                previous_node_index = find_lt(node_indices, node_index)
                 attribute_indices = find_in_between(all_attribute_indices, node_index, next_node_index)
 
                 in_handle.seek(0, 0)
@@ -457,6 +465,8 @@ class StudyAssayParser:
                             if attribute_header not in node.attributes:
                                 node.attributes.append(attribute_header)
 
+                    if not (previous_node_index == -1):
+                        node.derivesFrom.append(line[previous_node_index])
 
         return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
 
@@ -612,6 +622,7 @@ _assay_str = \
 _node_str = \
 """       * Node -> {name} {type} {index}
          attributes: {attributes}
+         derivesFrom: {derivesFrom}
          metadata: {md}"""
 
 _process_node_str = \
@@ -698,13 +709,15 @@ class NodeRecord:
         self.index = nindex
         self.metadata = {}
         self.attributes = []
+        self.derivesFrom = []
 
     def __str__(self):
         return _node_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 9),
                                 index=self.index,
                                 name=self.name,
                                 type=self.ntype,
-                                attributes=pprint.pformat(self.attributes).replace("\n","\n"+" "*9))
+                                attributes=pprint.pformat(self.attributes).replace("\n","\n"+" "*9),
+                                derivesFrom=pprint.pformat(self.derivesFrom).replace("\n","\n"+" "*9))
 
 
 class ProcessNodeRecord:
