@@ -364,9 +364,15 @@ class StudyAssayParser:
                                 process_node.assay_name = line[hgroups[assay_name_indices[0]][0]]
 
                         if not (input_node_indices in process_node.inputs):
-                            process_node.inputs = process_node.inputs + input_node_indices
+                            in_first = set(process_node.inputs)
+                            in_second = set(input_node_indices)
+                            in_second_but_not_in_first = in_second - in_first
+                            process_node.inputs = process_node.inputs + list(in_second_but_not_in_first)
                         if not (output_node_indices in process_node.outputs):
-                            process_node.outputs = process_node.outputs + output_node_indices
+                            in_first = set(process_node.outputs)
+                            in_second = set(output_node_indices)
+                            in_second_but_not_in_first = in_second - in_first
+                            process_node.outputs = process_node.outputs + list(in_second_but_not_in_first)
 
                         qualifier_process_map[qualifier_indices_string] = unique_process_name
                         input_process_map[input_node_indices_string] = unique_process_name
