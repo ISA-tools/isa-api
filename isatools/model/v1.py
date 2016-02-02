@@ -27,13 +27,20 @@ class IsaObject(object):
             self.comments = comments
 
 
-class IsaConfigurableObject(IsaObject):
+class FieldConfigurableObject(object):
     def __init__(self, comments):
         super().__init__(comments)
-        self.header = None
-        self.data_type = None
-        self.is_file_field = False
-        self.list_values = list()
+        self._field_header = None
+        self._field_data_type = None
+        self._field_is_file_field = False
+        self._field_is_multiple_value = False
+        self._field_is_required = True
+        self._field_is_hidden = False
+        self._field_is_forced_ontology = False
+        self._field_description = None
+        self._field_default_value = None
+        self._field_generated_value_template = None
+        self._field_list_values = list()
 
 
 class Investigation(IsaObject):
@@ -503,10 +510,11 @@ class Process(IsaObject):
             self.outputs = outputs
 
 
-class ParameterValue(object):
+class ParameterValue(FieldConfigurableObject):
     """A Parameter Value
     """
     def __init__(self, category="", value=None, unit=None, config=None):
+        super().__init__()
         self.category = category
         self._value = value
         self.unit = unit
@@ -621,39 +629,33 @@ def batch_create_materials(material=None, n=1):
     return material_list
 
 
-def configure(assay_object, config_dir, measurement_type, technology_type):
-    if not isinstance(assay_object, Assay):
+def configure(isa_obj, config):
+
+    def set_field_properties(o):
+        o._field_header = field.data_type
+        o._field_data_type = None
+        o._field_is_file_field = False
+        o._field_is_multiple_value = False
+        o._field_is_required = True
+        o._field_is_hidden = False
+        o._field_is_forced_ontology = False
+        o._field_description = None
+        o._field_default_value = None
+        o._field_generated_value_template = None
+        o._field_list_values = field.list_values
+
+    if not isinstance(isa_obj, FieldConfigurableObject):
         raise IOError("Cannot configure object of this type")
-    from isatools.io import isatab_configurator as configurator
-    configurator.load(config_dir)
-    config = configurator.get_config(measurement_type, technology_type)
-    from collections import OrderedDict
-    tab_headers_dict = OrderedDict()
-    import re
-    parameter_value_regex = re.compile('Parameter Value\[(.*?)\]')
-    comment_regex = re.compile('Comment\[(.*?)\]')
-    for field in config.field:
-        if field.header == 'Sample Name':
-            tab_headers_dict[field.pos] = Sample()
-        if field.header == 'Extract Name':
-            tab_headers_dict[field.pos] = Material(type_='Extract Name')
-        if parameter_value_regex.match(field.header):
-            parameter_category = parameter_value_regex.findall(field.header)[0]
-            tab_headers_dict[field.pos] = ParameterValue(category=parameter_category)
-        if field.header == 'Assay Name':
-            tab_headers_dict[field.pos] = Material()
-        if comment_regex.match(field.header):
-            tab_headers_dict[field.pos] = Comment(name=comment_regex.findall(field.header)[0])
-        if field.is_file_field:
-            tab_headers_dict[field.pos] = Data()
-    for protocol_field in config.protocol_field:
-        tab_headers_dict[protocol_field.pos] = \
-            Process(executes_protocol=OntologyAnnotation(name=protocol_field.protocol_type))
-    curr_context = None
-    for header_obj in tab_headers_dict.values:
-        if isinstance(header_obj, Source) or isinstance(header_obj, Sample) or isinstance(header_obj, Material) or isinstance(header_obj, Data):
-            curr_context = header_obj
-        elif isinstance(header_obj, ParameterValue):
-            curr_context.parameter_values.append(header_obj)
-
-
+    if isinstance(isa_obj, ParameterValue):
+        # If it's a parameter value, try find a matching Parameter Value header to configure it
+        import re
+        parameter_value_regex = re.compile('Parameter Value\[(.*?)\]')
+        for field in config.field:
+            if parameter_value_regex.match(field.header):  # if it's a valid Parameter Value header
+                if parameter_value_regex.findall(field.header)[0] == isa_obj.category:  # If the category matches obj
+                    set_field_properties(isa_obj)
+    if isinstance(isa_obj, Sample):
+        # If its a sample, try find a matching Sample header to configure it
+        for field in config.field:
+            if field.header == "Sample Name":  # if it's a valid Sample Name header
+                set_field_properties(isa_obj)
