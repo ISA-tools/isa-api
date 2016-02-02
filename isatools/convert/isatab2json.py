@@ -486,14 +486,17 @@ class ISATab2ISAjson_v1:
                         ("characteristics", self.createValueList(self.CHARACTERISTICS,node_index, nodes[node_index]))
                     ])
 
-                #derivesFrom sources TODO
-                # try:
-                #     source_name = nodes[node_index].metadata["Source Name"][0]
-                #     source_index = "source-"+source_name
-                #     source_identifier = self.getIdentifier("source", source_index)
-                #     json_item["derivesFrom"] = dict([ ("@id", source_identifier)])
-                # except KeyError:
-                #     print("There is no source declared for sample ", node_index)
+                #derivesFrom sources
+                try:
+                     json_list = []
+                     for source_name in nodes[node_index].derivesFrom:
+                        source_index = "source-"+source_name
+                        source_identifier = self.getIdentifier("source", source_index)
+                        json_list.append(dict([ ("@id", source_identifier)]))
+
+                     json_item["derivesFrom"] = json_list
+                except KeyError:
+                     print("There is no source declared for sample ", node_index)
 
                 json_dict.update({node_index: json_item})
 

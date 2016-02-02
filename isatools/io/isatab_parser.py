@@ -428,7 +428,8 @@ class StudyAssayParser:
                     #                        % (node_type, header)
                     continue
 
-                next_node_index = find_gt(node_indices, header_index)
+                next_node_index = find_gt(node_indices, node_index)
+                previous_node_index = find_lt(node_indices, node_index)
                 attribute_indices = find_in_between(all_attribute_indices, node_index, next_node_index)
 
                 in_handle.seek(0, 0)
@@ -464,6 +465,8 @@ class StudyAssayParser:
                             if attribute_header not in node.attributes:
                                 node.attributes.append(attribute_header)
 
+                    if not (previous_node_index == -1):
+                        node.derivesFrom.append(line[previous_node_index])
 
         return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
 
@@ -619,6 +622,7 @@ _assay_str = \
 _node_str = \
 """       * Node -> {name} {type} {index}
          attributes: {attributes}
+         derivesFrom: {derivesFrom}
          metadata: {md}"""
 
 _process_node_str = \
@@ -705,13 +709,15 @@ class NodeRecord:
         self.index = nindex
         self.metadata = {}
         self.attributes = []
+        self.derivesFrom = []
 
     def __str__(self):
         return _node_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 9),
                                 index=self.index,
                                 name=self.name,
                                 type=self.ntype,
-                                attributes=pprint.pformat(self.attributes).replace("\n","\n"+" "*9))
+                                attributes=pprint.pformat(self.attributes).replace("\n","\n"+" "*9),
+                                derivesFrom=pprint.pformat(self.derivesFrom).replace("\n","\n"+" "*9))
 
 
 class ProcessNodeRecord:
