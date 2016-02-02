@@ -584,23 +584,24 @@ class ISATab2ISAjson_v1:
         for node_index in nodes:
             node = nodes[node_index]
             for header in node.metadata:
-                 if not header.startswith(self.UNIT):
+                 if not header.startswith(self.CHARACTERISTICS):
+                    continue
+                 value_attributes = node.metadata[header][0]
+                 try:
+                    unit = value_attributes.Unit
+                 except AttributeError:
+                     continue
+
+                 unit_category_identifier = self.getIdentifier(self.UNIT, unit)
+                 if unit_category_identifier:
                     continue
 
-                #  characteristic_category_identifier = self.getIdentifier(self.UNIT, value_header)
-                #  if characteristic_category_identifier:
-                #      continue
-                #
-                #  characteristic_category_identifier = self.generateIdentifier(self.CHARACTERISTIC_CATEGORY, value_header)
-                #
-                #  json_item = dict([])
-                #
-                # json_item = dict([
-                #         ("@id", characteristic_category_identifier),
-                #         ("characteristicType", self.createOntologyAnnotation(value_header, "", ""))
-                #     ])
-                #
-                #  json_list.append(json_item)
+                 unit_category_identifier = self.generateIdentifier(self.UNIT, value_attributes.Unit)
+                 json_item = dict([
+                         ("@id", unit_category_identifier),
+                     ])
+                 json_item.update(self.createOntologyAnnotation(value_attributes.Unit, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
+                 json_list.append(json_item)
         return json_list
 
     def convert_num(self, s):
