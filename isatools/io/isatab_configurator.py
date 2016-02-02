@@ -13,6 +13,33 @@ import base64
 import datetime as datetime_
 import warnings as warnings_
 from lxml import etree as etree_
+import os
+
+config_dict = dict()
+
+
+def load(config_dir):
+    global config_dict
+    for file in os.listdir(config_dir):
+        if file.endswith(".xml"):
+            try:
+                config_obj = parse(inFileName=os.path.join(config_dir, file), silence=True)
+                measurement_type = config_obj.get_isatab_configuration()[0].get_measurement().get_term_label()
+                technology_type = config_obj.get_isatab_configuration()[0].get_technology().get_term_label()
+                config_dict[(measurement_type, technology_type)] = config_obj
+            except GDSParseError as parse_error:
+                print(parse_error)
+    return config_dict
+
+
+def get_config(measurement_type=None, technology_type=None):
+    global config_dict
+    try:
+        config = config_dict[(measurement_type, technology_type)].isatab_configuration[0]
+    except KeyError:
+        config = None
+    finally:
+        return config
 
 
 Validate_simpletypes_ = True
@@ -603,7 +630,6 @@ def _cast(typ, value):
 #
 # Data representation classes.
 #
-
 
 class FieldType(GeneratedsSuper):
     subclass = None
@@ -1599,9 +1625,12 @@ class IsaTabConfigurationType(GeneratedsSuper):
     def build(self, node):
         already_processed = set()
         self.buildAttributes(node, node.attrib, already_processed)
+        pos = 0
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
-            self.buildChildren(child, node, nodeName_)
+            self.buildChildren(child, node, nodeName_, pos)
+            if not ((nodeName_ == 'measurement') or (nodeName_ == 'technology')):
+                pos += 1
         return self
     def buildAttributes(self, node, attrs, already_processed):
         value = find_attr_value_('table-name', node)
@@ -1616,7 +1645,7 @@ class IsaTabConfigurationType(GeneratedsSuper):
         if value is not None and 'isatab-assay-type' not in already_processed:
             already_processed.add('isatab-assay-type')
             self.isatab_assay_type = value
-    def buildChildren(self, child_, node, nodeName_, fromsubclass_=False):
+    def buildChildren(self, child_, node, nodeName_, pos, fromsubclass_=False):
         if nodeName_ == 'measurement':
             obj_ = OntologyEntryType.factory()
             obj_.build(child_)
@@ -1632,21 +1661,25 @@ class IsaTabConfigurationType(GeneratedsSuper):
             obj_.build(child_)
             self.field.append(obj_)
             obj_.original_tagname_ = 'field'
+            obj_.pos = pos
         elif nodeName_ == 'protocol-field':
             obj_ = ProtocolFieldType.factory()
             obj_.build(child_)
             self.protocol_field.append(obj_)
             obj_.original_tagname_ = 'protocol-field'
+            obj_.pos = pos
         elif nodeName_ == 'structured-field':
             obj_ = StructuredFieldType.factory()
             obj_.build(child_)
             self.structured_field.append(obj_)
             obj_.original_tagname_ = 'structured-field'
+            obj_.pos = pos
         elif nodeName_ == 'unit-field':
             obj_ = UnitFieldType.factory()
             obj_.build(child_)
             self.unit_field.append(obj_)
             obj_.original_tagname_ = 'unit-field'
+            obj_.pos = pos
 # end class IsaTabConfigurationType
 
 

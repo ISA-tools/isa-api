@@ -1,7 +1,5 @@
 from datetime import date
-import abc
-
-__author__ = 'dj'
+from enum import Enum
 
 
 class Comment(object):
@@ -11,7 +9,7 @@ class Comment(object):
         name: The name of the comment (as mapped to Comment[SomeName]) to give context to the comment field
         value: A value for the corresponding comment, as a string encoded in some way
     """
-    def __init__(self, name="", value=""):
+    def __init__(self, name='', value=''):
         self.name = name
         self.value = value
 
@@ -24,7 +22,7 @@ class IsaObject(object):
     """
     def __init__(self, comments=None):
         if comments is None:
-            self.comments = []
+            self.comments = list()
         else:
             self.comments = comments
 
@@ -46,33 +44,35 @@ class Investigation(IsaObject):
         any treatments applied.
     """
 
-    def __init__(self, identifier="", title="", description="", submission_date=date.today(),
+    def __init__(self, id_='', filename='', identifier="", title="", description="", submission_date=date.today(),
                  public_release_date=date.today(), ontology_source_references=None, publications=None,
-                 contacts=None, studies=None, created_with_configuration="", last_opened_with_configuration=""):
+                 contacts=None, studies=None, comments=None):
         super().__init__()
+        self.id = id_
+        self.filename = filename
         self.identifier = identifier
         self.title = title
         self.description = description
         self.submission_date = submission_date
         self.public_release_date = public_release_date
         if ontology_source_references is None:
-            self.ontology_source_references = []
+            self.ontology_source_references = list()
         else:
             self.ontology_source_references = ontology_source_references
         if publications is None:
-            self.publications = []
+            self.publications = list()
         else:
             self.publications = publications
         if contacts is None:
-            self.contacts = []
+            self.contacts = list()
         else:
             self.contacts = contacts
         if studies is None:
-            self.studies = []
+            self.studies = list()
         else:
             self.studies = studies
-        self.created_with_configuration = Comment(name="Created With Configuration", value=created_with_configuration)
-        self.last_opened_with_configuration = Comment(name="Last Opened With Configuration", value=last_opened_with_configuration)
+        if comments is None:
+            self.comments = list()
 
 
 class OntologySourceReference(IsaObject):
@@ -152,9 +152,10 @@ class Person(IsaObject):
         affiliated organization.
     """
 
-    def __init__(self, first_name="", last_name="", mid_initials="", email="", phone="", fax="", address="",
+    def __init__(self, id_='', first_name="", last_name="", mid_initials="", email="", phone="", fax="", address="",
                  affiliation="", roles=None, comments=None):
         super().__init__(comments)
+        self.id = id_
         self.last_name = last_name
         self.first_name = first_name
         self.mid_initials = mid_initials
@@ -191,57 +192,70 @@ class Study(IsaObject):
         data: Data files associated with the study
     """
 
-    def __init__(self, identifier="", title="", description="", submission_date=date.today(),
-                 public_release_date=date.today(), file_name="", design_descriptors=None, publications=None,
-                 contacts=None, factors=None, protocols=None, assays=None, sources=None, samples=None,
-                 process_sequence=None, data=None, comments=None):
+    def __init__(self, id_='', filename="", identifier="",  title="", description="", submission_date=date.today(),
+                 public_release_date=date.today(), contacts=None, design_descriptors=None, publications=None,
+                 factors=None, protocols=None, assays=None, sources=None, samples=None,
+                 process_sequence=None, other_material=None, characteristic_categories=None, comments=None):
         super().__init__(comments)
+        self.id = id_
+        self.filename = filename
         self.identifier = identifier
         self.title = title
         self.description = description
         self.submission_date = submission_date
         self.public_release_date = public_release_date
-        self.file_name = file_name
-        if design_descriptors is None:
-            self.design_descriptors = []
-        else:
-            self.design_descriptors = design_descriptors
+
         if publications is None:
-            self.publications = []
+            self.publications = list()
         else:
             self.publications = publications
+
         if contacts is None:
-            self.contacts = []
+            self.contacts = list()
         else:
             self.contacts = contacts
-        if factors is None:
-            self.factors = []
+
+        if design_descriptors is None:
+            self.design_descriptors = list()
         else:
-            self.factors = factors
+            self.design_descriptors = design_descriptors
+
         if protocols is None:
-            self.protocols = []
+            self.protocols = list()
         else:
             self.protocols = protocols
-        if assays is None:
-            self.assays = []
-        else:
-            self.assays = assays
-        if sources is None:
-            self.sources = []
-        else:
-            self.sources = sources
-        if samples is None:
-            self.samples = []
-        else:
-            self.samples = samples
+
+        self.materials = {
+            'sources': list(),
+            'samples': list(),
+            'other_material': list()
+        }
+        if not (sources is None):
+            self.materials['sources'].append(sources)
+        if not (samples is None):
+            self.materials['samples'].append(samples)
+        if not (other_material is None):
+            self.materials['other_material'].append(other_material)
+
         if process_sequence is None:
-            self.process_sequence = []
+            self.process_sequence = list()
         else:
             self.process_sequence = process_sequence
-        if data is None:
-            self.data = []
+
+        if assays is None:
+            self.assays = list()
         else:
-            self.data = data
+            self.assays = assays
+
+        if factors is None:
+            self.factors = list()
+        else:
+            self.factors = factors
+
+        if characteristic_categories is None:
+            self.characteristic_categories = list()
+        else:
+            self.characteristic_categories = characteristic_categories
 
 
 class StudyFactor(IsaObject):
@@ -252,8 +266,9 @@ class StudyFactor(IsaObject):
         ontology_annotation: A representation of an ontology source reference
     """
 
-    def __init__(self, name="", factor_type=None, comments=None):
+    def __init__(self, id_='', name="", factor_type=None, comments=None):
         super().__init__(comments)
+        self.id = id_
         self.name = name
         if factor_type is None:
             self.factor_type = OntologyAnnotation()
@@ -272,8 +287,8 @@ class Assay(IsaObject):
         technology_platform: Manufacturer and platform name, e.g. Bruker AVANCE
         file_name: A field to specify the name of the Assay file corresponding the definition of that assay.
     """
-    def __init__(self, measurement_type=None, technology_type=None, technology_platform="", file_name="",
-                 process_sequence=None, comments=None):
+    def __init__(self, measurement_type=None, technology_type=None, technology_platform="", filename="",
+                 process_sequence=None, data_files=None, samples=None, other_material=None, comments=None):
         super().__init__(comments)
         if measurement_type is None:
             self.measurement_type = OntologyAnnotation()
@@ -284,11 +299,23 @@ class Assay(IsaObject):
         else:
             self.technology_type = technology_type
         self.technology_platform = technology_platform
-        self.file_name = file_name
+        self.filename = filename
         if process_sequence is None:
-            self.process_sequence = []
+            self.process_sequence = list()
         else:
             self.process_sequence = process_sequence
+        if data_files is None:
+            self.data_files = list()
+        else:
+            self.data_files = data_files
+        self.materials = {
+            'samples': list(),
+            'other_material': list()
+        }
+        if not (samples is None):
+            self.materials['samples'].append(samples)
+        if not (other_material is None):
+            self.materials['other_material'].append(other_material)
 
 
 class Protocol(IsaObject):
@@ -298,13 +325,14 @@ class Protocol(IsaObject):
         name:
         protocol_type:
         description:
-        uri:
         version:
         parameters:
         components:
     """
-    def __init__(self, name="", protocol_type=None, description="", uri="", version="", parameters=None, comments=None):
+    def __init__(self, id_='', name="", protocol_type=None, uri="", description="", version="", parameters=None,
+                 components=None, comments=None):
         super().__init__(comments)
+        self.id = id_
         self.name = name
         if protocol_type is None:
             self.protocol_type = OntologyAnnotation()
@@ -314,10 +342,13 @@ class Protocol(IsaObject):
         self.uri = uri
         self.version = version
         if parameters is None:
-            self.parameters = []
+            self.parameters = list()
         else:
             self.parameters = parameters
-        self.components = []
+        if components is None:
+            self.components = list()
+        else:
+            self.components = components
 
 
 class ProtocolParameter(IsaObject):
@@ -327,28 +358,106 @@ class ProtocolParameter(IsaObject):
         name:
         unit:
     """
-    def __init__(self, parameter_name=None, unit=None, comments=None):
+    def __init__(self, id_='', parameter_name=None, unit=None, comments=None):
         super().__init__(comments)
+        self.id = id_
         if parameter_name is None:
             self.name = OntologyAnnotation()
         else:
             self.parameter_name = parameter_name
-        self.parameter_name = parameter_name
-        if unit is None:
-            self.unit = OntologyAnnotation()
+        # if unit is None:
+        #     self.unit = OntologyAnnotation()
+        # else:
+        #     self.unit = unit
+
+
+class ProtocolComponent(object):
+    def __init__(self, component_name='', component_type=None):
+        self.component_name = component_name
+        if component_type is None:
+            self.component_type = OntologyAnnotation()
         else:
-            self.unit = unit
+            self.component_type = component_type
 
 
-class ParameterValue(IsaObject):
-    """A Parameter Value
+class Source(IsaObject):
+    """A Source.
+
+    Attributes:
+        name:
+        characteristics:
     """
-    def __init__(self, parameter_name="", parameter_value=None, unit=None):
-        self.parameter_name = parameter_name
-        if parameter_value is None:
-            self.parameter_value = OntologyAnnotation()
+    def __init__(self, id_='', name="", characteristics=None, comments=None):
+        super().__init__(comments)
+        self.id = id_
+        self.name = name
+        if characteristics is None:
+            self.characteristics = list()
         else:
-            self.parameter_value = parameter_value
+            self.characteristics = characteristics
+
+
+class Characteristic(IsaObject):
+    def __init__(self, category=None, value=None, unit=None, comments=None):
+        super().__init__(comments)
+        if category is None:
+            self.category = CharacteristicCategory()
+        else:
+            self.category = category
+        if value is None:
+            self.value = OntologyAnnotation()
+        else:
+            self.value = value
+        self.unit = unit
+
+
+class Sample(IsaObject):
+    """A Sample.
+
+    Attributes:
+        name:
+        characteristics:
+        factors:
+    """
+    def __init__(self, id_='', name="", factor_values=None, characteristics=None, derives_from=None, comments=None):
+        super().__init__(comments)
+        self.id = id_
+        self.name = name
+        if factor_values is None:
+            self.factor_values = list()
+        else:
+            self.factor_values = factor_values
+        if characteristics is None:
+            self.characteristics = list()
+        else:
+            self.characteristics = characteristics
+        self.derives_from = derives_from
+
+
+class Material(IsaObject):
+    """A Material.
+
+    Attributes:
+        name:
+        characteristics:
+    """
+    def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None):
+        super().__init__(comments)
+        self.id = id_
+        self.name = name
+        self.type = type_
+        if characteristics is None:
+            self.characteristics = list()
+        else:
+            self.characteristics = characteristics
+        self.derives_from = derives_from
+
+
+class FactorValue(IsaObject):
+    def __init__(self, factor_name=None, value=None, unit=None, comments=None):
+        super().__init__(comments)
+        self.factor_name = factor_name
+        self.value = value
         self.unit = unit
 
 
@@ -362,8 +471,10 @@ class Process(IsaObject):
         inputs:
         outputs:
     """
-    def __init__(self, name="", executes_protocol=None, date_=date.today(), performer="", parameters=None, inputs=None, outputs=None, comments=None):
+    def __init__(self, id_='', name="", executes_protocol=None, date_=date.today(), performer="",
+                 parameter_values=None, inputs=None, outputs=None, comments=None):
         super().__init__(comments)
+        self.id = id_
         self.name = name
         if executes_protocol is None:
             self.executes_protocol = Protocol()
@@ -371,10 +482,10 @@ class Process(IsaObject):
             self.executes_protocol = executes_protocol
         self.date = date_
         self.performer = performer
-        if parameters is None:
-            self.parameters = list()
+        if parameter_values is None:
+            self.parameter_values = list()
         else:
-            self.parameters = parameters
+            self.parameter_values = parameter_values
         if inputs is None:
             self.inputs = list()
         else:
@@ -385,49 +496,33 @@ class Process(IsaObject):
             self.outputs = outputs
 
 
-class Source(IsaObject):
-    """A Source.
-
-    Attributes:
-        name:
-        characteristics:
+class ParameterValue(object):
+    """A Parameter Value
     """
-    def __init__(self, name="", characteristics=None, comments=None):
-        super().__init__(comments)
-        self.name = name
-        if characteristics is None:
-            self.characteristics = list()
-        else:
-            self.characteristics = characteristics
-
-
-class FactorValue(IsaObject):
-    def __init__(self, factorName="", value=None, unit=None, comments=None):
-        super().__init__(comments)
-        self.factorName = factorName
-        self.value = value
-        self.unit = unit
-
-
-class Characteristic(IsaObject):
-    def __init__(self, category="", value=None, unit=None, comments=None):
-        super().__init__(comments)
+    def __init__(self, category="", value=None, unit=None):
         self.category = category
         self.value = value
         self.unit = unit
 
 
-class Material(IsaObject):
-    """A Material.
+class DataFileType(Enum):
+    generic_data_file = 0
+    raw_data_file = 1
+    derived_data_file = 2
+    image_file = 3
+
+
+class Data(IsaObject):
+    """A Data.
 
     Attributes:
         name:
-        characteristics:
     """
-    def __init__(self, name="", comments=None):
+    def __init__(self, id_='', name="", type_=DataFileType.generic_data_file, comments=None):
         super().__init__(comments)
+        self.id = id_
         self.name = name
-        self.characteristics = []
+        self.type_ = type_
 
 
 class MaterialAttribute(IsaObject):
@@ -449,35 +544,12 @@ class MaterialAttribute(IsaObject):
             self.unit = unit
 
 
-class Data(IsaObject):
-    """A Data.
+class CharacteristicCategory(IsaObject):
 
-    Attributes:
-        name:
-    """
-    def __init__(self, name="", type_="", comments=None):
-        super().__init__(comments)
-        self.name = name
-        self.type_ = type_
-
-
-class Sample(IsaObject):
-    """A Sample.
-
-    Attributes:
-        name:
-        characteristics:
-        factors:
-    """
-    def __init__(self, name="", factor_values=None, characteristics=None, derives_from=None, comments=None):
-        super().__init__(comments)
-        self.name = name
-        self.derives_from = derives_from
-        if factor_values is None:
-            self.factor_values = []
+    def __init__(self, id_='', characteristic_type=None):
+        super().__init__()
+        self.id = id_
+        if characteristic_type is None:
+            self.characteristic_type = OntologyAnnotation()
         else:
-            self.factor_values = factor_values
-        if characteristics is None:
-            self.characteristics = []
-        else:
-            self.characteristics = characteristics
+            self.characteristic_type = characteristic_type
