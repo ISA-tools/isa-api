@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 from urllib.parse import urljoin
 from lxml import etree
 from jsonschema import RefResolver, Draft4Validator
+from io import StringIO
 import requests
 import json
 import os
@@ -34,7 +35,8 @@ def validate_xml_against_schema(xml_str, xml_schema_file):
     xml_parser = etree.XMLParser(schema=etree.XMLSchema(schema_root))
 
     # parse XML to validate against schema
-    return etree.fromstring(xml_str, xml_parser)
+    # return etree.fromstring(xml_str, xml_parser)
+    return etree.parse(StringIO(xml_str), xml_parser)
 
 
 def validate_json_against_schema(json_dict, schema_src):
