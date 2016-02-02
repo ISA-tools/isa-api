@@ -28,6 +28,7 @@ class ISATab2ISAjson_v1:
     CHARACTERISTIC_CATEGORY = "characteristic_category"
     FACTOR_VALUE = "Factor Value"
     UNIT = "Unit"
+    PARAMETER_VALUE = "Parameter Value"
 
     def __init__(self, identifier_type):
         self.identifiers = list() #list of dictionaries
@@ -353,12 +354,13 @@ class ISATab2ISAjson_v1:
                     ("executesProtocol", self.createExecuteStudyProtocol(process_node_name, process_node)),
                     ("performer", process_node.performer),
                     ("date", process_node.date),
-                    ("parameterValues", self.createValueList("Parameter Value", process_node_name, process_node)),
+                    ("parameterValues", self.createValueList(self.PARAMETER_VALUE, process_node_name, process_node)),
                     ("inputs", self.createInputList(process_node.inputs, source_dict, sample_dict, material_dict, data_dict)),
                     ("outputs", self.createOutputList(process_node.outputs, sample_dict, material_dict, data_dict) )
             ])
             json_list.append(json_item)
         return json_list
+
 
     def createInputList(self, inputs, source_dict, sample_dict, material_dict, data_dict):
         json_list = []
@@ -389,6 +391,7 @@ class ISATab2ISAjson_v1:
             except KeyError:
                 pass
         return json_list
+
 
     def createOutputList(self, arguments, sample_dict, material_dict, data_dict):
         json_list = []
@@ -584,7 +587,7 @@ class ISATab2ISAjson_v1:
         for node_index in nodes:
             node = nodes[node_index]
             for header in node.metadata:
-                 if not header.startswith(self.CHARACTERISTICS):
+                 if not header.startswith(self.CHARACTERISTICS) and not header.startswith(self.FACTOR_VALUE) and not header.startswith(self.PARAMETER_VALUE):
                     continue
                  value_attributes = node.metadata[header][0]
                  try:
@@ -603,6 +606,7 @@ class ISATab2ISAjson_v1:
                  json_item.update(self.createOntologyAnnotation(value_attributes.Unit, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
                  json_list.append(json_item)
         return json_list
+
 
     def convert_num(self, s):
         try:
@@ -638,18 +642,20 @@ class ISATab2ISAjson_v1:
                          continue
                      header_type = "factor"
 
-                 if column_name.strip()=="Parameter Value":
+                 if column_name.strip()==self.PARAMETER_VALUE:
                      if header not in node.parameters:
                          continue
                      header_type = "parameter"
 
                  category_identifier =  self.getIdentifier(header_type, value_header)
 
+
                  if value_header==None or category_identifier==None:
                     try:
+                        unit_identifier = self.getIdentifier(self.UNIT, value_attributes.Unit)
                         value_json = dict([
                          ("value", value),
-                         ("unit", self.createOntologyAnnotation(value_attributes.Unit, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
+                         ("unit", dict([("@id", unit_identifier)]))
                         ])
                         json_list.append(value_json)
                         continue
@@ -668,10 +674,11 @@ class ISATab2ISAjson_v1:
 
                  else:
                     try:
+                        unit_identifier = self.getIdentifier(self.UNIT, value_attributes.Unit)
                         value_json = dict([
                          ("category", dict([("@id", category_identifier)])),
                          ("value", value),
-                         ("unit", self.createOntologyAnnotation(value_attributes.Unit, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
+                         ("unit", dict([("@id", unit_identifier)]))
                         ])
                         json_list.append(value_json)
                         continue

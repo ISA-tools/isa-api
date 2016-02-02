@@ -299,6 +299,7 @@ class StudyAssayParser:
                         output_indices = find_in_between(node_indices, processing_index, next_processing_index)
                         parameters_indices = find_in_between(all_parameters_indices, processing_index, next_processing_index)
                         assay_name_indices = find_in_between(node_assay_indices, processing_index, next_processing_index)
+                        qualifier_indices = hgroups[processing_index][1:]
 
                         input_headers = [ headers[hgroups[x][0]] for i, x in enumerate(input_indices) ]
                         output_headers = [  headers[hgroups[x][0]] for i, x in enumerate(output_indices) ]
@@ -320,20 +321,11 @@ class StudyAssayParser:
                         if (not input_names and not output_names):
                             continue
 
-                        #Add qualifiers (performer and date)
-                        qualifier_indices = hgroups[processing_index][1:]
-                        for qualifier_index in qualifier_indices:
-                            qualifier_header = headers[qualifier_index]
-                            if qualifier_header=="Date":
-                                process_node.date = line[qualifier_index]
-                            elif qualifier_header == "Performer":
-                                process_node.performer = line[qualifier_index]
-
                         processing_name = line[hgroups[processing_index][0]]
                         if not processing_name:
                             continue
 
-                        qualifier_indices_string = '-'.join(qualifier_indices)
+                        qualifier_indices_string = '-'.join(str(x) for x in qualifier_indices)
                         input_node_indices_string = "-".join(input_node_indices)
                         output_node_indices_string = "-".join(output_node_indices)
 
@@ -357,6 +349,15 @@ class StudyAssayParser:
                             #create process node
                             process_node = ProcessNodeRecord(unique_process_name, processing_header, study, processing_name)
                             process_number += 1
+
+
+                        #Add qualifiers (performer and date)
+                        for qualifier_index in qualifier_indices:
+                            qualifier_header = headers[qualifier_index]
+                            if qualifier_header=="Date":
+                                process_node.date = line[qualifier_index]
+                            elif qualifier_header == "Performer":
+                                process_node.performer = line[qualifier_index]
 
                         if assay_name_indices:
                             if len(assay_name_indices)==1:
