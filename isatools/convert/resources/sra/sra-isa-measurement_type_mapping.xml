@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+   <pairs>
+       <measurement SRA_strategy="ChIP-Seq" SRA_source="GENOMIC" isa="histone modification profiling" resource="OBI" accnum="http://purl.obolibrary.org/obo/OBI_0002017"/>
+       <measurement SRA_strategy="ChIA-PET" SRA_source="GENOMIC" isa="histone modification profiling" resource="OBI" accnum="http://purl.obolibrary.org/obo/OBI_0002017"/>
+ 
+       <measurement SRA_strategy="RNA-Seq" SRA_source="TRANSCRIPTOMIC" isa="transcription profiling" resource="OBI" accnum="http://purl.obolibrary.org/obo/OBI_0000424"/>
+       <measurement SRA_strategy="FL-cDNA" SRA_source="TRANSCRIPTOMIC" isa="transcription profiling" resource="OBI" accnum="http://purl.obolibrary.org/obo/OBI_0000424"/>
+       <measurement SRA_strategy="EST" SRA_source="TRANSCRIPTOMIC" isa="transcription profiling" resource="OBI" accnum="http://purl.org/obo/OBI_0000424"/> 
+       
+       <measurement SRA_strategy="miRNA-Seq" SRA_source="TRANSCRIPTOMIC" isa="transcription regulation" resource="OBI" accnum="http://purl.org/obo/OBI_00001234"/>
+       <measurement SRA_strategy="ncRNA-Seq" SRA_source="TRANSCRIPTOMIC" isa="transcription regulation" resource="OBI" accnum="http://purl.org/obo/OBI_00001234"/>
+       <measurement SRA_strategy="FAIRE-Seq" SRA_source="TRANSCRIPTOMIC" isa="transcription regulation" resource="OBI" accnum="http://purl.org/obo/OBI_00001234"/>
+       <measurement SRA_strategy="RIP-Seq" SRA_source="TRANSCRIPTOMIC" isa="transcription regulation" resource="OBI" accnum="http://purl.org/obo/OBI_00001234"/>
+ 
+       <measurement SRA_strategy="WGS" SRA_source="GENOMIC" isa="genome sequencing" resource="OBI" accnum="http://purl.org/obo/OBI_0000YYYY"/>
+       <measurement SRA_strategy="WCS" SRA_source="GENOMIC" isa="genome sequencing" resource="OBI" accnum="http://purl.org/obo/OBI_0000YYYY"/>
+       <measurement SRA_strategy="FINISHING" SRA_source="GENOMIC" isa="genome sequencing" resource="OBI" accnum="http://purl.org/obo/OBI_0000YYYY"/>
+       
+       <measurement SRA_strategy="RAD-Seq" SRA_source="GENOMIC" isa="genome variation profiling" resource="OBI" accnum="http://purl.org/obo/OBI_0000XXXX"/>
+       <measurement SRA_strategy="WGA" SRA_source="GENOMIC" isa="genome variation profiling" resource="OBI" accnum="http://purl.org/obo/OBI_0000XXXX"/>
+       
+       <measurement SRA_strategy="WXS" SRA_source="GENOMIC" isa="exome sequencing" resource="OBI" accnum="http://purl.org/obo/OBI_0000ZZZZ"/>
+       
+       <measurement SRA_strategy="MNase-Seq" SRA_source="GENOMIC" isa="methylation profiling" resource="OBI" accnum="http://purl.obolibrary.org/obo/OBI_0000634"/>
+       <measurement SRA_strategy="Bisulfite-Seq" SRA_source="GENOMIC" isa="methylation profiling" resource="OBI" accnum="http://purl.obolibrary.org/obo/OBI_0000634"/>
+       <measurement SRA_strategy="DNase-Hypersensitivity" SRA_source="GENOMIC" isa="methylation profiling" resource="OBI" accnum="http://purl.org/obo/OBI_00001234"/>
+       <measurement SRA_strategy="MRE-Seq" SRA_source="GENOMIC" isa="methylation profiling" resource="OBI" accnum="http://purl.obolibrary.org/obo/OBI_0000634"/>
+       <measurement SRA_strategy="MeDIP-Seq" SRA_source="GENOMIC" isa="methylation profiling" resource="OBI" accnum="http://purl.obolibrary.org/obo/OBI_0000634"/>
+       <measurement SRA_strategy="MBD-Seq" SRA_source="GENOMIC" isa="methylation profiling" resource="OBI" accnum="http://purl.obolibrary.org/obo/OBI_0000634"/>
+       
+       <measurement SRA_strategy="FAIRE-seq" SRA_source="GENOMIC"  isa="transcription regulation" resource="OBI" accnum="http://purl.org/obo/OBI_00001234"/> 
+       
+       <measurement SRA_strategy="AMPLICON" SRA_source="METAGENOMIC" isa="environmental gene survey" resource="OBI" accnum="http://purl.obolibrary.org/obo/OBI_0001960"/>
+       <!--<measurement SRA_strategy="AMPLICON" SRA_source="METATRANSCRIPTOMIC" isa="environmental gene survey" resource="OBI" accnum="http://purl.obolibrary.org/obo/OBI_0001960"/>-->   
+   </pairs> 
+</mapping>
