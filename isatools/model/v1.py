@@ -4,7 +4,7 @@ from enum import Enum
 
 class Comment(object):
     """A comment allows arbitrary annotation of all ISA classes
-    
+
     Attributes:
         name: The name of the comment (as mapped to Comment[SomeName]) to give context to the comment field
         value: A value for the corresponding comment, as a string encoded in some way
@@ -16,7 +16,7 @@ class Comment(object):
 
 class IsaObject(object):
     """ An ISA Object is an abstract class to enable containment of Comments
-    
+
     Attributes:
         comments: Comments associated with the implementing ISA class (all ISA classes)
     """
@@ -28,19 +28,19 @@ class IsaObject(object):
 
 
 class FieldConfigurableObject(object):
-    def __init__(self, comments):
-        super().__init__(comments)
+    def __init__(self):
         self._field_header = None
         self._field_data_type = None
-        self._field_is_file_field = False
-        self._field_is_multiple_value = False
-        self._field_is_required = True
-        self._field_is_hidden = False
-        self._field_is_forced_ontology = False
+        self._field_is_file_field = None
+        self._field_is_multiple_value = None
+        self._field_is_required = None
+        self._field_is_hidden = None
+        self._field_is_forced_ontology = None
         self._field_description = None
         self._field_default_value = None
         self._field_generated_value_template = None
-        self._field_list_values = list()
+        self._field_list_values = None
+        self._field_pos = None
 
 
 class Investigation(IsaObject):
@@ -425,7 +425,7 @@ class Characteristic(IsaObject):
         self.unit = unit
 
 
-class Sample(IsaObject):
+class Sample(IsaObject, FieldConfigurableObject, object):
     """A Sample.
 
     Attributes:
@@ -510,49 +510,6 @@ class Process(IsaObject):
             self.outputs = outputs
 
 
-class ParameterValue(FieldConfigurableObject):
-    """A Parameter Value
-    """
-    def __init__(self, category="", value=None, unit=None, config=None):
-        super().__init__()
-        self.category = category
-        self._value = value
-        self.unit = unit
-        self.config = config
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, v):
-        if self.config is None:
-            self._value = v
-        else:
-            import re
-            # Raise exception if value does not comply with config
-            parameter_value_regex = re.compile('Parameter Value\[(.*?)\]')
-            found_category = False
-            for field in self.config.field:
-                if len(parameter_value_regex.findall(field.header)) > 0:
-                    field_header_category = parameter_value_regex.findall(field.header)[0]
-                    if field_header_category == self.category:
-                        if field.data_type == 'String' and (not isinstance(v, str)):
-                            raise TypeError("Expected String")
-                        if field.data_type == 'Ontology Term' and (not isinstance(v, OntologyAnnotation)):
-                            raise TypeError("Expected Ontology Term")
-                        if field.data_type == 'List' and not (v in field.list_values.split(sep=',')):
-                            raise TypeError("Value not in list values: " + field.list_values)
-                        found_category = True
-            if not found_category:
-                raise TypeError("Parameter Value category '" + field_header_category + "' not found in configuration")
-            self._value = v
-
-    @value.deleter
-    def value(self):
-        self._value = None
-
-
 class DataFileType(Enum):
     generic_data_file = 0
     raw_data_file = 1
@@ -629,20 +586,114 @@ def batch_create_materials(material=None, n=1):
     return material_list
 
 
+class ParameterValue(FieldConfigurableObject):
+    """A Parameter Value
+    """
+    def __init__(self, category=None, value=None, unit=None):
+        super().__init__()
+        if category is None:
+            raise TypeError("You must specify a category")
+        self.category = category
+        self._value = value
+        self._unit = unit
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, v):
+        if self._field_header is None:
+            self._value = v
+        else:
+            if self._field_data_type == 'String':
+                if isinstance(v, str):
+                    self._value = v
+            elif self._field_data_type == 'Ontology term':
+                if isinstance(v, OntologyAnnotation):
+                    self._value = v
+            elif self._field_data_type == 'Integer':
+                if isinstance(v, int):
+                    self._value = v
+            elif self._field_data_type == 'List':
+                if v in self._field_list_values:
+                    self._value = v
+            else:  # FIXME: Does not get to this bit to raise exception. Why??
+                raise TypeError("Value to set does not comply with configuration")
+            # elif self._field_data_type == 'Float':
+            #     if isinstance(v, float):
+            #         self.value = v
+            # elif self._field_data_type == 'Boolean':
+            #     if isinstance(v, bool):
+            #         self.value = v
+            # elif self._field_data_type == 'Date':
+            #     if isinstance(v, Date):
+            #         self.value = v
+
+    @property
+    def unit(self):
+        return self._unit
+
+    @unit.setter
+    def unit(self, u):
+        if self._field_header is not None:
+            if self._field_data_type == 'Integer':
+                self._unit = u
+            else:
+                raise TypeError("Field type must be numeric to use units")
+        else:
+            self._unit = u
+
+
 def configure(isa_obj, config):
 
-    def set_field_properties(o):
-        o._field_header = field.data_type
-        o._field_data_type = None
-        o._field_is_file_field = False
-        o._field_is_multiple_value = False
-        o._field_is_required = True
-        o._field_is_hidden = False
-        o._field_is_forced_ontology = False
-        o._field_description = None
-        o._field_default_value = None
-        o._field_generated_value_template = None
-        o._field_list_values = field.list_values
+    """Configures an object of type FieldConfigurableObject to be constrained on values based on a given ISA
+    configuration object. Currently only works with ParameterValue objects in the model v1 package.
+
+    :param isa_obj: An ISA object. Currently this only works with those subclassing FieldConfigurableObject
+    :param config: A configuration object from the isatab_configurator
+
+    :Example:
+
+        Configure a ParameterValue object of category 'library strategy' required for the genome sequencing table
+        configuration
+
+        > isatab_configurator.load('tests/data/Configurations/isaconfig-default_v2015-07-02')
+        > genome_seq_config = configurator.get_config('genome sequencing', 'nucleotide sequencing')
+        > pv = ParameterValue(category='library strategy')
+        > configure(pv, genome_seq_config)
+
+        Setting pv.value should now be constrained to the values defined in the configuration (in this case only to
+        one of AMPLICON, CLONE, WGS, or OTHER.
+
+        > pv.value = 'AMPLICON'  #  will set value accordingly
+        > pv.value = 'other string'  #  will have no effect
+
+        You can now also interrogate for more information provided by the configuration for example
+
+        > pv._field_description
+        'Sequencing technique intended for this library (SRA 1.2 documentation)'
+
+        > pv._field_data_type
+        'List'
+
+        > pv._field_list_values
+        'AMPLICON,CLONE,WGS,OTHER'
+    """
+    def set_field_properties(o, c):
+        o._field_header = c.header
+        o._field_data_type = c.data_type
+        o._field_is_file_field = c.is_file_field
+        o._field_is_multiple_value = c.is_multiple_value
+        o._field_is_required = c.is_required
+        o._field_is_hidden = c.is_hidden
+        o._field_is_forced_ontology = c.is_forced_ontology
+        o._field_description = c.description
+        o._field_default_value = c.default_value
+        o._field_generated_value_template = c.generated_value_template
+        if c.data_type == 'List':
+            o._field_list_values = c.list_values.split(',')
+        o._field_pos = c.pos
 
     if not isinstance(isa_obj, FieldConfigurableObject):
         raise IOError("Cannot configure object of this type")
@@ -653,9 +704,9 @@ def configure(isa_obj, config):
         for field in config.field:
             if parameter_value_regex.match(field.header):  # if it's a valid Parameter Value header
                 if parameter_value_regex.findall(field.header)[0] == isa_obj.category:  # If the category matches obj
-                    set_field_properties(isa_obj)
+                    set_field_properties(isa_obj, field)
     if isinstance(isa_obj, Sample):
         # If its a sample, try find a matching Sample header to configure it
         for field in config.field:
             if field.header == "Sample Name":  # if it's a valid Sample Name header
-                set_field_properties(isa_obj)
+                set_field_properties(isa_obj, field)
