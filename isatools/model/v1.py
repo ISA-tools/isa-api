@@ -27,7 +27,34 @@ class IsaObject(object):
             self.comments = comments
 
 
+class StudyConfigurableObject(object):
+
+    def __init__(self):
+        self._study_node_sequence = None
+
+    def _validate_process_sequence(self, process_sequence):
+        #  Take all of our process objects and try to create an end-to-end graph
+        import networkx as nx
+        graph = nx.DiGraph()
+        prev_process_node = None
+        for process in process_sequence:
+            if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
+                graph.add_edge(prev_process_node, process)
+            for input_ in process.inputs:
+                graph.add_edge(input_, process)
+            for output in process.outputs:
+                graph.add_edge(process, output)
+            prev_process_node = process
+        #  Next, check if graph nodes match _study_node_sequence
+        i = 0
+        for node in graph.nodes():
+            class_type = self._study_node_sequence[i]
+            if not isinstance(node, class_type):
+                raise TypeError("Unexpected node in sequence")
+
+
 class FieldConfigurableObject(object):
+
     def __init__(self):
         self._field_header = None
         self._field_data_type = None
@@ -41,6 +68,32 @@ class FieldConfigurableObject(object):
         self._field_generated_value_template = None
         self._field_list_values = None
         self._field_pos = None
+
+    def _validate_data_type(self, v):
+        type_error = False
+        if self._field_data_type == 'String':
+            if not isinstance(v, str):
+                type_error = True
+        elif self._field_data_type == 'Ontology term':
+            if not isinstance(v, OntologyAnnotation):
+                type_error = True
+        elif self._field_data_type == 'Integer':
+            if not isinstance(v, int):
+                type_error = True
+        elif self._field_data_type == 'List':
+            if v not in self._field_list_values:
+                type_error = True
+        elif self._field_data_type == 'Float':
+            if not isinstance(v, float):
+                type_error = True
+        elif self._field_data_type == 'Boolean':
+            if not isinstance(v, bool):
+                type_error = True
+        # elif self._field_data_type == 'Date':
+        #     if not isinstance(v, date):
+        #         type_error = True
+        if type_error:
+            raise TypeError("Value to set does not comply with configuration")
 
 
 class Investigation(IsaObject):
@@ -184,7 +237,7 @@ class Person(IsaObject):
             self.roles = roles
 
 
-class Study(IsaObject):
+class Study(IsaObject, StudyConfigurableObject, object):
     """Study is the central unit, containing information on the subject under study, its characteristics
     and any treatments applied.
 
@@ -606,29 +659,11 @@ class ParameterValue(FieldConfigurableObject):
         if self._field_header is None:
             self._value = v
         else:
-            if self._field_data_type == 'String':
-                if isinstance(v, str):
-                    self._value = v
-            elif self._field_data_type == 'Ontology term':
-                if isinstance(v, OntologyAnnotation):
-                    self._value = v
-            elif self._field_data_type == 'Integer':
-                if isinstance(v, int):
-                    self._value = v
-            elif self._field_data_type == 'List':
-                if v in self._field_list_values:
-                    self._value = v
-            else:  # FIXME: Does not get to this bit to raise exception. Why??
-                raise TypeError("Value to set does not comply with configuration")
-            # elif self._field_data_type == 'Float':
-            #     if isinstance(v, float):
-            #         self.value = v
-            # elif self._field_data_type == 'Boolean':
-            #     if isinstance(v, bool):
-            #         self.value = v
-            # elif self._field_data_type == 'Date':
-            #     if isinstance(v, Date):
-            #         self.value = v
+            try:
+                self._validate_data_type(v)
+                self._value = v
+            finally:
+                pass
 
     @property
     def unit(self):
@@ -705,8 +740,49 @@ def configure(isa_obj, config):
             if parameter_value_regex.match(field.header):  # if it's a valid Parameter Value header
                 if parameter_value_regex.findall(field.header)[0] == isa_obj.category:  # If the category matches obj
                     set_field_properties(isa_obj, field)
+                    break
     if isinstance(isa_obj, Sample):
         # If its a sample, try find a matching Sample header to configure it
         for field in config.field:
             if field.header == "Sample Name":  # if it's a valid Sample Name header
                 set_field_properties(isa_obj, field)
+                break
+    if isinstance(isa_obj, Source):
+        for field in config.field:
+            if field.header == "Source Name":  # if it's a valid Sample Name header
+                set_field_properties(isa_obj, field)
+                break
+    if isinstance(isa_obj, Comment):
+            import re
+            comment_regex = re.compile('Comment\[(.*?)\]')
+            for field in config.field:
+                if comment_regex.match(field.header):  # if it's a valid Parameter Value header
+                    if comment_regex.findall(field.header)[0] == isa_obj.name:  # If the category matches obj
+                        set_field_properties(isa_obj, field)
+                        break
+    if isinstance(isa_obj, Study):
+        if config.measurement.term_label != '[Sample]':
+            raise TypeError("Cannot apply this configuration to a Study object")
+        from collections import OrderedDict
+        node_dict = OrderedDict()
+        import re
+        characteristics_regex = re.compile('Characteristics\[(.*?)\]')
+        factor_value_regex = re.compile('Factor Value\[(.*?)\]')
+        for field in config.field:
+            if field.header == "Source Name":
+                node_dict[field.pos] = Source
+            elif field.header == "Sample Name":
+                node_dict[field.pos] = Sample
+            elif characteristics_regex.match(field.header):
+                node_dict[field.pos] = Characteristic
+            elif factor_value_regex.match(field.header):
+                node_dict[field.pos] = FactorValue
+        for protocol_field in config.protocol_field:
+            node_dict[protocol_field.pos] = Process
+        for structured_field in config.structured_field:
+            if structured_field.name == 'characteristics':
+                node_dict[structured_field.pos] = [Characteristic]
+            elif structured_field.name == 'factors':
+                node_dict[structured_field.pos] = [FactorValue]
+        isa_obj._study_node_sequence = node_dict.values()
+
