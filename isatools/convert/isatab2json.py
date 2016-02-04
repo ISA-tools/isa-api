@@ -30,6 +30,7 @@ class ISATab2ISAjson_v1:
     FACTOR_VALUE = "Factor Value"
     UNIT = "Unit"
     PARAMETER_VALUE = "Parameter Value"
+    ARRAY_DESIGN_REF = "Array Design REF"
 
     def __init__(self, identifier_type):
         self.identifiers = list() #list of dictionaries
@@ -629,7 +630,7 @@ class ISATab2ISAjson_v1:
         """Method for the creation of factor, characteristics and parameter values"""
         json_list = []
         for header in node.metadata:
-            if header.startswith(column_name) or header == self.MATERIAL_TYPE or header == self.LABEL:
+            if header.startswith(column_name) or header == self.MATERIAL_TYPE or header == self.LABEL or header==self.ARRAY_DESIGN_REF:
                  value_header = header.replace("]", "").split("[")[-1]
 
                  value_attributes = node.metadata[header][0]
@@ -651,6 +652,8 @@ class ISATab2ISAjson_v1:
                  elif column_name.strip()==self.PARAMETER_VALUE:
                      if header not in node.parameters:
                          continue
+                     if header == self.ARRAY_DESIGN_REF:
+                         value_header = self.ARRAY_DESIGN_REF
                      header_type = "parameter"
 
                  category_identifier =  self.getIdentifier(header_type, value_header)
