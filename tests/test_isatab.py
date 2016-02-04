@@ -160,19 +160,32 @@ class IsatabPoolingTest(TestCase):
         s.graph = study_graph
         self.i.studies.append(s)
 
-        # assay_graph = nx.DiGraph()
-        # assay_graph.add_edge(sample1, rna_extraction)  # rna_extraction is Processing Event
-        # assay_graph.add_edge(rna_extraction, extract)
-        # assay_graph.add_edge(extract, labeling)  # labeling is Processing Event
-        # assay_graph.add_edge(labeling, labeled_extract)  # labeled_extract property includes Label
-        # assay_graph.add_edge(labeled_extract, hybridization)  # hybridization is Processing Event
-        # assay_graph.add_edge(hybridization, hybridization_assay)  # hybridization_assay property includes Array Design REF
-        # assay_graph.add_edge(hybridization_assay, data_collection)  # data_collection is Processing Event
-        # assay_graph.add_edge(data_collection, scan)  # scan properties of scan are output files
-        # assay_graph.add_edge(scan, data_normalization)  # data_normalization is Processing Event
-        # assay_graph.add_edge(data_normalization, normalization)  # normalization has a Derived Array Data File
-        # assay_graph.add_edge(normalization, anova)  # anova is Processing Event
-        # assay_graph.add_edge(anova, data_transformation)  # data_transformation has a Derived Array Data Matrix File
+        rna_extraction_process = ProcessingEvent(executes_protocol=rna_extraction_protocol)
+        extract = Extract(name='extract1')
+        labeling_process = ProcessingEvent(executes_protocol=labeling_protocol)
+        labeled_extract = LabeledExtract(name='extract1.le1', label=OntologyAnnotation(name='biotin'))
+        hybridization_process = ProcessingEvent(executes_protocol=hybridization_protocol)
+        hybridization_assay = HybridizationAssay(name='hyb1', array_design_ref='HG_U133_2.0')
+        data_collection_process = ProcessingEvent(executes_protocol=data_collection_protocol)
+        scan = Scan(name='hyb1.scan1', files=[ImageFile(name='1.dat'), ArrayDataFile(name='1.cel'), ArrayDataMatrixFile()])
+        data_normalization_process = ProcessingEvent(executes_protocol=data_normalization_protocol)
+        normalization = Normalization(name='N1', files=[DerivedArrayDataFile(name='N1.txt')])
+        anova_process = ProcessingEvent(executes_protocol=anova_protocol)
+        data_transformation = DataTransformation(name='DA1', files=[DerivedArrayDataMatrixFile(name='DA1.txt')])
+
+        assay_graph = nx.DiGraph()
+        assay_graph.add_edge(sample1, rna_extraction_process)  # rna_extraction is Processing Event
+        assay_graph.add_edge(rna_extraction_process, extract)
+        assay_graph.add_edge(extract, labeling_process)  # labeling is Processing Event
+        assay_graph.add_edge(labeling_process, labeled_extract)  # labeled_extract property includes Label
+        assay_graph.add_edge(labeled_extract, hybridization_process)  # hybridization is Processing Event
+        assay_graph.add_edge(hybridization_process, hybridization_assay)  # hybridization_assay property includes Array Design REF
+        assay_graph.add_edge(hybridization_assay, data_collection_process)  # data_collection is Processing Event
+        assay_graph.add_edge(data_collection_process, scan)  # scan properties of scan are output files
+        assay_graph.add_edge(scan, data_normalization_process)  # data_normalization is Processing Event
+        assay_graph.add_edge(data_normalization_process, normalization)  # normalization has a Derived Array Data File
+        assay_graph.add_edge(normalization, anova_process)  # anova is Processing Event
+        assay_graph.add_edge(anova_process, data_transformation)  # data_transformation has a Derived Array Data Matrix File
 
     def test_isatab_writer(self):
         isatab.dump(self.i, './data/tmp/')
