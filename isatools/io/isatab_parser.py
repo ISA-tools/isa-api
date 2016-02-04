@@ -278,14 +278,15 @@ class StudyAssayParser:
             headers = self._swap_synonyms(next(reader))
             hgroups = self._collapse_header(headers)
             htypes = self._characterize_header(headers, hgroups)
-
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
             all_parameters_indices = [i for i, x in enumerate(htypes) if x == "parameter"]
             node_indices = [i for i, x in enumerate(htypes) if x == "node"]
             node_assay_indices =  [i for i, x in enumerate(htypes) if x == "node_assay"]
-
             line_number = 0
             max_number = 0
+            process_counters = {}
+            input_process_map = {}
+            output_process_map = {}
 
             for line in reader:
                 if line_number >=  max_number:
@@ -304,52 +305,51 @@ class StudyAssayParser:
                         input_headers = [ headers[hgroups[x][0]] for i, x in enumerate(input_indices) ]
                         output_headers = [  headers[hgroups[x][0]] for i, x in enumerate(output_indices) ]
                         processing_header = headers[hgroups[processing_index][0]]
+                        qualifier_headers = [  headers[x] for i, x in enumerate(qualifier_indices) ]
 
-                        #reading line by line and identifying inputs outputs and creating process_node
-                        process_number = 1
-                        qualifier_process_map = {}
-                        input_process_map = {}
-                        output_process_map = {}
+                        input_values = [ line[hgroups[x][0]] for i, x in enumerate(input_indices) ]
+                        input_node_indices = [ self._build_node_index(input_headers[i],input_values[i]) for i, x in enumerate(input_values) ]
 
-                        input_names = [ line[hgroups[x][0]] for i, x in enumerate(input_indices) ]
-                        input_node_indices = [ self._build_node_index(input_headers[i],input_names[i]) for i, x in enumerate(input_names) ]
+                        output_values = [ line[hgroups[x][0]] for i, x in enumerate(output_indices) ]
+                        output_node_indices = [ self._build_node_index(output_headers[i], output_values[i]) for i, x in enumerate(output_values)]
 
-                        output_names = [ line[hgroups[x][0]] for i, x in enumerate(output_indices) ]
-                        output_node_indices = [ self._build_node_index(output_headers[i], output_names[i]) for i, x in enumerate(output_names)]
+                        qualifier_values = [ line[x] for i, x in enumerate(qualifier_indices) ]
 
                         #if both input_name and output_name are empty, ignore the row
-                        if (not input_names and not output_names):
+                        if (not input_values and not output_values):
                             continue
 
                         processing_name = line[hgroups[processing_index][0]]
                         if not processing_name:
                             continue
 
-                        qualifier_indices_string = '-'.join(str(x) for x in qualifier_indices)
+                        qualifier_indices_string = '-'.join(qualifier_values)
                         input_node_indices_string = "-".join(input_node_indices)
                         output_node_indices_string = "-".join(output_node_indices)
-
                         try:
-                            unique_process_name = qualifier_process_map[qualifier_indices_string]
+                            unique_process_name = input_process_map[qualifier_indices_string+input_node_indices_string]
+                            if not (unique_process_name.startswith(processing_name)):
+                                raise KeyError
                         except KeyError:
                             try:
-                                unique_process_name = input_process_map[input_node_indices_string]
+                                unique_process_name = output_process_map[qualifier_indices_string+output_node_indices_string]
+                                if not (unique_process_name.startswith(processing_name)):
+                                    raise KeyError
                             except KeyError:
                                 try:
-                                     unique_process_name = output_process_map[output_node_indices_string]
+                                    process_number = process_counters[processing_name]
                                 except KeyError:
-                                     processing_name = line[hgroups[processing_index][0]]
-                                     if not processing_name:
-                                         continue
-                                     unique_process_name = processing_name+str(process_number)
+                                    process_number = 0
+
+                                process_number +=1
+                                process_counters.update({processing_name: process_number})
+                                unique_process_name = processing_name+str(process_number)
 
                         try:
                             process_node = process_nodes[unique_process_name]
                         except KeyError:
                             #create process node
                             process_node = ProcessNodeRecord(unique_process_name, processing_header, study, processing_name)
-                            process_number += 1
-
 
                         #Add qualifiers (performer and date)
                         for qualifier_index in qualifier_indices:
@@ -374,9 +374,9 @@ class StudyAssayParser:
                             in_second_but_not_in_first = in_second - in_first
                             process_node.outputs = process_node.outputs + list(in_second_but_not_in_first)
 
-                        qualifier_process_map[qualifier_indices_string] = unique_process_name
-                        input_process_map[input_node_indices_string] = unique_process_name
-                        output_process_map[output_node_indices_string] = unique_process_name
+                        #qualifier_process_map[qualifier_indices_string] = unique_process_name
+                        input_process_map[qualifier_indices_string+input_node_indices_string] = unique_process_name
+                        output_process_map[qualifier_indices_string+output_node_indices_string] = unique_process_name
 
                         #Add parameters
                         parameter_headers = []
