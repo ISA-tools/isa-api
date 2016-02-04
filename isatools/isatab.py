@@ -754,24 +754,27 @@ def dump(isa_obj, output_path):
                                 for characteristic in node.characteristics:
                                     study_col_headers.append('Characteristics[' +
                                                              characteristic.category.characteristic_type.name + ']')
-                                    if not (characteristic.unit is None):
-                                        study_col_headers.append('Unit')
                                     if isinstance(characteristic.value, OntologyAnnotation):
                                         study_col_headers.extend(('Term Source REF', 'Term Accession'))
+                                    if not (characteristic.unit is None):
+                                        study_col_headers.extend(('Unit', 'Term Source REF', 'Term Accession'))
                             if isinstance(node, Process):
                                 study_col_headers.append('Protocol REF')
                                 for parameter_value in study.process_sequence[0].parameter_values:
-                                    study_col_headers.append('Parameter Value[' + 'parameter_value.category' + ']')
+                                    study_col_headers.append('Parameter Value[' +
+                                                             parameter_value.category.parameter_name.name + ']')
                                     if not (parameter_value.unit is None):
                                         study_col_headers.append('Unit')
                                     study_col_headers.extend(('Term Source REF', 'Term Accession', ))
                             if isinstance(node, Sample):
                                 study_col_headers.append('Sample Name')
                                 for characteristic in node.characteristics:
-                                    study_col_headers.append('Characteristics[' + characteristic.category.characteristic_type.name + ']')
+                                    study_col_headers.append('Characteristics[' +
+                                                             characteristic.category.characteristic_type.name + ']')
                                     if not (characteristic.unit is None):
-                                        study_col_headers.append('Unit')
-                                    study_col_headers.extend(('Term Source REF', 'Term Accession'))
+                                        study_col_headers.extend(('Unit', 'Term Source REF', 'Term Accession'))
+                                    if isinstance(characteristic.value, OntologyAnnotation):
+                                        study_col_headers.extend(('Term Source REF', 'Term Accession'))
                                 for factor_value in node.factor_values:
                                     study_col_headers.append('Factor Value[' + factor_value.factor_name.name + ']')
                                     if not (factor_value.unit is None):

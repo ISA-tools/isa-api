@@ -102,8 +102,9 @@ class OntologyAnnotation(IsaObject):
         term_accession: URI
     """
 
-    def __init__(self, name="", term_source=None, term_accession="", comments=None):
+    def __init__(self, id_='', name="", term_source=None, term_accession="", comments=None):
         super().__init__(comments)
+        self.id = id_
         self.name = name
         if term_source is None:
             self.term_source = OntologySourceReference()
@@ -288,34 +289,47 @@ class Assay(IsaObject):
         file_name: A field to specify the name of the Assay file corresponding the definition of that assay.
     """
     def __init__(self, measurement_type=None, technology_type=None, technology_platform="", filename="",
-                 process_sequence=None, data_files=None, samples=None, other_material=None, comments=None):
+                 process_sequence=None, data_files=None, samples=None, other_material=None,
+                 characteristic_categories=None, comments=None):
         super().__init__(comments)
         if measurement_type is None:
             self.measurement_type = OntologyAnnotation()
         else:
             self.measurement_type = measurement_type
+
         if technology_type is None:
             self.technology_type = OntologyAnnotation()
         else:
             self.technology_type = technology_type
+
         self.technology_platform = technology_platform
         self.filename = filename
+
         if process_sequence is None:
             self.process_sequence = list()
         else:
             self.process_sequence = process_sequence
+
         if data_files is None:
             self.data_files = list()
         else:
             self.data_files = data_files
+
         self.materials = {
             'samples': list(),
             'other_material': list()
         }
+
         if not (samples is None):
             self.materials['samples'].append(samples)
+
         if not (other_material is None):
             self.materials['other_material'].append(other_material)
+
+        if characteristic_categories is None:
+            self.characteristic_categories = list()
+        else:
+            self.characteristic_categories = characteristic_categories
 
 
 class Protocol(IsaObject):
@@ -362,7 +376,7 @@ class ProtocolParameter(IsaObject):
         super().__init__(comments)
         self.id = id_
         if parameter_name is None:
-            self.name = OntologyAnnotation()
+            self.parameter_name = OntologyAnnotation()
         else:
             self.parameter_name = parameter_name
         # if unit is None:
@@ -499,7 +513,7 @@ class Process(IsaObject):
 class ParameterValue(object):
     """A Parameter Value
     """
-    def __init__(self, category="", value=None, unit=None):
+    def __init__(self, category=None, value=None, unit=None):
         self.category = category
         self.value = value
         self.unit = unit

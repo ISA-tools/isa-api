@@ -68,6 +68,23 @@ def load(fp):
         protocols_dict = dict()
         factors_dict = dict()
         parameters_dict = dict()
+        units_dict = dict()
+
+        # populate assay characteristicCategories first
+        for study_json in isajson['studies']:
+            for assay_json in study_json['assays']:
+                for assay_characteristics_category_json in assay_json['characteristicCategories']:
+                    characteristic_category = CharacteristicCategory(
+                        id_=assay_characteristics_category_json['@id'],
+                        characteristic_type=OntologyAnnotation(
+                            name=assay_characteristics_category_json['characteristicType']['annotationValue'],
+                            term_source=assay_characteristics_category_json['characteristicType']['termSource'],
+                            term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
+                        )
+                    )
+                    # study.characteristic_categories.append(characteristic_category)
+                    categories_dict[characteristic_category.id] = characteristic_category
+
         for study_json in isajson['studies']:
             logger.debug('Start building Study object')
             study = Study(
@@ -89,6 +106,12 @@ def load(fp):
                 )
                 study.characteristic_categories.append(characteristic_category)
                 categories_dict[characteristic_category.id] = characteristic_category
+            for study_unit_json in study_json['unitCategories']:
+                unit = OntologyAnnotation(id_=study_unit_json['@id'],
+                                          name=study_unit_json['annotationValue'],
+                                          term_source=study_unit_json['termSource'],
+                                          term_accession=study_unit_json['termAccession'])
+                units_dict[unit.id] = unit
             for study_publication_json in study_json['publications']:
                 logger.debug('Build Study Publication object')
                 study_publication = Publication(
@@ -144,7 +167,7 @@ def load(fp):
                     )
                     protocol.parameters.append(parameter)
                     parameters_dict[parameter.id] = parameter
-                # TODO add protocol parameter and component declarations here
+                # TODO add component declarations here
                 study.protocols.append(protocol)
                 protocols_dict[protocol.id] = protocol
             for factor_json in study_json['factors']:
@@ -182,10 +205,7 @@ def load(fp):
                             raise IOError("Can't create value as annotation")
                     elif isinstance(value, int) or isinstance(value, float):
                         try:
-                            unit = OntologyAnnotation(
-                                name=characteristic_json['unit']['annotationValue'],
-                                term_source=characteristic_json['unit']['termSource'],
-                                term_accession=characteristic_json['unit']['termAccession'])
+                            unit = units_dict[characteristic_json['unit']['@id']]
                         except KeyError:
                             raise IOError("Can't create unit annotation")
                     elif not isinstance(value, str):
@@ -207,7 +227,7 @@ def load(fp):
                     value = characteristic_json['value']
                     unit = None
                     characteristic = Characteristic(
-                            category=categories_dict[characteristic_json['category']['@id']],)
+                            category=categories_dict[characteristic_json['category']['@id']])
                     if isinstance(value, dict):
                         try:
                             value = OntologyAnnotation(
@@ -218,10 +238,7 @@ def load(fp):
                             raise IOError("Can't create value as annotation")
                     elif isinstance(value, int) or isinstance(value, float):
                         try:
-                            unit = OntologyAnnotation(
-                                name=characteristic_json['unit']['annotationValue'],
-                                term_source=characteristic_json['unit']['termSource'],
-                                term_accession=characteristic_json['unit']['termAccession'])
+                            unit = units_dict[characteristic_json['unit']['@id']]
                         except KeyError:
                             raise IOError("Can't create unit annotation")
                     elif not isinstance(value, str):
@@ -245,11 +262,7 @@ def load(fp):
                         factor_value = FactorValue(
                             factor_name=factors_dict[factor_value_json['category']['@id']],
                             value=factor_value_json['value'],
-                            unit=OntologyAnnotation(
-                                name=factor_value_json['unit']['annotationValue'],
-                                term_accession=factor_value_json['unit']['termAccession'],
-                                term_source=factor_value_json['unit']['termSource'],
-                            ),
+                            unit=units_dict[factor_value_json['unit']['@id']],
                         )
                     sample.factor_values.append(factor_value)
                 samples_dict[sample.id] = sample
@@ -270,17 +283,13 @@ def load(fp):
                 for parameter_value_json in study_process_json['parameterValues']:
                     if isinstance(parameter_value_json['value'], int) or isinstance(parameter_value_json['value'], float):
                         parameter_value = ParameterValue(
-                            # category=parameter_value_json['category']['@id'],
+                            category=parameters_dict[parameter_value_json['category']['@id']],
                             value=parameter_value_json['value'],
-                            unit=OntologyAnnotation(
-                                name=parameter_value_json['unit']['annotationValue'],
-                                term_accession=parameter_value_json['unit']['termAccession'],
-                                term_source=parameter_value_json['unit']['termSource'],
-                            )
+                            unit=units_dict[parameter_value_json['unit']['@id']],
                         )
                     else:
                         parameter_value = ParameterValue(
-                            # category=parameter_value_json['category']['@id'],
+                            category=parameters_dict[parameter_value_json['category']['@id']],
                             value=OntologyAnnotation(
                                 name=parameter_value_json['value']['annotationValue'],
                                 term_accession=parameter_value_json['value']['termAccession'],
@@ -339,14 +348,26 @@ def load(fp):
                 for data_json in assay_json['dataFiles']:
                     logger.debug('Build Data object')
                     data = Data(
+                        id_=data_json['@id'],
                         name=data_json['name'],
                         type_=data_json['type'],
                     )
-                    data_dict[data.name] = data
+                    data_dict[data.id] = data
                     assay.data_files.append(data)
                 for sample_json in assay_json['materials']['samples']:
                     sample = samples_dict[sample_json['@id']]
                     assay.materials['samples'].append(sample)
+                for assay_characteristics_category_json in assay_json['characteristicCategories']:
+                    characteristic_category = CharacteristicCategory(
+                        id_=assay_characteristics_category_json['@id'],
+                        characteristic_type=OntologyAnnotation(
+                            name=assay_characteristics_category_json['characteristicType']['annotationValue'],
+                            term_source=assay_characteristics_category_json['characteristicType']['termSource'],
+                            term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
+                        )
+                    )
+                    study.characteristic_categories.append(characteristic_category)
+                    categories_dict[characteristic_category.id] = characteristic_category
                 other_materials_dict = dict()
                 for other_material_json in assay_json['materials']['otherMaterials']:
                     logger.debug('Build Material object')
@@ -383,6 +404,11 @@ def load(fp):
                                 input_ = samples_dict[input_json['@id']]
                             except KeyError:
                                 pass
+                            finally:
+                                try:
+                                    input_ = other_materials_dict[input_json['@id']]
+                                except KeyError:
+                                    pass
                         if input_ is None:
                             raise IOError("Could not find input node in sources or samples dicts: " +
                                           input_json['@id'])
@@ -400,7 +426,7 @@ def load(fp):
                                 pass
                             finally:
                                 try:
-                                    output = other_materials_dict[output_json['@id']]
+                                    output = data_dict[output_json['@id']]
                                 except KeyError:
                                     pass
                         if output is None:
@@ -408,15 +434,12 @@ def load(fp):
                                           output_json['@id'])
                         process.outputs.append(output)
                     for parameter_value_json in assay_process_json['parameterValues']:
-                        if isinstance(parameter_value_json['value'], int) or isinstance(parameter_value_json['value'], float):
+                        if isinstance(parameter_value_json['value'], int) or \
+                                isinstance(parameter_value_json['value'], float):
                             parameter_value = ParameterValue(
                                 category=parameters_dict[parameter_value_json['category']['@id']],
                                 value=parameter_value_json['value'],
-                                unit=OntologyAnnotation(
-                                    name=parameter_value_json['unit']['annotationValue'],
-                                    term_accession=parameter_value_json['unit']['termAccession'],
-                                    term_source=parameter_value_json['unit']['termSource'],
-                                )
+                                unit=units_dict[parameter_value_json['unit']['@id']]
                             )
                         else:
                             parameter_value = ParameterValue(
