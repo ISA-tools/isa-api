@@ -2,12 +2,13 @@ from abc import ABCMeta, abstractmethod
 from urllib.parse import urljoin
 from lxml import etree
 from jsonschema import RefResolver, Draft4Validator
+from io import StringIO
 import requests
 import json
 import os
 import pathlib
 import base64
-# import pdb
+import pdb
 
 __author__ = 'massi'
 
@@ -34,7 +35,8 @@ def validate_xml_against_schema(xml_str, xml_schema_file):
     xml_parser = etree.XMLParser(schema=etree.XMLSchema(schema_root))
 
     # parse XML to validate against schema
-    return etree.fromstring(xml_str, xml_parser)
+    # return etree.fromstring(xml_str, xml_parser)
+    return etree.parse(StringIO(xml_str), xml_parser)
 
 
 def validate_json_against_schema(json_dict, schema_src):
@@ -117,32 +119,24 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                 auths = [auth for auth in auths
                          if auth['note'] == payload['note'] and auth['scopes'] == payload['scopes']]
 
-                # if the required authorization already exists use it
+                # if the required authorization already exists, delete it
                 if len(auths) > 0:
-                    self._authorization = auths[0]
+                    requests.delete(auths[0]['url'], headers=headers, auth=(username, password))
 
-                # otherwise require a new authorization
-                else:
-                    res = requests.post(self.AUTH_ENDPOINT,  json=payload, headers=headers, auth=(username, password))
-                    if res.status_code == requests.codes.created:
-                        self._authorization = json.loads(res.text or res.content)
+                # require a new authorization
+                res = requests.post(self.AUTH_ENDPOINT,  json=payload, headers=headers, auth=(username, password))
+
+                if res.status_code == requests.codes.created:
+                    self._authorization = json.loads(res.text or res.content)
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """
-        Method to delete the authorization, if it was created by the constructor
+        Delete the authorization on destruction, if it was created by the constructor
         """
-        if not self.is_authenticated:
-            return
-        headers = {
-            'accept': 'application/json',
-            'authorization': 'token %s' % self.token
-        }
-        r = requests.delete(self.authorization_uri, headers=headers)
-        print(r)
-        return r.raise_for_status()
+        self.close()
 
     @property
     def authorization_uri(self):
@@ -158,6 +152,20 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             return True
         else:
             return False
+
+    def close(self):
+        """
+        Method to delete the authorization, if it was created by the constructor
+        """
+        if not self.is_authenticated:
+            return
+        headers = {
+            'accept': 'application/json',
+            'authorization': 'token %s' % self.token
+        }
+        r = requests.delete(self.authorization_uri, headers=headers)
+        print(r)
+        return r.raise_for_status()
 
     def download(self, source, destination='isa-target', owner='ISA-tools', repository='isa-api', validate_json=False):
         """
@@ -265,7 +273,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
 
             # if it is an object decode the content (if the option is available)
             elif decode_content:
-                processed_payload =  self._handle_content(res_payload)
+                processed_payload = self._handle_content(res_payload)
 
             # if it is an object the retrieve or download it
             else:

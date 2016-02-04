@@ -652,7 +652,6 @@ class ISATab2ISAjson_v1:
 
                  category_identifier =  self.getIdentifier(header_type, value_header)
 
-
                  if value_header==None or category_identifier==None:
                     try:
                         unit_identifier = self.getIdentifier(self.UNIT, value_attributes.Unit)
