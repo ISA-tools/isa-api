@@ -539,7 +539,7 @@ class StudyAssayParser:
         for h in [header[g[0]] for g in hgroups]:
             this_ctype = None
             for ctype, names in self._col_types.items():
-                if h.startswith(names):
+                if (h in names) or ( h.startswith(names) and h.endswith("]")):
                     this_ctype = ctype
                     break
             out.append(this_ctype)
