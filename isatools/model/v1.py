@@ -475,6 +475,18 @@ class FactorValue(IsaObject):
         self.unit = unit
 
 
+class ProcessingEvent(IsaObject):
+    def __init__(self, executes_protocol=None, date_=None, performer=None, parameter_values=None):
+        super().__init__()
+        self.executes_protocol = executes_protocol
+        self.date = date_
+        self.performer = performer
+        if parameter_values is None:
+            self.parameter_values = list()
+        else:
+            self.parameter_values = parameter_values
+
+
 class Process(IsaObject):
     """A Process.
 
@@ -485,7 +497,7 @@ class Process(IsaObject):
         inputs:
         outputs:
     """
-    def __init__(self, id_='', name="", executes_protocol=None, date_=date.today(), performer="",
+    def __init__(self, id_='', name="", executes_protocol=None, date_='', performer="",
                  parameter_values=None, inputs=None, outputs=None, comments=None):
         super().__init__(comments)
         self.id = id_
