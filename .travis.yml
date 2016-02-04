@@ -1,0 +1,18 @@
+language: python
+
+python:
+      - "3.4"
+      - "3.5"
+
+# install dependencies
+install:
+      - pip install -r requirements.txt
+
+# command to run tests
+script:
+      - python setup.py test
+      - behave --format=progress features/isa-file-handler.feature
+
+branches:
+    only:
+      - enhance/ci

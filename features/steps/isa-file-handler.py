@@ -346,8 +346,9 @@ def step_impl(context):
     # test equality of input and output
     expect(written_xml_text).to.equal(context.xml_text)
     # test that the stored output is valid XML
+    # expect(etree.parse(StringIO(written_xml_text))).to_not.throw(etree.XMLSyntaxError)
     xml = etree.parse(StringIO(written_xml_text))
-    expect(xml).to.be.an(etree._ElementTree)
+    expect(etree.iselement(xml.getroot())).to.be.true
 
 
 @step("it should return it as an XML object")
@@ -355,6 +356,7 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
+    expect(etree.iselement(context.res.getroot())).to.be.true
     expect(etree.tostring(context.res)).to.equal(etree.tostring(context.xml))
 
 
