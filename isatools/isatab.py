@@ -859,10 +859,22 @@ def dump(isa_obj, output_path):
                             graph.add_edge(prev_process_node, process)
                         for input_ in process.inputs:
                             graph.add_edge(input_, process)
+                        prev_out_node = None
+                        if len(process.outputs) > 0:
+                            graph.add_edge(process, process.outputs[0])
                         for output in process.outputs:
-                            graph.add_edge(process, output)
+                            if isinstance(output, Data):
+                                try:
+                                    if prev_out_node.type_ != output.type_:
+                                        graph.add_edge(prev_out_node, output)
+                                    else:
+                                        graph.add_edge(process, output)
+                                except AttributeError:
+                                    pass
+                                finally:
+                                    prev_out_node = output
                         prev_process_node = process
-                    # nx.draw_networkx(graph, arrows=True)
+                    nx.draw_networkx(graph, arrows=True)
                     assay.graph = graph
                     # Find all the start and end nodes by looking for nodes with zero in or out edges
                     start_nodes = list()
@@ -883,17 +895,19 @@ def dump(isa_obj, output_path):
                                     # go through nodes in path
                                     if isinstance(node, Sample):
                                         assay_col_headers.append('Sample Name')
+                                        # For the moment, do not put Characteristics back into assay level
                                         # for characteristic in node.characteristics:
                                         #     if characteristic.category.characteristic_type.annotationValue\
                                         #             == 'Material Type':
                                         #         assay_col_headers.append('Material Type')
                                     elif isinstance(node, Material):
                                         assay_col_headers.append(node.type)
+                                        if node.type == 'Labeled Extract Name':
+                                            assay_col_headers.extend(('Label', 'Term Source REF',
+                                                                      'Term Accession Number'))
                                     elif isinstance(node, Data):
-                                        if node.type_ == 'raw data file':
-                                            assay_col_headers.append('Raw Data File')
-                                        elif node.type_ == 'derived data file':
-                                            assay_col_headers.append('Derived Data File')
+                                        if node.type_ != '':
+                                            assay_col_headers.append(node.type_)
                                         else:
                                             assay_col_headers.append('Data File')
                                     elif isinstance(node, Process):
@@ -901,6 +915,8 @@ def dump(isa_obj, output_path):
                                         for parameter_value in node.parameter_values:
                                             assay_col_headers.append('Parameter Value[' +
                                                                      parameter_value.category.parameter_name.name + ']')
+                                            if isinstance(parameter_value.value, OntologyAnnotation):
+                                                assay_col_headers.extend(('Term Source REF', 'Term Accession Number'))
                                             if not (parameter_value.unit is None):
                                                 assay_col_headers.append('Unit')
                                                 assay_col_headers.extend(('Term Source REF', 'Term Accession Number'))
@@ -926,12 +942,25 @@ def dump(isa_obj, output_path):
                                         #     assay_line_out.append(characteristic.value.term_accession)
                                     elif isinstance(node, Material):
                                         assay_line_out.append(node.name)
+                                        if node.type == 'Labeled Extract Name':
+                                            # Find Label in characteristics
+                                            for characteristic in node.characteristics:
+                                                if characteristic.category.characteristic_type.name == 'Label':
+                                                    assay_line_out.append(characteristic.value.name)
+                                                    assay_line_out.append(characteristic.value.term_source)
+                                                    assay_line_out.append(characteristic.value.term_accession)
+                                                    break
                                     elif isinstance(node, Data):
                                         assay_line_out.append(node.name)
                                     elif isinstance(node, Process):
                                         assay_line_out.append(node.executes_protocol.name)
                                         for parameter_value in node.parameter_values:
-                                            assay_line_out.append(parameter_value.value)
+                                            if isinstance(parameter_value.value, OntologyAnnotation):
+                                                assay_line_out.append(parameter_value.value.name)
+                                                assay_line_out.append(parameter_value.value.term_source)
+                                                assay_line_out.append(parameter_value.value.term_accession)
+                                            else:
+                                                assay_line_out.append(parameter_value.value)
                                             if not (parameter_value.unit is None):
                                                 assay_line_out.append(parameter_value.unit.name)
                                                 assay_line_out.append(parameter_value.unit.term_source)
