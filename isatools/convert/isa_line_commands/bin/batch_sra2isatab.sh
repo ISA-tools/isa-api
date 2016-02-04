@@ -3,7 +3,12 @@
 # get the directory where this script is stored
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # the directory whre the SRA XML files are stored
+echo "We are in the batch SRA 2 ISA-tab conversion script"
+echo "\nArguments are: "
+echo $1
+echo "\nThis file parent directory is: "
 echo ${DIR}
+
 SRA_DIR=${DIR}/../../resources/sra
 
 input_file=${SRA_DIR}/blank.xml
@@ -25,7 +30,8 @@ do
         # if there is some error return the error code
         if (($? > 0)); then
             echo -e "Error while processing file: ${elem}\n"
-            exit $?
+            # exit $?
+            # possibly remove the subdirectory for that element??
         fi
 
     elif [[ ${elem} =~ ^SRP|ERP ]]
@@ -35,9 +41,10 @@ do
         # if there is some error return the error code
         if (($? > 0)); then
             echo -e "Error while processing file: ${elem}\n"
-            exit $?
+            # exit $?
+            # possibly remove the subdirectory for that element??
         fi
     fi
 
 done
-exit $?
+# exit 0
