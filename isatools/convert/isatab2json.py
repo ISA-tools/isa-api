@@ -24,6 +24,7 @@ class IdentifierType(Enum):
 class ISATab2ISAjson_v1:
 
     MATERIAL_TYPE = "Material Type"
+    LABEL = "Label"
     CHARACTERISTICS = "Characteristics"
     CHARACTERISTIC_CATEGORY = "characteristic_category"
     FACTOR_VALUE = "Factor Value"
@@ -559,11 +560,13 @@ class ISATab2ISAjson_v1:
         for node_index in nodes:
             node = nodes[node_index]
             for header in node.metadata:
-                 if (not header.startswith(self.CHARACTERISTICS)) and (not header==self.MATERIAL_TYPE):
+                 if (not header.startswith(self.CHARACTERISTICS)) and (not header==self.MATERIAL_TYPE) and (not header==self.LABEL):
                     continue
                  value_header = header.replace("]", "").split("[")[-1]
                  if header == self.MATERIAL_TYPE:
                      value_header = self.MATERIAL_TYPE
+                 if header == self.LABEL:
+                     value_header = self.LABEL
 
                  characteristic_category_identifier = self.getIdentifier(self.CHARACTERISTIC_CATEGORY, value_header)
                  if characteristic_category_identifier:
@@ -626,7 +629,7 @@ class ISATab2ISAjson_v1:
         """Method for the creation of factor, characteristics and parameter values"""
         json_list = []
         for header in node.metadata:
-            if header.startswith(column_name) or header == self.MATERIAL_TYPE:
+            if header.startswith(column_name) or header == self.MATERIAL_TYPE or header == self.LABEL:
                  value_header = header.replace("]", "").split("[")[-1]
 
                  value_attributes = node.metadata[header][0]
@@ -634,18 +637,18 @@ class ISATab2ISAjson_v1:
                  header_type = None
 
                  if column_name.strip()==self.CHARACTERISTICS:
-                     if header == self.MATERIAL_TYPE:
-                        value_header = self.MATERIAL_TYPE
                      if header not in node.attributes:
                          continue
+                     if header == self.MATERIAL_TYPE:
+                        value_header = self.MATERIAL_TYPE
+                     elif header == self.LABEL:
+                        value_header = self.LABEL
                      header_type = self.CHARACTERISTIC_CATEGORY
-
-                 if column_name.strip()==self.FACTOR_VALUE:
+                 elif column_name.strip()==self.FACTOR_VALUE:
                      if header not in node.attributes:
                          continue
                      header_type = "factor"
-
-                 if column_name.strip()==self.PARAMETER_VALUE:
+                 elif column_name.strip()==self.PARAMETER_VALUE:
                      if header not in node.parameters:
                          continue
                      header_type = "parameter"
