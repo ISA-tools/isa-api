@@ -160,18 +160,25 @@ class IsatabPoolingTest(TestCase):
         s.graph = study_graph
         self.i.studies.append(s)
 
+        rna_extraction_protocol = Protocol(name='rna extraction', protocol_type=OntologyAnnotation(name='rna extraction'))
+        labeling_protocol = Protocol(name='labeling', protocol_type=OntologyAnnotation(name='labeling'))
+        hybridization_protocol = Protocol(name='nucleic acid hybridization', protocol_type=OntologyAnnotation(name='nucleic acid hybridization'))
+        data_collection_protocol = Protocol(name='data collection', protocol_type=OntologyAnnotation(name='data collection'))
+        data_normalization_protocol = Protocol(name='data normalization', protocol_type=OntologyAnnotation(name='data normalization'))
+        anova_protocol = Protocol(name='anova', protocol_type=OntologyAnnotation(name='anova'))
+
         rna_extraction_process = ProcessingEvent(executes_protocol=rna_extraction_protocol)
-        extract = Extract(name='extract1')
+        extract = Extract(name='extract1')  # Material
         labeling_process = ProcessingEvent(executes_protocol=labeling_protocol)
-        labeled_extract = LabeledExtract(name='extract1.le1', label=OntologyAnnotation(name='biotin'))
+        labeled_extract = LabeledExtract(name='extract1.le1', label=OntologyAnnotation(name='biotin'))  # Material
         hybridization_process = ProcessingEvent(executes_protocol=hybridization_protocol)
-        hybridization_assay = HybridizationAssay(name='hyb1', array_design_ref='HG_U133_2.0')
+        hybridization_assay = HybridizationAssay(name='hyb1', array_design_ref='HG_U133_2.0')  # Material
         data_collection_process = ProcessingEvent(executes_protocol=data_collection_protocol)
-        scan = Scan(name='hyb1.scan1', files=[ImageFile(name='1.dat'), ArrayDataFile(name='1.cel'), ArrayDataMatrixFile()])
+        scan = Scan(name='hyb1.scan1', image_file='1.dat', array_data_file='1.cel')  # Data
         data_normalization_process = ProcessingEvent(executes_protocol=data_normalization_protocol)
-        normalization = Normalization(name='N1', files=[DerivedArrayDataFile(name='N1.txt')])
+        normalization = Normalization(name='N1', derived_array_data_file='N1.txt')  # Data
         anova_process = ProcessingEvent(executes_protocol=anova_protocol)
-        data_transformation = DataTransformation(name='DA1', files=[DerivedArrayDataMatrixFile(name='DA1.txt')])
+        data_transformation = DataTransformation(name='DA1', derived_array_data_matrix_file='DA1.txt')  # Data
 
         assay_graph = nx.DiGraph()
         assay_graph.add_edge(sample1, rna_extraction_process)  # rna_extraction is Processing Event

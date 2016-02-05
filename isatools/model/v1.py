@@ -467,6 +467,23 @@ class Material(IsaObject):
         self.derives_from = derives_from
 
 
+class Extract(Material):
+    def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None):
+        super().__init__(id_, name, type_, characteristics, derives_from, comments)
+
+
+class LabeledExtract(Extract):
+    def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None, label=None):
+        super().__init__(id_, name, type_, characteristics, derives_from, comments)
+        self.label = label
+
+
+class HybridizationAssay(Material):
+    def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None, array_design_ref=''):
+        super().__init__(id_, name, type_, characteristics, derives_from, comments)
+        self.array_design_ref = array_design_ref
+
+
 class FactorValue(IsaObject):
     def __init__(self, factor_name=None, value=None, unit=None, comments=None):
         super().__init__(comments)
@@ -531,24 +548,36 @@ class ParameterValue(object):
         self.unit = unit
 
 
-class DataFileType(Enum):
-    generic_data_file = 0
-    raw_data_file = 1
-    derived_data_file = 2
-    image_file = 3
-
-
 class Data(IsaObject):
     """A Data.
 
     Attributes:
         name:
     """
-    def __init__(self, id_='', name="", type_=DataFileType.generic_data_file, comments=None):
+    def __init__(self, id_='', name="", comments=None):
         super().__init__(comments)
         self.id = id_
         self.name = name
-        self.type_ = type_
+
+
+class Scan(Data):
+    def __init__(self, id_='', name="", image_file='', array_data_file='', array_data_matrix_file='', comments=None):
+        super().__init__(name, comments)
+        self.image_file = image_file
+        self.array_data_file = array_data_file
+        self.array_data_matrix_file = array_data_matrix_file
+
+
+class Normalization(Data):
+    def __init__(self, id_='', name="", derived_array_data_file='', comments=None):
+        super().__init__(name, comments)
+        self.derived_array_data_file = derived_array_data_file
+
+
+class DataTransformation(Data):
+    def __init__(self, id_='', name="", derived_array_data_matrix_file='', comments=None):
+        super().__init__(name, comments)
+        self.derived_array_data_file = derived_array_data_matrix_file
 
 
 class MaterialAttribute(IsaObject):
