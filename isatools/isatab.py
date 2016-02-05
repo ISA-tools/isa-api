@@ -723,17 +723,20 @@ def dump(isa_obj, output_path):
                                      index_label='Study Person Last Name')
             graph = study.graph
             # # First, build the length of one path in the graph, as our sample for headers
-            graph = nx.DiGraph()
-            prev_process_node = None
-            for process in study.process_sequence:
-                if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
-                    graph.add_edge(prev_process_node, process)
-                for input_ in process.inputs:
-                    graph.add_edge(input_, process)
-                for output in process.outputs:
-                    graph.add_edge(process, output)
-                prev_process_node = process
-            study.graph = graph
+            # graph = nx.DiGraph()
+            # prev_process_node = None
+            # for process in study.process_sequence:
+            #     if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
+            #         graph.add_edge(prev_process_node, process)
+            #     for input_ in process.inputs:
+            #         graph.add_edge(input_, process)
+            #     for output in process.outputs:
+            #         graph.add_edge(process, output)
+            #     prev_process_node = process
+            # study.graph = graph
+
+            # Study file writing assumes latest default config from studySample.xml
+
             # Find all the start and end nodes by looking for nodes with zero in or out edges
             start_nodes = list()
             end_nodes = list()
@@ -885,21 +888,16 @@ def dump(isa_obj, output_path):
                                                 assay_col_headers.extend(('Label', 'Term Source REF', 'Term Accession Number'))
                                             else:
                                                 assay_col_headers.append('Extract Name')
-                                        elif isinstance(node, HybridizationAssay):
-                                            assay_col_headers.append('Hybridization Assay')
-                                            assay_col_headers.append('Array Design REF')
                                         else:
-                                            assay_col_headers.append('Material')
+                                            assay_col_headers.append('Material Name')
                                     elif isinstance(node, Data):
-                                        if isinstance(node, Scan):
-                                            assay_col_headers.append('Scan Name')
+                                        if isinstance(node, ScanData):
                                             assay_col_headers.extend(('Image File', 'Array Data File', 'Array Data Matrix File'))
-                                        elif isinstance(node, Normalization):
-                                            assay_col_headers.append('Normalization Name')
-                                            assay_col_headers.append('Derived Array Data File')
-                                        elif isinstance(node, DataTransformation):
-                                            assay_col_headers.append('Data Transformation Name')
-                                            assay_col_headers.append('Derived Array Data Matrix File')
+                                        elif isinstance(node, DerivedData):
+                                            if node.label != '':
+                                                assay_col_headers.append(node.label)
+                                            else:
+                                                assay_col_headers.append('Derived Data File')
                                         else:
                                             assay_col_headers.append('Data File')
                                     elif isinstance(node, ProcessingEvent):
@@ -908,6 +906,14 @@ def dump(isa_obj, output_path):
                                             assay_col_headers.append('Date')
                                         if node.performer is not None:
                                             assay_col_headers.append('Performer')
+                                        if isinstance(node, HybridizationAssayEvent):
+                                            assay_col_headers.extend(('Hybridization Assay Name', 'Array Design REF'))
+                                        elif isinstance(node, ScanEvent):
+                                            assay_col_headers.append('Scan Name')
+                                        elif isinstance(node, DataNormalizationEvent):
+                                            assay_col_headers.append('Normalization Name')
+                                        elif isinstance(node, DataTransformationEvent):
+                                            assay_col_headers.append('Data Transformation Name')
                                         for parameter_value in node.parameter_values:
                                             assay_col_headers.append('Parameter Value[' +
                                                                      parameter_value.category.parameter_name.name + ']')
@@ -928,11 +934,11 @@ def dump(isa_obj, output_path):
                             paths = list(all_simple_paths(graph, start_node, end_node))
                             if len(paths) > 0:
                                 path = paths[0]
-                                assay_col_headers = list()
+                                assay_line_out = list()
                                 for node in path:
                                     # go through nodes in path
                                     if isinstance(node, Sample):
-                                        assay_col_headers.append(node.name)
+                                        assay_line_out.append(node.name)
                                         # For the moment, do not put Characteristics back into assay level
                                         # for characteristic in node.characteristics:
                                         #     if characteristic.category.characteristic_type.annotationValue\
@@ -941,45 +947,42 @@ def dump(isa_obj, output_path):
                                     elif isinstance(node, Material):
                                         if isinstance(node, Extract):
                                             if isinstance(node, LabeledExtract):
-                                                assay_col_headers.append(node.name)
-                                                assay_col_headers.extend((node.label.name, node.label.term_source, node.label.term_accession))
+                                                assay_line_out.append(node.name)
+                                                assay_line_out.extend((node.label.name, node.label.term_source.name, node.label.term_accession))
                                             else:
-                                                assay_col_headers.append(node.name)
-                                        elif isinstance(node, HybridizationAssay):
-                                            assay_col_headers.append(node.name)
-                                            assay_col_headers.append(node.array_design_ref)
+                                                assay_line_out.append(node.name)
                                         else:
-                                            assay_col_headers.append(node.name)
+                                            assay_line_out.append(node.name)
                                     elif isinstance(node, Data):
-                                        if isinstance(node, Scan):
-                                            assay_col_headers.append(node.name)
-                                            assay_col_headers.extend((node.image_file, node.array_data_file, node.array_data_matrix_file))
-                                        elif isinstance(node, Normalization):
-                                            assay_col_headers.append(node.name)
-                                            assay_col_headers.append(node.derived_array_data_file)
-                                        elif isinstance(node, DataTransformation):
-                                            assay_col_headers.append(node.name)
-                                            assay_col_headers.append(node.derived_array_data_file)
-                                        else:
-                                            assay_col_headers.append(node.name)
+                                        if isinstance(node, ScanData):
+                                            assay_line_out.extend((node.image_file, node.array_data_file, node.array_data_matrix_file))
+                                        elif isinstance(node, DerivedData):
+                                            assay_line_out.append(node.derived_data_file)
                                     elif isinstance(node, ProcessingEvent):
-                                        assay_col_headers.append(node.executes_protocol.name)
+                                        assay_line_out.append(node.executes_protocol.name)
                                         if node.date is not None:
-                                            assay_col_headers.append(node.date)
+                                            assay_line_out.append(node.date)
                                         if node.performer is not None:
-                                            assay_col_headers.append(node.performer)
+                                            assay_line_out.append(node.performer)
+                                        if isinstance(node, HybridizationAssayEvent):
+                                            assay_line_out.extend((node.name, node.array_design_ref))
+                                        if isinstance(node, ScanEvent):
+                                            assay_line_out.append(node.name)
+                                        if isinstance(node, DataNormalizationEvent):
+                                            assay_line_out.append(node.name)
+                                        if isinstance(node, DataTransformationEvent):
+                                            assay_line_out.append(node.name)
                                         for parameter_value in node.parameter_values:
                                             if isinstance(parameter_value.value, OntologyAnnotation):
-                                                assay_col_headers.append(parameter_value.value.name)
-                                                assay_col_headers.extend((parameter_value.value.term_source, parameter_value.value.term_accession))
+                                                assay_line_out.append(parameter_value.value.name)
+                                                assay_line_out.extend((parameter_value.value.term_source, parameter_value.value.term_accession))
                                             else:
-                                                assay_col_headers.append(parameter_value.value)
+                                                assay_line_out.append(parameter_value.value)
                                             if not (parameter_value.unit is None):
-                                                assay_col_headers.append(parameter_value.unit.name)
-                                                assay_col_headers.extend((parameter_value.unit.term_source, parameter_value.unit.term_accession))
+                                                assay_line_out.append(parameter_value.unit.name)
+                                                assay_line_out.extend((parameter_value.unit.term_source, parameter_value.unit.term_accession))
                                     else:
                                         raise IOError("Unexpected node: " + str(node))
-                                break
                                 print(assay_line_out)
                                 assay_file_writer.writerow(assay_line_out)
                     assay_fp.close()

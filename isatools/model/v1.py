@@ -493,8 +493,9 @@ class FactorValue(IsaObject):
 
 
 class ProcessingEvent(IsaObject):
-    def __init__(self, executes_protocol=None, date_=None, performer=None, parameter_values=None):
+    def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None):
         super().__init__()
+        self.name = name
         self.executes_protocol = executes_protocol
         self.date = date_
         self.performer = performer
@@ -502,6 +503,27 @@ class ProcessingEvent(IsaObject):
             self.parameter_values = list()
         else:
             self.parameter_values = parameter_values
+
+
+class HybridizationAssayEvent(ProcessingEvent):
+        def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None, array_design_ref=''):
+            super().__init__(name, executes_protocol, date_, performer, parameter_values)
+            self.array_design_ref = array_design_ref
+
+
+class ScanEvent(ProcessingEvent):
+        def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None):
+            super().__init__(name, executes_protocol, date_, performer, parameter_values)
+
+
+class DataNormalizationEvent(ProcessingEvent):
+        def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None):
+            super().__init__(name, executes_protocol, date_, performer, parameter_values)
+
+
+class DataTransformationEvent(ProcessingEvent):
+        def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None):
+            super().__init__(name, executes_protocol, date_, performer, parameter_values)
 
 
 class Process(IsaObject):
@@ -560,7 +582,7 @@ class Data(IsaObject):
         self.name = name
 
 
-class Scan(Data):
+class ScanData(Data):
     def __init__(self, id_='', name="", image_file='', array_data_file='', array_data_matrix_file='', comments=None):
         super().__init__(name, comments)
         self.image_file = image_file
@@ -568,16 +590,17 @@ class Scan(Data):
         self.array_data_matrix_file = array_data_matrix_file
 
 
-class Normalization(Data):
+class NormalizedData(Data):
     def __init__(self, id_='', name="", derived_array_data_file='', comments=None):
         super().__init__(name, comments)
         self.derived_array_data_file = derived_array_data_file
 
 
-class DataTransformation(Data):
-    def __init__(self, id_='', name="", derived_array_data_matrix_file='', comments=None):
+class DerivedData(Data):
+    def __init__(self, id_='', name="", derived_data_file='', label='Data File', comments=None):
         super().__init__(name, comments)
-        self.derived_array_data_file = derived_array_data_matrix_file
+        self.derived_data_file = derived_data_file
+        self.label = label
 
 
 class MaterialAttribute(IsaObject):
