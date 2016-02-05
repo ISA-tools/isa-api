@@ -31,7 +31,6 @@ class ISATab2ISAjson_v1:
     UNIT = "Unit"
     PARAMETER_VALUE = "Parameter Value"
     ARRAY_DESIGN_REF = "Array Design REF"
-    protocols_map = {}
 
     def __init__(self, identifier_type):
         self.identifiers = list() #list of dictionaries
@@ -164,13 +163,31 @@ class ISATab2ISAjson_v1:
         return publications_json
 
 
-    def createProtocols(self, protocols):
+    def createProtocols(self, protocols, assays):
         protocols_json = []
+
+        protocols_to_attach_parameter = []
+        #keep protocols that should have ArrayDesignREF as a parameter
+        for assay in assays:
+            for process_node in assay.process_nodes.values():
+                if self.ARRAY_DESIGN_REF in process_node.parameters:
+                        protocols_to_attach_parameter.append(process_node.protocol)
+
         for protocol in protocols:
             protocol_name = protocol['Study Protocol Name']
             if not protocol_name:
                 continue
             protocol_identifier = self.generateIdentifier("protocol", protocol_name)
+            parameters = self.createProtocolParameterList(protocol)
+
+            if protocol_name in protocols_to_attach_parameter:
+                #add parameter for ArrayDesignREF if it is used in any assay
+                parameter_identifier = self.generateIdentifier("parameter", self.ARRAY_DESIGN_REF)
+                json_item = dict([
+                    ("@id", parameter_identifier),
+                    ("parameterName",  self.createOntologyAnnotation(self.ARRAY_DESIGN_REF, "", ""))
+                ])
+
             protocol_json = dict([
                 ("@id", protocol_identifier),
                 ("name", protocol_name),
@@ -178,13 +195,14 @@ class ISATab2ISAjson_v1:
                 ("description", protocol['Study Protocol Description']),
                 ("uri", protocol['Study Protocol URI']),
                 ("version", protocol['Study Protocol Version']),
-                ("parameters", self.createProtocolParameterList(protocol)),
+                ("parameters", parameters),
                 ("components", self.createProtocolComponentList(protocol))
                 ])
-            self.protocols_map.update({ protocol_identifier : protocol_json})
             protocols_json.append(protocol_json)
 
+
         return protocols_json
+
 
 
     def createProtocolParameterList(self, protocol):
@@ -269,7 +287,7 @@ class ISATab2ISAjson_v1:
             source_dict = self.createSourcesDictionary(study.nodes)
             sample_dict = self.createSampleDictionary(study.nodes)
             material_dict = self.createMaterialDictionary(study.nodes)
-            protocol_list = self.createProtocols(study.protocols)
+            protocol_list = self.createProtocols(study.protocols, study.assays)
             assay_list = self.createStudyAssaysList(study.assays, sample_dict)
             #This data_dict should be empty on the studies - it is only used in the assays
             data_dict = self.createDataFiles(study.nodes)

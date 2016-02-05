@@ -60,17 +60,17 @@
                     "@id": "#assay/a_test-template1-splitting_transcription_profiling_DNA_microarray.txt",
                     "characteristicCategories": [
                         {
-                            "@id": "#characteristic_category/Test",
+                            "@id": "#characteristic_category/Label",
                             "characteristicType": {
-                                "annotationValue": "Test",
+                                "annotationValue": "Label",
                                 "termAccession": "",
                                 "termSource": ""
                             }
                         },
                         {
-                            "@id": "#characteristic_category/Label",
+                            "@id": "#characteristic_category/Test",
                             "characteristicType": {
-                                "annotationValue": "Label",
+                                "annotationValue": "Test",
                                 "termAccession": "",
                                 "termSource": ""
                             }
@@ -78,14 +78,14 @@
                     ],
                     "dataFiles": [
                         {
-                            "@id": "#data/imagefile-1.dat",
-                            "name": "1.dat",
-                            "type": "Image File"
-                        },
-                        {
                             "@id": "#data/rawdatafile-1.cel",
                             "name": "1.cel",
                             "type": "Raw Data File"
+                        },
+                        {
+                            "@id": "#data/imagefile-1.dat",
+                            "name": "1.dat",
+                            "type": "Image File"
                         }
                     ],
                     "filename": "a_test-template1-splitting_transcription_profiling_DNA_microarray.txt",
@@ -127,25 +127,6 @@
                         "termSource": "OBI"
                     },
                     "processSequence": [
-                        {
-                            "@id": "#process/hyb1",
-                            "date": "",
-                            "executesProtocol": {
-                                "@id": "#protocol/nucleic_acid_hybridization"
-                            },
-                            "inputs": [
-                                {
-                                    "@id": "#material/labeledextract-extract1.le1"
-                                }
-                            ],
-                            "outputs": [],
-                            "parameterValues": [
-                                {
-                                    "value": "HG_U133_2.0"
-                                }
-                            ],
-                            "performer": ""
-                        },
                         {
                             "@id": "#process/labeling1",
                             "date": "",
@@ -195,7 +176,8 @@
                             "performer": ""
                         },
                         {
-                            "@id": "#process/hyb1.scan1",
+                            "@id": "#process/data_collection1",
+                            "assayProcessName": "hyb1.scan1",
                             "date": "",
                             "executesProtocol": {
                                 "@id": "#protocol/data_collection"
@@ -203,10 +185,10 @@
                             "inputs": [],
                             "outputs": [
                                 {
-                                    "@id": "#data/imagefile-1.dat"
+                                    "@id": "#data/rawdatafile-1.cel"
                                 },
                                 {
-                                    "@id": "#data/rawdatafile-1.cel"
+                                    "@id": "#data/imagefile-1.dat"
                                 }
                             ],
                             "parameterValues": [
@@ -219,6 +201,29 @@
                                         "termAccession": "",
                                         "termSource": ""
                                     }
+                                }
+                            ],
+                            "performer": ""
+                        },
+                        {
+                            "@id": "#process/nucleic_acid_hybridization1",
+                            "assayProcessName": "hyb1",
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/nucleic_acid_hybridization"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract1.le1"
+                                }
+                            ],
+                            "outputs": [],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#parameter/Array_Design_REF"
+                                    },
+                                    "value": "HG_U133_2.0"
                                 }
                             ],
                             "performer": ""
@@ -243,17 +248,17 @@
                     }
                 },
                 {
-                    "@id": "#characteristic_category/organism_part",
+                    "@id": "#characteristic_category/reference_descriptor",
                     "characteristicType": {
-                        "annotationValue": "organism part",
+                        "annotationValue": "reference descriptor",
                         "termAccession": "",
                         "termSource": ""
                     }
                 },
                 {
-                    "@id": "#characteristic_category/specimen_mass",
+                    "@id": "#characteristic_category/organism_part",
                     "characteristicType": {
-                        "annotationValue": "specimen mass",
+                        "annotationValue": "organism part",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -267,9 +272,9 @@
                     }
                 },
                 {
-                    "@id": "#characteristic_category/reference_descriptor",
+                    "@id": "#characteristic_category/specimen_mass",
                     "characteristicType": {
-                        "annotationValue": "reference descriptor",
+                        "annotationValue": "specimen mass",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -382,6 +387,12 @@
                             },
                             {
                                 "category": {
+                                    "@id": "#characteristic_category/reference_descriptor"
+                                },
+                                "value": "not applicable"
+                            },
+                            {
+                                "category": {
                                     "@id": "#characteristic_category/organism"
                                 },
                                 "value": {
@@ -389,12 +400,6 @@
                                     "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
                                     "termSource": "NCBITAXON"
                                 }
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/reference_descriptor"
-                                },
-                                "value": "not applicable"
                             },
                             {
                                 "category": {
@@ -629,15 +634,15 @@
                     "termSource": "UO"
                 },
                 {
-                    "@id": "#Unit/milligram",
-                    "annotationValue": "milligram",
-                    "termAccession": "http://purl.obolibrary.org/obo/UO_0000022",
-                    "termSource": "UO"
-                },
-                {
                     "@id": "#Unit/hour",
                     "annotationValue": "hour",
                     "termAccession": "http://purl.obolibrary.org/obo/UO_0000032",
+                    "termSource": "UO"
+                },
+                {
+                    "@id": "#Unit/milligram",
+                    "annotationValue": "milligram",
+                    "termAccession": "http://purl.obolibrary.org/obo/UO_0000022",
                     "termSource": "UO"
                 }
             ]
