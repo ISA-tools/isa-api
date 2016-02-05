@@ -586,6 +586,7 @@ class StudyAssayParser:
                                         return "imagefile-"+name
                                      else:
                                         "ERROR - Type not being considered! ", type
+                                        return name
 
 
 _record_str = \
