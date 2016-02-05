@@ -118,14 +118,6 @@
             ],
             "characteristicCategories": [
                 {
-                    "@id": "#characteristic_category/organism",
-                    "characteristicType": {
-                        "annotationValue": "organism",
-                        "termAccession": "",
-                        "termSource": ""
-                    }
-                },
-                {
                     "@id": "#characteristic_category/reference_descriptor",
                     "characteristicType": {
                         "annotationValue": "reference descriptor",
@@ -134,9 +126,9 @@
                     }
                 },
                 {
-                    "@id": "#characteristic_category/organism_part",
+                    "@id": "#characteristic_category/organism",
                     "characteristicType": {
-                        "annotationValue": "organism part",
+                        "annotationValue": "organism",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -145,6 +137,14 @@
                     "@id": "#characteristic_category/Material_Type",
                     "characteristicType": {
                         "annotationValue": "Material Type",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/organism_part",
+                    "characteristicType": {
+                        "annotationValue": "organism part",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -205,6 +205,12 @@
                         "characteristics": [
                             {
                                 "category": {
+                                    "@id": "#characteristic_category/reference_descriptor"
+                                },
+                                "value": "not applicable"
+                            },
+                            {
+                                "category": {
                                     "@id": "#characteristic_category/organism"
                                 },
                                 "value": {
@@ -212,12 +218,6 @@
                                     "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
                                     "termSource": "NCBITAXON"
                                 }
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/reference_descriptor"
-                                },
-                                "value": "not applicable"
                             },
                             {
                                 "category": {
@@ -233,6 +233,12 @@
                         "characteristics": [
                             {
                                 "category": {
+                                    "@id": "#characteristic_category/reference_descriptor"
+                                },
+                                "value": "not applicable"
+                            },
+                            {
+                                "category": {
                                     "@id": "#characteristic_category/organism"
                                 },
                                 "value": {
@@ -240,12 +246,6 @@
                                     "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
                                     "termSource": "NCBITAXON"
                                 }
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/reference_descriptor"
-                                },
-                                "value": "not applicable"
                             },
                             {
                                 "category": {
@@ -257,38 +257,16 @@
                         "name": "source-source4"
                     },
                     {
-                        "@id": "#source/source-source3",
-                        "characteristics": [
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/organism"
-                                },
-                                "value": {
-                                    "annotationValue": "Human",
-                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
-                                    "termSource": "NCBITAXON"
-                                }
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/reference_descriptor"
-                                },
-                                "value": "not applicable"
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/Material_Type"
-                                },
-                                "value": "specimen"
-                            }
-                        ],
-                        "name": "source-source3"
-                    },
-                    {
                         "@id": "#source/source-source2",
                         "characteristics": [
                             {
                                 "category": {
+                                    "@id": "#characteristic_category/reference_descriptor"
+                                },
+                                "value": "not applicable"
+                            },
+                            {
+                                "category": {
                                     "@id": "#characteristic_category/organism"
                                 },
                                 "value": {
@@ -296,12 +274,6 @@
                                     "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
                                     "termSource": "NCBITAXON"
                                 }
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/reference_descriptor"
-                                },
-                                "value": "not applicable"
                             },
                             {
                                 "category": {
@@ -311,6 +283,34 @@
                             }
                         ],
                         "name": "source-source2"
+                    },
+                    {
+                        "@id": "#source/source-source3",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/reference_descriptor"
+                                },
+                                "value": "not applicable"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/organism"
+                                },
+                                "value": {
+                                    "annotationValue": "Human",
+                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
+                                    "termSource": "NCBITAXON"
+                                }
+                            },
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/Material_Type"
+                                },
+                                "value": "specimen"
+                            }
+                        ],
+                        "name": "source-source3"
                     }
                 ]
             },
