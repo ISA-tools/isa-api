@@ -194,6 +194,12 @@ class IsatabPoolingTest(TestCase):
         assay_graph.add_edge(normalization, anova_process)  # anova is Processing Event
         assay_graph.add_edge(anova_process, data_transformation)  # data_transformation has a Derived Array Data Matrix File
 
+        assay = Assay(filename='a_pool.txt')
+        assay.graph = assay_graph
+
+        s.assays.append(assay)
+        return assay_graph
+
     def test_isatab_writer(self):
         isatab.dump(self.i, './data/tmp/')
 

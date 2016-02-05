@@ -723,17 +723,17 @@ def dump(isa_obj, output_path):
                                      index_label='Study Person Last Name')
             graph = study.graph
             # # First, build the length of one path in the graph, as our sample for headers
-            # graph = nx.DiGraph()
-            # prev_process_node = None
-            # for process in study.process_sequence:
-            #     if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
-            #         graph.add_edge(prev_process_node, process)
-            #     for input_ in process.inputs:
-            #         graph.add_edge(input_, process)
-            #     for output in process.outputs:
-            #         graph.add_edge(process, output)
-            #     prev_process_node = process
-            # study.graph = graph
+            graph = nx.DiGraph()
+            prev_process_node = None
+            for process in study.process_sequence:
+                if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
+                    graph.add_edge(prev_process_node, process)
+                for input_ in process.inputs:
+                    graph.add_edge(input_, process)
+                for output in process.outputs:
+                    graph.add_edge(process, output)
+                prev_process_node = process
+            study.graph = graph
             # Find all the start and end nodes by looking for nodes with zero in or out edges
             start_nodes = list()
             end_nodes = list()
@@ -851,126 +851,138 @@ def dump(isa_obj, output_path):
                                             study_line_out.append(factor_value.value)
                         study_file_writer.writerow(study_line_out)
                 study_fp.close()
-                # for assay in study.assays:
-                #     # First, build the length of one path in the graph, as our sample for headers
-                #     graph = nx.DiGraph()
-                #     prev_process_node = None
-                #     for process in assay.process_sequence:
-                #         if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
-                #             graph.add_edge(prev_process_node, process)
-                #         for input_ in process.inputs:
-                #             graph.add_edge(input_, process)
-                #         prev_out_node = None
-                #         if len(process.outputs) > 0:
-                #             graph.add_edge(process, process.outputs[0])
-                #         for output in process.outputs:
-                #             if isinstance(output, Data):
-                #                 try:
-                #                     if prev_out_node.type_ != output.type_:
-                #                         graph.add_edge(prev_out_node, output)
-                #                     else:
-                #                         graph.add_edge(process, output)
-                #                 except AttributeError:
-                #                     pass
-                #                 finally:
-                #                     prev_out_node = output
-                #         prev_process_node = process
-                #     nx.draw_networkx(graph, arrows=True)
-                #     assay.graph = graph
-                #     # Find all the start and end nodes by looking for nodes with zero in or out edges
-                #     start_nodes = list()
-                #     end_nodes = list()
-                #     for node in graph.nodes():
-                #         if len(graph.in_edges(node)) == 0:
-                #             start_nodes.append(node)
-                #         if len(graph.out_edges(node)) == 0:
-                #             end_nodes.append(node)
-                #     # Start building headers by traversing all end-to-end paths; assumes correct experimental graphs
-                #     for start_node in start_nodes:
-                #         for end_node in end_nodes:
-                #             paths = list(all_simple_paths(graph, start_node, end_node))
-                #             if len(paths) > 0:
-                #                 path = paths[0]
-                #                 assay_col_headers = list()
-                #                 for node in path:
-                #                     # go through nodes in path
-                #                     if isinstance(node, Sample):
-                #                         assay_col_headers.append('Sample Name')
-                #                         # For the moment, do not put Characteristics back into assay level
-                #                         # for characteristic in node.characteristics:
-                #                         #     if characteristic.category.characteristic_type.annotationValue\
-                #                         #             == 'Material Type':
-                #                         #         assay_col_headers.append('Material Type')
-                #                     elif isinstance(node, Material):
-                #                         assay_col_headers.append(node.type)
-                #                         if node.type == 'Labeled Extract Name':
-                #                             assay_col_headers.extend(('Label', 'Term Source REF',
-                #                                                       'Term Accession Number'))
-                #                     elif isinstance(node, Data):
-                #                         if node.type_ != '':
-                #                             assay_col_headers.append(node.type_)
-                #                         else:
-                #                             assay_col_headers.append('Data File')
-                #                     elif isinstance(node, Process):
-                #                         assay_col_headers.append('Protocol REF')
-                #                         for parameter_value in node.parameter_values:
-                #                             assay_col_headers.append('Parameter Value[' +
-                #                                                      parameter_value.category.parameter_name.name + ']')
-                #                             if isinstance(parameter_value.value, OntologyAnnotation):
-                #                                 assay_col_headers.extend(('Term Source REF', 'Term Accession Number'))
-                #                             if not (parameter_value.unit is None):
-                #                                 assay_col_headers.append('Unit')
-                #                                 assay_col_headers.extend(('Term Source REF', 'Term Accession Number'))
-                #                     else:
-                #                         raise IOError("Unexpected node: " + str(node))
-                #                 break
-                #     print(assay_col_headers)
-                #     assay_fp = open(os.path.join(output_path, assay.filename), 'w')
-                #     assay_file_writer = csv.writer(assay_fp, delimiter='\t')
-                #     assay_file_writer.writerow(assay_col_headers)
-                #     for start_node in start_nodes:
-                #         for end_node in end_nodes:
-                #             paths = list(all_simple_paths(graph, start_node, end_node))
-                #             for path in paths:
-                #                 assay_line_out = list()
-                #                 for node in path:
-                #                     # cycle through nodes in each path
-                #                     if isinstance(node, Sample):
-                #                         assay_line_out.append(node.name)
-                #                         # for characteristic in node.characteristics:
-                #                         #     assay_line_out.append(characteristic.value.name)
-                #                         #     assay_line_out.append(characteristic.value.term_source)
-                #                         #     assay_line_out.append(characteristic.value.term_accession)
-                #                     elif isinstance(node, Material):
-                #                         assay_line_out.append(node.name)
-                #                         if node.type == 'Labeled Extract Name':
-                #                             # Find Label in characteristics
-                #                             for characteristic in node.characteristics:
-                #                                 if characteristic.category.characteristic_type.name == 'Label':
-                #                                     assay_line_out.append(characteristic.value.name)
-                #                                     assay_line_out.append(characteristic.value.term_source)
-                #                                     assay_line_out.append(characteristic.value.term_accession)
-                #                                     break
-                #                     elif isinstance(node, Data):
-                #                         assay_line_out.append(node.name)
-                #                     elif isinstance(node, Process):
-                #                         assay_line_out.append(node.executes_protocol.name)
-                #                         for parameter_value in node.parameter_values:
-                #                             if isinstance(parameter_value.value, OntologyAnnotation):
-                #                                 assay_line_out.append(parameter_value.value.name)
-                #                                 assay_line_out.append(parameter_value.value.term_source)
-                #                                 assay_line_out.append(parameter_value.value.term_accession)
-                #                             else:
-                #                                 assay_line_out.append(parameter_value.value)
-                #                             if not (parameter_value.unit is None):
-                #                                 assay_line_out.append(parameter_value.unit.name)
-                #                                 assay_line_out.append(parameter_value.unit.term_source)
-                #                                 assay_line_out.append(parameter_value.unit.term_accession)
-                #                     else:
-                #                         raise IOError("Unexpected node: " + str(node))
-                #                 print(assay_line_out)
-                #                 assay_file_writer.writerow(assay_line_out)
-                #     assay_fp.close()
+                for assay in study.assays:
+                    #  Assume the graph is built into a networkx graph on read from JSON
+                    # Find all the start and end nodes by looking for nodes with zero in or out edges
+                    start_nodes = list()
+                    end_nodes = list()
+                    graph = assay.graph
+                    for node in graph.nodes():
+                        if len(graph.in_edges(node)) == 0:
+                            start_nodes.append(node)
+                        if len(graph.out_edges(node)) == 0:
+                            end_nodes.append(node)
+                    # Start building headers by traversing all end-to-end paths; assumes correct experimental graphs
+                    for start_node in start_nodes:
+                        for end_node in end_nodes:
+                            paths = list(all_simple_paths(graph, start_node, end_node))
+                            if len(paths) > 0:
+                                path = paths[0]
+                                assay_col_headers = list()
+                                for node in path:
+                                    # go through nodes in path
+                                    if isinstance(node, Sample):
+                                        assay_col_headers.append('Sample Name')
+                                        # For the moment, do not put Characteristics back into assay level
+                                        # for characteristic in node.characteristics:
+                                        #     if characteristic.category.characteristic_type.annotationValue\
+                                        #             == 'Material Type':
+                                        #         assay_col_headers.append('Material Type')
+                                    elif isinstance(node, Material):
+                                        if isinstance(node, Extract):
+                                            if isinstance(node, LabeledExtract):
+                                                assay_col_headers.append('Labeled Extract Name')
+                                                assay_col_headers.extend(('Label', 'Term Source REF', 'Term Accession Number'))
+                                            else:
+                                                assay_col_headers.append('Extract Name')
+                                        elif isinstance(node, HybridizationAssay):
+                                            assay_col_headers.append('Hybridization Assay')
+                                            assay_col_headers.append('Array Design REF')
+                                        else:
+                                            assay_col_headers.append('Material')
+                                    elif isinstance(node, Data):
+                                        if isinstance(node, Scan):
+                                            assay_col_headers.append('Scan Name')
+                                            assay_col_headers.extend(('Image File', 'Array Data File', 'Array Data Matrix File'))
+                                        elif isinstance(node, Normalization):
+                                            assay_col_headers.append('Normalization Name')
+                                            assay_col_headers.append('Derived Array Data File')
+                                        elif isinstance(node, DataTransformation):
+                                            assay_col_headers.append('Data Transformation Name')
+                                            assay_col_headers.append('Derived Array Data Matrix File')
+                                        else:
+                                            assay_col_headers.append('Data File')
+                                    elif isinstance(node, ProcessingEvent):
+                                        assay_col_headers.append('Protocol REF')
+                                        if node.date is not None:
+                                            assay_col_headers.append('Date')
+                                        if node.performer is not None:
+                                            assay_col_headers.append('Performer')
+                                        for parameter_value in node.parameter_values:
+                                            assay_col_headers.append('Parameter Value[' +
+                                                                     parameter_value.category.parameter_name.name + ']')
+                                            if isinstance(parameter_value.value, OntologyAnnotation):
+                                                assay_col_headers.extend(('Term Source REF', 'Term Accession Number'))
+                                            if not (parameter_value.unit is None):
+                                                assay_col_headers.append('Unit')
+                                                assay_col_headers.extend(('Term Source REF', 'Term Accession Number'))
+                                    else:
+                                        raise IOError("Unexpected node: " + str(node))
+                                break
+                    assay_fp = open(os.path.join(output_path, assay.filename), 'w')
+                    assay_file_writer = csv.writer(assay_fp, delimiter='\t')
+                    assay_file_writer.writerow(assay_col_headers)
+                    # Start building headers by traversing all end-to-end paths; assumes correct experimental graphs
+                    for start_node in start_nodes:
+                        for end_node in end_nodes:
+                            paths = list(all_simple_paths(graph, start_node, end_node))
+                            if len(paths) > 0:
+                                path = paths[0]
+                                assay_col_headers = list()
+                                for node in path:
+                                    # go through nodes in path
+                                    if isinstance(node, Sample):
+                                        assay_col_headers.append(node.name)
+                                        # For the moment, do not put Characteristics back into assay level
+                                        # for characteristic in node.characteristics:
+                                        #     if characteristic.category.characteristic_type.annotationValue\
+                                        #             == 'Material Type':
+                                        #         assay_col_headers.append('Material Type')
+                                    elif isinstance(node, Material):
+                                        if isinstance(node, Extract):
+                                            if isinstance(node, LabeledExtract):
+                                                assay_col_headers.append(node.name)
+                                                assay_col_headers.extend((node.label.name, node.label.term_source, node.label.term_accession))
+                                            else:
+                                                assay_col_headers.append(node.name)
+                                        elif isinstance(node, HybridizationAssay):
+                                            assay_col_headers.append(node.name)
+                                            assay_col_headers.append(node.array_design_ref)
+                                        else:
+                                            assay_col_headers.append(node.name)
+                                    elif isinstance(node, Data):
+                                        if isinstance(node, Scan):
+                                            assay_col_headers.append(node.name)
+                                            assay_col_headers.extend((node.image_file, node.array_data_file, node.array_data_matrix_file))
+                                        elif isinstance(node, Normalization):
+                                            assay_col_headers.append(node.name)
+                                            assay_col_headers.append(node.derived_array_data_file)
+                                        elif isinstance(node, DataTransformation):
+                                            assay_col_headers.append(node.name)
+                                            assay_col_headers.append(node.derived_array_data_file)
+                                        else:
+                                            assay_col_headers.append(node.name)
+                                    elif isinstance(node, ProcessingEvent):
+                                        assay_col_headers.append(node.executes_protocol.name)
+                                        if node.date is not None:
+                                            assay_col_headers.append(node.date)
+                                        if node.performer is not None:
+                                            assay_col_headers.append(node.performer)
+                                        for parameter_value in node.parameter_values:
+                                            if isinstance(parameter_value.value, OntologyAnnotation):
+                                                assay_col_headers.append(parameter_value.value.name)
+                                                assay_col_headers.extend((parameter_value.value.term_source, parameter_value.value.term_accession))
+                                            else:
+                                                assay_col_headers.append(parameter_value.value)
+                                            if not (parameter_value.unit is None):
+                                                assay_col_headers.append(parameter_value.unit.name)
+                                                assay_col_headers.extend((parameter_value.unit.term_source, parameter_value.unit.term_accession))
+                                    else:
+                                        raise IOError("Unexpected node: " + str(node))
+                                break
+                                print(assay_line_out)
+                                assay_file_writer.writerow(assay_line_out)
+                    assay_fp.close()
         fp.close()
 
     else:

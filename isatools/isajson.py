@@ -326,6 +326,18 @@ def load(fp):
                     if output is None:
                         raise IOError("Could not find output node in sources or samples dicts: " + output_json['@id'])
                     process.outputs.append(output)
+                import networkx as nx
+                graph = nx.DiGraph()
+                prev_process_node = None
+                for process in study.process_sequence:
+                    if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
+                        graph.add_edge(prev_process_node, process)
+                    for input_ in process.inputs:
+                        graph.add_edge(input_, process)
+                    for output in process.outputs:
+                        graph.add_edge(process, output)
+                    prev_process_node = process
+                study.graph = graph
                 study.process_sequence.append(process)
             for assay_json in study_json['assays']:
                 logger.debug('Start building Assay object')
@@ -350,7 +362,7 @@ def load(fp):
                     data = Data(
                         id_=data_json['@id'],
                         name=data_json['name'],
-                        type_=data_json['type'],
+                        # type_=data_json['type'],
                     )
                     data_dict[data.id] = data
                     assay.data_files.append(data)
