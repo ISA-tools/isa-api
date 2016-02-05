@@ -60,6 +60,14 @@
                     "@id": "#assay/a_test-template1-splitting_transcription_profiling_DNA_microarray.txt",
                     "characteristicCategories": [
                         {
+                            "@id": "#characteristic_category/Label",
+                            "characteristicType": {
+                                "annotationValue": "Label",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
                             "@id": "#characteristic_category/Test",
                             "characteristicType": {
                                 "annotationValue": "Test",
@@ -70,30 +78,41 @@
                     ],
                     "dataFiles": [
                         {
-                            "@id": "#data/imagefile-1.dat",
-                            "name": "1.dat",
-                            "type": "Image File"
-                        },
-                        {
                             "@id": "#data/rawdatafile-1.cel",
                             "name": "1.cel",
                             "type": "Raw Data File"
+                        },
+                        {
+                            "@id": "#data/imagefile-1.dat",
+                            "name": "1.dat",
+                            "type": "Image File"
                         }
                     ],
                     "filename": "a_test-template1-splitting_transcription_profiling_DNA_microarray.txt",
                     "materials": {
                         "otherMaterials": [
                             {
-                                "@id": "#material/labeledextract-extract1.le1",
-                                "characteristics": [],
-                                "name": "labeledextract-extract1.le1",
-                                "type": "Labeled Extract Name"
-                            },
-                            {
                                 "@id": "#material/extract-extract1",
                                 "characteristics": [],
                                 "name": "extract-extract1",
                                 "type": "Extract Name"
+                            },
+                            {
+                                "@id": "#material/labeledextract-extract1.le1",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#characteristic_category/Label"
+                                        },
+                                        "value": {
+                                            "annotationValue": "biotin",
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_15956",
+                                            "termSource": "CHEBI"
+                                        }
+                                    }
+                                ],
+                                "name": "labeledextract-extract1.le1",
+                                "type": "Labeled Extract Name"
                             }
                         ],
                         "samples": [
@@ -128,21 +147,6 @@
                             "performer": ""
                         },
                         {
-                            "@id": "#process/hyb1",
-                            "date": "",
-                            "executesProtocol": {
-                                "@id": "#protocol/nucleic_acid_hybridization"
-                            },
-                            "inputs": [
-                                {
-                                    "@id": "#material/labeledextract-extract1.le1"
-                                }
-                            ],
-                            "outputs": [],
-                            "parameterValues": [],
-                            "performer": ""
-                        },
-                        {
                             "@id": "#process/RNA_extraction1",
                             "date": "",
                             "executesProtocol": {
@@ -172,7 +176,8 @@
                             "performer": ""
                         },
                         {
-                            "@id": "#process/hyb1.scan1",
+                            "@id": "#process/data_collection1",
+                            "assayProcessName": "hyb1.scan1",
                             "date": "",
                             "executesProtocol": {
                                 "@id": "#protocol/data_collection"
@@ -180,10 +185,10 @@
                             "inputs": [],
                             "outputs": [
                                 {
-                                    "@id": "#data/imagefile-1.dat"
+                                    "@id": "#data/rawdatafile-1.cel"
                                 },
                                 {
-                                    "@id": "#data/rawdatafile-1.cel"
+                                    "@id": "#data/imagefile-1.dat"
                                 }
                             ],
                             "parameterValues": [
@@ -196,6 +201,29 @@
                                         "termAccession": "",
                                         "termSource": ""
                                     }
+                                }
+                            ],
+                            "performer": ""
+                        },
+                        {
+                            "@id": "#process/nucleic_acid_hybridization1",
+                            "assayProcessName": "hyb1",
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/nucleic_acid_hybridization"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract1.le1"
+                                }
+                            ],
+                            "outputs": [],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#parameter/Array_Design_REF"
+                                    },
+                                    "value": "HG_U133_2.0"
                                 }
                             ],
                             "performer": ""
@@ -212,9 +240,17 @@
             ],
             "characteristicCategories": [
                 {
-                    "@id": "#characteristic_category/Material_Type",
+                    "@id": "#characteristic_category/body_weight",
                     "characteristicType": {
-                        "annotationValue": "Material Type",
+                        "annotationValue": "body weight",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/reference_descriptor",
+                    "characteristicType": {
+                        "annotationValue": "reference descriptor",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -236,25 +272,17 @@
                     }
                 },
                 {
-                    "@id": "#characteristic_category/body_weight",
-                    "characteristicType": {
-                        "annotationValue": "body weight",
-                        "termAccession": "",
-                        "termSource": ""
-                    }
-                },
-                {
-                    "@id": "#characteristic_category/reference_descriptor",
-                    "characteristicType": {
-                        "annotationValue": "reference descriptor",
-                        "termAccession": "",
-                        "termSource": ""
-                    }
-                },
-                {
                     "@id": "#characteristic_category/specimen_mass",
                     "characteristicType": {
                         "annotationValue": "specimen mass",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/Material_Type",
+                    "characteristicType": {
+                        "annotationValue": "Material Type",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -350,9 +378,18 @@
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/Material_Type"
+                                    "@id": "#characteristic_category/body_weight"
                                 },
-                                "value": "specimen"
+                                "unit": {
+                                    "@id": "#Unit/kilogram"
+                                },
+                                "value": 72
+                            },
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/reference_descriptor"
+                                },
+                                "value": "not applicable"
                             },
                             {
                                 "category": {
@@ -366,18 +403,9 @@
                             },
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/body_weight"
+                                    "@id": "#characteristic_category/Material_Type"
                                 },
-                                "unit": {
-                                    "@id": "#Unit/kilogram"
-                                },
-                                "value": 72
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/reference_descriptor"
-                                },
-                                "value": "not applicable"
+                                "value": "specimen"
                             }
                         ],
                         "name": "source-source1"
@@ -424,6 +452,15 @@
                     "parameterValues": [
                         {
                             "category": {
+                                "@id": "#parameter/storage_temperature"
+                            },
+                            "unit": {
+                                "@id": "#Unit/degree_Celsius"
+                            },
+                            "value": -20
+                        },
+                        {
+                            "category": {
                                 "@id": "#parameter/vessel"
                             },
                             "value": {
@@ -431,15 +468,6 @@
                                 "termAccession": "",
                                 "termSource": ""
                             }
-                        },
-                        {
-                            "category": {
-                                "@id": "#parameter/storage_temperature"
-                            },
-                            "unit": {
-                                "@id": "#Unit/degree_Celsius"
-                            },
-                            "value": -20
                         }
                     ],
                     "performer": ""
@@ -594,6 +622,12 @@
             "title": "TEST-Template6-charax-param-factors",
             "unitCategories": [
                 {
+                    "@id": "#Unit/kilogram",
+                    "annotationValue": "kilogram",
+                    "termAccession": "http://purl.obolibrary.org/obo/UO_0000009",
+                    "termSource": "UO"
+                },
+                {
                     "@id": "#Unit/degree_Celsius",
                     "annotationValue": "degree Celsius",
                     "termAccession": "http://purl.obolibrary.org/obo/UO_0000027",
@@ -603,12 +637,6 @@
                     "@id": "#Unit/hour",
                     "annotationValue": "hour",
                     "termAccession": "http://purl.obolibrary.org/obo/UO_0000032",
-                    "termSource": "UO"
-                },
-                {
-                    "@id": "#Unit/kilogram",
-                    "annotationValue": "kilogram",
-                    "termAccession": "http://purl.obolibrary.org/obo/UO_0000009",
                     "termSource": "UO"
                 },
                 {

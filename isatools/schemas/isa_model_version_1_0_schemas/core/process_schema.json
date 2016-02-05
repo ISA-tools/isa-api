@@ -8,6 +8,9 @@
         "name": {
             "type": "string"
         },
+        "assayProcessName": {
+            "type": "string"
+        },
         "executesProtocol": {
                 "$ref": "protocol_schema.json#"
         },
