@@ -31,6 +31,7 @@ class ISATab2ISAjson_v1:
     UNIT = "Unit"
     PARAMETER_VALUE = "Parameter Value"
     ARRAY_DESIGN_REF = "Array Design REF"
+    protocols_map = {}
 
     def __init__(self, identifier_type):
         self.identifiers = list() #list of dictionaries
@@ -180,7 +181,9 @@ class ISATab2ISAjson_v1:
                 ("parameters", self.createProtocolParameterList(protocol)),
                 ("components", self.createProtocolComponentList(protocol))
                 ])
+            self.protocols_map.update({ protocol_identifier : protocol_json})
             protocols_json.append(protocol_json)
+
         return protocols_json
 
 
@@ -346,14 +349,24 @@ class ISATab2ISAjson_v1:
 
             process_node = process_nodes[process_node_name]
 
-            if (process_node.assay_name):
-                process_identifier = self.generateIdentifier("process", process_node.assay_name)
-            else:
-                process_identifier = self.generateIdentifier("process", process_node.name)
+            process_identifier = self.generateIdentifier("process", process_node_name)
+            protocol_executed =  self.createExecuteStudyProtocol(process_node_name, process_node)
 
-            json_item = dict([
+            if (process_node.assay_name):
+                json_item = dict([
                     ("@id", process_identifier),
-                    ("executesProtocol", self.createExecuteStudyProtocol(process_node_name, process_node)),
+                    ("assayProcessName", process_node.assay_name),
+                    ("executesProtocol", protocol_executed),
+                    ("performer", process_node.performer),
+                    ("date", process_node.date),
+                    ("parameterValues", self.createValueList(self.PARAMETER_VALUE, process_node_name, process_node)),
+                    ("inputs", self.createInputList(process_node.inputs, source_dict, sample_dict, material_dict, data_dict)),
+                    ("outputs", self.createOutputList(process_node.outputs, sample_dict, material_dict, data_dict) )
+                ])
+            else:
+                json_item = dict([
+                    ("@id", process_identifier),
+                    ("executesProtocol", protocol_executed),
                     ("performer", process_node.performer),
                     ("date", process_node.date),
                     ("parameterValues", self.createValueList(self.PARAMETER_VALUE, process_node_name, process_node)),

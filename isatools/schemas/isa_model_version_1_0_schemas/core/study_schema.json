@@ -43,6 +43,12 @@
     "materials": {
       "type": "object",
       "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "source_schema.json#"
+          }
+        },
         "samples": {
           "type": "array",
           "items": {
