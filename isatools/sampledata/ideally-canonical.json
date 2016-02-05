@@ -4,12 +4,8 @@
     "description":"",
     "submissionDate":"",
     "publicReleaseDate":"",
-    "publications":[  
-
-    ],
-    "people":[  
-
-    ],
+    "publications":[],
+    "people":[],
     "comments":[  
         {  
             "name":"Created With Configuration",
@@ -54,6 +50,7 @@
     ],
     "studies":[  
         {  
+            "@id": "#study/TEST-Template5-repeatedmeasure",
             "identifier":"TEST-Template5-repeatedmeasure",
             "title":"TEST-Template5-repeatedmeasure",
             "description":"TEST-Template5-repeatedmeasure: more complex example, with 2 subjects, undergoing 4 distinct interventions, the order in which those are applied differs between the 2 subjects. interventions are identified as distinct protocols, whose application is identified by a date. intervention protocols are followed by a sample collection event, yielding from each subject 1 sample for the first 3 interventions and then 2 samples after the last intervention. Note: for repeated measure/longitudinal use cases, it is necessary for users to rely on 'Date' field associated to Protocol to allow for ordering along timeline. failing to do so prevents from distinguishing the information from a regular splitting. conversely, in ISA1.0, there can be cases where distinguishing a repeated measure design from other situation can be tricky.",
@@ -65,7 +62,7 @@
                     "doi":"",
                     "pubMedID":"1435624",
                     "status":{  
-                        "name":"Published",
+                        "annotationValue":"Published",
                         "termAccession":"",
                         "termSource":""
                     },
@@ -74,16 +71,17 @@
             ],
             "studyDesignDescriptors":[  
                 {  
-                    "name":"repeated measure design",
+                    "annotationValue":"repeated measure design",
                     "termAccession":"http://purl.obolibrary.org/obo/OBI_0500002",
                     "termSource":"OBI"
                 }
             ],
             "factors":[  
                 {  
+                    "@id": "#factor/location",
                     "factorName":"location",
                     "factorType":{  
-                        "name":"geographical location",
+                        "annotationValue":"geographical location",
                         "termAccession":"",
                         "termSource":""
                     }
@@ -91,9 +89,10 @@
             ],
             "protocols":[  
                 {  
+                    "@id": "#protocol/sample_collection",
                     "name":"sample collection",
                     "protocolType":{  
-                        "name":"sample collection",
+                        "annotationValue":"sample collection",
                         "termAccession":"",
                         "termSource":""
                     },
@@ -102,8 +101,9 @@
                     "version":"1.0",
                     "parameters":[  
                         {  
+                            "@id": "#parameter/storage_container",
                             "parameterName":{  
-                                "name":"storage container",
+                                "annotationValue":"storage container",
                                 "termAccession":"",
                                 "termSource":""
                             }
@@ -111,9 +111,10 @@
                     ],
                     "components":[  
                         {  
+                             "@id": "#component/barcode_reader",
                             "componentName":"barcode reader",
                             "componentType":{  
-                                "name":"device",
+                                "annotationValue":"device",
                                 "termAccession":"",
                                 "termSource":""
                             }
@@ -121,9 +122,10 @@
                     ]
                 },
                 {  
+                    "@id": "#protocol/nucleic_acid_extraction",
                     "name":"nucleic acid extraction",
                     "protocolType":{  
-                        "name":"nucleic acid extraction",
+                        "annotationValue":"nucleic acid extraction",
                         "termAccession":"",
                         "termSource":""
                     },
@@ -132,9 +134,10 @@
                     "version":"2.0"
                 },
                 {  
+                     "@id": "#protocol/library_construction",
                     "name":"library construction",
                     "protocolType":{  
-                        "name":"library construction",
+                        "annotationValue":"library construction",
                         "termAccession":"",
                         "termSource":""
                     },
@@ -143,28 +146,33 @@
                     "version":"2.0",
                     "parameters":[  
                         {  
-                            "parameterName":{  
-                                "name":"library strategy",
+                          "@id": "#parameter/library_strategy",
+                           "parameterName":{  
+                                "annotationValue":"library strategy",
                                 "termAccession":"",
                                 "termSource":""
                             }
                         },
                         {
+                            "@id": "#parameter/library_selection",
                             "parameterName":{  
-                                "name":"library selection",
+                                "annotationValue":"library selection",
                                 "termAccession":"",
                                 "termSource":""
                             }
                         },    
                         { 
+                         "@id": "#parameter/library_layout",
                          "parameterName":{  
-                                "name":"library layout",
+                                "annotationValue":"library layout",
                                 "termAccession":"",
                                 "termSource":""
                             }
                         },
-                        {    "parameterName":{  
-                                "name":"mid",
+                        {    
+                         "@id": "#parameter/mid",
+                        "parameterName":{  
+                                "annotationValue":"mid",
                                 "termAccession":"",
                                 "termSource":""
                             }
@@ -172,9 +180,10 @@
                     ]
                 },                 
                 {  
+                    "@id": "#protocol/nucleic_acid_sequencing",
                     "name":"nucleic acid sequencing",
                     "protocolType":{  
-                        "name":"data acquisition",
+                        "annotationValue":"data acquisition",
                         "termAccession":"",
                         "termSource":""
                     },
@@ -183,22 +192,25 @@
                     "version":"2.0",
                     "parameters":[  
                         {  
+                            "@id": "#parameter/sequencing_instrument",
                             "parameterName":{  
-                                "name":"sequencing instrument",
+                                "annotationValue":"sequencing instrument",
                                 "termAccession":"",
                                 "termSource":""
                             }
                          },   
                         {
+                            "@id": "#parameter/base_caller",
                             "parameterName":{  
-                                "name":"base caller",
+                                "annotationValue":"base caller",
                                 "termAccession":"",
                                 "termSource":""
                             }
                         },
                         {
+                           "@id": "#parameter/quality_scorer",
                            "parameterName":{  
-                                "name":"quality scorer",
+                                "annotationValue":"quality scorer",
                                 "termAccession":"",
                                 "termSource":""
                             }
@@ -206,9 +218,10 @@
                     ]
                 },
                 {  
+                    "@id": "#protocol/sequence_analysis_data_transformation",
                     "name":"sequence analysis data transformation",
                     "protocolType":{  
-                        "name":"sequence analysis data transformation",
+                        "annotationValue":"sequence analysis data transformation",
                         "termAccession":"",
                         "termSource":""
                     },
@@ -219,6 +232,7 @@
             ],
             "people":[  
                 {  
+                    "@id": "#person/john_smith",
                     "firstName":"John",
                     "lastName":"Smith",
                     "midInitials":"F",
@@ -229,7 +243,7 @@
                     "phone":"+44 (0) 1865 645 234",
                     "roles":[  
                         {  
-                            "name":"principale investigator",
+                            "annotationValue":"principal investigator",
                             "termAccession":"",
                             "termSource":""
                         }
@@ -237,33 +251,79 @@
                 }
             ],
             "filename":"s_ideally_canonical.txt",
-            "sources":[  
-                {  
-                    "name":"source1",
+
+            "materials":{
+                "otherMaterials": [
+                {
+                   "@id": "#extract/extract1",
+                   "name":"extract1",
+                   "type":"Extract Name",
                     "characteristics":[  
                         {
-                            "category": "Intervention time",
+                            "category": {
+                                    "@id": "#characteristic_category/material_type"
+                                },
+                            "value":{  
+                                "annotationValue":"genomic DNA",
+                                "termAccession":"",
+                                "termSource":""
+                            }
+                        },
+                        {
+                            "category": {
+                                    "@id": "#characteristic_category/concentration"
+                                },
+                            "value":  "74.5",
+                            "unit":{
+                                "annotationValue":"microgram per liter",
+                                "termAccession":"http://purl.obolibrary.org/obo/UO_000001",
+                                "termSource":"UO"
+                            }
+                        }
+                        
+                    ],
+                    "derivesFrom":[  
+                    {
+                                "@id": "#sample/sample1"
+                            }
+                       
+                    ]
+                }
+            ],
+                 "sources":[  
+                {  
+                    "@id": "#source/source1",
+                    "name":"source1",
+                    "characteristics":[  
+                         {
+                                "category": {
+                                    "@id": "#characteristic_category/organism"
+                                },
+                                "value": {
+                                    "annotationValue": "water metagenome",
+                                    "termAccession": "http://purl.obolibrary.org/obo/NCBITax001242",
+                                    "termSource": "NCBITax"
+                                }
+                            },                    
+                        {
+                            "category": {
+                                    "@id": "#characteristic_category/intervention_time"
+                                },
                             "value": 4,
                             "unit":{  
-                                "name":"year",
+                                "annotationValue":"year",
                                 "termAccession":"http://purl.obolibrary.org/obo/UO_000124",
                                 "termSource":"UO"
                             }
                         },
-                        {
-                            "category": "organism",
-                            "value":{  
-                                "name":"water metagenome",
-                                "termAccession":"http://purl.obolibrary.org/obo/NCBITax001242",
-                                "termSource":"NCBITax"
-                            }
-                        }
                     ],
                     "factorValues":[  
-{
-                            "category": "geographical location",
+                            {
+                            "category":{
+                                    "@id": "#characteristic_category/geographical_location"
+                                },
                             "value":{  
-                                "name":"Bergen",
+                                "annotationValue":"Bergen",
                                 "termAccession":"",
                                 "termSource":""
                             }
@@ -273,88 +333,54 @@
             ],
             "samples":[  
                 {  
+                    "@id": "#sample/sample1",
                     "name":"sample1",
                     "characteristics":[  
                         {
-                            "category": "Material Type",
+                            "category": {
+                                    "@id": "#characteristic_category/material_type"
+                                },
                             "value":{  
-                                "name":"sea water",
+                                "annotationValue":"sea water",
                                 "termAccession":"",
                                 "termSource":""
                             }
                         }
                     ],
                     "derivesFrom":[  
-                        "source1"
+                        {
+                                "@id": "#source/source1"
+                            }
                     ],
                     "factorValues":[  
 
                     ]
                 }
-            ],
-            "materials":[
-                {
-                   "name":"extract1",
-                   "type":"Extract Name",
-                    "characteristics":[  
-                        {
-                            "category": "material type",
-                            "value":{  
-                                "name":"genomic DNA",
-                                "termAccession":"",
-                                "termSource":""
-                            }
-                        },
-                        {
-                            "category": "concentration",
-                            "value":  "74.5",
-                            "unit":{
-                                "name":"microgram per liter",
-                                "termAccession":"http://purl.obolibrary.org/obo/UO_000001",
-                                "termSource":"UO"
-                            }
-                        }
-                        
-                    ],
-                    "derivesFrom":[  
-                        "sample1"
-                    ]
-                }
-            ],
-            "data":[  
-                {  
-                    "name":"my_favourite_raw_data_file.fastq.gz",
-                    "type":"raw data file",
-                    "process_node":"Assay Name"
-                },
-                {  
-                    "name":"my_prefered_derived_data_file.txt",
-                    "type":"derived data file",
-                    "process_node":"Normalization Name"
-                }
-            ],
+            ]
+            },
             "processSequence":[  
                 {  
+                    "@id":"#process/sample_collection1",
                     "executesProtocol":{  
-                        "name":"sample collection"
+                        "@id":"#protocol/sample_collection"
                     },
                     "date":"YYYY-MM-DD+Thh:mm:ss",
                     "performer":"john smith",
                     "inputs":[  
                         {  
-                            "name":"source1"
+                            "@id":"#source/source1"
                         }
                     ],
                     "outputs":[  
                         {  
-                            "name":"sample1"
+                            "@id":"#sample/sample1"
                         }
                     ],
                     "parameters":[  
                         {  
-                            "name":"storage vessel",
+                            "@id":"#parameter/storage_vessel",
                             "parameterValue":{  
-                                "name":"heparinated tube",
+                                "annotationValue":"heparinated tube",
                                 "termAccession":"http://purl.obolibrary.org/obo/OBI_XYZ",
                                 "termSource":"OBI"
                             }
@@ -362,68 +388,128 @@
                     ]
                 }
             ],
+            
+            "characteristicCategories": [
+                {
+                    "@id": "#characteristic_category/organism",
+                    "characteristicType": {
+                        "annotationValue": "organism",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/material_type",
+                    "characteristicType": {
+                        "annotationValue": "Material Type",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/concentration",
+                    "characteristicType": {
+                        "annotationValue": "concentration",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/intervention_time",
+                    "characteristicType": {
+                        "annotationValue": "intervention time",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/geographical_location",
+                    "characteristicType": {
+                        "annotationValue": "geographic location",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                }
+            ],            
+            
             "assays":[  
                 {  
-                    "fileName":"a_ideally_canonical-Gx.txt",
+                    "@id":"a_ideally_canonical-Gx.txt",
+                    "characteristicCategories": [],
+                    "dataFiles": [
+                         {  
+                             "@id": "#data/my_favourite_raw_data_file.fastq.gz",
+                             "name":"my_favourite_raw_data_file.fastq.gz",
+                             "type":"raw data file"
+                          },
+                        {  
+                             "@id": "#data/my_favourite_raw_data_file.fastq.gz",
+                            "name":"my_prefered_derived_data_file.txt",
+                            "type":"derived data file"
+                        }
+            ],
+
                     "measurementType":{  
-                        "name":"metagenome sequencing",
+                        "annotationValue":"metagenome sequencing",
                         "termAccession":"",
                         "termSource":"OBI"
                     },
                     "technologyType":{  
-                        "name":"nucleotide sequencing",
+                        "annotationValue":"nucleotide sequencing",
                         "termAccession":"",
                         "termSource":"OBI"
                     },
                     "technologyPlatform":"454 Genome Sequencer FLX",
                     "processSequence":[  
                         {  
+                            "@id": "#process/nucleic_acid_extraction1",
                             "executesProtocol":{  
-                                "name":"nucleic acid extraction"
+                                "@id":"#protocol/nucleic acid extraction"
                             },
                             "date":"2016-01-15+T15:30:45",
                             "performer":"john smith",
                             "inputs":[  
                                 {  
-                                    "name":"sample1"
+                                    "@id":"#sample/sample1"
                                 }
                             ]
                         },
                         {  
+                            "@id": "#process/library_construction_1",
                             "executesProtocol":{  
-                                "name":"library construction"
+                                "@id":"#protocol/library_construction"
                             },
                             "date":"2016-01-16+T15:30:45",
                             "performer":"john smith",
                             "parameters":[ 
                                {  
-                                     "name":"library selection",
+                                     "@id":"#parameter/library_selection",
                                      "parameterValue":{  
-                                         "name":"PCR",
+                                         "annotationValue":"PCR",
                                          "termAccession":"",
                                          "termSource":""
                                      }
                                  },
                                 {  
-                                    "name":"library layout",
+                                    "@id":"#parameter/library_layout",
                                     "parameterValue":{  
-                                        "name":"SINGLE",
+                                        "annotationValue":"SINGLE",
                                         "termAccession":"",
                                         "termSource":""
                                     }
                                 },
                                 {  
-                                    "name":"library strategy",
+                                    "@id":"#parameter/library_strategy",
                                     "parameterValue":{  
-                                        "name":"AMPLICON",
+                                        "annotationValue":"AMPLICON",
                                         "termAccession":"",
                                         "termSource":""
                                     }
                                 },
                                  {  
-                                    "name":"mid",
+                                    "@id":"#parameter/mid",
                                     "parameterValue":{  
-                                        "name":"ATTGCC",
+                                        "annotationValue":"ATTGCC",
                                         "termAccession":"",
                                         "termSource":""
                                     }
@@ -431,37 +517,38 @@
                             ]
                         },                        
                         {  
+                             "@id": "#process/nucleic_acid_sequencing_1",
                             "executesProtocol":{  
-                                "name":"nucleic acid sequencing"
+                                "@id":"#protocol/nucleic_acid_sequencing"
                             },
                             "date":"2016-01-17+T15:30:45",
                             "performer":"john smith",
                             "outputs":[  
                                 {  
-                                    "name":"my_favourite_raw_data_file.fastq.gz"
+                                    "@id":"#data/my_favourite_raw_data_file.fastq.gz"
                                 }
                             ],
                             "parameters":[  
                             {  
-                                     "name":"sequencing instrument",
+                                     "@id":"#parameter/sequencing_instrument",
                                      "parameterValue":{  
-                                         "name":"Illumina Genome Analyzer II",
+                                         "annotationValue":"Illumina Genome Analyzer II",
                                          "termAccession":"",
                                          "termSource":""
                                      }
                                  },
                                 {  
-                                    "name":"base caller",
+                                    "@id":"#parameter/base_caller",
                                     "parameterValue":{  
-                                        "name":"Illumina-caller",
+                                        "annotationValue":"Illumina-caller",
                                         "termAccession":"",
                                         "termSource":""
                                     }
                                 },
                                 {  
-                                    "name":"quality scorer",
+                                    "@id":"#parameter/quality_scorer",
                                     "parameterValue":{  
-                                        "name":"illumina-scorer",
+                                        "annotationValue":"illumina-scorer",
                                         "termAccession":"",
                                         "termSource":""
                                     }
@@ -469,29 +556,28 @@
                             ]
                         },
                         {  
+                            "@id":"#process/nucleic_acid_sequencing",
                             "executesProtocol":{  
-                                "name":"data transformation"
+                                "@id":"#protocol/data_transformation"
                             },
                             "date":"2016-01-18+T17:30:45",
                             "performer":"john smith",                            
                             "inputs":[  
                                 {  
-                                    "filename":"my_favourite_raw_data_file.fastq.gz",
-                                    "nodename" : ""
+                                    "@id":"#data/my_favourite_raw_data_file.fastq.gz"
                               
                                 }
                             ],
                             "outputs":[  
                                 {  
-                                    "filename":"my_prefered_derived_data_file.txt",
-                                     "nodename" : ""
+                                    "@id":"#data/my_prefered_derived_data_file.txt"
                                 }
                             ],
                             "parameters":[  
                             {  
-                                    "name":"error rate cut-off",
+                                    "@id":"#parameter/error_rate_cut-off",
                                     "parameterValue":{  
-                                        "name":"5 % error rate",
+                                        "annotationValue":"5 % error rate",
                                         "termAccession":"http://purl.obolibrary.org/obo/STATO_00000100",
                                         "termSource":"STATO"
                                     }
