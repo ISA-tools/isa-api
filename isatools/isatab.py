@@ -648,7 +648,7 @@ def dump(isa_obj, output_path):
                 for parameter in protocol.parameters:
                     parameters_names += parameter.parameter_name.name + ';'
                     parameters_accession_numbers += parameter.parameter_name.term_accession + ';'
-                    parameters_source_refs += parameter.parameter_name.term_source + ';'
+                    parameters_source_refs += parameter.parameter_name.term_source.name + ';'
                 component_names = ''
                 component_types = ''
                 component_types_accession_numbers = ''
@@ -762,7 +762,7 @@ def dump(isa_obj, output_path):
                                         study_col_headers.extend(('Term Source REF', 'Term Accession'))
                                     if not (characteristic.unit is None):
                                         study_col_headers.extend(('Unit', 'Term Source REF', 'Term Accession'))
-                            if isinstance(node, ProcessingEvent):
+                            elif isinstance(node, ProcessingEvent):
                                 study_col_headers.append('Protocol REF')
                                 if node.date is not None:
                                     study_col_headers.append('Date')
@@ -778,7 +778,7 @@ def dump(isa_obj, output_path):
                             #         if not (parameter_value.unit is None):
                             #             study_col_headers.append('Unit')
                             #         study_col_headers.extend(('Term Source REF', 'Term Accession', ))
-                            if isinstance(node, Sample):
+                            elif isinstance(node, Sample):
                                 study_col_headers.append('Sample Name')
                                 for characteristic in node.characteristics:
                                     study_col_headers.append('Characteristics[' +
@@ -792,6 +792,8 @@ def dump(isa_obj, output_path):
                                     if not (factor_value.unit is None):
                                         study_col_headers.append('Unit')
                                     study_col_headers.extend(('Term Source REF', 'Term Accession'))
+                            else:
+                                raise IOError("Unexpected node: " + str(node))
             if os.path.exists(output_path):
                 study_fp = open(os.path.join(output_path, study.filename), 'w')
                 import csv
@@ -987,7 +989,6 @@ def dump(isa_obj, output_path):
                                 assay_file_writer.writerow(assay_line_out)
                     assay_fp.close()
         fp.close()
-
     else:
         raise NotImplementedError("Dumping this ISA object to ISA Tab is not yet supported")
     return investigation

@@ -7,8 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 def load(fp):
-    # ontologySourceReference_REFs = dict()  # For term source REF pointers
-    # file_REFs = dict()  # For fileName REF pointers
     investigation = None
     logger.info('Opening file %s', fp)
     isajson = json.load(fp)
@@ -24,6 +22,7 @@ def load(fp):
             public_release_date=isajson['publicReleaseDate']
         )
         logger.debug('Populate the ontology source references')
+        term_source_dict = {'': None}
         for ontologySourceReference_json in isajson['ontologySourceReferences']:
             logger.debug('Build Ontology Source Reference object')
             ontology_source_reference = OntologySourceReference(
@@ -32,6 +31,7 @@ def load(fp):
                 version=ontologySourceReference_json['version'],
                 description=ontologySourceReference_json['description']
             )
+            term_source_dict[ontology_source_reference.name] = ontology_source_reference
             investigation.ontology_source_references.append(ontology_source_reference)
         for publication_json in isajson['publications']:
             logger.debug('Build Investigation Publication object')
@@ -78,7 +78,7 @@ def load(fp):
                         id_=assay_characteristics_category_json['@id'],
                         characteristic_type=OntologyAnnotation(
                             name=assay_characteristics_category_json['characteristicType']['annotationValue'],
-                            term_source=assay_characteristics_category_json['characteristicType']['termSource'],
+                            term_source=term_source_dict[assay_characteristics_category_json['characteristicType']['termSource']],
                             term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
                         )
                     )
@@ -100,7 +100,7 @@ def load(fp):
                     id_=study_characteristics_category_json['@id'],
                     characteristic_type=OntologyAnnotation(
                         name=study_characteristics_category_json['characteristicType']['annotationValue'],
-                        term_source=study_characteristics_category_json['characteristicType']['termSource'],
+                        term_source=term_source_dict[study_characteristics_category_json['characteristicType']['termSource']],
                         term_accession=study_characteristics_category_json['characteristicType']['termAccession'],
                     )
                 )
@@ -109,7 +109,7 @@ def load(fp):
             for study_unit_json in study_json['unitCategories']:
                 unit = OntologyAnnotation(id_=study_unit_json['@id'],
                                           name=study_unit_json['annotationValue'],
-                                          term_source=study_unit_json['termSource'],
+                                          term_source=term_source_dict[study_unit_json['termSource']],
                                           term_accession=study_unit_json['termAccession'])
                 units_dict[unit.id] = unit
             for study_publication_json in study_json['publications']:
@@ -121,6 +121,7 @@ def load(fp):
                     title=study_publication_json['title'],
                     status=OntologyAnnotation(
                         name=study_publication_json['status']['annotationValue'],
+                        term_source=term_source_dict[study_publication_json['status']['termSource']],
                         term_accession=study_publication_json['status']['termAccession'],
                     )
                 )
@@ -142,7 +143,7 @@ def load(fp):
                 design_descriptor = OntologyAnnotation(
                     name=design_descriptor_json['annotationValue'],
                     term_accession=design_descriptor_json['termAccession'],
-                    term_source=design_descriptor_json['termSource']
+                    term_source=term_source_dict[design_descriptor_json['termSource']]
                 )
                 study.design_descriptors.append(design_descriptor)
             for protocol_json in study_json['protocols']:
@@ -153,7 +154,7 @@ def load(fp):
                     protocol_type=OntologyAnnotation(
                         name=protocol_json['protocolType']['annotationValue'],
                         term_accession=protocol_json['protocolType']['termAccession'],
-                        term_source=protocol_json['protocolType']['termSource']
+                        term_source=term_source_dict[protocol_json['protocolType']['termSource']]
                     )
                 )
                 for parameter_json in protocol_json['parameters']:
@@ -161,7 +162,7 @@ def load(fp):
                         id_=parameter_json['@id'],
                         parameter_name=OntologyAnnotation(
                             name=parameter_json['parameterName']['annotationValue'],
-                            term_source=parameter_json['parameterName']['termSource'],
+                            term_source=term_source_dict[parameter_json['parameterName']['termSource']],
                             term_accession=parameter_json['parameterName']['termAccession']
                         )
                     )
@@ -178,7 +179,7 @@ def load(fp):
                     factor_type=OntologyAnnotation(
                         name=factor_json['factorType']['annotationValue'],
                         term_accession=factor_json['factorType']['termAccession'],
-                        term_source=factor_json['factorType']['termSource']
+                        term_source=term_source_dict[factor_json['factorType']['termSource']]
                     )
                 )
                 study.factors.append(factor)
@@ -199,7 +200,7 @@ def load(fp):
                         try:
                             value = OntologyAnnotation(
                                 name=characteristic_json['value']['annotationValue'],
-                                term_source=characteristic_json['value']['termSource'],
+                                term_source=term_source_dict[characteristic_json['value']['termSource']],
                                 term_accession=characteristic_json['value']['termAccession'])
                         except KeyError:
                             raise IOError("Can't create value as annotation")
@@ -232,7 +233,7 @@ def load(fp):
                         try:
                             value = OntologyAnnotation(
                                 name=characteristic_json['value']['annotationValue'],
-                                term_source=characteristic_json['value']['termSource'],
+                                term_source=term_source_dict[characteristic_json['value']['termSource']],
                                 term_accession=characteristic_json['value']['termAccession'])
                         except KeyError:
                             raise IOError("Can't create value as annotation")
@@ -254,7 +255,7 @@ def load(fp):
                             value=OntologyAnnotation(
                                 name=factor_value_json['value']['annotationValue'],
                                 term_accession=factor_value_json['value']['termAccession'],
-                                term_source=factor_value_json['value']['termSource'],
+                                term_source=term_source_dict[factor_value_json['value']['termSource']],
                             ),
 
                         )
@@ -293,7 +294,7 @@ def load(fp):
                             value=OntologyAnnotation(
                                 name=parameter_value_json['value']['annotationValue'],
                                 term_accession=parameter_value_json['value']['termAccession'],
-                                term_source=parameter_value_json['value']['termSource'],
+                                term_source=term_source_dict[parameter_value_json['value']['termSource']],
                             )
                         )
                     process.parameter_values.append(parameter_value)
@@ -346,12 +347,12 @@ def load(fp):
                     measurement_type=OntologyAnnotation(
                         name=assay_json['measurementType']['annotationValue'],
                         term_accession=assay_json['measurementType']['termAccession'],
-                        term_source=assay_json['measurementType']['termSource']
+                        term_source=term_source_dict[assay_json['measurementType']['termSource']]
                     ),
                     technology_type=OntologyAnnotation(
                         name=assay_json['technologyType']['annotationValue'],
                         term_accession=assay_json['technologyType']['termAccession'],
-                        term_source=assay_json['technologyType']['termSource']
+                        term_source=term_source_dict[assay_json['technologyType']['termSource']]
                     ),
                     technology_platform=assay_json['technologyPlatform'],
                     filename=assay_json['filename']
@@ -374,7 +375,7 @@ def load(fp):
                         id_=assay_characteristics_category_json['@id'],
                         characteristic_type=OntologyAnnotation(
                             name=assay_characteristics_category_json['characteristicType']['annotationValue'],
-                            term_source=assay_characteristics_category_json['characteristicType']['termSource'],
+                            term_source=term_source_dict[assay_characteristics_category_json['characteristicType']['termSource']],
                             term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
                         )
                     )
@@ -394,7 +395,7 @@ def load(fp):
                             category=categories_dict[characteristic_json['category']['@id']],
                             value=OntologyAnnotation(
                                 name=characteristic_json['value']['annotationValue'],
-                                term_source=characteristic_json['value']['termSource'],
+                                term_source=term_source_dict[characteristic_json['value']['termSource']],
                                 term_accession=characteristic_json['value']['termAccession'],
                             )
                         )
@@ -464,11 +465,23 @@ def load(fp):
                                 value=OntologyAnnotation(
                                     name=parameter_value_json['value']['annotationValue'],
                                     term_accession=parameter_value_json['value']['termAccession'],
-                                    term_source=parameter_value_json['value']['termSource'],
+                                    term_source=term_source_dict[parameter_value_json['value']['termSource']],
                                 )
                             )
                         process.parameter_values.append(parameter_value)
                     assay.process_sequence.append(process)
+                    import networkx as nx
+                    graph = nx.DiGraph()
+                    prev_process_node = None
+                    for process in assay.process_sequence:
+                        if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
+                            graph.add_edge(prev_process_node, process)
+                        for input_ in process.inputs:
+                            graph.add_edge(input_, process)
+                        for output in process.outputs:
+                            graph.add_edge(process, output)
+                        prev_process_node = process
+                    assay.graph = graph
                 study.assays.append(assay)
             logger.debug('End building Study object')
             investigation.studies.append(study)
