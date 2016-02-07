@@ -373,7 +373,7 @@ class ISATab2ISAjson_v1:
             if (process_node.assay_name):
                 json_item = dict([
                     ("@id", process_identifier),
-                    ("assayProcessName", process_node.assay_name),
+                    ("name", process_node.assay_name),
                     ("executesProtocol", protocol_executed),
                     ("performer", process_node.performer),
                     ("date", process_node.date),
