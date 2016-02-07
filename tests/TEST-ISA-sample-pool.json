@@ -58,14 +58,14 @@
                     ],
                     "dataFiles": [
                         {
-                            "@id": "#data/rawdatafile-1.cel",
-                            "name": "1.cel",
-                            "type": "Raw Data File"
-                        },
-                        {
                             "@id": "#data/imagefile-1.dat",
                             "name": "1.dat",
                             "type": "Image File"
+                        },
+                        {
+                            "@id": "#data/rawdatafile-1.cel",
+                            "name": "1.cel",
+                            "type": "Raw Data File"
                         }
                     ],
                     "filename": "a_test-template3-splitting_transcription_profiling_DNA_microarray.txt",
@@ -108,6 +108,25 @@
                     },
                     "processSequence": [
                         {
+                            "@id": "#process/hyb1.scan1",
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/data_collection"
+                            },
+                            "inputs": [],
+                            "name": "hyb1.scan1",
+                            "outputs": [
+                                {
+                                    "@id": "#data/imagefile-1.dat"
+                                },
+                                {
+                                    "@id": "#data/rawdatafile-1.cel"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": ""
+                        },
+                        {
                             "@id": "#process/labeling1",
                             "date": "",
                             "executesProtocol": {
@@ -121,25 +140,6 @@
                             "outputs": [
                                 {
                                     "@id": "#material/labeledextract-extract1.le1"
-                                }
-                            ],
-                            "parameterValues": [],
-                            "performer": ""
-                        },
-                        {
-                            "@id": "#process/data_collection1",
-                            "assayProcessName": "hyb1.scan1",
-                            "date": "",
-                            "executesProtocol": {
-                                "@id": "#protocol/data_collection"
-                            },
-                            "inputs": [],
-                            "outputs": [
-                                {
-                                    "@id": "#data/rawdatafile-1.cel"
-                                },
-                                {
-                                    "@id": "#data/imagefile-1.dat"
                                 }
                             ],
                             "parameterValues": [],
@@ -165,8 +165,7 @@
                             "performer": ""
                         },
                         {
-                            "@id": "#process/nucleic_acid_hybridization1",
-                            "assayProcessName": "hyb1",
+                            "@id": "#process/hyb1",
                             "date": "",
                             "executesProtocol": {
                                 "@id": "#protocol/nucleic_acid_hybridization"
@@ -176,6 +175,7 @@
                                     "@id": "#material/labeledextract-extract1.le1"
                                 }
                             ],
+                            "name": "hyb1",
                             "outputs": [],
                             "parameterValues": [
                                 {
@@ -199,14 +199,6 @@
             ],
             "characteristicCategories": [
                 {
-                    "@id": "#characteristic_category/Material_Type",
-                    "characteristicType": {
-                        "annotationValue": "Material Type",
-                        "termAccession": "",
-                        "termSource": ""
-                    }
-                },
-                {
                     "@id": "#characteristic_category/reference_descriptor",
                     "characteristicType": {
                         "annotationValue": "reference descriptor",
@@ -215,9 +207,9 @@
                     }
                 },
                 {
-                    "@id": "#characteristic_category/organism",
+                    "@id": "#characteristic_category/Material_Type",
                     "characteristicType": {
-                        "annotationValue": "organism",
+                        "annotationValue": "Material Type",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -226,6 +218,14 @@
                     "@id": "#characteristic_category/organism_part",
                     "characteristicType": {
                         "annotationValue": "organism part",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/organism",
+                    "characteristicType": {
+                        "annotationValue": "organism",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -282,8 +282,14 @@
                 ],
                 "sources": [
                     {
-                        "@id": "#source/source-source1",
+                        "@id": "#source/source-source4",
                         "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/reference_descriptor"
+                                },
+                                "value": "not applicable"
+                            },
                             {
                                 "category": {
                                     "@id": "#characteristic_category/Material_Type"
@@ -292,9 +298,31 @@
                             },
                             {
                                 "category": {
+                                    "@id": "#characteristic_category/organism"
+                                },
+                                "value": {
+                                    "annotationValue": "Human",
+                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
+                                    "termSource": "NCBITAXON"
+                                }
+                            }
+                        ],
+                        "name": "source-source4"
+                    },
+                    {
+                        "@id": "#source/source-source1",
+                        "characteristics": [
+                            {
+                                "category": {
                                     "@id": "#characteristic_category/reference_descriptor"
                                 },
                                 "value": "not applicable"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/Material_Type"
+                                },
+                                "value": "specimen"
                             },
                             {
                                 "category": {
@@ -314,15 +342,15 @@
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/Material_Type"
-                                },
-                                "value": "specimen"
-                            },
-                            {
-                                "category": {
                                     "@id": "#characteristic_category/reference_descriptor"
                                 },
                                 "value": "not applicable"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/Material_Type"
+                                },
+                                "value": "specimen"
                             },
                             {
                                 "category": {
@@ -338,47 +366,19 @@
                         "name": "source-source3"
                     },
                     {
-                        "@id": "#source/source-source4",
-                        "characteristics": [
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/Material_Type"
-                                },
-                                "value": "specimen"
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/reference_descriptor"
-                                },
-                                "value": "not applicable"
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/organism"
-                                },
-                                "value": {
-                                    "annotationValue": "Human",
-                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
-                                    "termSource": "NCBITAXON"
-                                }
-                            }
-                        ],
-                        "name": "source-source4"
-                    },
-                    {
                         "@id": "#source/source-source2",
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/Material_Type"
-                                },
-                                "value": "specimen"
-                            },
-                            {
-                                "category": {
                                     "@id": "#characteristic_category/reference_descriptor"
                                 },
                                 "value": "not applicable"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/Material_Type"
+                                },
+                                "value": "specimen"
                             },
                             {
                                 "category": {
