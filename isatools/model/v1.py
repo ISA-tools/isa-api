@@ -701,7 +701,6 @@ class CharacteristicCategory(IsaObject):
 
 
 def batch_create_materials(material=None, n=1):
-
     """Creates a batch of material objects (Source, Sample or Material) from a prototype material object
 
     :param material: existing material object to use as a prototype
@@ -715,6 +714,9 @@ def batch_create_materials(material=None, n=1):
         source = Source(name='source_material')
         prototype_sample = Sample(name='sample_material', derived_from=source)
         batch = batch_create_materials(sample, n=10)
+
+        [Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, ]
+
     """
     material_list = list()
     if isinstance(material, Source) or isinstance(material, Sample) or isinstance(material, Material):
@@ -726,10 +728,53 @@ def batch_create_materials(material=None, n=1):
     return material_list
 
 
-def batch_create_assays(materials=list()):
-    process_sequence = list()
-    return process_sequence
+def batch_create_assays(*args, n=1):
+    """Creates a batch of assay process sequences (Material->Process->Material) from a prototype sequence
+    (currently works only as flat end-to-end processes of Material->Process->Material->...)
 
+    :param *args: An argument list representing the process sequence prototype
+    :param n: Number of process sequences to create in the batch
+    :returns: List of process sequences replicating the prototype sequence
+
+    :Example:
+
+        # Create 10 assays of Sample -> Process -> Material
+
+        sample = Sample(name='sample')
+        data_acquisition = Process(name='data acquisition')
+        material = Material(name='material')
+        labeling = Process(name='labeling')
+        extract = LabeledExtract(name='lextract')
+        batch = batch_create_assays(sample, data_acquisition, material, labeling, extract, n=3)
+
+        [Process<> Process<>, Process<> Process<>, Process<>, Process<>]
+    """
+    process_sequence = list()
+    materialA = None
+    process = None
+    materialB = None
+    from copy import deepcopy
+    for x in range(0, n):
+        for arg in args:
+            if isinstance(arg, Sample) or isinstance(arg, Material):
+                if materialA is None:
+                    materialA = deepcopy(arg)
+                    materialA.name = materialA.name + '-' + str(x)
+                else:
+                    materialB = deepcopy(arg)
+                    materialB.name = materialB.name + '-' + str(x)
+            elif isinstance(arg, Process):
+                process = deepcopy(arg)
+                process.name = process.name + '-' + str(x)
+            if materialA is not None and materialB is not None and process is not None:
+                process.inputs.append(materialA)
+                process.outputs.append(materialB)
+                materialB.derives_from = materialA
+                process_sequence.append(process)
+                materialA = materialB
+                process = None
+                materialB = None
+    return process_sequence
 
 
 class ParameterValue(FieldConfigurableObject):
