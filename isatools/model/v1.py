@@ -712,8 +712,8 @@ def batch_create_materials(material=None, n=1):
         # Create 10 sample materials derived from one source material
 
         source = Source(name='source_material')
-        prototype_sample = Sample(name='sample_material', derived_from=source)
-        batch = batch_create_materials(sample, n=10)
+        prototype_sample = Sample(name='sample_material', derives_from=source)
+        batch = batch_create_materials(prototype_sample, n=10)
 
         [Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, ]
 
@@ -723,7 +723,7 @@ def batch_create_materials(material=None, n=1):
         from copy import deepcopy
         for x in range(0, n):
             new_obj = deepcopy(material)
-            new_obj.name = material_list.name + '-' + str(x)
+            new_obj.name = material.name + '-' + str(x)
             material_list.append(new_obj)
     return material_list
 
@@ -775,6 +775,11 @@ def batch_create_assays(*args, n=1):
                 process = None
                 materialB = None
     return process_sequence
+
+
+def batch_set_attr(l=list(), attr=None, val=None):
+    for i in l:
+        setattr(i, attr, val)
 
 
 class ParameterValue(FieldConfigurableObject):
