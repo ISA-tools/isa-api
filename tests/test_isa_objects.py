@@ -244,6 +244,7 @@ class ModelTests(TestCase):
         self.assertEqual(batch[0].derives_from, batch[9].derives_from)
 
     def test_batch_create_assays(self):
+        # flat end-to-end
         sample = Sample(name='sample')
         data_acquisition = Process(name='data acquisition')
         material = Material(name='material')
@@ -258,3 +259,19 @@ class ModelTests(TestCase):
         self.assertIsInstance(batch[0].outputs[0], Material)
         self.assertEqual(batch[0].outputs[0].derives_from, batch[0].inputs[0])
 
+        # multiple sample -> process -> multiple material
+        sample1 = Sample(name='sample')
+        sample2 = Sample(name='sample')
+        data_acquisition = Process(name='data acquisition')
+        material1 = Material(name='material')
+        material2 = Material(name='material')
+        batch = batch_create_assays([sample1, sample2], data_acquisition, [material1, material2], n=3)
+        self.assertIsInstance(batch, list)
+        self.assertEqual(len(batch), 3)  # 3 processes
+        self.assertIsInstance(batch[0], Process)
+        self.assertEqual(len(batch[0].inputs), 2)
+        self.assertIsInstance(batch[0].inputs[0], Sample)
+        self.assertEqual(batch[0].name, 'data acquisition-0')
+        self.assertEqual(len(batch[0].outputs), 2)
+        self.assertIsInstance(batch[0].outputs[0], Material)
+        self.assertEqual(batch[0].outputs[0].derives_from, [batch[0].inputs[0], batch[0].inputs[1]])
