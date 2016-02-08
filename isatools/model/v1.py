@@ -726,6 +726,12 @@ def batch_create_materials(material=None, n=1):
     return material_list
 
 
+def batch_create_assays(materials=list()):
+    process_sequence = list()
+    return process_sequence
+
+
+
 class ParameterValue(FieldConfigurableObject):
     """A Parameter Value
     """
