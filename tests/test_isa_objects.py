@@ -231,3 +231,30 @@ class ModelTests(TestCase):
         self.assertIsInstance(study.assays[0], Assay)
         self.assertIsInstance(study.materials['samples'], list)
         self.assertIsInstance(study.materials['samples'][0], Sample)
+
+    def test_batch_create_materials(self):
+        source = Source(name='source_material')
+        prototype_sample = Sample(name='sample_material')
+        batch = batch_create_materials(prototype_sample, n=10)
+        batch_set_attr(batch, 'derives_from', source)
+        self.assertIsInstance(batch, list)
+        self.assertEqual(len(batch), 10)
+        self.assertIsInstance(batch[0], Sample)
+        self.assertIsInstance(batch[0].derives_from, Source)
+        self.assertEqual(batch[0].derives_from, batch[9].derives_from)
+
+    def test_batch_create_assays(self):
+        sample = Sample(name='sample')
+        data_acquisition = Process(name='data acquisition')
+        material = Material(name='material')
+        labeling = Process(name='labeling')
+        extract = LabeledExtract(name='lextract')
+        batch = batch_create_assays(sample, data_acquisition, material, labeling, extract, n=3)
+        self.assertIsInstance(batch, list)
+        self.assertEqual(len(batch), 6)  # 6 processes, since 2 processes per process sequence
+        self.assertIsInstance(batch[0], Process)
+        self.assertIsInstance(batch[0].inputs[0], Sample)
+        self.assertEqual(batch[0].name, 'data acquisition-0')
+        self.assertIsInstance(batch[0].outputs[0], Material)
+        self.assertEqual(batch[0].outputs[0].derives_from, batch[0].inputs[0])
+
