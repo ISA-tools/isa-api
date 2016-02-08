@@ -738,7 +738,7 @@ def batch_create_assays(*args, n=1):
 
     :Example:
 
-        # Create 10 assays of Sample -> Process -> Material
+        # Create 3 assays of (Sample -> Process -> Material -> Process -> LabeledExtract)
 
         sample = Sample(name='sample')
         data_acquisition = Process(name='data acquisition')
@@ -748,6 +748,16 @@ def batch_create_assays(*args, n=1):
         batch = batch_create_assays(sample, data_acquisition, material, labeling, extract, n=3)
 
         [Process<> Process<>, Process<> Process<>, Process<>, Process<>]
+
+        # Create 3 assays of ([Sample, Sample] -> Process -> [Material, Material])
+
+        sample1 = Sample(name='sample')
+        sample2 = Sample(name='sample')
+        process = Process(name='data acquisition')
+        material1 = Material(name='material')
+        material2 = Material(name='material')
+        batch = batch_create_assays([sample1, sample2], process, [material1, material2])
+
     """
     process_sequence = list()
     materialA = None
@@ -756,6 +766,26 @@ def batch_create_assays(*args, n=1):
     from copy import deepcopy
     for x in range(0, n):
         for arg in args:
+            if isinstance(arg, list) and len(arg) > 0:
+                if isinstance(arg[0], Sample) or isinstance(arg[0], Material):
+                    if materialA is None:
+                        materialA = deepcopy(arg)
+                        y = 0
+                        for material in materialA:
+                            material.name = material.name + '-' + str(x) + '-' + str(y)
+                            y += 1
+                    else:
+                        materialB = deepcopy(arg)
+                        y = 0
+                        for material in materialB:
+                            material.name = material.name + '-' + str(x) + '-' + str(y)
+                            y += 1
+                elif isinstance(arg[0], Process):
+                    process = deepcopy(arg)
+                    y = 0
+                    for p in process:
+                        p.name = p.name + '-' + str(x) + '-' + str(y)
+                        y += 1
             if isinstance(arg, Sample) or isinstance(arg, Material):
                 if materialA is None:
                     materialA = deepcopy(arg)
@@ -767,10 +797,32 @@ def batch_create_assays(*args, n=1):
                 process = deepcopy(arg)
                 process.name = process.name + '-' + str(x)
             if materialA is not None and materialB is not None and process is not None:
-                process.inputs.append(materialA)
-                process.outputs.append(materialB)
-                materialB.derives_from = materialA
-                process_sequence.append(process)
+                if isinstance(process, list):
+                    for p in process:
+                        if isinstance(materialA, list):
+                            p.inputs = materialA
+                        else:
+                            p.inputs.append(materialA)
+                        if isinstance(materialB, list):
+                            p.outputs = materialB
+                            for material in materialB:
+                                material.derives_from = materialA
+                        else:
+                            p.outputs.append(materialB)
+                            materialB.derives_from = materialA
+                else:
+                    if isinstance(materialA, list):
+                        process.inputs = materialA
+                    else:
+                        process.inputs.append(materialA)
+                    if isinstance(materialB, list):
+                        process.outputs = materialB
+                        for material in materialB:
+                            material.derives_from = materialA
+                    else:
+                        process.outputs.append(materialB)
+                        materialB.derives_from = materialA
+                    process_sequence.append(process)
                 materialA = materialB
                 process = None
                 materialB = None
