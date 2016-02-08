@@ -285,11 +285,12 @@ class StudyAssayParser:
             line_number = 0
             max_number = 0
             process_counters = {}
+            assay_name_map = {}
             input_process_map = {}
             output_process_map = {}
 
             for line in reader:
-                if line_number >=  max_number:
+                # if line_number >=  max_number:
 
                     for processing_index in processing_indices:
 
@@ -323,33 +324,46 @@ class StudyAssayParser:
                         if not processing_name:
                             continue
 
-                        qualifier_indices_string = '-'.join(qualifier_values)
-                        input_node_indices_string = "-".join(input_node_indices)
-                        output_node_indices_string = "-".join(output_node_indices)
-                        try:
-                            unique_process_name = input_process_map[qualifier_indices_string+input_node_indices_string]
-                            if not (unique_process_name.startswith(processing_name)):
-                                raise KeyError
-                        except KeyError:
+                        assay_name = ""
+                        if assay_name_indices:
+                            if len(assay_name_indices)==1:
+                                assay_name = line[hgroups[assay_name_indices[0]][0]]
+
+
+                        if (assay_name):
+                           unique_process_name = assay_name
+                        else:
+                            qualifier_indices_string = '-'.join(qualifier_values)
+                            input_node_indices_string = "-".join(input_node_indices)
+                            output_node_indices_string = "-".join(output_node_indices)
                             try:
-                                unique_process_name = output_process_map[qualifier_indices_string+output_node_indices_string]
+                                unique_process_name = input_process_map[qualifier_indices_string+input_node_indices_string]
                                 if not (unique_process_name.startswith(processing_name)):
                                     raise KeyError
                             except KeyError:
                                 try:
-                                    process_number = process_counters[processing_name]
+                                    unique_process_name = output_process_map[qualifier_indices_string+output_node_indices_string]
+                                    if not (unique_process_name.startswith(processing_name)):
+                                        raise KeyError
                                 except KeyError:
-                                    process_number = 0
+                                    try:
+                                        process_number = process_counters[processing_name]
+                                    except KeyError:
+                                        process_number = 0
 
-                                process_number +=1
-                                process_counters.update({processing_name: process_number})
-                                unique_process_name = processing_name+str(process_number)
+                                    process_number +=1
+                                    process_counters.update({processing_name: process_number})
+                                    unique_process_name = processing_name+str(process_number)
 
                         try:
                             process_node = process_nodes[unique_process_name]
                         except KeyError:
                             #create process node
                             process_node = ProcessNodeRecord(unique_process_name, processing_header, study, processing_name)
+
+                        if assay_name:
+                            process_node.assay_name = assay_name
+                            assay_name_map.update({assay_name : process_node})
 
                         #Add qualifiers (performer and date)
                         for qualifier_index in qualifier_indices:
@@ -359,9 +373,6 @@ class StudyAssayParser:
                             elif qualifier_header == "Performer":
                                 process_node.performer = line[qualifier_index]
 
-                        if assay_name_indices:
-                            if len(assay_name_indices)==1:
-                                process_node.assay_name = line[hgroups[assay_name_indices[0]][0]]
 
                         if not (input_node_indices in process_node.inputs):
                             in_first = set(process_node.inputs)
@@ -389,7 +400,7 @@ class StudyAssayParser:
                             attrs = self._line_keyvals(line, headers, hgroups, htypes, process_node.metadata)
                             process_node.metadata = attrs
 
-                        max_number = max(len(process_node.inputs), len(process_node.outputs))
+                        # max_number = max(len(process_node.inputs), len(process_node.outputs))
                         line_number += 1
                         process_nodes[unique_process_name] = process_node
                     else:
@@ -586,6 +597,7 @@ class StudyAssayParser:
                                         return "imagefile-"+name
                                      else:
                                         "ERROR - Type not being considered! ", type
+                                        return name
 
 
 _record_str = \
@@ -628,6 +640,7 @@ _node_str = \
 _process_node_str = \
 """       * Process Node ->  {name} {type}
          assay_name: {assay_name}
+         protocol: {protocol}
          performer: {performer}
          date: {date}
          inputs: {inputs}
