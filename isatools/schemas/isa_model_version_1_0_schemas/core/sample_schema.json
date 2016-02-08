@@ -10,16 +10,19 @@
             "type" : "array",
             "items" :  {
                 "$ref": "material_attribute_value_schema.json#"
-                }
+            }
         },
         "factorValues" : {
             "type" : "array",
             "items" : {
-               "$ref" : "factor_value_schema.json#"
+                "$ref" : "factor_value_schema.json#"
             }
         },
         "derivesFrom": {
-          "$ref": "source_schema.json#"
+            "type" : "array",
+            "items" : {
+                "$ref": "source_schema.json#"
+            }
         }
     },
     "additionalProperties": false

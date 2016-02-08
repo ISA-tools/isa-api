@@ -140,6 +140,8 @@ class Investigation(IsaObject):
             self.studies = list()
         else:
             self.studies = studies
+        if comments is None:
+            self.comments = list()
 
 
 class OntologySourceReference(IsaObject):
@@ -169,8 +171,9 @@ class OntologyAnnotation(IsaObject):
         term_accession: URI
     """
 
-    def __init__(self, name="", term_source=None, term_accession="", comments=None):
+    def __init__(self, id_='', name="", term_source=None, term_accession="", comments=None):
         super().__init__(comments)
+        self.id = id_
         self.name = name
         if term_source is None:
             self.term_source = OntologySourceReference()
@@ -355,34 +358,47 @@ class Assay(IsaObject):
         file_name: A field to specify the name of the Assay file corresponding the definition of that assay.
     """
     def __init__(self, measurement_type=None, technology_type=None, technology_platform="", filename="",
-                 process_sequence=None, data_files=None, samples=None, other_material=None, comments=None):
+                 process_sequence=None, data_files=None, samples=None, other_material=None,
+                 characteristic_categories=None, comments=None):
         super().__init__(comments)
         if measurement_type is None:
             self.measurement_type = OntologyAnnotation()
         else:
             self.measurement_type = measurement_type
+
         if technology_type is None:
             self.technology_type = OntologyAnnotation()
         else:
             self.technology_type = technology_type
+
         self.technology_platform = technology_platform
         self.filename = filename
+
         if process_sequence is None:
             self.process_sequence = list()
         else:
             self.process_sequence = process_sequence
+
         if data_files is None:
             self.data_files = list()
         else:
             self.data_files = data_files
+
         self.materials = {
             'samples': list(),
             'other_material': list()
         }
+
         if not (samples is None):
             self.materials['samples'].append(samples)
+
         if not (other_material is None):
             self.materials['other_material'].append(other_material)
+
+        if characteristic_categories is None:
+            self.characteristic_categories = list()
+        else:
+            self.characteristic_categories = characteristic_categories
 
 
 class Protocol(IsaObject):
@@ -429,7 +445,7 @@ class ProtocolParameter(IsaObject):
         super().__init__(comments)
         self.id = id_
         if parameter_name is None:
-            self.name = OntologyAnnotation()
+            self.parameter_name = OntologyAnnotation()
         else:
             self.parameter_name = parameter_name
         # if unit is None:
@@ -520,12 +536,63 @@ class Material(IsaObject):
         self.derives_from = derives_from
 
 
+class Extract(Material):
+    def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None):
+        super().__init__(id_, name, type_, characteristics, derives_from, comments)
+
+
+class LabeledExtract(Extract):
+    def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None, label=None):
+        super().__init__(id_, name, type_, characteristics, derives_from, comments)
+        self.label = label
+
+
+class HybridizationAssay(Material):
+    def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None, array_design_ref=''):
+        super().__init__(id_, name, type_, characteristics, derives_from, comments)
+        self.array_design_ref = array_design_ref
+
+
 class FactorValue(IsaObject):
     def __init__(self, factor_name=None, value=None, unit=None, comments=None):
         super().__init__(comments)
         self.factor_name = factor_name
         self.value = value
         self.unit = unit
+
+
+class ProcessingEvent(IsaObject):
+    def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None):
+        super().__init__()
+        self.name = name
+        self.executes_protocol = executes_protocol
+        self.date = date_
+        self.performer = performer
+        if parameter_values is None:
+            self.parameter_values = list()
+        else:
+            self.parameter_values = parameter_values
+
+
+class HybridizationAssayEvent(ProcessingEvent):
+        def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None, array_design_ref=''):
+            super().__init__(name, executes_protocol, date_, performer, parameter_values)
+            self.array_design_ref = array_design_ref
+
+
+class ScanEvent(ProcessingEvent):
+        def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None):
+            super().__init__(name, executes_protocol, date_, performer, parameter_values)
+
+
+class DataNormalizationEvent(ProcessingEvent):
+        def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None):
+            super().__init__(name, executes_protocol, date_, performer, parameter_values)
+
+
+class DataTransformationEvent(ProcessingEvent):
+        def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None):
+            super().__init__(name, executes_protocol, date_, performer, parameter_values)
 
 
 class Process(IsaObject):
@@ -538,7 +605,7 @@ class Process(IsaObject):
         inputs:
         outputs:
     """
-    def __init__(self, id_='', name="", executes_protocol=None, date_=date.today(), performer="",
+    def __init__(self, id_='', name="", executes_protocol=None, date_='', performer="",
                  parameter_values=None, inputs=None, outputs=None, comments=None):
         super().__init__(comments)
         self.id = id_
@@ -568,7 +635,7 @@ class DataFileType(Enum):
     raw_data_file = 1
     derived_data_file = 2
     image_file = 3
-
+    
 
 class Data(IsaObject):
     """A Data.
@@ -576,11 +643,31 @@ class Data(IsaObject):
     Attributes:
         name:
     """
-    def __init__(self, id_='', name="", type_=DataFileType.generic_data_file, comments=None):
+    def __init__(self, id_='', name="", comments=None):
         super().__init__(comments)
         self.id = id_
         self.name = name
-        self.type_ = type_
+
+
+class ScanData(Data):
+    def __init__(self, id_='', name="", image_file='', array_data_file='', array_data_matrix_file='', comments=None):
+        super().__init__(name, comments)
+        self.image_file = image_file
+        self.array_data_file = array_data_file
+        self.array_data_matrix_file = array_data_matrix_file
+
+
+class NormalizedData(Data):
+    def __init__(self, id_='', name="", derived_array_data_file='', comments=None):
+        super().__init__(name, comments)
+        self.derived_array_data_file = derived_array_data_file
+
+
+class DerivedData(Data):
+    def __init__(self, id_='', name="", derived_data_file='', label='Data File', comments=None):
+        super().__init__(name, comments)
+        self.derived_data_file = derived_data_file
+        self.label = label
 
 
 class MaterialAttribute(IsaObject):

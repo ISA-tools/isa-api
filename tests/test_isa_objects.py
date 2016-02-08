@@ -138,12 +138,12 @@ class ModelTests(TestCase):
             name=''
         )
         sample.characteristics.append(MaterialAttribute())
-        sample.factors.append(StudyFactor())
+        sample.factor_values.append(StudyFactor())
         self.assertIsInstance(sample.name, str)
         self.assertIsInstance(sample.characteristics, list)
         self.assertIsInstance(sample.characteristics[0], MaterialAttribute)
-        self.assertIsInstance(sample.factors, list)
-        self.assertIsInstance(sample.factors[0], StudyFactor)
+        self.assertIsInstance(sample.factor_values, list)
+        self.assertIsInstance(sample.factor_values[0], StudyFactor)
 
     def test_object_material(self):
         material = Material(name='')
@@ -161,15 +161,15 @@ class ModelTests(TestCase):
             name='',
             executes_protocol=Protocol(),
         )
-        process.parameters.append(OntologyAnnotation())
+        process.parameter_values.append(OntologyAnnotation())
         process.inputs.append(Material())
         process.inputs.append(Data())
         process.outputs.append(Material())
         process.outputs.append(Data())
         self.assertIsInstance(process.name, str)
         self.assertIsInstance(process.executes_protocol, Protocol)
-        self.assertIsInstance(process.parameters, list)
-        self.assertIsInstance(process.parameters[0], OntologyAnnotation)
+        self.assertIsInstance(process.parameter_values, list)
+        self.assertIsInstance(process.parameter_values[0], OntologyAnnotation)
         self.assertIsInstance(process.inputs, list)
         self.assertIsInstance(process.inputs[0], Material)
         self.assertIsInstance(process.inputs[1], Data)
@@ -179,12 +179,12 @@ class ModelTests(TestCase):
 
     def test_object_assay(self):
         assay = Assay(
-            file_name='',
+            filename='',
             measurement_type=OntologyAnnotation(),
             technology_type=OntologyAnnotation(),
             technology_platform=''
         )
-        self.assertIsInstance(assay.file_name, str)
+        self.assertIsInstance(assay.filename, str)
         self.assertIsInstance(assay.measurement_type, OntologyAnnotation)
         self.assertIsInstance(assay.technology_type, OntologyAnnotation)
         self.assertIsInstance(assay.technology_platform, str)
@@ -196,23 +196,23 @@ class ModelTests(TestCase):
             description='',
             submission_date=date.today(),
             public_release_date=date.today(),
-            file_name=''
+            filename=''
         )
         study.publications.append(Publication())
         study.contacts.append(Person())
         study.design_descriptors.append(OntologyAnnotation())
         study.protocols.append(Protocol())
-        study.sources.append(Source())
-        study.samples.append(Sample())
+        study.materials['sources'].append(Source())
+        study.materials['samples'].append(Sample())
         study.process_sequence.append(Process())
         study.assays.append(Assay())
-        study.samples.append(Sample())
+        study.materials['samples'].append(Sample())
         self.assertIsInstance(study.identifier, str)
         self.assertIsInstance(study.title, str)
         self.assertIsInstance(study.description, str)
         self.assertIsInstance(study.submission_date, date)
         self.assertIsInstance(study.public_release_date, date)
-        self.assertIsInstance(study.file_name, str)
+        self.assertIsInstance(study.filename, str)
         self.assertIsInstance(study.publications, list)
         self.assertIsInstance(study.publications[0], Publication)
         self.assertIsInstance(study.contacts, list)
@@ -221,13 +221,13 @@ class ModelTests(TestCase):
         self.assertIsInstance(study.design_descriptors[0], OntologyAnnotation)
         self.assertIsInstance(study.protocols, list)
         self.assertIsInstance(study.protocols[0], Protocol)
-        self.assertIsInstance(study.sources, list)
-        self.assertIsInstance(study.sources[0], Source)
-        self.assertIsInstance(study.samples, list)
-        self.assertIsInstance(study.samples[0], Sample)
+        self.assertIsInstance(study.materials['sources'], list)
+        self.assertIsInstance(study.materials['sources'][0], Source)
+        self.assertIsInstance(study.materials['samples'], list)
+        self.assertIsInstance(study.materials['samples'][0], Sample)
         self.assertIsInstance(study.process_sequence, list)
         self.assertIsInstance(study.process_sequence[0], Process)
         self.assertIsInstance(study.assays, list)
         self.assertIsInstance(study.assays[0], Assay)
-        self.assertIsInstance(study.samples, list)
-        self.assertIsInstance(study.samples[0], Sample)
+        self.assertIsInstance(study.materials['samples'], list)
+        self.assertIsInstance(study.materials['samples'][0], Sample)

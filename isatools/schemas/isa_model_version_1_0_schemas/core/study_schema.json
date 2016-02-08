@@ -40,24 +40,26 @@
         "$ref": "protocol_schema.json#"
       }
     },
-
     "materials": {
-      "sources": {
-        "type": "array",
-        "items" : {
-          "$ref": "source_schema.json#"
-        }
-      },
-      "samples": {
-        "type": "array",
-        "items" : {
-          "$ref": "sample_schema.json#"
-        }
-      },
-      "otherMaterials": {
-        "type": "array",
-        "items" : {
-          "$ref": "material_schema.json#"
+      "type": "object",
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "source_schema.json#"
+          }
+        },
+        "samples": {
+          "type": "array",
+          "items": {
+            "$ref": "sample_schema.json#"
+          }
+        },
+        "otherMaterials": {
+          "type": "array",
+          "items": {
+            "$ref": "material_schema.json#"
+          }
         }
       }
     },

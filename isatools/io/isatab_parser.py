@@ -38,7 +38,8 @@ def find_lt(a, x):
     i = bisect.bisect_left(a, x)
     if i:
         return a[i-1]
-    raise ValueError
+    else:
+        return -1
 
 
 def find_gt(a, x):
@@ -46,7 +47,8 @@ def find_gt(a, x):
     i = bisect.bisect_right(a, x)
     if i != len(a):
         return a[i]
-    raise ValueError
+    else:
+        return -1
 
 def find_in_between(a, x, y):
     result = []
@@ -219,17 +221,18 @@ class StudyAssayParser:
         self._col_types = {"attribute": ("Characteristics", "Factor Type",
                                          "Comment", "Label", "Material Type", "Factor Value"),
                            "node" : ("Sample Name", "Source Name", "Image File",
-                                     "Raw Data File", "Derived Data File", "Acquisition Parameter Data File"),
-                           "node_assay" : ("Extract Name", "Labeled Extract Name",
-                                           "Assay Name", "Data Transformation Name",
+                                     "Raw Data File", "Derived Data File", "Acquisition Parameter Data File",
+                                     "Extract Name", "Labeled Extract Name"),
+                           "node_assay" : ("Assay Name", "Data Transformation Name",
                                            "Normalization Name"),
                            "processing": ("Protocol REF"),
-                           "parameter": ("Parameter Value")
+                           "parameter": ("Parameter Value", "Array Design REF")
                            }
         self._synonyms = {"Array Data File" : "Raw Data File",
                           "Free Induction Decay Data File": "Raw Data File",
                           "Derived Array Data File" : "Derived Data File",
                           "Hybridization Assay Name": "Assay Name",
+                          "Scan Name": "Assay Name",
                           "Derived Array Data Matrix File": "Derived Data File",
                           "Raw Spectral Data File": "Raw Data File",
                           "Derived Spectral Data File": "Derived Data File"}
@@ -240,14 +243,15 @@ class StudyAssayParser:
         final_studies = []
         for study in rec.studies:
             source_data = self._parse_study(study.metadata["Study File Name"],
-                                            ["Source Name", "Sample Name", "Comment[ENA_SAMPLE]"])
+                                            self._col_types["node"])
+                                            #["Source Name", "Sample Name", "Comment[ENA_SAMPLE]"])
             if source_data:
                 study.nodes = source_data
                 final_assays = []
                 for assay in study.assays:
                     cur_assay = ISATabAssayRecord(assay)
                     assay_data = self._parse_study(assay["Study Assay File Name"],
-                                                   ["Sample Name","Extract Name","Raw Data File","Derived Data File", "Image File", "Acquisition Parameter Data File", "Free Induction Decay Data File"])
+                                                   self._col_types["node"])
                     cur_assay.nodes = assay_data
                     assay_process_nodes = self._get_process_nodes(assay["Study Assay File Name"], cur_assay)
 
@@ -262,7 +266,9 @@ class StudyAssayParser:
         rec.studies = final_studies
         return rec
 
+
     def _get_process_nodes(self, fname, study):
+        """Building the process nodes"""
         if not os.path.exists(os.path.join(self._dir, fname)):
             return {}
         process_nodes = {}
@@ -272,76 +278,116 @@ class StudyAssayParser:
             headers = self._swap_synonyms(next(reader))
             hgroups = self._collapse_header(headers)
             htypes = self._characterize_header(headers, hgroups)
-
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
             all_parameters_indices = [i for i, x in enumerate(htypes) if x == "parameter"]
-            node_indices = [i for i, x in enumerate(htypes) if x == "node" or x=="node_assay"]
+            node_indices = [i for i, x in enumerate(htypes) if x == "node"]
+            node_assay_indices =  [i for i, x in enumerate(htypes) if x == "node_assay"]
+            line_number = 0
+            max_number = 0
+            process_counters = {}
+            assay_name_map = {}
+            input_process_map = {}
+            output_process_map = {}
 
-            for processing_index in processing_indices:
-                try:
-                    input_index = find_lt(node_indices, processing_index)
-                except ValueError:
-                    input_index = -1
+            for line in reader:
+                # if line_number >=  max_number:
 
-                try:
-                    output_index = find_gt(node_indices, processing_index)
-                except ValueError:
-                    output_index = -1
+                    for processing_index in processing_indices:
 
-                try:
-                    next_processing_index = find_gt(processing_indices, processing_index)
-                except ValueError:
-                    next_processing_index = -1
+                        next_processing_index = find_gt(processing_indices, processing_index)
+                        previous_processing_index = find_lt(processing_indices, processing_index)
 
-                try:
-                    parameters_indices = find_in_between(all_parameters_indices, processing_index, next_processing_index)
-                except ValueError:
-                    parameters_indices = []
+                        input_indices = find_in_between(node_indices, previous_processing_index, processing_index)
+                        output_indices = find_in_between(node_indices, processing_index, next_processing_index)
+                        parameters_indices = find_in_between(all_parameters_indices, processing_index, next_processing_index)
+                        assay_name_indices = find_in_between(node_assay_indices, processing_index, next_processing_index)
+                        qualifier_indices = hgroups[processing_index][1:]
 
-                input_header = headers[hgroups[input_index][0]]
-                output_header = headers[hgroups[output_index][0]]
-                processing_header = headers[hgroups[processing_index][0]]
-                line_number = 0
-                max_number = 0
+                        input_headers = [ headers[hgroups[x][0]] for i, x in enumerate(input_indices) ]
+                        output_headers = [  headers[hgroups[x][0]] for i, x in enumerate(output_indices) ]
+                        processing_header = headers[hgroups[processing_index][0]]
+                        qualifier_headers = [  headers[x] for i, x in enumerate(qualifier_indices) ]
 
-                #reading line by line and identifying inputs outputs and creating process_node
-                process_number = 1
-                input_process_map = {}
-                output_process_map = {}
-                for line in reader:
-                    if line_number >=  max_number:
-                        input_name = line[hgroups[input_index][0]]
-                        input_node_index = self._build_node_index(input_header,input_name)
+                        input_values = [ line[hgroups[x][0]] for i, x in enumerate(input_indices) ]
+                        input_node_indices = [ self._build_node_index(input_headers[i],input_values[i]) for i, x in enumerate(input_values) ]
 
-                        output_name = line[hgroups[output_index][0]]
-                        output_node_index = self._build_node_index(output_header, output_name)
+                        output_values = [ line[hgroups[x][0]] for i, x in enumerate(output_indices) ]
+                        output_node_indices = [ self._build_node_index(output_headers[i], output_values[i]) for i, x in enumerate(output_values)]
+
+                        qualifier_values = [ line[x] for i, x in enumerate(qualifier_indices) ]
 
                         #if both input_name and output_name are empty, ignore the row
-                        if (not input_name and not output_name):
+                        if (not input_values and not output_values):
                             continue
 
-                        try:
-                            unique_process_name = input_process_map[input_node_index]
-                        except KeyError:
+                        processing_name = line[hgroups[processing_index][0]]
+                        if not processing_name:
+                            continue
+
+                        assay_name = ""
+                        if assay_name_indices:
+                            if len(assay_name_indices)==1:
+                                assay_name = line[hgroups[assay_name_indices[0]][0]]
+
+
+                        if (assay_name):
+                           unique_process_name = assay_name
+                        else:
+                            qualifier_indices_string = '-'.join(qualifier_values)
+                            input_node_indices_string = "-".join(input_node_indices)
+                            output_node_indices_string = "-".join(output_node_indices)
                             try:
-                                unique_process_name = output_process_map[output_node_index]
+                                unique_process_name = input_process_map[qualifier_indices_string+input_node_indices_string]
+                                if not (unique_process_name.startswith(processing_name)):
+                                    raise KeyError
                             except KeyError:
-                                processing_name = line[hgroups[processing_index][0]]
-                                unique_process_name = processing_name+str(process_number)
+                                try:
+                                    unique_process_name = output_process_map[qualifier_indices_string+output_node_indices_string]
+                                    if not (unique_process_name.startswith(processing_name)):
+                                        raise KeyError
+                                except KeyError:
+                                    try:
+                                        process_number = process_counters[processing_name]
+                                    except KeyError:
+                                        process_number = 0
+
+                                    process_number +=1
+                                    process_counters.update({processing_name: process_number})
+                                    unique_process_name = processing_name+str(process_number)
 
                         try:
                             process_node = process_nodes[unique_process_name]
                         except KeyError:
                             #create process node
                             process_node = ProcessNodeRecord(unique_process_name, processing_header, study, processing_name)
-                            process_number += 1
 
-                        if not (input_node_index in process_node.inputs):
-                            process_node.inputs.append(input_node_index)
-                        if not (output_node_index in process_node.outputs):
-                            process_node.outputs.append(output_node_index)
-                        input_process_map[input_node_index] = unique_process_name
-                        output_process_map[output_node_index] = unique_process_name
+                        if assay_name:
+                            process_node.assay_name = assay_name
+                            assay_name_map.update({assay_name : process_node})
+
+                        #Add qualifiers (performer and date)
+                        for qualifier_index in qualifier_indices:
+                            qualifier_header = headers[qualifier_index]
+                            if qualifier_header=="Date":
+                                process_node.date = line[qualifier_index]
+                            elif qualifier_header == "Performer":
+                                process_node.performer = line[qualifier_index]
+
+
+                        if not (input_node_indices in process_node.inputs):
+                            in_first = set(process_node.inputs)
+                            in_second = set(input_node_indices)
+                            in_second_but_not_in_first = in_second - in_first
+                            process_node.inputs = process_node.inputs + list(in_second_but_not_in_first)
+                        if not (output_node_indices in process_node.outputs):
+                            in_first = set(process_node.outputs)
+                            in_second = set(output_node_indices)
+                            in_second_but_not_in_first = in_second - in_first
+                            process_node.outputs = process_node.outputs + list(in_second_but_not_in_first)
+
+                        #qualifier_process_map[qualifier_indices_string] = unique_process_name
+                        input_process_map[qualifier_indices_string+input_node_indices_string] = unique_process_name
+                        output_process_map[qualifier_indices_string+output_node_indices_string] = unique_process_name
 
                         #Add parameters
                         parameter_headers = []
@@ -354,13 +400,13 @@ class StudyAssayParser:
                             attrs = self._line_keyvals(line, headers, hgroups, htypes, process_node.metadata)
                             process_node.metadata = attrs
 
-                        max_number = max(len(process_node.inputs), len(process_node.outputs))
+                        # max_number = max(len(process_node.inputs), len(process_node.outputs))
                         line_number += 1
                         process_nodes[unique_process_name] = process_node
                     else:
                         line_number += 1
                 #study.process_nodes = process_nodes
-                return dict([(k, self._finalize_metadata(v)) for k, v in process_nodes.items()])
+        return dict([(k, self._finalize_metadata(v)) for k, v in process_nodes.items()])
 
 
     def _parse_study(self, fname, node_types):
@@ -375,16 +421,14 @@ class StudyAssayParser:
             hgroups = self._collapse_header(headers)
             htypes = self._characterize_header(headers, hgroups)
 
-            node_indices = [i for i, x in enumerate(htypes) if x == "node" or x=="node_assay"]
+            node_indices = [i for i, x in enumerate(htypes) if x == "node"]
             all_attribute_indices = [i for i, x in enumerate(htypes) if x == "attribute"]
 
             for node_index in node_indices:
 
                 node_type = headers[hgroups[node_index][0]]
-
                 if node_type not in node_types:
                     continue
-
                 try:
                     header_index = headers.index(node_type)
                 except ValueError:
@@ -395,36 +439,27 @@ class StudyAssayParser:
                     #                        % (node_type, header)
                     continue
 
-                try:
-                    next_node_index = find_gt(node_indices, header_index)
-                except ValueError:
-                    next_node_index = -1
-
-                try:
-                    attribute_indices = find_in_between(all_attribute_indices, node_index, next_node_index)
-                except ValueError:
-                    attribute_indices = []
+                next_node_index = find_gt(node_indices, node_index)
+                previous_node_index = find_lt(node_indices, node_index)
+                attribute_indices = find_in_between(all_attribute_indices, node_index, next_node_index)
 
                 in_handle.seek(0, 0)
                 for line in reader:
-                    name = line[header_index]
+                    name = self._swap_synonyms([line[header_index]])[0]
+                    #skip the header line and empty lines
+                    if (not name or name in headers):
+                        continue
                     #to deal with same name used for different node types (e.g. Source Name and Sample Name using the same string)
                     node_index_name = self._build_node_index(node_type,name)
-                    #skip the header line and empty lines
-                    if name in headers:
-                        continue
-                    if (not name):
-                        continue
+
                     try:
                         node = nodes[node_index_name]
 
-                        attribute_headers = []
                         for attribute_index in attribute_indices:
                             attribute_header = headers[hgroups[attribute_index][0]]
                             if attribute_header.startswith("Factor Value") and node_type != "Sample Name":
                                 continue
                             if attribute_header not in node.attributes:
-                                attribute_headers.append(attribute_header)
                                 node.attributes.append(attribute_header)
 
                     except KeyError:
@@ -434,15 +469,15 @@ class StudyAssayParser:
                         attrs = self._line_keyvals(line, headers, hgroups, htypes, node.metadata)
                         nodes[node_index_name].metadata = attrs
 
-                        attribute_headers = []
                         for attribute_index in attribute_indices:
                             attribute_header = headers[hgroups[attribute_index][0]]
                             if attribute_header.startswith("Factor Value") and node_type != "Sample Name":
                                 continue
                             if attribute_header not in node.attributes:
-                                attribute_headers.append(attribute_header)
                                 node.attributes.append(attribute_header)
 
+                    if not (previous_node_index == -1):
+                        node.derivesFrom.append(line[previous_node_index])
 
         return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
 
@@ -515,7 +550,7 @@ class StudyAssayParser:
         for h in [header[g[0]] for g in hgroups]:
             this_ctype = None
             for ctype, names in self._col_types.items():
-                if h.startswith(names):
+                if (h in names) or ( h.startswith(names) and h.endswith("]")):
                     this_ctype = ctype
                     break
             out.append(this_ctype)
@@ -546,19 +581,23 @@ class StudyAssayParser:
                 if type == "Extract Name":
                     return "extract-"+name
                 else:
-                    if type == "Raw Data File":
-                       return "rawdatafile-"+name
+                    if type == "Labeled Extract Name":
+                        return "labeledextract-"+name
                     else:
-                        if type=="Derived Data File":
-                            return "deriveddatafile-"+name
+                        if type == "Raw Data File":
+                            return "rawdatafile-"+name
                         else:
-                            if type=="Acquisiton Parameter Data File":
-                                return "acquisitionparameterfile-"+name
+                            if type=="Derived Data File":
+                                return "deriveddatafile-"+name
                             else:
-                                 if type=="Image File":
-                                    return "imagefile-"+name
-                                 else:
-                                    "ERROR - Type not being considered! ", type
+                                if type=="Acquisiton Parameter Data File":
+                                    return "acquisitionparameterfile-"+name
+                                else:
+                                     if type=="Image File":
+                                        return "imagefile-"+name
+                                     else:
+                                        "ERROR - Type not being considered! ", type
+                                        return name
 
 
 _record_str = \
@@ -595,10 +634,15 @@ _assay_str = \
 _node_str = \
 """       * Node -> {name} {type} {index}
          attributes: {attributes}
+         derivesFrom: {derivesFrom}
          metadata: {md}"""
 
 _process_node_str = \
 """       * Process Node ->  {name} {type}
+         assay_name: {assay_name}
+         protocol: {protocol}
+         performer: {performer}
+         date: {date}
          inputs: {inputs}
          outputs: {outputs}
          parameters: {parameters}
@@ -678,13 +722,15 @@ class NodeRecord:
         self.index = nindex
         self.metadata = {}
         self.attributes = []
+        self.derivesFrom = []
 
     def __str__(self):
         return _node_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 9),
                                 index=self.index,
                                 name=self.name,
                                 type=self.ntype,
-                                attributes=pprint.pformat(self.attributes).replace("\n","\n"+" "*9))
+                                attributes=pprint.pformat(self.attributes).replace("\n","\n"+" "*9),
+                                derivesFrom=pprint.pformat(self.derivesFrom).replace("\n","\n"+" "*9))
 
 
 class ProcessNodeRecord:
@@ -699,13 +745,19 @@ class ProcessNodeRecord:
         self.outputs = []
         self.metadata = {}
         self.parameters = []
+        self.assay_name = "" #used when there is an associated 'Assay Name' for a 'Protocol REF'
+        self.performer = ""
+        self.date = ""
 
     def __str__(self):
         return _process_node_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 9),
                                         inputs=pprint.pformat(self.inputs).replace("\n", "\n" + " " * 9),
                                         outputs=pprint.pformat(self.outputs).replace("\n", "\n" + " " * 9),
                                         name=self.name,
+                                        assay_name=self.assay_name,
                                         type=self.ntype,
                                         protocol=self.protocol,
+                                        performer=self.performer,
+                                        date=self.date,
                                         parameters=pprint.pformat(self.parameters).replace("\n","\n"+" "*9))
 
