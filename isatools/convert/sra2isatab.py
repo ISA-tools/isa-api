@@ -1,7 +1,7 @@
 import subprocess
 import os
 import re
-from io import BytesIO
+from io import BytesIO, StringIO
 from zipfile import ZipFile
 from shutil import rmtree
 import logging

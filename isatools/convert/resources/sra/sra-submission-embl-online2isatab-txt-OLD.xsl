@@ -30,14 +30,13 @@ SRA schema version considered:
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:isa="http://www.isa-tools.org/"
  exclude-result-prefixes="isa" version="2.0">
- <xsl:import href="extract-studies.xsl"/>
+ <xsl:import href="extract-studies-rice.xsl"/>
  <xsl:import href="isa-functions.xsl"/>
  <xsl:output method="text" encoding="UTF-8"/>
  <xsl:strip-space elements="*"/>
 
  <!-- The input parameter from the command line -->
  <xsl:param name="acc-number" required="yes"/>
- <xsl:param name="outputdir" required="yes"/>
 
  <xsl:key name="protocols" match="LIBRARY_CONSTRUCTION_PROTOCOL" use="."/>
  <xsl:key name="sampletaglookupid" match="/ROOT/SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE/TAG" use="."/>
@@ -77,26 +76,21 @@ SRA schema version considered:
  
  <xsl:template match="/">
   <xsl:apply-templates select="document($url)" mode="go"/>
-  
  </xsl:template>
  
  <xsl:template match="ROOT" mode="go">
-  <xsl:apply-templates select="SUBMISSION" mode="go"/>
- </xsl:template>
-
- <xsl:template match="SUBMISSION" mode="go">
   <xsl:variable name="broker-name" select="if (@broker_name) then @broker_name else ''"/> 
   <xsl:apply-templates>
-   <xsl:with-param name="outputdir" select="$outputdir"/>
    <xsl:with-param name="broker-name" select="$broker-name" tunnel="yes"/>
   </xsl:apply-templates>
   <xsl:call-template name="generate-assay-files"/>
+  <xsl:apply-templates select="STUDY/STUDY_LINKS"/>
  </xsl:template>
  
- <xsl:template match="XREF_LINK/DB[contains(.,'NA-STUDY')]">
+ <xsl:template match="STUDY">
   <xsl:param name="broker-name" required="yes" tunnel="yes"/>
   <xsl:variable name="study" select="following-sibling::ID"/>
-  <xsl:result-document href="{concat($outputdir,'/', $acc-number, '/', 'i_', $acc-number, '.txt')}" method="text">
+  <xsl:result-document href="{concat('output/', $acc-number, '/', 'i_', $acc-number, '.txt')}" method="text">
    <xsl:text>#SRA Document:</xsl:text>    <xsl:value-of select="isa:quotes($acc-number)"/><xsl:text>&#10;</xsl:text>
    <xsl:text>"ONTOLOGY SOURCE REFERENCE"&#10;</xsl:text>
    <xsl:value-of select="isa:single-name-value('Term Source Name', 'OBI')"/>
@@ -130,7 +124,8 @@ SRA schema version considered:
 "Investigation Person Roles Term Source REF"&#9;""
 "STUDY"
 <xsl:value-of select="isa:single-name-value('Comment[SRA broker]', $broker-name)"/>
-   <xsl:apply-templates select="document(concat('http://www.ebi.ac.uk/ena/data/view/',$study,'&amp;display=xml'))/ROOT/STUDY"/>
+   <xsl:call-template name="generate-rest-of-study"/>
+   <!--<xsl:apply-templates select="document(concat('http://www.ebi.ac.uk/ena/data/view/',$study,'&amp;display=xml'))/ROOT/STUDY"/>-->
    <xsl:text>&#10;"STUDY CONTACTS"&#10;</xsl:text>
    <xsl:value-of select="isa:single-name-value('Comment[SRA broker]', $broker-name)"/>
    <xsl:value-of select="isa:single-name-value('Study Person Last Name', substring-before(CONTACTS/CONTACT/@name,' '))"/>
@@ -147,8 +142,8 @@ SRA schema version considered:
   </xsl:result-document>
  </xsl:template>
 
- <xsl:template match="XREF_LINK/DB[contains(.,'NA-SAMPLE')]">
-  <xsl:result-document href="{concat($outputdir,'/', $acc-number, '/', 's_', $acc-number, '.txt')}" method="text">
+ <xsl:template match="STUDY_LINKS/STUDY_LINK/XREF_LINK/DB[contains(.,'NA-SAMPLE')]">
+  <xsl:result-document href="{concat('output/', $acc-number, '/', 's_', $acc-number, '.txt')}" method="text">
    <xsl:variable name="samples-ids" select="following-sibling::ID"/>
    <xsl:call-template name="generate-study-header"/>
    <xsl:text>"Sample Name"&#10;</xsl:text>
@@ -175,8 +170,10 @@ SRA schema version considered:
  </xsl:template>
  
  <xsl:template match="experiments/experiment" mode="distinct-exp">
-  <xsl:result-document href="{concat($outputdir,'/', $acc-number, '/', 'a_', lower-case(@library-strategy), '-', lower-case(@library-source), '.txt')}" method="text">
+  <xsl:result-document href="{concat('output/', $acc-number, '/', 'a_', $acc-number, lower-case(@library-strategy), '-', lower-case(@library-source), '.txt')}" method="text">
    <xsl:variable name="my-exp" select="document(concat('http://www.ebi.ac.uk/ena/data/view/', @acc-number, '&amp;display=xml'))"/>
+ <!--  <xsl:value-of select="$my-exp"/> -->
+   
    <!-- Create the header -->
    <xsl:text>"Sample Name"&#9;</xsl:text>
    <xsl:text>"Protocol REF"&#9;</xsl:text>
@@ -217,9 +214,12 @@ SRA schema version considered:
  <xsl:template match="exp">
   <xsl:param name="my-exp" required="yes"/>
   <xsl:apply-templates select="$my-exp/ROOT/EXPERIMENT[@accession = current()/@accession]"/>
+  <!--<xsl:value-of select="$my-exp"/><xsl:text>THERE&#9;</xsl:text>-->
+<!--    <xsl:value-of select="$my-exp/ROOT/EXPERIMENT[@accession = current()/@accession]"></xsl:value-of><xsl:text>&#9;</xsl:text>-->
+  <!--  -->
  </xsl:template>
  
- <xsl:template match="STUDY">
+ <xsl:template name="generate-rest-of-study">
   <xsl:variable name="sra-isa-mapping" select="document('sra-isa-measurement_type_mapping.xml')"/>
  
   <xsl:value-of select="isa:single-name-value('Study Identifier', @accession)"/>
@@ -406,11 +406,12 @@ SRA schema version considered:
   <xsl:variable name="my-sample" select="./SAMPLE_ATTRIBUTES"/>
   <xsl:for-each select="$distinct-characteristic-terms/terms/term">
    <xsl:variable name="my-term" select="current()"/>
-   <xsl:value-of select="isa:quotes(if ($my-sample/SAMPLE_ATTRIBUTE/TAG[.=$my-term]) then $my-sample/SAMPLE_ATTRIBUTE/TAG[.=$my-term]/following-sibling::VALUE else '')"/>
+   <xsl:value-of select="if ($my-sample/SAMPLE_ATTRIBUTE/TAG[.=$my-term]) then $my-sample/SAMPLE_ATTRIBUTE/TAG[.=$my-term]/following-sibling::VALUE else ''"/>
+<!--   <xsl:value-of select="isa:quotes(if ($my-sample/SAMPLE_ATTRIBUTE/TAG[.=$my-term]) then $my-sample/SAMPLE_ATTRIBUTE/TAG[.=$my-term]/following-sibling::VALUE else '')"/>-->
    <xsl:text>&#9;</xsl:text>
   </xsl:for-each>
  
-  <xsl:value-of select="isa:quotes-tab(@alias)"/>
+  <xsl:value-of select="isa:quotes-tab(@accession)"/>
   <xsl:text>&#10;</xsl:text>
  </xsl:template>
  
@@ -428,7 +429,7 @@ SRA schema version considered:
  </xsl:template>
  
  <xsl:template match="EXPERIMENT">
-  <!--<xsl:apply-templates select="DESIGN/SAMPLE_DESCRIPTOR/@refname"/>-->
+ <!-- <xsl:apply-templates select="DESIGN/SAMPLE_DESCRIPTOR/@refname"/>-->
   <xsl:apply-templates select="DESIGN/SAMPLE_DESCRIPTOR/@accession"/>
   <xsl:text>&#9;</xsl:text>
 
@@ -448,28 +449,6 @@ SRA schema version considered:
  
   <xsl:apply-templates select="DESIGN/LIBRARY_DESCRIPTOR/TARGETED_LOCI/LOCUS"/>
 
- <!-- <xsl:choose>
-   <xsl:when test="DESIGN/LIBRARY_DESCRIPTOR/TARGETED_LOCI">
-    <xsl:if test="DESIGN/LIBRARY_DESCRIPTOR/TARGETED_LOCI/LOCUS">
-     <xsl:value-of select="isa:quotes(DESIGN/LIBRARY_DESCRIPTOR/TARGETED_LOCI/LOCUS/@locus_name)"/>
-     <xsl:text>&#9;</xsl:text>
-    </xsl:if>
-   </xsl:when>
-   <xsl:otherwise>
-    <xsl:choose>
-     <xsl:when test="contains(DESIGN/DESIGN_DESCRIPTION/.,'target_gene: ')">
-      <xsl:value-of select="isa:quotes(substring-before(substring-after(DESIGN/DESIGN_DESCRIPTION/.,'target_gene: '),'target_subfragment:'))"/>
-      <xsl:text>&#9;</xsl:text>
-     </xsl:when>
-     <xsl:otherwise>
-      <xsl:text/>
-      <xsl:text>"NULL"</xsl:text>
-      <xsl:text>&#9;</xsl:text>
-     </xsl:otherwise>
-    </xsl:choose>
-   </xsl:otherwise>
-  </xsl:choose>
--->
   <xsl:apply-templates select="DESIGN/DESIGN_DESCRIPTION[contains(.,'target_subfragment: ')]" mode="target-subfragment"/>
   
   <xsl:apply-templates select="DESIGN/DESIGN_DESCRIPTION[contains(.,'mid: ')]" mode="mid"/>
@@ -618,6 +597,7 @@ SRA schema version considered:
    <xsl:text>"</xsl:text>
    <xsl:text>&#9;</xsl:text>
   </xsl:if>
+   
  </xsl:template>
  
  <xsl:template match="text() | @*"/>  
