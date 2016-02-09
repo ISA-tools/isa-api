@@ -128,11 +128,11 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
 
             if acc_number.startswith('SRA') or acc_number.startswith('ERA'):
                 res = subprocess.call(['java', '-jar', saxon_jar_path, INPUT_FILE, STUDY_XSL_FILE,
-                                       'acc-number='+acc_number, 'target-dir='+destination_dir])
+                                       'acc-number='+acc_number, 'outputdir='+destination_dir])
 
             elif acc_number.startswith('SRP') or acc_number.startswith('ERP'):
                 res = subprocess.call(['java', '-jar', saxon_jar_path, INPUT_FILE, SUBMISSION_XSL_FILE,
-                                 'acc-number='+acc_number, 'target-dir='+destination_dir])
+                                 'acc-number='+acc_number, 'outputdir='+destination_dir])
 
             print(res)
 
@@ -143,6 +143,7 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
     with ZipFile(buffer, 'w') as zip_file:
         # use relative dir_name to avoid absolute path on file names
         zipdir(dir_name, zip_file)
+        print(zip_file.namelist())
 
     # clean up the target directory after the ZIP file has been closed
     rmtree(destination_dir)
