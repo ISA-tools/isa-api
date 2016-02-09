@@ -527,8 +527,9 @@ class StudyAssayParser:
         vals = []
         pat = re.compile("[\W]+")
         for i in indexes:
-            names.append(pat.sub("_", self._clean_header(header[i])))
-            vals.append(line[i])
+            if header[i]:
+                names.append(pat.sub("_", self._clean_header(header[i])))
+                vals.append(line[i])
         Attrs = collections.namedtuple('Attrs', names)
         return Attrs(*vals)
 
