@@ -37,6 +37,7 @@ SRA schema version considered:
 
  <!-- The input parameter from the command line -->
  <xsl:param name="acc-number" required="yes"/>
+ <xsl:param name="target-dir" select="output" />
 
  <xsl:key name="protocols" match="LIBRARY_CONSTRUCTION_PROTOCOL" use="."/>
  <xsl:key name="sampletaglookupid" match="/ROOT/SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE/TAG" use="."/>
@@ -93,7 +94,7 @@ SRA schema version considered:
  <xsl:template match="XREF_LINK/DB[contains(.,'NA-STUDY')]">
   <xsl:param name="broker-name" required="yes" tunnel="yes"/>
   <xsl:variable name="study" select="following-sibling::ID"/>
-  <xsl:result-document href="{concat('output/', $acc-number, '/', 'i_', $acc-number, '.txt')}" method="text">
+  <xsl:result-document href="{concat($target-dir, '/', $acc-number, '/', 'i_', $acc-number, '.txt')}" method="text">
    <xsl:text>#SRA Document:</xsl:text>    <xsl:value-of select="isa:quotes($acc-number)"/><xsl:text>&#10;</xsl:text>
    <xsl:text>"ONTOLOGY SOURCE REFERENCE"&#10;</xsl:text>
    <xsl:value-of select="isa:single-name-value('Term Source Name', 'OBI')"/>
@@ -145,7 +146,7 @@ SRA schema version considered:
  </xsl:template>
 
  <xsl:template match="XREF_LINK/DB[contains(.,'NA-SAMPLE')]">
-  <xsl:result-document href="{concat('output/', $acc-number, '/', 's_', $acc-number, '.txt')}" method="text">
+  <xsl:result-document href="{concat($target-dir, '/', $acc-number, '/', 's_', $acc-number, '.txt')}" method="text">
    <xsl:variable name="samples-ids" select="following-sibling::ID"/>
    <xsl:call-template name="generate-study-header"/>
    <xsl:text>"Sample Name"&#10;</xsl:text>
@@ -172,7 +173,7 @@ SRA schema version considered:
  </xsl:template>
  
  <xsl:template match="experiments/experiment" mode="distinct-exp">
-  <xsl:result-document href="{concat('output/', $acc-number, '/', 'a_', lower-case(@library-strategy), '-', lower-case(@library-source), '.txt')}" method="text">
+  <xsl:result-document href="{concat($target-dir, '/', $acc-number, '/', 'a_', lower-case(@library-strategy), '-', lower-case(@library-source), '.txt')}" method="text">
    <xsl:variable name="my-exp" select="document(concat('http://www.ebi.ac.uk/ena/data/view/', @acc-number, '&amp;display=xml'))"/>
    <!-- Create the header -->
    <xsl:text>"Sample Name"&#9;</xsl:text>
