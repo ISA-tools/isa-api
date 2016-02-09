@@ -4,6 +4,16 @@ This repository is a python-based ISA-API library, which supports the programmat
 
 It relies on Python 3.4. We follow the [GitFlow development workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow).
 
+### Instalation procedure
+
+To install the isa-api, make sure to install the requirements:
+
+`pip install -r requiremens.txt`
+
+To run the tests:
+
+`python setup.py test`
+
 ## isatools package
 
 * Install using `pip install -e .` from inside `isa-api` project root (may need to sudo it)
