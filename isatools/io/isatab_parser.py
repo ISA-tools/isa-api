@@ -233,6 +233,7 @@ class StudyAssayParser:
                           "Derived Array Data File" : "Derived Data File",
                           "Hybridization Assay Name": "Assay Name",
                           "Scan Name": "Assay Name",
+                          "Array Data Matrix File": "Derived Data File",
                           "Derived Array Data Matrix File": "Derived Data File",
                           "Raw Spectral Data File": "Raw Data File",
                           "Derived Spectral Data File": "Derived Data File"}
@@ -329,7 +330,6 @@ class StudyAssayParser:
                             if len(assay_name_indices)==1:
                                 assay_name = line[hgroups[assay_name_indices[0]][0]]
 
-
                         if (assay_name):
                            unique_process_name = assay_name
                         else:
@@ -360,6 +360,9 @@ class StudyAssayParser:
                         except KeyError:
                             #create process node
                             process_node = ProcessNodeRecord(unique_process_name, processing_header, study, processing_name)
+
+                        #process_node.previous_process =
+                        #previous_protocol = line[hgroups[next_processing_index]]
 
                         if assay_name:
                             process_node.assay_name = assay_name
@@ -741,6 +744,8 @@ class ProcessNodeRecord:
         self.study_assay = study_assay
         self.name = name
         self.protocol = protocol
+        self.previous_process = ""
+        self.next_process = ""
         self.inputs = []
         self.outputs = []
         self.metadata = {}
