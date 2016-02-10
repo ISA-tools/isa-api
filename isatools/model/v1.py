@@ -639,7 +639,8 @@ class DataFileType(Enum):
 
 
 class DataFile(object):
-    def __init__(self, filename='', label=''):
+    def __init__(self, id_='', filename='', label=''):
+        self.id = id_
         self.filename = filename
         self.label = label
     

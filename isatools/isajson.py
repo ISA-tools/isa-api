@@ -360,9 +360,9 @@ def load(fp):
                 data_dict = dict()
                 for data_json in assay_json['dataFiles']:
                     logger.debug('Build Data object')
-                    data = Data(
+                    data = DataFile(
                         id_=data_json['@id'],
-                        name=data_json['name'],
+                        filename=data_json['name'],
                         # type_=data_json['type'],
                     )
                     data_dict[data.id] = data
@@ -404,6 +404,7 @@ def load(fp):
                     other_materials_dict[material.id] = material
                 for assay_process_json in assay_json['processSequence']:
                     process = Process(
+                        id_=assay_process_json['@id'],
                         executes_protocol=protocols_dict[assay_process_json['executesProtocol']['@id']]
                     )
                     for input_json in assay_process_json['inputs']:
@@ -488,3 +489,23 @@ def load(fp):
         logger.debug('End building Studies objects')
         logger.debug('End building Investigation object')
     return investigation
+
+
+class IsaJsonEncoder(json.JSONEncoder):
+        def default(self, o):
+            if isinstance(o, Sample):
+                return {
+                    '@id': o.id,
+                }
+            elif isinstance(o, Source):
+                return {
+                    '@id': o.id
+                }
+            elif isinstance(o, Process):
+                return {
+                    '@id': o.id
+                }
+
+
+def dump(i):
+    pass

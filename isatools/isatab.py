@@ -725,6 +725,7 @@ def dump(isa_obj, output_path):
 
             write_study_table_files(investigation, output_path)
             write_assay_table_files(investigation, output_path)
+
         fp.close()
     else:
         raise NotImplementedError("Dumping this ISA object to ISA Tab is not yet supported")
@@ -764,41 +765,41 @@ def write_assay_table_files(inv_obj, output_dir):
                         paths = list(all_simple_paths(graph, start_node, end_node))
                         if len(paths) > 0:
                             path = paths[0]
-                            line = list()
+                            cols = list()
                             for node in path:
                                 # go through nodes in path
                                 if isinstance(node, Sample):
-                                    line.append('Sample Name')
+                                    cols.append('Sample Name')
                                 elif isinstance(node, Material):
                                     if isinstance(node, Extract):
                                         if isinstance(node, LabeledExtract):
-                                            line.extend(('Labeled Extract Name', 'Label', 'Term Source REF', 'Term Accession'))
+                                            cols.extend(('Labeled Extract Name', 'Label', 'Term Source REF', 'Term Accession'))
                                         else:
-                                            line.append('Extract Name')
+                                            cols.append('Extract Name')
                                     else:
-                                        line.append('Material Name')
+                                        cols.append('Material Name')
                                 elif isinstance(node, Data):
                                     for file in sorted(node.data_files, key=lambda x: x.label):
-                                        line.append(file.label)
+                                        cols.append(file.label)
                                 elif isinstance(node, Process):
-                                    line.append('Protocol REF')
+                                    cols.append('Protocol REF')
                                     if node.date is not None:
-                                        line.append('Date')
+                                        cols.append('Date')
                                     if node.performer is not None:
-                                        line.append('Performer')
-                                    for attr, val in node.additional_properties:
-                                        line.append(attr)
+                                        cols.append('Performer')
+                                    for key in node.additional_properties:
+                                        cols.append(key)
                                     for parameter_value in sorted(node.parameter_values, key=lambda x: x.category):
                                         if isinstance(parameter_value.value, OntologyAnnotation):
-                                            line.extend(('Parameter Value[' + parameter_value.category + ']', 'Term Source REF', 'Term Accession'))
+                                            cols.extend(('Parameter Value[' + parameter_value.category + ']', 'Term Source REF', 'Term Accession'))
                                         else:
-                                            line.append('Parameter Value[' + parameter_value.category + ']')
+                                            cols.append('Parameter Value[' + parameter_value.category + ']')
                                         if not (parameter_value.unit is None):
-                                            line.extend(('Unit', 'Term Source REF', 'Term Accession'))
+                                            cols.extend(('Unit', 'Term Source REF', 'Term Accession'))
                                 else:
                                     raise IOError("Unexpected node: " + str(node))
-                            print(line)
-                            writer.writerow(line)
+                            print(cols)
+                            writer.writerow(cols)
                 fp.close()
 
 
@@ -829,58 +830,61 @@ def write_study_table_files(inv_obj, output_dir):
             fp = open(os.path.join(output_dir, study_obj.filename), 'w')
             writer = csv.writer(fp, delimiter='\t')
             # Now write out the row content; assumption - all paths traverse the same pattern of nodes and all same length
-            for start_node in start_nodes:
-                for end_node in end_nodes:
-                    paths = list(all_simple_paths(graph, start_node, end_node))  # get paths from start to end nodes
-                    cols = list()
-                    # write out column names first
-                    for node in paths[0]:  # only traverse one path
-                        if isinstance(node, Source):
-                            cols.append('Source Name')
-                            for c in sorted(node.characteristics, key=lambda x: id(x.category)):
-                                if isinstance(c.value, int) or isinstance(c.value, float):
-                                    cols.extend(('Characteristics[' + c.category.characteristic_type.name + ']', 'Unit', 'Term Source REF', 'Term Accession'))
-                                elif isinstance(c.value, OntologyAnnotation):
-                                    cols.extend(('Characteristics[' + c.category.characteristic_type.name + ']', 'Term Source REF', 'Term Accession'))
-                                else:
-                                    cols.append('Characteristics[' + c.category.characteristic_type.name + ']')
-                        elif isinstance(node, Process):
-                            cols.append('Protocol REF')
-                            if node.date is not None:
-                                cols.append('Date')
-                            if node.performer is not None:
-                                cols.append('Performer')
-                            for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
-                                if isinstance(pv.value, int) or isinstance(pv.value, float):
-                                    cols.extend(('Parameter Value[' + c.category.characteristic_type.name + ']', 'Unit', 'Term Source REF', 'Term Accession'))
-                                elif isinstance(pv.value, OntologyAnnotation):
-                                    cols.extend(('Parameter Value[' + c.category.characteristic_type.name + ']', 'Term Source REF', 'Term Accession'))
-                                else:
-                                    cols.append('Parameter Value[' + c.category.characteristic_type.name + ']')
-                        elif isinstance(node, Sample):
-                            cols.append('Sample Name')
-                            for c in sorted(node.characteristics, key=lambda x: id(x.category)):
-                                if isinstance(c.value, int) or isinstance(c.value, float):
-                                    cols.extend(('Characteristics[' + c.category.characteristic_type.name + ']', 'Unit', 'Term Source REF', 'Term Accession'))
-                                elif isinstance(c.value, OntologyAnnotation):
-                                    cols.extend(('Characteristics[' + c.category.characteristic_type.name + ']', 'Term Source REF', 'Term Accession'))
-                                else:
-                                    cols.append('Characteristics[' + c.category.characteristic_type.name + ']')
-                            for fv in sorted(node.factor_values, key=lambda x: id(x.factor_name)):
-                                if isinstance(fv.value, int) or isinstance(fv.value, float):
-                                    cols.extend(('Factor Value[' + c.category.characteristic_type.name + ']', 'Unit', 'Term Source REF', 'Term Accession'))
-                                elif isinstance(fv.value, OntologyAnnotation):
-                                    cols.extend(('Factor Value[' + c.category.characteristic_type.name + ']', 'Term Source REF', 'Term Accession'))
-                                else:
-                                    cols.append('Factor Value[' + c.category.characteristic_type.name + ']')
-                    writer.writerow(cols)
-                    break  # only do it once!
+            try:
+                for start_node in start_nodes:
+                    for end_node in end_nodes:
+                        paths = list(all_simple_paths(graph, start_node, end_node))  # get paths from start to end nodes
+                        cols = list()
+                        # write out column names first
+                        for node in paths[0]:  # only traverse one path
+                            if isinstance(node, Source):
+                                cols.append('Source Name')
+                                for c in sorted(node.characteristics, key=lambda x: id(x.category)):
+                                    if isinstance(c.value, int) or isinstance(c.value, float):
+                                        cols.extend(('Characteristics[' + c.category.characteristic_type.name + ']', 'Unit', 'Term Source REF', 'Term Accession'))
+                                    elif isinstance(c.value, OntologyAnnotation):
+                                        cols.extend(('Characteristics[' + c.category.characteristic_type.name + ']', 'Term Source REF', 'Term Accession'))
+                                    else:
+                                        cols.append('Characteristics[' + c.category.characteristic_type.name + ']')
+                            elif isinstance(node, Process):
+                                cols.append('Protocol REF')
+                                if node.date is not None:
+                                    cols.append('Date')
+                                if node.performer is not None:
+                                    cols.append('Performer')
+                                for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
+                                    if isinstance(pv.value, int) or isinstance(pv.value, float):
+                                        cols.extend(('Parameter Value[' + c.category.characteristic_type.name + ']', 'Unit', 'Term Source REF', 'Term Accession'))
+                                    elif isinstance(pv.value, OntologyAnnotation):
+                                        cols.extend(('Parameter Value[' + c.category.characteristic_type.name + ']', 'Term Source REF', 'Term Accession'))
+                                    else:
+                                        cols.append('Parameter Value[' + c.category.characteristic_type.name + ']')
+                            elif isinstance(node, Sample):
+                                cols.append('Sample Name')
+                                for c in sorted(node.characteristics, key=lambda x: id(x.category)):
+                                    if isinstance(c.value, int) or isinstance(c.value, float):
+                                        cols.extend(('Characteristics[' + c.category.characteristic_type.name + ']', 'Unit', 'Term Source REF', 'Term Accession'))
+                                    elif isinstance(c.value, OntologyAnnotation):
+                                        cols.extend(('Characteristics[' + c.category.characteristic_type.name + ']', 'Term Source REF', 'Term Accession'))
+                                    else:
+                                        cols.append('Characteristics[' + c.category.characteristic_type.name + ']')
+                                for fv in sorted(node.factor_values, key=lambda x: id(x.factor_name)):
+                                    if isinstance(fv.value, int) or isinstance(fv.value, float):
+                                        cols.extend(('Factor Value[' + c.category.characteristic_type.name + ']', 'Unit', 'Term Source REF', 'Term Accession'))
+                                    elif isinstance(fv.value, OntologyAnnotation):
+                                        cols.extend(('Factor Value[' + c.category.characteristic_type.name + ']', 'Term Source REF', 'Term Accession'))
+                                    else:
+                                        cols.append('Factor Value[' + c.category.characteristic_type.name + ']')
+                        writer.writerow(cols)
+                        raise IOError
+            except IOError:
+                pass
             for start_node in start_nodes:
                 for end_node in end_nodes:
                     paths = list(all_simple_paths(graph, start_node, end_node))  # traverse paths from start to end nodes
                     for path in paths:
                         line = list()
-                        for node in path:
+                        for col, node in zip(cols, path):
                             if isinstance(node, Source):
                                 line.append(node.name)
                                 for c in sorted(node.characteristics, key=lambda x: id(x.category)):
