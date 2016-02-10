@@ -290,11 +290,14 @@ class StudyAssayParser:
             input_process_map = {}
             output_process_map = {}
 
-            for line in reader:
-                # if line_number >=  max_number:
 
+            for line in reader:
+                    previous_processing_node = None
                     for processing_index in processing_indices:
 
+                        processing_name = line[hgroups[processing_index][0]]
+                        if not processing_name:
+                            continue
                         next_processing_index = find_gt(processing_indices, processing_index)
                         previous_processing_index = find_lt(processing_indices, processing_index)
 
@@ -307,7 +310,9 @@ class StudyAssayParser:
                         input_headers = [ headers[hgroups[x][0]] for i, x in enumerate(input_indices) ]
                         output_headers = [  headers[hgroups[x][0]] for i, x in enumerate(output_indices) ]
                         processing_header = headers[hgroups[processing_index][0]]
+
                         qualifier_headers = [  headers[x] for i, x in enumerate(qualifier_indices) ]
+                        qualifier_values = [ line[x] for i, x in enumerate(qualifier_indices) ]
 
                         input_values = [ line[hgroups[x][0]] for i, x in enumerate(input_indices) ]
                         input_node_indices = [ self._build_node_index(input_headers[i],input_values[i]) for i, x in enumerate(input_values) ]
@@ -315,14 +320,12 @@ class StudyAssayParser:
                         output_values = [ line[hgroups[x][0]] for i, x in enumerate(output_indices) ]
                         output_node_indices = [ self._build_node_index(output_headers[i], output_values[i]) for i, x in enumerate(output_values)]
 
-                        qualifier_values = [ line[x] for i, x in enumerate(qualifier_indices) ]
+                        qualifier_indices_string = '-'.join(qualifier_values)
+                        input_node_indices_string = "-".join(input_node_indices)
+                        output_node_indices_string = "-".join(output_node_indices)
 
                         #if both input_name and output_name are empty, ignore the row
                         if (not input_values and not output_values):
-                            continue
-
-                        processing_name = line[hgroups[processing_index][0]]
-                        if not processing_name:
                             continue
 
                         assay_name = ""
@@ -333,9 +336,6 @@ class StudyAssayParser:
                         if (assay_name):
                            unique_process_name = assay_name
                         else:
-                            qualifier_indices_string = '-'.join(qualifier_values)
-                            input_node_indices_string = "-".join(input_node_indices)
-                            output_node_indices_string = "-".join(output_node_indices)
                             try:
                                 unique_process_name = input_process_map[qualifier_indices_string+input_node_indices_string]
                                 if not (unique_process_name.startswith(processing_name)):
@@ -361,7 +361,11 @@ class StudyAssayParser:
                             #create process node
                             process_node = ProcessNodeRecord(unique_process_name, processing_header, study, processing_name)
 
-                        #process_node.previous_process =
+                        if (previous_processing_node):
+                            previous_processing_node.next_process = process_node
+                            process_node.previous_process = previous_processing_node
+
+                        previous_processing_node = process_node
                         #previous_protocol = line[hgroups[next_processing_index]]
 
                         if assay_name:
@@ -388,7 +392,6 @@ class StudyAssayParser:
                             in_second_but_not_in_first = in_second - in_first
                             process_node.outputs = process_node.outputs + list(in_second_but_not_in_first)
 
-                        #qualifier_process_map[qualifier_indices_string] = unique_process_name
                         input_process_map[qualifier_indices_string+input_node_indices_string] = unique_process_name
                         output_process_map[qualifier_indices_string+output_node_indices_string] = unique_process_name
 
@@ -649,6 +652,8 @@ _process_node_str = \
          date: {date}
          inputs: {inputs}
          outputs: {outputs}
+         previous_process = {previous_process}
+         next_process = {next_process}
          parameters: {parameters}
          metadata: {md}"""
 
@@ -745,8 +750,8 @@ class ProcessNodeRecord:
         self.study_assay = study_assay
         self.name = name
         self.protocol = protocol
-        self.previous_process = ""
-        self.next_process = ""
+        self.previous_process = None
+        self.next_process = None
         self.inputs = []
         self.outputs = []
         self.metadata = {}
@@ -765,5 +770,7 @@ class ProcessNodeRecord:
                                         protocol=self.protocol,
                                         performer=self.performer,
                                         date=self.date,
+                                        previous_process=self.previous_process.name if self.previous_process else "",
+                                        next_process=self.next_process.name if self.next_process else "",
                                         parameters=pprint.pformat(self.parameters).replace("\n","\n"+" "*9))
 

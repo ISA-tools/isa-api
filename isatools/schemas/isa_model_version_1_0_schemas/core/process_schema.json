@@ -24,6 +24,12 @@
              "type": "string",
               "format": "date-time"
         },
+        "previousProcess" : {
+             "$ref" : "process_schema.json#"
+        },
+        "nextProcess": {
+             "$ref" : "process_schema.json#"
+        },
         "inputs" : {
             "type": "array",
             "items": {

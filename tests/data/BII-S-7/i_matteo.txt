@@ -4,7 +4,7 @@ Term Source File	"http://data.bioontology.org/ontologies/NCBITAXON"	"http://data
 Term Source Version	"2"	"13"	"160"	"7"	"42"	"22"	"3"	
 Term Source Description	"National Center for Biotechnology Information (NCBI) Organismal Classification"	"Eagle-I Research Resource Ontology"	"Phenotypic Quality Ontology"	"Metagenome and Microbes Environmental Ontology"	"Units of Measurement Ontology"	"Ontology for Biomedical Investigations"	"Foundational Model of Anatomy"	
 INVESTIGATION
-Investigation Identifier	"1396875088422"
+Investigation Identifier	"BII-S-7"
 Investigation Title	""
 Investigation Description	""
 Investigation Submission Date	""
