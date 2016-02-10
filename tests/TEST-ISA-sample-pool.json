@@ -108,6 +108,35 @@
                     },
                     "processSequence": [
                         {
+                            "@id": "#process/hyb1",
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/nucleic_acid_hybridization"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract1.le1"
+                                }
+                            ],
+                            "name": "hyb1",
+                            "nextProcess": {
+                                "@id": "#process/hyb1.scan1"
+                            },
+                            "outputs": [],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#parameter/Array_Design_REF"
+                                    },
+                                    "value": "HG_U133_2.0"
+                                }
+                            ],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/labeling1"
+                            }
+                        },
+                        {
                             "@id": "#process/labeling1",
                             "date": "",
                             "executesProtocol": {
@@ -118,32 +147,19 @@
                                     "@id": "#material/extract-extract1"
                                 }
                             ],
+                            "nextProcess": {
+                                "@id": "#process/hyb1"
+                            },
                             "outputs": [
                                 {
                                     "@id": "#material/labeledextract-extract1.le1"
                                 }
                             ],
                             "parameterValues": [],
-                            "performer": ""
-                        },
-                        {
-                            "@id": "#process/data_collection1",
-                            "assayProcessName": "hyb1.scan1",
-                            "date": "",
-                            "executesProtocol": {
-                                "@id": "#protocol/data_collection"
-                            },
-                            "inputs": [],
-                            "outputs": [
-                                {
-                                    "@id": "#data/rawdatafile-1.cel"
-                                },
-                                {
-                                    "@id": "#data/imagefile-1.dat"
-                                }
-                            ],
-                            "parameterValues": [],
-                            "performer": ""
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/RNA_extraction1"
+                            }
                         },
                         {
                             "@id": "#process/RNA_extraction1",
@@ -156,6 +172,9 @@
                                     "@id": "#sample/sample-sample1"
                                 }
                             ],
+                            "nextProcess": {
+                                "@id": "#process/labeling1"
+                            },
                             "outputs": [
                                 {
                                     "@id": "#material/extract-extract1"
@@ -165,27 +184,26 @@
                             "performer": ""
                         },
                         {
-                            "@id": "#process/nucleic_acid_hybridization1",
-                            "assayProcessName": "hyb1",
+                            "@id": "#process/hyb1.scan1",
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/nucleic_acid_hybridization"
+                                "@id": "#protocol/data_collection"
                             },
-                            "inputs": [
+                            "inputs": [],
+                            "name": "hyb1.scan1",
+                            "outputs": [
                                 {
-                                    "@id": "#material/labeledextract-extract1.le1"
+                                    "@id": "#data/rawdatafile-1.cel"
+                                },
+                                {
+                                    "@id": "#data/imagefile-1.dat"
                                 }
                             ],
-                            "outputs": [],
-                            "parameterValues": [
-                                {
-                                    "category": {
-                                        "@id": "#parameter/Array_Design_REF"
-                                    },
-                                    "value": "HG_U133_2.0"
-                                }
-                            ],
-                            "performer": ""
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/hyb1"
+                            }
                         }
                     ],
                     "technologyPlatform": "",
@@ -199,17 +217,17 @@
             ],
             "characteristicCategories": [
                 {
-                    "@id": "#characteristic_category/Material_Type",
+                    "@id": "#characteristic_category/reference_descriptor",
                     "characteristicType": {
-                        "annotationValue": "Material Type",
+                        "annotationValue": "reference descriptor",
                         "termAccession": "",
                         "termSource": ""
                     }
                 },
                 {
-                    "@id": "#characteristic_category/reference_descriptor",
+                    "@id": "#characteristic_category/Material_Type",
                     "characteristicType": {
-                        "annotationValue": "reference descriptor",
+                        "annotationValue": "Material Type",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -286,15 +304,15 @@
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/Material_Type"
-                                },
-                                "value": "specimen"
-                            },
-                            {
-                                "category": {
                                     "@id": "#characteristic_category/reference_descriptor"
                                 },
                                 "value": "not applicable"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/Material_Type"
+                                },
+                                "value": "specimen"
                             },
                             {
                                 "category": {
@@ -310,47 +328,19 @@
                         "name": "source-source1"
                     },
                     {
-                        "@id": "#source/source-source3",
-                        "characteristics": [
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/Material_Type"
-                                },
-                                "value": "specimen"
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/reference_descriptor"
-                                },
-                                "value": "not applicable"
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/organism"
-                                },
-                                "value": {
-                                    "annotationValue": "Human",
-                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
-                                    "termSource": "NCBITAXON"
-                                }
-                            }
-                        ],
-                        "name": "source-source3"
-                    },
-                    {
                         "@id": "#source/source-source4",
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/Material_Type"
-                                },
-                                "value": "specimen"
-                            },
-                            {
-                                "category": {
                                     "@id": "#characteristic_category/reference_descriptor"
                                 },
                                 "value": "not applicable"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/Material_Type"
+                                },
+                                "value": "specimen"
                             },
                             {
                                 "category": {
@@ -366,8 +356,14 @@
                         "name": "source-source4"
                     },
                     {
-                        "@id": "#source/source-source2",
+                        "@id": "#source/source-source3",
                         "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/reference_descriptor"
+                                },
+                                "value": "not applicable"
+                            },
                             {
                                 "category": {
                                     "@id": "#characteristic_category/Material_Type"
@@ -376,9 +372,31 @@
                             },
                             {
                                 "category": {
+                                    "@id": "#characteristic_category/organism"
+                                },
+                                "value": {
+                                    "annotationValue": "Human",
+                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
+                                    "termSource": "NCBITAXON"
+                                }
+                            }
+                        ],
+                        "name": "source-source3"
+                    },
+                    {
+                        "@id": "#source/source-source2",
+                        "characteristics": [
+                            {
+                                "category": {
                                     "@id": "#characteristic_category/reference_descriptor"
                                 },
                                 "value": "not applicable"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/Material_Type"
+                                },
+                                "value": "specimen"
                             },
                             {
                                 "category": {

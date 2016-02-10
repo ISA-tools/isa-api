@@ -349,6 +349,10 @@ class ISATab2ISAjson_v1:
 
     def createProcessSequence(self, process_nodes, source_dict, sample_dict, material_dict, data_dict):
         json_list = []
+        #generate all the identifiers
+        for process_node_name in process_nodes:
+            self.generateIdentifier("process", process_node_name)
+
         for process_node_name in process_nodes:
             try:
                 measurement_type = process_nodes[process_node_name].study_assay.metadata["Study Assay Measurement Type"]
@@ -367,13 +371,15 @@ class ISATab2ISAjson_v1:
 
             process_node = process_nodes[process_node_name]
 
-            process_identifier = self.generateIdentifier("process", process_node_name)
+            process_identifier = self.getIdentifier("process", process_node_name)
             protocol_executed =  self.createExecuteStudyProtocol(process_node_name, process_node)
+            previous_process_identifier = self.getIdentifier("process", process_node.previous_process.name) if process_node.previous_process else ""
+            next_process_identifier = self.getIdentifier("process", process_node.next_process.name) if process_node.next_process else ""
 
             if (process_node.assay_name):
                 json_item = dict([
                     ("@id", process_identifier),
-                    ("assayProcessName", process_node.assay_name),
+                    ("name", process_node.assay_name),
                     ("executesProtocol", protocol_executed),
                     ("performer", process_node.performer),
                     ("date", process_node.date),
@@ -391,6 +397,11 @@ class ISATab2ISAjson_v1:
                     ("inputs", self.createInputList(process_node.inputs, source_dict, sample_dict, material_dict, data_dict)),
                     ("outputs", self.createOutputList(process_node.outputs, sample_dict, material_dict, data_dict) )
             ])
+
+            if previous_process_identifier:
+                json_item.update({  "previousProcess" : dict([("@id", previous_process_identifier)]) })
+            if next_process_identifier:
+                json_item.update({ "nextProcess" :  dict([("@id", next_process_identifier)]) })
             json_list.append(json_item)
         return json_list
 

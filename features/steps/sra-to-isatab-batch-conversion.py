@@ -3,13 +3,14 @@ from behave import *
 use_step_matcher("parse")
 
 
-@given('A list of comma separated access numbers "{access_numbers}"')
-def step_impl(context, access_numbers):
+@given('An access number {access_number}')
+def step_impl(context, access_number):
     """
+    :type access_number: str
     :type context: behave.runner.Context
-    :type access_numbers: str
     """
-    pass
+    context.access_number = access_number
+    print(context.access_number)
 
 
 @when("the SRA to ISA tab conversion is invoked")
@@ -34,3 +35,11 @@ def step_impl(context):
     :type context: behave.runner.Context
     """
     pass
+
+
+@step("nothing else")
+def step_impl(context):
+    """
+    :type context: behave.runner.Context
+    """
+    print("Nothing else")

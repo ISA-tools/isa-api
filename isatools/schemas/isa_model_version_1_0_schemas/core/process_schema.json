@@ -8,9 +8,6 @@
         "name": {
             "type": "string"
         },
-        "assayProcessName": {
-            "type": "string"
-        },
         "executesProtocol": {
                 "$ref": "protocol_schema.json#"
         },
@@ -26,6 +23,12 @@
         "date": {
              "type": "string",
               "format": "date-time"
+        },
+        "previousProcess" : {
+             "$ref" : "process_schema.json#"
+        },
+        "nextProcess": {
+             "$ref" : "process_schema.json#"
         },
         "inputs" : {
             "type": "array",

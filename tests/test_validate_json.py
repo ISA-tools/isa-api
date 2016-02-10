@@ -37,9 +37,9 @@ class ValidateJsonTest(TestCase):
         except ValidationError:
             self.fail('JSON Validation against schema failed')
 
-    def test_ideally_canonical(self):
-        try:
-            validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir,
-                                                                                   "ideally-canonical.json"))
-        except ValidationError:
-            self.fail('JSON Validation against schema failed')
+    # def test_ideally_canonical(self):
+    #     try:
+    #         validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir,
+    #                                                                                "ideally-canonical.json"))
+    #     except ValidationError:
+    #         self.fail('JSON Validation against schema failed')
