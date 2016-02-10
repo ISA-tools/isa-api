@@ -5,6 +5,7 @@ import os
 import sys
 import pandas as pd
 import io
+import networkx as nx
 
 
 def validate(isatab_dir, config_dir):
@@ -722,9 +723,8 @@ def dump(isa_obj, output_path):
             fp.write('STUDY CONTACTS\n')
             study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                      index_label='Study Person Last Name')
-
-            write_study_table_files(investigation, output_path)
-            write_assay_table_files(investigation, output_path)
+        write_study_table_files(investigation, output_path)
+        write_assay_table_files(investigation, output_path)
 
         fp.close()
     else:
@@ -800,7 +800,72 @@ def write_assay_table_files(inv_obj, output_dir):
                                     raise IOError("Unexpected node: " + str(node))
                             print(cols)
                             writer.writerow(cols)
+                # Start building lines by traversing all end-to-end paths; assumes correct experimental graphs
+                for start_node in start_nodes:
+                    for end_node in end_nodes:
+                        paths = list(all_simple_paths(graph, start_node, end_node))
+                        if len(paths) > 0:
+                            path = paths[0]
+                            line = list()
+                            for node in path:
+                                # go through nodes in path
+                                if isinstance(node, Sample):
+                                    line.append(node.name)
+                                elif isinstance(node, Material):
+                                    if isinstance(node, Extract):
+                                        if isinstance(node, LabeledExtract):
+                                            line.extend((node.name, node.label.name, node.label.term_source.name,
+                                                         node.label.term_accession))
+                                        else:
+                                            line.append(node.name)
+                                    else:
+                                        line.append(node.name)
+                                elif isinstance(node, Data):
+                                    for file in sorted(node.data_files, key=lambda x: x.label):
+                                        line.append(file.filename)
+                                elif isinstance(node, Process):
+                                    line.append(node.executes_protocol.name)
+                                    if node.date is not None:
+                                        line.append(node.date)
+                                    if node.performer is not None:
+                                        line.append(node.performer)
+                                    for key in node.additional_properties:
+                                        line.append(node.additional_properties[key])
+                                    for parameter_value in sorted(node.parameter_values, key=lambda x: x.category):
+                                        if isinstance(parameter_value.value, OntologyAnnotation):
+                                            line.extend((parameter_value.value.name, parameter_value.value.term_source,
+                                                         parameter_value.value.term_accession))
+                                        else:
+                                            line.append(parameter_value.value)
+                                        if not (parameter_value.unit is None):
+                                            line.extend((parameter_value.unit.name, parameter_value.unit.term_source,
+                                                         parameter_value.unit.term_accession))
+                                else:
+                                    raise IOError("Unexpected node: " + str(node))
+                            print(line)
+                            writer.writerow(line)
                 fp.close()
+
+
+def _longest_path(G):
+    """
+    Wrote this myself... woooo, get me!
+    """
+    start_nodes = list()
+    end_nodes = list()
+    for node in G.nodes():
+        if len(G.in_edges(node)) == 0:
+            start_nodes.append(node)
+        if len(G.out_edges(node)) == 0:
+            end_nodes.append(node)
+    from networkx.algorithms import all_simple_paths
+    longest = (0, None)
+    for start_node in start_nodes:
+        for end_node in end_nodes:
+            for path in all_simple_paths(G, start_node, end_node):
+                if len(path) > longest[0]:
+                    longest = (len(path), path)
+    return longest[1]
 
 
 def write_study_table_files(inv_obj, output_dir):
@@ -818,6 +883,76 @@ def write_study_table_files(inv_obj, output_dir):
     if isinstance(inv_obj, Investigation):
         for study_obj in inv_obj.studies:
             graph = study_obj.graph
+            # from networkx.algorithms import dag_longest_path
+            cols = list()
+            for node in longest_path(graph):
+                if isinstance(node, Source):
+                    cols.append('source')
+                    for c in sorted(node.characteristics, key=lambda x: id(x.category)):
+                        if isinstance(c.value, int) or isinstance(c.value, float):
+                            cols.extend(('source_char[' + c.category.characteristic_type.name + ']',
+                                         'source_char[' + c.category.characteristic_type.name + ']_unit',
+                                         'source_char[' + c.category.characteristic_type.name + ']_unit_termsource',
+                                         'source_char[' + c.category.characteristic_type.name + ']_unit_termaccession',))
+                        elif isinstance(c.value, OntologyAnnotation):
+                            cols.extend(('source_char[' + c.category.characteristic_type.name + ']',
+                                         'source_char[' + c.category.characteristic_type.name + ']_termsource',
+                                         'source_char[' + c.category.characteristic_type.name + ']_termaccession',))
+                        else:
+                            cols.append('source_char[' + c.category.characteristic_type.name + ']',)
+                elif isinstance(node, Process):
+                    cols.append('protocol[' + node.executes_protocol.name + ']')
+                    if node.date is not None:
+                        cols.append('protocol[' + node.executes_protocol.name + ']_date')
+                    if node.performer is not None:
+                        cols.append('protocol[' + node.executes_protocol.name + ']_performer')
+                    for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
+                        if isinstance(pv.value, int) or isinstance(pv.value, float):
+                            cols.extend(('protocol[' + node.executes_protocol.name +
+                                         ']_pv[' + c.category.characteristic_type.name + ']',
+                                         'protocol[' + node.executes_protocol.name +
+                                         ']_pv[' + c.category.characteristic_type.name + ']_unit',
+                                         'protocol[' + node.executes_protocol.name +
+                                         ']_pv[' + c.category.characteristic_type.name + ']_unit_termsource',
+                                         'protocol[' + node.executes_protocol.name +
+                                         ']_pv[' + c.category.characteristic_type.name + ']_unit_termaccession'))
+                        elif isinstance(pv.value, OntologyAnnotation):
+                            cols.extend(('protocol[' + node.executes_protocol.name +
+                                         ']_pv[' + c.category.characteristic_type.name + ']',
+                                         'protocol[' + node.executes_protocol.name +
+                                         ']_pv[' + c.category.characteristic_type.name + ']_termsource',
+                                         'protocol[' + node.executes_protocol.name +
+                                         ']_pv[' + c.category.characteristic_type.name + ']_termaccession',))
+                        else:
+                            cols.append('protocol[' + node.executes_protocol.name +
+                                        ']_pv[' + c.category.characteristic_type.name + ']',)
+                elif isinstance(node, Sample):
+                    cols.append('sample')
+                    for c in sorted(node.characteristics, key=lambda x: id(x.category)):
+                        if isinstance(c.value, int) or isinstance(c.value, float):
+                            cols.extend(('sample_char[' + c.category.characteristic_type.name + ']',
+                                         'sample_char[' + c.category.characteristic_type.name + ']_unit',
+                                         'sample_char[' + c.category.characteristic_type.name + ']_unit_termsource',
+                                         'sample_char[' + c.category.characteristic_type.name + ']_unit_termaccession',))
+                        elif isinstance(c.value, OntologyAnnotation):
+                            cols.extend(('sample_char[' + c.category.characteristic_type.name + ']',
+                                         'sample_char[' + c.category.characteristic_type.name + ']_termsource',
+                                         'sample_char[' + c.category.characteristic_type.name + ']_termaccession',))
+                    for fv in sorted(node.factor_values, key=lambda x: id(x.factor_name)):
+                        if isinstance(c.value, int) or isinstance(c.value, float):
+                            cols.extend(('sample_fv[' + c.category.characteristic_type.name + ']',
+                                         'sample_fv[' + c.category.characteristic_type.name + ']_unit',
+                                         'sample_fv[' + c.category.characteristic_type.name + ']_unit_termsource',
+                                         'sample_fv[' + c.category.characteristic_type.name + ']_unit_termaccession',))
+                        elif isinstance(c.value, OntologyAnnotation):
+                            cols.extend(('sample_fv[' + c.category.characteristic_type.name + ']',
+                                         'sample_fv[' + c.category.characteristic_type.name + ']_termsource',
+                                         'sample_fv[' + c.category.characteristic_type.name + ']_termaccession',))
+            import pandas as pd
+            df = pd.DataFrame(columns=cols)
+            print(cols)
+            return
+            """"""
             start_nodes = list()
             end_nodes = list()
             for node in graph.nodes():
