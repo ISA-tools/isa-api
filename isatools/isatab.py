@@ -1,3 +1,4 @@
+from symbol import lambdef
 from .model.v1 import *
 from isatools.io import isatab_parser, isatab_configurator
 from isatools.io.isatab_configurator import FieldType, ProtocolFieldType, StructuredFieldType
@@ -724,127 +725,12 @@ def dump(isa_obj, output_path):
             study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                      index_label='Study Person Last Name')
         write_study_table_files(investigation, output_path)
-        # write_assay_table_files(investigation, output_path)
+        write_assay_table_files(investigation, output_path)
 
         fp.close()
     else:
         raise NotImplementedError("Dumping this ISA object to ISA Tab is not yet supported")
     return investigation
-
-
-def write_assay_table_files(inv_obj, output_dir):
-    """
-        Writes out assay table files according to pattern defined by
-
-        Sample Name,
-        Protocol Ref: 'sample collection', [ ParameterValue[], ... ],
-        Sample Name, [ Characteristics[], ... ]
-        [ FactorValue[], ... ]
-
-        which should be equivalent to studySample.xml in default config
-
-    """
-    if isinstance(inv_obj, Investigation):
-        for study_obj in inv_obj.studies:
-            for assay_obj in study_obj.assays:
-                graph = assay_obj.graph
-                start_nodes = list()
-                end_nodes = list()
-                for node in graph.nodes():
-                    if len(graph.in_edges(node)) == 0:
-                        start_nodes.append(node)
-                    if len(graph.out_edges(node)) == 0:
-                        end_nodes.append(node)
-                from networkx.algorithms import all_simple_paths
-                import csv
-                fp = open(os.path.join(output_dir, assay_obj.filename), 'w')
-                writer = csv.writer(fp, delimiter='\t')
-                # Start building headers by traversing all end-to-end paths; assumes correct experimental graphs
-                for start_node in start_nodes:
-                    for end_node in end_nodes:
-                        paths = list(all_simple_paths(graph, start_node, end_node))
-                        if len(paths) > 0:
-                            path = paths[0]
-                            cols = list()
-                            for node in path:
-                                # go through nodes in path
-                                if isinstance(node, Sample):
-                                    cols.append('Sample Name')
-                                elif isinstance(node, Material):
-                                    if isinstance(node, Extract):
-                                        if isinstance(node, LabeledExtract):
-                                            cols.extend(('Labeled Extract Name', 'Label', 'Term Source REF', 'Term Accession'))
-                                        else:
-                                            cols.append('Extract Name')
-                                    else:
-                                        cols.append('Material Name')
-                                elif isinstance(node, Data):
-                                    for file in sorted(node.data_files, key=lambda x: x.label):
-                                        cols.append(file.label)
-                                elif isinstance(node, Process):
-                                    cols.append('Protocol REF')
-                                    if node.date is not None:
-                                        cols.append('Date')
-                                    if node.performer is not None:
-                                        cols.append('Performer')
-                                    for key in node.additional_properties:
-                                        cols.append(key)
-                                    for parameter_value in sorted(node.parameter_values, key=lambda x: x.category):
-                                        if isinstance(parameter_value.value, OntologyAnnotation):
-                                            cols.extend(('Parameter Value[' + parameter_value.category + ']', 'Term Source REF', 'Term Accession'))
-                                        else:
-                                            cols.append('Parameter Value[' + parameter_value.category + ']')
-                                        if not (parameter_value.unit is None):
-                                            cols.extend(('Unit', 'Term Source REF', 'Term Accession'))
-                                else:
-                                    raise IOError("Unexpected node: " + str(node))
-                            print(cols)
-                            writer.writerow(cols)
-                # Start building lines by traversing all end-to-end paths; assumes correct experimental graphs
-                for start_node in start_nodes:
-                    for end_node in end_nodes:
-                        paths = list(all_simple_paths(graph, start_node, end_node))
-                        if len(paths) > 0:
-                            path = paths[0]
-                            line = list()
-                            for node in path:
-                                # go through nodes in path
-                                if isinstance(node, Sample):
-                                    line.append(node.name)
-                                elif isinstance(node, Material):
-                                    if isinstance(node, Extract):
-                                        if isinstance(node, LabeledExtract):
-                                            line.extend((node.name, node.label.name, node.label.term_source.name,
-                                                         node.label.term_accession))
-                                        else:
-                                            line.append(node.name)
-                                    else:
-                                        line.append(node.name)
-                                elif isinstance(node, Data):
-                                    for file in sorted(node.data_files, key=lambda x: x.label):
-                                        line.append(file.filename)
-                                elif isinstance(node, Process):
-                                    line.append(node.executes_protocol.name)
-                                    if node.date is not None:
-                                        line.append(node.date)
-                                    if node.performer is not None:
-                                        line.append(node.performer)
-                                    for key in node.additional_properties:
-                                        line.append(node.additional_properties[key])
-                                    for parameter_value in sorted(node.parameter_values, key=lambda x: x.category):
-                                        if isinstance(parameter_value.value, OntologyAnnotation):
-                                            line.extend((parameter_value.value.name, parameter_value.value.term_source,
-                                                         parameter_value.value.term_accession))
-                                        else:
-                                            line.append(parameter_value.value)
-                                        if not (parameter_value.unit is None):
-                                            line.extend((parameter_value.unit.name, parameter_value.unit.term_source,
-                                                         parameter_value.unit.term_accession))
-                                else:
-                                    raise IOError("Unexpected node: " + str(node))
-                            print(line)
-                            writer.writerow(line)
-                fp.close()
 
 
 def _longest_path(G):
@@ -868,12 +754,155 @@ def _longest_path(G):
     return longest[1]
 
 
+def write_assay_table_files(inv_obj, output_dir):
+    """
+        Writes out assay table files according to pattern defined by
+
+        Sample Name,
+        Protocol Ref: 'sample collection', [ ParameterValue[], ... ],
+        Material Name, [ Characteristics[], ... ]
+        [ FactorValue[], ... ]
+
+
+    """
+    if isinstance(inv_obj, Investigation):
+        for study_obj in inv_obj.studies:
+            for assay_obj in study_obj.assays:
+                graph = assay_obj.graph
+                cols = list()
+                for node in _longest_path(graph):
+                    if isinstance(node, Sample):
+                        cols.append('sample')
+                    elif isinstance(node, Extract):
+                        if isinstance(node, LabeledExtract):
+                            cols.extend(('lextract', 'lextract_label', 'lextract_label_termsource', 'lextract_label_termaccession'))
+                        else:
+                            cols.append('extract')
+                    elif isinstance(node, Material):
+                        cols.append('material')
+                    elif isinstance(node, Data):
+                        for file in sorted(node.data_files, key=lambda x: x.label):
+                            cols.append('data[' + file.label + ']')
+                    elif isinstance(node, Process):
+                        cols.append('protocol[' + node.executes_protocol.name + ']')
+                        if node.date is not None:
+                            cols.append('protocol[' + node.executes_protocol.name + ']_date')
+                        if node.performer is not None:
+                            cols.append('protocol[' + node.executes_protocol.name + ']_performer')
+                        for prop in sorted(node.additional_properties.keys()):
+                            cols.append('protocol[' + node.executes_protocol.name + ']_prop[' + prop + ']')
+                        for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
+                            if isinstance(pv.value, int) or isinstance(pv.value, float):
+                                cols.extend(('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']',
+                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit',
+                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termsource',
+                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termaccession'))
+                            elif isinstance(pv.value, OntologyAnnotation):
+                                cols.extend(('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']',
+                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termsource',
+                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termaccession',))
+                            else:
+                                cols.append('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']',)
+                start_nodes = list()
+                end_nodes = list()
+                for node in graph.nodes():
+                    if len(graph.in_edges(node)) == 0:
+                        start_nodes.append(node)
+                    if len(graph.out_edges(node)) == 0:
+                        end_nodes.append(node)
+                import pandas as pd
+                df = pd.DataFrame(columns=cols)
+                i = 0
+                for start_node in start_nodes:
+                    for end_node in end_nodes:
+                        paths = list(nx.algorithms.all_simple_paths(graph, start_node, end_node))
+                        for path in paths:
+                            for node in path:
+                                if isinstance(node, Sample):
+                                    df.loc[i, 'sample'] = node.name
+                                elif isinstance(node, Extract):
+                                    if isinstance(node, LabeledExtract):
+                                        df.loc[i, 'lextract'] = node.name
+                                        df.loc[i, 'lextract_label'] = node.label.name
+                                        df.loc[i, 'lextract_label_termsource'] = node.label.term_source.name
+                                        df.loc[i, 'lextract_label_termaccession'] = node.label.term_accession
+                                    else:
+                                        df.loc[i, 'extract'] = node.name
+                                elif isinstance(node, Material):
+                                    df.loc[i, 'material'] = node.name
+                                elif isinstance(node, Data):
+                                    for file in sorted(node.data_files, key=lambda x: x.label):
+                                        df.loc[i, 'data[' + file.label + ']'] = file.filename
+                                elif isinstance(node, Process):
+                                    df.loc[i, 'protocol[' + node.executes_protocol.name + ']'] = node.executes_protocol.name
+                                    if node.date is not None:
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_date'] = node.date
+                                    if node.performer is not None:
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_performer'] = node.performer
+                                    for prop in sorted(node.additional_properties.keys()):
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_prop[' + prop + ']'] = node.additional_properties[prop]
+                                    for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
+                                        if isinstance(pv.value, int) or isinstance(pv.value, float):
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit'] = pv.unit.name
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termsource'] = pv.unit.term_source.name
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termaccession'] = pv.unit.term_accession
+                                        elif isinstance(pv.value, OntologyAnnotation):
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value.name
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termsource'] = pv.value.term_source.name
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termaccession'] = pv.value.term_accession
+                                        else:
+                                            df.loc[i, i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value
+                            i += 1
+                #  cleanup column headers before writing out df
+                import re
+                prop_regex = re.compile('.*_prop\[(.*?)\]')
+                data_regex = re.compile('data\[(.*?)\]')
+                pv_regex = re.compile('.*_pv\[(.*?)\]')
+                fv_regex = re.compile('.*_fv\[(.*?)\]')
+                for i, col in enumerate(cols):
+                    if col == 'sample':
+                        cols[i] = 'Sample Name'
+                    if col == 'extract':
+                        cols[i] = 'Extract Name'
+                    if 'protocol[' in col:
+                        cols[i] = 'Protocol REF'
+                    if '_date' in col:
+                        cols[i] = 'Date'
+                    if '_performer' in col:
+                        cols[i] = 'Performer'
+                    if ']_unit' in col:
+                        cols[i] = 'Unit'
+                    if '_termsource' in col:
+                        cols[i] = 'Term Source REF'
+                    if '_termaccession' in col:
+                        cols[i] = 'Term Accession'
+                    if col == 'lextract':
+                        cols[i] = 'Labeled Extract Name'
+                    if col == 'lextract_label':
+                        cols[i] = 'Label'
+                    if prop_regex.match(col) is not None:
+                        cols[i] = prop_regex.findall(col)[0]
+                    if data_regex.match(col) is not None:
+                        cols[i] = data_regex.findall(col)[0]
+                    if fv_regex.match(col) is not None:
+                        cols[i] = 'Factor Value[' + fv_regex.findall(col)[0] + ']'
+                    if pv_regex.match(col) is not None:
+                        cols[i] = 'Parameter Value[' + pv_regex.findall(col)[0] + ']'
+                df.columns = cols
+                df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0
+                import numpy as np
+                df = df.replace(r'\s+', np.nan, regex=True).replace('', np.nan)
+                df = df.dropna(axis=1, how='all')
+                df.to_csv(path_or_buf=open(os.path.join(output_dir, assay_obj.filename), 'w'), index=False, sep='\t', encoding='utf-8',)
+
+
 def write_study_table_files(inv_obj, output_dir):
     """
         Writes out study table files according to pattern defined by
 
         Source Name, [ Characteristics[], ... ],
-        Protocol Ref: 'sample collection', [ ParameterValue[], ... ],
+        Protocol Ref*: 'sample collection', [ ParameterValue[], ... ],
         Sample Name, [ Characteristics[], ... ]
         [ FactorValue[], ... ]
 
@@ -916,7 +945,7 @@ def write_study_table_files(inv_obj, output_dir):
                                          'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termsource',
                                          'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termaccession',))
                         else:
-                            cols.append('protocol[' + node.executes_protocol.name + ']_pv[' + c.category.characteristic_type.name + ']',)
+                            cols.append('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']',)
                 elif isinstance(node, Sample):
                     cols.append('sample')
                     for c in sorted(node.characteristics, key=lambda x: id(x.category)):
@@ -1011,10 +1040,39 @@ def write_study_table_files(inv_obj, output_dir):
                                         df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']_termsource'] = fv.value.term_source.name
                                         df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']_termaccession'] = fv.value.term_accession
                                     else:
-                                        df.loc[i, 'sample_fv[' + c.category.characteristic_type.name + ']'] = c.value
+                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']'] = fv.value
                         i += 1
-            print(df)
-            df.to_csv(path_or_buf=open('./data/tmp/a_test.txt', 'w'), sep='\t', encoding='utf-8',)
+            #  cleanup column headers before writing out df
+            import re
+            char_regex = re.compile('.*_char\[(.*?)\]')
+            pv_regex = re.compile('.*_pv\[(.*?)\]')
+            fv_regex = re.compile('.*_fv\[(.*?)\]')
+            for i, col in enumerate(cols):
+                if col == 'source':
+                    cols[i] = 'Source Name'
+                if col == 'sample':
+                    cols[i] = 'Sample Name'
+                if char_regex.match(col) is not None:
+                    cols[i] = 'Characteristics[' + char_regex.findall(col)[0] + ']'
+                if fv_regex.match(col) is not None:
+                    cols[i] = 'Factor Value[' + fv_regex.findall(col)[0] + ']'
+                if pv_regex.match(col) is not None:
+                    cols[i] = 'Parameter Value[' + pv_regex.findall(col)[0] + ']'
+                if 'protocol[' in col:
+                    cols[i] = 'Protocol REF'
+                if '_date' in col:
+                    cols[i] = 'Date'
+                if '_performer' in col:
+                    cols[i] = 'Performer'
+                if ']_unit' in col:
+                    cols[i] = 'Unit'
+                if '_termsource' in col:
+                    cols[i] = 'Term Source REF'
+                if '_termaccession' in col:
+                    cols[i] = 'Term Accession'
+            df.columns = cols
+            df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0
+            df.to_csv(path_or_buf=open(os.path.join(output_dir, study_obj.filename), 'w'), index=False, sep='\t', encoding='utf-8',)
     else:
         raise IOError("Input object is not a valid Investigation object")
 
