@@ -891,9 +891,9 @@ def write_assay_table_files(inv_obj, output_dir):
                         cols[i] = 'Parameter Value[' + pv_regex.findall(col)[0] + ']'
                 df.columns = cols
                 df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0
-                import numpy as np
-                df = df.replace(r'\s+', np.nan, regex=True).replace('', np.nan)
-                df = df.dropna(axis=1, how='all')
+                # import numpy as np
+                # df = df.replace(r'\s+', np.nan, regex=True).replace('', np.nan)
+                # df = df.dropna(axis=1, how='all')
                 df.to_csv(path_or_buf=open(os.path.join(output_dir, assay_obj.filename), 'w'), index=False, sep='\t', encoding='utf-8',)
 
 
