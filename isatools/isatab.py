@@ -724,7 +724,7 @@ def dump(isa_obj, output_path):
             study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                      index_label='Study Person Last Name')
         write_study_table_files(investigation, output_path)
-        write_assay_table_files(investigation, output_path)
+        # write_assay_table_files(investigation, output_path)
 
         fp.close()
     else:
@@ -883,9 +883,8 @@ def write_study_table_files(inv_obj, output_dir):
     if isinstance(inv_obj, Investigation):
         for study_obj in inv_obj.studies:
             graph = study_obj.graph
-            # from networkx.algorithms import dag_longest_path
             cols = list()
-            for node in longest_path(graph):
+            for node in _longest_path(graph):
                 if isinstance(node, Source):
                     cols.append('source')
                     for c in sorted(node.characteristics, key=lambda x: id(x.category)):
@@ -908,24 +907,16 @@ def write_study_table_files(inv_obj, output_dir):
                         cols.append('protocol[' + node.executes_protocol.name + ']_performer')
                     for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
                         if isinstance(pv.value, int) or isinstance(pv.value, float):
-                            cols.extend(('protocol[' + node.executes_protocol.name +
-                                         ']_pv[' + c.category.characteristic_type.name + ']',
-                                         'protocol[' + node.executes_protocol.name +
-                                         ']_pv[' + c.category.characteristic_type.name + ']_unit',
-                                         'protocol[' + node.executes_protocol.name +
-                                         ']_pv[' + c.category.characteristic_type.name + ']_unit_termsource',
-                                         'protocol[' + node.executes_protocol.name +
-                                         ']_pv[' + c.category.characteristic_type.name + ']_unit_termaccession'))
+                            cols.extend(('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']',
+                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit',
+                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termsource',
+                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termaccession'))
                         elif isinstance(pv.value, OntologyAnnotation):
-                            cols.extend(('protocol[' + node.executes_protocol.name +
-                                         ']_pv[' + c.category.characteristic_type.name + ']',
-                                         'protocol[' + node.executes_protocol.name +
-                                         ']_pv[' + c.category.characteristic_type.name + ']_termsource',
-                                         'protocol[' + node.executes_protocol.name +
-                                         ']_pv[' + c.category.characteristic_type.name + ']_termaccession',))
+                            cols.extend(('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']',
+                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termsource',
+                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termaccession',))
                         else:
-                            cols.append('protocol[' + node.executes_protocol.name +
-                                        ']_pv[' + c.category.characteristic_type.name + ']',)
+                            cols.append('protocol[' + node.executes_protocol.name + ']_pv[' + c.category.characteristic_type.name + ']',)
                 elif isinstance(node, Sample):
                     cols.append('sample')
                     for c in sorted(node.characteristics, key=lambda x: id(x.category)):
@@ -939,20 +930,15 @@ def write_study_table_files(inv_obj, output_dir):
                                          'sample_char[' + c.category.characteristic_type.name + ']_termsource',
                                          'sample_char[' + c.category.characteristic_type.name + ']_termaccession',))
                     for fv in sorted(node.factor_values, key=lambda x: id(x.factor_name)):
-                        if isinstance(c.value, int) or isinstance(c.value, float):
-                            cols.extend(('sample_fv[' + c.category.characteristic_type.name + ']',
-                                         'sample_fv[' + c.category.characteristic_type.name + ']_unit',
-                                         'sample_fv[' + c.category.characteristic_type.name + ']_unit_termsource',
-                                         'sample_fv[' + c.category.characteristic_type.name + ']_unit_termaccession',))
-                        elif isinstance(c.value, OntologyAnnotation):
-                            cols.extend(('sample_fv[' + c.category.characteristic_type.name + ']',
-                                         'sample_fv[' + c.category.characteristic_type.name + ']_termsource',
-                                         'sample_fv[' + c.category.characteristic_type.name + ']_termaccession',))
-            import pandas as pd
-            df = pd.DataFrame(columns=cols)
-            print(cols)
-            return
-            """"""
+                        if isinstance(fv.value, int) or isinstance(fv.value, float):
+                            cols.extend(('sample_fv[' + fv.category.characteristic_type.name + ']',
+                                         'sample_fv[' + fv.category.characteristic_type.name + ']_unit',
+                                         'sample_fv[' + fv.category.characteristic_type.name + ']_unit_termsource',
+                                         'sample_fv[' + fv.category.characteristic_type.name + ']_unit_termaccession',))
+                        elif isinstance(fv.value, OntologyAnnotation):
+                            cols.extend(('sample_fv[' + fv.category.characteristic_type.name + ']',
+                                         'sample_fv[' + fv.category.characteristic_type.name + ']_termsource',
+                                         'sample_fv[' + fv.category.characteristic_type.name + ']_termaccession',))
             start_nodes = list()
             end_nodes = list()
             for node in graph.nodes():
@@ -960,106 +946,75 @@ def write_study_table_files(inv_obj, output_dir):
                     start_nodes.append(node)
                 if len(graph.out_edges(node)) == 0:
                     end_nodes.append(node)
-            from networkx.algorithms import all_simple_paths
-            import csv
-            fp = open(os.path.join(output_dir, study_obj.filename), 'w')
-            writer = csv.writer(fp, delimiter='\t')
-            # Now write out the row content; assumption - all paths traverse the same pattern of nodes and all same length
-            try:
-                for start_node in start_nodes:
-                    for end_node in end_nodes:
-                        paths = list(all_simple_paths(graph, start_node, end_node))  # get paths from start to end nodes
-                        cols = list()
-                        # write out column names first
-                        for node in paths[0]:  # only traverse one path
-                            if isinstance(node, Source):
-                                cols.append('Source Name')
-                                for c in sorted(node.characteristics, key=lambda x: id(x.category)):
-                                    if isinstance(c.value, int) or isinstance(c.value, float):
-                                        cols.extend(('Characteristics[' + c.category.characteristic_type.name + ']', 'Unit', 'Term Source REF', 'Term Accession'))
-                                    elif isinstance(c.value, OntologyAnnotation):
-                                        cols.extend(('Characteristics[' + c.category.characteristic_type.name + ']', 'Term Source REF', 'Term Accession'))
-                                    else:
-                                        cols.append('Characteristics[' + c.category.characteristic_type.name + ']')
-                            elif isinstance(node, Process):
-                                cols.append('Protocol REF')
-                                if node.date is not None:
-                                    cols.append('Date')
-                                if node.performer is not None:
-                                    cols.append('Performer')
-                                for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
-                                    if isinstance(pv.value, int) or isinstance(pv.value, float):
-                                        cols.extend(('Parameter Value[' + c.category.characteristic_type.name + ']', 'Unit', 'Term Source REF', 'Term Accession'))
-                                    elif isinstance(pv.value, OntologyAnnotation):
-                                        cols.extend(('Parameter Value[' + c.category.characteristic_type.name + ']', 'Term Source REF', 'Term Accession'))
-                                    else:
-                                        cols.append('Parameter Value[' + c.category.characteristic_type.name + ']')
-                            elif isinstance(node, Sample):
-                                cols.append('Sample Name')
-                                for c in sorted(node.characteristics, key=lambda x: id(x.category)):
-                                    if isinstance(c.value, int) or isinstance(c.value, float):
-                                        cols.extend(('Characteristics[' + c.category.characteristic_type.name + ']', 'Unit', 'Term Source REF', 'Term Accession'))
-                                    elif isinstance(c.value, OntologyAnnotation):
-                                        cols.extend(('Characteristics[' + c.category.characteristic_type.name + ']', 'Term Source REF', 'Term Accession'))
-                                    else:
-                                        cols.append('Characteristics[' + c.category.characteristic_type.name + ']')
-                                for fv in sorted(node.factor_values, key=lambda x: id(x.factor_name)):
-                                    if isinstance(fv.value, int) or isinstance(fv.value, float):
-                                        cols.extend(('Factor Value[' + c.category.characteristic_type.name + ']', 'Unit', 'Term Source REF', 'Term Accession'))
-                                    elif isinstance(fv.value, OntologyAnnotation):
-                                        cols.extend(('Factor Value[' + c.category.characteristic_type.name + ']', 'Term Source REF', 'Term Accession'))
-                                    else:
-                                        cols.append('Factor Value[' + c.category.characteristic_type.name + ']')
-                        writer.writerow(cols)
-                        raise IOError
-            except IOError:
-                pass
+            import pandas as pd
+            df = pd.DataFrame(columns=cols)
+            i = 0
             for start_node in start_nodes:
                 for end_node in end_nodes:
-                    paths = list(all_simple_paths(graph, start_node, end_node))  # traverse paths from start to end nodes
+                    paths = list(nx.algorithms.all_simple_paths(graph, start_node, end_node))
                     for path in paths:
-                        line = list()
-                        for col, node in zip(cols, path):
+                        for node in path:
                             if isinstance(node, Source):
-                                line.append(node.name)
+                                df.loc[i, 'source'] = node.name
                                 for c in sorted(node.characteristics, key=lambda x: id(x.category)):
                                     if isinstance(c.value, int) or isinstance(c.value, float):
-                                        line.extend((c.value, c.unit.name, c.unit.term_source.name, c.unit.term_accession))
+                                        df.loc[i, 'source_char[' + c.category.characteristic_type.name + ']'] = c.value
+                                        df.loc[i, 'source_char[' + c.category.characteristic_type.name + ']_unit'] = c.unit.name
+                                        df.loc[i, 'source_char[' + c.category.characteristic_type.name + ']_unit_termsource'] = c.unit.term_source.name
+                                        df.loc[i, 'source_char[' + c.category.characteristic_type.name + ']_unit_termaccession'] = c.unit.term_accession
                                     elif isinstance(c.value, OntologyAnnotation):
-                                        line.extend((c.value.name, c.value.term_source.name, c.value.term_accession))
+                                        df.loc[i, 'source_char[' + c.category.characteristic_type.name + ']'] = c.value.name
+                                        df.loc[i, 'source_char[' + c.category.characteristic_type.name + ']_termsource'] = c.value.term_source.name
+                                        df.loc[i, 'source_char[' + c.category.characteristic_type.name + ']_termaccession'] = c.value.term_accession
                                     else:
-                                        line.append(c.value)
+                                        df.loc[i, 'source_char[' + c.category.characteristic_type.name + ']'] = c.value
                             elif isinstance(node, Process):
-                                line.append(node.executes_protocol.name)
+                                df.loc[i, 'protocol[' + node.executes_protocol.name + ']'] = node.executes_protocol.name
                                 if node.date is not None:
-                                    line.append(node.date)
+                                    df.loc[i, 'protocol[' + node.executes_protocol.name + ']_date'] = node.date
                                 if node.performer is not None:
-                                    line.append(node.performer)
+                                    df.loc[i, 'protocol[' + node.executes_protocol.name + ']_performer'] = node.performer
                                 for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
                                     if isinstance(pv.value, int) or isinstance(pv.value, float):
-                                        line.extend((pv.value, pv.unit.name, pv.unit.term_source.name, pv.unit.term_accession))
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit'] = pv.unit.name
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termsource'] = pv.unit.term_source.name
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termaccession'] = pv.unit.term_accession
                                     elif isinstance(pv.value, OntologyAnnotation):
-                                        line.extend((pv.value.name, pv.value.term_source.name, pv.value.term_accession))
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value.name
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termsource'] = pv.value.term_source
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termaccession'] = pv.value.term_accession
                                     else:
-                                        line.append(pv.value)
+                                        df.loc[i, i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value
                             elif isinstance(node, Sample):
-                                line.append(node.name)
+                                df.loc[i, 'sample'] = node.name
                                 for c in sorted(node.characteristics, key=lambda x: id(x.category)):
                                     if isinstance(c.value, int) or isinstance(c.value, float):
-                                        line.extend((c.value, c.unit.name, c.unit.term_source.name, c.unit.term_accession))
+                                        df.loc[i, 'sample_char[' + c.category.characteristic_type.name + ']'] = c.value
+                                        df.loc[i, 'sample_char[' + c.category.characteristic_type.name + ']_unit'] = c.unit.name
+                                        df.loc[i, 'sample_char[' + c.category.characteristic_type.name + ']_unit_termsource'] = c.unit.term_source.name
+                                        df.loc[i, 'sample_char[' + c.category.characteristic_type.name + ']_term_accession'] = c.unit.term_accession
                                     elif isinstance(c.value, OntologyAnnotation):
-                                        line.extend((c.value.name, c.value.term_source.name, c.value.term_accession))
+                                        df.loc[i, 'sample_char[' + c.category.characteristic_type.name + ']'] = c.value.name
+                                        df.loc[i, 'sample_char[' + c.category.characteristic_type.name + ']_termsource'] = c.value.term_source.name
+                                        df.loc[i, 'sample_char[' + c.category.characteristic_type.name + ']_termaccession'] = c.value.term_accession
                                     else:
-                                        line.append(c.value)
+                                        df.loc[i, 'sample_char[' + c.category.characteristic_type.name + ']'] = c.value
                                 for fv in sorted(node.factor_values, key=lambda x: id(x.factor_name)):
                                     if isinstance(fv.value, int) or isinstance(fv.value, float):
-                                        line.extend((fv.value, fv.unit.name, fv.unit.term_source.name, fv.unit.term_accession))
+                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']'] = fv.value
+                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']_unit'] = fv.unit.name
+                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']_unit_termsource'] = fv.unit.term_source.name
+                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']_unit_termaccession'] = fv.value.term_accession
                                     elif isinstance(fv.value, OntologyAnnotation):
-                                        line.extend((fv.value.name, fv.value.term_source.name, fv.value.term_accession))
+                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']'] = fv.value.name
+                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']_termsource'] = fv.value.term_source.name
+                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']_termaccession'] = fv.value.term_accession
                                     else:
-                                        line.append(fv.value)
-                        writer.writerow(line)
-            fp.close()
+                                        df.loc[i, 'sample_fv[' + c.category.characteristic_type.name + ']'] = c.value
+                        i += 1
+            print(df)
+            df.to_csv(path_or_buf=open('./data/tmp/a_test.txt', 'w'), sep='\t', encoding='utf-8',)
     else:
         raise IOError("Input object is not a valid Investigation object")
 
@@ -1087,6 +1042,7 @@ def read_investigation_file(fp):
         return memf
 
     def _build_section_df(f):
+        import numpy as np
         df = pd.read_csv(f, sep='\t').T  # Load and transpose ISA file section
         df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
         df.reset_index(inplace=True)  # Reset index so it is accessible as column
@@ -1173,7 +1129,7 @@ def read_investigation_file(fp):
     #     )
     #     print(ontology_source.to_json())
     #     ontology_source_references.append(ontology_source)
-    # investigation_data = investigation_df[1]
+    # investigation_data = investigation_df.loc[1]
     # investigation = Investigation(
     #     identifier=investigation_data['Investigation Identifier'],
     #     title=investigation_data['Investigation Title'],
