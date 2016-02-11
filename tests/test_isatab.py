@@ -216,16 +216,6 @@ class IsatabPoolingTest(TestCase):
         assay_graph.add_edge(anova_process, transformed_data)  # anova is Processing Event
 
         assay_graph.add_edge(sample2, rna_extraction_process)  # rna_extraction is Processing Event
-        assay_graph.add_edge(rna_extraction_process, extract)
-        assay_graph.add_edge(extract, labeling_process)  # labeling is Processing Event
-        assay_graph.add_edge(labeling_process, labeled_extract)  # labeled_extract property includes Label
-        assay_graph.add_edge(labeled_extract, hybridization_process)  # hybridization is Processing Event
-        assay_graph.add_edge(hybridization_process, scan_process)
-        assay_graph.add_edge(scan_process, scan_data)  # data_collection is Processing Event
-        assay_graph.add_edge(scan_data, data_normalization_process)  # scan properties of scan are output files
-        assay_graph.add_edge(data_normalization_process, normalized_data)  # data_normalization is Processing Event
-        assay_graph.add_edge(normalized_data, anova_process)  # normalization has a Derived Array Data File
-        assay_graph.add_edge(anova_process, transformed_data)  # anova is Processing Event
 
         assay = Assay(filename='a_pool.txt')
         assay.graph = assay_graph
