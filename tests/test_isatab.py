@@ -64,7 +64,7 @@ class IsatabSplittingTest(TestCase):
             term_accession='http://purl.obolibrary.org/obo/UBERON_0000178',
         )))
 
-        sample_collection_process = ProcessingEvent(executes_protocol=sample_collection_protocol)
+        sample_collection_process = Process(executes_protocol=sample_collection_protocol)
 
         import networkx as nx
         graph = nx.DiGraph()
@@ -98,6 +98,12 @@ class IsatabPoolingTest(TestCase):
             protocol_type=OntologyAnnotation(name='sample collection')
         )
         s.protocols.append(sample_collection_protocol)
+
+        sample_collection_protocol2 = Protocol(
+            name='sample collection2',
+            protocol_type=OntologyAnnotation(name='sample collection2')
+        )
+        s.protocols.append(sample_collection_protocol2)
 
         reference_descriptor_category = \
             CharacteristicCategory(characteristic_type=OntologyAnnotation(name='reference descriptor'))
@@ -148,18 +154,28 @@ class IsatabPoolingTest(TestCase):
             term_accession='http://purl.obolibrary.org/obo/UBERON_0002107',
         )))
 
-        sample_collection_process = ProcessingEvent(executes_protocol=sample_collection_protocol)
+        sample2 = Sample(name='sample2')
+        organism_part = CharacteristicCategory(characteristic_type=OntologyAnnotation(name='organism part'))
+        sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
+            name='liver',
+            term_source=uberon,
+            term_accession='http://purl.obolibrary.org/obo/UBERON_0002107',
+        )))
+
+        sample_collection_process = Process(executes_protocol=sample_collection_protocol)
+        sample_collection_process2 = Process(executes_protocol=sample_collection_protocol2)
 
         import networkx as nx
         study_graph = nx.DiGraph()
-        study_graph.add_edges_from([(source1, sample_collection_process),
+        study_graph.add_edges_from([(source1, sample_collection_process2),
                                    (source2, sample_collection_process),
                                    (source3, sample_collection_process),
                                    (source4, sample_collection_process)])
-        study_graph.add_edge(sample_collection_process, sample1)
+        study_graph.add_edge(sample_collection_process, sample_collection_process2)
+        study_graph.add_edge(sample_collection_process2, sample1)
 
         s.graph = study_graph
-        self.i.studies.append(s)
+
 
         rna_extraction_protocol = Protocol(name='rna extraction', protocol_type=OntologyAnnotation(name='rna extraction'))
         labeling_protocol = Protocol(name='labeling', protocol_type=OntologyAnnotation(name='labeling'))
@@ -199,11 +215,23 @@ class IsatabPoolingTest(TestCase):
         assay_graph.add_edge(normalized_data, anova_process)  # normalization has a Derived Array Data File
         assay_graph.add_edge(anova_process, transformed_data)  # anova is Processing Event
 
+        assay_graph.add_edge(sample2, rna_extraction_process)  # rna_extraction is Processing Event
+        assay_graph.add_edge(rna_extraction_process, extract)
+        assay_graph.add_edge(extract, labeling_process)  # labeling is Processing Event
+        assay_graph.add_edge(labeling_process, labeled_extract)  # labeled_extract property includes Label
+        assay_graph.add_edge(labeled_extract, hybridization_process)  # hybridization is Processing Event
+        assay_graph.add_edge(hybridization_process, scan_process)
+        assay_graph.add_edge(scan_process, scan_data)  # data_collection is Processing Event
+        assay_graph.add_edge(scan_data, data_normalization_process)  # scan properties of scan are output files
+        assay_graph.add_edge(data_normalization_process, normalized_data)  # data_normalization is Processing Event
+        assay_graph.add_edge(normalized_data, anova_process)  # normalization has a Derived Array Data File
+        assay_graph.add_edge(anova_process, transformed_data)  # anova is Processing Event
+
         assay = Assay(filename='a_pool.txt')
         assay.graph = assay_graph
 
         s.assays.append(assay)
-        return assay_graph
+        self.i.studies.append(s)
 
     def test_isatab_writer(self):
         isatab.dump(self.i, './data/tmp/')
@@ -312,18 +340,18 @@ class IsatabRepeatedMeasureTest(TestCase):
             term_accession='http://purl.obolibrary.org/obo/UBERON_0000178',
         )))
 
-        sample_collection_1_process = ProcessingEvent(executes_protocol=sample_collection_protocol, date_='01/01/2016')
-        sample_collection_2_process = ProcessingEvent(executes_protocol=sample_collection_protocol, date_='08/01/2016')
-        sample_collection_3_process = ProcessingEvent(executes_protocol=sample_collection_protocol, date_='15/01/2016')
-        sample_collection_4_process = ProcessingEvent(executes_protocol=sample_collection_protocol, date_='22/01/2016')
+        sample_collection_1_process = Process(executes_protocol=sample_collection_protocol, date_='01/01/2016')
+        sample_collection_2_process = Process(executes_protocol=sample_collection_protocol, date_='08/01/2016')
+        sample_collection_3_process = Process(executes_protocol=sample_collection_protocol, date_='15/01/2016')
+        sample_collection_4_process = Process(executes_protocol=sample_collection_protocol, date_='22/01/2016')
 
-        intervention_A1_process = ProcessingEvent(executes_protocol=intervention_A_protocol, date_='01/01/2016')
-        intervention_A2_process = ProcessingEvent(executes_protocol=intervention_A_protocol, date_='22/01/2016')
-        intervention_B1_process = ProcessingEvent(executes_protocol=intervention_B_protocol, date_='01/01/2016')
-        intervention_B2_process = ProcessingEvent(executes_protocol=intervention_B_protocol, date_='08/01/2016')
-        intervention_C_process = ProcessingEvent(executes_protocol=intervention_C_protocol, date_='15/01/2016')
-        intervention_D1_process = ProcessingEvent(executes_protocol=intervention_D_protocol, date_='08/01/2016')
-        intervention_D2_process = ProcessingEvent(executes_protocol=intervention_D_protocol, date_='22/01/2016')
+        intervention_A1_process = Process(executes_protocol=intervention_A_protocol, date_='01/01/2016')
+        intervention_A2_process = Process(executes_protocol=intervention_A_protocol, date_='22/01/2016')
+        intervention_B1_process = Process(executes_protocol=intervention_B_protocol, date_='01/01/2016')
+        intervention_B2_process = Process(executes_protocol=intervention_B_protocol, date_='08/01/2016')
+        intervention_C_process = Process(executes_protocol=intervention_C_protocol, date_='15/01/2016')
+        intervention_D1_process = Process(executes_protocol=intervention_D_protocol, date_='08/01/2016')
+        intervention_D2_process = Process(executes_protocol=intervention_D_protocol, date_='22/01/2016')
 
         import networkx as nx
         graph = nx.DiGraph()
