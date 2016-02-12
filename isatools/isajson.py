@@ -69,6 +69,7 @@ def load(fp):
         factors_dict = dict()
         parameters_dict = dict()
         units_dict = dict()
+        process_dict = dict()
 
         # populate assay characteristicCategories first
         for study_json in isajson['studies']:
@@ -271,6 +272,7 @@ def load(fp):
             for study_process_json in study_json['processSequence']:
                 logger.debug('Build Process object')
                 process = Process(
+                    id_=study_process_json['@id'],
                     executes_protocol=protocols_dict[study_process_json['executesProtocol']['@id']],
                 )
                 try:
@@ -288,6 +290,7 @@ def load(fp):
                             value=parameter_value_json['value'],
                             unit=units_dict[parameter_value_json['unit']['@id']],
                         )
+                        process.parameter_values.append(parameter_value)
                     else:
                         parameter_value = ParameterValue(
                             category=parameters_dict[parameter_value_json['category']['@id']],
@@ -297,8 +300,7 @@ def load(fp):
                                 term_source=term_source_dict[parameter_value_json['value']['termSource']],
                             )
                         )
-                    process.parameter_values.append(parameter_value)
-                study.process_sequence.append(process)
+                        process.parameter_values.append(parameter_value)
                 for input_json in study_process_json['inputs']:
                     input_ = None
                     try:
@@ -327,19 +329,37 @@ def load(fp):
                     if output is None:
                         raise IOError("Could not find output node in sources or samples dicts: " + output_json['@id'])
                     process.outputs.append(output)
-                import networkx as nx
-                graph = nx.DiGraph()
-                prev_process_node = None
-                for process in study.process_sequence:
-                    if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
-                        graph.add_edge(prev_process_node, process)
-                    for input_ in process.inputs:
-                        graph.add_edge(input_, process)
-                    for output in process.outputs:
-                        graph.add_edge(process, output)
-                    prev_process_node = process
-                study.graph = graph
                 study.process_sequence.append(process)
+                process_dict[process.id] = process
+            for study_process_json in study_json['processSequence']:  # 2nd pass
+                try:
+                    prev_proc = study_process_json['previousProcess']['@id']
+                    process_dict[study_process_json['@id']].prev_process = process_dict[prev_proc]
+                except KeyError:
+                    pass
+                try:
+                    next_proc = study_process_json['nextProcess']['@id']
+                    process_dict[study_process_json['@id']].next_process = process_dict[next_proc]
+                except KeyError:
+                    pass
+
+            import networkx as nx
+            graph = nx.DiGraph()
+            for process in study.process_sequence:
+                if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
+                    if len(process.outputs) > 0:
+                        for output in process.outputs:
+                            graph.add_edge(process, output)
+                    else:  # otherwise just connect the process to the next one
+                        graph.add_edge(process, process.next_process)
+                if process.prev_process is not None or len(process.inputs) > 0:
+                    if len(process.inputs) > 0:
+                        for input_ in process.inputs:
+                            graph.add_edge(input_, process)
+                    else:
+                        graph.add_edge(process.prev_process, process)
+
+            study.graph = graph
             for assay_json in study_json['assays']:
                 logger.debug('Start building Assay object')
                 logger.debug('Build Study Assay object')
@@ -357,16 +377,22 @@ def load(fp):
                     technology_platform=assay_json['technologyPlatform'],
                     filename=assay_json['filename']
                 )
+                for assay_unit_json in assay_json['unitCategories']:
+                    unit = OntologyAnnotation(id_=assay_unit_json['@id'],
+                                              name=assay_unit_json['annotationValue'],
+                                              term_source=term_source_dict[assay_unit_json['termSource']],
+                                              term_accession=assay_unit_json['termAccession'])
+                    units_dict[unit.id] = unit
                 data_dict = dict()
                 for data_json in assay_json['dataFiles']:
                     logger.debug('Build Data object')
-                    data = DataFile(
+                    data_file = DataFile(
                         id_=data_json['@id'],
                         filename=data_json['name'],
-                        # type_=data_json['type'],
+                        label=data_json['type'],
                     )
-                    data_dict[data.id] = data
-                    assay.data_files.append(data)
+                    data_dict[data_file.id] = data_file
+                    assay.data_files.append(data_file)
                 for sample_json in assay_json['materials']['samples']:
                     sample = samples_dict[sample_json['@id']]
                     assay.materials['samples'].append(sample)
@@ -423,10 +449,23 @@ def load(fp):
                                     input_ = other_materials_dict[input_json['@id']]
                                 except KeyError:
                                     pass
+                                try:
+                                    input_ = data_dict[input_json['@id']]
+                                except KeyError:
+                                    pass
                         if input_ is None:
                             raise IOError("Could not find input node in sources or samples dicts: " +
                                           input_json['@id'])
                         process.inputs.append(input_)
+                    data = Data()
+                    for output_json in assay_process_json['outputs']:  # first pass to load data nodes
+                        try:
+                            data_file = data_dict[output_json['@id']]
+                            data.data_files.append(data_file)
+                        except KeyError:
+                            pass
+                    if len(data.data_files) > 0:
+                        process.outputs.append(data)
                     for output_json in assay_process_json['outputs']:
                         output = None
                         try:
@@ -438,21 +477,12 @@ def load(fp):
                                 output = other_materials_dict[output_json['@id']]
                             except KeyError:
                                 pass
-                            finally:
-                                try:
-                                    output = data_dict[output_json['@id']]
-                                except KeyError:
-                                    pass
-                        if output is None:
-                            raise IOError("Could not find output node in samples or other materials dicts: " +
-                                          output_json['@id'])
-                        process.outputs.append(output)
+                        if output is not None:
+                            process.outputs.append(output)
                     for parameter_value_json in assay_process_json['parameterValues']:
+                        print(parameter_value_json)
                         if parameter_value_json['category']['@id'] == '#parameter/Array_Design_REF':  # Special case
-                            parameter_value = ParameterValue(
-                                category=ProtocolParameter(parameter_name='Array Design REF'),
-                                value=parameter_value_json['value'],
-                            )
+                            process.additional_properties['Array Design Ref'] = parameter_value_json['value']
                         elif isinstance(parameter_value_json['value'], int) or \
                                 isinstance(parameter_value_json['value'], float):
                             parameter_value = ParameterValue(
@@ -460,28 +490,47 @@ def load(fp):
                                 value=parameter_value_json['value'],
                                 unit=units_dict[parameter_value_json['unit']['@id']]
                             )
+                            process.parameter_values.append(parameter_value)
                         else:
                             parameter_value = ParameterValue(
                                 category=parameters_dict[parameter_value_json['category']['@id']],
-                                value=OntologyAnnotation(
+                                )
+                            try:
+                                parameter_value.value = OntologyAnnotation(
                                     name=parameter_value_json['value']['annotationValue'],
                                     term_accession=parameter_value_json['value']['termAccession'],
-                                    term_source=term_source_dict[parameter_value_json['value']['termSource']],
-                                )
-                            )
-                        process.parameter_values.append(parameter_value)
+                                    term_source=term_source_dict[parameter_value_json['value']['termSource']],)
+                            except TypeError:
+                                parameter_value.value = parameter_value_json['value']
+                            process.parameter_values.append(parameter_value)
                     assay.process_sequence.append(process)
+                    process_dict[process.id] = process
+                    for assay_process_json in assay_json['processSequence']:  # 2nd pass
+                        try:
+                            prev_proc = assay_process_json['previousProcess']['@id']
+                            process_dict[assay_process_json['@id']].prev_process = process_dict[prev_proc]
+                        except KeyError:
+                            pass
+                        try:
+                            next_proc = assay_process_json['nextProcess']['@id']
+                            process_dict[assay_process_json['@id']].next_process = process_dict[next_proc]
+                        except KeyError:
+                            pass
                     import networkx as nx
                     graph = nx.DiGraph()
-                    prev_process_node = None
                     for process in assay.process_sequence:
-                        if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
-                            graph.add_edge(prev_process_node, process)
-                        for input_ in process.inputs:
-                            graph.add_edge(input_, process)
-                        for output in process.outputs:
-                            graph.add_edge(process, output)
-                        prev_process_node = process
+                        if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
+                            if len(process.outputs) > 0:
+                                for output in process.outputs:
+                                    graph.add_edge(process, output)
+                            else:  # otherwise just connect the process to the next one
+                                graph.add_edge(process, process.next_process)
+                        if process.prev_process is not None or len(process.inputs) > 0:
+                            if len(process.inputs) > 0:
+                                for input_ in process.inputs:
+                                    graph.add_edge(input_, process)
+                            else:
+                                graph.add_edge(process.prev_process, process)
                     assay.graph = graph
                 study.assays.append(assay)
             logger.debug('End building Study object')
