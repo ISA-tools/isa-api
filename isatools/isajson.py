@@ -436,36 +436,32 @@ def load(fp):
                     for input_json in assay_process_json['inputs']:
                         input_ = None
                         try:
-                            input_ = sources_dict[input_json['@id']]
+                            input_ = samples_dict[input_json['@id']]
                         except KeyError:
                             pass
                         finally:
                             try:
-                                input_ = samples_dict[input_json['@id']]
+                                input_ = other_materials_dict[input_json['@id']]
                             except KeyError:
                                 pass
                             finally:
-                                try:
-                                    input_ = other_materials_dict[input_json['@id']]
-                                except KeyError:
-                                    pass
                                 try:
                                     input_ = data_dict[input_json['@id']]
                                 except KeyError:
                                     pass
                         if input_ is None:
-                            raise IOError("Could not find input node in sources or samples dicts: " +
+                            raise IOError("Could not find input node in samples or materials or data dicts: " +
                                           input_json['@id'])
                         process.inputs.append(input_)
-                    data = Data()
-                    for output_json in assay_process_json['outputs']:  # first pass to load data nodes
-                        try:
-                            data_file = data_dict[output_json['@id']]
-                            data.data_files.append(data_file)
-                        except KeyError:
-                            pass
-                    if len(data.data_files) > 0:
-                        process.outputs.append(data)
+                    # data = Data()
+                    # for output_json in assay_process_json['outputs']:  # first pass to load data nodes
+                    #     try:
+                    #         data_file = data_dict[output_json['@id']]
+                    #         data.data_files.append(data_file)
+                    #     except KeyError:
+                    #         pass
+                    # if len(data.data_files) > 0:
+                    #     process.outputs.append(data)
                     for output_json in assay_process_json['outputs']:
                         output = None
                         try:
@@ -477,8 +473,15 @@ def load(fp):
                                 output = other_materials_dict[output_json['@id']]
                             except KeyError:
                                 pass
-                        if output is not None:
-                            process.outputs.append(output)
+                            finally:
+                                    try:
+                                        output = data_dict[output_json['@id']]
+                                    except KeyError:
+                                        pass
+                        if output is None:
+                            raise IOError("Could not find output node in samples or materials or data dicts: " +
+                                          output_json['@id'])
+                        process.outputs.append(output)
                     for parameter_value_json in assay_process_json['parameterValues']:
                         print(parameter_value_json)
                         if parameter_value_json['category']['@id'] == '#parameter/Array_Design_REF':  # Special case
