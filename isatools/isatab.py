@@ -780,9 +780,6 @@ def write_assay_table_files(inv_obj, output_dir):
                             cols.append('extract')
                     elif isinstance(node, Material):
                         cols.append('material')
-                    elif isinstance(node, Data):
-                        for file in sorted(node.data_files, key=lambda x: x.label):
-                            cols.append('data[' + file.label + ']')
                     elif isinstance(node, Process):
                         cols.append('protocol[' + node.executes_protocol.name + ']')
                         if node.date is not None:
@@ -793,16 +790,20 @@ def write_assay_table_files(inv_obj, output_dir):
                             cols.append('protocol[' + node.executes_protocol.name + ']_prop[' + prop + ']')
                         for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
                             if isinstance(pv.value, int) or isinstance(pv.value, float):
-                                cols.extend(('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']',
-                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit',
-                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termsource',
-                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termaccession'))
+                                cols.extend(('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']',
+                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_unit',
+                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource',
+                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_unit_termaccession'))
                             elif isinstance(pv.value, OntologyAnnotation):
-                                cols.extend(('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']',
-                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termsource',
-                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termaccession',))
+                                cols.extend(('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']',
+                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_termsource',
+                                             'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_termaccession',))
                             else:
-                                cols.append('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']',)
+                                cols.append('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']',)
+                        for output in [x for x in node.outputs if isinstance(x, DataFile)]:
+                            cols.append('data[' + output.label + ']')
+                    elif isinstance(node, DataFile):
+                        pass  # we process DataFile above inside Process
                 start_nodes = list()
                 end_nodes = list()
                 for node in graph.nodes():
@@ -813,10 +814,10 @@ def write_assay_table_files(inv_obj, output_dir):
                 import pandas as pd
                 df = pd.DataFrame(columns=cols)
                 i = 0
+                assay_obj.paths = list()
                 for start_node in start_nodes:
                     for end_node in end_nodes:
-                        paths = list(nx.algorithms.all_simple_paths(graph, start_node, end_node))
-                        for path in paths:
+                        for path in list(nx.algorithms.all_simple_paths(graph, start_node, end_node)):
                             for node in path:
                                 if isinstance(node, Sample):
                                     df.loc[i, 'sample'] = node.name
@@ -830,9 +831,9 @@ def write_assay_table_files(inv_obj, output_dir):
                                         df.loc[i, 'extract'] = node.name
                                 elif isinstance(node, Material):
                                     df.loc[i, 'material'] = node.name
-                                elif isinstance(node, Data):
-                                    for file in sorted(node.data_files, key=lambda x: x.label):
-                                        df.loc[i, 'data[' + file.label + ']'] = file.filename
+                                elif isinstance(node, DataFile):
+                                    # for file in sorted(node.data_files, key=lambda x: x.label):
+                                    df.loc[i, 'data[' + node.label + ']'] = node.filename
                                 elif isinstance(node, Process):
                                     df.loc[i, 'protocol[' + node.executes_protocol.name + ']'] = node.executes_protocol.name
                                     if node.date is not None:
@@ -843,19 +844,20 @@ def write_assay_table_files(inv_obj, output_dir):
                                         df.loc[i, 'protocol[' + node.executes_protocol.name + ']_prop[' + prop + ']'] = node.additional_properties[prop]
                                     for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
                                         if isinstance(pv.value, int) or isinstance(pv.value, float):
-                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value
-                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit'] = pv.unit.name
-                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termsource'] = pv.unit.term_source.name
-                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termaccession'] = pv.unit.term_accession
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_unit'] = pv.unit.name
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource'] = pv.unit.term_source.name
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_unit_termaccession'] = pv.unit.term_accession
                                         elif isinstance(pv.value, OntologyAnnotation):
-                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value.name
-                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termsource'] = pv.value.term_source.name
-                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termaccession'] = pv.value.term_accession
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value.name
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_termsource'] = pv.value.term_source.name
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_termaccession'] = pv.value.term_accession
                                         else:
-                                            df.loc[i, i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value
+                                            df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
                             i += 1
                 #  cleanup column headers before writing out df
                 import re
+                protocol_regex = re.compile('protocol\[(.*?)\]')
                 prop_regex = re.compile('.*_prop\[(.*?)\]')
                 data_regex = re.compile('data\[(.*?)\]')
                 pv_regex = re.compile('.*_pv\[(.*?)\]')
@@ -863,9 +865,11 @@ def write_assay_table_files(inv_obj, output_dir):
                 for i, col in enumerate(cols):
                     if col == 'sample':
                         cols[i] = 'Sample Name'
+                    if col == 'material':
+                        cols[i] = 'Material Name'
                     if col == 'extract':
                         cols[i] = 'Extract Name'
-                    if 'protocol[' in col:
+                    if protocol_regex.match(col):
                         cols[i] = 'Protocol REF'
                     if '_date' in col:
                         cols[i] = 'Date'
@@ -889,11 +893,12 @@ def write_assay_table_files(inv_obj, output_dir):
                         cols[i] = 'Factor Value[' + fv_regex.findall(col)[0] + ']'
                     if pv_regex.match(col) is not None:
                         cols[i] = 'Parameter Value[' + pv_regex.findall(col)[0] + ']'
-                df.columns = cols
-                df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0
+                # df.columns = cols
+                df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0 (Sample name)
                 import numpy as np
-                df = df.replace(r'\s+', np.nan, regex=True).replace('', np.nan)
+                df = df.replace('', np.nan)
                 df = df.dropna(axis=1, how='all')
+                assay_obj.df = df  # http://stackoverflow.com/questions/24986968/combine-rows-under-a-condition-in-a-pandas-dataframe
                 df.to_csv(path_or_buf=open(os.path.join(output_dir, assay_obj.filename), 'w'), index=False, sep='\t', encoding='utf-8',)
 
 
@@ -960,14 +965,14 @@ def write_study_table_files(inv_obj, output_dir):
                                          'sample_char[' + c.category.characteristic_type.name + ']_termaccession',))
                     for fv in sorted(node.factor_values, key=lambda x: id(x.factor_name)):
                         if isinstance(fv.value, int) or isinstance(fv.value, float):
-                            cols.extend(('sample_fv[' + fv.category.characteristic_type.name + ']',
-                                         'sample_fv[' + fv.category.characteristic_type.name + ']_unit',
-                                         'sample_fv[' + fv.category.characteristic_type.name + ']_unit_termsource',
-                                         'sample_fv[' + fv.category.characteristic_type.name + ']_unit_termaccession',))
+                            cols.extend(('sample_fv[' + fv.factor_name.factor_type.name + ']',
+                                         'sample_fv[' + fv.factor_name.factor_type.name + ']_unit',
+                                         'sample_fv[' + fv.factor_name.factor_type.name + ']_unit_termsource',
+                                         'sample_fv[' + fv.factor_name.factor_type.name + ']_unit_termaccession',))
                         elif isinstance(fv.value, OntologyAnnotation):
-                            cols.extend(('sample_fv[' + fv.category.characteristic_type.name + ']',
-                                         'sample_fv[' + fv.category.characteristic_type.name + ']_termsource',
-                                         'sample_fv[' + fv.category.characteristic_type.name + ']_termaccession',))
+                            cols.extend(('sample_fv[' + fv.factor_name.factor_type.name + ']',
+                                         'sample_fv[' + fv.factor_name.factor_type.name + ']_termsource',
+                                         'sample_fv[' + fv.factor_name.factor_type.name + ']_termaccession',))
             start_nodes = list()
             end_nodes = list()
             for node in graph.nodes():
@@ -1031,16 +1036,16 @@ def write_study_table_files(inv_obj, output_dir):
                                         df.loc[i, 'sample_char[' + c.category.characteristic_type.name + ']'] = c.value
                                 for fv in sorted(node.factor_values, key=lambda x: id(x.factor_name)):
                                     if isinstance(fv.value, int) or isinstance(fv.value, float):
-                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']'] = fv.value
-                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']_unit'] = fv.unit.name
-                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']_unit_termsource'] = fv.unit.term_source.name
-                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']_unit_termaccession'] = fv.value.term_accession
+                                        df.loc[i, 'sample_fv[' + fv.factor_name.factor_type.name + ']'] = fv.value
+                                        df.loc[i, 'sample_fv[' + fv.factor_name.factor_type.name + ']_unit'] = fv.unit.name
+                                        df.loc[i, 'sample_fv[' + fv.factor_name.factor_type.name + ']_unit_termsource'] = fv.unit.term_source.name
+                                        df.loc[i, 'sample_fv[' + fv.factor_name.factor_type.name + ']_unit_termaccession'] = fv.unit.term_accession
                                     elif isinstance(fv.value, OntologyAnnotation):
-                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']'] = fv.value.name
-                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']_termsource'] = fv.value.term_source.name
-                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']_termaccession'] = fv.value.term_accession
+                                        df.loc[i, 'sample_fv[' + fv.factor_name.factor_type.name + ']'] = fv.value.name
+                                        df.loc[i, 'sample_fv[' + fv.factor_name.factor_type.name + ']_termsource'] = fv.value.term_source.name
+                                        df.loc[i, 'sample_fv[' + fv.factor_name.factor_type.name + ']_termaccession'] = fv.value.term_accession
                                     else:
-                                        df.loc[i, 'sample_fv[' + fv.category.characteristic_type.name + ']'] = fv.value
+                                        df.loc[i, 'sample_fv[' + fv.factor_name.factor_type.name + ']'] = fv.value
                         i += 1
             #  cleanup column headers before writing out df
             import re
@@ -1070,7 +1075,7 @@ def write_study_table_files(inv_obj, output_dir):
                     cols[i] = 'Term Source REF'
                 if '_termaccession' in col:
                     cols[i] = 'Term Accession'
-            df.columns = cols
+            # df.columns = cols
             df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0
             df.to_csv(path_or_buf=open(os.path.join(output_dir, study_obj.filename), 'w'), index=False, sep='\t', encoding='utf-8',)
     else:
