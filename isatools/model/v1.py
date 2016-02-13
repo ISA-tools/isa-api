@@ -629,6 +629,8 @@ class Process(IsaObject):
         else:
             self.outputs = outputs
         self.additional_properties = dict()
+        self.prev_process = None
+        self.next_process = None
 
 
 class DataFileType(Enum):
