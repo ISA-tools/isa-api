@@ -409,7 +409,7 @@ def load(fp):
                     categories_dict[characteristic_category.id] = characteristic_category
                 other_materials_dict = dict()
                 for other_material_json in assay_json['materials']['otherMaterials']:
-                    logger.debug('Build Material object')
+                    logger.debug('Build Material object')  # need to detect material types
                     material_name = other_material_json['name'][8:]
                     material = Material(
                         id_=other_material_json['@id'],
@@ -433,6 +433,9 @@ def load(fp):
                         id_=assay_process_json['@id'],
                         executes_protocol=protocols_dict[assay_process_json['executesProtocol']['@id']]
                     )
+                    if process.executes_protocol.protocol_type.name == 'data collection' and assay.technology_type.name == 'DNA microarray':
+                        process.additional_properties['Scan Name'] = assay_process_json['name']
+
                     for input_json in assay_process_json['inputs']:
                         input_ = None
                         try:
@@ -453,15 +456,6 @@ def load(fp):
                             raise IOError("Could not find input node in samples or materials or data dicts: " +
                                           input_json['@id'])
                         process.inputs.append(input_)
-                    # data = Data()
-                    # for output_json in assay_process_json['outputs']:  # first pass to load data nodes
-                    #     try:
-                    #         data_file = data_dict[output_json['@id']]
-                    #         data.data_files.append(data_file)
-                    #     except KeyError:
-                    #         pass
-                    # if len(data.data_files) > 0:
-                    #     process.outputs.append(data)
                     for output_json in assay_process_json['outputs']:
                         output = None
                         try:

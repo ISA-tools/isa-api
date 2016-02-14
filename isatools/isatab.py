@@ -771,6 +771,7 @@ def write_assay_table_files(inv_obj, output_dir):
                 graph = assay_obj.graph
                 cols = list()
                 for node in _longest_path(graph):
+                    mcount = 0
                     if isinstance(node, Sample):
                         cols.append('sample')
                     elif isinstance(node, Extract):
@@ -779,7 +780,16 @@ def write_assay_table_files(inv_obj, output_dir):
                         else:
                             cols.append('extract')
                     elif isinstance(node, Material):
-                        cols.append('material')
+                        if node.type == 'Labeled Extract Name':
+                            cols.append('lextract')
+                            cols.append('lextract_label')
+                            cols.append('lextract_label_termsource')
+                            cols.append('lextract_label_termaccession')
+                        elif node.type == 'Extract Name':
+                            cols.append('extract')
+                        else:
+                            cols.append('material[' + str(mcount) + ']')
+                            mcount += 1
                     elif isinstance(node, Process):
                         cols.append('protocol[' + node.executes_protocol.name + ']')
                         if node.date is not None:
@@ -818,19 +828,21 @@ def write_assay_table_files(inv_obj, output_dir):
                 for start_node in start_nodes:
                     for end_node in end_nodes:
                         for path in list(nx.algorithms.all_simple_paths(graph, start_node, end_node)):
+                            mcount = 0
                             for node in path:
                                 if isinstance(node, Sample):
                                     df.loc[i, 'sample'] = node.name
-                                elif isinstance(node, Extract):
-                                    if isinstance(node, LabeledExtract):
-                                        df.loc[i, 'lextract'] = node.name
-                                        df.loc[i, 'lextract_label'] = node.label.name
-                                        df.loc[i, 'lextract_label_termsource'] = node.label.term_source.name
-                                        df.loc[i, 'lextract_label_termaccession'] = node.label.term_accession
-                                    else:
-                                        df.loc[i, 'extract'] = node.name
                                 elif isinstance(node, Material):
-                                    df.loc[i, 'material'] = node.name
+                                    if node.type == 'Labeled Extract Name':
+                                        df.loc[i, 'lextract'] = node.name
+                                        df.loc[i, 'lextract_label'] = node.characteristics[0].value.name
+                                        df.loc[i, 'lextract_label_termsource'] =  node.characteristics[0].value.term_source.name
+                                        df.loc[i, 'lextract_label_termaccession'] =  node.characteristics[0].value.term_accession
+                                    elif node.type == 'Extract Name':
+                                        df.loc[i, 'extract'] = node.name
+                                    else:
+                                        df.loc[i, 'material[' + str(mcount) + ']'] = node.name
+                                        mcount += 1
                                 elif isinstance(node, DataFile):
                                     # for file in sorted(node.data_files, key=lambda x: x.label):
                                     df.loc[i, 'data[' + node.label + ']'] = node.filename
@@ -857,6 +869,7 @@ def write_assay_table_files(inv_obj, output_dir):
                             i += 1
                 #  cleanup column headers before writing out df
                 import re
+                material_regex = re.compile('material\[(.*?)\]')
                 protocol_regex = re.compile('protocol\[(.*?)\]')
                 prop_regex = re.compile('.*_prop\[(.*?)\]')
                 data_regex = re.compile('data\[(.*?)\]')
@@ -865,7 +878,7 @@ def write_assay_table_files(inv_obj, output_dir):
                 for i, col in enumerate(cols):
                     if col == 'sample':
                         cols[i] = 'Sample Name'
-                    if col == 'material':
+                    if material_regex.match('material'):
                         cols[i] = 'Material Name'
                     if col == 'extract':
                         cols[i] = 'Extract Name'
