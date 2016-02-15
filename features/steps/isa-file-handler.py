@@ -11,7 +11,7 @@ from zipfile import is_zipfile
 from urllib.parse import urljoin
 from isatools.io.storage_adapter import IsaGitHubStorageAdapter, REPOS, CONTENTS
 from lxml import etree
-from io import StringIO
+from io import BytesIO, StringIO
 from requests.exceptions import HTTPError
 
 __author__ = 'massi'
@@ -165,7 +165,6 @@ def step_impl(context):
     context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
                                                owner=context.owner_name, repository=context.repo_name, ref=branch)
 
-    expect(context.res).to.be.true
     expect(httpretty.has_request()).to.be.true
 
 
@@ -179,6 +178,21 @@ def step_impl(context):
     expect(os.path.isdir(out_dir)).to.be.true
     # expect each item in the directory to have been saved as a file
     [expect(os.path.isfile(os.path.join(out_dir, item['name']))).to.be.true for item in context.items_in_dir]
+
+
+@step("it should return a binary stream with the zipped content of the directory")
+def step_impl(context):
+    """
+    :type context: behave.runner.Context
+    """
+    expect(context.res).to.be.a(BytesIO)
+    dir_name = context.source_path.split('/')[-1]
+    file_names = [os.path.join(dir_name, item['name']) for item in context.items_in_dir]
+    with ZipFile(context.res) as zip_file:
+        expect(len(zip_file.namelist())).to.be.greater_than(0)
+
+        # the zip file should contain all the files listed in the source directory (i.e. in the directory JSON profile)
+        expect(set(zip_file.namelist())).to.equal(set(file_names))
 
 
 @when("the file object is a ZIP archive")
