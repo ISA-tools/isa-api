@@ -58,16 +58,39 @@
                     ],
                     "dataFiles": [
                         {
+<<<<<<< HEAD
+=======
                             "@id": "#data/rawdatafile-4.cel",
                             "name": "4.cel",
                             "type": "Raw Data File"
                         },
                         {
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             "@id": "#data/imagefile-1.dat",
                             "name": "1.dat",
                             "type": "Image File"
                         },
                         {
+<<<<<<< HEAD
+                            "@id": "#data/imagefile-2.dat",
+                            "name": "2.dat",
+                            "type": "Image File"
+                        },
+                        {
+                            "@id": "#data/imagefile-4.dat",
+                            "name": "4.dat",
+                            "type": "Image File"
+                        },
+                        {
+                            "@id": "#data/rawdatafile-2.cel",
+                            "name": "2.cel",
+                            "type": "Raw Data File"
+                        },
+                        {
+                            "@id": "#data/rawdatafile-1.cel",
+                            "name": "1.cel",
+                            "type": "Raw Data File"
+=======
                             "@id": "#data/rawdatafile-3.cel",
                             "name": "3.cel",
                             "type": "Raw Data File"
@@ -76,16 +99,12 @@
                             "@id": "#data/imagefile-4.dat",
                             "name": "4.dat",
                             "type": "Image File"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                         },
                         {
-                            "@id": "#data/rawdatafile-1.cel",
-                            "name": "1.cel",
+                            "@id": "#data/rawdatafile-3.cel",
+                            "name": "3.cel",
                             "type": "Raw Data File"
-                        },
-                        {
-                            "@id": "#data/imagefile-2.dat",
-                            "name": "2.dat",
-                            "type": "Image File"
                         },
                         {
                             "@id": "#data/imagefile-3.dat",
@@ -93,8 +112,18 @@
                             "type": "Image File"
                         },
                         {
+<<<<<<< HEAD
+                            "@id": "#data/rawdatafile-4.cel",
+                            "name": "4.cel",
+=======
+                            "@id": "#data/imagefile-3.dat",
+                            "name": "3.dat",
+                            "type": "Image File"
+                        },
+                        {
                             "@id": "#data/rawdatafile-2.cel",
                             "name": "2.cel",
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             "type": "Raw Data File"
                         }
                     ],
@@ -102,7 +131,11 @@
                     "materials": {
                         "otherMaterials": [
                             {
+<<<<<<< HEAD
+                                "@id": "#material/labeledextract-extract4.le1",
+=======
                                 "@id": "#material/labeledextract-extract3.le1",
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                                 "characteristics": [
                                     {
                                         "category": {
@@ -115,11 +148,19 @@
                                         }
                                     }
                                 ],
+<<<<<<< HEAD
+                                "name": "labeledextract-extract4.le1",
+                                "type": "Labeled Extract Name"
+                            },
+                            {
+                                "@id": "#material/labeledextract-extract1.le1",
+=======
                                 "name": "labeledextract-extract3.le1",
                                 "type": "Labeled Extract Name"
                             },
                             {
                                 "@id": "#material/labeledextract-extract2.le1",
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                                 "characteristics": [
                                     {
                                         "category": {
@@ -132,7 +173,11 @@
                                         }
                                     }
                                 ],
+<<<<<<< HEAD
+                                "name": "labeledextract-extract1.le1",
+=======
                                 "name": "labeledextract-extract2.le1",
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                                 "type": "Labeled Extract Name"
                             },
                             {
@@ -159,6 +204,10 @@
                                 "type": "Extract Name"
                             },
                             {
+<<<<<<< HEAD
+                                "@id": "#material/extract-extract2",
+                                "characteristics": [],
+=======
                                 "@id": "#material/extract-extract3",
                                 "characteristics": [],
                                 "name": "extract-extract3",
@@ -167,11 +216,12 @@
                             {
                                 "@id": "#material/extract-extract2",
                                 "characteristics": [],
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                                 "name": "extract-extract2",
                                 "type": "Extract Name"
                             },
                             {
-                                "@id": "#material/labeledextract-extract1.le1",
+                                "@id": "#material/labeledextract-extract2.le1",
                                 "characteristics": [
                                     {
                                         "category": {
@@ -184,7 +234,7 @@
                                         }
                                     }
                                 ],
-                                "name": "labeledextract-extract1.le1",
+                                "name": "labeledextract-extract2.le1",
                                 "type": "Labeled Extract Name"
                             },
                             {
@@ -192,20 +242,40 @@
                                 "characteristics": [],
                                 "name": "extract-extract1",
                                 "type": "Extract Name"
+<<<<<<< HEAD
+                            },
+                            {
+                                "@id": "#material/extract-extract3",
+                                "characteristics": [],
+                                "name": "extract-extract3",
+                                "type": "Extract Name"
+=======
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             }
                         ],
                         "samples": [
                             {
-                                "@id": "#sample/sample-sample1"
-                            },
-                            {
+<<<<<<< HEAD
                                 "@id": "#sample/sample-sample3"
                             },
                             {
                                 "@id": "#sample/sample-sample2"
+=======
+                                "@id": "#sample/sample-sample1"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             },
                             {
                                 "@id": "#sample/sample-sample4"
+                            },
+                            {
+<<<<<<< HEAD
+                                "@id": "#sample/sample-sample1"
+=======
+                                "@id": "#sample/sample-sample2"
+                            },
+                            {
+                                "@id": "#sample/sample-sample4"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             }
                         ]
                     },
@@ -216,13 +286,53 @@
                     },
                     "processSequence": [
                         {
+<<<<<<< HEAD
+                            "@id": "#process/labeling3",
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/labeling"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/extract-extract3"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/hyb3"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract3.le1"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/RNA_extraction3"
+                            }
+                        },
+                        {
+                            "@id": "#process/labeling2",
+=======
                             "@id": "#process/RNA_extraction4",
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             "date": "",
                             "executesProtocol": {
                                 "@id": "#protocol/RNA_extraction"
                             },
                             "inputs": [
                                 {
+<<<<<<< HEAD
+                                    "@id": "#material/extract-extract2"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/hyb2"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract2.le1"
+=======
                                     "@id": "#sample/sample-sample4"
                                 }
                             ],
@@ -232,19 +342,38 @@
                             "outputs": [
                                 {
                                     "@id": "#material/extract-extract4"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                                 }
                             ],
                             "parameterValues": [],
-                            "performer": ""
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/RNA_extraction2"
+                            }
                         },
                         {
+<<<<<<< HEAD
+                            "@id": "#process/labeling4",
+=======
                             "@id": "#process/RNA_extraction3",
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/RNA_extraction"
+                                "@id": "#protocol/labeling"
                             },
                             "inputs": [
                                 {
+<<<<<<< HEAD
+                                    "@id": "#material/extract-extract4"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/hyb4"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract4.le1"
+=======
                                     "@id": "#sample/sample-sample3"
                                 }
                             ],
@@ -254,25 +383,42 @@
                             "outputs": [
                                 {
                                     "@id": "#material/extract-extract3"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                                 }
                             ],
                             "parameterValues": [],
-                            "performer": ""
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/RNA_extraction4"
+                            }
                         },
                         {
+<<<<<<< HEAD
+                            "@id": "#process/hyb1",
+=======
                             "@id": "#process/hyb3",
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             "date": "",
                             "executesProtocol": {
                                 "@id": "#protocol/nucleic_acid_hybridization"
                             },
                             "inputs": [
                                 {
+<<<<<<< HEAD
+                                    "@id": "#material/labeledextract-extract1.le1"
+                                }
+                            ],
+                            "name": "hyb1",
+                            "nextProcess": {
+                                "@id": "#process/hyb1.scan1"
+=======
                                     "@id": "#material/labeledextract-extract3.le1"
                                 }
                             ],
                             "name": "hyb3",
                             "nextProcess": {
                                 "@id": "#process/hyb3.scan1"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             },
                             "outputs": [],
                             "parameterValues": [
@@ -285,17 +431,36 @@
                             ],
                             "performer": "",
                             "previousProcess": {
+<<<<<<< HEAD
+                                "@id": "#process/labeling1"
+                            }
+                        },
+                        {
+                            "@id": "#process/RNA_extraction2",
+=======
                                 "@id": "#process/labeling3"
                             }
                         },
                         {
                             "@id": "#process/labeling1",
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/labeling"
+                                "@id": "#protocol/RNA_extraction"
                             },
                             "inputs": [
                                 {
+<<<<<<< HEAD
+                                    "@id": "#sample/sample-sample2"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/labeling2"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/extract-extract2"
+=======
                                     "@id": "#material/extract-extract1"
                                 }
                             ],
@@ -305,6 +470,7 @@
                             "outputs": [
                                 {
                                     "@id": "#material/labeledextract-extract1.le1"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                                 }
                             ],
                             "parameterValues": [],
@@ -314,11 +480,28 @@
                             }
                         },
                         {
+<<<<<<< HEAD
+                            "@id": "#process/RNA_extraction1",
+=======
                             "@id": "#process/hyb2.scan1",
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/data_collection"
+                                "@id": "#protocol/RNA_extraction"
                             },
+<<<<<<< HEAD
+                            "inputs": [
+                                {
+                                    "@id": "#sample/sample-sample1"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/labeling1"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/extract-extract1"
+=======
                             "inputs": [],
                             "name": "hyb2.scan1",
                             "outputs": [
@@ -327,6 +510,7 @@
                                 },
                                 {
                                     "@id": "#data/rawdatafile-2.cel"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                                 }
                             ],
                             "parameterValues": [],
@@ -347,7 +531,11 @@
                                 }
                             ],
                             "nextProcess": {
+<<<<<<< HEAD
+                                "@id": "#process/labeling4"
+=======
                                 "@id": "#process/labeling1"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             },
                             "outputs": [
                                 {
@@ -387,6 +575,9 @@
                             }
                         },
                         {
+<<<<<<< HEAD
+                            "@id": "#process/labeling1",
+=======
                             "@id": "#process/hyb1",
                             "date": "",
                             "executesProtocol": {
@@ -417,12 +608,24 @@
                         },
                         {
                             "@id": "#process/RNA_extraction2",
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             "date": "",
                             "executesProtocol": {
-                                "@id": "#protocol/RNA_extraction"
+                                "@id": "#protocol/labeling"
                             },
                             "inputs": [
                                 {
+<<<<<<< HEAD
+                                    "@id": "#material/extract-extract1"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/hyb1"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract1.le1"
+=======
                                     "@id": "#sample/sample-sample2"
                                 }
                             ],
@@ -432,19 +635,60 @@
                             "outputs": [
                                 {
                                     "@id": "#material/extract-extract2"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                                 }
                             ],
                             "parameterValues": [],
-                            "performer": ""
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/RNA_extraction1"
+                            }
                         },
                         {
+<<<<<<< HEAD
+                            "@id": "#process/hyb1.scan1",
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/data_collection"
+=======
                             "@id": "#process/labeling3",
                             "date": "",
                             "executesProtocol": {
                                 "@id": "#protocol/labeling"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             },
-                            "inputs": [
+                            "inputs": [],
+                            "name": "hyb1.scan1",
+                            "outputs": [
                                 {
+<<<<<<< HEAD
+                                    "@id": "#data/imagefile-1.dat"
+                                },
+                                {
+                                    "@id": "#data/rawdatafile-1.cel"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/hyb1"
+                            }
+                        },
+                        {
+                            "@id": "#process/hyb3.scan1",
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/data_collection"
+                            },
+                            "inputs": [],
+                            "name": "hyb3.scan1",
+                            "outputs": [
+                                {
+                                    "@id": "#data/rawdatafile-3.cel"
+                                },
+                                {
+                                    "@id": "#data/imagefile-3.dat"
+=======
                                     "@id": "#material/extract-extract3"
                                 }
                             ],
@@ -454,12 +698,17 @@
                             "outputs": [
                                 {
                                     "@id": "#material/labeledextract-extract3.le1"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
+<<<<<<< HEAD
+                                "@id": "#process/hyb3"
+=======
                                 "@id": "#process/RNA_extraction3"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             }
                         },
                         {
@@ -498,9 +747,15 @@
                                     "@id": "#material/labeledextract-extract2.le1"
                                 }
                             ],
+<<<<<<< HEAD
+                            "name": "hyb3",
+                            "nextProcess": {
+                                "@id": "#process/hyb3.scan1"
+=======
                             "name": "hyb2",
                             "nextProcess": {
                                 "@id": "#process/hyb2.scan1"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             },
                             "outputs": [],
                             "parameterValues": [
@@ -513,6 +768,9 @@
                             ],
                             "performer": "",
                             "previousProcess": {
+<<<<<<< HEAD
+                                "@id": "#process/labeling3"
+=======
                                 "@id": "#process/labeling2"
                             }
                         },
@@ -539,28 +797,118 @@
                             "performer": "",
                             "previousProcess": {
                                 "@id": "#process/RNA_extraction2"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             }
                         },
                         {
-                            "@id": "#process/hyb1.scan1",
+                            "@id": "#process/hyb2.scan1",
                             "date": "",
                             "executesProtocol": {
                                 "@id": "#protocol/data_collection"
                             },
                             "inputs": [],
-                            "name": "hyb1.scan1",
+                            "name": "hyb2.scan1",
                             "outputs": [
                                 {
+<<<<<<< HEAD
+                                    "@id": "#data/imagefile-2.dat"
+                                },
+                                {
+                                    "@id": "#data/rawdatafile-2.cel"
+=======
                                     "@id": "#data/rawdatafile-1.cel"
                                 },
                                 {
                                     "@id": "#data/imagefile-1.dat"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
+<<<<<<< HEAD
+                                "@id": "#process/hyb2"
+                            }
+                        },
+                        {
+                            "@id": "#process/RNA_extraction3",
+=======
                                 "@id": "#process/hyb1"
+                            }
+                        },
+                        {
+                            "@id": "#process/hyb4.scan1",
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/RNA_extraction"
+                            },
+<<<<<<< HEAD
+                            "inputs": [
+                                {
+                                    "@id": "#sample/sample-sample3"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/labeling3"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/extract-extract3"
+=======
+                            "inputs": [],
+                            "name": "hyb4.scan1",
+                            "outputs": [
+                                {
+                                    "@id": "#data/rawdatafile-4.cel"
+                                },
+                                {
+                                    "@id": "#data/imagefile-4.dat"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/hyb4"
+                            }
+                        },
+                        {
+<<<<<<< HEAD
+                            "@id": "#process/hyb2",
+=======
+                            "@id": "#process/hyb3.scan1",
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/data_collection"
+                            },
+                            "inputs": [],
+                            "name": "hyb3.scan1",
+                            "outputs": [
+                                {
+<<<<<<< HEAD
+                                    "@id": "#material/labeledextract-extract2.le1"
+                                }
+                            ],
+                            "name": "hyb2",
+                            "nextProcess": {
+                                "@id": "#process/hyb2.scan1"
+                            },
+                            "outputs": [],
+                            "parameterValues": [
+=======
+                                    "@id": "#data/imagefile-3.dat"
+                                },
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
+                                {
+                                    "@id": "#data/rawdatafile-3.cel"
+                                }
+                            ],
+<<<<<<< HEAD
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/labeling2"
                             }
                         },
                         {
@@ -573,38 +921,22 @@
                             "name": "hyb4.scan1",
                             "outputs": [
                                 {
-                                    "@id": "#data/rawdatafile-4.cel"
+                                    "@id": "#data/imagefile-4.dat"
                                 },
                                 {
-                                    "@id": "#data/imagefile-4.dat"
+                                    "@id": "#data/rawdatafile-4.cel"
                                 }
                             ],
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
                                 "@id": "#process/hyb4"
-                            }
-                        },
-                        {
-                            "@id": "#process/hyb3.scan1",
-                            "date": "",
-                            "executesProtocol": {
-                                "@id": "#protocol/data_collection"
-                            },
-                            "inputs": [],
-                            "name": "hyb3.scan1",
-                            "outputs": [
-                                {
-                                    "@id": "#data/imagefile-3.dat"
-                                },
-                                {
-                                    "@id": "#data/rawdatafile-3.cel"
-                                }
-                            ],
+=======
                             "parameterValues": [],
                             "performer": "",
                             "previousProcess": {
                                 "@id": "#process/hyb3"
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                             }
                         }
                     ],
@@ -643,9 +975,15 @@
                     }
                 },
                 {
+<<<<<<< HEAD
+                    "@id": "#characteristic_category/organism",
+                    "characteristicType": {
+                        "annotationValue": "organism",
+=======
                     "@id": "#characteristic_category/organism_part",
                     "characteristicType": {
                         "annotationValue": "organism part",
+>>>>>>> 111b997e2ff9f944eabfcd305ee0d7d9c4ab0aa1
                         "termAccession": "",
                         "termSource": ""
                     }
