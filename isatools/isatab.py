@@ -831,31 +831,38 @@ def write_assay_table_files(inv_obj, output_dir):
                     for end_node in end_nodes:
                         for path in list(nx.algorithms.all_simple_paths(graph, start_node, end_node)):
                             mcount = 0
+                            compound_key = str()
                             for node in path:
                                 if isinstance(node, Sample):
                                     df.loc[i, 'sample'] = node.name
+                                    compound_key += node.name + '/'
                                 elif isinstance(node, Material):
                                     if node.type == 'Labeled Extract Name':
                                         df.loc[i, 'lextract'] = node.name
+                                        compound_key += node.name + '/'
                                         df.loc[i, 'lextract_label'] = node.characteristics[0].value.name
                                         df.loc[i, 'lextract_label_termsource'] =  node.characteristics[0].value.term_source.name
                                         df.loc[i, 'lextract_label_termaccession'] =  node.characteristics[0].value.term_accession
                                     elif node.type == 'Extract Name':
                                         df.loc[i, 'extract'] = node.name
+                                        compound_key += node.name + '/'
                                     else:
                                         df.loc[i, 'material[' + str(mcount) + ']'] = node.name
+                                        compound_key += node.name + '/'
                                         mcount += 1
                                 elif isinstance(node, DataFile):
                                     # for file in sorted(node.data_files, key=lambda x: x.label):
                                     df.loc[i, 'data[' + node.label + ']'] = node.filename
                                 elif isinstance(node, Process):
                                     df.loc[i, 'protocol[' + node.executes_protocol.name + ']'] = node.executes_protocol.name
+                                    compound_key += node.executes_protocol.name + '/' + node.name + '/'
                                     if node.date is not None:
                                         df.loc[i, 'protocol[' + node.executes_protocol.name + ']_date'] = node.date
                                     if node.performer is not None:
                                         df.loc[i, 'protocol[' + node.executes_protocol.name + ']_performer'] = node.performer
                                     for prop in sorted(node.additional_properties.keys()):
                                         df.loc[i, 'protocol[' + node.executes_protocol.name + ']_prop[' + prop + ']'] = node.additional_properties[prop]
+                                        compound_key += node.executes_protocol.name + '/' + prop + '/' + node.additional_properties[prop]
                                     for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
                                         if isinstance(pv.value, int) or isinstance(pv.value, float):
                                             df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
@@ -868,6 +875,8 @@ def write_assay_table_files(inv_obj, output_dir):
                                             df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_termaccession'] = pv.value.term_accession
                                         else:
                                             df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
+                            df.loc[i, 'compound_key'] = compound_key
+                            print(compound_key)
                             i += 1
 
                 # reduce rows of data on separate lines
@@ -885,7 +894,7 @@ def write_assay_table_files(inv_obj, output_dir):
                     prev = val
                     return rolling_group.group
                 rolling_group.group = 0  # static variable
-                groups = df.groupby(df['sample'].apply(rolling_group), as_index=False)  # groups by column 1 only
+                groups = df.groupby(df['compound_key'].apply(rolling_group), as_index=False)  # groups by column 1 only
 
                 # merge items in column groups
                 def reduce(group, column):
@@ -933,6 +942,7 @@ def write_assay_table_files(inv_obj, output_dir):
                         cols[i] = 'Factor Value[' + fv_regex.findall(col)[0] + ']'
                     if pv_regex.match(col) is not None:
                         cols[i] = 'Parameter Value[' + pv_regex.findall(col)[0] + ']'
+                del df['compound_key']  # release compound_key as we don't write it out
                 df.columns = cols  # reset column headers
                 df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0 (Sample name)
                 # drop completely empty columns
