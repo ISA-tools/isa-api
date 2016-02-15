@@ -860,7 +860,7 @@ def write_assay_table_files(inv_obj, output_dir):
                                         df.loc[i, 'protocol[' + node.executes_protocol.name + ']_date'] = node.date
                                     if node.performer is not None:
                                         df.loc[i, 'protocol[' + node.executes_protocol.name + ']_performer'] = node.performer
-                                    for prop in sorted(node.additional_properties.keys()):
+                                    for prop in reversed(sorted(node.additional_properties.keys())):
                                         df.loc[i, 'protocol[' + node.executes_protocol.name + ']_prop[' + prop + ']'] = node.additional_properties[prop]
                                         compound_key += node.executes_protocol.name + '/' + prop + '/' + node.additional_properties[prop]
                                     for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
@@ -893,19 +893,17 @@ def write_assay_table_files(inv_obj, output_dir):
                     prev = val
                     return rolling_group.group
                 rolling_group.group = 0  # static variable
-                groups = df.groupby(df['compound_key'].apply(rolling_group), as_index=False)  # groups by column 1 only
+                groups = df.groupby(df['compound_key'].apply(rolling_group), as_index=True)  # groups by column 1 only
 
                 # merge items in column groups
                 def reduce(group, column):
                     col = group[column]
                     s = [str(each) for each in col if pd.notnull(each)]
-                    print(s)
                     if len(s) > 0:
                         return s[0]
                     else:
                         return ''
                 df = groups.apply(lambda g: pd.Series([reduce(g, col) for col in g.columns], index=g.columns))
-                #  FIXME: need to make the above groupby work with multiple columns minus the data cols
 
                 #  cleanup column headers before writing out df
                 material_regex = re.compile('material\[(.*?)\]')
