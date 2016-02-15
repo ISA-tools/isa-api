@@ -12,14 +12,16 @@ SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa
 INVESTIGATION_SCHEMA = "investigation_schema.json"
 
 
-def convert(work_dir, json_dir, identifier_type):
-    converter = ISATab2ISAjson_v1(identifier_type)
-    converter.convert(work_dir, json_dir)
-
 class IdentifierType(Enum):
     counter = 1
     uuid = 2
     name = 3
+
+
+def convert(work_dir, json_dir, identifier_type=IdentifierType.name):
+    converter = ISATab2ISAjson_v1(identifier_type)
+    converter.convert(work_dir, json_dir)
+
 
 class ISATab2ISAjson_v1:
 
