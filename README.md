@@ -23,6 +23,16 @@ Travis Continuous Integration is set up on both Master and Develop branches of t
 python setup.py test
 
 
+### Instalation procedure
+
+To install the isa-api, make sure to install the requirements:
+
+`pip install -r requiremens.txt`
+
+To run the tests:
+
+`python setup.py test`
+
 ## isatools package
 
 * Install using `pip install -e .` from inside `isa-api` project root (may need to sudo it)

@@ -37,6 +37,7 @@ SRA schema version considered:
 
  <!-- The input parameter from the command line -->
  <xsl:param name="acc-number" required="yes"/>
+ <xsl:param name="outputdir" required="yes"/>
 
  <xsl:key name="protocols" match="LIBRARY_CONSTRUCTION_PROTOCOL" use="."/>
  <xsl:key name="sampletaglookupid" match="/ROOT/SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE/TAG" use="."/>
@@ -76,6 +77,7 @@ SRA schema version considered:
  
  <xsl:template match="/">
   <xsl:apply-templates select="document($url)" mode="go"/>
+  
  </xsl:template>
  
  <xsl:template match="ROOT" mode="go">
@@ -85,6 +87,7 @@ SRA schema version considered:
  <xsl:template match="SUBMISSION" mode="go">
   <xsl:variable name="broker-name" select="if (@broker_name) then @broker_name else ''"/> 
   <xsl:apply-templates>
+   <xsl:with-param name="outputdir" select="$outputdir"/>
    <xsl:with-param name="broker-name" select="$broker-name" tunnel="yes"/>
   </xsl:apply-templates>
   <xsl:call-template name="generate-assay-files"/>
@@ -93,7 +96,7 @@ SRA schema version considered:
  <xsl:template match="XREF_LINK/DB[contains(.,'NA-STUDY')]">
   <xsl:param name="broker-name" required="yes" tunnel="yes"/>
   <xsl:variable name="study" select="following-sibling::ID"/>
-  <xsl:result-document href="{concat('output/', $acc-number, '/', 'i_', $acc-number, '.txt')}" method="text">
+  <xsl:result-document href="{concat($outputdir,'/', $acc-number, '/', 'i_', $acc-number, '.txt')}" method="text">
    <xsl:text>#SRA Document:</xsl:text>    <xsl:value-of select="isa:quotes($acc-number)"/><xsl:text>&#10;</xsl:text>
    <xsl:text>"ONTOLOGY SOURCE REFERENCE"&#10;</xsl:text>
    <xsl:value-of select="isa:single-name-value('Term Source Name', 'OBI')"/>
@@ -145,7 +148,7 @@ SRA schema version considered:
  </xsl:template>
 
  <xsl:template match="XREF_LINK/DB[contains(.,'NA-SAMPLE')]">
-  <xsl:result-document href="{concat('output/', $acc-number, '/', 's_', $acc-number, '.txt')}" method="text">
+  <xsl:result-document href="{concat($outputdir,'/', $acc-number, '/', 's_', $acc-number, '.txt')}" method="text">
    <xsl:variable name="samples-ids" select="following-sibling::ID"/>
    <xsl:call-template name="generate-study-header"/>
    <xsl:text>"Sample Name"&#10;</xsl:text>
@@ -172,7 +175,7 @@ SRA schema version considered:
  </xsl:template>
  
  <xsl:template match="experiments/experiment" mode="distinct-exp">
-  <xsl:result-document href="{concat('output/', $acc-number, '/', 'a_', lower-case(@library-strategy), '-', lower-case(@library-source), '.txt')}" method="text">
+  <xsl:result-document href="{concat($outputdir,'/', $acc-number, '/', 'a_', lower-case(@library-strategy), '-', lower-case(@library-source), '.txt')}" method="text">
    <xsl:variable name="my-exp" select="document(concat('http://www.ebi.ac.uk/ena/data/view/', @acc-number, '&amp;display=xml'))"/>
    <!-- Create the header -->
    <xsl:text>"Sample Name"&#9;</xsl:text>

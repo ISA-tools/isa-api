@@ -72,12 +72,6 @@
                     "materials": {
                         "otherMaterials": [
                             {
-                                "@id": "#material/extract-extract1",
-                                "characteristics": [],
-                                "name": "extract-extract1",
-                                "type": "Extract Name"
-                            },
-                            {
                                 "@id": "#material/labeledextract-extract1.le1",
                                 "characteristics": [
                                     {
@@ -93,6 +87,12 @@
                                 ],
                                 "name": "labeledextract-extract1.le1",
                                 "type": "Labeled Extract Name"
+                            },
+                            {
+                                "@id": "#material/extract-extract1",
+                                "characteristics": [],
+                                "name": "extract-extract1",
+                                "type": "Extract Name"
                             }
                         ],
                         "samples": [
@@ -118,9 +118,66 @@
                                     "@id": "#material/extract-extract1"
                                 }
                             ],
+                            "nextProcess": {
+                                "@id": "#process/hyb1"
+                            },
                             "outputs": [
                                 {
                                     "@id": "#material/labeledextract-extract1.le1"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/RNA_extraction1"
+                            }
+                        },
+                        {
+                            "@id": "#process/hyb1",
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/nucleic_acid_hybridization"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract1.le1"
+                                }
+                            ],
+                            "name": "hyb1",
+                            "nextProcess": {
+                                "@id": "#process/hyb1.scan1"
+                            },
+                            "outputs": [],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#parameter/Array_Design_REF"
+                                    },
+                                    "value": "HG_U133_2.0"
+                                }
+                            ],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/labeling1"
+                            }
+                        },
+                        {
+                            "@id": "#process/RNA_extraction1",
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/RNA_extraction"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/sample-sample1"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/labeling1"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/extract-extract1"
                                 }
                             ],
                             "parameterValues": [],
@@ -143,49 +200,10 @@
                                 }
                             ],
                             "parameterValues": [],
-                            "performer": ""
-                        },
-                        {
-                            "@id": "#process/hyb1",
-                            "date": "",
-                            "executesProtocol": {
-                                "@id": "#protocol/nucleic_acid_hybridization"
-                            },
-                            "inputs": [
-                                {
-                                    "@id": "#material/labeledextract-extract1.le1"
-                                }
-                            ],
-                            "name": "hyb1",
-                            "outputs": [],
-                            "parameterValues": [
-                                {
-                                    "category": {
-                                        "@id": "#parameter/Array_Design_REF"
-                                    },
-                                    "value": "HG_U133_2.0"
-                                }
-                            ],
-                            "performer": ""
-                        },
-                        {
-                            "@id": "#process/RNA_extraction1",
-                            "date": "",
-                            "executesProtocol": {
-                                "@id": "#protocol/RNA_extraction"
-                            },
-                            "inputs": [
-                                {
-                                    "@id": "#sample/sample-sample1"
-                                }
-                            ],
-                            "outputs": [
-                                {
-                                    "@id": "#material/extract-extract1"
-                                }
-                            ],
-                            "parameterValues": [],
-                            "performer": ""
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/hyb1"
+                            }
                         }
                     ],
                     "technologyPlatform": "",
@@ -199,9 +217,9 @@
             ],
             "characteristicCategories": [
                 {
-                    "@id": "#characteristic_category/organism",
+                    "@id": "#characteristic_category/reference_descriptor",
                     "characteristicType": {
-                        "annotationValue": "organism",
+                        "annotationValue": "reference descriptor",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -223,9 +241,9 @@
                     }
                 },
                 {
-                    "@id": "#characteristic_category/reference_descriptor",
+                    "@id": "#characteristic_category/organism",
                     "characteristicType": {
-                        "annotationValue": "reference descriptor",
+                        "annotationValue": "organism",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -286,13 +304,9 @@
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/organism"
+                                    "@id": "#characteristic_category/reference_descriptor"
                                 },
-                                "value": {
-                                    "annotationValue": "Human",
-                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
-                                    "termSource": "NCBITAXON"
-                                }
+                                "value": "not applicable"
                             },
                             {
                                 "category": {
@@ -302,9 +316,13 @@
                             },
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/reference_descriptor"
+                                    "@id": "#characteristic_category/organism"
                                 },
-                                "value": "not applicable"
+                                "value": {
+                                    "annotationValue": "Human",
+                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
+                                    "termSource": "NCBITAXON"
+                                }
                             }
                         ],
                         "name": "source-source3"
@@ -314,13 +332,9 @@
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/organism"
+                                    "@id": "#characteristic_category/reference_descriptor"
                                 },
-                                "value": {
-                                    "annotationValue": "Human",
-                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
-                                    "termSource": "NCBITAXON"
-                                }
+                                "value": "not applicable"
                             },
                             {
                                 "category": {
@@ -330,9 +344,13 @@
                             },
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/reference_descriptor"
+                                    "@id": "#characteristic_category/organism"
                                 },
-                                "value": "not applicable"
+                                "value": {
+                                    "annotationValue": "Human",
+                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
+                                    "termSource": "NCBITAXON"
+                                }
                             }
                         ],
                         "name": "source-source1"
@@ -342,13 +360,9 @@
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/organism"
+                                    "@id": "#characteristic_category/reference_descriptor"
                                 },
-                                "value": {
-                                    "annotationValue": "Human",
-                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
-                                    "termSource": "NCBITAXON"
-                                }
+                                "value": "not applicable"
                             },
                             {
                                 "category": {
@@ -358,9 +372,13 @@
                             },
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/reference_descriptor"
+                                    "@id": "#characteristic_category/organism"
                                 },
-                                "value": "not applicable"
+                                "value": {
+                                    "annotationValue": "Human",
+                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
+                                    "termSource": "NCBITAXON"
+                                }
                             }
                         ],
                         "name": "source-source4"
@@ -370,13 +388,9 @@
                         "characteristics": [
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/organism"
+                                    "@id": "#characteristic_category/reference_descriptor"
                                 },
-                                "value": {
-                                    "annotationValue": "Human",
-                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
-                                    "termSource": "NCBITAXON"
-                                }
+                                "value": "not applicable"
                             },
                             {
                                 "category": {
@@ -386,9 +400,13 @@
                             },
                             {
                                 "category": {
-                                    "@id": "#characteristic_category/reference_descriptor"
+                                    "@id": "#characteristic_category/organism"
                                 },
-                                "value": "not applicable"
+                                "value": {
+                                    "annotationValue": "Human",
+                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
+                                    "termSource": "NCBITAXON"
+                                }
                             }
                         ],
                         "name": "source-source2"
