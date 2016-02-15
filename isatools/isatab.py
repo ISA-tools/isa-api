@@ -876,7 +876,6 @@ def write_assay_table_files(inv_obj, output_dir):
                                         else:
                                             df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
                             df.loc[i, 'compound_key'] = compound_key
-                            print(compound_key)
                             i += 1
 
                 # reduce rows of data on separate lines
@@ -900,10 +899,13 @@ def write_assay_table_files(inv_obj, output_dir):
                 def reduce(group, column):
                     col = group[column]
                     s = [str(each) for each in col if pd.notnull(each)]
-                    return s[0]
+                    print(s)
+                    if len(s) > 0:
+                        return s[0]
+                    else:
+                        return ''
                 df = groups.apply(lambda g: pd.Series([reduce(g, col) for col in g.columns], index=g.columns))
                 #  FIXME: need to make the above groupby work with multiple columns minus the data cols
-
 
                 #  cleanup column headers before writing out df
                 material_regex = re.compile('material\[(.*?)\]')
