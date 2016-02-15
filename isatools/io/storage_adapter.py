@@ -2,7 +2,8 @@ from abc import ABCMeta, abstractmethod
 from urllib.parse import urljoin
 from lxml import etree
 from jsonschema import RefResolver, Draft4Validator
-from io import StringIO
+from io import BytesIO, StringIO
+from zipfile import ZipFile
 import requests
 import json
 import os
@@ -101,6 +102,8 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         """
         self._authorization = {}
         if username and password:
+            self._username = username
+            self._password = password
             payload = {
                 "scopes": list(scopes),
                 "note": note or "Authorization to access the ISA data sets"
@@ -111,7 +114,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
 
             }
             # retrieve all the existing authorizations for user
-            res = requests.get(self.AUTH_ENDPOINT, headers= headers, auth=(username, password))
+            res = requests.get(self.AUTH_ENDPOINT, headers=headers, auth=(self._username, self._password))
             if res.status_code == requests.codes.ok:
                 auths = json.loads(res.text)
 
@@ -160,10 +163,9 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         if not self.is_authenticated:
             return
         headers = {
-            'accept': 'application/json',
-            'authorization': 'token %s' % self.token
+            'accept': 'application/json'
         }
-        r = requests.delete(self.authorization_uri, headers=headers)
+        r = requests.delete(self.authorization_uri, headers=headers, auth=(self._username, self._password))
         print(r)
         return r.raise_for_status()
 
@@ -248,8 +250,9 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         Returns:
             :return dict - if the retrieved file contains a (valid) json document
             :return XMLElement - if the retrieved file contains a valid ISA XML configuration file
-            :return True - if the file(s) retrieved belongs to one of the authorized types (currently ZIP or directories)
-            :return False - if the file downloaded is of an authorized type. These file are not saved to disk
+            :return io.BytesIO - if the target is a directory of a ZIP file. If it is a directory the zipped content of
+                                 it is returned as a binary stream.
+            :return False - if the file downloaded is of an unauthorized type. These file are not saved to disk
 
         Raises:
             :raise requests.exceptions.HTTPException when the request to GitHub fails
@@ -269,7 +272,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
 
             # if it is a directory
             if isinstance(res_payload, list):
-                return self._download_dir(source.split('/')[-1], destination, res_payload)
+                return self._download_dir(source.split('/')[-1], destination, res_payload, write_to_file)
 
             # if it is an object decode the content (if the option is available)
             elif decode_content:
@@ -306,24 +309,36 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
     def delete(self):
         pass
 
-    def _download_dir(self, directory, destination, dir_items):
+    def _download_dir(self, directory, destination, dir_items, write_to_directory):
         """
         Retrieves the full content of a directory
         """
         headers = {'Authorization': 'token %s' % self.token} if self.token else {}
         # filter the items to keep only files
         files = [item for item in dir_items if item['type'] == 'file']
+        buf = BytesIO()
 
-        for file in files:
-            file_name = file["name"]
-            res = requests.get(file['download_url'], headers=headers)
-            # if request went fine and the payload is a regular (ISA) text file write it to file
-            if res.status_code == requests.codes.ok and res.headers['Content-Type'].split(";")[0] == 'text/plain':
-                dir_path = os.path.join(destination, directory)
-                os.makedirs(dir_path, exist_ok=True)
-                with open(os.path.join(dir_path, file_name), 'w+') as out_file:
-                    out_file.write(res.text)
-        return True
+        with ZipFile(buf, 'w') as zip_file:
+
+            for file in files:
+                file_name = file["name"]
+                res = requests.get(file['download_url'], headers=headers)
+
+                # if request went fine and the payload is a regular (ISA) text file write it to file
+                if res.status_code == requests.codes.ok and res.headers['Content-Type'].split(";")[0] == 'text/plain':
+
+                    # zip the text payload
+                    zip_file.writestr(os.path.join(directory, file["name"]), res.text)
+
+                    # write to a target dir
+                    if write_to_directory:
+                        dir_path = os.path.join(destination, directory)
+                        os.makedirs(dir_path, exist_ok=True)
+                        with open(os.path.join(dir_path, file_name), 'w+') as out_file:
+                            out_file.write(res.text)
+
+        buf.seek(0)
+        return buf
 
     def _handle_content(self, payload, validate_json=False, char_set='utf-8'):
         """

@@ -17,6 +17,7 @@ Feature: ISA file management
     And a destination directory "destination_dir_0" in your home folder
     When the file object is a directory
     Then it should download the files contained within the directory
+    And it should return a binary stream with the zipped content of the directory
 
   Scenario: resource retrieval with ZIP archive download
     Given an authenticated storage adapter
