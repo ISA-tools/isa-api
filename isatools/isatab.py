@@ -753,6 +753,8 @@ def _longest_path(G):
                     longest = (len(path), path)
     return longest[1]
 
+prev = ''  # used in rolling_group(val) in write_assay_table_files(inv_obj, output_dir)
+
 
 def write_assay_table_files(inv_obj, output_dir):
     """
@@ -867,12 +869,37 @@ def write_assay_table_files(inv_obj, output_dir):
                                         else:
                                             df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
                             i += 1
-                #  cleanup column headers before writing out df
+
+                # reduce rows of data on separate lines
+
+                # can we group by matching all columns minus the data columns?
                 import re
+                data_regex = re.compile('data\[(.*?)\]')
+                # cols_no_data = [col for col in cols if not data_regex.match(col)]  # column list without data cols
+
+                # calculate groupings
+                def rolling_group(val):
+                    global prev
+                    if val != prev:
+                        rolling_group.group += 1  # val != prev is signal to switch group; rows sorted by cols_no_data
+                    prev = val
+                    return rolling_group.group
+                rolling_group.group = 0  # static variable
+                groups = df.groupby(df['sample'].apply(rolling_group), as_index=False)  # groups by column 1 only
+
+                # merge items in column groups
+                def reduce(group, column):
+                    col = group[column]
+                    s = [str(each) for each in col if pd.notnull(each)]
+                    return s[0]
+                df = groups.apply(lambda g: pd.Series([reduce(g, col) for col in g.columns], index=g.columns))
+                #  FIXME: need to make the above groupby work with multiple columns minus the data cols
+
+
+                #  cleanup column headers before writing out df
                 material_regex = re.compile('material\[(.*?)\]')
                 protocol_regex = re.compile('protocol\[(.*?)\]')
                 prop_regex = re.compile('.*_prop\[(.*?)\]')
-                data_regex = re.compile('data\[(.*?)\]')
                 pv_regex = re.compile('.*_pv\[(.*?)\]')
                 fv_regex = re.compile('.*_fv\[(.*?)\]')
                 for i, col in enumerate(cols):
@@ -906,8 +933,9 @@ def write_assay_table_files(inv_obj, output_dir):
                         cols[i] = 'Factor Value[' + fv_regex.findall(col)[0] + ']'
                     if pv_regex.match(col) is not None:
                         cols[i] = 'Parameter Value[' + pv_regex.findall(col)[0] + ']'
-                # df.columns = cols
+                df.columns = cols  # reset column headers
                 df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0 (Sample name)
+                # drop completely empty columns
                 import numpy as np
                 df = df.replace('', np.nan)
                 df = df.dropna(axis=1, how='all')
@@ -954,16 +982,16 @@ def write_study_table_files(inv_obj, output_dir):
                         cols.append('protocol[' + node.executes_protocol.name + ']_performer')
                     for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
                         if isinstance(pv.value, int) or isinstance(pv.value, float):
-                            cols.extend(('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']',
-                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit',
-                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termsource',
-                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termaccession'))
+                            cols.extend(('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']',
+                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_unit',
+                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource',
+                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_unit_termaccession'))
                         elif isinstance(pv.value, OntologyAnnotation):
-                            cols.extend(('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']',
-                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termsource',
-                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termaccession',))
+                            cols.extend(('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']',
+                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_termsource',
+                                         'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_termaccession',))
                         else:
-                            cols.append('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']',)
+                            cols.append('protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']',)
                 elif isinstance(node, Sample):
                     cols.append('sample')
                     for c in sorted(node.characteristics, key=lambda x: id(x.category)):
@@ -1023,14 +1051,14 @@ def write_study_table_files(inv_obj, output_dir):
                                     df.loc[i, 'protocol[' + node.executes_protocol.name + ']_performer'] = node.performer
                                 for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
                                     if isinstance(pv.value, int) or isinstance(pv.value, float):
-                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value
-                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit'] = pv.unit.name
-                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termsource'] = pv.unit.term_source.name
-                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_unit_termaccession'] = pv.unit.term_accession
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_unit'] = pv.unit.name
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource'] = pv.unit.term_source.name
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_unit_termaccession'] = pv.unit.term_accession
                                     elif isinstance(pv.value, OntologyAnnotation):
-                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value.name
-                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termsource'] = pv.value.term_source
-                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']_termaccession'] = pv.value.term_accession
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value.name
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_termsource'] = pv.value.term_source
+                                        df.loc[i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.parameter_name.name + ']_termaccession'] = pv.value.term_accession
                                     else:
                                         df.loc[i, i, 'protocol[' + node.executes_protocol.name + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value
                             elif isinstance(node, Sample):

@@ -410,7 +410,7 @@ def load(fp):
                 other_materials_dict = dict()
                 for other_material_json in assay_json['materials']['otherMaterials']:
                     logger.debug('Build Material object')  # need to detect material types
-                    material_name = other_material_json['name'][8:]
+                    material_name = other_material_json['name'][8:]  # FIXME: Strip out extra typing in the naming e.g. labeledextract- etc. BUT needs to be ID type aware??
                     material = Material(
                         id_=other_material_json['@id'],
                         name=material_name,
@@ -433,9 +433,17 @@ def load(fp):
                         id_=assay_process_json['@id'],
                         executes_protocol=protocols_dict[assay_process_json['executesProtocol']['@id']]
                     )
+                    # additional properties, currently hard-coded special cases
                     if process.executes_protocol.protocol_type.name == 'data collection' and assay.technology_type.name == 'DNA microarray':
                         process.additional_properties['Scan Name'] = assay_process_json['name']
-
+                    elif process.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
+                        process.additional_properties['Assay Name'] = assay_process_json['name']
+                    elif process.executes_protocol.protocol_type.name == 'nucleic acid hybridization':
+                        process.additional_properties['Hybridization Assay Name'] = assay_process_json['name']
+                    elif process.executes_protocol.protocol_type.name == 'data transformation':
+                        process.additional_properties['Data Transformation Name'] = assay_process_json['name']
+                    elif process.executes_protocol.protocol_type.name == 'data normalization':
+                        process.additional_properties['Normalization Name'] = assay_process_json['name']
                     for input_json in assay_process_json['inputs']:
                         input_ = None
                         try:
@@ -477,9 +485,8 @@ def load(fp):
                                           output_json['@id'])
                         process.outputs.append(output)
                     for parameter_value_json in assay_process_json['parameterValues']:
-                        print(parameter_value_json)
                         if parameter_value_json['category']['@id'] == '#parameter/Array_Design_REF':  # Special case
-                            process.additional_properties['Array Design Ref'] = parameter_value_json['value']
+                            process.additional_properties['Array Design REF'] = parameter_value_json['value']
                         elif isinstance(parameter_value_json['value'], int) or \
                                 isinstance(parameter_value_json['value'], float):
                             parameter_value = ParameterValue(
