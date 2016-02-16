@@ -2,7 +2,7 @@ from isatools.model.v1 import *
 import json
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -410,7 +410,11 @@ def load(fp):
                 other_materials_dict = dict()
                 for other_material_json in assay_json['materials']['otherMaterials']:
                     logger.debug('Build Material object')  # need to detect material types
-                    material_name = other_material_json['name'][8:]  # FIXME: Strip out extra typing in the naming e.g. labeledextract- etc. BUT needs to be ID type aware??
+                    material_name = other_material_json['name']
+                    if material_name.startswith('labeledextract-'):
+                        material_name = material_name[15:]
+                    else:
+                        material_name = material_name[8:]  # FIXME: Strip out extra typing in the naming e.g. labeledextract- etc. BUT needs to be ID type aware??
                     material = Material(
                         id_=other_material_json['@id'],
                         name=material_name,

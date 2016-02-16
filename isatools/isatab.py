@@ -798,7 +798,7 @@ def write_assay_table_files(inv_obj, output_dir):
                             cols.append('protocol[' + node.executes_protocol.name + ']_date')
                         if node.performer is not None:
                             cols.append('protocol[' + node.executes_protocol.name + ']_performer')
-                        for prop in sorted(node.additional_properties.keys()):
+                        for prop in reversed(sorted(node.additional_properties.keys())):
                             cols.append('protocol[' + node.executes_protocol.name + ']_prop[' + prop + ']')
                         for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
                             if isinstance(pv.value, int) or isinstance(pv.value, float):
@@ -929,7 +929,7 @@ def write_assay_table_files(inv_obj, output_dir):
                     if '_termsource' in col:
                         cols[i] = 'Term Source REF'
                     if '_termaccession' in col:
-                        cols[i] = 'Term Accession'
+                        cols[i] = 'Term Accession Number'
                     if col == 'lextract':
                         cols[i] = 'Labeled Extract Name'
                     if col == 'lextract_label':
@@ -937,7 +937,13 @@ def write_assay_table_files(inv_obj, output_dir):
                     if prop_regex.match(col) is not None:
                         cols[i] = prop_regex.findall(col)[0]
                     if data_regex.match(col) is not None:
-                        cols[i] = data_regex.findall(col)[0]
+                        if data_regex.findall(col)[0] == 'Raw Data File':
+                            if assay_obj.technology_type.name == 'DNA microarray':
+                                cols[i] = 'Array Data File'
+                            else:
+                                cols[i] = data_regex.findall(col)[0]
+                        else:
+                            cols[i] = data_regex.findall(col)[0]
                     if fv_regex.match(col) is not None:
                         cols[i] = 'Factor Value[' + fv_regex.findall(col)[0] + ']'
                     if pv_regex.match(col) is not None:
@@ -949,7 +955,7 @@ def write_assay_table_files(inv_obj, output_dir):
                 import numpy as np
                 df = df.replace('', np.nan)
                 df = df.dropna(axis=1, how='all')
-                assay_obj.df = df  # http://stackoverflow.com/questions/24986968/combine-rows-under-a-condition-in-a-pandas-dataframe
+                assay_obj.df = df
                 df.to_csv(path_or_buf=open(os.path.join(output_dir, assay_obj.filename), 'w'), index=False, sep='\t', encoding='utf-8',)
 
 
@@ -1109,7 +1115,10 @@ def write_study_table_files(inv_obj, output_dir):
                 if col == 'sample':
                     cols[i] = 'Sample Name'
                 if char_regex.match(col) is not None:
-                    cols[i] = 'Characteristics[' + char_regex.findall(col)[0] + ']'
+                    if char_regex.findall(col)[0] == 'Material Type':
+                        cols[i] = 'Material Type'
+                    else:
+                        cols[i] = 'Characteristics[' + char_regex.findall(col)[0] + ']'
                 if fv_regex.match(col) is not None:
                     cols[i] = 'Factor Value[' + fv_regex.findall(col)[0] + ']'
                 if pv_regex.match(col) is not None:
@@ -1125,8 +1134,12 @@ def write_study_table_files(inv_obj, output_dir):
                 if '_termsource' in col:
                     cols[i] = 'Term Source REF'
                 if '_termaccession' in col:
-                    cols[i] = 'Term Accession'
-            # df.columns = cols
+                    cols[i] = 'Term Accession Number'
+            df.columns = cols  # reset column headers
+            # drop completely empty columns
+            import numpy as np
+            df = df.replace('', np.nan)
+            df = df.dropna(axis=1, how='all')
             df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0
             df.to_csv(path_or_buf=open(os.path.join(output_dir, study_obj.filename), 'w'), index=False, sep='\t', encoding='utf-8',)
     else:
