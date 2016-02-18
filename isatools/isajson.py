@@ -294,12 +294,14 @@ def load(fp):
                     else:
                         parameter_value = ParameterValue(
                             category=parameters_dict[parameter_value_json['category']['@id']],
-                            value=OntologyAnnotation(
+                            )
+                        try:
+                            parameter_value.value = OntologyAnnotation(
                                 name=parameter_value_json['value']['annotationValue'],
                                 term_accession=parameter_value_json['value']['termAccession'],
-                                term_source=term_source_dict[parameter_value_json['value']['termSource']],
-                            )
-                        )
+                                term_source=term_source_dict[parameter_value_json['value']['termSource']],)
+                        except TypeError:
+                            parameter_value.value = parameter_value_json['value']
                         process.parameter_values.append(parameter_value)
                 for input_json in study_process_json['inputs']:
                     input_ = None
