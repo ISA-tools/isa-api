@@ -793,9 +793,49 @@ def write_assay_table_files(inv_obj, output_dir):
                         elif node.type == 'Extract Name':
                             cols.append('extract')
                             col_map['extract'] = 'Extract Name'
+                            for c in sorted(node.characteristics, key=lambda x: id(x.category)):
+                                if isinstance(c.value, int) or isinstance(c.value, float):
+                                    cols.extend(('extract_char[' + c.category.characteristic_type.name + ']',
+                                                 'extract_char[' + c.category.characteristic_type.name + ']_unit',
+                                                 'extract_char[' + c.category.characteristic_type.name + ']_unit_termsource',
+                                                 'extract_char[' + c.category.characteristic_type.name + ']_unit_termaccession',))
+                                    col_map['extract_char[' + c.category.characteristic_type.name + ']'] = 'Characteristics[' + c.category.characteristic_type.name + ']'
+                                    col_map['extract_char[' + c.category.characteristic_type.name + ']_unit'] = 'Unit'
+                                    col_map['extract_char[' + c.category.characteristic_type.name + ']_unit_termsource'] = 'Term Source REF'
+                                    col_map['extract_char[' + c.category.characteristic_type.name + ']_unit_termaccession'] = 'Term Accession Number'
+                                elif isinstance(c.value, OntologyAnnotation):
+                                    cols.extend(('extract_char[' + c.category.characteristic_type.name + ']',
+                                                 'extract_char[' + c.category.characteristic_type.name + ']_termsource',
+                                                 'extract_char[' + c.category.characteristic_type.name + ']_termaccession',))
+                                    col_map['extract_char[' + c.category.characteristic_type.name + ']'] = 'Characteristics[' + c.category.characteristic_type.name + ']'
+                                    col_map['extract_char[' + c.category.characteristic_type.name + ']_termsource'] = 'Term Source REF'
+                                    col_map['extract_char[' + c.category.characteristic_type.name + ']_termaccession'] = 'Term Accession Number'
+                                else:
+                                    cols.append('extract_char[' + c.category.characteristic_type.name + ']')
+                                    col_map['extract_char[' + c.category.characteristic_type.name + ']'] = 'Characteristics[' + c.category.characteristic_type.name + ']'
                         else:
                             cols.append('material[' + str(mcount) + ']')
                             col_map['material[' + str(mcount) + ']'] = 'Material Name'
+                            for c in sorted(node.characteristics, key=lambda x: id(x.category)):
+                                if isinstance(c.value, int) or isinstance(c.value, float):
+                                    cols.extend(('material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']',
+                                                 'material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_unit',
+                                                 'material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_unit_termsource',
+                                                 'material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_unit_termaccession',))
+                                    col_map['material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']'] = 'Characteristics[' + c.category.characteristic_type.name + ']'
+                                    col_map['material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_unit'] = 'Unit'
+                                    col_map['material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_unit_termsource'] = 'Term Source REF'
+                                    col_map['material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_unit_termaccession'] = 'Term Accession Number'
+                                elif isinstance(c.value, OntologyAnnotation):
+                                    cols.extend(('material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']',
+                                                 'material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_termsource',
+                                                 'material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_termaccession',))
+                                    col_map['material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']'] = 'Characteristics[' + c.category.characteristic_type.name + ']'
+                                    col_map['material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_termsource'] = 'Term Source REF'
+                                    col_map['material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_termaccession'] = 'Term Accession Number'
+                                else:
+                                    cols.append('material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']')
+                                    col_map['material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']'] = 'Characteristics[' + c.category.characteristic_type.name + ']'
                             mcount += 1
                     elif isinstance(node, Process):
                         cols.append('protocol[' + str(protrefcount) + ']')
@@ -867,12 +907,34 @@ def write_assay_table_files(inv_obj, output_dir):
                                     elif node.type == 'Extract Name':
                                         df.loc[i, 'extract'] = node.name
                                         compound_key += node.name + '/'
+                                        for c in sorted(node.characteristics, key=lambda x: id(x.category)):
+                                            if isinstance(c.value, int) or isinstance(c.value, float):
+                                                df.loc[i, 'extract_char[' + c.category.characteristic_type.name + ']'] = c.value
+                                                df.loc[i, 'extract_char[' + c.category.characteristic_type.name + ']_unit'] = c.unit.name
+                                                df.loc[i, 'extract_char[' + c.category.characteristic_type.name + ']_unit_termsource'] = c.unit.term_source.name
+                                                df.loc[i, 'extract_char[' + c.category.characteristic_type.name + ']_unit_termaccession'] = c.unit.term_accession
+                                            elif isinstance(c.value, OntologyAnnotation):
+                                                df.loc[i, 'extract_char[' + c.category.characteristic_type.name + ']'] = c.value.name
+                                                df.loc[i, 'extract_char[' + c.category.characteristic_type.name + ']_termsource'] = c.value.term_source.name
+                                                df.loc[i, 'extract_char[' + c.category.characteristic_type.name + ']_termaccession'] = c.value.term_accession
+                                            else:
+                                                df.loc[i, 'extract_char[' + c.category.characteristic_type.name + ']'] = c.value
                                     else:
                                         df.loc[i, 'material[' + str(mcount) + ']'] = node.name
                                         compound_key += node.name + '/'
+                                        for c in sorted(node.characteristics, key=lambda x: id(x.category)):
+                                            if isinstance(c.value, int) or isinstance(c.value, float):
+                                                df.loc[i, 'material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']'] = c.value
+                                                df.loc[i, 'material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_unit'] = c.unit.name
+                                                df.loc[i, 'material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_unit_termsource'] = c.unit.term_source.name
+                                                df.loc[i, 'material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_unit_termaccession'] = c.unit.term_accession
+                                            elif isinstance(c.value, OntologyAnnotation):
+                                                df.loc[i, 'material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']'] = c.value.name
+                                                df.loc[i, 'material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_termsource'] = c.value.term_source.name
+                                                df.loc[i, 'material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']_termaccession'] = c.value.term_accession
+                                            else:
+                                                df.loc[i, 'material[' + str(mcount) + ']_char[' + c.category.characteristic_type.name + ']'] = c.value
                                         mcount += 1
-                                elif isinstance(node, DataFile):
-                                    pass
                                 elif isinstance(node, Process):
                                     protrefcount = prottypes[node.executes_protocol.protocol_type.name]
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']'] = node.executes_protocol.name
@@ -929,51 +991,18 @@ def write_assay_table_files(inv_obj, output_dir):
                 df = groups.apply(lambda g: pd.Series([reduce(g, col) for col in g.columns], index=g.columns))
 
                 #  cleanup column headers before writing out df
-                material_regex = re.compile('material\[(.*?)\]')
-                protocol_regex = re.compile('protocol\[(.*?)\]')
-                prop_regex = re.compile('.*_prop\[(.*?)\]')
-                pv_regex = re.compile('.*_pv\[(.*?)\]')
-                fv_regex = re.compile('.*_fv\[(.*?)\]')
-                for i, col in enumerate(cols):
-                    if col == 'sample':
-                        cols[i] = 'Sample Name'
-                    if material_regex.match('material'):
-                        cols[i] = 'Material Name'
-                    if col == 'extract':
-                        cols[i] = 'Extract Name'
-                    if protocol_regex.match(col):
-                        cols[i] = 'Protocol REF'
-                    if '_date' in col:
-                        cols[i] = 'Date'
-                    if '_performer' in col:
-                        cols[i] = 'Performer'
-                    if ']_unit' in col:
-                        cols[i] = 'Unit'
-                    if '_termsource' in col:
-                        cols[i] = 'Term Source REF'
-                    if '_termaccession' in col:
-                        cols[i] = 'Term Accession Number'
-                    if col == 'lextract':
-                        cols[i] = 'Labeled Extract Name'
-                    if col == 'lextract_label':
-                        cols[i] = 'Label'
-                    if prop_regex.match(col) is not None:
-                        cols[i] = prop_regex.findall(col)[0]
+                # WARNING: don't just dump out col_map.values() as we need to put columns back in order
+                df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0 (Sample name)
+                del df['compound_key']  # release compound_key as we don't write it out
+                for i, col in enumerate(df.columns):
+                    cols[i] = col_map[col]
+                    if col_map[col] == 'Characteristics[Material Type]':
+                        cols[i] = 'Material Type'
                     if data_regex.match(col) is not None:
                         if data_regex.findall(col)[0] == 'Raw Data File':
                             if assay_obj.technology_type.name == 'DNA microarray':
                                 cols[i] = 'Array Data File'
-                            else:
-                                cols[i] = data_regex.findall(col)[0]
-                        else:
-                            cols[i] = data_regex.findall(col)[0]
-                    if fv_regex.match(col) is not None:
-                        cols[i] = 'Factor Value[' + fv_regex.findall(col)[0] + ']'
-                    if pv_regex.match(col) is not None:
-                        cols[i] = 'Parameter Value[' + pv_regex.findall(col)[0] + ']'
-                del df['compound_key']  # release compound_key as we don't write it out
                 df.columns = cols  # reset column headers
-                df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0 (Sample name)
                 # drop completely empty columns
                 import numpy as np
                 df = df.replace('', np.nan)
