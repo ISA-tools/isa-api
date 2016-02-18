@@ -628,6 +628,9 @@ class Process(IsaObject):
             self.outputs = list()
         else:
             self.outputs = outputs
+        self.additional_properties = dict()
+        self.prev_process = None
+        self.next_process = None
 
 
 class DataFileType(Enum):
@@ -635,18 +638,26 @@ class DataFileType(Enum):
     raw_data_file = 1
     derived_data_file = 2
     image_file = 3
+
+
+class DataFile(object):
+    def __init__(self, id_='', filename='', label=''):
+        self.id = id_
+        self.filename = filename
+        self.label = label
     
 
 class Data(IsaObject):
     """A Data.
 
     Attributes:
-        name:
+        id:
+        data_files: List of DataFile
     """
-    def __init__(self, id_='', name="", comments=None):
+    def __init__(self, id_='', data_files=list(), comments=None):
         super().__init__(comments)
         self.id = id_
-        self.name = name
+        self.data_files = data_files
 
 
 class ScanData(Data):

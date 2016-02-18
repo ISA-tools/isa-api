@@ -19,4 +19,4 @@ def convert(json_fp, path):
 
     """
     isa_obj = isajson.load(fp=json_fp)
-    isatab.dump(isa_obj=isa_obj, path=path)
+    isatab.dump(isa_obj=isa_obj, output_path=path)

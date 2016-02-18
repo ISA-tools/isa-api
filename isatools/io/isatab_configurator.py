@@ -36,10 +36,19 @@ def get_config(measurement_type=None, technology_type=None):
     global config_dict
     try:
         config = config_dict[(measurement_type, technology_type)].isatab_configuration[0]
+        from collections import OrderedDict
+        fields = dict()
+        for field in config.field:
+            fields[field.pos] = field
+        for protocol_field in config.protocol_field:
+            fields[protocol_field.pos] = protocol_field
+        for structured_field in config.structured_field:
+            fields[structured_field.pos] = structured_field
+        sorted_fields = OrderedDict(sorted(fields.items(), key=lambda x: x[0]))
+        sorted_config = list(sorted_fields.values())
     except KeyError:
-        config = None
-    finally:
-        return config
+        sorted_config = None
+    return sorted_config
 
 
 Validate_simpletypes_ = True
