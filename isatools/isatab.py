@@ -1,4 +1,4 @@
-from _hashlib import new
+from pandas.util.testing import assert_frame_equal
 from .model.v1 import *
 from isatools.io import isatab_parser
 import os
@@ -180,7 +180,6 @@ def load(isatab_dir):
 
             obj_item = Process(
                 executes_protocol=_createExecuteStudyProtocol(process_node_name, process_nodes[process_node_name]),
-                parameters=list(),
                 inputs=_createInputList(process_nodes[process_node_name].inputs, source_dict, sample_dict),
                 outputs=_createOutputList(process_nodes[process_node_name].outputs, sample_dict)
             )
@@ -543,7 +542,7 @@ def dump(isa_obj, output_path):
                 study_design_descriptors_df.loc[j] = [
                     design_descriptor.name,
                     design_descriptor.term_accession,
-                    design_descriptor.term_source
+                    design_descriptor.term_source.name
                 ]
                 study_design_descriptors_df = study_design_descriptors_df.set_index('Study Design Type').T
                 fp.write('STUDY DESIGN DESCRIPTORS\n')
@@ -566,7 +565,7 @@ def dump(isa_obj, output_path):
                     study_publication.doi,
                     study_publication.author_list,
                     study_publication.status.name,
-                    study_publication.status.term_source,
+                    study_publication.status.term_source.name,
                     study_publication.status.term_accession,
                 ]
                 j += 1
@@ -588,7 +587,7 @@ def dump(isa_obj, output_path):
                     factor.name,
                     factor.factor_type.name,
                     factor.factor_type.term_accession,
-                    factor.factor_type.term_source
+                    factor.factor_type.term_source.name
                 ]
                 j += 1
             study_factors_df = study_factors_df.set_index('Study Factor Name').T
@@ -612,10 +611,10 @@ def dump(isa_obj, output_path):
                 study_assays_df.loc[j] = [
                     assay.measurement_type.name,
                     assay.measurement_type.term_accession,
-                    assay.measurement_type.term_source,
+                    assay.measurement_type.term_source.name,
                     assay.technology_type.name,
                     assay.technology_type.term_accession,
-                    assay.technology_type.term_source,
+                    assay.technology_type.term_source.name,
                     assay.technology_platform,
                     assay.filename
                 ]
@@ -664,7 +663,7 @@ def dump(isa_obj, output_path):
                     protocol.name,
                     protocol.protocol_type.name,
                     protocol.protocol_type.term_accession,
-                    protocol.protocol_type.term_source,
+                    protocol.protocol_type.term_source.name,
                     protocol.description,
                     protocol.uri,
                     protocol.version,
@@ -1230,10 +1229,7 @@ def write_study_table_files(inv_obj, output_dir):
         raise IOError("Input object is not a valid Investigation object")
 
 
-def assertTabEqual(fp_x, fp_y):
-    def diff(a, b):
-        b = set(b)
-        return [aa for aa in a if aa not in b]
+def assert_tab_equal(fp_x, fp_y):
     """
     Test for equality of tab files, only down to level of content - should not be taken as canonical equality, but
     rather that all the expected content matches to both input files
@@ -1241,80 +1237,109 @@ def assertTabEqual(fp_x, fp_y):
     :param fp_y: File descriptor of another  ISAtab file
     :return: True or False plus any AssertionErrors
     """
-    import numpy as np
-    df_x = pd.read_csv(fp_x, sep='\t', encoding='utf-8')
-    df_y = pd.read_csv(fp_y, sep='\t', encoding='utf-8')
-    try:
-        # drop empty columns
-        df_x = df_x.replace('', np.nan)
-        df_x = df_x.dropna(axis=1, how='all')
-        df_y = df_y.replace('', np.nan)
-        df_y = df_y.dropna(axis=1, how='all')
 
-        is_cols_equal = set([x.split('.', 1)[0] for x in df_x.columns]) == set([x.split('.', 1)[0] for x in df_y.columns])
-        if not is_cols_equal:
-            print('x: ' + df_x.columns)
-            print('y: ' + df_y.columns)
-            print(diff(df_x.columns, df_y.columns))
-            raise AssertionError("Columns in x do not match those in y")
+    def _assert_df_equal(x, y):
+        try:
+            assert_frame_equal(x, y)
+            return True
+        except AssertionError as e:
+            print('x: ' + str(x))
+            print('y: ' + str(y))
+            print(e)
+            return False
 
-        # reindex to add contexts for duplicate named columns (i.e. Term Accession Number, Unit, etc.)
-        import re
-        char_regex = re.compile('Characteristics\[(.*?)\]')
-        pv_regex = re.compile('Parameter Value\[(.*?)\]')
-        fv_regex = re.compile('Factor Value\[(.*?)\]')
-        newcolsx = list()
-        for col in df_x.columns:
-            newcolsx.append(col)
-        for i, col in enumerate(df_x.columns):
-            if char_regex.match(col) or pv_regex.match(col) or fv_regex.match(col):
-                try:
-                    if 'Unit' in df_x.columns[i+1]:
-                        newcolsx[i+1] = col + '/Unit'
-                        if 'Term Source REF' in df_x.columns[i+2]:
-                            newcolsx[i+2] = col + '/Unit/Term Source REF'
-                        if 'Term Accession Number' in df_x.columns[i+3]:
-                            newcolsx[i+3] = col + '/Unit/Term Accession Number'
-                    elif 'Term Source REF' in df_x.columns[i+1]:
-                        newcolsx[i+1] = col + '/Term Source REF'
-                        if 'Term Accession Number' in df_x.columns[i+2]:
-                            newcolsx[i+2] = col + '/Term Accession Number'
-                except IndexError:
-                    pass
-        df_x.columns = newcolsx
-        newcolsy = list()
-        for col in df_y.columns:
-            newcolsy.append(col)
-        for i, col in enumerate(df_y.columns):
-            if char_regex.match(col) or pv_regex.match(col) or fv_regex.match(col):
-                try:
-                    if 'Unit' in df_y.columns[i+1]:
-                        newcolsy[i+1] = col + '/Unit'
-                        if 'Term Source REF' in df_y.columns[i+2]:
-                            newcolsy[i+2] = col + '/Unit/Term Source REF'
-                        if 'Term Accession Number' in df_y.columns[i+3]:
-                            newcolsy[i+3] = col + '/Unit/Term Accession Number'
-                    elif 'Term Source REF' in df_y.columns[i+1]:
-                        newcolsy[i+1] = col + '/Term Source REF'
-                        if 'Term Accession Number' in df_y.columns[i+2]:
-                            newcolsy[i+2] = col + '/Term Accession Number'
-                except IndexError:
-                    pass
-        df_y.columns = newcolsy
-        for colx in df_x.columns:
-            for eachx, eachy in zip(df_x[colx], df_y[colx]):
-                if eachx != eachy:
-                    print(df_x[colx])
-                    print(df_y[colx])
-                    raise AssertionError("Value: " + str(eachx) + ", does not match: " + str(eachy))
-        print("Well, you got here so the files must be same-ish... well done, you!")
-        return True
-    except AssertionError as e:
-        print(str(e))
-        return False
+    from os.path import basename
+    if basename(fp_x.name).startswith('i_'):
+        df_dict_x = _read_investigation_file(fp_x)
+        df_dict_y = _read_investigation_file(fp_y)
+        for k in df_dict_x.keys():
+            dfx = df_dict_x[k]
+            dfy = df_dict_y[k]
+            if not isinstance(dfx, list):
+                _assert_df_equal(dfx, dfy)
+            else:
+                for x, y in zip(dfx, dfy):
+                    _assert_df_equal(x, y)
+    else:
+
+        def diff(a, b):
+            b = set(b)
+            return [aa for aa in a if aa not in b]
+
+        import numpy as np
+        df_x = pd.read_csv(fp_x, sep='\t', encoding='utf-8')
+        df_y = pd.read_csv(fp_y, sep='\t', encoding='utf-8')
+        try:
+            # drop empty columns
+            df_x = df_x.replace('', np.nan)
+            df_x = df_x.dropna(axis=1, how='all')
+            df_y = df_y.replace('', np.nan)
+            df_y = df_y.dropna(axis=1, how='all')
+
+            is_cols_equal = set([x.split('.', 1)[0] for x in df_x.columns]) == set([x.split('.', 1)[0] for x in df_y.columns])
+            if not is_cols_equal:
+                print('x: ' + str(df_x.columns))
+                print('y: ' + str(df_y.columns))
+                print(diff(df_x.columns, df_y.columns))
+                raise AssertionError("Columns in x do not match those in y")
+
+            # reindex to add contexts for duplicate named columns (i.e. Term Accession Number, Unit, etc.)
+            import re
+            char_regex = re.compile('Characteristics\[(.*?)\]')
+            pv_regex = re.compile('Parameter Value\[(.*?)\]')
+            fv_regex = re.compile('Factor Value\[(.*?)\]')
+            newcolsx = list()
+            for col in df_x.columns:
+                newcolsx.append(col)
+            for i, col in enumerate(df_x.columns):
+                if char_regex.match(col) or pv_regex.match(col) or fv_regex.match(col):
+                    try:
+                        if 'Unit' in df_x.columns[i+1]:
+                            newcolsx[i+1] = col + '/Unit'
+                            if 'Term Source REF' in df_x.columns[i+2]:
+                                newcolsx[i+2] = col + '/Unit/Term Source REF'
+                            if 'Term Accession Number' in df_x.columns[i+3]:
+                                newcolsx[i+3] = col + '/Unit/Term Accession Number'
+                        elif 'Term Source REF' in df_x.columns[i+1]:
+                            newcolsx[i+1] = col + '/Term Source REF'
+                            if 'Term Accession Number' in df_x.columns[i+2]:
+                                newcolsx[i+2] = col + '/Term Accession Number'
+                    except IndexError:
+                        pass
+            df_x.columns = newcolsx
+            newcolsy = list()
+            for col in df_y.columns:
+                newcolsy.append(col)
+            for i, col in enumerate(df_y.columns):
+                if char_regex.match(col) or pv_regex.match(col) or fv_regex.match(col):
+                    try:
+                        if 'Unit' in df_y.columns[i+1]:
+                            newcolsy[i+1] = col + '/Unit'
+                            if 'Term Source REF' in df_y.columns[i+2]:
+                                newcolsy[i+2] = col + '/Unit/Term Source REF'
+                            if 'Term Accession Number' in df_y.columns[i+3]:
+                                newcolsy[i+3] = col + '/Unit/Term Accession Number'
+                        elif 'Term Source REF' in df_y.columns[i+1]:
+                            newcolsy[i+1] = col + '/Term Source REF'
+                            if 'Term Accession Number' in df_y.columns[i+2]:
+                                newcolsy[i+2] = col + '/Term Accession Number'
+                    except IndexError:
+                        pass
+            df_y.columns = newcolsy
+            for colx in df_x.columns:
+                for eachx, eachy in zip(df_x[colx], df_y[colx]):
+                    if eachx != eachy:
+                        print(df_x[colx])
+                        print(df_y[colx])
+                        raise AssertionError("Value: " + str(eachx) + ", does not match: " + str(eachy))
+            print("Well, you got here so the files must be same-ish... well done, you!")
+            return True
+        except AssertionError as e:
+            print(str(e))
+            return False
 
 
-def read_investigation_file(fp):
+def _read_investigation_file(fp):
 
     def _peek(f):
         position = f.tell()
@@ -1332,7 +1357,7 @@ def read_investigation_file(fp):
             line = f.readline()
             if not line:
                 break
-            memf.write(line)
+            memf.write(line.rstrip())
         memf.seek(0)
         return memf
 
@@ -1345,68 +1370,70 @@ def read_investigation_file(fp):
         df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
         return df
 
+    df_dict = dict()
+
     # Read in investigation file into DataFrames first
-    ontology_sources_df = _build_section_df(_read_tab_section(
+    df_dict['ontology_sources'] = _build_section_df(_read_tab_section(
         f=fp,
         sec_key='ONTOLOGY SOURCE REFERENCE',
         next_sec_key='INVESTIGATION'
     ))
     # assert({'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
     #        .issubset(set(ontology_sources_df.columns.values)))  # Check required labels are present
-    investigation_df = _build_section_df(_read_tab_section(
+    df_dict['investigation']  = _build_section_df(_read_tab_section(
         f=fp,
         sec_key='INVESTIGATION',
         next_sec_key='INVESTIGATION PUBLICATIONS'
     ))
-    investigation_publications_df = _build_section_df(_read_tab_section(
+    df_dict['i_publications']  = _build_section_df(_read_tab_section(
         f=fp,
         sec_key='INVESTIGATION PUBLICATIONS',
         next_sec_key='INVESTIGATION CONTACTS'
     ))
-    investigation_contacts_df = _build_section_df(_read_tab_section(
+    df_dict['i_contacts']  = _build_section_df(_read_tab_section(
         f=fp,
         sec_key='INVESTIGATION CONTACTS',
         next_sec_key='STUDY'
     ))
-    study_df_list = list()
-    study_design_descriptors_df_list = list()
-    study_publications_df_list = list()
-    study_factors_df_list = list()
-    study_assays_df_list = list()
-    study_protocols_df_list = list()
-    study_contacts_df_list = list()
+    df_dict['studies']  = list()
+    df_dict['s_design_descriptors']  = list()
+    df_dict['s_publications']  = list()
+    df_dict['s_factors']  = list()
+    df_dict['s_assays']  = list()
+    df_dict['s_protocols']  = list()
+    df_dict['s_contacts']  = list()
     while _peek(fp):  # Iterate through STUDY blocks until end of file
-        study_df_list.append(_build_section_df(_read_tab_section(
+        df_dict['studies'].append(_build_section_df(_read_tab_section(
             f=fp,
             sec_key='STUDY',
             next_sec_key='STUDY DESIGN DESCRIPTORS'
         )))
-        study_design_descriptors_df_list.append(_build_section_df(_read_tab_section(
+        df_dict['s_design_descriptors'] .append(_build_section_df(_read_tab_section(
             f=fp,
             sec_key='STUDY DESIGN DESCRIPTORS',
             next_sec_key='STUDY PUBLICATIONS'
         )))
-        study_publications_df_list.append(_build_section_df(_read_tab_section(
+        df_dict['s_publications'].append(_build_section_df(_read_tab_section(
             f=fp,
             sec_key='STUDY PUBLICATIONS',
             next_sec_key='STUDY FACTORS'
         )))
-        study_factors_df_list.append(_build_section_df(_read_tab_section(
+        df_dict['s_factors'].append(_build_section_df(_read_tab_section(
             f=fp,
             sec_key='STUDY FACTORS',
             next_sec_key='STUDY ASSAYS'
         )))
-        study_assays_df_list.append(_build_section_df(_read_tab_section(
+        df_dict['s_assays'].append(_build_section_df(_read_tab_section(
             f=fp,
             sec_key='STUDY ASSAYS',
             next_sec_key='STUDY PROTOCOLS'
         )))
-        study_protocols_df_list.append(_build_section_df(_read_tab_section(
+        df_dict['s_protocols'].append(_build_section_df(_read_tab_section(
             f=fp,
             sec_key='STUDY PROTOCOLS',
             next_sec_key='STUDY CONTACTS'
         )))
-        study_contacts_df_list.append(_build_section_df(_read_tab_section(
+        df_dict['s_contacts'].append(_build_section_df(_read_tab_section(
             f=fp,
             sec_key='STUDY CONTACTS',
             next_sec_key='STUDY'
@@ -1446,7 +1473,7 @@ def read_investigation_file(fp):
     #         )
     #     )
     #     investigation.publications.append(investigation_publication)
-    return investigation_df
+    return df_dict
 
 
 def read_study_file(fp):
