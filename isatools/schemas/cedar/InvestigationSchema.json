@@ -1,5 +1,4 @@
 {
-    "name": "InvestigationSchema",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "properties": {
         "investigation": {
@@ -3927,20 +3926,14 @@
                         "oneOf": [
                             {
                                 "type": "string",
-                                "format": "uri",
-                                "enum": [
-                                    "http://purl.obolibrary.org/obo/UO_0000003"
-                                ]
+                                "format": "uri"
                             },
                             {
                                 "type": "array",
                                 "minItems": 1,
                                 "items": {
                                     "type": "string",
-                                    "format": "uri",
-                                    "enum": [
-                                        "http://purl.obolibrary.org/obo/UO_0000003"
-                                    ]
+                                    "format": "uri"
                                 },
                                 "uniqueItems": true
                             }

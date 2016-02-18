@@ -7,7 +7,6 @@ from os import listdir
 from os.path import isdir, join
 from jsonschema import RefResolver, Draft4Validator
 
-
 #from bcbio.isatab.parser import InvestigationParser
 from isatools.io.isatab_parser import parse
 #from isatab_parser_orig import parse
@@ -239,10 +238,8 @@ class ISATab2CEDAR():
 
 
     def createDataFiles(self, nodes):
-        print("create data files dictionary...")
         json_dict = dict([])
         for node_index in nodes:
-            print("node_index...", node_index)
             if nodes[node_index].ntype.endswith("Data File") :
                 json_item = dict([
                     ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
@@ -309,20 +306,41 @@ class ISATab2CEDAR():
                     ("@type", "https://repo.metadatacenter.org/model/Characteristic"),
                     ("name", dict([("value", characteristic)])),
                     ("description", dict([("value", "")])),
-                    ("hasCharacteristicValue", self.createCharacteristicValueList(node.metadata[header]))
+                    ("hasCharacteristicValue", self.createCharacteristicValueList(node.metadata[header][0]))
                     ])
                  json_list.append(json_item)
         return json_list
 
-    def createCharacteristicValueList(self, characteristicValues):
-        #TODO - check how to represent more than one characteristics value
-        characteristicValue = dict([
-                                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
-                                ("@type", "https://repo.metadatacenter.org/model/CharacteristicValue"),
-                                ("type", dict([("value", characteristicValues[0][2])])),
-                                ("unit", dict([("value", "")])),
-                                ("value", dict([("value", characteristicValues[0][0])]))
-                    ])
+    def createCharacteristicValueList(self, value_attributes):
+
+        value  = value_attributes[0]
+        try:
+            typeValue = value_attributes.Term_Accession_Number
+        except AttributeError:
+            typeValue = ""
+
+        try:
+            unitValue = value_attributes.Unit
+        except AttributeError:
+            unitValue = ""
+
+        if unitValue:
+            characteristicValue = dict([
+                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                ("@type", "https://repo.metadatacenter.org/model/CharacteristicValue"),
+                ("type", dict([("value", "")])),
+                ("unit", dict([("value", unitValue), ("@type", typeValue)])),
+                ("value", dict([("value", value)]))
+                ])
+        else:
+            characteristicValue = dict([
+                ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                ("@type", "https://repo.metadatacenter.org/model/CharacteristicValue"),
+                ("type", dict([("value", typeValue)])),
+                ("unit", dict([("value", unitValue)])),
+                ("value", dict([("value", value)]))
+                ])
+
         return characteristicValue
 
 
