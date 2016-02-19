@@ -46,15 +46,3 @@ class JsonToTabTest(TestCase):
         json2isatab.convert(open(os.path.join(self._dir, 'BII-S-3.json')), self._tmp)
         self.assertTrue(assert_tab_equal(open(os.path.join(self._tmp, 'a_gilbert-assay-Tx.txt')),
                                          open(os.path.join(self._dir, 'data/BII-S-3/a_gilbert-assay-Tx.txt'))))
-
-    # def test_bii_s_3_assay_table_Gx(self):
-    #     json2isatab.convert(open('/Users/dj/PycharmProjects/isa-api/isatools/sampledata/BII-S-3.json'), self._tmp)
-    #     self.assertTrue(assert_tab_equal(open(os.path.join(self._tmp, 'a_gilbert-assay-Gx.txt')),
-    #                                      open(os.path.join(self._dir, '/Users/dj/PycharmProjects/isa-api/tests/data/BII-S-3/a_gilbert-assay-Gx.txt'))))
-    #  need comments support to test above
-
-    # def test_source_split_investigation(self):
-    #     json2isatab.convert(open(os.path.join(self._dir, 'TEST-ISA-source-split.json')), self._tmp)
-    #     self.assertTrue(assert_tab_equal(open(os.path.join(self._tmp, 'i_Investigation.txt')),
-    #                                      open(os.path.join(self._dir, 'data/TEST-ISA-source-split/i_Investigation.txt'))))
-    #  Above works with comments stripped out of i file
