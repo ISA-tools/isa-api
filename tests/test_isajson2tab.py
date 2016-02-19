@@ -17,12 +17,6 @@ class JsonToTabTest(TestCase):
         shutil.rmtree(self._tmp, ignore_errors=True)
         pass
 
-    # def test_source_split_investigation(self):
-    #     json2isatab.convert(open(os.path.join(self._dir, 'TEST-ISA-source-split.json')), self._tmp)
-    #     self.assertTrue(assert_tab_equal(open(os.path.join(self._tmp, 'i_Investigation.txt')),
-    #                                      open(os.path.join(self._dir, 'data/TEST-ISA-source-split/i_Investigation.txt'))))
-    #  Above works with comments stripped out of i file
-
     def test_source_split_study_table(self):
         json2isatab.convert(open(os.path.join(self._dir, 'TEST-ISA-source-split.json')), self._tmp)
         self.assertTrue(assert_tab_equal(open(os.path.join(self._tmp, 's_TEST-Template1-Splitting.txt')),
@@ -58,3 +52,9 @@ class JsonToTabTest(TestCase):
     #     self.assertTrue(assert_tab_equal(open(os.path.join(self._tmp, 'a_gilbert-assay-Gx.txt')),
     #                                      open(os.path.join(self._dir, '/Users/dj/PycharmProjects/isa-api/tests/data/BII-S-3/a_gilbert-assay-Gx.txt'))))
     #  need comments support to test above
+
+    # def test_source_split_investigation(self):
+    #     json2isatab.convert(open(os.path.join(self._dir, 'TEST-ISA-source-split.json')), self._tmp)
+    #     self.assertTrue(assert_tab_equal(open(os.path.join(self._tmp, 'i_Investigation.txt')),
+    #                                      open(os.path.join(self._dir, 'data/TEST-ISA-source-split/i_Investigation.txt'))))
+    #  Above works with comments stripped out of i file
