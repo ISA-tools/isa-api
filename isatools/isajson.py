@@ -1,3 +1,4 @@
+from pyxb.bundles.wssplat.raw.bpws import tRoles
 from isatools.model.v1 import *
 import json
 import logging
@@ -57,9 +58,9 @@ def load(fp):
                 phone=person_json['phone'],
                 fax=person_json['fax'],
                 address=person_json['address'],
-                affiliation=person_json['affiliation']
+                affiliation=person_json['affiliation'],
+                roles=person_json['roles']
             )
-            # TODO: Implement support for roles
             investigation.contacts.append(person)
         logger.debug('Start building Studies objects')
         samples_dict = dict()
@@ -137,7 +138,15 @@ def load(fp):
                     phone=study_person_json['phone'],
                     fax=study_person_json['fax'],
                     address=study_person_json['address'],
+                    affiliation=study_person_json['affiliation'],
                 )
+                for role_json in study_person_json['roles']:
+                    role = OntologyAnnotation(
+                        name=role_json['annotationValue'],
+                        term_accession=role_json['termAccession'],
+                        term_source=term_source_dict[role_json['termSource']]
+                    )
+                    study_person.roles.append(role)
                 study.contacts.append(study_person)
             for design_descriptor_json in study_json['studyDesignDescriptors']:
                 logger.debug('Build Ontology Annotation object (Study Design Descriptor)')
@@ -152,6 +161,9 @@ def load(fp):
                 protocol = Protocol(
                     id_=protocol_json['@id'],
                     name=protocol_json['name'],
+                    uri=protocol_json['uri'],
+                    description=protocol_json['description'],
+                    version=protocol_json['version'],
                     protocol_type=OntologyAnnotation(
                         name=protocol_json['protocolType']['annotationValue'],
                         term_accession=protocol_json['protocolType']['termAccession'],
@@ -169,7 +181,16 @@ def load(fp):
                     )
                     protocol.parameters.append(parameter)
                     parameters_dict[parameter.id] = parameter
-                # TODO add component declarations here
+                for component_json in protocol_json['components']:
+                    component = ProtocolComponent(
+                        name=component_json['componentName'],
+                        component_type=OntologyAnnotation(
+                            name=component_json['componentType']['annotationValue'],
+                            term_source=term_source_dict[component_json['componentType']['termSource']],
+                            term_accession=component_json['componentType']['termAccession']
+                        )
+                    )
+                    protocol.components.append(component)
                 study.protocols.append(protocol)
                 protocols_dict[protocol.id] = protocol
             for factor_json in study_json['factors']:

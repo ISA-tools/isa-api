@@ -235,7 +235,7 @@ class Person(IsaObject):
         self.address = address
         self.affiliation = affiliation
         if roles is None:
-            self.roles = []
+            self.roles = list()
         else:
             self.roles = roles
 
@@ -454,9 +454,11 @@ class ProtocolParameter(IsaObject):
         #     self.unit = unit
 
 
-class ProtocolComponent(object):
-    def __init__(self, component_name='', component_type=None):
-        self.component_name = component_name
+class ProtocolComponent(IsaObject):
+    def __init__(self, id_='', name='', component_type=None, comments=None):
+        super().__init__(comments)
+        self.id = id_
+        self.name = name
         if component_type is None:
             self.component_type = OntologyAnnotation()
         else:

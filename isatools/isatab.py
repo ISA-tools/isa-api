@@ -444,6 +444,7 @@ def dump(isa_obj, output_path):
         investigation_publications_df = pd.DataFrame(columns=('Investigation PubMed ID',
                                                               'Investigation Publication DOI',
                                                               'Investigation Publication Author List',
+                                                              'Investigation Publication Title',
                                                               'Investigation Publication Status',
                                                               'Investigation Publication Status Term Accession '
                                                               'Number',
@@ -456,6 +457,7 @@ def dump(isa_obj, output_path):
                 investigation_publication.pubmed_id,
                 investigation_publication.doi,
                 investigation_publication.author_list,
+                investigation_publication.title,
                 investigation_publication.status.name,
                 investigation_publication.status.term_source,
                 investigation_publication.status.term_accession,
@@ -506,7 +508,7 @@ def dump(isa_obj, output_path):
         investigation_contacts_df = investigation_contacts_df.set_index('Investigation Person Last Name').T
         fp.write('INVESTIGATION CONTACTS\n')
         investigation_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                         index_label='Investigation PubMed ID')
+                                         index_label='Investigation Person Last Name')
 
         # Write STUDY sections
         i = 0
@@ -553,6 +555,7 @@ def dump(isa_obj, output_path):
             study_publications_df = pd.DataFrame(columns=('Study PubMed ID',
                                                           'Study Publication DOI',
                                                           'Study Publication Author List',
+                                                          'Study Publication Title',
                                                           'Study Publication Status',
                                                           'Study Publication Status Term Accession Number',
                                                           'Study Publication Status Term Source REF'
@@ -564,6 +567,7 @@ def dump(isa_obj, output_path):
                     study_publication.pubmed_id,
                     study_publication.doi,
                     study_publication.author_list,
+                    study_publication.title,
                     study_publication.status.name,
                     study_publication.status.term_source.name,
                     study_publication.status.term_accession,
@@ -620,16 +624,16 @@ def dump(isa_obj, output_path):
                     assay.technology_platform
                 ]
                 j += 1
-            study_assays_df = study_assays_df.set_index('Study Assay Measurement Type').T
+            study_assays_df = study_assays_df.set_index('Study Assay File Name').T
             fp.write('STUDY ASSAYS\n')
             study_assays_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                   index_label='Study Assay Measurement Type')
+                                   index_label='Study Assay File Name')
 
             # Write STUDY PROTOCOLS section
             study_protocols_df = pd.DataFrame(columns=('Study Protocol Name',
                                                        'Study Protocol Type',
-                                                       'Study Protocol Type  Accession Number',
-                                                       'Study Protocol Type Source REF',
+                                                       'Study Protocol Type Term Accession Number',
+                                                       'Study Protocol Type Term Source REF',
                                                        'Study Protocol Description',
                                                        'Study Protocol URI',
                                                        'Study Protocol Version',
@@ -651,15 +655,24 @@ def dump(isa_obj, output_path):
                     parameters_names += parameter.parameter_name.name + ';'
                     parameters_accession_numbers += parameter.parameter_name.term_accession + ';'
                     parameters_source_refs += parameter.parameter_name.term_source.name + ';'
+                if len(protocol.parameters) > 0:
+                    parameters_names = parameters_names[:-1]
+                    parameters_accession_numbers = parameters_accession_numbers[:-1]
+                    parameters_source_refs = parameters_source_refs[:-1]
                 component_names = ''
                 component_types = ''
                 component_types_accession_numbers = ''
                 component_types_source_refs = ''
                 for component in protocol.components:
                     component_names += component.name + ';'
-                    component_types += component.component_type + ';'
+                    component_types += component.component_type.name + ';'
                     component_types_accession_numbers += component.component_type.term_accession + ';'
                     component_types_source_refs += component.component_type.term_source.name + ';'
+                if len(protocol.components) > 0:
+                    component_names = component_names[:-1]
+                    component_types = component_types[:-1]
+                    component_types_accession_numbers = component_types_accession_numbers[:-1]
+                    component_types_source_refs = component_types_source_refs[:-1]
                 study_protocols_df.loc[j] = [
                     protocol.name,
                     protocol.protocol_type.name,
@@ -698,13 +711,17 @@ def dump(isa_obj, output_path):
                                              )
             j = 0
             for study_contact in study.contacts:
-                # roles = ''
-                # roles_accession_numbers = ''
-                # roles_source_refs = ''
-                # for role in study_contact.roles:
-                #     roles += role.name + ';'
-                #     roles_accession_numbers += role.term_accession + ';'
-                #     roles_source_refs += role.term_source.name + ';'
+                roles_names = ''
+                roles_accession_numbers = ''
+                roles_source_refs = ''
+                for role in study_contact.roles:
+                    roles_names += role.name + ';'
+                    roles_accession_numbers += role.term_accession + ';'
+                    roles_source_refs += role.term_source.name + ';'
+                if len(study_contact.roles) > 0:
+                    roles_names = roles_names[:-1]
+                    roles_accession_numbers = roles_accession_numbers[:-1]
+                    roles_source_refs = roles_source_refs[:-1]
                 study_contacts_df.loc[j] = [
                     study_contact.last_name,
                     study_contact.first_name,
@@ -714,9 +731,9 @@ def dump(isa_obj, output_path):
                     study_contact.fax,
                     study_contact.address,
                     study_contact.affiliation,
-                    '',  # roles,
-                    '',  # roles_accession_numbers,
-                    '',  # roles_source_refs
+                    roles_names,
+                    roles_accession_numbers,
+                    roles_source_refs
                 ]
                 j += 1
             study_contacts_df = study_contacts_df.set_index('Study Person Last Name').T
