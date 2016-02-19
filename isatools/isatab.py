@@ -596,27 +596,28 @@ def dump(isa_obj, output_path):
                                     index_label='Study Factor Name')
 
             # Write STUDY ASSAYS section
-            study_assays_df = pd.DataFrame(columns=('Study Assay Measurement Type',
+            study_assays_df = pd.DataFrame(columns=(
+                                                    'Study Assay File Name',
+                                                    'Study Assay Measurement Type',
                                                     'Study Assay Measurement Type Term Accession Number',
                                                     'Study Assay Measurement Type Term Source REF',
                                                     'Study Assay Technology Type',
                                                     'Study Assay Technology Type Term Accession Number',
                                                     'Study Assay Technology Type Term Source REF',
                                                     'Study Assay Technology Platform',
-                                                    'Study Assay File Name'
                                                     )
                                            )
             j = 0
             for assay in study.assays:
                 study_assays_df.loc[j] = [
+                    assay.filename,
                     assay.measurement_type.name,
                     assay.measurement_type.term_accession,
                     assay.measurement_type.term_source.name,
                     assay.technology_type.name,
                     assay.technology_type.term_accession,
                     assay.technology_type.term_source.name,
-                    assay.technology_platform,
-                    assay.filename
+                    assay.technology_platform
                 ]
                 j += 1
             study_assays_df = study_assays_df.set_index('Study Assay Measurement Type').T
@@ -1243,8 +1244,6 @@ def assert_tab_equal(fp_x, fp_y):
             assert_frame_equal(x, y)
             return True
         except AssertionError as e:
-            print('x: ' + str(x))
-            print('y: ' + str(y))
             print(e)
             return False
 
@@ -1252,14 +1251,27 @@ def assert_tab_equal(fp_x, fp_y):
     if basename(fp_x.name).startswith('i_'):
         df_dict_x = _read_investigation_file(fp_x)
         df_dict_y = _read_investigation_file(fp_y)
+        # if not _assert_df_equal(df_dict_x['ontology_sources'], df_dict_y['ontology_sources']):
+        #     print(df_dict_x['ontology_sources'])
+        #     print(df_dict_y['ontology_sources'])
+        #     print("Dataframes don't match")
+        #     return False
+        # else:
+        #     return True
+        eq = True
         for k in df_dict_x.keys():
             dfx = df_dict_x[k]
             dfy = df_dict_y[k]
             if not isinstance(dfx, list):
-                _assert_df_equal(dfx, dfy)
+                if not _assert_df_equal(dfx, dfy):
+                    eq = False
+                    break
             else:
-                for x, y in zip(dfx, dfy):
-                    _assert_df_equal(x, y)
+                for x, y in zip(sorted(dfx), sorted(dfy)):
+                    if not _assert_df_equal(x, y):
+                        eq = False
+                        break
+        return eq
     else:
 
         def diff(a, b):
@@ -1332,7 +1344,7 @@ def assert_tab_equal(fp_x, fp_y):
                         print(df_x[colx])
                         print(df_y[colx])
                         raise AssertionError("Value: " + str(eachx) + ", does not match: " + str(eachy))
-            print("Well, you got here so the files must be same-ish... well done, you!")
+            # print("Well, you got here so the files must be same-ish... well done, you!")
             return True
         except AssertionError as e:
             print(str(e))
@@ -1357,7 +1369,7 @@ def _read_investigation_file(fp):
             line = f.readline()
             if not line:
                 break
-            memf.write(line.rstrip())
+            memf.write(line.rstrip() + '\n')
         memf.seek(0)
         return memf
 
