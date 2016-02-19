@@ -14,8 +14,8 @@ class JsonToTabTest(TestCase):
             os.mkdir(self._tmp)
 
     def tearDown(self):
-        shutil.rmtree(self._tmp, ignore_errors=True)
-        # pass
+        # shutil.rmtree(self._tmp, ignore_errors=True)
+        pass
 
     # def test_source_split_investigation(self):
     #     json2isatab.convert(open(os.path.join(self._dir, 'TEST-ISA-source-split.json')), self._tmp)
@@ -45,14 +45,14 @@ class JsonToTabTest(TestCase):
                                          open(os.path.join(self._dir, 'data/TEST-ISA-sample-pool/a_test-template3-splitting_transcription_profiling_DNA_microarray.txt'))))
 
     def test_bii_s_3_study_table(self):
-        json2isatab.convert(open('/Users/dj/PycharmProjects/isa-api/isatools/sampledata/BII-S-3.json'), self._tmp)
+        json2isatab.convert(open('../isatools/sampledata/BII-S-3.json'), self._tmp)
         self.assertTrue(assert_tab_equal(open(os.path.join(self._tmp, 's_BII-S-3.txt')),
-                                         open(os.path.join(self._dir, '/Users/dj/PycharmProjects/isa-api/tests/data/BII-S-3/s_BII-S-3.txt'))))
+                                         open(os.path.join(self._dir, 'data/BII-S-3/s_BII-S-3.txt'))))
 
     def test_bii_s_3_assay_table_Tx(self):
-        json2isatab.convert(open('/Users/dj/PycharmProjects/isa-api/isatools/sampledata/BII-S-3.json'), self._tmp)
+        json2isatab.convert(open('../isatools/sampledata/BII-S-3.json'), self._tmp)
         self.assertTrue(assert_tab_equal(open(os.path.join(self._tmp, 'a_gilbert-assay-Tx.txt')),
-                                         open(os.path.join(self._dir, '/Users/dj/PycharmProjects/isa-api/tests/data/BII-S-3/a_gilbert-assay-Tx.txt'))))
+                                         open(os.path.join(self._dir, 'data/BII-S-3/a_gilbert-assay-Tx.txt'))))
 
     # def test_bii_s_3_assay_table_Gx(self):
     #     json2isatab.convert(open('/Users/dj/PycharmProjects/isa-api/isatools/sampledata/BII-S-3.json'), self._tmp)
