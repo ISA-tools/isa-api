@@ -14,8 +14,8 @@ class JsonToTabTest(TestCase):
             os.mkdir(self._tmp)
 
     def tearDown(self):
-        # shutil.rmtree(self._tmp, ignore_errors=True)
-        pass
+        shutil.rmtree(self._tmp, ignore_errors=True)
+        # pass
 
     # def test_source_split_investigation(self):
     #     json2isatab.convert(open(os.path.join(self._dir, 'TEST-ISA-source-split.json')), self._tmp)
