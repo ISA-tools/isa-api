@@ -1327,7 +1327,7 @@ def assert_tab_equal(fp_x, fp_y):
                         pass
             df_y.columns = newcolsy
             for colx in df_x.columns:
-                for eachx, eachy in zip(df_x[colx], df_y[colx]):
+                for eachx, eachy in zip(df_x.sort_values(by=colx)[colx], df_y.sort_values(by=colx)[colx]):
                     if eachx != eachy:
                         print(df_x[colx])
                         print(df_y[colx])
@@ -1395,13 +1395,13 @@ def _read_investigation_file(fp):
         sec_key='INVESTIGATION CONTACTS',
         next_sec_key='STUDY'
     ))
-    df_dict['studies']  = list()
-    df_dict['s_design_descriptors']  = list()
-    df_dict['s_publications']  = list()
-    df_dict['s_factors']  = list()
-    df_dict['s_assays']  = list()
-    df_dict['s_protocols']  = list()
-    df_dict['s_contacts']  = list()
+    df_dict['studies'] = list()
+    df_dict['s_design_descriptors'] = list()
+    df_dict['s_publications'] = list()
+    df_dict['s_factors'] = list()
+    df_dict['s_assays'] = list()
+    df_dict['s_protocols'] = list()
+    df_dict['s_contacts'] = list()
     while _peek(fp):  # Iterate through STUDY blocks until end of file
         df_dict['studies'].append(_build_section_df(_read_tab_section(
             f=fp,
