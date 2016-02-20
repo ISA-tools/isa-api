@@ -9,8 +9,6 @@ Investigation Title	""
 Investigation Description	""
 Investigation Submission Date	""
 Investigation Public Release Date	""
-Comment [Created with configuration]	""
-Comment [Last Opened With Configuration]	""
 Comment[Created With Configuration]	""
 Comment[Last Opened With Configuration]	"GSC MIxS human gut"
 INVESTIGATION PUBLICATIONS
