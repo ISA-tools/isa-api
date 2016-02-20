@@ -1,5 +1,3 @@
-__author__ = 'agbeltran'
-
 import json
 import os
 from os.path import join
@@ -7,6 +5,7 @@ from isatools.io.isatab_parser import parse
 from jsonschema import RefResolver, Draft4Validator
 from uuid import uuid4
 from enum import Enum
+import re
 
 SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
@@ -92,7 +91,7 @@ class ISATab2ISAjson_v1:
                         ("publications", self.createPublications(isa_tab.publications, "Investigation")),
                         ("people", self.createContacts(isa_tab.contacts, "Investigation")),
                         ("studies", self.createStudies(isa_tab.studies)),
-                        ("comments", self.createInvestigationComments(isa_tab))
+                        ("comments", self.createComments(isa_tab.metadata))
                     ])
 
                 if (isa_tab.metadata['Investigation Identifier']):
@@ -113,10 +112,11 @@ class ISATab2ISAjson_v1:
                 print("... conversion finished.")
                 return isa_json
 
-    def createInvestigationComments(self, isa_tab):
+    def createComments(self, isadict):
         comments = []
-        comments.append(self.createComment('Created With Configuration',isa_tab.metadata['Comment[Created With Configuration]']))
-        comments.append(self.createComment('Last Opened With Configuration', isa_tab.metadata['Comment[Last Opened With Configuration]']))
+        comments_regex = re.compile('Comment\[(.*?)\]')
+        for k in [k for k in isadict.keys() if comments_regex.match(k)]:
+            comments.append(self.createComment(comments_regex.findall(k)[0], isadict[k]))
         return comments
 
     def createComment(self, name, value):
@@ -125,7 +125,6 @@ class ISATab2ISAjson_v1:
             ("value", value)
         ])
         return comment_json
-
 
     def createContacts(self, contacts, inv_or_study):
         people_json = []
@@ -144,8 +143,10 @@ class ISATab2ISAjson_v1:
                 ("fax", contact[inv_or_study+" Person Fax"]),
                 ("address", contact[inv_or_study+" Person Address"]),
                 ("affiliation", contact[inv_or_study+" Person Affiliation"]),
-                ("roles", self.createOntologyAnnotationsFromStringList(contact, inv_or_study, " Person Roles"))
+                ("roles", self.createOntologyAnnotationsFromStringList(contact, inv_or_study, " Person Roles")),
+                ("comments", self.createComments(contact))
             ])
+
             people_json.append(person_json)
         return people_json
 
@@ -315,6 +316,7 @@ class ISATab2ISAjson_v1:
                 ("processSequence", self.createProcessSequence(study.process_nodes, source_dict, sample_dict, material_dict, data_dict)),
                 ("assays", assay_list),
                 ("filename", study.metadata['Study File Name']),
+                ("comments", self.createComments(study.metadata)),
             ])
             study_array.append(studyJson)
         return study_array
@@ -377,7 +379,6 @@ class ISATab2ISAjson_v1:
             protocol_executed =  self.createExecuteStudyProtocol(process_node_name, process_node)
             previous_process_identifier = self.getIdentifier("process", process_node.previous_process.name) if process_node.previous_process else ""
             next_process_identifier = self.getIdentifier("process", process_node.next_process.name) if process_node.next_process else ""
-
             if (process_node.assay_name):
                 json_item = dict([
                     ("@id", process_identifier),
