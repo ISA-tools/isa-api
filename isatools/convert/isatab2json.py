@@ -372,7 +372,6 @@ class ISATab2ISAjson_v1:
                 technology = process_nodes[process_node_name].study_assay.metadata["Study Assay Technology Type"]
             except:
                 technology = ""
-
             process_node = process_nodes[process_node_name]
 
             process_identifier = self.getIdentifier("process", process_node_name)
@@ -388,7 +387,8 @@ class ISATab2ISAjson_v1:
                     ("date", process_node.date),
                     ("parameterValues", self.createValueList(self.PARAMETER_VALUE, process_node_name, process_node)),
                     ("inputs", self.createInputList(process_node.inputs, source_dict, sample_dict, material_dict, data_dict)),
-                    ("outputs", self.createOutputList(process_node.outputs, sample_dict, material_dict, data_dict) )
+                    ("outputs", self.createOutputList(process_node.outputs, sample_dict, material_dict, data_dict)),
+                    ("comments", self.createFromNodeComments(process_node)),
                 ])
             else:
                 json_item = dict([
@@ -398,7 +398,8 @@ class ISATab2ISAjson_v1:
                     ("date", process_node.date),
                     ("parameterValues", self.createValueList(self.PARAMETER_VALUE, process_node_name, process_node)),
                     ("inputs", self.createInputList(process_node.inputs, source_dict, sample_dict, material_dict, data_dict)),
-                    ("outputs", self.createOutputList(process_node.outputs, sample_dict, material_dict, data_dict) )
+                    ("outputs", self.createOutputList(process_node.outputs, sample_dict, material_dict, data_dict)),
+                    ("comments", self.createFromNodeComments(process_node)),
             ])
 
             if previous_process_identifier:
@@ -505,22 +506,24 @@ class ISATab2ISAjson_v1:
             json_list.append(json_item)
         return json_list
 
+    def createFromNodeComments(self, node):
+        comments = []
+        comments_regex = re.compile('Comment\[(.*?)\]')
+        for key in [key for key in node.metadata.keys() if comments_regex.match(key)]:
+            comments.append(self.createComment(comments_regex.findall(key)[0], getattr(
+                node.metadata[key][0], comments_regex.findall(key)[0].replace(' ', '_'))))
+        return comments
 
     def createDataFiles(self, nodes):
         json_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype.endswith(" File") :
                 data_identifier = self.generateIdentifier("data", node_index)
-                comments = []
-                comments_regex = re.compile('Comment\[(.*?)\]')
-                for key in [key for key in nodes[node_index].metadata.keys() if comments_regex.match(key)]:
-                    comments.append(self.createComment(comments_regex.findall(key)[0], getattr(
-                        nodes[node_index].metadata[key][0], comments_regex.findall(key)[0])))
                 json_item = dict([
                     ("@id", data_identifier),
                     ("name", nodes[node_index].name),
                     ("type", nodes[node_index].ntype),
-                    ("comments", comments)
+                    ("comments", self.createFromNodeComments(nodes[node_index]))
                 ])
                 json_dict.update({node_index: json_item})
         return json_dict
