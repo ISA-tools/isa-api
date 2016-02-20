@@ -9213,18 +9213,12 @@
                     "@type": {
                       "oneOf": [
                         {
-                          "enum": [
-                            "http://scai.fraunhofer.de/HuPSON#SCAIVPH_00000190"
-                          ],
                           "type": "string",
                           "format": "uri"
                         },
                         {
                           "minItems": 1,
                           "items": {
-                            "enum": [
-                              "http://scai.fraunhofer.de/HuPSON#SCAIVPH_00000190"
-                            ],
                             "type": "string",
                             "format": "uri"
                           },
@@ -9281,18 +9275,12 @@
                 "@type": {
                   "oneOf": [
                     {
-                      "enum": [
-                        "http://purl.obolibrary.org/obo/BFO_0000055"
-                      ],
                       "type": "string",
                       "format": "uri"
                     },
                     {
                       "minItems": 1,
                       "items": {
-                        "enum": [
-                          "http://purl.obolibrary.org/obo/BFO_0000055"
-                        ],
                         "type": "string",
                         "format": "uri"
                       },
@@ -9416,18 +9404,12 @@
                     "@type": {
                       "oneOf": [
                         {
-                          "enum": [
-                            "http://www.ebi.ac.uk/efo/EFO_0001742"
-                          ],
                           "type": "string",
                           "format": "uri"
                         },
                         {
                           "minItems": 1,
                           "items": {
-                            "enum": [
-                              "http://www.ebi.ac.uk/efo/EFO_0001742"
-                            ],
                             "type": "string",
                             "format": "uri"
                           },
@@ -9464,18 +9446,12 @@
                     "@type": {
                       "oneOf": [
                         {
-                          "enum": [
-                            "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C71462"
-                          ],
                           "type": "string",
                           "format": "uri"
                         },
                         {
                           "minItems": 1,
                           "items": {
-                            "enum": [
-                              "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C71462"
-                            ],
                             "type": "string",
                             "format": "uri"
                           },
@@ -9554,18 +9530,12 @@
                     "@type": {
                       "oneOf": [
                         {
-                          "enum": [
-                            "http://purl.obolibrary.org/obo/OBI_0001617"
-                          ],
                           "type": "string",
                           "format": "uri"
                         },
                         {
                           "minItems": 1,
                           "items": {
-                            "enum": [
-                              "http://purl.obolibrary.org/obo/OBI_0001617"
-                            ],
                             "type": "string",
                             "format": "uri"
                           },
@@ -9609,18 +9579,12 @@
                       "@type": {
                         "oneOf": [
                           {
-                            "enum": [
-                              "http://purl.obolibrary.org/obo/IAO_0000321"
-                            ],
                             "type": "string",
                             "format": "uri"
                           },
                           {
                             "minItems": 1,
                             "items": {
-                              "enum": [
-                                "http://purl.obolibrary.org/obo/IAO_0000321"
-                              ],
                               "type": "string",
                               "format": "uri"
                             },
