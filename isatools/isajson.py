@@ -21,6 +21,12 @@ def load(fp):
             submission_date=isajson['submissionDate'],
             public_release_date=isajson['publicReleaseDate']
         )
+        for comment_json in isajson['comments']:
+            comment = Comment(
+                name=comment_json['name'],
+                value=comment_json['value'],
+            )
+            investigation.comments.append(comment)
         logger.debug('Populate the ontology source references')
         term_source_dict = {'': None}
         for ontologySourceReference_json in isajson['ontologySourceReferences']:
@@ -57,9 +63,21 @@ def load(fp):
                 phone=person_json['phone'],
                 fax=person_json['fax'],
                 address=person_json['address'],
-                affiliation=person_json['affiliation']
+                affiliation=person_json['affiliation'],
             )
-            # TODO: Implement support for roles
+            for role_json in person_json['roles']:
+                role = OntologyAnnotation(
+                    name=role_json['annotationValue'],
+                    term_accession=role_json['termAccession'],
+                    term_source=term_source_dict[role_json['termSource']]
+                )
+                person.roles.append(role)
+            for comment_json in person_json['comments']:
+                comment = Comment(
+                    name=comment_json['name'],
+                    value=comment_json['value'],
+                )
+                person.comments.append(comment)
             investigation.contacts.append(person)
         logger.debug('Start building Studies objects')
         samples_dict = dict()
@@ -96,6 +114,12 @@ def load(fp):
                 public_release_date=study_json['publicReleaseDate'],
                 filename=study_json['filename']
             )
+            for comment_json in study_json['comments']:
+                comment = Comment(
+                    name=comment_json['name'],
+                    value=comment_json['value'],
+                )
+                study.comments.append(comment)
             for study_characteristics_category_json in study_json['characteristicCategories']:
                 characteristic_category = CharacteristicCategory(
                     id_=study_characteristics_category_json['@id'],
@@ -137,7 +161,21 @@ def load(fp):
                     phone=study_person_json['phone'],
                     fax=study_person_json['fax'],
                     address=study_person_json['address'],
+                    affiliation=study_person_json['affiliation'],
                 )
+                for role_json in study_person_json['roles']:
+                    role = OntologyAnnotation(
+                        name=role_json['annotationValue'],
+                        term_accession=role_json['termAccession'],
+                        term_source=term_source_dict[role_json['termSource']]
+                    )
+                    study_person.roles.append(role)
+                for comment_json in study_person_json['comments']:
+                    comment = Comment(
+                        name=comment_json['name'],
+                        value=comment_json['value'],
+                    )
+                    study_person.comments.append(comment)
                 study.contacts.append(study_person)
             for design_descriptor_json in study_json['studyDesignDescriptors']:
                 logger.debug('Build Ontology Annotation object (Study Design Descriptor)')
@@ -152,6 +190,9 @@ def load(fp):
                 protocol = Protocol(
                     id_=protocol_json['@id'],
                     name=protocol_json['name'],
+                    uri=protocol_json['uri'],
+                    description=protocol_json['description'],
+                    version=protocol_json['version'],
                     protocol_type=OntologyAnnotation(
                         name=protocol_json['protocolType']['annotationValue'],
                         term_accession=protocol_json['protocolType']['termAccession'],
@@ -169,7 +210,16 @@ def load(fp):
                     )
                     protocol.parameters.append(parameter)
                     parameters_dict[parameter.id] = parameter
-                # TODO add component declarations here
+                for component_json in protocol_json['components']:
+                    component = ProtocolComponent(
+                        name=component_json['componentName'],
+                        component_type=OntologyAnnotation(
+                            name=component_json['componentType']['annotationValue'],
+                            term_source=term_source_dict[component_json['componentType']['termSource']],
+                            term_accession=component_json['componentType']['termAccession']
+                        )
+                    )
+                    protocol.components.append(component)
                 study.protocols.append(protocol)
                 protocols_dict[protocol.id] = protocol
             for factor_json in study_json['factors']:
@@ -275,6 +325,12 @@ def load(fp):
                     id_=study_process_json['@id'],
                     executes_protocol=protocols_dict[study_process_json['executesProtocol']['@id']],
                 )
+                for comment_json in study_process_json['comments']:
+                    comment = Comment(
+                        name=comment_json['name'],
+                        value=comment_json['value'],
+                    )
+                    process.comments.append(comment)
                 try:
                     process.date = study_process_json['date']
                 except KeyError:
@@ -393,6 +449,12 @@ def load(fp):
                         filename=data_json['name'],
                         label=data_json['type'],
                     )
+                    for comment_json in data_json['comments']:
+                        comment = Comment(
+                            name=comment_json['name'],
+                            value=comment_json['value'],
+                        )
+                        data_file.comments.append(comment)
                     data_dict[data_file.id] = data_file
                     assay.data_files.append(data_file)
                 for sample_json in assay_json['materials']['samples']:
@@ -439,6 +501,12 @@ def load(fp):
                         id_=assay_process_json['@id'],
                         executes_protocol=protocols_dict[assay_process_json['executesProtocol']['@id']]
                     )
+                    for comment_json in assay_process_json['comments']:
+                        comment = Comment(
+                            name=comment_json['name'],
+                            value=comment_json['value'],
+                        )
+                        process.comments.append(comment)
                     # additional properties, currently hard-coded special cases
                     if process.executes_protocol.protocol_type.name == 'data collection' and assay.technology_type.name == 'DNA microarray':
                         process.additional_properties['Scan Name'] = assay_process_json['name']
