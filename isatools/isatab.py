@@ -421,20 +421,25 @@ def dump(isa_obj, output_path):
                                              index_label='Term Source Name')  # Need to set index_label as top left cell
 
         # Write INVESTIGATION section
-        investigation_df = pd.DataFrame(columns=('Investigation Identifier',
-                                                 'Investigation Title',
-                                                 'Investigation Description',
-                                                 'Investigation Submission Date',
-                                                 'Investigation Public Release Date'
-                                                 )
-                                        )
-        investigation_df.loc[0] = [
+        inv_df_cols = ['Investigation Identifier',
+                       'Investigation Title',
+                       'Investigation Description',
+                       'Investigation Submission Date',
+                       'Investigation Public Release Date']
+        for comment in sorted(investigation.comments, key=lambda x: x.name):
+            inv_df_cols.append('Comment[' + comment.name + ']')
+        investigation_df = pd.DataFrame(columns=tuple(inv_df_cols))
+        inv_df_rows = [
             investigation.identifier,
             investigation.title,
             investigation.description,
             investigation.submission_date,
             investigation.public_release_date
         ]
+        for comment in sorted(investigation.comments, key=lambda x: x.name):
+            inv_df_rows.append(comment.value)
+        investigation_df.loc[0] = inv_df_rows
+
         investigation_df = investigation_df.set_index('Investigation Identifier').T
         fp.write('INVESTIGATION\n')
         investigation_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
@@ -513,15 +518,16 @@ def dump(isa_obj, output_path):
         # Write STUDY sections
         i = 0
         for study in investigation.studies:
-            study_df = pd.DataFrame(columns=('Study Identifier',
-                                             'Study Title',
-                                             'Study Description',
-                                             'Study Submission Date',
-                                             'Study Public Release Date',
-                                             'Study File Name'
-                                             )
-                                    )
-            study_df.loc[i] = [
+            study_df_cols = ['Study Identifier',
+                             'Study Title',
+                             'Study Description',
+                             'Study Submission Date',
+                             'Study Public Release Date',
+                             'Study File Name']
+            for comment in sorted(study.comments, key=lambda x: x.name):
+                study_df_cols.append('Comment[' + comment.name + ']')
+            study_df = pd.DataFrame(columns=tuple(study_df_cols))
+            study_df_row = [
                 study.identifier,
                 study.title,
                 study.description,
@@ -529,6 +535,9 @@ def dump(isa_obj, output_path):
                 study.public_release_date,
                 study.filename
             ]
+            for comment in sorted(study.comments, key=lambda x: x.name):
+                study_df_row.append(comment.value)
+            study_df.loc[i] = study_df_row
             study_df = study_df.set_index('Study Identifier').T
             fp.write('STUDY\n')
             study_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8', index_label='Study Identifier')
@@ -696,19 +705,20 @@ def dump(isa_obj, output_path):
                                       index_label='Study Protocol Name')
 
             # Write STUDY CONTACTS section
-            study_contacts_df = pd.DataFrame(columns=('Study Person Last Name',
-                                                      'Study Person First Name',
-                                                      'Study Person Mid Initials',
-                                                      'Study Person Email',
-                                                      'Study Person Phone',
-                                                      'Study Person Fax',
-                                                      'Study Person Address',
-                                                      'Study Person Affiliation',
-                                                      'Study Person Roles',
-                                                      'Study Person Roles Term Accession Number',
-                                                      'Study Person Roles Term Source REF'
-                                                      )
-                                             )
+            study_contacts_df_cols = ['Study Person Last Name',
+                                      'Study Person First Name',
+                                      'Study Person Mid Initials',
+                                      'Study Person Email',
+                                      'Study Person Phone',
+                                      'Study Person Fax',
+                                      'Study Person Address',
+                                      'Study Person Affiliation',
+                                      'Study Person Roles',
+                                      'Study Person Roles Term Accession Number',
+                                      'Study Person Roles Term Source REF']
+            for comment in study.contacts[0].comments:
+                study_contacts_df_cols.append('Comment[' + comment.name + ']')
+            study_contacts_df = pd.DataFrame(columns=tuple(study_contacts_df_cols))
             j = 0
             for study_contact in study.contacts:
                 roles_names = ''
@@ -722,7 +732,7 @@ def dump(isa_obj, output_path):
                     roles_names = roles_names[:-1]
                     roles_accession_numbers = roles_accession_numbers[:-1]
                     roles_source_refs = roles_source_refs[:-1]
-                study_contacts_df.loc[j] = [
+                study_contacts_df_row = [
                     study_contact.last_name,
                     study_contact.first_name,
                     study_contact.mid_initials,
@@ -735,6 +745,9 @@ def dump(isa_obj, output_path):
                     roles_accession_numbers,
                     roles_source_refs
                 ]
+                for comment in study_contact.comments:
+                    study_contacts_df_row.append(comment.value)
+                study_contacts_df.loc[j] = study_contacts_df_row
                 j += 1
             study_contacts_df = study_contacts_df.set_index('Study Person Last Name').T
             fp.write('STUDY CONTACTS\n')
@@ -888,6 +901,9 @@ def write_assay_table_files(inv_obj, output_dir):
                         for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                             cols.append('data[' + output.label + ']')
                             col_map['data[' + output.label + ']'] = output.label
+                            for comment in output.comments:
+                                cols.append('data[' + output.label + ']_comment[' + comment.name + ']')
+                                col_map['data[' + output.label + ']_comment[' + comment.name + ']'] = 'Comment[' + comment.name + ']'
                         if node.executes_protocol.protocol_type.name not in prottypes.keys():
                             prottypes[node.executes_protocol.protocol_type.name] = protrefcount
                             protrefcount += 1
@@ -976,6 +992,8 @@ def write_assay_table_files(inv_obj, output_dir):
                                             df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
                                     for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                                         df.loc[i, 'data[' + output.label + ']'] = output.filename
+                                        for comment in output.comments:
+                                            df.loc[i, 'data[' + output.label + ']_comment[' + comment.name + ']'] = comment.value
                             df.loc[i, 'compound_key'] = compound_key
                             i += 1
 

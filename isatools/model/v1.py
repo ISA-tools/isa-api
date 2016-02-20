@@ -642,8 +642,9 @@ class DataFileType(Enum):
     image_file = 3
 
 
-class DataFile(object):
-    def __init__(self, id_='', filename='', label=''):
+class DataFile(IsaObject):
+    def __init__(self, id_='', filename='', label='', comments=None):
+        super().__init__(comments)
         self.id = id_
         self.filename = filename
         self.label = label
