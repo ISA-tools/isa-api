@@ -1,4 +1,3 @@
-from pyxb.bundles.wssplat.raw.bpws import tRoles
 from isatools.model.v1 import *
 import json
 import logging
