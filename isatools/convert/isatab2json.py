@@ -511,10 +511,16 @@ class ISATab2ISAjson_v1:
         for node_index in nodes:
             if nodes[node_index].ntype.endswith(" File") :
                 data_identifier = self.generateIdentifier("data", node_index)
+                comments = []
+                comments_regex = re.compile('Comment\[(.*?)\]')
+                for key in [key for key in nodes[node_index].metadata.keys() if comments_regex.match(key)]:
+                    comments.append(self.createComment(comments_regex.findall(key)[0], getattr(
+                        nodes[node_index].metadata[key][0], comments_regex.findall(key)[0])))
                 json_item = dict([
                     ("@id", data_identifier),
                     ("name", nodes[node_index].name),
-                    ("type", nodes[node_index].ntype)
+                    ("type", nodes[node_index].ntype),
+                    ("comments", comments)
                 ])
                 json_dict.update({node_index: json_item})
         return json_dict
