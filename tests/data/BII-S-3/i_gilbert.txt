@@ -12,39 +12,39 @@ Investigation Public Release Date	""
 Comment[Created With Configuration]	""
 Comment[Last Opened With Configuration]	"GSC MIxS human gut"
 INVESTIGATION PUBLICATIONS
-Investigation PubMed ID	""
-Investigation Publication DOI	""
-Investigation Publication Author List	""
-Investigation Publication Title	""
-Investigation Publication Status	""
-Investigation Publication Status Term Accession Number	""
-Investigation Publication Status Term Source REF	""
+Investigation PubMed ID
+Investigation Publication DOI
+Investigation Publication Author List
+Investigation Publication Title
+Investigation Publication Status
+Investigation Publication Status Term Accession Number
+Investigation Publication Status Term Source REF
 INVESTIGATION CONTACTS
-Investigation Person Last Name	""
-Investigation Person First Name	""
-Investigation Person Mid Initials	""
-Investigation Person Email	""
-Investigation Person Phone	""
-Investigation Person Fax	""
-Investigation Person Address	""
-Investigation Person Affiliation	""
-Investigation Person Roles	""
-Investigation Person Roles Term Accession Number	""
-Investigation Person Roles Term Source REF	""
+Investigation Person Last Name
+Investigation Person First Name
+Investigation Person Mid Initials
+Investigation Person Email
+Investigation Person Phone
+Investigation Person Fax
+Investigation Person Address
+Investigation Person Affiliation
+Investigation Person Roles
+Investigation Person Roles Term Accession Number
+Investigation Person Roles Term Source REF
 STUDY
 Study Identifier	"BII-S-3"
 Study Title	"Metagenomes and Metatranscriptomes of phytoplankton blooms from an ocean acidification mesocosm experiment"
 Study Description	"Sequencing the metatranscriptome can provide information about the response of organisms to varying environmental conditions. We present a methodology for obtaining random whole-community mRNA from a complex microbial assemblage using Pyrosequencing. The metatranscriptome had, with minimum contamination by ribosomal RNA, significant coverage of abundant transcripts, and included significantly more potentially novel proteins than in the metagenome. This experiment is part of a much larger experiment. We have produced 4 454 metatranscriptomic datasets and 6 454 metagenomic datasets. These were derived from 4 samples."
-Comment[Study Grant Number]	""
-Comment[Study Funding Agency]	""
 Study Submission Date	"15/08/2008"
 Study Public Release Date	"15/08/2008"
 Study File Name	"s_BII-S-3.txt"
-Comment[SRA Submission Action]	"ADD"
-Comment[SRA Center Name]	"OXFORD"
 Comment[SRA Broker Name]	"OXFORD"
-Comment[SRA Lab Name]	"Oxford e-Research Centre"
+Comment[SRA Center Name]	"OXFORD"
 Comment[SRA Center Project Name]	"OXFORD"
+Comment[SRA Lab Name]	"Oxford e-Research Centre"
+Comment[SRA Submission Action]	"ADD"
+Comment[Study Funding Agency]	""
+Comment[Study Grant Number]	""
 STUDY DESIGN DESCRIPTORS
 Study Design Type	"time series design"
 Study Design Type Term Accession Number	"http://purl.obolibrary.org/obo/OBI_0500020"

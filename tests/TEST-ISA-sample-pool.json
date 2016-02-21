@@ -58,19 +58,25 @@
                     ],
                     "dataFiles": [
                         {
-                            "@id": "#data/rawdatafile-1.cel",
-                            "name": "1.cel",
-                            "type": "Raw Data File"
-                        },
-                        {
                             "@id": "#data/imagefile-1.dat",
                             "name": "1.dat",
                             "type": "Image File"
+                        },
+                        {
+                            "@id": "#data/rawdatafile-1.cel",
+                            "name": "1.cel",
+                            "type": "Raw Data File"
                         }
                     ],
                     "filename": "a_test-template3-splitting_transcription_profiling_DNA_microarray.txt",
                     "materials": {
                         "otherMaterials": [
+                            {
+                                "@id": "#material/extract-extract1",
+                                "characteristics": [],
+                                "name": "extract-extract1",
+                                "type": "Extract Name"
+                            },
                             {
                                 "@id": "#material/labeledextract-extract1.le1",
                                 "characteristics": [
@@ -87,12 +93,6 @@
                                 ],
                                 "name": "labeledextract-extract1.le1",
                                 "type": "Labeled Extract Name"
-                            },
-                            {
-                                "@id": "#material/extract-extract1",
-                                "characteristics": [],
-                                "name": "extract-extract1",
-                                "type": "Extract Name"
                             }
                         ],
                         "samples": [
@@ -108,6 +108,60 @@
                     },
                     "processSequence": [
                         {
+<<<<<<< HEAD
+=======
+                            "@id": "#process/hyb1",
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/nucleic_acid_hybridization"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract1.le1"
+                                }
+                            ],
+                            "name": "hyb1",
+                            "nextProcess": {
+                                "@id": "#process/hyb1.scan1"
+                            },
+                            "outputs": [],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#parameter/Array_Design_REF"
+                                    },
+                                    "value": "HG_U133_2.0"
+                                }
+                            ],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/labeling1"
+                            }
+                        },
+                        {
+                            "@id": "#process/hyb1.scan1",
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/data_collection"
+                            },
+                            "inputs": [],
+                            "name": "hyb1.scan1",
+                            "outputs": [
+                                {
+                                    "@id": "#data/imagefile-1.dat"
+                                },
+                                {
+                                    "@id": "#data/rawdatafile-1.cel"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/hyb1"
+                            }
+                        },
+                        {
+>>>>>>> develop
                             "@id": "#process/labeling1",
                             "date": "",
                             "executesProtocol": {
@@ -153,6 +207,7 @@
                             ],
                             "parameterValues": [],
                             "performer": ""
+<<<<<<< HEAD
                         },
                         {
                             "@id": "#process/hyb1",
@@ -204,6 +259,8 @@
                             "previousProcess": {
                                 "@id": "#process/hyb1"
                             }
+=======
+>>>>>>> develop
                         }
                     ],
                     "technologyPlatform": "",
@@ -300,7 +357,11 @@
                 ],
                 "sources": [
                     {
+<<<<<<< HEAD
                         "@id": "#source/source-source4",
+=======
+                        "@id": "#source/source-source3",
+>>>>>>> develop
                         "characteristics": [
                             {
                                 "category": {
@@ -325,7 +386,11 @@
                                 "value": "specimen"
                             }
                         ],
+<<<<<<< HEAD
                         "name": "source-source4"
+=======
+                        "name": "source-source3"
+>>>>>>> develop
                     },
                     {
                         "@id": "#source/source-source1",
@@ -356,7 +421,7 @@
                         "name": "source-source1"
                     },
                     {
-                        "@id": "#source/source-source3",
+                        "@id": "#source/source-source4",
                         "characteristics": [
                             {
                                 "category": {
@@ -381,7 +446,7 @@
                                 "value": "specimen"
                             }
                         ],
-                        "name": "source-source3"
+                        "name": "source-source4"
                     },
                     {
                         "@id": "#source/source-source2",

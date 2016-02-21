@@ -18,8 +18,9 @@ INPUT_FILE = os.path.join(SRA_DIR, 'blank.xml')
 SUBMISSION_XSL_FILE = os.path.join(SRA_DIR, 'sra-submission-embl-online2isatab-txt.xsl')
 STUDY_XSL_FILE = os.path.join(SRA_DIR, 'sra-study-embl-online2isatab.xsl')
 
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 def zipdir(path, zip_file):
@@ -134,10 +135,9 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
                 res = subprocess.call(['java', '-jar', saxon_jar_path, INPUT_FILE, SUBMISSION_XSL_FILE,
                                  'acc-number='+acc_number, 'outputdir='+destination_dir])
 
-            print(res)
+            logger.info('Subprocess Saxon exited with code: %d', res)
 
         except subprocess.CalledProcessError as err:
-            print("isatools.convert.sra2isatab: CalledProcessError caught ", err.returncode)
             logger.error("isatools.convert.sra2isatab: CalledProcessError caught ", err.returncode)
 
     with ZipFile(buffer, 'w') as zip_file:

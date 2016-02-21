@@ -152,9 +152,10 @@ class ModelTests(TestCase):
         self.assertIsInstance(material.characteristics, list)
         self.assertIsInstance(material.characteristics[0], MaterialAttribute)
 
-    def test_object_data(self):
-        data = Data(name='')
-        self.assertIsInstance(data.name, str)
+    def test_object_datafile(self):
+        datafile = DataFile(filename='', label='')
+        self.assertIsInstance(datafile.filename, str)
+        self.assertIsInstance(datafile.label, str)
 
     def test_object_process(self):
         process = Process(

@@ -20,4 +20,4 @@ class ISATabTest(TestCase):
     def test_isatab_to_sra(self):
         from isatools.convert import isatab2sra
         isatab2sra.create_sra(self._work_dir, self._sra_dir, self._config_dir)
-        assert(os.path.exists(os.path.join(self._sra_dir, '/sra')), True)
+        self.assertTrue(os.path.exists(os.path.join(self._sra_dir, 'sra')))
