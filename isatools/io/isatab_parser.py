@@ -290,7 +290,6 @@ class StudyAssayParser:
             input_process_map = {}
             output_process_map = {}
 
-
             for line in reader:
                     previous_processing_node = None
                     for processing_index in processing_indices:
@@ -323,10 +322,6 @@ class StudyAssayParser:
                         qualifier_indices_string = '-'.join(qualifier_values)
                         input_node_indices_string = "-".join(input_node_indices)
                         output_node_indices_string = "-".join(output_node_indices)
-
-                        #if both input_name and output_name are empty, ignore the row
-                        if (not input_values and not output_values):
-                            continue
 
                         assay_name = ""
                         if assay_name_indices:

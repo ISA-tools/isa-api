@@ -235,7 +235,7 @@ class Person(IsaObject):
         self.address = address
         self.affiliation = affiliation
         if roles is None:
-            self.roles = []
+            self.roles = list()
         else:
             self.roles = roles
 
@@ -454,9 +454,11 @@ class ProtocolParameter(IsaObject):
         #     self.unit = unit
 
 
-class ProtocolComponent(object):
-    def __init__(self, component_name='', component_type=None):
-        self.component_name = component_name
+class ProtocolComponent(IsaObject):
+    def __init__(self, id_='', name='', component_type=None, comments=None):
+        super().__init__(comments)
+        self.id = id_
+        self.name = name
         if component_type is None:
             self.component_type = OntologyAnnotation()
         else:
@@ -628,6 +630,9 @@ class Process(IsaObject):
             self.outputs = list()
         else:
             self.outputs = outputs
+        self.additional_properties = dict()
+        self.prev_process = None
+        self.next_process = None
 
 
 class DataFileType(Enum):
@@ -635,18 +640,27 @@ class DataFileType(Enum):
     raw_data_file = 1
     derived_data_file = 2
     image_file = 3
+
+
+class DataFile(IsaObject):
+    def __init__(self, id_='', filename='', label='', comments=None):
+        super().__init__(comments)
+        self.id = id_
+        self.filename = filename
+        self.label = label
     
 
 class Data(IsaObject):
     """A Data.
 
     Attributes:
-        name:
+        id:
+        data_files: List of DataFile
     """
-    def __init__(self, id_='', name="", comments=None):
+    def __init__(self, id_='', data_files=list(), comments=None):
         super().__init__(comments)
         self.id = id_
-        self.name = name
+        self.data_files = data_files
 
 
 class ScanData(Data):

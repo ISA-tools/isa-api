@@ -64,7 +64,7 @@ class IsatabSplittingTest(TestCase):
             term_accession='http://purl.obolibrary.org/obo/UBERON_0000178',
         )))
 
-        sample_collection_process = ProcessingEvent(executes_protocol=sample_collection_protocol)
+        sample_collection_process = Process(executes_protocol=sample_collection_protocol)
 
         import networkx as nx
         graph = nx.DiGraph()
@@ -75,7 +75,7 @@ class IsatabSplittingTest(TestCase):
                               (sample_collection_process, sample4)])
         s.graph = graph
         self.i.studies.append(s)
-        return s.graph
+        # return s.graph
 
     def test_isatab_writer(self):
         # isatab.dump(self.i, './data/tmp/')
@@ -98,6 +98,12 @@ class IsatabPoolingTest(TestCase):
             protocol_type=OntologyAnnotation(name='sample collection')
         )
         s.protocols.append(sample_collection_protocol)
+
+        sample_collection_protocol2 = Protocol(
+            name='sample collection2',
+            protocol_type=OntologyAnnotation(name='sample collection2')
+        )
+        s.protocols.append(sample_collection_protocol2)
 
         reference_descriptor_category = \
             CharacteristicCategory(characteristic_type=OntologyAnnotation(name='reference descriptor'))
@@ -148,18 +154,28 @@ class IsatabPoolingTest(TestCase):
             term_accession='http://purl.obolibrary.org/obo/UBERON_0002107',
         )))
 
-        sample_collection_process = ProcessingEvent(executes_protocol=sample_collection_protocol)
+        sample2 = Sample(name='sample2')
+        organism_part = CharacteristicCategory(characteristic_type=OntologyAnnotation(name='organism part'))
+        sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
+            name='liver',
+            term_source=uberon,
+            term_accession='http://purl.obolibrary.org/obo/UBERON_0002107',
+        )))
+
+        sample_collection_process = Process(executes_protocol=sample_collection_protocol)
+        sample_collection_process2 = Process(executes_protocol=sample_collection_protocol2)
 
         import networkx as nx
         study_graph = nx.DiGraph()
-        study_graph.add_edges_from([(source1, sample_collection_process),
+        study_graph.add_edges_from([(source1, sample_collection_process2),
                                    (source2, sample_collection_process),
                                    (source3, sample_collection_process),
                                    (source4, sample_collection_process)])
-        study_graph.add_edge(sample_collection_process, sample1)
+        study_graph.add_edge(sample_collection_process, sample_collection_process2)
+        study_graph.add_edge(sample_collection_process2, sample1)
 
         s.graph = study_graph
-        self.i.studies.append(s)
+
 
         rna_extraction_protocol = Protocol(name='rna extraction', protocol_type=OntologyAnnotation(name='rna extraction'))
         labeling_protocol = Protocol(name='labeling', protocol_type=OntologyAnnotation(name='labeling'))
@@ -168,17 +184,23 @@ class IsatabPoolingTest(TestCase):
         data_normalization_protocol = Protocol(name='data normalization', protocol_type=OntologyAnnotation(name='data normalization'))
         anova_protocol = Protocol(name='anova', protocol_type=OntologyAnnotation(name='anova'))
 
-        rna_extraction_process = ProcessingEvent(executes_protocol=rna_extraction_protocol)
+        rna_extraction_process = Process(executes_protocol=rna_extraction_protocol)
         extract = Extract(name='extract1')  # Material
-        labeling_process = ProcessingEvent(executes_protocol=labeling_protocol)
+        labeling_process = Process(executes_protocol=labeling_protocol)
         labeled_extract = LabeledExtract(name='extract1.le1', label=OntologyAnnotation(name='biotin'))  # Material
-        hybridization_process = HybridizationAssayEvent(executes_protocol=hybridization_protocol, name='hyb1', array_design_ref='HG_U133_2.0')
-        scan_process = ScanEvent(executes_protocol=data_collection_protocol, name='hyb1.scan1')
-        scan_data = ScanData(image_file='1.dat', array_data_file='1.cel')  # Data
-        data_normalization_process = DataNormalizationEvent(executes_protocol=data_normalization_protocol, name='N1')
-        normalized_data = DerivedData(derived_data_file='N1.txt', label="Derived Array Data File")  # Data
-        anova_process = DataTransformationEvent(executes_protocol=anova_protocol, name='DA1')
-        transformed_data = DerivedData(derived_data_file='DA1.txt', label="Derived Array Data Matrix File")  # Data
+        hybridization_process = Process(executes_protocol=hybridization_protocol)
+        hybridization_process.additional_properties['Hybridization Assay Name'] = 'hyb1'
+        hybridization_process.additional_properties['Array Design REF'] = 'HG_U133_2.0'
+        scan_process = Process(executes_protocol=data_collection_protocol)
+        scan_process.additional_properties['Scan Name'] = 'hyb1.scan1'
+        scan_data = Data(data_files=[DataFile(filename='1.dat', label='Image File'),
+                                     DataFile(filename='1.cel', label='Array Data File')])  # Data
+        data_normalization_process = Process(executes_protocol=data_normalization_protocol)
+        data_normalization_process.additional_properties['Normalization Name'] = 'N1'
+        normalized_data = Data(data_files=[DataFile(filename='N1.txt', label="Derived Array Data File")])  # Data
+        anova_process = Process(executes_protocol=anova_protocol)
+        anova_process.additional_properties['Data Transformation Name'] = 'DA1'
+        transformed_data = Data(data_files=[DataFile(filename='DA1.txt', label="Derived Array Data Matrix File")])  # Data
 
         assay_graph = nx.DiGraph()
         assay_graph.add_edge(sample1, rna_extraction_process)  # rna_extraction is Processing Event
@@ -193,11 +215,13 @@ class IsatabPoolingTest(TestCase):
         assay_graph.add_edge(normalized_data, anova_process)  # normalization has a Derived Array Data File
         assay_graph.add_edge(anova_process, transformed_data)  # anova is Processing Event
 
+        assay_graph.add_edge(sample2, rna_extraction_process)  # rna_extraction is Processing Event
+
         assay = Assay(filename='a_pool.txt')
         assay.graph = assay_graph
 
         s.assays.append(assay)
-        return assay_graph
+        self.i.studies.append(s)
 
     def test_isatab_writer(self):
         # isatab.dump(self.i, './data/tmp/')
@@ -306,18 +330,18 @@ class IsatabRepeatedMeasureTest(TestCase):
             term_accession='http://purl.obolibrary.org/obo/UBERON_0000178',
         )))
 
-        sample_collection_1_process = ProcessingEvent(executes_protocol=sample_collection_protocol, date_='01/01/2016')
-        sample_collection_2_process = ProcessingEvent(executes_protocol=sample_collection_protocol, date_='08/01/2016')
-        sample_collection_3_process = ProcessingEvent(executes_protocol=sample_collection_protocol, date_='15/01/2016')
-        sample_collection_4_process = ProcessingEvent(executes_protocol=sample_collection_protocol, date_='22/01/2016')
+        sample_collection_1_process = Process(executes_protocol=sample_collection_protocol, date_='01/01/2016')
+        sample_collection_2_process = Process(executes_protocol=sample_collection_protocol, date_='08/01/2016')
+        sample_collection_3_process = Process(executes_protocol=sample_collection_protocol, date_='15/01/2016')
+        sample_collection_4_process = Process(executes_protocol=sample_collection_protocol, date_='22/01/2016')
 
-        intervention_A1_process = ProcessingEvent(executes_protocol=intervention_A_protocol, date_='01/01/2016')
-        intervention_A2_process = ProcessingEvent(executes_protocol=intervention_A_protocol, date_='22/01/2016')
-        intervention_B1_process = ProcessingEvent(executes_protocol=intervention_B_protocol, date_='01/01/2016')
-        intervention_B2_process = ProcessingEvent(executes_protocol=intervention_B_protocol, date_='08/01/2016')
-        intervention_C_process = ProcessingEvent(executes_protocol=intervention_C_protocol, date_='15/01/2016')
-        intervention_D1_process = ProcessingEvent(executes_protocol=intervention_D_protocol, date_='08/01/2016')
-        intervention_D2_process = ProcessingEvent(executes_protocol=intervention_D_protocol, date_='22/01/2016')
+        intervention_A1_process = Process(executes_protocol=intervention_A_protocol, date_='01/01/2016')
+        intervention_A2_process = Process(executes_protocol=intervention_A_protocol, date_='22/01/2016')
+        intervention_B1_process = Process(executes_protocol=intervention_B_protocol, date_='01/01/2016')
+        intervention_B2_process = Process(executes_protocol=intervention_B_protocol, date_='08/01/2016')
+        intervention_C_process = Process(executes_protocol=intervention_C_protocol, date_='15/01/2016')
+        intervention_D1_process = Process(executes_protocol=intervention_D_protocol, date_='08/01/2016')
+        intervention_D2_process = Process(executes_protocol=intervention_D_protocol, date_='22/01/2016')
 
         import networkx as nx
         graph = nx.DiGraph()
@@ -350,7 +374,7 @@ class IsatabRepeatedMeasureTest(TestCase):
                               (sample_collection_4_process, sample6)])
         s.graph = graph
         self.i.studies.append(s)
-        return s.graph
+        # return s.graph
 
     def test_isatab_writer(self):
         # isatab.dump(self.i, './data/tmp/')
