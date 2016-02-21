@@ -262,9 +262,9 @@ class ISATab2CEDAR():
                     ("type", dict([("_value", "http://purl.obolibrary.org/obo/OBI_0000747")])),
                     ("description", dict([("_value", "")])),
                     ("source", dict([("_value", "")])),
-                    ("hasFactorValue", []),
-                    ("hasCollectionStudyTime", self.createStudyTimeCollection()),
-                    ("hasCharacteristic", self.createCharacteristicList(node_index, nodes[node_index])),
+                    ("factorValue", []),
+                    ("collectionStudyTime", self.createStudyTimeCollection()),
+                    ("characteristic", self.createCharacteristicList(node_index, nodes[node_index])),
                 ])
                 json_dict.update({node_index: json_item})
         return json_dict
@@ -278,7 +278,7 @@ class ISATab2CEDAR():
                     ("@type", "https://repo.metadatacenter.org/model/StudySubject"),
                     ("name", dict([("_value", node_index)])),
                     ("type", dict([("_value", "http://purl.obolibrary.org/obo/OBI_0000925")])),
-                    ("hasCharacteristic", self.createCharacteristicList(node_index, nodes[node_index])),
+                    ("characteristic", self.createCharacteristicList(node_index, nodes[node_index])),
                 ])
                 json_dict.update({node_index: json_item})
         return json_dict
@@ -497,15 +497,3 @@ class ISATab2CEDAR():
             ])
             json_list.append(json_item)
         return json_list
-
-
-
-#local tests
-#isa2cedar = ISATab2CEDAR("Metabolights")
-#isa2cedar.createCEDARjson("../../tests/data/BII-I-1", "./schemas/cedar", True)
-#isa2cedar.createCEDARjson("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS114", "../../tests/datasets/metabolights", False)
-#isa2cedar.createCEDARjson("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS1", "../../tests/datasets/metabolights", False)
-#isa2cedar.createCEDARjson("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS10", "../../tests/datasets/metabolights", False)
-#isa2cedar.createCEDARjson("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS161", "../../tests/datasets/metabolights", False)
-#isa2cedar.createCEDARjson_folder("../../tests/datasets/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/", "../../tests/datasets/metabolights", False)
-
