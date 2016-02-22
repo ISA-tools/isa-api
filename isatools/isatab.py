@@ -408,14 +408,25 @@ def _get_start_end_nodes(G):
     return start_nodes, end_nodes
 
 
-def _longest_path(G):
+def _longest_path_and_attrs(G):
     start_nodes, end_nodes = _get_start_end_nodes(G)
     from networkx.algorithms import all_simple_paths
     longest = (0, None)
     for start_node, end_node in itertools.product(start_nodes, end_nodes):
         for path in all_simple_paths(G, start_node, end_node):
-            if len(path) > longest[0]:
-                longest = (len(path), path)
+            length = len(path)
+            for n in path:
+                if isinstance(n, Source):
+                    length += len(n.characteristics)
+                elif isinstance(n, Sample):
+                    length += (len(n.characteristics) + len(n.factor_values))
+                elif isinstance(n, Material):
+                    length += (len(n.characteristics))
+                elif isinstance(n, Process):
+                    length += (len(n.additional_properties) + len([o for o in n.outputs if isinstance(o, DataFile)]))
+                length += len(n.comments)
+            if length > longest[0]:
+                longest = (length, path)
     return longest[1]
 
 prev = ''  # used in rolling_group(val) in write_assay_table_files(inv_obj, output_dir)
@@ -447,7 +458,7 @@ def write_assay_table_files(inv_obj, output_dir):
                 protrefcount = 0
                 prottypes = dict()
                 col_map = dict()
-                for node in _longest_path(assay_obj.graph):
+                for node in _longest_path_and_attrs(assay_obj.graph):
                     if isinstance(node, Sample):
                         cols.append('sample')
                         col_map['sample'] = 'Sample Name'
@@ -700,7 +711,7 @@ def write_study_table_files(inv_obj, output_dir):
         prottypes = dict()
         col_map = dict()
 
-        for node in _longest_path(study_obj.graph):
+        for node in _longest_path_and_attrs(study_obj.graph):
             if isinstance(node, Source):
                 cols.append('source')
                 col_map['source'] = 'Source Name'
@@ -872,9 +883,6 @@ def write_study_table_files(inv_obj, output_dir):
                         else:
                             df.loc[i, 'sample_fv[' + fv.factor_name.name + ']'] = fv.value
             i += 1
-        #  cleanup column headers before writing out df
-        import re
-        #  cleanup column headers before writing out df
         # WARNING: don't just dump out col_map.values() as we need to put columns back in order
         df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0 (Sample name)
         for i, col in enumerate(df.columns):
