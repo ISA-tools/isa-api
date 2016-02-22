@@ -55,4 +55,4 @@ class JsonToTabTest(TestCase):
     def test_bii_s_3_assay_table_Gx(self):
         json2isatab.convert(open(os.path.join(self._dir, 'data/BII-S-3/BII-S-3.json')), self._tmp)
         self.assertTrue(assert_tab_equal(open(os.path.join(self._tmp, 'a_gilbert-assay-Gx.txt')),
-                                         open(os.path.join(self._dir, '/Users/dj/PycharmProjects/isa-api/tests/data/BII-S-3/a_gilbert-assay-Gx.txt'))))
+                                         open(os.path.join(self._dir, 'data/BII-S-3/a_gilbert-assay-Gx.txt'))))
