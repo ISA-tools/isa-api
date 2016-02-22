@@ -59,11 +59,13 @@
                     "dataFiles": [
                         {
                             "@id": "#data/imagefile-1.dat",
+                            "comments": [],
                             "name": "1.dat",
                             "type": "Image File"
                         },
                         {
                             "@id": "#data/rawdatafile-1.cel",
+                            "comments": [],
                             "name": "1.cel",
                             "type": "Raw Data File"
                         }
@@ -108,61 +110,8 @@
                     },
                     "processSequence": [
                         {
-<<<<<<< HEAD
-=======
-                            "@id": "#process/hyb1",
-                            "date": "",
-                            "executesProtocol": {
-                                "@id": "#protocol/nucleic_acid_hybridization"
-                            },
-                            "inputs": [
-                                {
-                                    "@id": "#material/labeledextract-extract1.le1"
-                                }
-                            ],
-                            "name": "hyb1",
-                            "nextProcess": {
-                                "@id": "#process/hyb1.scan1"
-                            },
-                            "outputs": [],
-                            "parameterValues": [
-                                {
-                                    "category": {
-                                        "@id": "#parameter/Array_Design_REF"
-                                    },
-                                    "value": "HG_U133_2.0"
-                                }
-                            ],
-                            "performer": "",
-                            "previousProcess": {
-                                "@id": "#process/labeling1"
-                            }
-                        },
-                        {
-                            "@id": "#process/hyb1.scan1",
-                            "date": "",
-                            "executesProtocol": {
-                                "@id": "#protocol/data_collection"
-                            },
-                            "inputs": [],
-                            "name": "hyb1.scan1",
-                            "outputs": [
-                                {
-                                    "@id": "#data/imagefile-1.dat"
-                                },
-                                {
-                                    "@id": "#data/rawdatafile-1.cel"
-                                }
-                            ],
-                            "parameterValues": [],
-                            "performer": "",
-                            "previousProcess": {
-                                "@id": "#process/hyb1"
-                            }
-                        },
-                        {
->>>>>>> develop
                             "@id": "#process/labeling1",
+                            "comments": [],
                             "date": "",
                             "executesProtocol": {
                                 "@id": "#protocol/labeling"
@@ -187,30 +136,8 @@
                             }
                         },
                         {
-                            "@id": "#process/RNA_extraction1",
-                            "date": "",
-                            "executesProtocol": {
-                                "@id": "#protocol/RNA_extraction"
-                            },
-                            "inputs": [
-                                {
-                                    "@id": "#sample/sample-sample1"
-                                }
-                            ],
-                            "nextProcess": {
-                                "@id": "#process/labeling1"
-                            },
-                            "outputs": [
-                                {
-                                    "@id": "#material/extract-extract1"
-                                }
-                            ],
-                            "parameterValues": [],
-                            "performer": ""
-<<<<<<< HEAD
-                        },
-                        {
                             "@id": "#process/hyb1",
+                            "comments": [],
                             "date": "",
                             "executesProtocol": {
                                 "@id": "#protocol/nucleic_acid_hybridization"
@@ -239,7 +166,31 @@
                             }
                         },
                         {
+                            "@id": "#process/RNA_extraction1",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/RNA_extraction"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/sample-sample1"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/labeling1"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/extract-extract1"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": ""
+                        },
+                        {
                             "@id": "#process/hyb1.scan1",
+                            "comments": [],
                             "date": "",
                             "executesProtocol": {
                                 "@id": "#protocol/data_collection"
@@ -248,10 +199,10 @@
                             "name": "hyb1.scan1",
                             "outputs": [
                                 {
-                                    "@id": "#data/rawdatafile-1.cel"
+                                    "@id": "#data/imagefile-1.dat"
                                 },
                                 {
-                                    "@id": "#data/imagefile-1.dat"
+                                    "@id": "#data/rawdatafile-1.cel"
                                 }
                             ],
                             "parameterValues": [],
@@ -259,8 +210,6 @@
                             "previousProcess": {
                                 "@id": "#process/hyb1"
                             }
-=======
->>>>>>> develop
                         }
                     ],
                     "technologyPlatform": "",
@@ -274,17 +223,17 @@
             ],
             "characteristicCategories": [
                 {
-                    "@id": "#characteristic_category/reference_descriptor",
+                    "@id": "#characteristic_category/Material_Type",
                     "characteristicType": {
-                        "annotationValue": "reference descriptor",
+                        "annotationValue": "Material Type",
                         "termAccession": "",
                         "termSource": ""
                     }
                 },
                 {
-                    "@id": "#characteristic_category/organism_part",
+                    "@id": "#characteristic_category/reference_descriptor",
                     "characteristicType": {
-                        "annotationValue": "organism part",
+                        "annotationValue": "reference descriptor",
                         "termAccession": "",
                         "termSource": ""
                     }
@@ -298,12 +247,22 @@
                     }
                 },
                 {
-                    "@id": "#characteristic_category/Material_Type",
+                    "@id": "#characteristic_category/organism_part",
                     "characteristicType": {
-                        "annotationValue": "Material Type",
+                        "annotationValue": "organism part",
                         "termAccession": "",
                         "termSource": ""
                     }
+                }
+            ],
+            "comments": [
+                {
+                    "name": "Study Funding Agency",
+                    "value": ""
+                },
+                {
+                    "name": "Study Grant Number",
+                    "value": ""
                 }
             ],
             "description": "TEST-Template3-Pool",
@@ -357,12 +316,14 @@
                 ],
                 "sources": [
                     {
-<<<<<<< HEAD
                         "@id": "#source/source-source4",
-=======
-                        "@id": "#source/source-source3",
->>>>>>> develop
                         "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/Material_Type"
+                                },
+                                "value": "specimen"
+                            },
                             {
                                 "category": {
                                     "@id": "#characteristic_category/reference_descriptor"
@@ -378,25 +339,21 @@
                                     "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
                                     "termSource": "NCBITAXON"
                                 }
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/Material_Type"
-                                },
-                                "value": "specimen"
                             }
                         ],
-<<<<<<< HEAD
                         "name": "source-source4"
-=======
-                        "name": "source-source3"
->>>>>>> develop
                     },
                     {
                         "@id": "#source/source-source1",
                         "characteristics": [
                             {
                                 "category": {
+                                    "@id": "#characteristic_category/Material_Type"
+                                },
+                                "value": "specimen"
+                            },
+                            {
+                                "category": {
                                     "@id": "#characteristic_category/reference_descriptor"
                                 },
                                 "value": "not applicable"
@@ -410,19 +367,19 @@
                                     "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
                                     "termSource": "NCBITAXON"
                                 }
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/Material_Type"
-                                },
-                                "value": "specimen"
                             }
                         ],
                         "name": "source-source1"
                     },
                     {
-                        "@id": "#source/source-source4",
+                        "@id": "#source/source-source3",
                         "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/Material_Type"
+                                },
+                                "value": "specimen"
+                            },
                             {
                                 "category": {
                                     "@id": "#characteristic_category/reference_descriptor"
@@ -438,21 +395,21 @@
                                     "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
                                     "termSource": "NCBITAXON"
                                 }
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/Material_Type"
-                                },
-                                "value": "specimen"
                             }
                         ],
-                        "name": "source-source4"
+                        "name": "source-source3"
                     },
                     {
                         "@id": "#source/source-source2",
                         "characteristics": [
                             {
                                 "category": {
+                                    "@id": "#characteristic_category/Material_Type"
+                                },
+                                "value": "specimen"
+                            },
+                            {
+                                "category": {
                                     "@id": "#characteristic_category/reference_descriptor"
                                 },
                                 "value": "not applicable"
@@ -466,12 +423,6 @@
                                     "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
                                     "termSource": "NCBITAXON"
                                 }
-                            },
-                            {
-                                "category": {
-                                    "@id": "#characteristic_category/Material_Type"
-                                },
-                                "value": "specimen"
                             }
                         ],
                         "name": "source-source2"
@@ -483,6 +434,12 @@
                     "@id": "#person/Smith",
                     "address": "34, Beaumont Street",
                     "affiliation": "University of Oxford",
+                    "comments": [
+                        {
+                            "name": "Study Person REF",
+                            "value": ""
+                        }
+                    ],
                     "email": "john.f.smith@research.org",
                     "fax": "+44 (0) 1865 645 000",
                     "firstName": "John",
@@ -501,6 +458,7 @@
             "processSequence": [
                 {
                     "@id": "#process/sample_collection1",
+                    "comments": [],
                     "date": "",
                     "executesProtocol": {
                         "@id": "#protocol/sample_collection"
