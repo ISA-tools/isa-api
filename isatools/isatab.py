@@ -875,10 +875,7 @@ def write_assay_table_files(inv_obj, output_dir):
                         if node.performer is not None:
                             cols.append('protocol[' + str(protrefcount) + ']_performer')
                             col_map['protocol[' + str(protrefcount) + ']_performer'] = 'Performer'
-                        for prop in reversed(sorted(node.additional_properties.keys())):
-                            cols.append('protocol[' + str(protrefcount) + ']_prop[' + prop + ']')
-                            col_map['protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = prop
-                        for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
+                        for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.name)):
                             if isinstance(pv.value, int) or isinstance(pv.value, float):
                                 cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']',
                                              'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit',
@@ -898,6 +895,9 @@ def write_assay_table_files(inv_obj, output_dir):
                             else:
                                 cols.append('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']',)
                                 col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = 'Parameter Value[' + pv.category.parameter_name.name + ']'
+                        for prop in reversed(sorted(node.additional_properties.keys())):
+                            cols.append('protocol[' + str(protrefcount) + ']_prop[' + prop + ']')
+                            col_map['protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = prop
                         for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                             cols.append('data[' + output.label + ']')
                             col_map['data[' + output.label + ']'] = output.label
@@ -975,10 +975,7 @@ def write_assay_table_files(inv_obj, output_dir):
                                         df.loc[i, 'protocol[' + str(protrefcount) + ']_date'] = node.date
                                     if node.performer is not None:
                                         df.loc[i, 'protocol[' + str(protrefcount) + ']_performer'] = node.performer
-                                    for prop in reversed(sorted(node.additional_properties.keys())):
-                                        df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = node.additional_properties[prop]
-                                        compound_key += str(protrefcount) + '/' + prop + '/' + node.additional_properties[prop]
-                                    for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
+                                    for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.name)):
                                         if isinstance(pv.value, int) or isinstance(pv.value, float):
                                             df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
                                             df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit'] = pv.unit.name
@@ -990,6 +987,9 @@ def write_assay_table_files(inv_obj, output_dir):
                                             df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termaccession'] = pv.value.term_accession
                                         else:
                                             df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
+                                    for prop in reversed(sorted(node.additional_properties.keys())):
+                                        df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = node.additional_properties[prop]
+                                        compound_key += str(protrefcount) + '/' + prop + '/' + node.additional_properties[prop]
                                     for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                                         df.loc[i, 'data[' + output.label + ']'] = output.filename
                                         for comment in output.comments:
@@ -1097,7 +1097,7 @@ def write_study_table_files(inv_obj, output_dir):
                     if node.performer is not None:
                         cols.append('protocol[' + str(protrefcount) + ']_performer')
                         col_map['protocol[' + str(protrefcount) + ']_performer'] = 'Performer'
-                    for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
+                    for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.name)):
                         if isinstance(pv.value, int) or isinstance(pv.value, float):
                             cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']',
                                          'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit',
@@ -1205,7 +1205,7 @@ def write_study_table_files(inv_obj, output_dir):
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_date'] = node.date
                                 if node.performer is not None:
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_performer'] = node.performer
-                                for pv in sorted(node.parameter_values, key=lambda x: id(x.category)):
+                                for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.name)):
                                     if isinstance(pv.value, int) or isinstance(pv.value, float):
                                         df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
                                         df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit'] = pv.unit.name
@@ -1246,15 +1246,14 @@ def write_study_table_files(inv_obj, output_dir):
                         i += 1
             #  cleanup column headers before writing out df
             import re
-            char_regex = re.compile('.*_char\[(.*?)\]')
-            pv_regex = re.compile('.*_pv\[(.*?)\]')
-            fv_regex = re.compile('.*_fv\[(.*?)\]')
+            #  cleanup column headers before writing out df
             # WARNING: don't just dump out col_map.values() as we need to put columns back in order
-            for i, col in enumerate(cols):
-                cols[i] = col_map[col]
-                if char_regex.match(col) is not None:
-                    if char_regex.findall(col)[0] == 'Material Type':
-                        cols[i] = 'Material Type'
+            df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0 (Sample name)
+            for i, col in enumerate(df.columns):
+                if col_map[col] == 'Characteristics[Material Type]':
+                    cols[i] = 'Material Type'
+                else:
+                    cols[i] = col_map[col]
             df.columns = cols  # reset column headers
             import numpy as np
             df = df.replace('', np.nan)
@@ -1302,10 +1301,14 @@ def assert_tab_equal(fp_x, fp_y):
                     eq = False
                     break
             else:
-                for x, y in zip(sorted(dfx), sorted(dfy)):
-                    if not _assert_df_equal(x, y):
-                        eq = False
-                        break
+                try:
+                    for x, y in zip(sorted(dfx), sorted(dfy)):
+                        if not _assert_df_equal(x, y):
+                            eq = False
+                            break
+                except ValueError:
+                    print(dfx)
+                    print(dfy)
         return eq
     else:
 
@@ -1320,8 +1323,10 @@ def assert_tab_equal(fp_x, fp_y):
             # drop empty columns
             df_x = df_x.replace('', np.nan)
             df_x = df_x.dropna(axis=1, how='all')
+            df_x = df_x.replace(np.nan, '')
             df_y = df_y.replace('', np.nan)
             df_y = df_y.dropna(axis=1, how='all')
+            df_y = df_y.replace(np.nan, '')
 
             is_cols_equal = set([x.split('.', 1)[0] for x in df_x.columns]) == set([x.split('.', 1)[0] for x in df_y.columns])
             if not is_cols_equal:
