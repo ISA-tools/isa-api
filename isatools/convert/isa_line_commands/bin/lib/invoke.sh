@@ -15,6 +15,8 @@ ILBIN=$ILLIB/..
 CLASSNAME=$1
 shift
 
+java -version
+
 # See here for an explaination about ${1+"$@"} :
 # http://stackoverflow.com/questions/743454/space-in-java-command-line-arguments 
 
@@ -24,4 +26,8 @@ java \
   -cp $CP $CLASSNAME \
   ${1+"$@"}
 
+RES=$?
+
+echo ${RES}
 echo Finished.
+exit ${RES}

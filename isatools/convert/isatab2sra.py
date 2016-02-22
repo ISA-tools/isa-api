@@ -1,5 +1,7 @@
 import sys
 import os
+import pdb
+import subprocess
 
 
 def create_sra(source_path="", dest_path="", config_path=""):
@@ -18,8 +20,8 @@ def create_sra(source_path="", dest_path="", config_path=""):
                 the input ISA-Tab.
 
         Raises:
-            OSErrpr: If something goes wrong calling the shell commands to run the
-            Java conversion, this will raise an OSError
+            TypeErrpr: If something goes wrong calling the shell commands to run the
+            Java conversion, this will raise a TypeError (NOTE: should this error be customised?)
 
     """
     if not os.path.exists(source_path):
@@ -36,13 +38,16 @@ def create_sra(source_path="", dest_path="", config_path=""):
                                    source_path + " " +
                                    dest_path + " " +
                                    config_path)
-    from subprocess import call
+    # subprocess.call(['java', '-version'])
+
+    # return_code = subprocess.call([convert_command], shell=True)
     try:
-        return_code = call([convert_command], shell=True)
-        if return_code < 0:
-            print(sys.stderr, "Terminated by signal", -return_code)
-        else:
-            print(sys.stderr, "Returned", return_code)
-    except OSError as e:
-        print(sys.stderr, "Execution failed:", e)
+        res = subprocess.check_output([convert_command], shell=True, stderr=subprocess.STDOUT)
+
+        #TODO return the buffer containing the SRA element(s) as an archive?
+    except subprocess.CalledProcessError as err:
+        print("Execution failed: ", err.output)
+        error_message = str(err.output, encoding='utf-8')
+        raise TypeError(error_message)
+
 
