@@ -15,12 +15,12 @@ class JsonToTabTest(TestCase):
 
     def tearDown(self):
         shutil.rmtree(self._tmp, ignore_errors=True)
+        pass
 
-    # def test_source_split_investigation(self):
-    #     json2isatab.convert(open(os.path.join(self._dir, 'TEST-ISA-source-split.json')), self._tmp)
-    #     self.assertTrue(assert_tab_equal(open(os.path.join(self._tmp, 'i_Investigation.txt')),
-    #                                      open(os.path.join(self._dir, 'data/TEST-ISA-source-split/i_Investigation.txt'))))
-    # above fails because of empty line of data in investigation publications and contacts
+    def test_source_split_investigation(self):
+        json2isatab.convert(open(os.path.join(self._dir, 'TEST-ISA-source-split.json')), self._tmp)
+        self.assertTrue(assert_tab_equal(open(os.path.join(self._tmp, 'i_Investigation.txt')),
+                                         open(os.path.join(self._dir, 'data/TEST-ISA-source-split/i_Investigation.txt'))))
 
     def test_source_split_study_table(self):
         json2isatab.convert(open(os.path.join(self._dir, 'TEST-ISA-source-split.json')), self._tmp)
