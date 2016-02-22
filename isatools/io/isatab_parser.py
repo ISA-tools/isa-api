@@ -24,6 +24,9 @@ collapsing the data across the samples and raw data.
 """
 from __future__ import with_statement
 
+__author__ = 'brad chapman' #initial version
+__author__ = 'agbeltran' #modifications/extensions
+
 import os
 import re
 import csv
@@ -431,7 +434,8 @@ class StudyAssayParser:
                 if node_type not in node_types:
                     continue
                 try:
-                    header_index = headers.index(node_type)
+                    header_index = hgroups[node_index][0]
+
                 except ValueError:
                     header_index = None
 
