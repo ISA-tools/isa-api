@@ -11,7 +11,7 @@ from zipfile import is_zipfile
 from urllib.parse import urljoin
 from isatools.io.storage_adapter import IsaGitHubStorageAdapter, REPOS, CONTENTS
 from lxml import etree
-from io import StringIO
+from io import BytesIO, StringIO
 from requests.exceptions import HTTPError
 
 __author__ = 'massi'
@@ -165,7 +165,6 @@ def step_impl(context):
     context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
                                                owner=context.owner_name, repository=context.repo_name, ref=branch)
 
-    expect(context.res).to.be.true
     expect(httpretty.has_request()).to.be.true
 
 
@@ -181,6 +180,21 @@ def step_impl(context):
     [expect(os.path.isfile(os.path.join(out_dir, item['name']))).to.be.true for item in context.items_in_dir]
 
 
+@step("it should return a binary stream with the zipped content of the directory")
+def step_impl(context):
+    """
+    :type context: behave.runner.Context
+    """
+    expect(context.res).to.be.a(BytesIO)
+    dir_name = context.source_path.split('/')[-1]
+    file_names = [os.path.join(dir_name, item['name']) for item in context.items_in_dir]
+    with ZipFile(context.res) as zip_file:
+        expect(len(zip_file.namelist())).to.be.greater_than(0)
+
+        # the zip file should contain all the files listed in the source directory (i.e. in the directory JSON profile)
+        expect(set(zip_file.namelist())).to.equal(set(file_names))
+
+
 @when("the file object is a ZIP archive")
 @httpretty.activate
 def step_impl(context):
@@ -192,7 +206,9 @@ def step_impl(context):
         .replace(' ', '_').replace('.zip', '.json')
 
     destination_name = context.source_path.split('/')[-1]
-    fixture_file_path = os.path.abspath(os.path.join('features', 'fixtures', fixture_file_name))
+
+    fixture_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures', fixture_file_name))
+
     download_url = '/'.join([GITHUB_API_URL, REPOS, context.owner_name, context.repo_name,
                              CONTENTS, context.source_path])
 
@@ -201,7 +217,7 @@ def step_impl(context):
         context.zipped_dataset_encoded = json.load(json_file)
         httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.zipped_dataset_encoded))
 
-    fixture_file_path_raw = os.path.abspath(os.path.join('features', 'fixtures', destination_name))
+    fixture_file_path_raw = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures', destination_name))
     download_url = context.zipped_dataset_encoded['download_url']
 
     # get the raw zipped file
@@ -242,8 +258,10 @@ def step_impl(context):
     fixture_file_name = '_'.join([context.owner_name, context.repo_name, context.source_path]).replace('/', '_')
     fixture_file_name_encoded = fixture_file_name.replace('.json', '_encoded.json')
     fixture_file_name_raw = fixture_file_name.replace('.json', '_raw.json')
-    fixture_file_path_encoded = os.path.abspath(os.path.join('features', 'fixtures', fixture_file_name_encoded))
-    fixture_file_path_raw = os.path.abspath(os.path.join('features', 'fixtures', fixture_file_name_raw))
+    fixture_file_path_encoded = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures',
+                                                             fixture_file_name_encoded))
+    fixture_file_path_raw = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures',
+                                                         fixture_file_name_raw))
 
     # create the url to GET the encoded dataset
     encoded_file_url = '/'.join([GITHUB_API_URL, REPOS, context.owner_name, context.repo_name,
@@ -304,7 +322,7 @@ def step_impl(context):
     encoded_file_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name,
                              'contents', context.source_path])
 
-    fixture_file_path = os.path.abspath(os.path.join('features', 'fixtures', fixture_file_name))
+    fixture_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures', fixture_file_name))
     # open the json file containg the encoded xml
     with open(fixture_file_path) as json_file:
         context.xml_encoded = json.load(json_file)
@@ -312,7 +330,7 @@ def step_impl(context):
 
     # build up the path to the fixtures RAW XML file
     fixture_file_frags = context.source_path.split('/')
-    fixture_file_path_raw = os.path.abspath(os.path.join(*fixture_file_frags))
+    fixture_file_path_raw = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', *fixture_file_frags))
     download_url = context.xml_encoded['download_url']
 
     # get the raw zipped file
@@ -371,7 +389,7 @@ def step_impl(context):
 
     encoded_file_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name, 'contents',
                                  context.source_path])
-    fixture_file_path = os.path.abspath(os.path.join('features', 'fixtures', fixture_file_name))
+    fixture_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures', fixture_file_name))
 
     print('Encoded file URL: ', encoded_file_url)
 
@@ -381,7 +399,7 @@ def step_impl(context):
                                content_type='text/plain')
 
     fixture_file_frags = context.source_path.split('/')
-    fixture_file_path_raw = os.path.abspath(os.path.join(*fixture_file_frags))
+    fixture_file_path_raw = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', *fixture_file_frags))
     download_url = context.text_encoded['download_url']
 
     with open(fixture_file_path_raw) as text_file:

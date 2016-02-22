@@ -1,8 +1,8 @@
 ONTOLOGY SOURCE REFERENCE
-Term Source Name	"NCBITAXON"	"CHEBI"	"UBERON"	"OBI"	
-Term Source File	"http://data.bioontology.org/ontologies/NCBITAXON"	"http://data.bioontology.org/ontologies/CHEBI"	"http://data.bioontology.org/ontologies/UBERON"	"http://data.bioontology.org/ontologies/OBI"	
-Term Source Version	"2"	"84"	"216"	"22"	
-Term Source Description	"National Center for Biotechnology Information (NCBI) Organismal Classification"	"Chemical Entities of Biological Interest Ontology"	"Uber Anatomy Ontology"	"Ontology for Biomedical Investigations"	
+Term Source Name	"NCBITAXON"	"CHEBI"	"UBERON"	"OBI"
+Term Source File	"http://data.bioontology.org/ontologies/NCBITAXON"	"http://data.bioontology.org/ontologies/CHEBI"	"http://data.bioontology.org/ontologies/UBERON"	"http://data.bioontology.org/ontologies/OBI"
+Term Source Version	"2"	"84"	"216"	"22"
+Term Source Description	"National Center for Biotechnology Information (NCBI) Organismal Classification"	"Chemical Entities of Biological Interest Ontology"	"Uber Anatomy Ontology"	"Ontology for Biomedical Investigations"
 INVESTIGATION
 Investigation Identifier	"TEST-ISA-source-split"
 Investigation Title	"Investigation"

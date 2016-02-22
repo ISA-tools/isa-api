@@ -6,3 +6,4 @@ behave
 httpretty
 sure
 lxml
+requests
