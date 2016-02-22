@@ -114,12 +114,15 @@ def load(fp):
                 public_release_date=study_json['publicReleaseDate'],
                 filename=study_json['filename']
             )
-            for comment_json in study_json['comments']:
-                comment = Comment(
-                    name=comment_json['name'],
-                    value=comment_json['value'],
-                )
-                study.comments.append(comment)
+            try:
+                for comment_json in study_json['comments']:
+                    comment = Comment(
+                        name=comment_json['name'],
+                        value=comment_json['value'],
+                    )
+                    study.comments.append(comment)
+            except KeyError:
+                pass
             for study_characteristics_category_json in study_json['characteristicCategories']:
                 characteristic_category = CharacteristicCategory(
                     id_=study_characteristics_category_json['@id'],
@@ -170,12 +173,15 @@ def load(fp):
                         term_source=term_source_dict[role_json['termSource']]
                     )
                     study_person.roles.append(role)
-                for comment_json in study_person_json['comments']:
-                    comment = Comment(
-                        name=comment_json['name'],
-                        value=comment_json['value'],
-                    )
-                    study_person.comments.append(comment)
+                try:
+                    for comment_json in study_person_json['comments']:
+                        comment = Comment(
+                            name=comment_json['name'],
+                            value=comment_json['value'],
+                        )
+                        study_person.comments.append(comment)
+                except KeyError:
+                    pass
                 study.contacts.append(study_person)
             for design_descriptor_json in study_json['studyDesignDescriptors']:
                 logger.debug('Build Ontology Annotation object (Study Design Descriptor)')
@@ -325,12 +331,15 @@ def load(fp):
                     id_=study_process_json['@id'],
                     executes_protocol=protocols_dict[study_process_json['executesProtocol']['@id']],
                 )
-                for comment_json in study_process_json['comments']:
-                    comment = Comment(
-                        name=comment_json['name'],
-                        value=comment_json['value'],
-                    )
-                    process.comments.append(comment)
+                try:
+                    for comment_json in study_process_json['comments']:
+                        comment = Comment(
+                            name=comment_json['name'],
+                            value=comment_json['value'],
+                        )
+                        process.comments.append(comment)
+                except KeyError:
+                    pass
                 try:
                     process.date = study_process_json['date']
                 except KeyError:
@@ -449,12 +458,15 @@ def load(fp):
                         filename=data_json['name'],
                         label=data_json['type'],
                     )
-                    for comment_json in data_json['comments']:
-                        comment = Comment(
-                            name=comment_json['name'],
-                            value=comment_json['value'],
-                        )
-                        data_file.comments.append(comment)
+                    try:
+                        for comment_json in data_json['comments']:
+                            comment = Comment(
+                                name=comment_json['name'],
+                                value=comment_json['value'],
+                            )
+                            data_file.comments.append(comment)
+                    except KeyError:
+                        pass
                     data_dict[data_file.id] = data_file
                     assay.data_files.append(data_file)
                 for sample_json in assay_json['materials']['samples']:
@@ -501,12 +513,15 @@ def load(fp):
                         id_=assay_process_json['@id'],
                         executes_protocol=protocols_dict[assay_process_json['executesProtocol']['@id']]
                     )
-                    for comment_json in assay_process_json['comments']:
-                        comment = Comment(
-                            name=comment_json['name'],
-                            value=comment_json['value'],
-                        )
-                        process.comments.append(comment)
+                    try:
+                        for comment_json in assay_process_json['comments']:
+                            comment = Comment(
+                                name=comment_json['name'],
+                                value=comment_json['value'],
+                            )
+                            process.comments.append(comment)
+                    except KeyError:
+                        pass
                     # additional properties, currently hard-coded special cases
                     if process.executes_protocol.protocol_type.name == 'data collection' and assay.technology_type.name == 'DNA microarray':
                         process.additional_properties['Scan Name'] = assay_process_json['name']
