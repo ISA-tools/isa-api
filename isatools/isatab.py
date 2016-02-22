@@ -474,29 +474,35 @@ def dump(isa_obj, output_path):
                                              index_label='Investigation PubMed ID')
 
         # Write INVESTIGATION CONTACTS section
-        investigation_contacts_df = pd.DataFrame(columns=('Investigation Person Last Name',
-                                                          'Investigation Person First Name',
-                                                          'Investigation Person Mid Initials',
-                                                          'Investigation Person Email',
-                                                          'Investigation Person Phone',
-                                                          'Investigation Person Fax',
-                                                          'Investigation Person Address',
-                                                          'Investigation Person Affiliation',
-                                                          'Investigation Person Roles',
-                                                          'Investigation Person Roles Term Accession Number',
-                                                          'Investigation Person Roles Term Source REF'
-                                                          )
-                                                 )
+        investigation_contacts_df_cols = ['Investigation Person Last Name',
+                                          'Investigation Person First Name',
+                                          'Investigation Person Mid Initials',
+                                          'Investigation Person Email',
+                                          'Investigation Person Phone',
+                                          'Investigation Person Fax',
+                                          'Investigation Person Address',
+                                          'Investigation Person Affiliation',
+                                          'Investigation Person Roles',
+                                          'Investigation Person Roles Term Accession Number',
+                                          'Investigation Person Roles Term Source REF']
+        if len(investigation.contacts) > 0:
+            for comment in investigation.contacts[0].comments:
+                    investigation_contacts_df_cols.append('Comment[' + comment.name + ']')
+        investigation_contacts_df = pd.DataFrame(columns=tuple(investigation_contacts_df_cols))
         i = 0
         for investigation_contact in investigation.contacts:
-            roles = ''
+            roles_names = ''
             roles_accession_numbers = ''
             roles_source_refs = ''
             for role in investigation_contact.roles:
-                roles += role.name + ';'
+                roles_names += role.name + ';'
                 roles_accession_numbers += role.term_accession + ';'
                 roles_source_refs += role.term_source.name + ';'
-            investigation_contacts_df.loc[i] = [
+            if len(investigation_contact.roles) > 0:
+                roles_names = roles_names[:-1]
+                roles_accession_numbers = roles_accession_numbers[:-1]
+                roles_source_refs = roles_source_refs[:-1]
+            investigation_contacts_df_row = [
                 investigation_contact.last_name,
                 investigation_contact.first_name,
                 investigation_contact.mid_initials,
@@ -505,10 +511,13 @@ def dump(isa_obj, output_path):
                 investigation_contact.fax,
                 investigation_contact.address,
                 investigation_contact.affiliation,
-                roles,
+                roles_names,
                 roles_accession_numbers,
                 roles_source_refs
             ]
+            for comment in investigation.contacts[i].comments:
+                investigation_contacts_df_row.append(comment.value)
+                investigation_contacts_df.loc[i] = investigation_contacts_df_row
             i += 1
         investigation_contacts_df = investigation_contacts_df.set_index('Investigation Person Last Name').T
         fp.write('INVESTIGATION CONTACTS\n')
