@@ -490,7 +490,7 @@ def load(fp):
                     if material_name.startswith('labeledextract-'):
                         material_name = material_name[15:]
                     else:
-                        material_name = material_name[8:]  # FIXME: Strip out extra typing in the naming e.g. labeledextract- etc. BUT needs to be ID type aware??
+                        material_name = material_name[8:]
                     material = Material(
                         id_=other_material_json['@id'],
                         name=material_name,
@@ -614,7 +614,7 @@ def load(fp):
                     for process in assay.process_sequence:
                         if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
                             if len(process.outputs) > 0:
-                                for output in process.outputs:
+                                for output in [n for n in process.outputs if not isinstance(n, DataFile)]:
                                     graph.add_edge(process, output)
                             else:  # otherwise just connect the process to the next one
                                 graph.add_edge(process, process.next_process)
