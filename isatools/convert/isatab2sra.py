@@ -35,9 +35,9 @@ def create_sra(source_path="", dest_path="", config_path=""):
     print("ISA configuration XML folder: " + config_path)
     convert_command = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    "isa_line_commands/bin/convert.sh -t sra " +
-                                   source_path + " " +
-                                   dest_path + " " +
-                                   config_path)
+                                   os.path.abspath(source_path) + " " +
+                                   os.path.abspath(dest_path) + " " +
+                                   os.path.abspath(config_path))
     # subprocess.call(['java', '-version'])
 
     # return_code = subprocess.call([convert_command], shell=True)
