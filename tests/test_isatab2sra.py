@@ -8,7 +8,7 @@ class ISATabTest(TestCase):
     def setUp(self):
         """set up directories etc"""
         self._dir = os.path.join(os.path.dirname(__file__), "data")
-        self._work_dir = os.path.join(self._dir, "BII-S-3")
+        self._work_dir = os.path.join(self._dir, "BII-S-7")
         self._config_dir = os.path.join(self._dir, "Configurations/isaconfig-default_v2015-07-02")
         self._tmp = os.path.join(self._dir, './tmp/')
         if not os.path.exists(self._tmp):
