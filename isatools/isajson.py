@@ -52,6 +52,15 @@ def load(fp):
                     term_source=publication_json['status']['termSource']
                 )
             )
+            try:
+                for comment_json in publication_json['comments']:
+                    comment = Comment(
+                        name=comment_json['name'],
+                        value=comment_json['value']
+                    )
+                    publication.comments.append(comment)
+            except KeyError:
+                pass
             investigation.publications.append(publication)
         for person_json in isajson['people']:
             logger.debug('Build Investigation Person object')
@@ -153,6 +162,15 @@ def load(fp):
                         term_accession=study_publication_json['status']['termAccession'],
                     )
                 )
+                try:
+                    for comment_json in study_publication_json['comments']:
+                        comment = Comment(
+                            name=comment_json['name'],
+                            value=comment_json['value']
+                        )
+                        study_publication.comments.append(comment)
+                except KeyError:
+                    pass
                 study.publications.append(study_publication)
             for study_person_json in study_json['people']:
                 logger.debug('Build Study Person object')
