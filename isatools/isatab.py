@@ -31,6 +31,86 @@ def validate(isatab_dir, config_dir):
 
 
 def dump(isa_obj, output_path):
+
+    def _build_roles_str(roles=list()):
+            roles_names = ''
+            roles_accession_numbers = ''
+            roles_source_refs = ''
+            for role in roles:
+                roles_names += role.name + ';'
+                roles_accession_numbers += role.term_accession + ';'
+                roles_source_refs += role.term_source.name + ';'
+            if len(roles) > 0:
+                roles_names = roles_names[:-1]
+                roles_accession_numbers = roles_accession_numbers[:-1]
+                roles_source_refs = roles_source_refs[:-1]
+            return roles_names, roles_accession_numbers, roles_source_refs
+
+    def _build_contacts_section_df(prefix='Investigation', contacts=list()):
+        contacts_df_cols = [prefix + ' Person Last Name',
+                            prefix + ' Person First Name',
+                            prefix + ' Person Mid Initials',
+                            prefix + ' Person Email',
+                            prefix + ' Person Phone',
+                            prefix + ' Person Fax',
+                            prefix + ' Person Address',
+                            prefix + ' Person Affiliation',
+                            prefix + ' Person Roles',
+                            prefix + ' Person Roles Term Accession Number',
+                            prefix + ' Person Roles Term Source REF']
+        if len(contacts) > 0:
+            for comment in contacts[0].comments:
+                contacts_df_cols.append('Comment[' + comment.name + ']')
+        contacts_df = pd.DataFrame(columns=tuple(contacts_df_cols))
+        for i, contact in enumerate(contacts):
+            roles_names, roles_accession_numbers, roles_source_refs = _build_roles_str(contact.roles)
+            contacts_df_row = [
+                contact.last_name,
+                contact.first_name,
+                contact.mid_initials,
+                contact.email,
+                contact.phone,
+                contact.fax,
+                contact.address,
+                contact.affiliation,
+                roles_names,
+                roles_accession_numbers,
+                roles_source_refs
+            ]
+            for comment in contact.comments:
+                contacts_df_row.append(comment.value)
+            contacts_df.loc[i] = contacts_df_row
+        return contacts_df.set_index(prefix + ' Person Last Name').T
+
+    def _build_publications_section_df(prefix='Investigation', publications=list()):
+        publications_df_cols = pd.DataFrame(columns=(prefix + ' PubMed ID',
+                                                     prefix + ' Publication DOI',
+                                                     prefix + ' Publication Author List',
+                                                     prefix + ' Publication Title',
+                                                     prefix + ' Publication Status',
+                                                     prefix + ' Publication Status Term Accession Number',
+                                                     prefix + ' Publication Status Term Source REF'
+                                                     )
+                                            )
+        if len(publications) > 0:
+            for comment in publications[0].comments:
+                publications_df_cols.append('Comment[' + comment.name + ']')
+        publications_df = pd.DataFrame(columns=tuple(publications_df_cols))
+        for i, publication in enumerate(publications):
+            publications_df_row = [
+                publication.pubmed_id,
+                publication.doi,
+                publication.author_list,
+                publication.title,
+                publication.status.name,
+                publication.status.term_accession,
+                publication.status.term_source.name,
+            ]
+            for comment in publication.comments:
+                publications_df_row.append(comment.value)
+            publications_df.loc[i] = publications_df_row
+        return publications_df.set_index(prefix +' PubMed ID').T
+
     if os.path.exists(output_path):
         fp = open(os.path.join(output_path, 'i_investigation.txt'), 'w')
     else:
@@ -85,75 +165,13 @@ def dump(isa_obj, output_path):
                             index_label='Investigation Identifier')  # Need to set index_label as top left cell
 
     # Write INVESTIGATION PUBLICATIONS section
-    investigation_publications_df = pd.DataFrame(columns=('Investigation PubMed ID',
-                                                          'Investigation Publication DOI',
-                                                          'Investigation Publication Author List',
-                                                          'Investigation Publication Title',
-                                                          'Investigation Publication Status',
-                                                          'Investigation Publication Status Term Accession Number',
-                                                          'Investigation Publication Status Term Source REF'
-                                                          )
-                                                 )
-    for i, investigation_publication in enumerate(investigation.publications):
-        investigation_publications_df.loc[i] = [
-            investigation_publication.pubmed_id,
-            investigation_publication.doi,
-            investigation_publication.author_list,
-            investigation_publication.title,
-            investigation_publication.status.name,
-            investigation_publication.status.term_source,
-            investigation_publication.status.term_accession,
-        ]
-    investigation_publications_df = investigation_publications_df.set_index('Investigation PubMed ID').T
+    investigation_publications_df = _build_publications_section_df(publications=investigation.publications)
     fp.write('INVESTIGATION PUBLICATIONS\n')
     investigation_publications_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                          index_label='Investigation PubMed ID')
 
     # Write INVESTIGATION CONTACTS section
-    investigation_contacts_df_cols = ['Investigation Person Last Name',
-                                      'Investigation Person First Name',
-                                      'Investigation Person Mid Initials',
-                                      'Investigation Person Email',
-                                      'Investigation Person Phone',
-                                      'Investigation Person Fax',
-                                      'Investigation Person Address',
-                                      'Investigation Person Affiliation',
-                                      'Investigation Person Roles',
-                                      'Investigation Person Roles Term Accession Number',
-                                      'Investigation Person Roles Term Source REF']
-    if len(investigation.contacts) > 0:
-        for comment in investigation.contacts[0].comments:
-                investigation_contacts_df_cols.append('Comment[' + comment.name + ']')
-    investigation_contacts_df = pd.DataFrame(columns=tuple(investigation_contacts_df_cols))
-    for i, investigation_contact in enumerate(investigation.contacts):
-        roles_names = ''
-        roles_accession_numbers = ''
-        roles_source_refs = ''
-        for role in investigation_contact.roles:
-            roles_names += role.name + ';'
-            roles_accession_numbers += role.term_accession + ';'
-            roles_source_refs += role.term_source.name + ';'
-        if len(investigation_contact.roles) > 0:
-            roles_names = roles_names[:-1]
-            roles_accession_numbers = roles_accession_numbers[:-1]
-            roles_source_refs = roles_source_refs[:-1]
-        investigation_contacts_df_row = [
-            investigation_contact.last_name,
-            investigation_contact.first_name,
-            investigation_contact.mid_initials,
-            investigation_contact.email,
-            investigation_contact.phone,
-            investigation_contact.fax,
-            investigation_contact.address,
-            investigation_contact.affiliation,
-            roles_names,
-            roles_accession_numbers,
-            roles_source_refs
-        ]
-        for comment in investigation.contacts[i].comments:
-            investigation_contacts_df_row.append(comment.value)
-            investigation_contacts_df.loc[i] = investigation_contacts_df_row
-    investigation_contacts_df = investigation_contacts_df.set_index('Investigation Person Last Name').T
+    investigation_contacts_df = _build_contacts_section_df(contacts=investigation.contacts)
     fp.write('INVESTIGATION CONTACTS\n')
     investigation_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                      index_label='Investigation Person Last Name')
@@ -202,29 +220,9 @@ def dump(isa_obj, output_path):
                                                index_label='Study Design Type')
 
         # Write STUDY PUBLICATIONS section
-        study_publications_df = pd.DataFrame(columns=('Study PubMed ID',
-                                                      'Study Publication DOI',
-                                                      'Study Publication Author List',
-                                                      'Study Publication Title',
-                                                      'Study Publication Status',
-                                                      'Study Publication Status Term Accession Number',
-                                                      'Study Publication Status Term Source REF'
-                                                      )
-                                             )
-        for i, study_publication in enumerate(study.publications):
-            study_publications_df.loc[i] = [
-                study_publication.pubmed_id,
-                study_publication.doi,
-                study_publication.author_list,
-                study_publication.title,
-                study_publication.status.name,
-                study_publication.status.term_source.name,
-                study_publication.status.term_accession,
-            ]
-        study_publications_df = study_publications_df.set_index('Study PubMed ID').T
+        study_publications_df = _build_publications_section_df(prefix='Study', publications=study.publications)
         fp.write('STUDY PUBLICATIONS\n')
-        study_publications_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                             index_label='Study PubMed ID')
+        study_publications_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8', index_label='Study PubMed ID')
 
         # Write STUDY FACTORS section
         study_factors_df = pd.DataFrame(columns=('Study Factor Name',
@@ -338,49 +336,7 @@ def dump(isa_obj, output_path):
                                   index_label='Study Protocol Name')
 
         # Write STUDY CONTACTS section
-        study_contacts_df_cols = ['Study Person Last Name',
-                                  'Study Person First Name',
-                                  'Study Person Mid Initials',
-                                  'Study Person Email',
-                                  'Study Person Phone',
-                                  'Study Person Fax',
-                                  'Study Person Address',
-                                  'Study Person Affiliation',
-                                  'Study Person Roles',
-                                  'Study Person Roles Term Accession Number',
-                                  'Study Person Roles Term Source REF']
-        for comment in study.contacts[0].comments:
-            study_contacts_df_cols.append('Comment[' + comment.name + ']')
-        study_contacts_df = pd.DataFrame(columns=tuple(study_contacts_df_cols))
-        for i, study_contact in enumerate(study.contacts):
-            roles_names = ''
-            roles_accession_numbers = ''
-            roles_source_refs = ''
-            for role in study_contact.roles:
-                roles_names += role.name + ';'
-                roles_accession_numbers += role.term_accession + ';'
-                roles_source_refs += role.term_source.name + ';'
-            if len(study_contact.roles) > 0:
-                roles_names = roles_names[:-1]
-                roles_accession_numbers = roles_accession_numbers[:-1]
-                roles_source_refs = roles_source_refs[:-1]
-            study_contacts_df_row = [
-                study_contact.last_name,
-                study_contact.first_name,
-                study_contact.mid_initials,
-                study_contact.email,
-                study_contact.phone,
-                study_contact.fax,
-                study_contact.address,
-                study_contact.affiliation,
-                roles_names,
-                roles_accession_numbers,
-                roles_source_refs
-            ]
-            for comment in study_contact.comments:
-                study_contacts_df_row.append(comment.value)
-            study_contacts_df.loc[i] = study_contacts_df_row
-        study_contacts_df = study_contacts_df.set_index('Study Person Last Name').T
+        study_contacts_df = _build_contacts_section_df(prefix='Study', contacts=study.contacts)
         fp.write('STUDY CONTACTS\n')
         study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
                                  index_label='Study Person Last Name')
