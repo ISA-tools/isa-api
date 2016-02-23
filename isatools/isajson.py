@@ -2,7 +2,7 @@ from isatools.model.v1 import *
 import json
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 
@@ -631,23 +631,3 @@ def load(fp):
         logger.debug('End building Studies objects')
         logger.debug('End building Investigation object')
     return investigation
-
-
-class IsaJsonEncoder(json.JSONEncoder):
-        def default(self, o):
-            if isinstance(o, Sample):
-                return {
-                    '@id': o.id,
-                }
-            elif isinstance(o, Source):
-                return {
-                    '@id': o.id
-                }
-            elif isinstance(o, Process):
-                return {
-                    '@id': o.id
-                }
-
-
-def dump(i):
-    pass
