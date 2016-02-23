@@ -884,6 +884,7 @@ def write_study_table_files(inv_obj, output_dir):
                             df.loc[i, 'sample_fv[' + fv.factor_name.name + ']'] = fv.value
             i += 1
         # WARNING: don't just dump out col_map.values() as we need to put columns back in order
+        df = df.drop_duplicates()
         df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0 (Sample name)
         for i, col in enumerate(df.columns):
             if col_map[col] == 'Characteristics[Material Type]':
@@ -897,18 +898,22 @@ def write_study_table_files(inv_obj, output_dir):
         df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0
         df.to_csv(path_or_buf=open(os.path.join(output_dir, study_obj.filename), 'w'), index=False, sep='\t', encoding='utf-8',)
 
-def assert_tab_equal(fp_x, fp_y):
+
+def assert_tab_content_equal(fp_x, fp_y):
     """
     Test for equality of tab files, only down to level of content - should not be taken as canonical equality, but
-    rather that all the expected content matches to both input files
+    rather that all the expected content matches to both input files, but not the order in which they appear.
+
+    For more precise equality, you will need to apply a configuration
+        - use assert_tab_equal_by_config(fp_x, fp_y, config)
     :param fp_x: File descriptor of a ISAtab file
     :param fp_y: File descriptor of another  ISAtab file
     :return: True or False plus any AssertionErrors
     """
 
-    def _assert_df_equal(x, y):
+    def _assert_df_equal(x, y):  # need to sort values to loosen up how equality is calculated
         try:
-            assert_frame_equal(x, y)
+            assert_frame_equal(x.sort_values(by=x.columns[0]), y.sort_values(by=y.columns[0]))
             return True
         except AssertionError as e:
             print(e)
@@ -939,9 +944,8 @@ def assert_tab_equal(fp_x, fp_y):
                         if not _assert_df_equal(x, y):
                             eq = False
                             break
-                except ValueError:
-                    print(dfx)
-                    print(dfy)
+                except ValueError as e:
+                    print(e)
         return eq
     else:
 
