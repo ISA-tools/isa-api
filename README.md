@@ -2,8 +2,6 @@
 
 This repository is a python-based ISA-API library, which supports the programmatic creation of ISA objects, multiple ISA serializations (e.g. tabular and JSON representations) and conversions between ISA and other formats (e.g. SRA xml).
 
-
-
 It relies on Python 3.4 and we recommand using virtualenv for running/testing the code.
 If you are not familiar with virtualenv, read this excellent blogpost by Jamie Matthews (https://www.dabapps.com/blog/introduction-to-pip-and-virtualenv-python/). Make sure your environmental variable are pointing to Python 3.4 before invoking virtualenv.
 
@@ -27,7 +25,7 @@ python setup.py test
 
 To install the isa-api, make sure to install the requirements:
 
-`pip install -r requiremens.txt`
+`pip install -r requirements.txt`
 
 To run the tests:
 
