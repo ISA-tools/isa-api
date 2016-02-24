@@ -21,7 +21,7 @@ Travis Continuous Integration is set up on both Master and Develop branches of t
 python setup.py test
 
 
-### Instalation procedure
+### Installation procedure
 
 To install the isa-api, make sure to install the requirements:
 
