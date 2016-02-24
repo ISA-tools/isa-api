@@ -92,14 +92,13 @@ class TwoWayConvertTest(TestCase):
         self.assertTrue(isatab.assert_tab_content_equal(open(os.path.join(source_dir, 'a_gilbert-assay-Tx.txt')),
                                                 open(os.path.join(self._tmp, 'a_gilbert-assay-Tx.txt'))))
 
-    # def test_isa_bii_s_7(self):
-    #     source_dir = os.path.join(self._dir, 'data/BII-S-7/')
-    #     isatab2json.convert(source_dir, self._tmp)
-    #     json2isatab.convert(open(os.path.join(self._tmp, 'BII-S-7.json')), self._tmp)
-    #     isatab.assert_tab_content_equal(open(os.path.join(source_dir, 'i_matteo.txt')),
-    #                             open(os.path.join(self._tmp, 'i_investigation.txt')))
-    #     isatab.assert_tab_content_equal(open(os.path.join(source_dir, 's_BII-S-7.txt')),
-    #                             open(os.path.join(self._tmp, 's_BII-S-7.txt')))
-    #     isatab.assert_tab_content_equal(open(os.path.join(source_dir, 'a_matteo-assay-Gx.txt')),
-    #                             open(os.path.join(self._tmp, 'a_matteo-assay-Gx.txt')))
-    """Problem with intermediate json - Factor Values at assay level"""
+    def test_isa_bii_s_7(self):
+        source_dir = os.path.join(self._dir, 'data/BII-S-7/')
+        isatab2json.convert(source_dir, self._tmp)
+        json2isatab.convert(open(os.path.join(self._tmp, 'BII-S-7.json')), self._tmp)
+        isatab.assert_tab_content_equal(open(os.path.join(source_dir, 'i_matteo.txt')),
+                                open(os.path.join(self._tmp, 'i_investigation.txt')))
+        isatab.assert_tab_content_equal(open(os.path.join(source_dir, 's_BII-S-7.txt')),
+                                open(os.path.join(self._tmp, 's_BII-S-7.txt')))
+        isatab.assert_tab_content_equal(open(os.path.join(source_dir, 'a_matteo-assay-Gx.txt')),
+                                open(os.path.join(self._tmp, 'a_matteo-assay-Gx.txt')))
