@@ -43,6 +43,7 @@ def create_sra(source_path="", dest_path="", config_path=""):
     # return_code = subprocess.call([convert_command], shell=True)
     try:
         res = subprocess.check_output([convert_command], shell=True, stderr=subprocess.STDOUT)
+        print(res)
 
         #TODO return the buffer containing the SRA element(s) as an archive?
     except subprocess.CalledProcessError as err:
