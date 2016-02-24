@@ -581,6 +581,15 @@ class ISATab2ISAjson_v1:
                 except KeyError:
                     print("Key ", node_index, " not available in sample_dict=", sample_dict)
 
+                #adding factors that may have been defined at the assay level
+                try:
+                    sample_json = sample_dict[node_index]
+                    new_factors = self.createValueList(self.FACTOR_VALUE,node_index, node)
+                    sample_json["factorValues"] = sample_json["factorValues"] + new_factors
+                    sample_dict[node_index] = sample_json
+                except KeyError:
+                    print("Key ", node_index, " not available in sample_dict=", sample_dict)
+
         return json_dict
 
 
@@ -693,7 +702,7 @@ class ISATab2ISAjson_v1:
                  value  = self.convert_num(value_attributes[0])
                  header_type = None
 
-                 if column_name.strip()==self.CHARACTERISTICS:
+                 if column_name.strip()==self.CHARACTERISTICS and (header==self.CHARACTERISTICS or header == self.LABEL or header==self.MATERIAL_TYPE):
                      if header not in node.attributes:
                          continue
                      if header == self.MATERIAL_TYPE:
@@ -701,63 +710,65 @@ class ISATab2ISAjson_v1:
                      elif header == self.LABEL:
                         value_header = self.LABEL
                      header_type = self.CHARACTERISTIC_CATEGORY
-                 elif column_name.strip()==self.FACTOR_VALUE:
-                     if header not in node.attributes:
-                         continue
+                 elif column_name.strip()==self.FACTOR_VALUE and header.startswith(self.FACTOR_VALUE):
+                     #if header not in node.attributes:
+                     #    continue
                      header_type = "factor"
-                 elif column_name.strip()==self.PARAMETER_VALUE:
+                 elif column_name.strip()==self.PARAMETER_VALUE and (header == self.PARAMETER_VALUE or header == self.ARRAY_DESIGN_REF):
                      if header not in node.parameters:
                          continue
                      if header == self.ARRAY_DESIGN_REF:
                          value_header = self.ARRAY_DESIGN_REF
                      header_type = "parameter"
 
-                 category_identifier =  self.getIdentifier(header_type, value_header)
+                 if header_type:
 
-                 if value_header==None or category_identifier==None:
-                    try:
-                        unit_identifier = self.getIdentifier(self.UNIT, value_attributes.Unit)
-                        value_json = dict([
-                         ("value", value),
-                         ("unit", dict([("@id", unit_identifier)]))
-                        ])
-                        json_list.append(value_json)
-                        continue
-                    except AttributeError:
+                    category_identifier =  self.getIdentifier(header_type, value_header)
+
+                    if value_header==None or category_identifier==None:
                         try:
+                            unit_identifier = self.getIdentifier(self.UNIT, value_attributes.Unit)
                             value_json = dict([
-                                ("value", self.createOntologyAnnotation(value, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
-                                ])
+                            ("value", value),
+                            ("unit", dict([("@id", unit_identifier)]))
+                            ])
                             json_list.append(value_json)
                             continue
                         except AttributeError:
-                            value_json = dict([
-                                 ("value", value)
-                                 ])
-                            json_list.append(value_json)
+                            try:
+                                value_json = dict([
+                                    ("value", self.createOntologyAnnotation(value, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
+                                    ])
+                                json_list.append(value_json)
+                                continue
+                            except AttributeError:
+                                value_json = dict([
+                                     ("value", value)
+                                     ])
+                                json_list.append(value_json)
 
-                 else:
-                    try:
-                        unit_identifier = self.getIdentifier(self.UNIT, value_attributes.Unit)
-                        value_json = dict([
-                         ("category", dict([("@id", category_identifier)])),
-                         ("value", value),
-                         ("unit", dict([("@id", unit_identifier)]))
-                        ])
-                        json_list.append(value_json)
-                        continue
-                    except AttributeError:
+                    else:
                         try:
+                            unit_identifier = self.getIdentifier(self.UNIT, value_attributes.Unit)
                             value_json = dict([
-                                ("category", dict([("@id", category_identifier)])),
-                                ("value", self.createOntologyAnnotation(value, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
-                                ])
+                             ("category", dict([("@id", category_identifier)])),
+                             ("value", value),
+                             ("unit", dict([("@id", unit_identifier)]))
+                            ])
                             json_list.append(value_json)
                             continue
                         except AttributeError:
-                            value_json = dict([
-                                 ("category", dict([("@id", category_identifier)])),
-                                 ("value", value)
-                                 ])
-                            json_list.append(value_json)
+                            try:
+                                value_json = dict([
+                                    ("category", dict([("@id", category_identifier)])),
+                                    ("value", self.createOntologyAnnotation(value, value_attributes.Term_Source_REF, value_attributes.Term_Accession_Number))
+                                    ])
+                                json_list.append(value_json)
+                                continue
+                            except AttributeError:
+                                value_json = dict([
+                                     ("category", dict([("@id", category_identifier)])),
+                                     ("value", value)
+                                     ])
+                                json_list.append(value_json)
         return json_list
