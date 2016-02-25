@@ -1,12 +1,31 @@
 from isatools.model.v1 import *
 import json
 import logging
+from networkx import DiGraph
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 
 def load(fp):
+
+    def _build_assay_graph(process_sequence=list()):
+        G = DiGraph()
+        for process in process_sequence:
+            if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
+                if len(process.outputs) > 0:
+                    for output in [n for n in process.outputs if not isinstance(n, DataFile)]:
+                        G.add_edge(process, output)
+                else:  # otherwise just connect the process to the next one
+                    G.add_edge(process, process.next_process)
+            if process.prev_process is not None or len(process.inputs) > 0:
+                if len(process.inputs) > 0:
+                    for input_ in process.inputs:
+                        G.add_edge(input_, process)
+                else:
+                    G.add_edge(process.prev_process, process)
+        return G
+
     investigation = None
     logger.info('Opening file %s', fp)
     isajson = json.load(fp)
@@ -52,6 +71,15 @@ def load(fp):
                     term_source=publication_json['status']['termSource']
                 )
             )
+            try:
+                for comment_json in publication_json['comments']:
+                    comment = Comment(
+                        name=comment_json['name'],
+                        value=comment_json['value']
+                    )
+                    publication.comments.append(comment)
+            except KeyError:
+                pass
             investigation.publications.append(publication)
         for person_json in isajson['people']:
             logger.debug('Build Investigation Person object')
@@ -114,12 +142,15 @@ def load(fp):
                 public_release_date=study_json['publicReleaseDate'],
                 filename=study_json['filename']
             )
-            for comment_json in study_json['comments']:
-                comment = Comment(
-                    name=comment_json['name'],
-                    value=comment_json['value'],
-                )
-                study.comments.append(comment)
+            try:
+                for comment_json in study_json['comments']:
+                    comment = Comment(
+                        name=comment_json['name'],
+                        value=comment_json['value'],
+                    )
+                    study.comments.append(comment)
+            except KeyError:
+                pass
             for study_characteristics_category_json in study_json['characteristicCategories']:
                 characteristic_category = CharacteristicCategory(
                     id_=study_characteristics_category_json['@id'],
@@ -150,6 +181,15 @@ def load(fp):
                         term_accession=study_publication_json['status']['termAccession'],
                     )
                 )
+                try:
+                    for comment_json in study_publication_json['comments']:
+                        comment = Comment(
+                            name=comment_json['name'],
+                            value=comment_json['value']
+                        )
+                        study_publication.comments.append(comment)
+                except KeyError:
+                    pass
                 study.publications.append(study_publication)
             for study_person_json in study_json['people']:
                 logger.debug('Build Study Person object')
@@ -170,12 +210,15 @@ def load(fp):
                         term_source=term_source_dict[role_json['termSource']]
                     )
                     study_person.roles.append(role)
-                for comment_json in study_person_json['comments']:
-                    comment = Comment(
-                        name=comment_json['name'],
-                        value=comment_json['value'],
-                    )
-                    study_person.comments.append(comment)
+                try:
+                    for comment_json in study_person_json['comments']:
+                        comment = Comment(
+                            name=comment_json['name'],
+                            value=comment_json['value'],
+                        )
+                        study_person.comments.append(comment)
+                except KeyError:
+                    pass
                 study.contacts.append(study_person)
             for design_descriptor_json in study_json['studyDesignDescriptors']:
                 logger.debug('Build Ontology Annotation object (Study Design Descriptor)')
@@ -325,12 +368,15 @@ def load(fp):
                     id_=study_process_json['@id'],
                     executes_protocol=protocols_dict[study_process_json['executesProtocol']['@id']],
                 )
-                for comment_json in study_process_json['comments']:
-                    comment = Comment(
-                        name=comment_json['name'],
-                        value=comment_json['value'],
-                    )
-                    process.comments.append(comment)
+                try:
+                    for comment_json in study_process_json['comments']:
+                        comment = Comment(
+                            name=comment_json['name'],
+                            value=comment_json['value'],
+                        )
+                        process.comments.append(comment)
+                except KeyError:
+                    pass
                 try:
                     process.date = study_process_json['date']
                 except KeyError:
@@ -400,24 +446,7 @@ def load(fp):
                     process_dict[study_process_json['@id']].next_process = process_dict[next_proc]
                 except KeyError:
                     pass
-
-            import networkx as nx
-            graph = nx.DiGraph()
-            for process in study.process_sequence:
-                if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
-                    if len(process.outputs) > 0:
-                        for output in process.outputs:
-                            graph.add_edge(process, output)
-                    else:  # otherwise just connect the process to the next one
-                        graph.add_edge(process, process.next_process)
-                if process.prev_process is not None or len(process.inputs) > 0:
-                    if len(process.inputs) > 0:
-                        for input_ in process.inputs:
-                            graph.add_edge(input_, process)
-                    else:
-                        graph.add_edge(process.prev_process, process)
-
-            study.graph = graph
+            study.graph = _build_assay_graph(study.process_sequence)
             for assay_json in study_json['assays']:
                 logger.debug('Start building Assay object')
                 logger.debug('Build Study Assay object')
@@ -449,12 +478,15 @@ def load(fp):
                         filename=data_json['name'],
                         label=data_json['type'],
                     )
-                    for comment_json in data_json['comments']:
-                        comment = Comment(
-                            name=comment_json['name'],
-                            value=comment_json['value'],
-                        )
-                        data_file.comments.append(comment)
+                    try:
+                        for comment_json in data_json['comments']:
+                            comment = Comment(
+                                name=comment_json['name'],
+                                value=comment_json['value'],
+                            )
+                            data_file.comments.append(comment)
+                    except KeyError:
+                        pass
                     data_dict[data_file.id] = data_file
                     assay.data_files.append(data_file)
                 for sample_json in assay_json['materials']['samples']:
@@ -478,7 +510,7 @@ def load(fp):
                     if material_name.startswith('labeledextract-'):
                         material_name = material_name[15:]
                     else:
-                        material_name = material_name[8:]  # FIXME: Strip out extra typing in the naming e.g. labeledextract- etc. BUT needs to be ID type aware??
+                        material_name = material_name[8:]
                     material = Material(
                         id_=other_material_json['@id'],
                         name=material_name,
@@ -501,12 +533,15 @@ def load(fp):
                         id_=assay_process_json['@id'],
                         executes_protocol=protocols_dict[assay_process_json['executesProtocol']['@id']]
                     )
-                    for comment_json in assay_process_json['comments']:
-                        comment = Comment(
-                            name=comment_json['name'],
-                            value=comment_json['value'],
-                        )
-                        process.comments.append(comment)
+                    try:
+                        for comment_json in assay_process_json['comments']:
+                            comment = Comment(
+                                name=comment_json['name'],
+                                value=comment_json['value'],
+                            )
+                            process.comments.append(comment)
+                    except KeyError:
+                        pass
                     # additional properties, currently hard-coded special cases
                     if process.executes_protocol.protocol_type.name == 'data collection' and assay.technology_type.name == 'DNA microarray':
                         process.additional_properties['Scan Name'] = assay_process_json['name']
@@ -594,45 +629,10 @@ def load(fp):
                             process_dict[assay_process_json['@id']].next_process = process_dict[next_proc]
                         except KeyError:
                             pass
-                    import networkx as nx
-                    graph = nx.DiGraph()
-                    for process in assay.process_sequence:
-                        if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
-                            if len(process.outputs) > 0:
-                                for output in process.outputs:
-                                    graph.add_edge(process, output)
-                            else:  # otherwise just connect the process to the next one
-                                graph.add_edge(process, process.next_process)
-                        if process.prev_process is not None or len(process.inputs) > 0:
-                            if len(process.inputs) > 0:
-                                for input_ in process.inputs:
-                                    graph.add_edge(input_, process)
-                            else:
-                                graph.add_edge(process.prev_process, process)
-                    assay.graph = graph
+                    assay.graph = _build_assay_graph(assay.process_sequence)
                 study.assays.append(assay)
             logger.debug('End building Study object')
             investigation.studies.append(study)
         logger.debug('End building Studies objects')
         logger.debug('End building Investigation object')
     return investigation
-
-
-class IsaJsonEncoder(json.JSONEncoder):
-        def default(self, o):
-            if isinstance(o, Sample):
-                return {
-                    '@id': o.id,
-                }
-            elif isinstance(o, Source):
-                return {
-                    '@id': o.id
-                }
-            elif isinstance(o, Process):
-                return {
-                    '@id': o.id
-                }
-
-
-def dump(i):
-    pass

@@ -18,7 +18,7 @@ class ISAtab2jsonTest(TestCase):
 
 
     def test_isa_charac_param_factor(self):
-        isatab2json.convert(os.path.join(self._dir, './data/TEST-ISA-charax-param-factor/'), self._dir, isatab2json.IdentifierType.name)
+        isatab2json.convert(os.path.join(self._dir, './data/TEST-ISA-charac-param-factor/'), self._dir, isatab2json.IdentifierType.name)
         isa_json = json.load(open(os.path.join(self._dir, 'TEST-ISA-charac-param-factor.json')))
         self.assertEqual(isa_json["identifier"], "TEST-ISA-charac-param-factor")
 

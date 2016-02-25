@@ -113,8 +113,8 @@ class Investigation(IsaObject):
         any treatments applied.
     """
 
-    def __init__(self, id_='', filename='', identifier="", title="", description="", submission_date=date.today(),
-                 public_release_date=date.today(), ontology_source_references=None, publications=None,
+    def __init__(self, id_='', filename='', identifier="", title="", description="", submission_date='',
+                 public_release_date='', ontology_source_references=None, publications=None,
                  contacts=None, studies=None, comments=None):
         super().__init__(comments)
         self.id = id_
@@ -262,8 +262,8 @@ class Study(IsaObject, StudyConfigurableObject, object):
         data: Data files associated with the study
     """
 
-    def __init__(self, id_='', filename="", identifier="",  title="", description="", submission_date=date.today(),
-                 public_release_date=date.today(), contacts=None, design_descriptors=None, publications=None,
+    def __init__(self, id_='', filename="", identifier="",  title="", description="", submission_date='',
+                 public_release_date='', contacts=None, design_descriptors=None, publications=None,
                  factors=None, protocols=None, assays=None, sources=None, samples=None,
                  process_sequence=None, other_material=None, characteristic_categories=None, comments=None):
         super().__init__(comments)
@@ -326,6 +326,7 @@ class Study(IsaObject, StudyConfigurableObject, object):
             self.characteristic_categories = list()
         else:
             self.characteristic_categories = characteristic_categories
+        self.graph = None
 
 
 class StudyFactor(IsaObject):
@@ -399,6 +400,7 @@ class Assay(IsaObject):
             self.characteristic_categories = list()
         else:
             self.characteristic_categories = characteristic_categories
+        self.graph = None
 
 
 class Protocol(IsaObject):

@@ -239,10 +239,8 @@ class ISATab2CEDAR():
 
 
     def createDataFiles(self, nodes):
-        print("create data files dictionary...")
         json_dict = dict([])
         for node_index in nodes:
-            print("node_index...", node_index)
             if nodes[node_index].ntype.endswith("Data File") :
                 json_item = dict([
                     ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
