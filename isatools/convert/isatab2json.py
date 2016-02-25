@@ -585,6 +585,8 @@ class ISATab2ISAjson_v1:
                 try:
                     sample_json = sample_dict[node_index]
                     new_factors = self.createValueList(self.FACTOR_VALUE,node_index, node)
+                    if (sample_json["factorValues"]==new_factors):
+                        continue
                     sample_json["factorValues"] = sample_json["factorValues"] + new_factors
                     sample_dict[node_index] = sample_json
                 except KeyError:
@@ -700,6 +702,10 @@ class ISATab2ISAjson_v1:
 
                  value_attributes = node.metadata[header][0]
                  value  = self.convert_num(value_attributes[0])
+
+                 if not value:
+                     continue
+
                  header_type = None
 
                  if column_name.strip()==self.CHARACTERISTICS and (header==self.CHARACTERISTICS or header == self.LABEL or header==self.MATERIAL_TYPE):
