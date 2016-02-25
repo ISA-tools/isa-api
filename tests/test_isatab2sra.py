@@ -1,4 +1,6 @@
 from unittest import TestCase
+from io import BytesIO
+from zipfile import ZipFile
 import os
 import shutil
 
@@ -19,5 +21,11 @@ class ISATabTest(TestCase):
 
     def test_isatab_to_sra(self):
         from isatools.convert import isatab2sra
-        isatab2sra.create_sra(self._work_dir, self._tmp, self._config_dir)
+        res = isatab2sra.create_sra(self._work_dir, self._tmp, self._config_dir)
+        self.assertIsInstance(res, BytesIO)
+
+        # check that content was effectively written to response
+        with ZipFile(res) as zip_file:
+            self.assertGreater(len(zip_file.namelist()), 0)
+
         self.assertTrue(os.path.exists(os.path.join(self._tmp, 'sra')))
