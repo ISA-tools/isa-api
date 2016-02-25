@@ -579,7 +579,7 @@ class ISATab2ISAjson_v1:
                     sample_json["characteristics"] = sample_json["characteristics"] + new_characteristics
                     sample_dict[node_index] = sample_json
                 except KeyError:
-                    print("Key ", node_index, " not available in sample_dict=", sample_dict)
+                    print("Warning: the sample ", node_index, " has not been defined at the study level.")
 
                 #adding factors that may have been defined at the assay level
                 try:

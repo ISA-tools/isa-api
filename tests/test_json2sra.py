@@ -15,10 +15,10 @@ class JsonToSraTest(TestCase):
     def tearDown(self):
         shutil.rmtree(self._tmp, ignore_errors=True)
 
-    def test_isatab_to_sra_bii_s_3(self):
+    def test_json_to_sra_bii_s_3(self):
         json2sra.convert(open(os.path.join(self._dir, 'BII-S-3/BII-S-3.json')), self._tmp, self._config_dir)
         self.assertTrue(os.path.exists(os.path.join(self._tmp, 'sra')))
 
-    def test_isatab_to_sra_bii_s_7(self):
+    def test_json_to_sra_bii_s_7(self):
         json2sra.convert(open(os.path.join(self._dir, 'BII-S-7/BII-S-7.json')), self._tmp, self._config_dir)
         self.assertTrue(os.path.exists(os.path.join(self._tmp, 'sra')))

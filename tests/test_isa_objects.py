@@ -276,3 +276,234 @@ class ModelTests(TestCase):
         self.assertEqual(len(batch[0].outputs), 2)
         self.assertIsInstance(batch[0].outputs[0], Material)
         self.assertEqual(batch[0].outputs[0].derives_from, [batch[0].inputs[0], batch[0].inputs[1]])
+
+    def test_create_bii_s_3(self):
+        # Create the root investigation object with an identifier
+        i = Investigation(identifier='BII-S-3')
+
+        # Create some ontology source references
+        term_source_chebi = OntologySourceReference(
+            name='CHEBI',
+            file='http://data.bioontology.org/ontologies/CHEBI',
+            version='78',
+            description="Chemical Entities of Biological Interest Ontology")
+        term_source_efo = OntologySourceReference(
+            name='EFO',
+            file='http://data.bioontology.org/ontologies/EFO',
+            version='111',
+            description="Experimental Factor Ontology")
+        term_source_obi = OntologySourceReference(
+            name='OBI',
+            file='http://data.bioontology.org/ontologies/OBI',
+            version='21',
+            description="Ontology for Biomedical Investigations")
+        term_source_ncbitaxon = OntologySourceReference(
+            name='NCBITAXON',
+            file='http://data.bioontology.org/ontologies/NCBITAXON',
+            version='2',
+            description="National Center for Biotechnology Information (NCBI) Organismal Classification")
+        term_source_pato = OntologySourceReference(
+            name='PATO',
+            file='http://data.bioontology.org/ontologies/PATO',
+            version='160',
+            description="Phenotypic Quality Ontology")
+        # Attach ontology sources to the investigation ontology_source_references list
+        i.ontology_source_references.append(term_source_chebi)
+        i.ontology_source_references.append(term_source_efo)
+        i.ontology_source_references.append(term_source_obi)
+        i.ontology_source_references.append(term_source_ncbitaxon)
+        i.ontology_source_references.append(term_source_pato)
+
+        # Create two comments. The first contains an empty string, the second as some value set
+        comment_created_with_config = Comment(name='Created With Configuration')
+        comment_last_opened_with_config = Comment(name='Last Opened With Configuration')
+        comment_last_opened_with_config.value = "GSC MIxS human gut"
+        # Attach comments to the investigation comments list
+        i.comments.append(comment_created_with_config)
+        i.comments.append(comment_last_opened_with_config)
+
+        # Create study object and associated metadata
+        s = Study(
+            identifier='BII-S-3',
+            title="Metagenomes and Metatranscriptomes of phytoplankton blooms from an ocean acidification mesocosm experiment",
+            description="Sequencing the metatranscriptome can provide information about the response of organisms to varying environmental conditions. We present a methodology for obtaining random whole-community mRNA from a complex microbial assemblage using Pyrosequencing. The metatranscriptome had, with minimum contamination by ribosomal RNA, significant coverage of abundant transcripts, and included significantly more potentially novel proteins than in the metagenome. This experiment is part of a much larger experiment. We have produced 4 454 metatranscriptomic datasets and 6 454 metagenomic datasets. These were derived from 4 samples.",
+            submission_date='15/08/2008',
+            public_release_date='15/08/2008',
+            filename='s_BII-S-3.txt'
+        )
+        # Add some comments that are specific for SRA format submissions to ENA
+        comment_sra_broker_name = Comment(name='SRA Broker Name', value='OXFORD')
+        comment_sra_center_name = Comment(name='SRA Center Name', value='OXFORD')
+        comment_sra_center_project_name = Comment(name='SRA Center Project Name', value='OXFORD')
+        comment_sra_lab_name = Comment(name='SRA Lab Name', value='Oxford e-Research Centre')
+        comment_sra_submission_action = Comment(name='SRA Submission Action', value='ADD')
+        s.comments.append(comment_sra_broker_name)
+        s.comments.append(comment_sra_center_name)
+        s.comments.append(comment_sra_center_project_name)
+        s.comments.append(comment_sra_lab_name)
+        s.comments.append(comment_sra_submission_action)
+        s.comments.append(Comment(name='Study Funding Agency'))
+        s.comments.append(Comment(name='Study Grant Number'))
+
+        # A design descriptor is an ontology annotation. Make sure you point term_source to an ontology_term_source
+        dd = OntologyAnnotation(
+            name='time series design',
+            term_source=term_source_obi,
+            term_accession='http://purl.obolibrary.org/obo/OBI_0500020'
+        )
+        s.design_descriptors.append(dd)  # Add your design descriptors to the design_descriptors list
+
+        # Publications can be associated with a Study, but also to an Investigation (but not in this example)
+        pub_1 = Publication(
+            pubmed_id='18725995',
+            doi='10.1371/journal.pone.0003042',
+            author_list="Gilbert JA, Field D, Huang Y, Edwards R, Li W, Gilna P, Joint I.",
+            title="Detection of large numbers of novel sequences in the metatranscriptomes of complex marine microbial communities.")
+        pub_1.status = OntologyAnnotation(
+            name='indexed in PubMed'
+        )
+        pub_2 = Publication(
+            pubmed_id='18783384',
+            doi='10.1111/j.1462-2920.2008.01745.x',
+            author_list="Gilbert JA, Thomas S, Cooley NA, Kulakova A, Field D, Booth T, McGrath JW, Quinn JP, Joint I.",
+            title="Potential for phosphonoacetate utilization by marine bacteria in temperate coastal waters.")
+        pub_2.status = OntologyAnnotation(
+            name='indexed in PubMed'
+        )
+        s.publications.append(pub_1)
+        s.publications.append(pub_2)
+
+        # Study factors need to be declared before using Factor Values in the study or assay graphs
+        factor_dose = StudyFactor(name='dose',  # factor_types are ontology annotations
+                                  factor_type=OntologyAnnotation(name='dose',
+                                                                 term_source=term_source_efo,
+                                                                 term_accession='http://www.ebi.ac.uk/efo/EFO_0000428'))
+        factor_compound = StudyFactor(name='compound',
+                                      factor_type=OntologyAnnotation(name='chemical substance',
+                                                                     term_source=term_source_chebi,
+                                                                     term_accession='http://purl.obolibrary.org/obo/CHEBI_59999'))
+        factor_collection_time = StudyFactor(name='collection time',
+                                             factor_type=OntologyAnnotation(name='time',
+                                                                            term_source=term_source_pato,
+                                                                            term_accession='http://purl.obolibrary.org/obo/PATO_0000165'))
+        s.factors.append(factor_dose)
+        s.factors.append(factor_compound)
+        s.factors.append(factor_collection_time)
+
+        # Study protocols need to be declared before using Processes and Parameter Values in study and assay graphs
+        protocol_sample_collection = Protocol(
+            name='sample collection - standard procedure 1',
+            description="Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom.",
+            protocol_type=OntologyAnnotation(name='environmental material collection')  # Protocol types are ontology annotations
+        )
+        protocol_sample_collection.parameters.append(ProtocolParameter(parameter_name=OntologyAnnotation(name='filter pore size')))  # Protocol parameter names are ontology annotation
+        annotation_nucleic_acid_extraction = OntologyAnnotation(name='nucleic acid extraction')
+        protocol_nucleic_acid_extraction = Protocol(
+            name='nucleic acid extraction - standard procedure 2',
+            description="Total nucleic acid extraction was done as quickly as possible using the method of Neufeld et al, 2007.",
+            protocol_type=annotation_nucleic_acid_extraction
+        )
+        protocol_mrna_extraction = Protocol(
+            name='mRNA extraction - standard procedure 3',
+            description="RNA MinElute + substrative Hybridization + MEGAclear For transcriptomics, total RNA was separated from the columns using the RNA MinElute clean-up kit (Qiagen) and checked for integrity of rRNA using an Agilent bioanalyser (RNA nano6000 chip). High integrity rRNA is essential for subtractive hybridization. Samples were treated with Turbo DNA-free enzyme (Ambion) to remove contaminating DNA. The rRNA was removed from mRNA by subtractive hybridization (Microbe Express Kit, Ambion), and absence of rRNA and DNA contamination was confirmed using the Agilent bioanalyser. The mRNA was further purified with the MEGAclearTM kit (Ambion). Reverse transcription of mRNA was performed using the SuperScript III enzyme (Invitrogen) with random hexamer primers (Promega). The cDNA was treated with RiboShredderTM RNase Blend (Epicentre) to remove trace RNA contaminants. To improve the yield of cDNA, samples were subjected to random amplification using the GenomiPhi V2 method (GE Healthcare). GenomiPhi technology produces branched DNA molecules that are recalcitrant to the pyrosequencing methodology. Therefore amplified samples were treated with S1 nuclease using the method of Zhang et al.2006.",
+            protocol_type=OntologyAnnotation(name='RNA extraction')
+        )
+        protocol_genomic_dna_extraction = Protocol(
+            name='genomic DNA extraction - standard procedure 4',
+            protocol_type=OntologyAnnotation(name='DNA extraction')
+        )
+        protocol_reverse_transcription = Protocol(
+            name='reverse transcription - standard procedure 5',
+            description="superscript+random hexamer primer",
+            protocol_type=OntologyAnnotation(name='reverse transcription')
+        )
+        protocol_library_construction = Protocol(
+            name='library construction',
+            protocol_type=OntologyAnnotation(name='library construction')
+        )
+        protocol_library_construction.parameters.append(ProtocolParameter(parameter_name=OntologyAnnotation(name='library strategy')))
+        protocol_library_construction.parameters.append(ProtocolParameter(parameter_name=OntologyAnnotation(name='library layout')))
+        protocol_library_construction.parameters.append(ProtocolParameter(parameter_name=OntologyAnnotation(name='library selection')))
+        protocol_pyrosequencing = Protocol(
+            name='pyrosequencing - standard procedure 6',
+            description="1. Sample Input and Fragmentation: The Genome Sequencer FLX System supports the sequencing of samples from a wide variety of starting materials including genomic DNA, PCR products, BACs, and cDNA. Samples such as genomic DNA and BACs are fractionated into small, 300- to 800-base pair fragments. For smaller samples, such as small non-coding RNA or PCR amplicons, fragmentation is not required. Instead, short PCR products amplified using Genome Sequencer fusion primers can be used for immobilization onto DNA capture beads as shown below.",
+            protocol_type=annotation_nucleic_acid_extraction
+        )
+        protocol_pyrosequencing.parameters.append(ProtocolParameter(parameter_name=OntologyAnnotation(name='sequencing instrument')))
+        protocol_seq_analysis = Protocol(
+            name='sequence analysis - standard procedure 7',
+            protocol_type=OntologyAnnotation(name='data transformation')
+        )
+        s.protocols.append(protocol_sample_collection)
+        s.protocols.append(protocol_nucleic_acid_extraction)
+        s.protocols.append(protocol_mrna_extraction)
+        s.protocols.append(protocol_genomic_dna_extraction)
+        s.protocols.append(protocol_reverse_transcription)
+        s.protocols.append(protocol_library_construction)
+        s.protocols.append(protocol_pyrosequencing)
+        s.protocols.append(protocol_seq_analysis)
+
+        role_pi = OntologyAnnotation('principal investigator role')
+        contact_1 = Person(
+            last_name='Gilbert',
+            first_name='Jack',
+            mid_initials='A',
+            email='jagi@pml.ac.uk',
+            address="Prospect Place, Plymouth, United Kingdom",
+            affiliation='Plymouth Marine Laboratory',
+            roles=[
+                OntologyAnnotation(name='SRA Inform On Status'),
+                OntologyAnnotation(name='SRA Inform On Error')
+            ]
+        )
+        contact_1.roles.append(role_pi)
+        contact_2 = Person(
+            last_name='Field',
+            first_name='Dawn',
+            address="CEH Oxford, Oxford, United Kingdom",
+            affiliation='NERC Centre for Ecology and Hydrology',
+            roles=[role_pi]
+        )
+        contact_3 = Person(
+            last_name='Huang',
+            first_name='Ying',
+            affiliation='California Institute for Telecommunications and Information Technology',
+            address="San Diego State University, San Diego, California, United States of America",
+            roles=[role_pi]
+        )
+        contact_4 = Person(
+            last_name='Edwards',
+            first_name='Rob',
+            affiliation='Department of Computer Science, Mathematics and Computer Science Division,',
+            address="Argonne National Laboratory, Argonne, Illinois, United States of America",
+            roles=[role_pi]
+        )
+        contact_5 = Person(
+            last_name='Li',
+            first_name='Weizhong',
+            affiliation='California Institute for Telecommunications and Information Technology',
+            address="San Diego State University, San Diego, California, United States of America",
+            roles=[role_pi]
+        )
+        contact_6 = Person(
+            last_name='Gilna',
+            first_name='Paul',
+            affiliation='California Institute for Telecommunications and Information Technology',
+            address="San Diego State University, San Diego, California, United States of America",
+            roles=[role_pi]
+        )
+        contact_7 = Person(
+            last_name='Joint',
+            first_name='Ian',
+            affiliation='Plymouth Marine Laboratory',
+            address="Prospect Place, Plymouth, United Kingdom",
+            roles=[role_pi]
+        )
+        s.contacts.append(contact_1)
+        s.contacts.append(contact_2)
+        s.contacts.append(contact_3)
+        s.contacts.append(contact_4)
+        s.contacts.append(contact_5)
+        s.contacts.append(contact_6)
+        s.contacts.append(contact_7)
+        i.studies.append(s)

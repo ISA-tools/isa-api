@@ -542,6 +542,7 @@ def write_assay_table_files(inv_obj, output_dir):
     if isinstance(inv_obj, Investigation):
         for study_obj in inv_obj.studies:
             for assay_obj in study_obj.assays:
+                if assay_obj.graph is None: break
                 cols = list()
                 mcount = 0
                 protrefcount = 0
@@ -735,6 +736,7 @@ def write_study_table_files(inv_obj, output_dir):
     if not isinstance(inv_obj, Investigation):
         raise NotImplementedError
     for study_obj in inv_obj.studies:
+        if study_obj.graph is None: break
         cols = list()
         protrefcount = 0
         prottypes = dict()
