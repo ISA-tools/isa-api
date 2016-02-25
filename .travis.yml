@@ -5,7 +5,7 @@ python:
 install:
 - pip install -r requirements.txt
 script:
-- python setup.py test
+- coverage run --source=isatools setup.py test
 - behave --format=progress features/isa-file-handler.feature
 branches:
   only:
