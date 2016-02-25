@@ -642,5 +642,5 @@ class ModelTests(TestCase):
         s.build_graph()
         i.studies.append(s)
 
-        from isatools import isatab
-        isatab.dump(i, '/Users/dj/PycharmProjects/isa-api/tests/tmp')
+        # from isatools import isatab
+        # isatab.dump(i, '/Users/dj/PycharmProjects/isa-api/tests/tmp')
