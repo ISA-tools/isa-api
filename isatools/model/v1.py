@@ -1,4 +1,4 @@
-from datetime import date
+from networkx import DiGraph
 from enum import Enum
 
 
@@ -327,6 +327,8 @@ class Study(IsaObject, StudyConfigurableObject, object):
         else:
             self.characteristic_categories = characteristic_categories
         self.graph = None
+    def build_graph(self):
+        self.graph = _build_assay_graph(self.process_sequence)
 
 
 class StudyFactor(IsaObject):
@@ -346,6 +348,22 @@ class StudyFactor(IsaObject):
         else:
             self.factor_type = factor_type
 
+def _build_assay_graph(process_sequence=list()):
+    G = DiGraph()
+    for process in process_sequence:
+        if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
+            if len(process.outputs) > 0:
+                for output in [n for n in process.outputs if not isinstance(n, DataFile)]:
+                    G.add_edge(process, output)
+            else:  # otherwise just connect the process to the next one
+                G.add_edge(process, process.next_process)
+        if process.prev_process is not None or len(process.inputs) > 0:
+            if len(process.inputs) > 0:
+                for input_ in process.inputs:
+                    G.add_edge(input_, process)
+            else:
+                G.add_edge(process.prev_process, process)
+    return G
 
 class Assay(IsaObject):
     """A Study Assay declares and describes each of the Assay files associated with the current Study.
@@ -401,6 +419,9 @@ class Assay(IsaObject):
         else:
             self.characteristic_categories = characteristic_categories
         self.graph = None
+
+    def build_graph(self):
+        self.graph = _build_assay_graph(self.process_sequence)
 
 
 class Protocol(IsaObject):
@@ -488,7 +509,7 @@ class Characteristic(IsaObject):
     def __init__(self, category=None, value=None, unit=None, comments=None):
         super().__init__(comments)
         if category is None:
-            self.category = CharacteristicCategory()
+            self.category = OntologyAnnotation()
         else:
             self.category = category
         if value is None:
@@ -609,7 +630,7 @@ class Process(IsaObject):
         inputs:
         outputs:
     """
-    def __init__(self, id_='', name="", executes_protocol=None, date_='', performer="",
+    def __init__(self, id_='', name="", executes_protocol=None, date_=None, performer=None,
                  parameter_values=None, inputs=None, outputs=None, comments=None):
         super().__init__(comments)
         self.id = id_
@@ -703,17 +724,6 @@ class MaterialAttribute(IsaObject):
             self.unit = OntologyAnnotation()
         else:
             self.unit = unit
-
-
-class CharacteristicCategory(IsaObject):
-
-    def __init__(self, id_='', characteristic_type=None):
-        super().__init__()
-        self.id = id_
-        if characteristic_type is None:
-            self.characteristic_type = OntologyAnnotation()
-        else:
-            self.characteristic_type = characteristic_type
 
 
 def batch_create_materials(material=None, n=1):

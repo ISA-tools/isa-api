@@ -71,8 +71,8 @@ class ModelTests(TestCase):
             identifier='',
             title='',
             description='',
-            submission_date=date.today(),
-            public_release_date=date.today()
+            submission_date='',
+            public_release_date=''
         )
         investigation.ontology_source_references.append(OntologySourceReference())
         investigation.publications.append(Publication())
@@ -81,8 +81,8 @@ class ModelTests(TestCase):
         self.assertIsInstance(investigation.identifier, str)
         self.assertIsInstance(investigation.title, str)
         self.assertIsInstance(investigation.description, str)
-        self.assertIsInstance(investigation.submission_date, date)
-        self.assertIsInstance(investigation.public_release_date, date)
+        self.assertIsInstance(investigation.submission_date, str)
+        self.assertIsInstance(investigation.public_release_date, str)
         self.assertIsInstance(investigation.ontology_source_references, list)
         self.assertIsInstance(investigation.ontology_source_references[0], OntologySourceReference)
         self.assertIsInstance(investigation.publications, list)
@@ -195,8 +195,8 @@ class ModelTests(TestCase):
             identifier='',
             title='',
             description='',
-            submission_date=date.today(),
-            public_release_date=date.today(),
+            submission_date='',
+            public_release_date='',
             filename=''
         )
         study.publications.append(Publication())
@@ -211,8 +211,8 @@ class ModelTests(TestCase):
         self.assertIsInstance(study.identifier, str)
         self.assertIsInstance(study.title, str)
         self.assertIsInstance(study.description, str)
-        self.assertIsInstance(study.submission_date, date)
-        self.assertIsInstance(study.public_release_date, date)
+        self.assertIsInstance(study.submission_date, str)
+        self.assertIsInstance(study.public_release_date, str)
         self.assertIsInstance(study.filename, str)
         self.assertIsInstance(study.publications, list)
         self.assertIsInstance(study.publications[0], Publication)
@@ -506,4 +506,141 @@ class ModelTests(TestCase):
         s.contacts.append(contact_5)
         s.contacts.append(contact_6)
         s.contacts.append(contact_7)
+
+        # Now let's build our study experiment graph. This corresponds to the study table file in ISA tab
+        source_prototype = Source()
+
+        # First few characteristics
+        charac_organism = Characteristic(category=OntologyAnnotation(name='organism'),
+                                         value=OntologyAnnotation(name='marine metagenome',
+                                                                  term_source=term_source_ncbitaxon,
+                                                                  term_accession='http://purl.obolibrary.org/obo/NCBITaxon_408172'))
+        charac_location = Characteristic(category=OntologyAnnotation(name='geographic location (country and/or sea,region)'),
+                                         value=OntologyAnnotation(name='Norway, fjord, coastal'))
+        charac_longitude = Characteristic(category=OntologyAnnotation(name='Characteristics[geographic location (longitude)'), value='5.222222')
+        charac_lattitude = Characteristic(category=OntologyAnnotation(name='geographic location (latitude)'), value='60.269444')
+
+        # These units annotations are used on more than one of characteristics, so declare only once here and attach them
+        unit_ug_per_l = OntologyAnnotation(name='ug/l')
+        unit_number_per_ml = OntologyAnnotation(name='number/ml')
+        unit_umol_per_l = OntologyAnnotation(name='umol/l')
+
+        # There's a lot of characteristics in BII-S-3 attached to the sources, but all follow similar patterns throughout
+        charac_chlorophyll_a_concentration = Characteristic(category=OntologyAnnotation(name='chlorophyll a concentration'), unit=unit_ug_per_l)
+        charac_peridinin_concentration = Characteristic(category=OntologyAnnotation(name='peridinin concentration'), unit=unit_ug_per_l)
+        charac_butfucoxanthin_concentration = Characteristic(category=OntologyAnnotation(name='butfucoxanthin concentration'), unit=unit_ug_per_l)
+        charac_hexfucoxanthin_concentration = Characteristic(category=OntologyAnnotation(name='hexfucoxanthin concentration'), unit=unit_ug_per_l)
+        charac_alloxanthin_concentration = Characteristic(category=OntologyAnnotation(name='alloxanthin concentration'), unit=unit_ug_per_l)
+        charac_zeaxanthin_concentration = Characteristic(category=OntologyAnnotation(name='zeaxanthin concentration'), unit=unit_ug_per_l)
+        charac_lutein_concentration = Characteristic(category=OntologyAnnotation(name='lutein concentration'), unit=unit_ug_per_l)
+        charac_chl_c3_concentration = Characteristic(category=OntologyAnnotation(name='chl-c3 concentration'), unit=unit_ug_per_l)
+        charac_chl_c2_concentration = Characteristic(category=OntologyAnnotation(name='chl-c2 concentration'), unit=unit_ug_per_l)
+        charac_prasinoxanthin_concentration = Characteristic(category=OntologyAnnotation(name='prasinoxanthin concentration'), unit=unit_ug_per_l)
+        charac_neoxanthin_concentration = Characteristic(category=OntologyAnnotation(name='neoxanthin concentration'), unit=unit_ug_per_l)
+        charac_violaxanthin_concentration = Characteristic(category=OntologyAnnotation(name='cviolaxanthin concentration'), unit=unit_ug_per_l)
+        charac_diadinoxanthin_concentration = Characteristic(category=OntologyAnnotation(name='diadinoxanthin concentration'), unit=unit_ug_per_l)
+        charac_diatoxanthin_concentration = Characteristic(category=OntologyAnnotation(name='diatoxanthin concentration'), unit=unit_ug_per_l)
+        charac_divinyl_chl_b_concentration = Characteristic(category=OntologyAnnotation(name='divinyl-chl-b concentration'), unit=unit_ug_per_l)
+        charac_chl_b_concentration = Characteristic(category=OntologyAnnotation(name='chl-b concentration'), unit=unit_ug_per_l)
+        charac_divinyl_chl_a_concentration = Characteristic(category=OntologyAnnotation(name='divinyl-chl-a concentration'),  unit=unit_ug_per_l)
+        charac_chl_a_concentration = Characteristic(category=OntologyAnnotation(name='chl-a concentration'), unit=unit_ug_per_l)
+        charac_BB_carotene_concentration = Characteristic(category=OntologyAnnotation(name='BB carotene concentration'), unit=unit_ug_per_l)
+        charac_bacteria_count = Characteristic(category=OntologyAnnotation(name='bacteria count'), unit=unit_number_per_ml)
+        charac_synechococcus_count = Characteristic(category=OntologyAnnotation(name='synechococcus count'), value=0, unit=unit_number_per_ml)
+        charac_small_picoeukaryotes_count = Characteristic(category=OntologyAnnotation(name='small picoeukaryotes count'), unit=unit_number_per_ml)
+        charac_large_picoeukaryotes_count = Characteristic(category=OntologyAnnotation(name='large picoeukaryotes count'), unit=unit_number_per_ml)
+        charac_nanoflagellates_count = Characteristic(category=OntologyAnnotation(name='nanoflagellates count'), unit=unit_number_per_ml)
+        charac_cryptophytes_count = Characteristic(category=OntologyAnnotation(name='cryptophytes count'), unit=unit_number_per_ml)
+        charac_phosphate_concentration = Characteristic(category=OntologyAnnotation(name='phosphate concentration'), unit=unit_umol_per_l)
+        charac_nitrate_concentration = Characteristic(category=OntologyAnnotation(name='nitrate concentration'), unit=unit_umol_per_l)
+        charac_particulate_organic_nitrogen_concentration = Characteristic(category=OntologyAnnotation(name='particulate organic nitrogen concentration'), unit=unit_ug_per_l)
+        charac_particulate_organic_carbon_concentration = Characteristic(category=OntologyAnnotation(name='particulate organic carbon concentration'), unit=unit_ug_per_l)
+        charac_primary_production_depth = Characteristic(category=OntologyAnnotation(name='primary production depth integrated production to 3 m expressed_in mgC m-2 d-1'),
+                                                         unit=OntologyAnnotation(name='mg/m2/d'))
+        charac_water_salinity = Characteristic(category=OntologyAnnotation(name='water salinity'), unit=OntologyAnnotation(name='psu'))
+        charac_fluorescence = Characteristic(category=OntologyAnnotation(name='fluorescence'))
+        charac_water_temperature = Characteristic(category=OntologyAnnotation(name='water temperature at 3 meter depth'), unit=OntologyAnnotation(name='degree celsius'))
+
+        source_prototype.characteristics.append(charac_organism)
+        source_prototype.characteristics.append(charac_location)
+        source_prototype.characteristics.append(charac_longitude)
+        source_prototype.characteristics.append(charac_lattitude)
+        source_prototype.characteristics.append(charac_chlorophyll_a_concentration)
+        source_prototype.characteristics.append(charac_peridinin_concentration)
+        source_prototype.characteristics.append(charac_butfucoxanthin_concentration)
+        source_prototype.characteristics.append(charac_hexfucoxanthin_concentration)
+        source_prototype.characteristics.append(charac_alloxanthin_concentration)
+        source_prototype.characteristics.append(charac_zeaxanthin_concentration)
+        source_prototype.characteristics.append(charac_lutein_concentration)
+        source_prototype.characteristics.append(charac_chl_c3_concentration)
+        source_prototype.characteristics.append(charac_chl_c2_concentration)
+        source_prototype.characteristics.append(charac_prasinoxanthin_concentration)
+        source_prototype.characteristics.append(charac_neoxanthin_concentration)
+        source_prototype.characteristics.append(charac_violaxanthin_concentration)
+        source_prototype.characteristics.append(charac_diadinoxanthin_concentration)
+        source_prototype.characteristics.append(charac_diatoxanthin_concentration)
+        source_prototype.characteristics.append(charac_divinyl_chl_b_concentration)
+        source_prototype.characteristics.append(charac_chl_b_concentration)
+        source_prototype.characteristics.append(charac_divinyl_chl_a_concentration)
+        source_prototype.characteristics.append(charac_chl_a_concentration)
+        source_prototype.characteristics.append(charac_BB_carotene_concentration)
+        source_prototype.characteristics.append(charac_bacteria_count)
+        source_prototype.characteristics.append(charac_synechococcus_count)
+        source_prototype.characteristics.append(charac_small_picoeukaryotes_count)
+        source_prototype.characteristics.append(charac_large_picoeukaryotes_count)
+        source_prototype.characteristics.append(charac_nanoflagellates_count)
+        source_prototype.characteristics.append(charac_cryptophytes_count)
+        source_prototype.characteristics.append(charac_phosphate_concentration)
+        source_prototype.characteristics.append(charac_nitrate_concentration)
+        source_prototype.characteristics.append(charac_particulate_organic_nitrogen_concentration)
+        source_prototype.characteristics.append(charac_particulate_organic_carbon_concentration)
+        source_prototype.characteristics.append(charac_primary_production_depth)
+        source_prototype.characteristics.append(charac_water_salinity)
+        source_prototype.characteristics.append(charac_fluorescence)
+        source_prototype.characteristics.append(charac_water_temperature)
+
+        # Declare a Process (an application of a Protocol). In this case, sample collection is applied.
+        proc_sample_collection = Process(executes_protocol=protocol_sample_collection)
+        proc_sample_collection.parameter_values.append(
+            ParameterValue(category=protocol_sample_collection.parameters[0], # refer back to the parameter we declared in the relevant protocol
+                           value=0.22,
+                           unit=OntologyAnnotation(name='micrometer')))
+
+        # Create samples. Remember those factors we declared earlier? We can point to them now
+        sample_prototype = Sample()
+        factor_value_compound = FactorValue(factor_name=factor_compound,
+                                            value=OntologyAnnotation(name='carbon dioxide',
+                                                                     term_source=term_source_chebi,
+                                                                     term_accession='http://purl.obolibrary.org/obo/CHEBI_16526'))
+        factor_value_dose = FactorValue(factor_name=factor_dose, value=OntologyAnnotation(name='high'))
+        factor_value_collection_time = FactorValue(factor_name=factor_collection_time,
+                                                   value=OntologyAnnotation(name='may 13th, 2006'))
+        sample_prototype.factor_values.append(factor_value_compound)
+        sample_prototype.factor_values.append(factor_value_dose)
+        sample_prototype.factor_values.append(factor_value_collection_time)
+        sample_prototype.derives_from = source_prototype  # put a pointer to what the sample derives from
+
+        proc_sample_collection.inputs.append(source_prototype)  # add source as our input to our process
+        proc_sample_collection.outputs.append(sample_prototype)  # add samples as our output to our process
+
+        s.process_sequence.append(proc_sample_collection)
+
+        # Now let's build our assays
+        assay_1 = Assay(
+            filename='a_gilbert-assay-Gx.txt',
+            measurement_type=OntologyAnnotation(name='metagenome sequencing', term_source=term_source_obi),
+            technology_type=OntologyAnnotation(name='nucleotide sequencing', term_source=term_source_obi),
+            technology_platform='454 Genome Sequencer FLX'
+        )
+
+        assay_2 = Assay(
+            filename='a_gilbert-assay-Tx.txt',
+            measurement_type=OntologyAnnotation(name='transcription profiling', term_source=term_source_obi),
+            technology_type=OntologyAnnotation(name='nucleotide sequencing', term_source=term_source_obi),
+            technology_platform='454 Genome Sequencer FLX'
+        )
+        s.build_graph()
         i.studies.append(s)
+
+        from isatools import isatab
+        isatab.dump(i, '/Users/dj/PycharmProjects/isa-api/tests/tmp')

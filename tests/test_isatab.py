@@ -21,10 +21,9 @@ class IsatabSplittingTest(TestCase):
         )
         s.protocols.append(sample_collection_protocol)
 
-        reference_descriptor_category = \
-            CharacteristicCategory(characteristic_type=OntologyAnnotation(name='reference descriptor'))
-        material_type_category = CharacteristicCategory(characteristic_type=OntologyAnnotation(name='material type'))
-        organism_category = CharacteristicCategory(characteristic_type=OntologyAnnotation(name='organism'))
+        reference_descriptor_category = OntologyAnnotation(name='reference descriptor')
+        material_type_category = OntologyAnnotation(name='material type')
+        organism_category = OntologyAnnotation(name='organism')
 
         source1 = Source(name='source1')
         source1.characteristics = [
@@ -36,7 +35,7 @@ class IsatabSplittingTest(TestCase):
         ]
 
         sample1 = Sample(name='sample1')
-        organism_part = CharacteristicCategory(characteristic_type=OntologyAnnotation(name='organism part'))
+        organism_part = OntologyAnnotation(name='organism part')
         sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
             name='liver',
             term_source=uberon,
@@ -105,10 +104,9 @@ class IsatabPoolingTest(TestCase):
         )
         s.protocols.append(sample_collection_protocol2)
 
-        reference_descriptor_category = \
-            CharacteristicCategory(characteristic_type=OntologyAnnotation(name='reference descriptor'))
-        material_type_category = CharacteristicCategory(characteristic_type=OntologyAnnotation(name='material type'))
-        organism_category = CharacteristicCategory(characteristic_type=OntologyAnnotation(name='organism'))
+        reference_descriptor_category = OntologyAnnotation(name='reference descriptor')
+        material_type_category = OntologyAnnotation(name='material type')
+        organism_category = OntologyAnnotation(name='organism')
 
         source1 = Source(name='source1')
         source1.characteristics = [
@@ -147,7 +145,7 @@ class IsatabPoolingTest(TestCase):
         ]
 
         sample1 = Sample(name='sample1')
-        organism_part = CharacteristicCategory(characteristic_type=OntologyAnnotation(name='organism part'))
+        organism_part = OntologyAnnotation(name='organism part')
         sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
             name='liver',
             term_source=uberon,
@@ -155,7 +153,7 @@ class IsatabPoolingTest(TestCase):
         )))
 
         sample2 = Sample(name='sample2')
-        organism_part = CharacteristicCategory(characteristic_type=OntologyAnnotation(name='organism part'))
+        organism_part = OntologyAnnotation(name='organism part')
         sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
             name='liver',
             term_source=uberon,
@@ -264,10 +262,9 @@ class IsatabRepeatedMeasureTest(TestCase):
 
         s.protocols.append(sample_collection_protocol)
 
-        reference_descriptor_category = \
-            CharacteristicCategory(characteristic_type=OntologyAnnotation(name='reference descriptor'))
-        material_type_category = CharacteristicCategory(characteristic_type=OntologyAnnotation(name='material type'))
-        organism_category = CharacteristicCategory(characteristic_type=OntologyAnnotation(name='organism'))
+        reference_descriptor_category =OntologyAnnotation(name='reference descriptor')
+        material_type_category = OntologyAnnotation(name='material type')
+        organism_category = OntologyAnnotation(name='organism')
 
         source1 = Source(name='source1')
         source1.characteristics = [
@@ -288,7 +285,7 @@ class IsatabRepeatedMeasureTest(TestCase):
         ]
 
         sample1 = Sample(name='sample1')
-        organism_part = CharacteristicCategory(characteristic_type=OntologyAnnotation(name='organism part'))
+        organism_part = OntologyAnnotation(name='organism part')
         sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
             name='blood',
             term_source=uberon,

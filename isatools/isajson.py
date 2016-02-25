@@ -121,13 +121,10 @@ def load(fp):
         for study_json in isajson['studies']:
             for assay_json in study_json['assays']:
                 for assay_characteristics_category_json in assay_json['characteristicCategories']:
-                    characteristic_category = CharacteristicCategory(
-                        id_=assay_characteristics_category_json['@id'],
-                        characteristic_type=OntologyAnnotation(
-                            name=assay_characteristics_category_json['characteristicType']['annotationValue'],
-                            term_source=term_source_dict[assay_characteristics_category_json['characteristicType']['termSource']],
-                            term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
-                        )
+                    characteristic_category = OntologyAnnotation(
+                        name=assay_characteristics_category_json['characteristicType']['annotationValue'],
+                        term_source=term_source_dict[assay_characteristics_category_json['characteristicType']['termSource']],
+                        term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
                     )
                     # study.characteristic_categories.append(characteristic_category)
                     categories_dict[characteristic_category.id] = characteristic_category
@@ -152,13 +149,11 @@ def load(fp):
             except KeyError:
                 pass
             for study_characteristics_category_json in study_json['characteristicCategories']:
-                characteristic_category = CharacteristicCategory(
+                characteristic_category = OntologyAnnotation(
                     id_=study_characteristics_category_json['@id'],
-                    characteristic_type=OntologyAnnotation(
-                        name=study_characteristics_category_json['characteristicType']['annotationValue'],
-                        term_source=term_source_dict[study_characteristics_category_json['characteristicType']['termSource']],
-                        term_accession=study_characteristics_category_json['characteristicType']['termAccession'],
-                    )
+                    name=study_characteristics_category_json['characteristicType']['annotationValue'],
+                    term_source=term_source_dict[study_characteristics_category_json['characteristicType']['termSource']],
+                    term_accession=study_characteristics_category_json['characteristicType']['termAccession'],
                 )
                 study.characteristic_categories.append(characteristic_category)
                 categories_dict[characteristic_category.id] = characteristic_category
@@ -288,8 +283,7 @@ def load(fp):
                     logger.debug('Build Ontology Annotation object (Characteristic)')
                     value = characteristic_json['value']
                     unit = None
-                    characteristic = Characteristic(
-                            category=categories_dict[characteristic_json['category']['@id']],)
+                    characteristic = Characteristic(category=categories_dict[characteristic_json['category']['@id']],)
                     if isinstance(value, dict):
                         try:
                             value = OntologyAnnotation(
@@ -493,13 +487,11 @@ def load(fp):
                     sample = samples_dict[sample_json['@id']]
                     assay.materials['samples'].append(sample)
                 for assay_characteristics_category_json in assay_json['characteristicCategories']:
-                    characteristic_category = CharacteristicCategory(
+                    characteristic_category =OntologyAnnotation(
                         id_=assay_characteristics_category_json['@id'],
-                        characteristic_type=OntologyAnnotation(
-                            name=assay_characteristics_category_json['characteristicType']['annotationValue'],
-                            term_source=term_source_dict[assay_characteristics_category_json['characteristicType']['termSource']],
-                            term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
-                        )
+                        name=assay_characteristics_category_json['characteristicType']['annotationValue'],
+                        term_source=term_source_dict[assay_characteristics_category_json['characteristicType']['termSource']],
+                        term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
                     )
                     study.characteristic_categories.append(characteristic_category)
                     categories_dict[characteristic_category.id] = characteristic_category

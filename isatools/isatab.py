@@ -411,9 +411,9 @@ def _charac_label(charac_type_name): return 'Characteristics[' + charac_type_nam
 
 def _set_charac_cols(prefix, characteristics, cols, col_map):
     for c in sorted(characteristics, key=lambda x: id(x.category)):
-        obj_charac_key = prefix + '_char[' + c.category.characteristic_type.name + ']'
+        obj_charac_key = prefix + '_char[' + c.category.name + ']'
         cols.append(obj_charac_key)
-        col_map[obj_charac_key] = _charac_label(c.category.characteristic_type.name)
+        col_map[obj_charac_key] = _charac_label(c.category.name)
         if isinstance(c.value, int) or isinstance(c.value, float):
             cols.extend((obj_charac_key + KEY_POSTFIX_UNIT,
                          obj_charac_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE,
@@ -430,7 +430,7 @@ def _set_charac_cols(prefix, characteristics, cols, col_map):
 
 def _set_charac_vals(prefix, characteristics, df, i):
     for c in sorted(characteristics, key=lambda x: id(x.category)):
-        obj_charac_key = prefix + '_char[' + c.category.characteristic_type.name + ']'
+        obj_charac_key = prefix + '_char[' + c.category.name + ']'
         df.loc[i, obj_charac_key] = c.value
         if isinstance(c.value, int) or isinstance(c.value, float):
             df.loc[i, obj_charac_key + KEY_POSTFIX_UNIT] = c.unit.name
