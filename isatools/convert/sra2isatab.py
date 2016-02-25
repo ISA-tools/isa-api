@@ -24,7 +24,7 @@ logger.setLevel(logging.DEBUG)
 
 
 def zipdir(path, zip_file):
-    "utility function to zip a whole directory"
+    """utility function to zip a whole directory"""
     # zip_file is zipfile handle
     for root, dirs, files in os.walk(path):
         for file in files:
