@@ -12,10 +12,11 @@ def zipdir(path, zip_file):
     # zip_file is zipfile handle
     for root, dirs, files in os.walk(path):
         for file in files:
-            zip_file.write(os.path.join(root, file), arcname=file)
+            zip_file.write(os.path.join(root, file),
+                           arcname=os.path.join(os.path.basename(root), file))
 
 
-def create_sra(source_path, dest_path, config_path, log_file='outlog.log'):
+def create_sra(source_path, dest_path, config_path):
     """ This function converts a set of ISA-Tab files into SRA XML format.
 
         The SRA conversion uses the Java compiled validator and converter, packaged
@@ -29,6 +30,7 @@ def create_sra(source_path, dest_path, config_path, log_file='outlog.log'):
                 sub-directory /sra under where you specify the dest_path.
             config_path (str): Path to the ISA Configuration XML files to validate
                 the input ISA-Tab.
+            log_file (str): the absolute or realtive path to the log file where
 
         Raises:
             TypeErrpr: If something goes wrong calling the shell commands to run the
@@ -59,8 +61,9 @@ def create_sra(source_path, dest_path, config_path, log_file='outlog.log'):
     # return_code = subprocess.call([convert_command], shell=True)
     try:
         res = subprocess.check_output([convert_command], shell=True, stderr=subprocess.STDOUT)
-        with open(log_file, 'w') as logf:
-            logf.write(str(res, encoding='utf-8'))
+
+        # with open(log_file, 'w') as logf:
+        #     logf.write(str(res, encoding='utf-8'))
 
     except subprocess.CalledProcessError as err:
         print("Execution failed: ", err.output)
@@ -69,7 +72,7 @@ def create_sra(source_path, dest_path, config_path, log_file='outlog.log'):
 
     # returns the buffer containing the SRA element(s) as an archive
     buffer = BytesIO()
-    sra_dir = os.path.join(dest_path, 'sra', os.path.basename(source_path))
+    sra_dir = os.path.join(dest_path, 'sra')
 
     if os.path.isdir(sra_dir):
         with ZipFile(buffer, 'w') as zip_file:
