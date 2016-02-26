@@ -1,53 +1,36 @@
+<img align="right" src="http://www.isa-tools.org/wp-content/themes/isatools-wp-theme/img/footer_logo.svg">
+ISA API
+=======
 
-<p>Master branch</p> 
-[![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=master)](https://travis-ci.org/ISA-tools/isa-api/) [![Coverage Status](https://coveralls.io/repos/github/ISA-tools/isa-api/badge.svg?branch=master)](https://coveralls.io/github/ISA-tools/isa-api?branch=master)
-<p>Develop branch</p> 
+The open source ISA metadata tracking tools help to manage an increasingly diverse set of life science, environmental and biomedical experiments that employing one or a combination of technologies.
+
+Built around the ‘Investigation’ (the project context), ‘Study’ (a unit of research) and ‘Assay’ (analytical measurement) general-purpose Tabular format, the ISA tools helps you to provide rich description of the experimental metadata (i.e. sample characteristics, technology and measurement types, sample-to-data relationships) so that the resulting data and discoveries are reproducible and reusable.
+
+To find out more about ISA, see [www.isa-tools.org](http://www.isa-tools.org)
+
+To find out who's using ISA and about the ISA development and user community, see [www.isacommons.org](http://www.isacommons.org)
+
+The *ISA API*  aims to provide you, the developer, with a set of tools to help you easily and quickly build your own ISA objects, validate, and convert between serializations of ISA-formatted datasets and other formats/schemas (e.g. SRA schemas). The ISA API is published on PyPI as the `isatools` package.
+
 [![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=develop)](https://travis-ci.org/ISA-tools/isa-api/) [![Coverage Status](https://coveralls.io/repos/github/ISA-tools/isa-api/badge.svg?branch=develop)](https://coveralls.io/github/ISA-tools/isa-api?branch=develop)
 
-# isa-api
+----
+*Authors*: [The ISA team](http://www.isa-tools.org/team/).
 
-This repository is a python-based ISA-API library, which supports the programmatic creation of ISA objects, multiple ISA serializations (e.g. tabular and JSON representations) and conversions between ISA and other formats (e.g. SRA xml).
+*License*:      This code is licensed under the [CPAL License](https://raw.githubusercontent.com/ISA-tools/isa-api/master/LICENSE.txt).
 
-It relies on Python 3.4 and we recommand using virtualenv for running/testing the code.
+*Repository*:   [https://github.com/ISA-tools/isa-api](https://github.com/ISA-tools/isa-api)
 
-If you are not familiar with virtualenv, read this excellent blogpost by Jamie Matthews (https://www.dabapps.com/blog/introduction-to-pip-and-virtualenv-python/). Make sure your environmental variable are pointing to Python 3.4 before invoking virtualenv.
+*ISA discussion group*: [https://groups.google.com/forum/#!forum/isaforum](https://groups.google.com/forum/#!forum/isaforum)
 
-install all the dependencies by running:
+*Github issue tracker*: [https://github.com/ISA-tools/isa-api/issues](https://github.com/ISA-tools/isa-api/issues)
 
-env/bin/pip install -r requirements.txt
+----
+Using the ISA-API
+-----------------
+To install and start using the ISA-API, check out the [wiki](https://github.com/ISA-tools/isa-api/wiki).
 
-source env/bin/activate
-
-
-# using git and pushing code
-
- We follow the [GitFlow development workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow).
-
-Travis Continuous Integration is set up on both Master and Develop branches of the repo. Prior to push code, always run the tests by invoking the following command
-
-python setup.py test
-
-
-### Instalation procedure
-
-To install the isa-api, make sure to install the requirements:
-
-`pip install -r requiremens.txt`
-
-To run the tests:
-
-`python setup.py test`
-
-## isatools package
-
-* Install using `pip install -e .` from inside `isa-api` project root (may need to sudo it)
-
-## License
-
-[CPAL License](https://raw.githubusercontent.com/ISA-tools/isa-api/master/LICENSE.txt)
-
-## service
-
-**Note:**
-
-* REST service implementation is available at [isa-rest-api project](https://github.com/ISA-tools/isa-rest-api)
+----
+Contributing
+------------
+The ISA-API is still in very early stages of development. We would be very happy to receive any help and contributions (testing, feature requests, pull requests). Please feel free to contact our development team, ask a question, report a bug or file a feature request in the Github issue tracker, or fork our repository.
