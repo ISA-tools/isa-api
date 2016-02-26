@@ -108,22 +108,15 @@ class ModelTests(TestCase):
         self.assertIsInstance(protocol.uri, str)
         self.assertIsInstance(protocol.version, str)
 
-    def test_object_material_attribute(self):
-        material_attribute = MaterialAttribute(
-            characteristic=OntologyAnnotation(),
-            unit=OntologyAnnotation()
-        )
-        self.assertIsInstance(material_attribute.characteristic, OntologyAnnotation)
-        self.assertIsInstance(material_attribute.unit, OntologyAnnotation)
 
     def test_object_source(self):
         source = Source(
             name=''
         )
-        source.characteristics.append(MaterialAttribute())
+        source.characteristics.append(Characteristic())
         self.assertIsInstance(source.name, str)
         self.assertIsInstance(source.characteristics, list)
-        self.assertIsInstance(source.characteristics[0], MaterialAttribute)
+        self.assertIsInstance(source.characteristics[0], Characteristic)
 
     def test_object_study_factor(self):
         factor = StudyFactor(
@@ -137,20 +130,20 @@ class ModelTests(TestCase):
         sample = Sample(
             name=''
         )
-        sample.characteristics.append(MaterialAttribute())
+        sample.characteristics.append(Characteristic())
         sample.factor_values.append(StudyFactor())
         self.assertIsInstance(sample.name, str)
         self.assertIsInstance(sample.characteristics, list)
-        self.assertIsInstance(sample.characteristics[0], MaterialAttribute)
+        self.assertIsInstance(sample.characteristics[0], Characteristic)
         self.assertIsInstance(sample.factor_values, list)
         self.assertIsInstance(sample.factor_values[0], StudyFactor)
 
     def test_object_material(self):
         material = Material(name='')
-        material.characteristics.append(MaterialAttribute())
+        material.characteristics.append(Characteristic())
         self.assertIsInstance(material.name, str)
         self.assertIsInstance(material.characteristics, list)
-        self.assertIsInstance(material.characteristics[0], MaterialAttribute)
+        self.assertIsInstance(material.characteristics[0], Characteristic)
 
     def test_object_datafile(self):
         datafile = DataFile(filename='', label='')
@@ -164,19 +157,19 @@ class ModelTests(TestCase):
         )
         process.parameter_values.append(OntologyAnnotation())
         process.inputs.append(Material())
-        process.inputs.append(Data())
+        process.inputs.append(DataFile())
         process.outputs.append(Material())
-        process.outputs.append(Data())
+        process.outputs.append(DataFile())
         self.assertIsInstance(process.name, str)
         self.assertIsInstance(process.executes_protocol, Protocol)
         self.assertIsInstance(process.parameter_values, list)
         self.assertIsInstance(process.parameter_values[0], OntologyAnnotation)
         self.assertIsInstance(process.inputs, list)
         self.assertIsInstance(process.inputs[0], Material)
-        self.assertIsInstance(process.inputs[1], Data)
+        self.assertIsInstance(process.inputs[1], DataFile)
         self.assertIsInstance(process.outputs, list)
         self.assertIsInstance(process.outputs[0], Material)
-        self.assertIsInstance(process.outputs[1], Data)
+        self.assertIsInstance(process.outputs[1], DataFile)
 
     def test_object_assay(self):
         assay = Assay(
