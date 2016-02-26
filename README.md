@@ -1,3 +1,9 @@
+
+<p>Master branch</p> 
+[![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=master)](https://travis-ci.org/ISA-tools/isa-api/)
+<p>Develop branch</p> 
+[![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=develop)](https://travis-ci.org/ISA-tools/isa-api/)
+
 # isa-api
 
 [![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=develop)](https://travis-ci.org/ISA-tools/isa-api) [![Coverage Status](https://coveralls.io/repos/github/ISA-tools/isa-api/badge.svg?branch=develop)](https://coveralls.io/github/ISA-tools/isa-api?branch=develop)
