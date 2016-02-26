@@ -517,7 +517,7 @@ class ModelTests(TestCase):
                                                                   term_accession='http://purl.obolibrary.org/obo/NCBITaxon_408172'))
         charac_location = Characteristic(category=OntologyAnnotation(name='geographic location (country and/or sea,region)'),
                                          value=OntologyAnnotation(name='Norway, fjord, coastal'))
-        charac_longitude = Characteristic(category=OntologyAnnotation(name='Characteristics[geographic location (longitude)'),
+        charac_longitude = Characteristic(category=OntologyAnnotation(name='geographic location (longitude)'),
                                           value='5.222222')
         charac_lattitude = Characteristic(category=OntologyAnnotation(name='geographic location (latitude)'),
                                           value='60.269444')
@@ -670,8 +670,8 @@ class ModelTests(TestCase):
         source1.characteristics.append(charac_water_temperature)
 
         # Declare a Process (an application of a Protocol). In this case, sample collection is applied.
-        proc_sample_collection = Process(executes_protocol=protocol_sample_collection)
-        proc_sample_collection.parameter_values.append(
+        sample_collection1 = Process(executes_protocol=protocol_sample_collection)
+        sample_collection1.parameter_values.append(
             ParameterValue(category=protocol_sample_collection.parameters[0], # refer back to the parameter we declared in the relevant protocol
                            value=0.22,
                            unit=OntologyAnnotation(name='micrometer')))
@@ -690,17 +690,13 @@ class ModelTests(TestCase):
         sample1.factor_values.append(factor_value_collection_time)
         sample1.derives_from = source1  # put a pointer to what the sample derives from
 
-        proc_sample_collection.inputs.append(source1)  # add source as our input to our process
-        proc_sample_collection.outputs.append(sample1)  # add samples as our output to our process
+        sample_collection1.inputs.append(source1)  # add source as our input to our process
+        sample_collection1.outputs.append(sample1)  # add samples as our output to our process
 
-        # This creates our first source -> sample collection process -> sample assay. Normally, we would iterate through
-        # our incoming data to produce all the paths in the experimental graph, but we also have a utility function that
-        # can take our
-        # process_sequence = batch_create_assays(source1, proc_sample_collection, sample1)
+        # This creates our first source -> sample collection process -> sample assay, to attach to our process_sequence.
+        s.process_sequence.append(sample_collection1)
 
-        s.process_sequence.append(proc_sample_collection)
-
-        # Now let's build our assays
+        # Now let's build an assays associated with our study
         assay_1 = Assay(
             filename='a_gilbert-assay-Gx.txt',
             measurement_type=OntologyAnnotation(name='metagenome sequencing', term_source=term_source_obi),
@@ -708,12 +704,43 @@ class ModelTests(TestCase):
             technology_platform='454 Genome Sequencer FLX'
         )
 
-        assay_2 = Assay(
-            filename='a_gilbert-assay-Tx.txt',
-            measurement_type=OntologyAnnotation(name='transcription profiling', term_source=term_source_obi),
-            technology_type=OntologyAnnotation(name='nucleotide sequencing', term_source=term_source_obi),
-            technology_platform='454 Genome Sequencer FLX'
-        )
+        nucleic_acid_extraction = Process(executes_protocol=protocol_nucleic_acid_extraction)
+        nucleic_acid_extraction.inputs.append(sample1)  # alternatively prev line could be include inputs=[sample1] as a parameter instead of appending afterwards
+        genomic_dna_extraction = Process(executes_protocol=protocol_genomic_dna_extraction)
+        nucleic_acid_extraction.next_process = genomic_dna_extraction
+        genomic_dna_extraction.prev_process = nucleic_acid_extraction
+        extract1 = Extract(name='GSM255770.e1', characteristics=[Characteristic(
+            category=OntologyAnnotation(name='Material Type'),
+            value=OntologyAnnotation(name='deoxyribonucleic acid', term_source=term_source_chebi, term_accession='http://purl.obolibrary.org/obo/CHEBI_16991')
+        )])
+        genomic_dna_extraction.outputs.append(extract1)
+
+        library_construction = Process(executes_protocol=protocol_library_construction, inputs=[extract1])
+        library_strategy = ParameterValue(category=protocol_library_construction.parameters[0], value=OntologyAnnotation(name='WGS'))  # We added protocol parameters to our protocols earlier. Refer to them directly
+        library_selection = ParameterValue(category=protocol_library_construction.parameters[1], value=OntologyAnnotation(name='RANDOM'))  # We added protocol parameters to our protocols earlier. Refer to them directly
+        library_layout = ParameterValue(category=protocol_library_construction.parameters[2], value=OntologyAnnotation(name='SINGLE'))  # We added protocol parameters to our protocols earlier. Refer to them directly
+        library_construction.parameter_values.append(library_strategy)
+        library_construction.parameter_values.append(library_selection)
+        library_construction.parameter_values.append(library_layout)
+        library_construction.prev_process = genomic_dna_extraction
+        genomic_dna_extraction.next_process = library_construction
+
+        pyrosequencing = Process(executes_protocol=protocol_pyrosequencing)
+        library_construction.next_process = pyrosequencing
+        pyrosequencing.prev_process = library_construction
+        sequencing_instrument = ParameterValue(category=protocol_pyrosequencing.parameters[0], value=OntologyAnnotation(name='454 GS-FLX'))
+        pyrosequencing.parameter_values.append(sequencing_instrument)
+        pyrosequencing.additional_properties['Assay Name'] = 'assay1'
+        raw_data_file = DataFile(filename='EWOEPZA01.sff')
+        raw_data_file.comments.append(Comment(name='TraceDB', value='ftp://ftp.ncbi.nih.gov/pub/TraceDB/ShortRead/SRA000266/EWOEPZA01.sff'))
+        pyrosequencing.outputs.append(raw_data_file)
+
+        assay_1.process_sequence.append(nucleic_acid_extraction)
+        assay_1.process_sequence.append(genomic_dna_extraction)
+        assay_1.process_sequence.append(library_construction)
+        assay_1.process_sequence.append(pyrosequencing)
+        assay_1.build_graph()
+        s.assays.append(assay_1)
         s.build_graph()
         i.studies.append(s)
 
