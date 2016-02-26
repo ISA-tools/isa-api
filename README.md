@@ -31,7 +31,6 @@ Using the ISA-API
 -----------------
 To install and start using the ISA-API, check out the [wiki](https://github.com/ISA-tools/isa-api/wiki).
 
-----
 Contributing
 ------------
 The ISA-API is still in very early stages of development. We would be very happy to receive any help and contributions (testing, feature requests, pull requests). Please feel free to contact our development team, ask a question, report a bug or file a feature request in the Github issue tracker, or fork our repository.
