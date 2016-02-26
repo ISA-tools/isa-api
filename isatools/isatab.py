@@ -546,7 +546,7 @@ def write_assay_table_files(inv_obj, output_dir):
                 cols = list()
                 mcount = 0
                 protrefcount = 0
-                prottypes = dict()
+                protnames = dict()
                 col_map = dict()
                 for node in _longest_path_and_attrs(assay_obj.graph):
                     if isinstance(node, Sample):
@@ -609,8 +609,8 @@ def write_assay_table_files(inv_obj, output_dir):
                             for comment in output.comments:
                                 cols.append('data[' + output.label + ']_comment[' + comment.name + ']')
                                 col_map['data[' + output.label + ']_comment[' + comment.name + ']'] = 'Comment[' + comment.name + ']'
-                        if node.executes_protocol.protocol_type.name not in prottypes.keys():
-                            prottypes[node.executes_protocol.protocol_type.name] = protrefcount
+                        if node.executes_protocol.name not in protnames.keys():
+                            protnames[node.executes_protocol.name] = protrefcount
                             protrefcount += 1
                         # protrefcount = _set_protocol_cols(protrefcount, prottypes, node, cols, col_map)
                     elif isinstance(node, DataFile):
@@ -643,7 +643,13 @@ def write_assay_table_files(inv_obj, output_dir):
                                 _set_charac_vals('material', node.characteristics, df, i)
                                 mcount += 1
                         elif isinstance(node, Process):
-                            protrefcount = prottypes[node.executes_protocol.protocol_type.name]
+                            def find(n):
+                                v = 0
+                                for k, v in protnames.items():
+                                    if k == n.executes_protocol.name:
+                                        return v
+                                return v
+                            protrefcount = find(node)
                             df.loc[i, 'protocol[' + str(protrefcount) + ']'] = node.executes_protocol.name
                             compound_key += str(protrefcount) + '/' + node.name + '/'
                             if node.date is not None:
@@ -739,7 +745,7 @@ def write_study_table_files(inv_obj, output_dir):
         if study_obj.graph is None: break
         cols = list()
         protrefcount = 0
-        prottypes = dict()
+        protnames = dict()
         col_map = dict()
 
         for node in _longest_path_and_attrs(study_obj.graph):
@@ -777,8 +783,8 @@ def write_study_table_files(inv_obj, output_dir):
                     else:
                         cols.append('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']')
                         col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = 'Parameter Value[' + pv.category.parameter_name.name + ']'
-                if node.executes_protocol.protocol_type.name not in prottypes.values():
-                    prottypes[protrefcount] = node.executes_protocol.protocol_type.name
+                if node.executes_protocol.name not in protnames.keys():
+                    protnames[node.executes_protocol.name] = protrefcount
                     protrefcount += 1
             elif isinstance(node, Sample):
                 cols.append('sample')
@@ -797,11 +803,11 @@ def write_study_table_files(inv_obj, output_dir):
                     _set_charac_vals('source', node.characteristics, df, i)
                 elif isinstance(node, Process):
                     def find(n):
-                        k = 0
-                        for k, v in prottypes.items():
-                            if v == n.executes_protocol.protocol_type.name:
-                                return k
-                        return k
+                        v = 0
+                        for k, v in protnames.items():
+                            if k == n.executes_protocol.name:
+                                return v
+                        return v
                     protrefcount = find(node)
                     df.loc[i, 'protocol[' + str(protrefcount) + ']'] = node.executes_protocol.name
                     if node.date is not None:
