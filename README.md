@@ -1,12 +1,10 @@
 
 <p>Master branch</p> 
-[![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=master)](https://travis-ci.org/ISA-tools/isa-api/)
+[![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=master)](https://travis-ci.org/ISA-tools/isa-api/) [![Coverage Status](https://coveralls.io/repos/github/ISA-tools/isa-api/badge.svg?branch=master)](https://coveralls.io/github/ISA-tools/isa-api?branch=master)
 <p>Develop branch</p> 
-[![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=develop)](https://travis-ci.org/ISA-tools/isa-api/)
+[![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=develop)](https://travis-ci.org/ISA-tools/isa-api/) [![Coverage Status](https://coveralls.io/repos/github/ISA-tools/isa-api/badge.svg?branch=develop)](https://coveralls.io/github/ISA-tools/isa-api?branch=develop)
 
 # isa-api
-
-[![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=develop)](https://travis-ci.org/ISA-tools/isa-api) [![Coverage Status](https://coveralls.io/repos/github/ISA-tools/isa-api/badge.svg?branch=develop)](https://coveralls.io/github/ISA-tools/isa-api?branch=develop)
 
 This repository is a python-based ISA-API library, which supports the programmatic creation of ISA objects, multiple ISA serializations (e.g. tabular and JSON representations) and conversions between ISA and other formats (e.g. SRA xml).
 
