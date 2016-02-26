@@ -191,14 +191,14 @@ class IsatabPoolingTest(TestCase):
         hybridization_process.additional_properties['Array Design REF'] = 'HG_U133_2.0'
         scan_process = Process(executes_protocol=data_collection_protocol)
         scan_process.additional_properties['Scan Name'] = 'hyb1.scan1'
-        scan_data = Data(data_files=[DataFile(filename='1.dat', label='Image File'),
-                                     DataFile(filename='1.cel', label='Array Data File')])  # Data
+        # scan_data = Data(data_files=[DataFile(filename='1.dat', label='Image File'),
+        #                              DataFile(filename='1.cel', label='Array Data File')])  # Data
         data_normalization_process = Process(executes_protocol=data_normalization_protocol)
         data_normalization_process.additional_properties['Normalization Name'] = 'N1'
-        normalized_data = Data(data_files=[DataFile(filename='N1.txt', label="Derived Array Data File")])  # Data
+        # normalized_data = Data(data_files=[DataFile(filename='N1.txt', label="Derived Array Data File")])  # Data
         anova_process = Process(executes_protocol=anova_protocol)
         anova_process.additional_properties['Data Transformation Name'] = 'DA1'
-        transformed_data = Data(data_files=[DataFile(filename='DA1.txt', label="Derived Array Data Matrix File")])  # Data
+        # transformed_data = Data(data_files=[DataFile(filename='DA1.txt', label="Derived Array Data Matrix File")])  # Data
 
         assay_graph = nx.DiGraph()
         assay_graph.add_edge(sample1, rna_extraction_process)  # rna_extraction is Processing Event
@@ -207,11 +207,12 @@ class IsatabPoolingTest(TestCase):
         assay_graph.add_edge(labeling_process, labeled_extract)  # labeled_extract property includes Label
         assay_graph.add_edge(labeled_extract, hybridization_process)  # hybridization is Processing Event
         assay_graph.add_edge(hybridization_process, scan_process)
-        assay_graph.add_edge(scan_process, scan_data)  # data_collection is Processing Event
-        assay_graph.add_edge(scan_data, data_normalization_process)  # scan properties of scan are output files
-        assay_graph.add_edge(data_normalization_process, normalized_data)  # data_normalization is Processing Event
-        assay_graph.add_edge(normalized_data, anova_process)  # normalization has a Derived Array Data File
-        assay_graph.add_edge(anova_process, transformed_data)  # anova is Processing Event
+        # assay_graph.add_edge(scan_process, scan_data)  # data_collection is Processing Event
+        # assay_graph.add_edge(scan_data, data_normalization_process)  # scan properties of scan are output files
+        # assay_graph.add_edge(data_normalization_process, normalized_data)  # data_normalization is Processing Event
+        # assay_graph.add_edge(normalized_data, anova_process)  # normalization has a Derived Array Data File
+        # assay_graph.add_edge(anova_process, transformed_data)  # anova is Processing Event
+        # TODO: Update test to use DataFile, not Data
 
         assay_graph.add_edge(sample2, rna_extraction_process)  # rna_extraction is Processing Event
 
