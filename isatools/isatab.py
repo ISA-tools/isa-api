@@ -1196,9 +1196,9 @@ def load(isatab_dir):
         obj_dict = dict([])
         for node_index in nodes:
             if nodes[node_index].ntype.endswith("Data File"):
-                obj_item = Data(
-                    name=nodes[node_index].name,
-                    type_=nodes[node_index].ntype
+                obj_item = DataFile(
+                    filename=nodes[node_index].name,
+                    label=nodes[node_index].ntype
                 )
                 obj_dict.update({node_index: obj_item})
         return obj_dict
