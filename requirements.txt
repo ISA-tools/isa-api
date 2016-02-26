@@ -7,3 +7,4 @@ httpretty
 sure
 lxml
 requests
+coveralls
