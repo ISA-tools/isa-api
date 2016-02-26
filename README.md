@@ -1,3 +1,9 @@
+
+<p>Master branch</p> 
+[![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=master)](https://travis-ci.org/ISA-tools/isa-api/)
+<p>Develop branch</p> 
+[![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=develop)](https://travis-ci.org/ISA-tools/isa-api/)
+
 # isa-api
 
 This repository is a python-based ISA-API library, which supports the programmatic creation of ISA objects, multiple ISA serializations (e.g. tabular and JSON representations) and conversions between ISA and other formats (e.g. SRA xml).
