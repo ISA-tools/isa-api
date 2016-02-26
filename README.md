@@ -1,7 +1,6 @@
-<img align="right" src="http://www.isa-tools.org/wp-content/themes/isatools-wp-theme/img/footer_logo.svg">
 ISA API
 =======
-
+<img align="right" src="http://www.isa-tools.org/wp-content/themes/isatools-wp-theme/img/footer_logo.svg">
 The open source ISA metadata tracking tools help to manage an increasingly diverse set of life science, environmental and biomedical experiments that employing one or a combination of technologies.
 
 Built around the ‘Investigation’ (the project context), ‘Study’ (a unit of research) and ‘Assay’ (analytical measurement) general-purpose Tabular format, the ISA tools helps you to provide rich description of the experimental metadata (i.e. sample characteristics, technology and measurement types, sample-to-data relationships) so that the resulting data and discoveries are reproducible and reusable.
@@ -13,6 +12,8 @@ To find out who's using ISA and about the ISA development and user community, se
 The *ISA API*  aims to provide you, the developer, with a set of tools to help you easily and quickly build your own ISA objects, validate, and convert between serializations of ISA-formatted datasets and other formats/schemas (e.g. SRA schemas). The ISA API is published on PyPI as the `isatools` package.
 
 [![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=develop)](https://travis-ci.org/ISA-tools/isa-api/) [![Coverage Status](https://coveralls.io/repos/github/ISA-tools/isa-api/badge.svg?branch=develop)](https://coveralls.io/github/ISA-tools/isa-api?branch=develop)
+
+****Note that the current version is a very early stage release (v0.1)****
 
 ----
 *Authors*: [The ISA team](http://www.isa-tools.org/team/).
