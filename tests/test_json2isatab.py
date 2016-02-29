@@ -19,7 +19,7 @@ class JsonToTabTest(TestCase):
     def test_source_split_investigation(self):
         json2isatab.convert(open(os.path.join(self._dir, 'TEST-ISA-source-split.json')), self._tmp)
         self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp, 'i_investigation.txt')),
-                                                 open(os.path.join(self._dir, 'data/TEST-ISA-source-split/i_Investigation.txt'))))
+                                                 open(os.path.join(self._dir, 'data/TEST-ISA-source-split/i_investigation.txt'))))
 
     def test_source_split_study_table(self):
         json2isatab.convert(open(os.path.join(self._dir, 'TEST-ISA-source-split.json')), self._tmp)
@@ -34,7 +34,7 @@ class JsonToTabTest(TestCase):
     def test_sample_pool_investigation(self):
         json2isatab.convert(open(os.path.join(self._dir, 'TEST-ISA-sample-pool.json')), self._tmp)
         self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp, 'i_investigation.txt')),
-                                                 open(os.path.join(self._dir, 'data/TEST-ISA-sample-pool/i_Investigation.txt'))))
+                                                 open(os.path.join(self._dir, 'data/TEST-ISA-sample-pool/i_investigation.txt'))))
 
     def test_sample_pool_study_table(self):
         json2isatab.convert(open(os.path.join(self._dir, 'TEST-ISA-sample-pool.json')), self._tmp)
