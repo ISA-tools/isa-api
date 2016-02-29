@@ -22,6 +22,8 @@ The *ISA API*  aims to provide you, the developer, with a set of tools to help y
 
 *Repository*:   [https://github.com/ISA-tools/isa-api](https://github.com/ISA-tools/isa-api)
 
+*ISA team email*: [https://groups.google.com/forum/#!forum/isatools](https://groups.google.com/forum/#!forum/isatools)
+
 *ISA discussion group*: [https://groups.google.com/forum/#!forum/isaforum](https://groups.google.com/forum/#!forum/isaforum)
 
 *Github issue tracker*: [https://github.com/ISA-tools/isa-api/issues](https://github.com/ISA-tools/isa-api/issues)
