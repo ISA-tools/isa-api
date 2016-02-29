@@ -18,4 +18,6 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         ],
+    install_requires=["biopy-isatab", "jsonschema", "pandas", "networkx", "behave", "httpretty", "sure", "lxml",
+                      "requests", "coveralls"]
 )
