@@ -29,5 +29,6 @@ setup(
         "lxml",
         "requests",
         "coveralls"
-    ]
+    ],
+    test_suite='tests'
 )
