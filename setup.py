@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='isatools',
-    version='0.1.0',
+    version='0.1.1',
     packages=['isatools', 'isatools.convert', 'isatools.io', 'isatools.model', 'isatools.sampledata',
               'isatools.schemas', 'isatools.validate'],
     description='ISA-API',
