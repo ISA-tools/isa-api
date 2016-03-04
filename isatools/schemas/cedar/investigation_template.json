@@ -3269,7 +3269,7 @@
                   "title": "Process"
                 },
                 "parameterValue": {
-                  "minItems": 1,
+                  "minItems": 0,
                   "items": {
                     "description": "Investigation model - Parameter Value",
                     "title": "Parameter Value",
@@ -3340,7 +3340,7 @@
                         "title": "Parameter Value"
                       },
                       "protocolParameter": {
-                        "minItems": 1,
+                        "minItems": 0,
                         "items": {
                           "description": "Investigation Model - Protocol Parameter",
                           "title": "Protocol Parameter",
