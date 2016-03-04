@@ -7395,18 +7395,12 @@
                           "@type": {
                             "oneOf": [
                               {
-                                "enum": [
-                                  "http://purl.obolibrary.org/obo/IAO_0000590"
-                                ],
                                 "type": "string",
                                 "format": "uri"
                               },
                               {
                                 "minItems": 1,
                                 "items": {
-                                  "enum": [
-                                    "http://purl.obolibrary.org/obo/IAO_0000590"
-                                  ],
                                   "type": "string",
                                   "format": "uri"
                                 },
@@ -8526,18 +8520,12 @@
                                     "@type": {
                                       "oneOf": [
                                         {
-                                          "enum": [
-                                            "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C44278"
-                                          ],
                                           "type": "string",
                                           "format": "uri"
                                         },
                                         {
                                           "minItems": 1,
                                           "items": {
-                                            "enum": [
-                                              "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C44278"
-                                            ],
                                             "type": "string",
                                             "format": "uri"
                                           },
@@ -8965,7 +8953,7 @@
                   "oneOf": [
                     {
                       "enum": [
-                        "http://purl.obolibrary.org/obo/OBI_0000181"
+                        "http://purl.obolibrary.org/obo/STATO_0000193"
                       ],
                       "type": "string",
                       "format": "uri"
@@ -8974,7 +8962,7 @@
                       "minItems": 1,
                       "items": {
                         "enum": [
-                          "http://purl.obolibrary.org/obo/OBI_0000181"
+                          "http://purl.obolibrary.org/obo/STATO_0000193"
                         ],
                         "type": "string",
                         "format": "uri"
