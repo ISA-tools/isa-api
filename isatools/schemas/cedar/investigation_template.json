@@ -1255,11 +1255,6 @@
                       "sample"
                     ]
                   },
-                  "required": [
-                    "dataFile",
-                    "sample",
-                    "result"
-                  ],
                   "additionalProperties": false,
                   "type": "object",
                   "properties": {
@@ -3683,13 +3678,6 @@
                       "studySubject"
                     ]
                   },
-                  "required": [
-                    "studySubject",
-                    "dataFile",
-                    "sample",
-                    "reagent",
-                    "result"
-                  ],
                   "additionalProperties": false,
                   "type": "object",
                   "properties": {
