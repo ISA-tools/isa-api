@@ -16,7 +16,7 @@ class ISAtab2CEDARTest(TestCase):
 
     def test_isa_charac_param_factor(self):
         self.isa2cedar = ISATab2CEDAR("http://www.isa-tools.org/")
-        self.test_data = os.path.join(self._data_dir, "TEST-ISA-charax-param-factor")
+        self.test_data = os.path.join(self._data_dir, "TEST-ISA-charac-param-factor")
         self.isa2cedar.createCEDARjson(self.test_data, self._data_dir, True)
 
     def test_metabolights_conversion(self):
