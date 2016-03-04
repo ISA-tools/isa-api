@@ -42,16 +42,18 @@ class ISATab2CEDAR():
         else:
                 if isa_tab.metadata != {}:
                     investigationObject = dict([
-                        ("schemaID", "https://repo.metadatacenter.org/UUID"),
                         ("@id", "https://repo.metadatacenter.org/UUID/"+str(uuid4())),
+                        ("_templateId", "http://example.org"),
                         ("@type", "https://repo.metadatacenter.org/model/Investigation"),
                         ("@context", dict(
                             [
-                                ("model", "https://repo.metadatacenter.org/model/"),
-                                ("xsd", "http://www.w3.org/2001/XMLSchema"),
-                                ("schema", "https://schema.org/"),
-                                ("title", "https://repo.metadatacenter.org/model/title"),
-                                ("description", "https://repo.metadatacenter.org/model/description")
+                                ("description", "https://metadatacenter.org/schemas/description"),
+                                ("title", "https://metadatacenter.org/schemas/title"),
+                                ("study", "https://metadatacenter.org/schemas/study"),
+                                ("submissionDate", "https://metadatacenter.org/schemas/submissionDate"),
+                                ("_value", "https://schema.org/value"),
+                                ("publicReleaseDate", "https://metadatacenter.org/schemas/publicReleaseDate"),
+                                ("identifier", "https://metadatacenter.org/schemas/identifier")
                             ]
                         )),
                         ("title", dict([ ("_value", isa_tab.metadata['Investigation Title'])])),
@@ -59,13 +61,13 @@ class ISATab2CEDAR():
                         ("identifier", dict([ ("_value", isa_tab.metadata['Investigation Identifier'])])),
                         ("submissionDate", dict([ ("_value", isa_tab.metadata['Investigation Submission Date'])])),
                         ("publicReleaseDate", dict([ ("_value", isa_tab.metadata['Investigation Public Release Date'])])),
-                        ("study", self.createStudiesList(isa_tab.studies)),
-                        ("contact", self.createInvestigationContactsList(isa_tab.contacts)),
-                        ("publication", self.createInvestigationPublicationsList(isa_tab.publications)),
-                        ("provenance", dict([
-                            ("wasGeneratedBy", "http://www.isa-tools.org"),
-                            ("hadPrimarySource", self.primary_source)
-                        ]))
+                        #("study", self.createStudiesList(isa_tab.studies)),
+                        #("contact", self.createInvestigationContactsList(isa_tab.contacts)),
+                        #("publication", self.createInvestigationPublicationsList(isa_tab.publications)),
+                        #("provenance", dict([
+                        #    ("wasGeneratedBy", "http://www.isa-tools.org"),
+                        #    ("hadPrimarySource", self.primary_source)
+                        #]))
                     ])
                 else:
                     investigationObject = dict([
@@ -74,11 +76,13 @@ class ISATab2CEDAR():
                         ("@type", "https://repo.metadatacenter.org/model/Investigation"),
                         ("@context", dict(
                             [
-                                ("model", "https://repo.metadatacenter.org/model/"),
-                                ("xsd", "http://www.w3.org/2001/XMLSchema"),
-                                ("schema", "https://schema.org/"),
-                                ("title", "https://repo.metadatacenter.org/model/title"),
-                                ("description", "https://repo.metadatacenter.org/model/description")
+                                ("description", "https://metadatacenter.org/schemas/description"),
+                                ("title", "https://metadatacenter.org/schemas/title"),
+                                ("study", "https://metadatacenter.org/schemas/study"),
+                                ("submissionDate", "https://metadatacenter.org/schemas/submissionDate"),
+                                ("_value", "https://schema.org/value"),
+                                ("publicReleaseDate", "https://metadatacenter.org/schemas/publicReleaseDate"),
+                                ("identifier", "https://metadatacenter.org/schemas/identifier")
                             ]
                         )),
                         ("title", dict([ ("_value", "")])),
@@ -86,14 +90,12 @@ class ISATab2CEDAR():
                         ("identifier", dict([ ("_value", "")])),
                         ("submissionDate", dict([ ("_value", "")])),
                         ("publicReleaseDate", dict([ ("_value", "")])),
-                        ("study", self.createStudiesList(isa_tab.studies)),
-                        ("contact", self.createInvestigationContactsList(isa_tab.contacts)),
-                        ("publication", self.createInvestigationPublicationsList(isa_tab.publications))
+                        #("study", self.createStudiesList(isa_tab.studies)),
+                        #("contact", self.createInvestigationContactsList(isa_tab.contacts)),
+                        #("publication", self.createInvestigationPublicationsList(isa_tab.publications))
                     ])
 
-                cedar_json = dict([
-                    ("investigation",investigationObject)
-                ])
+                cedar_json = investigationObject
 
                 validator.validate(cedar_json, schema)
 
@@ -212,13 +214,24 @@ class ISATab2CEDAR():
 
     def createExecuteStudyProtocol(self, process_node_name, process_node):
         json_item = dict([
+                    ("@context", dict(
+                            [
+                                ("name", "https://metadatacenter.org/schemas/name"),
+                                ("uRI", "https://metadatacenter.org/schemas/uRI"),
+                                ("_value", "https://schema.org/value"),
+                                ("version",  "https://metadatacenter.org/schemas/version"),
+                                ("protocolParameter", "https://metadatacenter.org/schemas/protocolParameter"),
+                                ("type",  "https://metadatacenter.org/schemas/type"),
+                                ("description", "https://metadatacenter.org/schemas/description")
+                            ]
+                    )),
                     ("name", dict([("_value", process_node_name)])),
                     ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                     ("@type", "http://purl.obolibrary.org/obo/OBI_0000272"),
                     ("type", dict([("_value", "http://purl.obolibrary.org/obo/OBI_0000272")])),
                     ("description", dict([("_value", process_node_name)])),
                     ("version", dict([("_value", process_node_name)])),
-                    ("uri", dict([("_value", process_node_name)])),
+                    ("uRI", dict([("_value", process_node_name)])),
                     ("protocolParameter", self.createProcessParameterList(process_node_name, process_node))
                 ])
 
@@ -228,6 +241,7 @@ class ISATab2CEDAR():
     def createProcessParameterList(self, process_node_name, process_node):
         json_list = []
         json_item = dict([
+
                     ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                     ("@type", "https://repo.metadatacenter.org/model/ProtocolParameter"),
                     ("name", dict([("_value", process_node_name )])),
@@ -449,7 +463,7 @@ class ISATab2CEDAR():
                 ("description", dict([("_value", protocol['Study Protocol Description'])])),
                 ("type", dict([("_value", protocol['Study Protocol Type'])])),
                 ("version", dict([("_value", protocol['Study Protocol Version'])])),
-                ("uri", dict([("_value", protocol['Study Protocol URI'])])),
+                ("uRI", dict([("_value", protocol['Study Protocol URI'])])),
                 ("protocolParameter", self.createProtocolParametersList(protocol)),
                 ])
             json_list.append(json_item)
@@ -463,7 +477,7 @@ class ISATab2CEDAR():
         if len(parameters) > 0:
             for parameter in parameters.split(';'):
                 json_item = dict([
-                      ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                    ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                     ("@type", "https://repo.metadatacenter.org/model/ProtocolParameter"),
                     ("name", dict([("_value", parameter)])),
                     ("description", (dict([("_value", parametersURIs[index] if (len(parametersURIs) == len(parameters)) else "")]))),
