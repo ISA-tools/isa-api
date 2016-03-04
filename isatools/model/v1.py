@@ -1,5 +1,23 @@
-from datetime import date
+from networkx import DiGraph
 from enum import Enum
+
+
+def _build_assay_graph(process_sequence=list()):
+    G = DiGraph()
+    for process in process_sequence:
+        if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
+            if len(process.outputs) > 0:
+                for output in [n for n in process.outputs if not isinstance(n, DataFile)]:
+                    G.add_edge(process, output)
+            else:  # otherwise just connect the process to the next one
+                G.add_edge(process, process.next_process)
+        if process.prev_process is not None or len(process.inputs) > 0:
+            if len(process.inputs) > 0:
+                for input_ in process.inputs:
+                    G.add_edge(input_, process)
+            else:
+                G.add_edge(process.prev_process, process)
+    return G
 
 
 class Comment(object):
@@ -53,49 +71,6 @@ class StudyConfigurableObject(object):
                 raise TypeError("Unexpected node in sequence")
 
 
-class FieldConfigurableObject(object):
-
-    def __init__(self):
-        self._field_header = None
-        self._field_data_type = None
-        self._field_is_file_field = None
-        self._field_is_multiple_value = None
-        self._field_is_required = None
-        self._field_is_hidden = None
-        self._field_is_forced_ontology = None
-        self._field_description = None
-        self._field_default_value = None
-        self._field_generated_value_template = None
-        self._field_list_values = None
-        self._field_pos = None
-
-    def _validate_data_type(self, v):
-        type_error = False
-        if self._field_data_type == 'String':
-            if not isinstance(v, str):
-                type_error = True
-        elif self._field_data_type == 'Ontology term':
-            if not isinstance(v, OntologyAnnotation):
-                type_error = True
-        elif self._field_data_type == 'Integer':
-            if not isinstance(v, int):
-                type_error = True
-        elif self._field_data_type == 'List':
-            if v not in self._field_list_values:
-                type_error = True
-        elif self._field_data_type == 'Float':
-            if not isinstance(v, float):
-                type_error = True
-        elif self._field_data_type == 'Boolean':
-            if not isinstance(v, bool):
-                type_error = True
-        # elif self._field_data_type == 'Date':
-        #     if not isinstance(v, date):
-        #         type_error = True
-        if type_error:
-            raise TypeError("Value to set does not comply with configuration")
-
-
 class Investigation(IsaObject):
     """An investigation maintains metadata about the project context and links to one or more studies. There can only
     be 1 Investigation in an ISA package. Investigations has the following properties:
@@ -113,8 +88,8 @@ class Investigation(IsaObject):
         any treatments applied.
     """
 
-    def __init__(self, id_='', filename='', identifier="", title="", description="", submission_date=date.today(),
-                 public_release_date=date.today(), ontology_source_references=None, publications=None,
+    def __init__(self, id_='', filename='', identifier="", title="", description="", submission_date='',
+                 public_release_date='', ontology_source_references=None, publications=None,
                  contacts=None, studies=None, comments=None):
         super().__init__(comments)
         self.id = id_
@@ -262,8 +237,8 @@ class Study(IsaObject, StudyConfigurableObject, object):
         data: Data files associated with the study
     """
 
-    def __init__(self, id_='', filename="", identifier="",  title="", description="", submission_date=date.today(),
-                 public_release_date=date.today(), contacts=None, design_descriptors=None, publications=None,
+    def __init__(self, id_='', filename="", identifier="",  title="", description="", submission_date='',
+                 public_release_date='', contacts=None, design_descriptors=None, publications=None,
                  factors=None, protocols=None, assays=None, sources=None, samples=None,
                  process_sequence=None, other_material=None, characteristic_categories=None, comments=None):
         super().__init__(comments)
@@ -326,6 +301,9 @@ class Study(IsaObject, StudyConfigurableObject, object):
             self.characteristic_categories = list()
         else:
             self.characteristic_categories = characteristic_categories
+        self.graph = None
+    def build_graph(self):
+        self.graph = _build_assay_graph(self.process_sequence)
 
 
 class StudyFactor(IsaObject):
@@ -399,6 +377,10 @@ class Assay(IsaObject):
             self.characteristic_categories = list()
         else:
             self.characteristic_categories = characteristic_categories
+        self.graph = None
+
+    def build_graph(self):
+        self.graph = _build_assay_graph(self.process_sequence)
 
 
 class Protocol(IsaObject):
@@ -486,7 +468,7 @@ class Characteristic(IsaObject):
     def __init__(self, category=None, value=None, unit=None, comments=None):
         super().__init__(comments)
         if category is None:
-            self.category = CharacteristicCategory()
+            self.category = OntologyAnnotation()
         else:
             self.category = category
         if value is None:
@@ -496,7 +478,7 @@ class Characteristic(IsaObject):
         self.unit = unit
 
 
-class Sample(IsaObject, FieldConfigurableObject, object):
+class Sample(IsaObject):
     """A Sample.
 
     Attributes:
@@ -541,6 +523,7 @@ class Material(IsaObject):
 class Extract(Material):
     def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None):
         super().__init__(id_, name, type_, characteristics, derives_from, comments)
+        self.type = 'Extract Name'
 
 
 class LabeledExtract(Extract):
@@ -549,52 +532,12 @@ class LabeledExtract(Extract):
         self.label = label
 
 
-class HybridizationAssay(Material):
-    def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None, array_design_ref=''):
-        super().__init__(id_, name, type_, characteristics, derives_from, comments)
-        self.array_design_ref = array_design_ref
-
-
 class FactorValue(IsaObject):
     def __init__(self, factor_name=None, value=None, unit=None, comments=None):
         super().__init__(comments)
         self.factor_name = factor_name
         self.value = value
         self.unit = unit
-
-
-class ProcessingEvent(IsaObject):
-    def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None):
-        super().__init__()
-        self.name = name
-        self.executes_protocol = executes_protocol
-        self.date = date_
-        self.performer = performer
-        if parameter_values is None:
-            self.parameter_values = list()
-        else:
-            self.parameter_values = parameter_values
-
-
-class HybridizationAssayEvent(ProcessingEvent):
-        def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None, array_design_ref=''):
-            super().__init__(name, executes_protocol, date_, performer, parameter_values)
-            self.array_design_ref = array_design_ref
-
-
-class ScanEvent(ProcessingEvent):
-        def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None):
-            super().__init__(name, executes_protocol, date_, performer, parameter_values)
-
-
-class DataNormalizationEvent(ProcessingEvent):
-        def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None):
-            super().__init__(name, executes_protocol, date_, performer, parameter_values)
-
-
-class DataTransformationEvent(ProcessingEvent):
-        def __init__(self, name='', executes_protocol=None, date_=None, performer=None, parameter_values=None):
-            super().__init__(name, executes_protocol, date_, performer, parameter_values)
 
 
 class Process(IsaObject):
@@ -607,7 +550,7 @@ class Process(IsaObject):
         inputs:
         outputs:
     """
-    def __init__(self, id_='', name="", executes_protocol=None, date_='', performer="",
+    def __init__(self, id_='', name="", executes_protocol=None, date_=None, performer=None,
                  parameter_values=None, inputs=None, outputs=None, comments=None):
         super().__init__(comments)
         self.id = id_
@@ -635,83 +578,12 @@ class Process(IsaObject):
         self.next_process = None
 
 
-class DataFileType(Enum):
-    generic_data_file = 0
-    raw_data_file = 1
-    derived_data_file = 2
-    image_file = 3
-
-
 class DataFile(IsaObject):
     def __init__(self, id_='', filename='', label='', comments=None):
         super().__init__(comments)
         self.id = id_
         self.filename = filename
         self.label = label
-    
-
-class Data(IsaObject):
-    """A Data.
-
-    Attributes:
-        id:
-        data_files: List of DataFile
-    """
-    def __init__(self, id_='', data_files=list(), comments=None):
-        super().__init__(comments)
-        self.id = id_
-        self.data_files = data_files
-
-
-class ScanData(Data):
-    def __init__(self, id_='', name="", image_file='', array_data_file='', array_data_matrix_file='', comments=None):
-        super().__init__(name, comments)
-        self.image_file = image_file
-        self.array_data_file = array_data_file
-        self.array_data_matrix_file = array_data_matrix_file
-
-
-class NormalizedData(Data):
-    def __init__(self, id_='', name="", derived_array_data_file='', comments=None):
-        super().__init__(name, comments)
-        self.derived_array_data_file = derived_array_data_file
-
-
-class DerivedData(Data):
-    def __init__(self, id_='', name="", derived_data_file='', label='Data File', comments=None):
-        super().__init__(name, comments)
-        self.derived_data_file = derived_data_file
-        self.label = label
-
-
-class MaterialAttribute(IsaObject):
-    """A MaterialAttribute.
-
-    Attributes:
-        characteristic:
-        unit:
-    """
-    def __init__(self, characteristic=None, unit=None, comments=None):
-        super().__init__(comments)
-        if characteristic is None:
-            self.characteristic = OntologyAnnotation()
-        else:
-            self.characteristic = characteristic
-        if unit is None:
-            self.unit = OntologyAnnotation()
-        else:
-            self.unit = unit
-
-
-class CharacteristicCategory(IsaObject):
-
-    def __init__(self, id_='', characteristic_type=None):
-        super().__init__()
-        self.id = id_
-        if characteristic_type is None:
-            self.characteristic_type = OntologyAnnotation()
-        else:
-            self.characteristic_type = characteristic_type
 
 
 def batch_create_materials(material=None, n=1):
@@ -770,7 +642,7 @@ def batch_create_assays(*args, n=1):
         process = Process(name='data acquisition')
         material1 = Material(name='material')
         material2 = Material(name='material')
-        batch = batch_create_assays([sample1, sample2], process, [material1, material2])
+        batch = batch_create_assays([sample1, sample2], process, [material1, material2], n=3)
 
     """
     process_sequence = list()
@@ -848,7 +720,7 @@ def batch_set_attr(l=list(), attr=None, val=None):
         setattr(i, attr, val)
 
 
-class ParameterValue(FieldConfigurableObject):
+class ParameterValue(object):
     """A Parameter Value
     """
     def __init__(self, category=None, value=None, unit=None):
@@ -856,142 +728,5 @@ class ParameterValue(FieldConfigurableObject):
         if category is None:
             raise TypeError("You must specify a category")
         self.category = category
-        self._value = value
-        self._unit = unit
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, v):
-        if self._field_header is None:
-            self._value = v
-        else:
-            try:
-                self._validate_data_type(v)
-                self._value = v
-            finally:
-                pass
-
-    @property
-    def unit(self):
-        return self._unit
-
-    @unit.setter
-    def unit(self, u):
-        if self._field_header is not None:
-            if self._field_data_type == 'Integer':
-                self._unit = u
-            else:
-                raise TypeError("Field type must be numeric to use units")
-        else:
-            self._unit = u
-
-
-def configure(isa_obj, config):
-
-    """Configures an object of type FieldConfigurableObject to be constrained on values based on a given ISA
-    configuration object. Currently only works with ParameterValue objects in the model v1 package.
-
-    :param isa_obj: An ISA object. Currently this only works with those subclassing FieldConfigurableObject
-    :param config: A configuration object from the isatab_configurator
-
-    :Example:
-
-        Configure a ParameterValue object of category 'library strategy' required for the genome sequencing table
-        configuration
-
-        > isatab_configurator.load('tests/data/Configurations/isaconfig-default_v2015-07-02')
-        > genome_seq_config = configurator.get_config('genome sequencing', 'nucleotide sequencing')
-        > pv = ParameterValue(category='library strategy')
-        > configure(pv, genome_seq_config)
-
-        Setting pv.value should now be constrained to the values defined in the configuration (in this case only to
-        one of AMPLICON, CLONE, WGS, or OTHER.
-
-        > pv.value = 'AMPLICON'  #  will set value accordingly
-        > pv.value = 'other string'  #  will have no effect
-
-        You can now also interrogate for more information provided by the configuration for example
-
-        > pv._field_description
-        'Sequencing technique intended for this library (SRA 1.2 documentation)'
-
-        > pv._field_data_type
-        'List'
-
-        > pv._field_list_values
-        'AMPLICON,CLONE,WGS,OTHER'
-    """
-    def set_field_properties(o, c):
-        o._field_header = c.header
-        o._field_data_type = c.data_type
-        o._field_is_file_field = c.is_file_field
-        o._field_is_multiple_value = c.is_multiple_value
-        o._field_is_required = c.is_required
-        o._field_is_hidden = c.is_hidden
-        o._field_is_forced_ontology = c.is_forced_ontology
-        o._field_description = c.description
-        o._field_default_value = c.default_value
-        o._field_generated_value_template = c.generated_value_template
-        if c.data_type == 'List':
-            o._field_list_values = c.list_values.split(',')
-        o._field_pos = c.pos
-
-    if not isinstance(isa_obj, FieldConfigurableObject):
-        raise IOError("Cannot configure object of this type")
-    if isinstance(isa_obj, ParameterValue):
-        # If it's a parameter value, try find a matching Parameter Value header to configure it
-        import re
-        parameter_value_regex = re.compile('Parameter Value\[(.*?)\]')
-        for field in config.field:
-            if parameter_value_regex.match(field.header):  # if it's a valid Parameter Value header
-                if parameter_value_regex.findall(field.header)[0] == isa_obj.category:  # If the category matches obj
-                    set_field_properties(isa_obj, field)
-                    break
-    if isinstance(isa_obj, Sample):
-        # If its a sample, try find a matching Sample header to configure it
-        for field in config.field:
-            if field.header == "Sample Name":  # if it's a valid Sample Name header
-                set_field_properties(isa_obj, field)
-                break
-    if isinstance(isa_obj, Source):
-        for field in config.field:
-            if field.header == "Source Name":  # if it's a valid Sample Name header
-                set_field_properties(isa_obj, field)
-                break
-    if isinstance(isa_obj, Comment):
-            import re
-            comment_regex = re.compile('Comment\[(.*?)\]')
-            for field in config.field:
-                if comment_regex.match(field.header):  # if it's a valid Parameter Value header
-                    if comment_regex.findall(field.header)[0] == isa_obj.name:  # If the category matches obj
-                        set_field_properties(isa_obj, field)
-                        break
-    if isinstance(isa_obj, Study):
-        if config.measurement.term_label != '[Sample]':
-            raise TypeError("Cannot apply this configuration to a Study object")
-        from collections import OrderedDict
-        node_dict = OrderedDict()
-        import re
-        characteristics_regex = re.compile('Characteristics\[(.*?)\]')
-        factor_value_regex = re.compile('Factor Value\[(.*?)\]')
-        for field in config.field:
-            if field.header == "Source Name":
-                node_dict[field.pos] = Source
-            elif field.header == "Sample Name":
-                node_dict[field.pos] = Sample
-            elif characteristics_regex.match(field.header):
-                node_dict[field.pos] = Characteristic
-            elif factor_value_regex.match(field.header):
-                node_dict[field.pos] = FactorValue
-        for protocol_field in config.protocol_field:
-            node_dict[protocol_field.pos] = Process
-        for structured_field in config.structured_field:
-            if structured_field.name == 'characteristics':
-                node_dict[structured_field.pos] = [Characteristic]
-            elif structured_field.name == 'factors':
-                node_dict[structured_field.pos] = [FactorValue]
-        isa_obj._study_node_sequence = node_dict.values()
-
+        self.value = value
+        self.unit = unit
