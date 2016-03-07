@@ -285,7 +285,7 @@
                   "$schema": "http://json-schema.org/draft-04/schema#"
                 },
                 "protocolParameter": {
-                  "minItems": 1,
+                  "minItems": 0,
                   "items": {
                     "description": "Investigation Model - Protocol Parameter",
                     "title": "Protocol Parameter",
@@ -3857,18 +3857,12 @@
                                         "@type": {
                                           "oneOf": [
                                             {
-                                              "enum": [
-                                                "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C25712"
-                                              ],
                                               "type": "string",
                                               "format": "uri"
                                             },
                                             {
                                               "minItems": 1,
                                               "items": {
-                                                "enum": [
-                                                  "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C25712"
-                                                ],
                                                 "type": "string",
                                                 "format": "uri"
                                               },
