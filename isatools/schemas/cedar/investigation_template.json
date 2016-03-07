@@ -3682,7 +3682,7 @@
                   "type": "object",
                   "properties": {
                     "studySubject": {
-                      "minItems": 1,
+                      "minItems": 0,
                       "items": {
                         "description": "Investigation model - Study Subject",
                         "title": "Study Subject",
@@ -4258,7 +4258,7 @@
                       "type": "array"
                     },
                     "dataFile": {
-                      "minItems": 1,
+                      "minItems": 0,
                       "items": {
                         "description": "Investigation model - Data File",
                         "title": "Data File",
@@ -4435,7 +4435,7 @@
                       "type": "array"
                     },
                     "sample": {
-                      "minItems": 1,
+                      "minItems": 0,
                       "items": {
                         "description": "Investigation Model - Sample",
                         "title": "Sample",
@@ -5827,7 +5827,7 @@
                       "type": "array"
                     },
                     "reagent": {
-                      "minItems": 1,
+                      "minItems": 0,
                       "items": {
                         "description": "Investigation model - Reagent",
                         "title": "Reagent",
@@ -6407,7 +6407,7 @@
                       "title": "Input"
                     },
                     "result": {
-                      "minItems": 1,
+                      "minItems": 0,
                       "items": {
                         "description": "Investigation model - Result",
                         "title": "Result",
