@@ -97,7 +97,6 @@ class ISATab2CEDAR():
 
                 cedar_json = investigationObject
 
-                validator.validate(cedar_json, schema)
 
                 #save output json
                 if (inv_identifier):
@@ -108,6 +107,8 @@ class ISATab2CEDAR():
                 with open(file_name, "w") as outfile:
                     json.dump(cedar_json, outfile, indent=4, sort_keys=True)
                     outfile.close()
+
+                validator.validate(cedar_json, schema)
                 print("... conversion finished.")
 
     def createStudiesList(self, studies):
@@ -190,28 +191,34 @@ class ISATab2CEDAR():
 
     def createInputList(self, inputs, source_dict, sample_dict):
         json_dict = dict([])
+        sample_list = []
+        studySubject_list = []
         for argument in inputs:
             try:
                 json_item = source_dict[argument]
-                json_dict.update({"studySubject": json_item})
+                studySubject_list.append(json_item)
             except KeyError:
                 pass
             try:
                 json_item = sample_dict[argument]
-                json_dict.update({"sample": json_item})
+                sample_list.append(json_item)
             except KeyError:
                 pass
+        json_dict.update({"sample": sample_list})
+        json_dict.update({"studySubject": studySubject_list})
         return json_dict
 
 
     def createOutputList(self, arguments, sample_dict):
         json_dict = dict([])
+        sample_list = []
         for argument in arguments:
             try:
                 json_item = sample_dict[argument]
-                json_dict.update({"sample": json_item})
+                sample_list.append(json_item)
             except KeyError:
                 pass
+        json_dict.update({"sample": sample_list})
         return json_dict
 
 
@@ -238,17 +245,48 @@ class ISATab2CEDAR():
                     ("protocolParameter", self.createProcessParameterList(process_node_name, process_node))
                 ])
 
-        return json_item
+        return [ json_item ]
+
+
+    def createProtocolParametersList(self, protocol):
+        json_list = []
+        parameters = protocol['Study Protocol Parameters Name']
+        parametersURIs = protocol['Study Protocol Parameters Name Term Accession Number']
+        index = 0
+        if len(parameters) > 0:
+            for parameter in parameters.split(';'):
+                json_item = dict([
+                    ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                    ("@type", "https://repo.metadatacenter.org/model/ProtocolParameter"),
+                    ("name", dict([("_value", parameter)])),
+                    ("description", (dict([("_value", parametersURIs[index] if (len(parametersURIs) == len(parameters)) else "")]))),
+                ])
+                index=index+1
+                json_list.append(json_item)
+        return json_list
+
+    def convert_num(self, s):
+        try:
+            return int(s)
+        except ValueError:
+            try:
+               return float(s)
+            except ValueError:
+                return s
 
 
     def createProcessParameterList(self, process_node_name, process_node):
         json_list = []
-        json_item = dict([
-
+        for header in process_node.metadata:
+            value_header = header.replace("]", "").split("[")[-1]
+            value_attributes = process_node.metadata[header][0]
+            value = self.convert_num(value_attributes[0])
+            if header.startswith("Parameter Value"):
+                json_item = dict([
                     ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                     ("@type", "https://repo.metadatacenter.org/model/ProtocolParameter"),
-                    #("name", dict([("_value", process_node_name )])),
-                    #("description", dict([("_value", "")])),
+                    ("value", dict([("_value", value)])),
+                    ("description", dict([("_value", value_header)]))
                 ])
         json_list.append(json_item)
         return json_list
@@ -472,22 +510,6 @@ class ISATab2CEDAR():
             json_list.append(json_item)
         return json_list
 
-    def createProtocolParametersList(self, protocol):
-        json_list = []
-        parameters = protocol['Study Protocol Parameters Name']
-        parametersURIs = protocol['Study Protocol Parameters Name Term Accession Number']
-        index = 0
-        if len(parameters) > 0:
-            for parameter in parameters.split(';'):
-                json_item = dict([
-                    ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
-                    ("@type", "https://repo.metadatacenter.org/model/ProtocolParameter"),
-                    ("name", dict([("_value", parameter)])),
-                    ("description", (dict([("_value", parametersURIs[index] if (len(parametersURIs) == len(parameters)) else "")]))),
-                ])
-                index=index+1
-                json_list.append(json_item)
-        return json_list
 
     def createStudyFactorsList(self, factors):
         #print factors
@@ -510,7 +532,7 @@ class ISATab2CEDAR():
         elements = authorListString.split(',')
         for element in elements:
             json_item = dict([
-                ("value", element)
+                ("_value", element)
             ])
             json_list.append(json_item)
         return json_list
