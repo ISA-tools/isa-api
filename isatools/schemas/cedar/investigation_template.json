@@ -2359,7 +2359,7 @@
                                   "$schema": "http://json-schema.org/draft-04/schema#"
                                 },
                                 "studyFactor": {
-                                  "minItems": 1,
+                                  "minItems": 0,
                                   "items": {
                                     "description": "Investigation model - Study Factor",
                                     "title": "Study Factor",
@@ -7226,7 +7226,7 @@
             "$schema": "http://json-schema.org/draft-04/schema#"
           },
           "contact": {
-            "minItems": 1,
+            "minItems": 0,
             "items": {
               "description": "Investigation model (Contact)",
               "title": "Contact",
@@ -7901,7 +7901,7 @@
             "type": "array"
           },
           "studyFactor": {
-            "minItems": 1,
+            "minItems": 0,
             "items": {
               "description": "Investigation model - Study Factor",
               "title": "Study Factor",
@@ -9286,7 +9286,7 @@
             ]
           },
           "publication": {
-            "minItems": 1,
+            "minItems": 0,
             "items": {
               "description": "Investigation model - Publication",
               "title": "Publication",
