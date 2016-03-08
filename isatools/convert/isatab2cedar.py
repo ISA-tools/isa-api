@@ -290,7 +290,7 @@ class ISATab2CEDAR():
                     ("unit", dict([("_value", value_header)]))
                     #("description", dict([("_value", value_header)]))
                 ])
-        json_list.append(json_item)
+                json_list.append(json_item)
         return json_list
 
 
@@ -405,15 +405,22 @@ class ISATab2CEDAR():
         factor_list = []
         for header in node.metadata:
             if header.startswith("Factor Value"):
-                factorValue = dict([
+                 value_header = header.replace("]", "").split("[")[-1]
+                 value_attributes = node.metadata[header][0]
+                 value  = value_attributes[0]
+                 try:
+                    unit = value_attributes.Unit
+                 except AttributeError:
+                     unit = ""
+                 factorValue = dict([
                     ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                     ("@type", "https://repo.metadatacenter.org/model/CharacteristicValue"),
-                    ("type", dict([("_value", "")])),
-                    ("unit", dict([("_value", ""), ("@type", "")])),
-                    ("value", dict([("_value", "")])),
+                    ("type", dict([("_value", value_header)])),
+                    ("unit", dict([("_value", unit), ("@type", "")])),
+                    ("value", dict([("_value", value)])),
                     ("studyFactor", [ self.createStudyFactor("", "") ] )
                     ])
-                factor_list.append(factorValue)
+                 factor_list.append(factorValue)
         return factor_list
 
 

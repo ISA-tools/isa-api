@@ -2292,7 +2292,7 @@
                             }
                           },
                           "factorValue": {
-                            "minItems": 1,
+                            "minItems": 0,
                             "items": {
                               "description": "Investigation Model - Factor Value",
                               "title": "Factor Value",
