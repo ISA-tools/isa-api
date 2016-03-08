@@ -4,11 +4,15 @@ from setuptools import setup
 
 setup(
     name='isatools',
-    version='0.1.2',
+    version='0.1.3',
     packages=['isatools', 'isatools.convert', 'isatools.io', 'isatools.model', 'isatools.sampledata', 
               'isatools.schemas', 'isatools.validate'],
-    package_data={'isatools': ['schemas/cedar/*.json', 'schemas/isa_model_version_1_0_schemas/core/*.json', 
-                               'convert/isa_line_commands/bin/lib/*', 'convert/isa_line_commands/bin/convert.sh',
+    package_data={'isatools': ['schemas/cedar/*.json',
+                               'schemas/isa_model_version_1_0_schemas/core/*.json',
+                               'convert/isa_line_commands/bin/lib/*',
+                               'convert/isa_line_commands/bin/config.sh',
+                               'convert/isa_line_commands/config/*',
+                               'convert/isa_line_commands/bin/convert.sh',
                                'convert/isa_line_commands/bin/validate.sh', 
                                'convert/isa_line_commands/import_layer_deps.jar',
                                'convert/resources/sra/*.xsl'],
