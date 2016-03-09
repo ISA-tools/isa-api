@@ -68,7 +68,7 @@ def load(fp):
                 status=OntologyAnnotation(
                     name=publication_json['status']['annotationValue'],
                     term_accession=publication_json['status']['termAccession'],
-                    term_source=publication_json['status']['termSource']
+                    term_source=term_source_dict[publication_json['status']['termSource']]
                 )
             )
             try:
@@ -122,13 +122,13 @@ def load(fp):
             for assay_json in study_json['assays']:
                 for assay_characteristics_category_json in assay_json['characteristicCategories']:
                     characteristic_category = OntologyAnnotation(
+                        id_=assay_characteristics_category_json['@id'],
                         name=assay_characteristics_category_json['characteristicType']['annotationValue'],
                         term_source=term_source_dict[assay_characteristics_category_json['characteristicType']['termSource']],
                         term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
                     )
                     # study.characteristic_categories.append(characteristic_category)
                     categories_dict[characteristic_category.id] = characteristic_category
-
         for study_json in isajson['studies']:
             logger.debug('Start building Study object')
             study = Study(
