@@ -8,9 +8,9 @@ script:
 - coverage run --source=isatools setup.py test
 - behave --format=progress features/isa-file-handler.feature
 branches:
-  only:
-  - develop
-  - master
+  except:
+    - /^feat/
+    - /^enhance/
 deploy:
   provider: pypi
   user: zigur
