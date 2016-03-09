@@ -116,5 +116,5 @@ crashlytics-build.properties
 # Behaviour-driven-development output directory
 features/test_outputs
 
-# jenv local file
+# jenv local file (for Java Versions)
 .java-version
