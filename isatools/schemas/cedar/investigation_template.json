@@ -714,7 +714,7 @@
             "$schema": "http://json-schema.org/draft-04/schema#"
           },
           "process": {
-            "minItems": 1,
+            "minItems": 0,
             "items": {
               "description": "Investigation Model - Process",
               "title": "Process",
