@@ -6,6 +6,7 @@ from uuid import uuid4
 from os import listdir
 from os.path import isdir, join
 from jsonschema import RefResolver, Draft4Validator
+from jsonschema.exceptions import ValidationError
 
 #from bcbio.isatab.parser import InvestigationParser
 from isatools.io.isatab_parser import parse
@@ -70,8 +71,8 @@ class ISATab2CEDAR():
                     ])
                 else:
                     investigationObject = dict([
-                        ("schemaID", "https://repo.metadatacenter.org/UUID"),
                         ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
+                        ("_templateId", "http://example.org"),
                         ("@type", "https://repo.metadatacenter.org/model/Investigation"),
                         ("@context", dict(
                             [
@@ -97,6 +98,15 @@ class ISATab2CEDAR():
                 cedar_json = investigationObject
 
 
+                try:
+                    validator.validate(cedar_json, schema)
+                except ValidationError as e:
+                    error_file_name = os.path.join(json_dir, "error.log")
+                    with open(error_file_name, "w") as errorfile:
+                        errorfile.write(e.message)
+                        errorfile.write(e.cause)
+                        errorfile.close()
+
                 #save output json
                 if (inv_identifier):
                     file_name = os.path.join(json_dir,isa_tab.metadata['Investigation Identifier']+".json")
@@ -107,7 +117,6 @@ class ISATab2CEDAR():
                     json.dump(cedar_json, outfile, indent=4, sort_keys=True)
                     outfile.close()
 
-                validator.validate(cedar_json, schema)
                 print("... conversion finished.")
 
     def createStudiesList(self, studies):
