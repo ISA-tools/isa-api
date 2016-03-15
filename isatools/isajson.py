@@ -15,7 +15,7 @@ def validates(isa_json, reporting_level=logging.INFO):
     logger = logging.getLogger(__name__)
     try:  # if can load the JSON (if the JSON is well-formed already), validate the JSON against our schemas
         investigation_schema_path = os.path.join(os.path.dirname(__file__) + '/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json')
-        investigation_schema = json.load(investigation_schema_path)
+        investigation_schema = json.load(open(investigation_schema_path))
         resolver = RefResolver('file://' + investigation_schema_path, investigation_schema)
         validator = Draft4Validator(investigation_schema, resolver=resolver)
         validator.validate(isa_json)
