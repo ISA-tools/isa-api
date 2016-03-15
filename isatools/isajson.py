@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 def validates(isa_json, reporting_level=logging.INFO):
     """Validate JSON"""
+    logging.basicConfig(level=reporting_level)
+    logger = logging.getLogger(__name__)
     try:  # if can load the JSON (if the JSON is well-formed already), validate the JSON against our schemas
         investigation_schema_path = os.path.join(os.path.dirname(__file__) + '/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json')
         investigation_schema = json.load(investigation_schema_path)
@@ -34,10 +36,11 @@ def validate(fp, reporting_level=logging.INFO):  # default reporting
         except ValueError as json_load_error:
             logger.fatal("There was an error when trying to parse the JSON")
             logger.fatal(json_load_error)
+            raise json_load_error
     except SystemError as system_error:
         logger.fatal("There was a general system error")
         logger.fatal(system_error)
-
+        raise SystemError
 
 def load(fp):
 
