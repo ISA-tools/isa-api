@@ -2,9 +2,41 @@ from isatools.model.v1 import *
 import json
 import logging
 from networkx import DiGraph
+from jsonschema import Draft4Validator, RefResolver, ValidationError
+import os
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
+
+
+def validates(isa_json, reporting_level=logging.INFO):
+    """Validate JSON"""
+    try:  # if can load the JSON (if the JSON is well-formed already), validate the JSON against our schemas
+        investigation_schema_path = os.path.join(os.path.dirname(__file__) + '/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json')
+        investigation_schema = json.load(investigation_schema_path)
+        resolver = RefResolver('file://' + investigation_schema_path, investigation_schema)
+        validator = Draft4Validator(investigation_schema, resolver=resolver)
+        validator.validate(isa_json)
+        # if the JSON is validated against ISA JSON, let's start checking content
+    except ValidationError as isa__schema_validation_error:
+        logger.fatal("There was an error when vaidating the JSON against the ISA schemas")
+        logger.fatal(isa__schema_validation_error)
+
+
+def validate(fp, reporting_level=logging.INFO):  # default reporting
+    """Validate JSON file"""
+    logging.basicConfig(level=reporting_level)
+    logger = logging.getLogger(__name__)
+    try:  # first, try open the file as a JSON
+        try:
+            isa_json = json.load(fp=fp)
+            validates(isa_json, reporting_level)
+        except ValueError as json_load_error:
+            logger.fatal("There was an error when trying to parse the JSON")
+            logger.fatal(json_load_error)
+    except SystemError as system_error:
+        logger.fatal("There was a general system error")
+        logger.fatal(system_error)
 
 
 def load(fp):
