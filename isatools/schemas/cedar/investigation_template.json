@@ -3730,7 +3730,7 @@
                             "$schema": "http://json-schema.org/draft-04/schema#"
                           },
                           "characteristic": {
-                            "minItems": 1,
+                            "minItems": 0,
                             "items": {
                               "description": "Investigation Model - Characteristic",
                               "title": "Characteristic",
@@ -8197,7 +8197,7 @@
                         "$schema": "http://json-schema.org/draft-04/schema#"
                       },
                       "characteristic": {
-                        "minItems": 1,
+                        "minItems": 0,
                         "items": {
                           "description": "Investigation Model - Characteristic",
                           "title": "Characteristic",
