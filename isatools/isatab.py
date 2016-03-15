@@ -8,6 +8,7 @@ import io
 import networkx as nx
 import itertools
 
+
 def validate(isatab_dir, config_dir):
     """ Validate an ISA-Tab archive using the Java validator that is embedded in the Python ISA-API
     :param isatab_dir: Path to ISA-Tab files
@@ -33,18 +34,18 @@ def validate(isatab_dir, config_dir):
 def dump(isa_obj, output_path):
 
     def _build_roles_str(roles=list()):
-            roles_names = ''
-            roles_accession_numbers = ''
-            roles_source_refs = ''
-            for role in roles:
-                roles_names += role.name + ';'
-                roles_accession_numbers += role.term_accession + ';'
-                roles_source_refs += role.term_source.name + ';'
-            if len(roles) > 0:
-                roles_names = roles_names[:-1]
-                roles_accession_numbers = roles_accession_numbers[:-1]
-                roles_source_refs = roles_source_refs[:-1]
-            return roles_names, roles_accession_numbers, roles_source_refs
+        roles_names = ''
+        roles_accession_numbers = ''
+        roles_source_refs = ''
+        for role in roles:
+            roles_names += role.name + ';'
+            roles_accession_numbers += role.term_accession + ';'
+            roles_source_refs += role.term_source.name + ';'
+        if len(roles) > 0:
+            roles_names = roles_names[:-1]
+            roles_accession_numbers = roles_accession_numbers[:-1]
+            roles_source_refs = roles_source_refs[:-1]
+        return roles_names, roles_accession_numbers, roles_source_refs
 
     def _build_contacts_section_df(prefix='Investigation', contacts=list()):
         contacts_df_cols = [prefix + ' Person Last Name',
