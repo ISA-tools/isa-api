@@ -20,9 +20,9 @@ def validates(isa_json, reporting_level=logging.INFO):
         validator = Draft4Validator(investigation_schema, resolver=resolver)
         validator.validate(isa_json)
         # if the JSON is validated against ISA JSON, let's start checking content
-    except ValidationError as isa__schema_validation_error:
-        logger.fatal("There was an error when vaidating the JSON against the ISA schemas")
-        logger.fatal(isa__schema_validation_error)
+    except ValidationError as isa_schema_validation_error:
+        logger.fatal("There was an error when validating the JSON against the ISA schemas")
+        raise isa_schema_validation_error
 
 
 def validate(fp, reporting_level=logging.INFO):  # default reporting
@@ -35,12 +35,10 @@ def validate(fp, reporting_level=logging.INFO):  # default reporting
             validates(isa_json, reporting_level)
         except ValueError as json_load_error:
             logger.fatal("There was an error when trying to parse the JSON")
-            logger.fatal(json_load_error)
             raise json_load_error
     except SystemError as system_error:
         logger.fatal("There was a general system error")
-        logger.fatal(system_error)
-        raise SystemError
+        raise system_error
 
 def load(fp):
 
