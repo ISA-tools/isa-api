@@ -1259,7 +1259,7 @@
                   "type": "object",
                   "properties": {
                     "dataFile": {
-                      "minItems": 1,
+                      "minItems": 0,
                       "items": {
                         "description": "Investigation model - Data File",
                         "title": "Data File",
@@ -1436,7 +1436,7 @@
                       "type": "array"
                     },
                     "sample": {
-                      "minItems": 1,
+                      "minItems": 0,
                       "items": {
                         "description": "Investigation Model - Sample",
                         "title": "Sample",
@@ -1506,7 +1506,7 @@
                             "$schema": "http://json-schema.org/draft-04/schema#"
                           },
                           "characteristic": {
-                            "minItems": 1,
+                            "minItems": 0,
                             "items": {
                               "description": "Investigation Model - Characteristic",
                               "title": "Characteristic",
@@ -2820,7 +2820,7 @@
                       "title": "Output"
                     },
                     "result": {
-                      "minItems": 1,
+                      "minItems": 0,
                       "items": {
                         "description": "Investigation model - Result",
                         "title": "Result",
@@ -3730,7 +3730,7 @@
                             "$schema": "http://json-schema.org/draft-04/schema#"
                           },
                           "characteristic": {
-                            "minItems": 1,
+                            "minItems": 0,
                             "items": {
                               "description": "Investigation Model - Characteristic",
                               "title": "Characteristic",
@@ -8197,7 +8197,7 @@
                         "$schema": "http://json-schema.org/draft-04/schema#"
                       },
                       "characteristic": {
-                        "minItems": 1,
+                        "minItems": 0,
                         "items": {
                           "description": "Investigation Model - Characteristic",
                           "title": "Characteristic",
