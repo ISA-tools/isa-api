@@ -20,10 +20,17 @@ class ValidateIsaJsonTest(TestCase):
         isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'minimal_syntax.json')))
 
 
-class ValidateIsaTabTest:
+class ValidateIsaTabTest(TestCase):
 
     def setUp(self):
-        pass
+        self._dir = os.path.dirname(__file__)
 
     def tearDown(self):
         pass
+
+    def test_invalid_tab_load(self):
+        with self.assertRaises(ValueError):
+            isatab.validatei(open(os.path.join(self._dir, 'data', 'tab', 'invalid_i', 'i_01.txt')))
+        with self.assertRaises(ValueError):
+            isatab.validatei(open(os.path.join(self._dir, 'data', 'tab', 'invalid_i', 'i_02.txt')))
+
