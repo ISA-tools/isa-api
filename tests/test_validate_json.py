@@ -17,12 +17,6 @@ class ValidateJsonTest(TestCase):
                                                      "investigation_template.json")
         self._mtbls_test_json_dir = os.path.join(os.path.dirname(__file__), "./data", "metabolights")
 
-    # def test_cedar_example(self):
-    #   validateJsonAgainstSchemas("../isatools/schemas/cedar/InvestigationSchema.json","../isatools/schemas/cedar/InvestigationExampleInstances.json")
-    #
-    # def test_cedar_bii_i_1(self):
-    #   validateJsonAgainstSchemas("../isatools/schemas/cedar/InvestigationSchema.json","./data/BII-I-1.json")
-
     def test_sampledata_bii_i_1(self):
         try:
             validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir, "BII-I-1.json"))
