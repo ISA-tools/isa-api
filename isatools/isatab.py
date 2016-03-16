@@ -41,12 +41,15 @@ def _read_investigation_file(fp):
 
     def _build_section_df(f):
         import numpy as np
-        df = pd.read_csv(f, sep='\t').T  # Load and transpose ISA file section
-        df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
-        df.reset_index(inplace=True)  # Reset index so it is accessible as column
-        df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
-        print(df.columns)
-        df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
+        try:
+            df = pd.read_csv(f, sep='\t').T  # Load and transpose ISA file section
+            df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
+            df.reset_index(inplace=True)  # Reset index so it is accessible as column
+            df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
+            df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
+        except ValueError:
+            logger.error("A section has no content")
+            raise ValidationError("A section has no content")
         return df
 
     df_dict = dict()
