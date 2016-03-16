@@ -7,6 +7,192 @@ import pandas as pd
 import io
 import networkx as nx
 import itertools
+import logging
+
+logging.basicConfig(level=logging.ERROR)
+logger = logging.getLogger(__name__)
+
+
+class ValidationError(Exception): pass
+
+
+def _read_investigation_file(fp):
+    """Parses investigation file and returns a dictionary of dataframes of each section"""
+
+    def _peek(f):
+        position = f.tell()
+        l = f.readline()
+        f.seek(position)
+        return l
+
+    def _read_tab_section(f, sec_key, next_sec_key=None):
+
+        line = f.readline()
+        if not line.rstrip() == sec_key:
+            raise ValidationError("Expected: " + sec_key + " section, but got: " + line)
+        memf = io.StringIO()
+        while not _peek(f=f).rstrip() == next_sec_key:
+            line = f.readline()
+            if not line:
+                break
+            memf.write(line.rstrip() + '\n')
+        memf.seek(0)
+        return memf
+
+    def _build_section_df(f):
+        import numpy as np
+        df = pd.read_csv(f, sep='\t').T  # Load and transpose ISA file section
+        df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
+        df.reset_index(inplace=True)  # Reset index so it is accessible as column
+        df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
+        print(df.columns)
+        df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
+        return df
+
+    df_dict = dict()
+
+    # Read in investigation file into DataFrames first
+    df_dict['ONTOLOGY SOURCE REFERENCE'] = _build_section_df(_read_tab_section(
+        f=fp,
+        sec_key='ONTOLOGY SOURCE REFERENCE',
+        next_sec_key='INVESTIGATION'
+    ))
+    if not {'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}\
+            .issubset(set(df_dict['ONTOLOGY SOURCE REFERENCE'].columns.values)):
+        raise ValidationError("ONTOLOGY SOURCE REFERENCE section does not contain required fields")
+    df_dict['INVESTIGATION'] = _build_section_df(_read_tab_section(
+        f=fp,
+        sec_key='INVESTIGATION',
+        next_sec_key='INVESTIGATION PUBLICATIONS'
+    ))
+    if not {'Investigation Identifier', 'Investigation Title', 'Investigation Description',
+            'Investigation Submission Date', 'Investigation Public Release Date'}\
+            .issubset(set(df_dict['INVESTIGATION'].columns.values)):
+        raise ValidationError("INVESTIGATION section does not contain required fields")
+    df_dict['INVESTIGATION PUBLICATIONS'] = _build_section_df(_read_tab_section(
+        f=fp,
+        sec_key='INVESTIGATION PUBLICATIONS',
+        next_sec_key='INVESTIGATION CONTACTS'
+    ))
+    if not {'Investigation PubMed ID', 'Investigation Publication DOI', 'Investigation Publication Author List',
+            'Investigation Publication Title', 'Investigation Publication Status',
+            'Investigation Publication Status Term Accession Number',
+            'Investigation Publication Status Term Source REF'}\
+            .issubset(set(df_dict['INVESTIGATION PUBLICATIONS'].columns.values)):
+        raise ValidationError("INVESTIGATION PUBLICATIONS section does not contain required fields")
+    df_dict['INVESTIGATION CONTACTS'] = _build_section_df(_read_tab_section(
+        f=fp,
+        sec_key='INVESTIGATION CONTACTS',
+        next_sec_key='STUDY'
+    ))
+    if not {'Investigation Person Last Name', 'Investigation Person First Name', 'Investigation Person Mid Initials',
+            'Investigation Person Email', 'Investigation Person Phone', 'Investigation Person Fax',
+            'Investigation Person Address', 'Investigation Person Affiliation', 'Investigation Person Roles',
+            'Investigation Person Roles Term Accession Number', 'Investigation Person Roles Term Source REF'}\
+            .issubset(set(df_dict['INVESTIGATION CONTACTS'].columns.values)):
+            raise ValidationError("INVESTIGATION CONTACTS section does not contain required fields")
+    study_count = 0
+    while _peek(fp):  # Iterate through STUDY blocks until end of file
+        df_dict['STUDY.' + str(study_count)] = _build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='STUDY',
+            next_sec_key='STUDY DESIGN DESCRIPTORS'
+        ))
+        if not {'Study Identifier', 'Study Title', 'Study Description'}\
+                .issubset(set(df_dict['STUDY.' + str(study_count)].columns.values)):
+            raise ValidationError("STUDY.{} section does not contain required fields".format(study_count))
+        df_dict['STUDY DESIGN DESCRIPTORS.' + str(study_count)] = _build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='STUDY DESIGN DESCRIPTORS',
+            next_sec_key='STUDY PUBLICATIONS'
+        ))
+        if not {'Study Design Type', 'Study Design Type Term Accession Number', 'Study Design Type Term Source REF'}\
+                .issubset(set(df_dict['STUDY DESIGN DESCRIPTORS.' + str(study_count)].columns.values)):
+            raise ValidationError("STUDY DESIGN DESCRIPTORS.{} section does not contain required fields".format(study_count))
+        df_dict['STUDY PUBLICATIONS.' + str(study_count)] = _build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='STUDY PUBLICATIONS',
+            next_sec_key='STUDY FACTORS'
+        ))
+        if not {'Study PubMed ID', 'Study Publication DOI', 'Study Publication Author List', 'Study Publication Title',
+                'Study Publication Status', 'Study Publication Status Term Accession Number',
+                'Study Publication Status Term Source REF'}\
+                .issubset(set(df_dict['STUDY PUBLICATIONS.' + str(study_count)].columns.values)):
+            raise ValidationError("STUDY PUBLICATIONS.{} section does not contain required fields".format(study_count))
+        df_dict['STUDY FACTORS.' + str(study_count)] = _build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='STUDY FACTORS',
+            next_sec_key='STUDY ASSAYS'
+        ))
+        if not {'Study Factor Name', 'Study Factor Type', 'Study Factor Type Term Accession Number',
+                'Study Factor Type Term Source REF'}\
+                .issubset(set(df_dict['STUDY FACTORS.' + str(study_count)].columns.values)):
+            raise ValidationError("STUDY FACTORS.{} section does not contain required fields".format(study_count))
+        df_dict['STUDY ASSAYS.' + str(study_count)] = _build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='STUDY ASSAYS',
+            next_sec_key='STUDY PROTOCOLS'
+        ))
+        if not {'Study Assay Measurement Type', 'Study Assay Measurement Type Term Accession Number',
+                'Study Assay Measurement Type Term Source REF', 'Study Assay Technology Type',
+                'Study Assay Technology Type Term Accession Number', 'Study Assay Technology Type Term Source REF',
+                'Study Assay Technology Platform', 'Study Assay File Name'}\
+                .issubset(set(df_dict['STUDY ASSAYS.' + str(study_count)].columns.values)):
+            raise ValidationError("STUDY ASSAYS.{} section does not contain required fields".format(study_count))
+        df_dict['STUDY PROTOCOLS.' + str(study_count)].append(_build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='STUDY PROTOCOLS',
+            next_sec_key='STUDY CONTACTS'
+        )))
+        if not {'Study Protocol Name', 'Study Protocol Type', 'Study Protocol Type Term Accession Number',
+                'Study Protocol Type Term Source REF', 'Study Protocol Description', 'Study Protocol URI',
+                'Study Protocol Version', 'Study Protocol Parameters Name',
+                'Study Protocol Parameters Name Term Accession Number',
+                'Study Protocol Parameters Name Term Source REF', 'Study Protocol Components Name',
+                'Study Protocol Components Type', 'Study Protocol Components Type Term Accession Number',
+                'Study Protocol Components Type Term Source REF'}\
+                .issubset(set(df_dict['STUDY PROTOCOLS.' + str(study_count)].columns.values)):
+            raise ValidationError("STUDY PROTOCOLS.{} section does not contain required fields".format(study_count))
+        df_dict['STUDY CONTACTS.' + str(study_count)] = _build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='STUDY CONTACTS',
+            next_sec_key='STUDY'
+        ))
+        if not {'Study Person Last Name', 'Study Person First Name', 'Study Person Mid Initials', 'Study Person Email',
+                'Study Person Phone', 'Study Person Fax', 'Study Person Address', 'Study Person Affiliation',
+                'Study Person Roles', 'Study Person Roles Term Accession Number', 'Study Person Roles Term Source REF'}\
+                .issubset(set(df_dict['STUDY CONTACTS'].columns.values)):
+            raise ValidationError("STUDY CONTACTS section does not contain required fields")
+        study_count += 1
+    return df_dict
+
+
+def validate_tab(isatab_dir, reporting_level=logging.INFO):
+    """Validate an ISA tab archive (directory)"""
+    logging.basicConfig(level=reporting_level)
+    logger = logging.getLogger(__name__)
+    # Check if an i_ file exists
+    try:
+        i_file = [fname for fname in os.listdir(isatab_dir) if fname.startswith('i_') and fname.endswith('.txt')]
+        if len(i_file) > 1:
+            raise ValidationError
+        validatei(open(os.path.join(isatab_dir, i_file[0])))
+    except ValidationError as i_file_validation_error:
+        logger.fatal("There was an error when validating the structure of the ISA tab investigation file")
+        raise i_file_validation_error
+
+
+def validatei(fp, reporting_level=logging.INFO):
+    """Validate an ISA tab, starting from i file"""
+    logging.basicConfig(level=reporting_level)
+    # logger = logging.getLogger(__name__)
+    _read_investigation_file(fp)
+
+
+def validatez(isatab_dir, config_dir):
+    """Validate an ISA tab zip archive"""
+    pass
+
 
 def validate(isatab_dir, config_dir):
     """ Validate an ISA-Tab archive using the Java validator that is embedded in the Python ISA-API
@@ -968,107 +1154,6 @@ def assert_tab_content_equal(fp_x, fp_y):
             print(str(e))
             return False
 
-
-def _read_investigation_file(fp):
-
-    def _peek(f):
-        position = f.tell()
-        l = f.readline()
-        f.seek(position)
-        return l
-
-    def _read_tab_section(f, sec_key, next_sec_key=None):
-
-        line = f.readline()
-        if not line.rstrip() == sec_key:
-            raise IOError("Expected: " + sec_key + " section, but got: " + line)
-        memf = io.StringIO()
-        while not _peek(f=f).rstrip() == next_sec_key:
-            line = f.readline()
-            if not line:
-                break
-            memf.write(line.rstrip() + '\n')
-        memf.seek(0)
-        return memf
-
-    def _build_section_df(f):
-        import numpy as np
-        df = pd.read_csv(f, sep='\t').T  # Load and transpose ISA file section
-        df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
-        df.reset_index(inplace=True)  # Reset index so it is accessible as column
-        df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
-        df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
-        return df
-
-    df_dict = dict()
-
-    # Read in investigation file into DataFrames first
-    df_dict['ontology_sources'] = _build_section_df(_read_tab_section(
-        f=fp,
-        sec_key='ONTOLOGY SOURCE REFERENCE',
-        next_sec_key='INVESTIGATION'
-    ))
-    # assert({'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
-    #        .issubset(set(ontology_sources_df.columns.values)))  # Check required labels are present
-    df_dict['investigation']  = _build_section_df(_read_tab_section(
-        f=fp,
-        sec_key='INVESTIGATION',
-        next_sec_key='INVESTIGATION PUBLICATIONS'
-    ))
-    df_dict['i_publications']  = _build_section_df(_read_tab_section(
-        f=fp,
-        sec_key='INVESTIGATION PUBLICATIONS',
-        next_sec_key='INVESTIGATION CONTACTS'
-    ))
-    df_dict['i_contacts']  = _build_section_df(_read_tab_section(
-        f=fp,
-        sec_key='INVESTIGATION CONTACTS',
-        next_sec_key='STUDY'
-    ))
-    df_dict['studies'] = list()
-    df_dict['s_design_descriptors'] = list()
-    df_dict['s_publications'] = list()
-    df_dict['s_factors'] = list()
-    df_dict['s_assays'] = list()
-    df_dict['s_protocols'] = list()
-    df_dict['s_contacts'] = list()
-    while _peek(fp):  # Iterate through STUDY blocks until end of file
-        df_dict['studies'].append(_build_section_df(_read_tab_section(
-            f=fp,
-            sec_key='STUDY',
-            next_sec_key='STUDY DESIGN DESCRIPTORS'
-        )))
-        df_dict['s_design_descriptors'] .append(_build_section_df(_read_tab_section(
-            f=fp,
-            sec_key='STUDY DESIGN DESCRIPTORS',
-            next_sec_key='STUDY PUBLICATIONS'
-        )))
-        df_dict['s_publications'].append(_build_section_df(_read_tab_section(
-            f=fp,
-            sec_key='STUDY PUBLICATIONS',
-            next_sec_key='STUDY FACTORS'
-        )))
-        df_dict['s_factors'].append(_build_section_df(_read_tab_section(
-            f=fp,
-            sec_key='STUDY FACTORS',
-            next_sec_key='STUDY ASSAYS'
-        )))
-        df_dict['s_assays'].append(_build_section_df(_read_tab_section(
-            f=fp,
-            sec_key='STUDY ASSAYS',
-            next_sec_key='STUDY PROTOCOLS'
-        )))
-        df_dict['s_protocols'].append(_build_section_df(_read_tab_section(
-            f=fp,
-            sec_key='STUDY PROTOCOLS',
-            next_sec_key='STUDY CONTACTS'
-        )))
-        df_dict['s_contacts'].append(_build_section_df(_read_tab_section(
-            f=fp,
-            sec_key='STUDY CONTACTS',
-            next_sec_key='STUDY'
-        )))
-    return df_dict
 
 """ Everything below this line is work in progress. You're best off ignoring it! """
 
