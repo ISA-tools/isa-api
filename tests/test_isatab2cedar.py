@@ -45,18 +45,18 @@ class ISAtab2CEDARTest(TestCase):
         print("\t... done")
 
 
-    def test_scidata_conversion(self):
-        self.isa2cedar = ISATab2CEDAR("http://www.nature.com/sdata/")
-        self.folder = os.path.join("/Users/agbeltran/work-dev/isa-explorer/", "data")
-        self.path = os.path.abspath(self.folder)
-
-        # find all subdirectories in self.path directory
-        self.directories = next(os.walk(self.path))[1]
-
-        for directory in self.directories:
-            print("Converting ", directory, " ...")
-            self.isa2cedar.createCEDARjson(os.path.join(self.path, directory),
-                                           os.path.join(self._data_dir, "sdata"), False)
-        print("\t... done")
+    # def test_scidata_conversion(self):
+    #     self.isa2cedar = ISATab2CEDAR("http://www.nature.com/sdata/")
+    #     self.folder = os.path.join("/Users/agbeltran/work-dev/isa-explorer/", "data")
+    #     self.path = os.path.abspath(self.folder)
+    #
+    #     # find all subdirectories in self.path directory
+    #     self.directories = next(os.walk(self.path))[1]
+    #
+    #     for directory in self.directories:
+    #         print("Converting ", directory, " ...")
+    #         self.isa2cedar.createCEDARjson(os.path.join(self.path, directory),
+    #                                        os.path.join(self._data_dir, "sdata"), False)
+    #     print("\t... done")
 
 

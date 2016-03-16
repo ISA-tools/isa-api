@@ -35,7 +35,10 @@ class ISATab2CEDAR():
         validator = Draft4Validator(schema, resolver=resolver)
 
         isa_tab = parse(work_dir)
-        #print(isa_tab)
+        # parser_file_name = os.path.join(json_dir, "parser.log")
+        # with open(parser_file_name, "w") as parserfile:
+        #                 parserfile.write(str(isa_tab))
+        #                 parserfile.close()
 
         if isa_tab is None:
             print("No ISAtab dataset found")
@@ -96,7 +99,16 @@ class ISATab2CEDAR():
                     ])
 
                 cedar_json = investigationObject
+                try:
+                    investigation_identifier = isa_tab.metadata['Investigation Identifier']
+                except KeyError:
+                    investigation_identifier = ""
 
+                try:
+                    study_identifier = isa_tab.studies[0].metadata['Study Identifier']
+                    #study_identifier = study_identifier[study_identifier.find("/")+1:]
+                except KeyError:
+                    study_identifier = ""
 
                 try:
                     validator.validate(cedar_json, schema)
@@ -109,10 +121,10 @@ class ISATab2CEDAR():
 
                 #save output json
                 if (inv_identifier):
-                    file_name = os.path.join(json_dir,isa_tab.metadata['Investigation Identifier']+".json")
+                    file_name = os.path.join(json_dir,investigation_identifier+".json")
                 else:
                     #print isa_tab.studies[0]
-                    file_name = os.path.join(json_dir,isa_tab.studies[0].metadata['Study Identifier']+".json")
+                    file_name = os.path.join(json_dir,study_identifier+".json")
                 with open(file_name, "w") as outfile:
                     json.dump(cedar_json, outfile, indent=4, sort_keys=True)
                     outfile.close()
