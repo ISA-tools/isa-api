@@ -2,6 +2,7 @@ from unittest import TestCase
 from isatools import isajson
 from isatools import isatab
 import os
+from isatools.isatab import ValidationError
 
 
 class ValidateIsaJsonTest(TestCase):
@@ -28,9 +29,13 @@ class ValidateIsaTabTest(TestCase):
     def tearDown(self):
         pass
 
-    def test_invalid_tab_load(self):
-        with self.assertRaises(ValueError):
+    def test_i_no_content(self):
+        with self.assertRaises(ValidationError):
             isatab.validatei(open(os.path.join(self._dir, 'data', 'tab', 'invalid_i', 'i_01.txt')))
-        with self.assertRaises(ValueError):
+
+    def test_i_no_required_labels(self):
+        with self.assertRaises(ValidationError):
             isatab.validatei(open(os.path.join(self._dir, 'data', 'tab', 'invalid_i', 'i_02.txt')))
 
+    def test_i_valid_labels(self):
+        isatab.validatei(open(os.path.join(self._dir, 'data', 'tab', 'valid_i', 'i_01.txt')))
