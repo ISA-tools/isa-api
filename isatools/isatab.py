@@ -151,11 +151,11 @@ def _read_investigation_file(fp):
                 .issubset(set(df_dict['STUDY ASSAYS.' + str(study_count)].columns.values)):
             logger.fatal("STUDY ASSAYS.{} section does not contain required fields".format(study_count))
             raise ValidationError("STUDY ASSAYS.{} section does not contain required fields".format(study_count))
-        df_dict['STUDY PROTOCOLS.' + str(study_count)].append(_build_section_df(_read_tab_section(
+        df_dict['STUDY PROTOCOLS.' + str(study_count)] = _build_section_df(_read_tab_section(
             f=fp,
             sec_key='STUDY PROTOCOLS',
             next_sec_key='STUDY CONTACTS'
-        )))
+        ))
         if not {'Study Protocol Name', 'Study Protocol Type', 'Study Protocol Type Term Accession Number',
                 'Study Protocol Type Term Source REF', 'Study Protocol Description', 'Study Protocol URI',
                 'Study Protocol Version', 'Study Protocol Parameters Name',
