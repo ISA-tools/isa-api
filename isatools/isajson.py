@@ -40,6 +40,7 @@ def validate(fp, reporting_level=logging.INFO):  # default reporting
         logger.fatal("There was a general system error")
         raise system_error
 
+
 def load(fp):
 
     def _build_assay_graph(process_sequence=list()):

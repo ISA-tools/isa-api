@@ -48,8 +48,8 @@ def _read_investigation_file(fp):
             df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
             df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
         except ValueError:
-            logger.error("A section has no content")
-            raise ValidationError("A section has no content")
+            logger.fatal("A section of the investigation file has no content")
+            raise ValidationError("A section of the investigation file has no content")
         return df
 
     df_dict = dict()
@@ -62,6 +62,7 @@ def _read_investigation_file(fp):
     ))
     if not {'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}\
             .issubset(set(df_dict['ONTOLOGY SOURCE REFERENCE'].columns.values)):
+        logger.fatal("ONTOLOGY SOURCE REFERENCE section does not contain required fields")
         raise ValidationError("ONTOLOGY SOURCE REFERENCE section does not contain required fields")
     df_dict['INVESTIGATION'] = _build_section_df(_read_tab_section(
         f=fp,
@@ -71,6 +72,7 @@ def _read_investigation_file(fp):
     if not {'Investigation Identifier', 'Investigation Title', 'Investigation Description',
             'Investigation Submission Date', 'Investigation Public Release Date'}\
             .issubset(set(df_dict['INVESTIGATION'].columns.values)):
+        logger.fatal("INVESTIGATION section does not contain required fields")
         raise ValidationError("INVESTIGATION section does not contain required fields")
     df_dict['INVESTIGATION PUBLICATIONS'] = _build_section_df(_read_tab_section(
         f=fp,
@@ -82,6 +84,7 @@ def _read_investigation_file(fp):
             'Investigation Publication Status Term Accession Number',
             'Investigation Publication Status Term Source REF'}\
             .issubset(set(df_dict['INVESTIGATION PUBLICATIONS'].columns.values)):
+        logger.fatal("INVESTIGATION PUBLICATIONS section does not contain required fields")
         raise ValidationError("INVESTIGATION PUBLICATIONS section does not contain required fields")
     df_dict['INVESTIGATION CONTACTS'] = _build_section_df(_read_tab_section(
         f=fp,
@@ -93,6 +96,7 @@ def _read_investigation_file(fp):
             'Investigation Person Address', 'Investigation Person Affiliation', 'Investigation Person Roles',
             'Investigation Person Roles Term Accession Number', 'Investigation Person Roles Term Source REF'}\
             .issubset(set(df_dict['INVESTIGATION CONTACTS'].columns.values)):
+            logger.fatal("INVESTIGATION CONTACTS section does not contain required fields")
             raise ValidationError("INVESTIGATION CONTACTS section does not contain required fields")
     study_count = 0
     while _peek(fp):  # Iterate through STUDY blocks until end of file
@@ -103,6 +107,7 @@ def _read_investigation_file(fp):
         ))
         if not {'Study Identifier', 'Study Title', 'Study Description'}\
                 .issubset(set(df_dict['STUDY.' + str(study_count)].columns.values)):
+            logger.fatal("STUDY section does not contain required fields")
             raise ValidationError("STUDY.{} section does not contain required fields".format(study_count))
         df_dict['STUDY DESIGN DESCRIPTORS.' + str(study_count)] = _build_section_df(_read_tab_section(
             f=fp,
@@ -111,6 +116,7 @@ def _read_investigation_file(fp):
         ))
         if not {'Study Design Type', 'Study Design Type Term Accession Number', 'Study Design Type Term Source REF'}\
                 .issubset(set(df_dict['STUDY DESIGN DESCRIPTORS.' + str(study_count)].columns.values)):
+            logger.fatal("STUDY DESIGN DESCRIPTORS.{} section does not contain required fields".format(study_count))
             raise ValidationError("STUDY DESIGN DESCRIPTORS.{} section does not contain required fields".format(study_count))
         df_dict['STUDY PUBLICATIONS.' + str(study_count)] = _build_section_df(_read_tab_section(
             f=fp,
@@ -121,6 +127,7 @@ def _read_investigation_file(fp):
                 'Study Publication Status', 'Study Publication Status Term Accession Number',
                 'Study Publication Status Term Source REF'}\
                 .issubset(set(df_dict['STUDY PUBLICATIONS.' + str(study_count)].columns.values)):
+            logger.fatal("STUDY PUBLICATIONS.{} section does not contain required fields".format(study_count))
             raise ValidationError("STUDY PUBLICATIONS.{} section does not contain required fields".format(study_count))
         df_dict['STUDY FACTORS.' + str(study_count)] = _build_section_df(_read_tab_section(
             f=fp,
@@ -130,6 +137,7 @@ def _read_investigation_file(fp):
         if not {'Study Factor Name', 'Study Factor Type', 'Study Factor Type Term Accession Number',
                 'Study Factor Type Term Source REF'}\
                 .issubset(set(df_dict['STUDY FACTORS.' + str(study_count)].columns.values)):
+            logger.fatal("STUDY FACTORS.{} section does not contain required fields".format(study_count))
             raise ValidationError("STUDY FACTORS.{} section does not contain required fields".format(study_count))
         df_dict['STUDY ASSAYS.' + str(study_count)] = _build_section_df(_read_tab_section(
             f=fp,
@@ -141,6 +149,7 @@ def _read_investigation_file(fp):
                 'Study Assay Technology Type Term Accession Number', 'Study Assay Technology Type Term Source REF',
                 'Study Assay Technology Platform', 'Study Assay File Name'}\
                 .issubset(set(df_dict['STUDY ASSAYS.' + str(study_count)].columns.values)):
+            logger.fatal("STUDY ASSAYS.{} section does not contain required fields".format(study_count))
             raise ValidationError("STUDY ASSAYS.{} section does not contain required fields".format(study_count))
         df_dict['STUDY PROTOCOLS.' + str(study_count)].append(_build_section_df(_read_tab_section(
             f=fp,
@@ -155,6 +164,7 @@ def _read_investigation_file(fp):
                 'Study Protocol Components Type', 'Study Protocol Components Type Term Accession Number',
                 'Study Protocol Components Type Term Source REF'}\
                 .issubset(set(df_dict['STUDY PROTOCOLS.' + str(study_count)].columns.values)):
+            logger.fatal("STUDY PROTOCOLS.{} section does not contain required fields".format(study_count))
             raise ValidationError("STUDY PROTOCOLS.{} section does not contain required fields".format(study_count))
         df_dict['STUDY CONTACTS.' + str(study_count)] = _build_section_df(_read_tab_section(
             f=fp,
@@ -164,8 +174,9 @@ def _read_investigation_file(fp):
         if not {'Study Person Last Name', 'Study Person First Name', 'Study Person Mid Initials', 'Study Person Email',
                 'Study Person Phone', 'Study Person Fax', 'Study Person Address', 'Study Person Affiliation',
                 'Study Person Roles', 'Study Person Roles Term Accession Number', 'Study Person Roles Term Source REF'}\
-                .issubset(set(df_dict['STUDY CONTACTS'].columns.values)):
-            raise ValidationError("STUDY CONTACTS section does not contain required fields")
+                .issubset(set(df_dict['STUDY CONTACTS.' + str(study_count)].columns.values)):
+            logger.fatal("STUDY CONTACTS.{} section does not contain required fields".format(study_count))
+            raise ValidationError("STUDY CONTACTS.{} section does not contain required fields".format(study_count))
         study_count += 1
     return df_dict
 
