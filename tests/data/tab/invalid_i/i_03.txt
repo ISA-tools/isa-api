@@ -1,0 +1,91 @@
+ONTOLOGY SOURCE REFERENCE
+Term Source Name	"OBI"	"BTO"	"NEWT"	"UO"	"CHEBI"	"PATO"	"EFO"
+Term Source File	"http://bioportal.bioontology.org/ontologies/1123"	"ArrayExpress Experimental Factor Ontology"	""	""	""	""	""
+Term Source Version	"47893"	"v 1.26"	"v 1.26"	"v 1.26"	"v 1.26"	"v 1.26"	"v 1.26"
+Term Source Description	"Ontology for Biomedical Investigations"	"BRENDA tissue / enzyme source"	"NEWT UniProt Taxonomy Database"	"Unit Ontology"	"Chemical Entities of Biological Interest"	"Phenotypic qualities (properties)"	"ArrayExpress Experimental Factor Ontology"
+INVESTIGATION
+Investigation Identifier	""
+Investigation Title	""
+Investigation Description	""
+Investigation Submission Date	"2007--30"
+Investigation Public Release Date	"2009-03-10"
+INVESTIGATION PUBLICATIONS
+Investigation PubMed ID	"1739666"
+Investigation Publication DOI	"doi:10.1186/jbiol54"
+Investigation Publication Author List	""
+Investigation Publication Title	""
+Investigation Publication Status	""
+Investigation Publication Status Term Accession Number	""
+Investigation Publication Status Term Source REF	""
+INVESTIGATION CONTACTS
+Investigation Person Last Name	""
+Investigation Person First Name	""
+Investigation Person Mid Initials	""
+Investigation Person Email	""
+Investigation Person Phone	""
+Investigation Person Fax	""
+Investigation Person Address	""
+Investigation Person Affiliation	""
+Investigation Person Roles	"corresponding author"
+Investigation Person Roles Term Accession Number	""
+Investigation Person Roles Term Source REF	"TESTO"
+STUDY
+Study Identifier
+Study Title
+Study Description
+Study Submission Date
+Study Public Release Date
+Study File Name
+STUDY DESIGN DESCRIPTORS
+Study Design Type
+Study Design Type Term Accession Number
+Study Design Type Term Source REF
+STUDY PUBLICATIONS
+Study PubMed ID
+Study Publication DOI
+Study Publication Author List
+Study Publication Title
+Study Publication Status
+Study Publication Status Term Accession Number
+Study Publication Status Term Source REF
+STUDY FACTORS
+Study Factor Name
+Study Factor Type
+Study Factor Type Term Accession Number
+Study Factor Type Term Source REF
+STUDY ASSAYS
+Study Assay Measurement Type
+Study Assay Measurement Type Term Accession Number
+Study Assay Measurement Type Term Source REF
+Study Assay Technology Type
+Study Assay Technology Type Term Accession Number
+Study Assay Technology Type Term Source REF
+Study Assay Technology Platform
+Study Assay File Name
+STUDY PROTOCOLS
+Study Protocol Name
+Study Protocol Type
+Study Protocol Type Term Accession Number
+Study Protocol Type Term Source REF
+Study Protocol Description
+Study Protocol URI
+Study Protocol Version
+Study Protocol Parameters Name
+Study Protocol Parameters Name Term Accession Number
+Study Protocol Parameters Name Term Source REF
+Study Protocol Components Name
+Study Protocol Components Type
+Study Protocol Components Type Term Accession Number
+Study Protocol Components Type Term Source REF
+STUDY CONTACTS
+Study Person Last Name
+Study Person First Name
+Study Person Mid Initials
+Study Person Email
+Study Person Phone
+Study Person Fax
+Study Person Address
+Study Person Affiliation
+Study Person Roles
+Study Person Roles Term Accession Number
+Study Person Roles Term Source REF
