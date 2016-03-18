@@ -8,8 +8,11 @@ import io
 import networkx as nx
 import itertools
 import logging
+import iso8601
+import numpy as np
+import re
 
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -61,7 +64,7 @@ def _read_investigation_file(fp):
         next_sec_key='INVESTIGATION'
     ))
     if not {'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}\
-            .issubset(set(df_dict['ONTOLOGY SOURCE REFERENCE'].columns.values)):
+            .issubset(set(df_dict['ONTOLOGY SOURCE REFERENCE'].columns)):
         logger.fatal("ONTOLOGY SOURCE REFERENCE section does not contain required fields")
         raise ValidationError("ONTOLOGY SOURCE REFERENCE section does not contain required fields")
     df_dict['INVESTIGATION'] = _build_section_df(_read_tab_section(
@@ -71,7 +74,7 @@ def _read_investigation_file(fp):
     ))
     if not {'Investigation Identifier', 'Investigation Title', 'Investigation Description',
             'Investigation Submission Date', 'Investigation Public Release Date'}\
-            .issubset(set(df_dict['INVESTIGATION'].columns.values)):
+            .issubset(set(df_dict['INVESTIGATION'].columns)):
         logger.fatal("INVESTIGATION section does not contain required fields")
         raise ValidationError("INVESTIGATION section does not contain required fields")
     df_dict['INVESTIGATION PUBLICATIONS'] = _build_section_df(_read_tab_section(
@@ -83,8 +86,9 @@ def _read_investigation_file(fp):
             'Investigation Publication Title', 'Investigation Publication Status',
             'Investigation Publication Status Term Accession Number',
             'Investigation Publication Status Term Source REF'}\
-            .issubset(set(df_dict['INVESTIGATION PUBLICATIONS'].columns.values)):
+            .issubset(set(df_dict['INVESTIGATION PUBLICATIONS'].columns)):
         logger.fatal("INVESTIGATION PUBLICATIONS section does not contain required fields")
+        print(df_dict['INVESTIGATION PUBLICATIONS'].columns)
         raise ValidationError("INVESTIGATION PUBLICATIONS section does not contain required fields")
     df_dict['INVESTIGATION CONTACTS'] = _build_section_df(_read_tab_section(
         f=fp,
@@ -95,7 +99,7 @@ def _read_investigation_file(fp):
             'Investigation Person Email', 'Investigation Person Phone', 'Investigation Person Fax',
             'Investigation Person Address', 'Investigation Person Affiliation', 'Investigation Person Roles',
             'Investigation Person Roles Term Accession Number', 'Investigation Person Roles Term Source REF'}\
-            .issubset(set(df_dict['INVESTIGATION CONTACTS'].columns.values)):
+            .issubset(set(df_dict['INVESTIGATION CONTACTS'].columns)):
             logger.fatal("INVESTIGATION CONTACTS section does not contain required fields")
             raise ValidationError("INVESTIGATION CONTACTS section does not contain required fields")
     study_count = 0
@@ -106,7 +110,7 @@ def _read_investigation_file(fp):
             next_sec_key='STUDY DESIGN DESCRIPTORS'
         ))
         if not {'Study Identifier', 'Study Title', 'Study Description'}\
-                .issubset(set(df_dict['STUDY.' + str(study_count)].columns.values)):
+                .issubset(set(df_dict['STUDY.' + str(study_count)].columns)):
             logger.fatal("STUDY section does not contain required fields")
             raise ValidationError("STUDY.{} section does not contain required fields".format(study_count))
         df_dict['STUDY DESIGN DESCRIPTORS.' + str(study_count)] = _build_section_df(_read_tab_section(
@@ -115,7 +119,7 @@ def _read_investigation_file(fp):
             next_sec_key='STUDY PUBLICATIONS'
         ))
         if not {'Study Design Type', 'Study Design Type Term Accession Number', 'Study Design Type Term Source REF'}\
-                .issubset(set(df_dict['STUDY DESIGN DESCRIPTORS.' + str(study_count)].columns.values)):
+                .issubset(set(df_dict['STUDY DESIGN DESCRIPTORS.' + str(study_count)].columns)):
             logger.fatal("STUDY DESIGN DESCRIPTORS.{} section does not contain required fields".format(study_count))
             raise ValidationError("STUDY DESIGN DESCRIPTORS.{} section does not contain required fields".format(study_count))
         df_dict['STUDY PUBLICATIONS.' + str(study_count)] = _build_section_df(_read_tab_section(
@@ -126,7 +130,7 @@ def _read_investigation_file(fp):
         if not {'Study PubMed ID', 'Study Publication DOI', 'Study Publication Author List', 'Study Publication Title',
                 'Study Publication Status', 'Study Publication Status Term Accession Number',
                 'Study Publication Status Term Source REF'}\
-                .issubset(set(df_dict['STUDY PUBLICATIONS.' + str(study_count)].columns.values)):
+                .issubset(set(df_dict['STUDY PUBLICATIONS.' + str(study_count)].columns)):
             logger.fatal("STUDY PUBLICATIONS.{} section does not contain required fields".format(study_count))
             raise ValidationError("STUDY PUBLICATIONS.{} section does not contain required fields".format(study_count))
         df_dict['STUDY FACTORS.' + str(study_count)] = _build_section_df(_read_tab_section(
@@ -136,7 +140,7 @@ def _read_investigation_file(fp):
         ))
         if not {'Study Factor Name', 'Study Factor Type', 'Study Factor Type Term Accession Number',
                 'Study Factor Type Term Source REF'}\
-                .issubset(set(df_dict['STUDY FACTORS.' + str(study_count)].columns.values)):
+                .issubset(set(df_dict['STUDY FACTORS.' + str(study_count)].columns)):
             logger.fatal("STUDY FACTORS.{} section does not contain required fields".format(study_count))
             raise ValidationError("STUDY FACTORS.{} section does not contain required fields".format(study_count))
         df_dict['STUDY ASSAYS.' + str(study_count)] = _build_section_df(_read_tab_section(
@@ -148,7 +152,7 @@ def _read_investigation_file(fp):
                 'Study Assay Measurement Type Term Source REF', 'Study Assay Technology Type',
                 'Study Assay Technology Type Term Accession Number', 'Study Assay Technology Type Term Source REF',
                 'Study Assay Technology Platform', 'Study Assay File Name'}\
-                .issubset(set(df_dict['STUDY ASSAYS.' + str(study_count)].columns.values)):
+                .issubset(set(df_dict['STUDY ASSAYS.' + str(study_count)].columns)):
             logger.fatal("STUDY ASSAYS.{} section does not contain required fields".format(study_count))
             raise ValidationError("STUDY ASSAYS.{} section does not contain required fields".format(study_count))
         df_dict['STUDY PROTOCOLS.' + str(study_count)] = _build_section_df(_read_tab_section(
@@ -163,7 +167,7 @@ def _read_investigation_file(fp):
                 'Study Protocol Parameters Name Term Source REF', 'Study Protocol Components Name',
                 'Study Protocol Components Type', 'Study Protocol Components Type Term Accession Number',
                 'Study Protocol Components Type Term Source REF'}\
-                .issubset(set(df_dict['STUDY PROTOCOLS.' + str(study_count)].columns.values)):
+                .issubset(set(df_dict['STUDY PROTOCOLS.' + str(study_count)].columns)):
             logger.fatal("STUDY PROTOCOLS.{} section does not contain required fields".format(study_count))
             raise ValidationError("STUDY PROTOCOLS.{} section does not contain required fields".format(study_count))
         df_dict['STUDY CONTACTS.' + str(study_count)] = _build_section_df(_read_tab_section(
@@ -174,7 +178,7 @@ def _read_investigation_file(fp):
         if not {'Study Person Last Name', 'Study Person First Name', 'Study Person Mid Initials', 'Study Person Email',
                 'Study Person Phone', 'Study Person Fax', 'Study Person Address', 'Study Person Affiliation',
                 'Study Person Roles', 'Study Person Roles Term Accession Number', 'Study Person Roles Term Source REF'}\
-                .issubset(set(df_dict['STUDY CONTACTS.' + str(study_count)].columns.values)):
+                .issubset(set(df_dict['STUDY CONTACTS.' + str(study_count)].columns)):
             logger.fatal("STUDY CONTACTS.{} section does not contain required fields".format(study_count))
             raise ValidationError("STUDY CONTACTS.{} section does not contain required fields".format(study_count))
         study_count += 1
@@ -184,11 +188,11 @@ def _read_investigation_file(fp):
 def validate_tab(isatab_dir, reporting_level=logging.INFO):
     """Validate an ISA tab archive (directory)"""
     logging.basicConfig(level=reporting_level)
-    logger = logging.getLogger(__name__)
     # Check if an i_ file exists
     try:
         i_file = [fname for fname in os.listdir(isatab_dir) if fname.startswith('i_') and fname.endswith('.txt')]
         if len(i_file) > 1:
+            logger.fatal("More than one investigation was found in the given directory")
             raise ValidationError
         validatei(open(os.path.join(isatab_dir, i_file[0])))
     except ValidationError as i_file_validation_error:
@@ -196,11 +200,75 @@ def validate_tab(isatab_dir, reporting_level=logging.INFO):
         raise i_file_validation_error
 
 
+def _check_iso8601_date(date_str):
+    if date_str is not '' or np.nan:
+        try:
+            iso8601.parse_date(date_str)
+        except iso8601.ParseError:
+            logger.warn("A date does not conform to ISO8601 format")
+
+
+def _check_pubmed_id(pubmed_id_str):
+    pmid_regex = re.compile('[0-9]{8}')
+    pmcid_regex = re.compile('PMC[0-9]{8}')
+    if not pmid_regex.match(pubmed_id_str) or not pmcid_regex.match(pubmed_id_str):
+        logger.warn("PubMed ID is not valid format")
+    # TODO: Check if publication exists and consistency with other metadata in section
+
+
+def _check_doi(doi_str):
+    pass
+
+
 def validatei(fp, reporting_level=logging.INFO):
     """Validate an ISA tab, starting from i file"""
     logging.basicConfig(level=reporting_level)
     # logger = logging.getLogger(__name__)
-    _read_investigation_file(fp)
+    # use chardet for detecting UTF8 encoding
+    i_df_dict = _read_investigation_file(fp)  # check that the i file is structured correctly
+    ontology_source_references_dict = dict()  # key is Term Source Name
+    for i, row in i_df_dict['ONTOLOGY SOURCE REFERENCE'].iterrows():  # load ontology source references
+        ontology_source_reference = OntologySourceReference(
+            name=row['Term Source Name'],
+            file=row['Term Source File'],
+            version=row['Term Source Version'],
+            description=row['Term Source Description']
+        )
+        ontology_source_references_dict[ontology_source_reference.name] = ontology_source_reference
+    for i, row in i_df_dict['INVESTIGATION'].iterrows():  # check INVESTIGATION section
+        _check_iso8601_date(row['Investigation Submission Date'])
+        _check_iso8601_date(row['Investigation Public Release Date'])
+
+    for i, row in i_df_dict['INVESTIGATION PUBLICATIONS'].iterrows():  # check INVESTIGATION PUBLICATIONS section
+        _check_pubmed_id(row['Investigation PubMed ID'])
+        _check_doi(row['Investigation Publication DOI'])
+
+        if row['Investigation Publication Status'] is not '':
+            if row['Investigation Publication Status Term Accession Number'] is '':
+                logger.warn("Missing {} Term Accession Number".format('Investigation Publication Status'))
+            if row['Investigation Publication Status Term Source REF'] is '':
+                logger.warn("Missing {} Term Source REF".format('Investigation Publication Status'))
+            else:
+                try:
+                    ontology_source_references_dict[row['Investigation Publication Status Term Source REF']]
+                except KeyError:
+                    logger.error("Term Source REF not declared in Ontology Source References")
+
+    for i, row in i_df_dict['INVESTIGATION CONTACTS'].iterrows():  # check INVESTIGATION PUBLICATIONS section
+
+        if row['Investigation Person Roles'] is not '':
+            if row['Investigation Person Roles Term Accession Number'] is '':
+                logger.warn("Missing {} Term Accession Number".format('Investigation Person Roles'))
+            if row['Investigation Person Roles Term Source REF'] is '':
+                logger.warn("Missing {} Term Source REF".format('Investigation Person Roles'))
+            else:
+                try:
+                    ontology_source_references_dict[row['Investigation Person Roles Term Source REF']]
+                except KeyError:
+                    logger.error("Term Source REF not declared in Ontology Source References")
+
+    for s_key in [k for k in i_df_dict if 'STUDY' in k]:
+        pass
 
 
 def validatez(isatab_dir, config_dir):
@@ -919,7 +987,6 @@ def write_assay_table_files(inv_obj, output_dir):
                                 cols[i] = 'Array Data File'
                 df.columns = cols  # reset column headers
                 # drop completely empty columns
-                import numpy as np
                 df = df.replace('', np.nan)
                 df = df.dropna(axis=1, how='all')
                 assay_obj.df = df
