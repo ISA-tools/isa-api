@@ -4,40 +4,136 @@ import logging
 from networkx import DiGraph
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
+from isatools.isatab import ValidationReport
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 
-def validates(isa_json, reporting_level=logging.INFO):
+def validates(isa_json, report):
     """Validate JSON"""
-    logging.basicConfig(level=reporting_level)
-    logger = logging.getLogger(__name__)
+
+    def _check_filenames(isa_json, report):
+        for study in isa_json['studies']:
+            if study['filename'] is '':
+                report.warn("A study filename is missing")
+            for assay in study['assays']:
+                if assay['filename'] is '':
+                    report.warn("An assay filename is missing")
+
+    def _check_ontology_sources(isa_json, report):
+        ontology_source_refs = ['']  # initalize with empty string as the default none ref
+        for ontology_source in isa_json['ontologySourceReferences']:
+            if ontology_source['name'] is '':
+                report.warn("An Ontology Source Reference is missing Term Source Name, so can't be referenced")
+            else:
+                ontology_source_refs.append(ontology_source['name'])
+        return ontology_source_refs
+
+    def _check_date_formats(isa_json, report):
+        from isatools.isatab import _check_iso8601_date
+        _check_iso8601_date(isa_json['publicReleaseDate'], report)
+        _check_iso8601_date(isa_json['submissionDate'], report)
+        for study in isa_json['studies']:
+            _check_iso8601_date(study['publicReleaseDate'], report)
+            _check_iso8601_date(study['submissionDate'], report)
+            for process in study['processSequence']:
+                _check_iso8601_date(process['date'], report)
+
+    def _check_term_source_refs(isa_json, ontology_source_refs, report):
+        # get all matching annotation patterns by traversing the whole json structure
+        if isinstance(isa_json, dict):
+            for i in isa_json.keys():
+                if isinstance(isa_json[i], dict):
+                    if set(isa_json[i].keys()) == {'annotationValue', 'termAccession', 'termSource'} or \
+                                    set(isa_json[i].keys()) == {'@id', 'annotationValue', 'termAccession', 'termSource'}:
+                        if isa_json[i]['termSource'] not in ontology_source_refs:
+                            report.warn("Annotation {0} references {1} term source that has not been declared"
+                                        .format(isa_json[i]['annotationValue'], isa_json[i]['termSource']))
+                    _check_term_source_refs(isa_json[i], ontology_source_refs, report)
+                elif isinstance(isa_json[i], list):
+                    for j in isa_json[i]:
+                        _check_term_source_refs(j, ontology_source_refs, report)
+
+    def _check_pubmed_ids(isa_json, report):
+        from isatools.isatab import _check_pubmed_id
+        for ipub in isa_json['publications']:
+            _check_pubmed_id(ipub['pubMedID'], report)
+        for study in isa_json['studies']:
+            for spub in study['publications']:
+                _check_pubmed_id(spub['pubMedID'], report)
+
+    def _check_protocol_names(isa_json, report):
+        protocol_refs = ['']  # initalize with empty string as the default none ref
+        for study in isa_json['studies']:
+            for protocol in study['protocols']:
+                if protocol['name'] is '':
+                    report.warn("A Protocol is missing Protocol Name, so can't be referenced")
+                else:
+                    protocol_refs.append(protocol['name'])
+        return protocol_refs
+
+    def _check_protocol_parameter_names(isa_json, report):
+        protocol_parameter_refs = ['']  # initalize with empty string as the default none ref
+        for study in isa_json['studies']:
+            for protocol in study['protocols']:
+                for parameter in protocol['parameters']:
+                    if parameter['parameterName'] is '':
+                        report.warn("A Protocol Parameter is missing Name, so can't be referenced")
+                    else:
+                        protocol_parameter_refs.append(parameter['parameterName'])
+        return protocol_parameter_refs
+
+    def _check_study_factor_names(isa_json, report):
+        study_factor_refs = ['']  # initalize with empty string as the default none ref
+        for study in isa_json['studies']:
+            for factor in study['factors']:
+                    if factor['factorName'] is '':
+                        report.warn("A Study Factor is missing Name, so can't be referenced")
+                    else:
+                        study_factor_refs.append(study_factor_refs)
+        return study_factor_refs
+
+
     try:  # if can load the JSON (if the JSON is well-formed already), validate the JSON against our schemas
         investigation_schema_path = os.path.join(os.path.dirname(__file__) + '/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json')
         investigation_schema = json.load(open(investigation_schema_path))
         resolver = RefResolver('file://' + investigation_schema_path, investigation_schema)
         validator = Draft4Validator(investigation_schema, resolver=resolver)
         validator.validate(isa_json)
+
         # if the JSON is validated against ISA JSON, let's start checking content
+        _check_filenames(isa_json=isa_json, report=report)  # check if tab filenames are present for converting back
+        ontology_source_refs = _check_ontology_sources(isa_json=isa_json, report=report)  # check if ontology sources are declared with enough info
+        _check_date_formats(isa_json=isa_json, report=report)  # check if dates are all ISO8601 compliant
+        _check_term_source_refs(isa_json=isa_json, ontology_source_refs=ontology_source_refs, report=report)  # check if ontology refs refer to ontology source
+        _check_pubmed_ids(isa_json=isa_json, report=report)
+        # _check_dois(isa_json=isa_json, report=report)
+        _check_protocol_names(isa_json=isa_json, report=report)
+        _check_protocol_parameter_names(isa_json=isa_json, report=report)
+        _check_study_factor_names(isa_json=isa_json, report=report)
+        # _check_object_refs(isa_json=isa_json, report=report)
+
     except ValidationError as isa_schema_validation_error:
-        logger.fatal("There was an error when validating the JSON against the ISA schemas")
         raise isa_schema_validation_error
+    print(report.generate_report())
 
 
-def validate(fp, reporting_level=logging.INFO):  # default reporting
+def validate(fp):  # default reporting
     """Validate JSON file"""
-    logging.basicConfig(level=reporting_level)
-    logger = logging.getLogger(__name__)
+    report = ValidationReport()
+    from isatools.isatab import _check_encoding
+    report = ValidationReport()
+    _check_encoding(fp, report)
     try:  # first, try open the file as a JSON
         try:
             isa_json = json.load(fp=fp)
-            validates(isa_json, reporting_level)
+            validates(isa_json, report)
         except ValueError as json_load_error:
-            logger.fatal("There was an error when trying to parse the JSON")
+            report.fatal("There was an error when trying to parse the JSON")
             raise json_load_error
     except SystemError as system_error:
-        logger.fatal("There was a general system error")
+        report.fatal("There was a general system error")
         raise system_error
 
 

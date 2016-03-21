@@ -28,25 +28,19 @@ class ValidationReport:
         self.report['errors'] = list()
         self.report['fatal'] = list()
 
-    def fatal(self, error_id, msg, line_no):
+    def fatal(self, msg):
         self.report['fatal'].append({
-            'error': error_id,
             'message': msg,
-            'line': line_no
         })
 
-    def warn(self, error_id, msg, line_no):
+    def warn(self, msg):
         self.report['warnings'].append({
-            'error': error_id,
             'message': msg,
-            'line': line_no
         })
 
-    def error(self, error_id, msg, line_no):
+    def error(self, msg):
         self.report['errors'].append({
-            'error': error_id,
             'message': msg,
-            'line': line_no
         })
 
     def generate_report(self, reporting_level=3):
@@ -249,35 +243,35 @@ def validate_tab(isatab_dir, reporting_level=logging.INFO):
         raise i_file_validation_error
 
 
-def _check_iso8601_date(date_str):
-    if date_str is not '' or np.nan:
+def _check_iso8601_date(date_str, report):
+    if date_str is not '':
         try:
             iso8601.parse_date(date_str)
         except iso8601.ParseError:
-            logger.warn("A date does not conform to ISO8601 format")
+            report.warn("Date {} does not conform to ISO8601 format".format(date_str))
 
 
-def _check_pubmed_id(pubmed_id_str):
-    pmid_regex = re.compile('[0-9]{8}')
-    pmcid_regex = re.compile('PMC[0-9]{8}')
-    if not pmid_regex.match(pubmed_id_str) or not pmcid_regex.match(pubmed_id_str):
-        logger.warn("PubMed ID is not valid format")
-    # TODO: Check if publication exists and consistency with other metadata in section
+def _check_pubmed_id(pubmed_id_str, report):
+    if pubmed_id_str is not '':
+        pmid_regex = re.compile('[0-9]{8}')
+        pmcid_regex = re.compile('PMC[0-9]{8}')
+        if pmid_regex.match(pubmed_id_str) is not None and pmcid_regex.match(pubmed_id_str) is not None:
+            report.warn("PubMed ID {} is not valid format".format(pubmed_id_str))
+    # TODO: Check if publication exists and consistency with other metadata in section; needs network connection
 
 
-def _check_doi(doi_str):
+def _check_doi(doi_str, report):
     pass
 
 
+def _check_encoding(fp, report):
+    charset = chardet.detect(open(fp.name, 'rb').read())
+    if charset['encoding'] is not 'UTF-8':
+        report.warn("File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
+                    .format(charset['encoding'], charset['confidence']))
+
 def validatei(i_fp):
     """Validate an ISA tab, starting from i file"""
-
-    def _check_encoding(fp, report):
-        charset = chardet.detect(open(fp.name, 'rb').read())
-        if charset['encoding'] is not 'UTF-8':
-            report.warn('0000',
-                        "File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
-                        .format(charset['encoding'], charset['confidence']), None)
 
     def _check_i_sections(fp, report):
 
