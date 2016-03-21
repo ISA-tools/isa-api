@@ -33,18 +33,14 @@ class ValidateIsaTabTest(TestCase):
 
     def test_i_no_content(self):
         with self.assertRaises(ValidationError):
-            isatab.validatei(fp=open(os.path.join(self._dir, 'data', 'tab', 'invalid_i', 'i_01.txt')),
-                             reporting_level=self.reporting_level)
+            isatab.validatei(i_fp=open(os.path.join(self._dir, 'data', 'tab', 'invalid_i', 'i_01.txt')))
 
     def test_i_no_required_labels(self):
         with self.assertRaises(ValidationError):
-            isatab.validatei(fp=open(os.path.join(self._dir, 'data', 'tab', 'invalid_i', 'i_02.txt')),
-                             reporting_level=self.reporting_level)
+            isatab.validatei(i_fp=open(os.path.join(self._dir, 'data', 'tab', 'invalid_i', 'i_02.txt')))
 
     def test_i_valid_labels(self):
-        isatab.validatei(fp=open(os.path.join(self._dir, 'data', 'tab', 'valid_i', 'i_01.txt')),
-                         reporting_level=self.reporting_level)
+        isatab.validatei(i_fp=open(os.path.join(self._dir, 'data', 'tab', 'valid_i', 'i_01.txt')))
 
     def test_i_content(self):
-        isatab.validatei(fp=open(os.path.join(self._dir, 'data', 'tab', 'invalid_i', 'i_03.txt')),
-                         reporting_level=self.reporting_level)
+        isatab.validatei(i_fp=open(os.path.join(self._dir, 'data', 'tab', 'invalid_i', 'i_03.txt')))
