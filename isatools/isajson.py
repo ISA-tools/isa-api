@@ -43,17 +43,17 @@ def validates(isa_json, report):
     def _check_term_source_refs(isa_json, ontology_source_refs, report):
         # get all matching annotation patterns by traversing the whole json structure
         if isinstance(isa_json, dict):
+            if set(isa_json.keys()) == {'annotationValue', 'termAccession', 'termSource'} or \
+                            set(isa_json.keys()) == {'@id', 'annotationValue', 'termAccession', 'termSource'}:
+                if isa_json['termSource'] not in ontology_source_refs:
+                    report.warn("Annotation {0} references {1} term source that has not been declared"
+                                .format(isa_json['annotationValue'], isa_json['termSource']))
             for i in isa_json.keys():
-                if isinstance(isa_json[i], dict):
-                    if set(isa_json[i].keys()) == {'annotationValue', 'termAccession', 'termSource'} or \
-                                    set(isa_json[i].keys()) == {'@id', 'annotationValue', 'termAccession', 'termSource'}:
-                        if isa_json[i]['termSource'] not in ontology_source_refs:
-                            report.warn("Annotation {0} references {1} term source that has not been declared"
-                                        .format(isa_json[i]['annotationValue'], isa_json[i]['termSource']))
-                    _check_term_source_refs(isa_json[i], ontology_source_refs, report)
-                elif isinstance(isa_json[i], list):
-                    for j in isa_json[i]:
-                        _check_term_source_refs(j, ontology_source_refs, report)
+                _check_term_source_refs(isa_json[i], ontology_source_refs, report)
+        elif isinstance(isa_json, list):
+            for j in isa_json:
+                _check_term_source_refs(j, ontology_source_refs, report)
+
 
     def _check_pubmed_ids(isa_json, report):
         from isatools.isatab import _check_pubmed_id
@@ -94,6 +94,31 @@ def validates(isa_json, report):
                         study_factor_refs.append(study_factor_refs)
         return study_factor_refs
 
+    def _collect_object_refs(isa_json, object_refs):
+        # get all matching annotation patterns by traversing the whole json structure
+        if isinstance(isa_json, dict):
+            if '@id' in set(isa_json.keys()) and len(set(isa_json.keys())) > 1:
+                if isa_json['@id'] not in object_refs:
+                    object_refs.append(isa_json['@id'])
+            for i in isa_json.keys():
+                _collect_object_refs(isa_json[i], object_refs)
+        elif isinstance(isa_json, list):
+            for j in isa_json:
+                _collect_object_refs(j, object_refs)
+        return object_refs
+
+    def _check_object_refs(isa_json, object_refs, report):
+        # get all matching annotation patterns by traversing the whole json structure
+        if isinstance(isa_json, dict):
+            if '@id' in set(isa_json.keys()) and len(set(isa_json.keys())) == 1:
+                if isa_json['@id'] not in object_refs and isa_json['@id'] != '#parameter/Array_Design_REF':
+                    report.error("Object reference {} not declared anywhere".format(isa_json['@id']))
+            for i in isa_json.keys():
+                _check_object_refs(isa_json=isa_json[i], object_refs=object_refs, report=report)
+        elif isinstance(isa_json, list):
+            for j in isa_json:
+                _check_object_refs(j, object_refs, report)
+        return object_refs
 
     try:  # if can load the JSON (if the JSON is well-formed already), validate the JSON against our schemas
         investigation_schema_path = os.path.join(os.path.dirname(__file__) + '/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json')
@@ -112,7 +137,7 @@ def validates(isa_json, report):
         _check_protocol_names(isa_json=isa_json, report=report)
         _check_protocol_parameter_names(isa_json=isa_json, report=report)
         _check_study_factor_names(isa_json=isa_json, report=report)
-        # _check_object_refs(isa_json=isa_json, report=report)
+        _check_object_refs(isa_json=isa_json, object_refs=_collect_object_refs(isa_json=isa_json, object_refs=list()), report=report)
 
     except ValidationError as isa_schema_validation_error:
         raise isa_schema_validation_error
