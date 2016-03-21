@@ -269,7 +269,7 @@ def _check_doi(doi_str):
     pass
 
 
-def validatei(i_fp, reporting_level=logging.INFO):
+def validatei(i_fp):
     """Validate an ISA tab, starting from i file"""
 
     def _check_encoding(fp, report):
