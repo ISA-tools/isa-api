@@ -120,6 +120,17 @@ def validates(isa_json, report):
                 _check_object_refs(j, object_refs, report)
         return object_refs
 
+    def _check_data_files(isa_json, report):
+        for study in isa_json['studies']:
+            for assay in study['assays']:
+                for data_file in assay['dataFiles']:
+                    try:
+                        filename = data_file['name']
+                        with open(filename) as file:
+                            pass
+                    except IOError as e:
+                        report.warn("Cannot open file {}".format(filename))
+
     try:  # if can load the JSON (if the JSON is well-formed already), validate the JSON against our schemas
         investigation_schema_path = os.path.join(os.path.dirname(__file__) + '/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json')
         investigation_schema = json.load(open(investigation_schema_path))
@@ -138,6 +149,8 @@ def validates(isa_json, report):
         _check_protocol_parameter_names(isa_json=isa_json, report=report)
         _check_study_factor_names(isa_json=isa_json, report=report)
         _check_object_refs(isa_json=isa_json, object_refs=_collect_object_refs(isa_json=isa_json, object_refs=list()), report=report)
+        _check_data_files(isa_json=isa_json, report=report)
+
 
     except ValidationError as isa_schema_validation_error:
         raise isa_schema_validation_error
