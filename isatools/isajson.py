@@ -54,7 +54,6 @@ def validates(isa_json, report):
             for j in isa_json:
                 _check_term_source_refs(j, ontology_source_refs, report)
 
-
     def _check_pubmed_ids(isa_json, report):
         from isatools.isatab import _check_pubmed_id
         for ipub in isa_json['publications']:
@@ -107,6 +106,19 @@ def validates(isa_json, report):
                 _collect_object_refs(j, object_refs)
         return object_refs
 
+    def _collect_id_refs(isa_json, id_refs):
+        # get all matching annotation patterns by traversing the whole json structure
+        if isinstance(isa_json, dict):
+            if '@id' in set(isa_json.keys()) and len(set(isa_json.keys())) == 1:
+                if isa_json['@id'] not in id_refs:
+                    id_refs.append(isa_json['@id'])
+            for i in isa_json.keys():
+                _collect_id_refs(isa_json[i], id_refs)
+        elif isinstance(isa_json, list):
+            for j in isa_json:
+                _collect_id_refs(j, id_refs)
+        return id_refs
+
     def _check_object_refs(isa_json, object_refs, report):
         # get all matching annotation patterns by traversing the whole json structure
         if isinstance(isa_json, dict):
@@ -119,6 +131,11 @@ def validates(isa_json, report):
             for j in isa_json:
                 _check_object_refs(j, object_refs, report)
         return object_refs
+
+    def _check_object_usage(section, objects_declared, id_refs, report):
+        for obj_ref in objects_declared:
+            if obj_ref not in id_refs:
+                report.error("Object reference {0} not used anywhere in {1}".format(obj_ref, section))
 
     def _check_data_files(isa_json, report):
         for study in isa_json['studies']:
@@ -149,9 +166,23 @@ def validates(isa_json, report):
         _check_protocol_parameter_names(isa_json=isa_json, report=report)
         _check_study_factor_names(isa_json=isa_json, report=report)
         _check_object_refs(isa_json=isa_json, object_refs=_collect_object_refs(isa_json=isa_json, object_refs=list()), report=report)
+
+        # check protocols declared are used
+        for study in isa_json['studies']:
+            prot_obj_ids = list()
+            for protocol in study['protocols']:
+                prot_obj_ids.append(protocol['@id'])
+            _check_object_usage(section=study['identifier'], objects_declared=prot_obj_ids, id_refs=_collect_id_refs(isa_json=isa_json, id_refs=list()), report=report)
+
+        # check study factors declared are used
+        for study in isa_json['studies']:
+            prot_obj_ids = list()
+            for protocol in study['factors']:
+                prot_obj_ids.append(protocol['@id'])
+            _check_object_usage(section=study['identifier'], objects_declared=prot_obj_ids, id_refs=_collect_id_refs(isa_json=isa_json, id_refs=list()), report=report)
+
+
         _check_data_files(isa_json=isa_json, report=report)
-
-
     except ValidationError as isa_schema_validation_error:
         raise isa_schema_validation_error
     print(report.generate_report())
