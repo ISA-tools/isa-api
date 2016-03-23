@@ -450,6 +450,8 @@ class StudyAssayParser:
 
                 in_handle.seek(0, 0)
                 for line in reader:
+                    if (line[0].startswith("#")):
+                        continue
                     name = self._swap_synonyms([line[header_index]])[0]
                     #skip the header line and empty lines
                     if (not name or name in headers):
