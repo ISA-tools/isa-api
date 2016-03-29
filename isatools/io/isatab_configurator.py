@@ -15,21 +15,40 @@ import warnings as warnings_
 from lxml import etree as etree_
 import os
 
-config_dict = dict()
+configs_dict = dict()
 
 
 def load(config_dir):
-    global config_dict
+    global configs_dict
     for file in os.listdir(config_dir):
         if file.endswith(".xml"):
             try:
                 config_obj = parse(inFileName=os.path.join(config_dir, file), silence=True)
-                measurement_type = config_obj.get_isatab_configuration()[0].get_measurement().get_term_label()
-                technology_type = config_obj.get_isatab_configuration()[0].get_technology().get_term_label()
-                config_dict[(measurement_type, technology_type)] = config_obj
+                config = config_obj.get_isatab_configuration()[0]
+                measurement_type = config.get_measurement().get_term_label()
+                technology_type = config.get_technology().get_term_label()
+                config_fields = list()
+                for field in config.get_field():
+                    config_field = {
+                        'header': field.header,
+                        'is-required': field.is_required,
+                        'data-type': field.data_type,
+                        'is-multiple-value': field.is_multiple_value
+                    }
+                    if field.section is not None:
+                        config_field['section'] = field.section
+                    if field.generated_value_template is not None:
+                        config_field['generated-value-template'] = field.generated_value_template.strip()
+                    config_fields.append(config_field)
+                print(config_fields)
+                configs_dict[(measurement_type, technology_type)] = {
+                    'measurement-type': measurement_type,
+                    'technology-type': technology_type,
+                    'fields': config_fields
+                }
             except GDSParseError as parse_error:
                 print(parse_error)
-    return config_dict
+    return configs_dict
 
 
 def get_config(measurement_type=None, technology_type=None):
