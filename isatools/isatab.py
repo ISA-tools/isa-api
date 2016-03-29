@@ -392,60 +392,129 @@ def validatei(i_fp):
         return sec_df_dict
 
     def _check_i_section_labels(sec_df_dict, report):
-        if not {'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}\
-                .issubset(set(sec_df_dict['ONTOLOGY SOURCE REFERENCE'].columns)):
+
+        FIELDS_ONTOLOGY_SOURCE_REFERENCE = {
+            'Term Source Name',
+            'Term Source File',
+            'Term Source Version',
+            'Term Source Description'
+        }
+        FIELDS_INVESTIGATION = {
+            'Investigation Identifier',
+            'Investigation Title',
+            'Investigation Description',
+            'Investigation Submission Date',
+            'Investigation Public Release Date'
+        }
+        FIELDS_INVESTIGATION_PUBLICATIONS = {
+            'Investigation PubMed ID',
+            'Investigation Publication DOI',
+            'Investigation Publication Author List',
+            'Investigation Publication Title',
+            'Investigation Publication Status',
+            'Investigation Publication Status Term Accession Number',
+            'Investigation Publication Status Term Source REF'
+        }
+        FIELDS_INVESTIGATION_CONTACTS = {
+            'Investigation Person Last Name',
+            'Investigation Person First Name',
+            'Investigation Person Mid Initials',
+            'Investigation Person Email',
+            'Investigation Person Phone',
+            'Investigation Person Fax',
+            'Investigation Person Address',
+            'Investigation Person Affiliation',
+            'Investigation Person Roles',
+            'Investigation Person Roles Term Accession Number',
+            'Investigation Person Roles Term Source REF'
+        }
+        FIELDS_STUDY = {
+            'Study Identifier',
+            'Study Title',
+            'Study Description'
+        }
+        FIELDS_STUDY_DESIGN_DESCRIPTORS = {
+            'Study Design Type',
+            'Study Design Type Term Accession Number',
+            'Study Design Type Term Source REF'
+        }
+        FIELDS_STUDY_PUBLICATIONS = {
+            'Study PubMed ID',
+            'Study Publication DOI',
+            'Study Publication Author List',
+            'Study Publication Title',
+            'Study Publication Status',
+            'Study Publication Status Term Accession Number',
+            'Study Publication Status Term Source REF'
+        }
+        FIELDS_STUDY_FACTORS = {
+            'Study Factor Name',
+            'Study Factor Type',
+            'Study Factor Type Term Accession Number',
+            'Study Factor Type Term Source REF'
+        }
+        FIELDS_STUDY_ASSAYS = {
+            'Study Assay Measurement Type',
+            'Study Assay Measurement Type Term Accession Number',
+            'Study Assay Measurement Type Term Source REF',
+            'Study Assay Technology Type',
+            'Study Assay Technology Type Term Accession Number',
+            'Study Assay Technology Type Term Source REF',
+            'Study Assay Technology Platform',
+            'Study Assay File Name'
+        }
+        FIELDS_STUDY_PROTOCOLS = {
+            'Study Protocol Name',
+            'Study Protocol Type',
+            'Study Protocol Type Term Accession Number',
+            'Study Protocol Type Term Source REF',
+            'Study Protocol Description',
+            'Study Protocol URI',
+            'Study Protocol Version',
+            'Study Protocol Parameters Name',
+            'Study Protocol Parameters Name Term Accession Number',
+            'Study Protocol Parameters Name Term Source REF',
+            'Study Protocol Components Name',
+            'Study Protocol Components Type',
+            'Study Protocol Components Type Term Accession Number',
+            'Study Protocol Components Type Term Source REF'
+        }
+        FIELDS_STUDY_CONTACTS = {
+            'Study Person Last Name',
+            'Study Person First Name',
+            'Study Person Mid Initials',
+            'Study Person Email',
+            'Study Person Phone',
+            'Study Person Fax',
+            'Study Person Address',
+            'Study Person Affiliation',
+            'Study Person Roles',
+            'Study Person Roles Term Accession Number',
+            'Study Person Roles Term Source REF'
+        }
+
+        if not FIELDS_ONTOLOGY_SOURCE_REFERENCE.issubset(set(sec_df_dict['ONTOLOGY SOURCE REFERENCE'].columns)):
             report.fatal('0000', "ONTOLOGY SOURCE REFERENCE section does not contain required fields", None)
-        if not {'Investigation Identifier', 'Investigation Title', 'Investigation Description',
-                'Investigation Submission Date', 'Investigation Public Release Date'}\
-                .issubset(set(sec_df_dict['INVESTIGATION'].columns)):
+        if not FIELDS_INVESTIGATION.issubset(set(sec_df_dict['INVESTIGATION'].columns)):
             report.fatal('0000', "INVESTIGATION section does not contain required fields", None)
-        if not {'Investigation PubMed ID', 'Investigation Publication DOI', 'Investigation Publication Author List',
-                'Investigation Publication Title', 'Investigation Publication Status',
-                'Investigation Publication Status Term Accession Number',
-                'Investigation Publication Status Term Source REF'}\
-                .issubset(set(sec_df_dict['INVESTIGATION PUBLICATIONS'].columns)):
+        if not FIELDS_INVESTIGATION_PUBLICATIONS.issubset(set(sec_df_dict['INVESTIGATION PUBLICATIONS'].columns)):
             report.fatal('0000', "INVESTIGATION PUBLICATIONS section does not contain required fields", None)
-        if not {'Investigation Person Last Name', 'Investigation Person First Name', 'Investigation Person Mid Initials',
-                'Investigation Person Email', 'Investigation Person Phone', 'Investigation Person Fax',
-                'Investigation Person Address', 'Investigation Person Affiliation', 'Investigation Person Roles',
-                'Investigation Person Roles Term Accession Number', 'Investigation Person Roles Term Source REF'}\
-                .issubset(set(sec_df_dict['INVESTIGATION CONTACTS'].columns)):
+        if not FIELDS_INVESTIGATION_CONTACTS.issubset(set(sec_df_dict['INVESTIGATION CONTACTS'].columns)):
             report.fatal('0000', "INVESTIGATION CONTACTS section does not contain required fields", None)
         for study_count in range(0, len([k for k in sec_memf_dict.keys() if k.startswith('STUDY.')])):
-            if not {'Study Identifier', 'Study Title', 'Study Description'}\
-                    .issubset(set(sec_df_dict['STUDY.' + str(study_count)].columns)):
+            if not FIELDS_STUDY.issubset(set(sec_df_dict['STUDY.' + str(study_count)].columns)):
                 report.fatal('0000', "STUDY section does not contain required fields", None)
-            if not {'Study Design Type', 'Study Design Type Term Accession Number', 'Study Design Type Term Source REF'}\
-                    .issubset(set(sec_df_dict['STUDY DESIGN DESCRIPTORS.' + str(study_count)].columns)):
-                report.fatal('0000', "I'STUDY DESIGN DESCRIPTORS section does not contain required fields", None)
-            if not {'Study PubMed ID', 'Study Publication DOI', 'Study Publication Author List', 'Study Publication Title',
-                    'Study Publication Status', 'Study Publication Status Term Accession Number',
-                    'Study Publication Status Term Source REF'}\
-                    .issubset(set(sec_df_dict['STUDY PUBLICATIONS.' + str(study_count)].columns)):
+            if not FIELDS_STUDY_DESIGN_DESCRIPTORS.issubset(set(sec_df_dict['STUDY DESIGN DESCRIPTORS.' + str(study_count)].columns)):
+                report.fatal('0000', "STUDY DESIGN DESCRIPTORS section does not contain required fields", None)
+            if not FIELDS_STUDY_PUBLICATIONS.issubset(set(sec_df_dict['STUDY PUBLICATIONS.' + str(study_count)].columns)):
                 report.fatal('0000', "STUDY PUBLICATIONS section does not contain required fields", None)
-            if not {'Study Factor Name', 'Study Factor Type', 'Study Factor Type Term Accession Number',
-                    'Study Factor Type Term Source REF'}\
-                    .issubset(set(sec_df_dict['STUDY FACTORS.' + str(study_count)].columns)):
+            if not FIELDS_STUDY_FACTORS.issubset(set(sec_df_dict['STUDY FACTORS.' + str(study_count)].columns)):
                 report.fatal('0000', "STUDY FACTORS section does not contain required fields", None)
-            if not {'Study Assay Measurement Type', 'Study Assay Measurement Type Term Accession Number',
-                    'Study Assay Measurement Type Term Source REF', 'Study Assay Technology Type',
-                    'Study Assay Technology Type Term Accession Number', 'Study Assay Technology Type Term Source REF',
-                    'Study Assay Technology Platform', 'Study Assay File Name'}\
-                    .issubset(set(sec_df_dict['STUDY ASSAYS.' + str(study_count)].columns)):
+            if not FIELDS_STUDY_ASSAYS.issubset(set(sec_df_dict['STUDY ASSAYS.' + str(study_count)].columns)):
                 report.fatal('0000', "STUDY ASSAYS section does not contain required fields", None)
-            if not {'Study Protocol Name', 'Study Protocol Type', 'Study Protocol Type Term Accession Number',
-                    'Study Protocol Type Term Source REF', 'Study Protocol Description', 'Study Protocol URI',
-                    'Study Protocol Version', 'Study Protocol Parameters Name',
-                    'Study Protocol Parameters Name Term Accession Number',
-                    'Study Protocol Parameters Name Term Source REF', 'Study Protocol Components Name',
-                    'Study Protocol Components Type', 'Study Protocol Components Type Term Accession Number',
-                    'Study Protocol Components Type Term Source REF'}\
-                    .issubset(set(sec_df_dict['STUDY PROTOCOLS.' + str(study_count)].columns)):
+            if not FIELDS_STUDY_PROTOCOLS.issubset(set(sec_df_dict['STUDY PROTOCOLS.' + str(study_count)].columns)):
                 report.fatal('0000', "STUDY PROTOCOLS section does not contain required fields", None)
-            if not {'Study Person Last Name', 'Study Person First Name', 'Study Person Mid Initials', 'Study Person Email',
-                    'Study Person Phone', 'Study Person Fax', 'Study Person Address', 'Study Person Affiliation',
-                    'Study Person Roles', 'Study Person Roles Term Accession Number', 'Study Person Roles Term Source REF'}\
-                    .issubset(set(sec_df_dict['STUDY CONTACTS.' + str(study_count)].columns)):
+            if not FIELDS_STUDY_CONTACTS.issubset(set(sec_df_dict['STUDY CONTACTS.' + str(study_count)].columns)):
                 report.fatal('0000', "STUDY PROTOCOLS section does not contain required fields", None)
 
     report = ValidationReport()
