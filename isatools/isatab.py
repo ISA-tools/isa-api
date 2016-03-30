@@ -285,7 +285,7 @@ def validatei(i_fp):
 
             line = f.readline()
             if not line.rstrip() == sec_key:
-                report.fatal('0000', "Expected {0} section but got {1}".format(line.rstrip(), sec_key), None)
+                report.fatal("Expected {0} section but got {1}".format(line.rstrip(), sec_key))
                 raise ValidationError(report.generate_report())
             memf = io.StringIO()
             while not _peek(f=f).rstrip() == next_sec_key:
@@ -373,7 +373,7 @@ def validatei(i_fp):
                 df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
                 df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
             except ValueError:
-                report.fatal('0000', "{} section of the investigation file has no content ".format(ref), None)
+                report.fatal("{} section of the investigation file has no content ".format(ref))
             return df
 
         sec_df_dict = dict()
@@ -393,111 +393,25 @@ def validatei(i_fp):
 
     def _check_i_section_labels(sec_df_dict, report):
 
+        from isatools.io import isatab_configurator
+        config = isatab_configurator.load(os.path.join(os.path.dirname(__file__), '../tests/data/Configurations/isaconfig-default_v2015-07-02'))
+        inv_config = config[('[investigation]', '')]
         FIELDS_ONTOLOGY_SOURCE_REFERENCE = {
             'Term Source Name',
             'Term Source File',
             'Term Source Version',
             'Term Source Description'
         }
-        FIELDS_INVESTIGATION = {
-            'Investigation Identifier',
-            'Investigation Title',
-            'Investigation Description',
-            'Investigation Submission Date',
-            'Investigation Public Release Date',
-            'Comment[Created With Configuration]',
-            'Comment[Last Opened With Configuration]'
-        }
-        FIELDS_INVESTIGATION_PUBLICATIONS = {
-            'Investigation PubMed ID',
-            'Investigation Publication DOI',
-            'Investigation Publication Author List',
-            'Investigation Publication Title',
-            'Investigation Publication Status',
-            'Investigation Publication Status Term Accession Number',
-            'Investigation Publication Status Term Source REF'
-        }
-        FIELDS_INVESTIGATION_CONTACTS = {
-            'Comment[Investigation Person REF]',
-            'Investigation Person Last Name',
-            'Investigation Person First Name',
-            'Investigation Person Mid Initials',
-            'Investigation Person Email',
-            'Investigation Person Phone',
-            'Investigation Person Fax',
-            'Investigation Person Address',
-            'Investigation Person Affiliation',
-            'Investigation Person Roles',
-            'Investigation Person Roles Term Accession Number',
-            'Investigation Person Roles Term Source REF'
-        }
-        FIELDS_STUDY = {
-            'Study Identifier',
-            'Study Title',
-            'Study Description',
-            'Comment[Study Grant Number]',
-            'Comment[Study Funding Agency]'
-        }
-        FIELDS_STUDY_DESIGN_DESCRIPTORS = {
-            'Study Design Type',
-            'Study Design Type Term Accession Number',
-            'Study Design Type Term Source REF'
-        }
-        FIELDS_STUDY_PUBLICATIONS = {
-            'Study PubMed ID',
-            'Study Publication DOI',
-            'Study Publication Author List',
-            'Study Publication Title',
-            'Study Publication Status',
-            'Study Publication Status Term Accession Number',
-            'Study Publication Status Term Source REF'
-        }
-        FIELDS_STUDY_FACTORS = {
-            'Study Factor Name',
-            'Study Factor Type',
-            'Study Factor Type Term Accession Number',
-            'Study Factor Type Term Source REF'
-        }
-        FIELDS_STUDY_ASSAYS = {
-            'Study Assay Measurement Type',
-            'Study Assay Measurement Type Term Accession Number',
-            'Study Assay Measurement Type Term Source REF',
-            'Study Assay Technology Type',
-            'Study Assay Technology Type Term Accession Number',
-            'Study Assay Technology Type Term Source REF',
-            'Study Assay Technology Platform',
-            'Study Assay File Name'
-        }
-        FIELDS_STUDY_PROTOCOLS = {
-            'Study Protocol Name',
-            'Study Protocol Type',
-            'Study Protocol Type Term Accession Number',
-            'Study Protocol Type Term Source REF',
-            'Study Protocol Description',
-            'Study Protocol URI',
-            'Study Protocol Version',
-            'Study Protocol Parameters Name',
-            'Study Protocol Parameters Name Term Accession Number',
-            'Study Protocol Parameters Name Term Source REF',
-            'Study Protocol Components Name',
-            'Study Protocol Components Type',
-            'Study Protocol Components Type Term Accession Number',
-            'Study Protocol Components Type Term Source REF'
-        }
-        FIELDS_STUDY_CONTACTS = {
-            'Comment[Study Person REF]',
-            'Study Person Last Name',
-            'Study Person First Name',
-            'Study Person Mid Initials',
-            'Study Person Email',
-            'Study Person Phone',
-            'Study Person Fax',
-            'Study Person Address',
-            'Study Person Affiliation',
-            'Study Person Roles',
-            'Study Person Roles Term Accession Number',
-            'Study Person Roles Term Source REF'
-        }
+        FIELDS_INVESTIGATION = set([field['header'] for field in inv_config['fields'] if field['section'] == 'INVESTIGATION'])
+        FIELDS_INVESTIGATION_PUBLICATIONS = set([field['header'] for field in inv_config['fields'] if field['section'] == 'INVESTIGATION PUBLICATIONS'])
+        FIELDS_INVESTIGATION_CONTACTS = set([field['header'] for field in inv_config['fields'] if field['section'] == 'INVESTIGATION CONTACTS'])
+        FIELDS_STUDY = set([field['header'] for field in inv_config['fields'] if field['section'] == 'STUDY'])
+        FIELDS_STUDY_DESIGN_DESCRIPTORS = set([field['header'] for field in inv_config['fields'] if field['section'] == 'STUDY DESIGN DESCRIPTORS'])
+        FIELDS_STUDY_PUBLICATIONS = set([field['header'] for field in inv_config['fields'] if field['section'] == 'STUDY PUBLICATIONS'])
+        FIELDS_STUDY_FACTORS = set([field['header'] for field in inv_config['fields'] if field['section'] == 'STUDY FACTORS'])
+        FIELDS_STUDY_ASSAYS = set([field['header'] for field in inv_config['fields'] if field['section'] == 'STUDY ASSAYS'])
+        FIELDS_STUDY_PROTOCOLS = set([field['header'] for field in inv_config['fields'] if field['section'] == 'STUDY PROTOCOLS'])
+        FIELDS_STUDY_CONTACTS = set([field['header'] for field in inv_config['fields'] if field['section'] == 'STUDY CONTACTS'])
 
         if not FIELDS_ONTOLOGY_SOURCE_REFERENCE.issubset(set(sec_df_dict['ONTOLOGY SOURCE REFERENCE'].columns)):
             report.fatal("ONTOLOGY SOURCE REFERENCE section does not contain required fields")

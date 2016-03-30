@@ -40,7 +40,6 @@ def load(config_dir):
                     if field.generated_value_template is not None:
                         config_field['generated-value-template'] = field.generated_value_template.strip()
                     config_fields.append(config_field)
-                print(config_fields)
                 configs_dict[(measurement_type, technology_type)] = {
                     'measurement-type': measurement_type,
                     'technology-type': technology_type,
