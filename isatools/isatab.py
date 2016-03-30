@@ -543,8 +543,7 @@ def validatei(i_fp):
     #
 
     for s_key in [k for k in sec_df_dict if 'STUDY' in k]:
-        print(s_key)
-        # FIXME: for some reason only goes through one study
+        pass
     report.print_report()
 
 
