@@ -371,9 +371,11 @@ def validatei(i_fp):
                 sec_key='STUDY CONTACTS',
                 next_sec_key='STUDY'
             )
+            study_count += 1
         return file_section_dict
 
     def _check_i_section_shape(sec_memf_dict, report):
+
         def _build_section_df(sec_memf_dict, ref):
             import numpy as np
             df = None
@@ -449,7 +451,6 @@ def validatei(i_fp):
                 report.fatal("STUDY PROTOCOLS section does not contain required fields")
 
     def _check_i_values_required(sec_df_dict, report):
-
 
         def _check_sec_values(sec_df_dict, sec_label, fields):
             sec_df = sec_df_dict[sec_label]
@@ -542,9 +543,8 @@ def validatei(i_fp):
     #
 
     for s_key in [k for k in sec_df_dict if 'STUDY' in k]:
-        # print(s_key)
+        print(s_key)
         # FIXME: for some reason only goes through one study
-        pass
     report.print_report()
 
 
