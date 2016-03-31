@@ -63,10 +63,10 @@ class ValidationReport:
         report_json = self.generate_report_json(reporting_level)
         if len(self.report['fatal']) > 0: print('Fatal errors:')
         for message in report_json['fatal']:
-            print(message)
+            print(message['message'])
         if len(self.report['errors']) > 0: print('Errors:')
         for message in report_json['errors']:
-            print(message)
+            print(message['message'])
         if len(self.report['warnings']) > 0: print('Warnings:')
         for message in report_json['warnings']:
             print(message['message'])
@@ -405,54 +405,9 @@ def validatei(i_fp):
             sec_df_dict['STUDY CONTACTS.{}'.format(study_count)] = _build_section_df(sec_memf_dict, 'STUDY CONTACTS.{}'.format(study_count))
         return sec_df_dict
 
-    def _check_i_section_labels(sec_df_dict, report):
-        from isatools.io import isatab_configurator
-        config = isatab_configurator.load(os.path.join(os.path.dirname(__file__), '../tests/data/Configurations/isaconfig-default_v2015-07-02'))
-        inv_config = config[('[investigation]', '')]
-        i_ont_src_headers = {
-            'Term Source Name',
-            'Term Source File',
-            'Term Source Version',
-            'Term Source Description'
-        }
-        i_headers = set([field['header'] for field in inv_config['fields'] if field['section'] == 'INVESTIGATION'])
-        i_pub_headers = set([field['header'] for field in inv_config['fields'] if field['section'] == 'INVESTIGATION PUBLICATIONS'])
-        i_contacts_headers = set([field['header'] for field in inv_config['fields'] if field['section'] == 'INVESTIGATION CONTACTS'])
-        s_headers = set([field['header'] for field in inv_config['fields'] if field['section'] == 'STUDY'])
-        s_des_desc_headers = set([field['header'] for field in inv_config['fields'] if field['section'] == 'STUDY DESIGN DESCRIPTORS'])
-        s_pub_headers = set([field['header'] for field in inv_config['fields'] if field['section'] == 'STUDY PUBLICATIONS'])
-        s_factors_headers = set([field['header'] for field in inv_config['fields'] if field['section'] == 'STUDY FACTORS'])
-        s_assays_headers = set([field['header'] for field in inv_config['fields'] if field['section'] == 'STUDY ASSAYS'])
-        s_protocols_headers = set([field['header'] for field in inv_config['fields'] if field['section'] == 'STUDY PROTOCOLS'])
-        s_contacts_headers = set([field['header'] for field in inv_config['fields'] if field['section'] == 'STUDY CONTACTS'])
-
-        if not i_ont_src_headers.issubset(set(sec_df_dict['ONTOLOGY SOURCE REFERENCE'].columns)):
-            report.fatal("ONTOLOGY SOURCE REFERENCE section does not contain required fields")
-        if not i_headers.issubset(set(sec_df_dict['INVESTIGATION'].columns)):
-            report.fatal("INVESTIGATION section does not contain required fields")
-        if not i_pub_headers.issubset(set(sec_df_dict['INVESTIGATION PUBLICATIONS'].columns)):
-            report.fatal("INVESTIGATION PUBLICATIONS section does not contain required fields")
-        if not i_contacts_headers.issubset(set(sec_df_dict['INVESTIGATION CONTACTS'].columns)):
-            report.fatal("INVESTIGATION CONTACTS section does not contain required fields")
-        for study_count in range(0, len([k for k in sec_memf_dict.keys() if k.startswith('STUDY.')])):
-            if not s_headers.issubset(set(sec_df_dict['STUDY.' + str(study_count)].columns)):
-                report.fatal("STUDY section does not contain required fields")
-            if not s_des_desc_headers.issubset(set(sec_df_dict['STUDY DESIGN DESCRIPTORS.' + str(study_count)].columns)):
-                report.fatal("STUDY DESIGN DESCRIPTORS section does not contain required fields")
-            if not s_pub_headers.issubset(set(sec_df_dict['STUDY PUBLICATIONS.' + str(study_count)].columns)):
-                report.fatal("STUDY PUBLICATIONS section does not contain required fields")
-            if not s_factors_headers.issubset(set(sec_df_dict['STUDY FACTORS.' + str(study_count)].columns)):
-                report.fatal("STUDY FACTORS section does not contain required fields")
-            if not s_assays_headers.issubset(set(sec_df_dict['STUDY ASSAYS.' + str(study_count)].columns)):
-                report.fatal("STUDY ASSAYS section does not contain required fields")
-            if not s_protocols_headers.issubset(set(sec_df_dict['STUDY PROTOCOLS.' + str(study_count)].columns)):
-                report.fatal("STUDY PROTOCOLS section does not contain required fields")
-            if not s_contacts_headers.issubset(set(sec_df_dict['STUDY CONTACTS.' + str(study_count)].columns)):
-                report.fatal("STUDY PROTOCOLS section does not contain required fields")
-
     def _check_i_values_required(sec_df_dict, report):
 
-        def _check_sec_values(sec_df_dict, sec_label, fields):
+        def _check_i_section(sec_df_dict, sec_label, fields):
             sec_df = sec_df_dict[sec_label]
             for i in range(0, len(sec_df.index)):
                 for col in sec_df.columns:
@@ -463,6 +418,9 @@ def validatei(i_fp):
                                 report.warn("Field '{0}' of entry {1} in {2} section is missing a required value".format(col, i+1, sec_label))
                             else:
                                 report.warn("Field '{0}' in {1} section is missing a required value".format(col, sec_label))
+            headers = set([field['header'] for field in fields])
+            if not headers.issubset(set(sec_df)):
+                report.fatal("{} section does not contain required fields".format(sec_label))
 
         from isatools.io import isatab_configurator
         config = isatab_configurator.load(os.path.join(os.path.dirname(__file__), '../tests/data/Configurations/isaconfig-default_v2015-07-02'))
@@ -478,24 +436,31 @@ def validatei(i_fp):
         s_protocols_is_req = [field for field in inv_config['fields'] if field['section'] == 'STUDY PROTOCOLS']
         s_contacts_is_req = [field for field in inv_config['fields'] if field['section'] == 'STUDY CONTACTS']
 
-        _check_sec_values(sec_df_dict, 'INVESTIGATION', i_fields)
-        _check_sec_values(sec_df_dict, 'INVESTIGATION PUBLICATIONS', i_pub_fields)
-        _check_sec_values(sec_df_dict, 'INVESTIGATION CONTACTS', i_contacts_fields)
+        i_ont_src_headers = {
+            'Term Source Name',
+            'Term Source File',
+            'Term Source Version',
+            'Term Source Description'
+        }
+        if not i_ont_src_headers.issubset(set(sec_df_dict['ONTOLOGY SOURCE REFERENCE'].columns)):
+            report.fatal("ONTOLOGY SOURCE REFERENCE section does not contain required fields")
+        _check_i_section(sec_df_dict, 'INVESTIGATION', i_fields)
+        _check_i_section(sec_df_dict, 'INVESTIGATION PUBLICATIONS', i_pub_fields)
+        _check_i_section(sec_df_dict, 'INVESTIGATION CONTACTS', i_contacts_fields)
         for study_count in range(0, len([k for k in sec_memf_dict.keys() if k.startswith('STUDY.')])):
-            _check_sec_values(sec_df_dict, 'STUDY.' + str(study_count), s_fields)
-            _check_sec_values(sec_df_dict, 'STUDY DESIGN DESCRIPTORS.' + str(study_count), s_des_desc_fields)
-            _check_sec_values(sec_df_dict, 'STUDY PUBLICATIONS.' + str(study_count), s_pub_is_req)
-            _check_sec_values(sec_df_dict, 'STUDY FACTORS.' + str(study_count), s_factors_is_req)
-            _check_sec_values(sec_df_dict, 'STUDY ASSAYS.' + str(study_count), s_assays_is_req)
-            _check_sec_values(sec_df_dict, 'STUDY PROTOCOLS.' + str(study_count), s_protocols_is_req)
-            _check_sec_values(sec_df_dict, 'STUDY CONTACTS.' + str(study_count), s_contacts_is_req)
+            _check_i_section(sec_df_dict, 'STUDY.' + str(study_count), s_fields)
+            _check_i_section(sec_df_dict, 'STUDY DESIGN DESCRIPTORS.' + str(study_count), s_des_desc_fields)
+            _check_i_section(sec_df_dict, 'STUDY PUBLICATIONS.' + str(study_count), s_pub_is_req)
+            _check_i_section(sec_df_dict, 'STUDY FACTORS.' + str(study_count), s_factors_is_req)
+            _check_i_section(sec_df_dict, 'STUDY ASSAYS.' + str(study_count), s_assays_is_req)
+            _check_i_section(sec_df_dict, 'STUDY PROTOCOLS.' + str(study_count), s_protocols_is_req)
+            _check_i_section(sec_df_dict, 'STUDY CONTACTS.' + str(study_count), s_contacts_is_req)
 
     report = ValidationReport()
     _check_encoding(fp=i_fp, report=report)  # check file encoding of i file
     sec_memf_dict = _check_i_sections(fp=i_fp, report=report)  # if successful, returns a dict of sections split into memory files
     sec_df_dict = _check_i_section_shape(sec_memf_dict=sec_memf_dict, report=report)  # if successful, returns dataframes of sections
-    _check_i_section_labels(sec_df_dict=sec_df_dict, report=report)  # check if required labels are there (not ordered)
-    _check_i_values_required(sec_df_dict=sec_df_dict, report=report)
+    _check_i_values_required(sec_df_dict=sec_df_dict, report=report)  # check if required labels and values are there (not ordered)
     # _check_i_section_datatypes(sec_df_dict=sec_df_dict, report=report)  # check if values are of correct datatypes
 
     # i_df_dict = _read_investigation_file(fp, report)  # check that the i file is structured correctly
