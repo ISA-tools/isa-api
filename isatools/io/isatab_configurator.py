@@ -27,8 +27,8 @@ def load(config_dir):
                 config = config_obj.get_isatab_configuration()[0]
                 measurement_type = config.get_measurement().get_term_label()
                 technology_type = config.get_technology().get_term_label()
-                config_fields = list()
-                for field in config.get_field():
+                config_fields = dict()
+                for field in config.field:
                     config_field = {
                         'header': field.header,
                         'is-required': field.is_required,
@@ -41,11 +41,29 @@ def load(config_dir):
                         config_field['list-values'] = field.list_values.split(',')
                     if field.generated_value_template is not None:
                         config_field['generated-value-template'] = field.generated_value_template.strip()
-                    config_fields.append(config_field)
+                    config_fields[field.pos] = config_field
+                for protocol_field in config.protocol_field:
+                    config_field = {
+                        'protocol-type': protocol_field.protocol_type
+                    }
+                    config_fields[protocol_field.pos] = config_field
+                for structured_field in config.structured_field:
+                    if structured_field.name == 'characteristics':
+                        config_field = {
+                            'allow-extra-characteristics': True
+                        }
+                        config_fields[structured_field.pos] = config_field
+                    elif structured_field.name == 'factors':
+                        config_field = {
+                            'allow-extra-factors': True
+                        }
+                        config_fields[structured_field.pos] = config_field
+                from collections import OrderedDict
+                sorted_fields = OrderedDict(sorted(config_fields.items(), key=lambda x: x[0]))
                 configs_dict[(measurement_type, technology_type)] = {
                     'measurement-type': measurement_type,
                     'technology-type': technology_type,
-                    'fields': config_fields
+                    'fields': list(sorted_fields.values())
                 }
             except GDSParseError as parse_error:
                 print(parse_error)
