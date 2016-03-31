@@ -262,6 +262,15 @@ def _check_iso8601_date(date_str, report):
         except iso8601.ParseError:
             report.warn("Date {} does not conform to ISO8601 format".format(date_str))
 
+def _is_iso8601_date(date_str):
+    if date_str is not '':
+        try:
+            iso8601.parse_date(date_str)
+        except iso8601.ParseError:
+            return False
+        return True
+    return False
+
 
 def _check_pubmed_id(pubmed_id_str, report):
     if pubmed_id_str is not '':
@@ -393,10 +402,14 @@ def validatei(i_fp):
         sec_df_dict = dict()
         sec_df_dict['ONTOLOGY SOURCE REFERENCE'] = _build_section_df(sec_memf_dict, 'ONTOLOGY SOURCE REFERENCE')
         sec_df_dict['INVESTIGATION'] = _build_section_df(sec_memf_dict, 'INVESTIGATION')
+        i_rows = len(sec_df_dict['INVESTIGATION'].index)
+        if i_rows > 1: report.fatal("INVESTIGATION section should only have 1 record. Found {} records.".format(i_rows))
         sec_df_dict['INVESTIGATION PUBLICATIONS'] = _build_section_df(sec_memf_dict, 'INVESTIGATION PUBLICATIONS')
         sec_df_dict['INVESTIGATION CONTACTS'] = _build_section_df(sec_memf_dict, 'INVESTIGATION CONTACTS')
         for study_count in range(0, len([k for k in sec_memf_dict.keys() if k.startswith('STUDY.')])):
             sec_df_dict['STUDY.{}'.format(study_count)] = _build_section_df(sec_memf_dict, 'STUDY.{}'.format(study_count))
+            s_rows = len(sec_df_dict['STUDY.{}'.format(study_count)].index)
+            if s_rows > 1: report.fatal("STUDY.{0} section should only have 1 record. Found {1} records.".format(study_count, i_rows))
             sec_df_dict['STUDY DESIGN DESCRIPTORS.{}'.format(study_count)] = _build_section_df(sec_memf_dict, 'STUDY DESIGN DESCRIPTORS.{}'.format(study_count))
             sec_df_dict['STUDY PUBLICATIONS.{}'.format(study_count)] = _build_section_df(sec_memf_dict, 'STUDY PUBLICATIONS.{}'.format(study_count))
             sec_df_dict['STUDY FACTORS.{}'.format(study_count)] = _build_section_df(sec_memf_dict, 'STUDY FACTORS.{}'.format(study_count))
@@ -405,10 +418,25 @@ def validatei(i_fp):
             sec_df_dict['STUDY CONTACTS.{}'.format(study_count)] = _build_section_df(sec_memf_dict, 'STUDY CONTACTS.{}'.format(study_count))
         return sec_df_dict
 
-    def _check_i_values_required(sec_df_dict, report):
+    def _check_i_sections_content(sec_df_dict, report):
 
-        def _check_i_section(sec_df_dict, sec_label, fields):
+        def _check_i_labels_values(sec_df_dict, sec_label, fields):
             sec_df = sec_df_dict[sec_label]
+
+            # check if required labels exist
+            # headers = [field['header'] for field in fields]
+            headers_list = list()
+            for field in fields:
+                header = field['header']
+                headers_list.append(header)
+                if field['data-type'] == 'Ontology term':
+                    headers_list.append(header + ' Term Accession Number')
+                    headers_list.append(header + ' Term Source REF')
+            headers = set(headers_list)
+            if not headers.issubset(set(sec_df)):
+                report.fatal("{} section does not contain required fields".format(sec_label))
+
+            # check if required values are set
             for i in range(0, len(sec_df.index)):
                 for col in sec_df.columns:
                     flag = [field['is-required'] for field in fields if field['header'] == col]
@@ -418,9 +446,24 @@ def validatei(i_fp):
                                 report.warn("Field '{0}' of entry {1} in {2} section is missing a required value".format(col, i+1, sec_label))
                             else:
                                 report.warn("Field '{0}' in {1} section is missing a required value".format(col, sec_label))
-            headers = set([field['header'] for field in fields])
-            if not headers.issubset(set(sec_df)):
-                report.fatal("{} section does not contain required fields".format(sec_label))
+
+            # check if values given are of correct data-type
+            for i in range(0, len(sec_df.index)):
+                for col in sec_df.columns:
+                    fail = False
+                    data_type = [field['data-type'] for field in fields if field['header'] == col]
+                    value = sec_df.iloc[i][col]
+                    if len(data_type) > 0:
+                        if isinstance(value, str):
+                            if data_type[0] == 'Date':
+                                if not _is_iso8601_date(value):
+                                    report.warn("Value '{0}' in section {1} in field '{2}' does not conform to ISO8601 (date) formatting".format(value, sec_label, col))
+                    if fail:
+                        if i > 0:
+                            report.warn("Field '{0}' of entry {1} in {2} section is missing a required value".format(col, i+1, sec_label))
+                        else:
+                            report.warn("Field '{0}' in {1} section is missing a required value".format(col, sec_label))
+
 
         from isatools.io import isatab_configurator
         config = isatab_configurator.load(os.path.join(os.path.dirname(__file__), '../tests/data/Configurations/isaconfig-default_v2015-07-02'))
@@ -444,26 +487,23 @@ def validatei(i_fp):
         }
         if not i_ont_src_headers.issubset(set(sec_df_dict['ONTOLOGY SOURCE REFERENCE'].columns)):
             report.fatal("ONTOLOGY SOURCE REFERENCE section does not contain required fields")
-        _check_i_section(sec_df_dict, 'INVESTIGATION', i_fields)
-        _check_i_section(sec_df_dict, 'INVESTIGATION PUBLICATIONS', i_pub_fields)
-        _check_i_section(sec_df_dict, 'INVESTIGATION CONTACTS', i_contacts_fields)
+        _check_i_labels_values(sec_df_dict, 'INVESTIGATION', i_fields)
+        _check_i_labels_values(sec_df_dict, 'INVESTIGATION PUBLICATIONS', i_pub_fields)
+        _check_i_labels_values(sec_df_dict, 'INVESTIGATION CONTACTS', i_contacts_fields)
         for study_count in range(0, len([k for k in sec_memf_dict.keys() if k.startswith('STUDY.')])):
-            _check_i_section(sec_df_dict, 'STUDY.' + str(study_count), s_fields)
-            _check_i_section(sec_df_dict, 'STUDY DESIGN DESCRIPTORS.' + str(study_count), s_des_desc_fields)
-            _check_i_section(sec_df_dict, 'STUDY PUBLICATIONS.' + str(study_count), s_pub_is_req)
-            _check_i_section(sec_df_dict, 'STUDY FACTORS.' + str(study_count), s_factors_is_req)
-            _check_i_section(sec_df_dict, 'STUDY ASSAYS.' + str(study_count), s_assays_is_req)
-            _check_i_section(sec_df_dict, 'STUDY PROTOCOLS.' + str(study_count), s_protocols_is_req)
-            _check_i_section(sec_df_dict, 'STUDY CONTACTS.' + str(study_count), s_contacts_is_req)
+            _check_i_labels_values(sec_df_dict, 'STUDY.' + str(study_count), s_fields)
+            _check_i_labels_values(sec_df_dict, 'STUDY DESIGN DESCRIPTORS.' + str(study_count), s_des_desc_fields)
+            _check_i_labels_values(sec_df_dict, 'STUDY PUBLICATIONS.' + str(study_count), s_pub_is_req)
+            _check_i_labels_values(sec_df_dict, 'STUDY FACTORS.' + str(study_count), s_factors_is_req)
+            _check_i_labels_values(sec_df_dict, 'STUDY ASSAYS.' + str(study_count), s_assays_is_req)
+            _check_i_labels_values(sec_df_dict, 'STUDY PROTOCOLS.' + str(study_count), s_protocols_is_req)
+            _check_i_labels_values(sec_df_dict, 'STUDY CONTACTS.' + str(study_count), s_contacts_is_req)
 
     report = ValidationReport()
     _check_encoding(fp=i_fp, report=report)  # check file encoding of i file
     sec_memf_dict = _check_i_sections(fp=i_fp, report=report)  # if successful, returns a dict of sections split into memory files
     sec_df_dict = _check_i_section_shape(sec_memf_dict=sec_memf_dict, report=report)  # if successful, returns dataframes of sections
-    _check_i_values_required(sec_df_dict=sec_df_dict, report=report)  # check if required labels and values are there (not ordered)
-    # _check_i_section_datatypes(sec_df_dict=sec_df_dict, report=report)  # check if values are of correct datatypes
-
-    # i_df_dict = _read_investigation_file(fp, report)  # check that the i file is structured correctly
+    _check_i_sections_content(sec_df_dict=sec_df_dict, report=report)  # check if required labels and values are there (not ordered)
 
     # ontology_source_references_dict = dict()  # key is Term Source Name
     # for i, row in i_df_dict['ONTOLOGY SOURCE REFERENCE'].iterrows():  # load ontology source references
