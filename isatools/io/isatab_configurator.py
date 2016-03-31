@@ -37,6 +37,8 @@ def load(config_dir):
                     }
                     if field.section is not None:
                         config_field['section'] = field.section
+                    if field.data_type == 'List' and field.list_values is not None:
+                        config_field['list-values'] = field.list_values.split(',')
                     if field.generated_value_template is not None:
                         config_field['generated-value-template'] = field.generated_value_template.strip()
                     config_fields.append(config_field)
