@@ -559,42 +559,91 @@ def validatei(i_fp):
 def validates(s_fp):
     """Validate an ISA tab s_ file"""
 
-    study_tab_df = pd.read_csv(s_fp, sep='\t', header=None)
+    study_tab_df = pd.read_csv(s_fp, sep='\t')
     from isatools.io import isatab_configurator
     config = isatab_configurator.load(os.path.join(os.path.dirname(__file__), '../tests/data/Configurations/isaconfig-default_v2015-07-02'))
     study_config = config[('[Sample]', '')]
-    nodes_from_config = list()
+
+    # Build list of headers from configuration. Prefix headers with an int indicating node ID
+    headers_from_config = list()
     fields = study_config['fields']
+    node_count = 0
     for x, field in enumerate(fields):
         try:
             header = field['header']
             if header == 'Source Name' or header == 'Sample Name':
-                node = dict()
-                node['name'] = header
-                node['characteristics'] = list()
+                headers_from_config.append(str(node_count) + '.' + header)
                 offset = 1
                 try:
-                    while fields[x+offset]['header'].startswith('Characteristics[') or fields[x+offset]['header'].startswith('Factors['):
-                        node['characteristics'].append(fields[x+offset]['header'])
+                    while fields[x+offset]['header'].startswith('Characteristics[') or fields[x+offset]['header'].startswith('Factor Value['):
+                        if fields[x+offset]['header'].startswith('Characteristics['):
+                            headers_from_config.append(str(node_count) + '.' + fields[x+offset]['header'])
+                            if fields[x+offset]['data-type'] == 'Ontology term':
+                                headers_from_config.append(str(node_count) + '.Term Source REF')
+                                headers_from_config.append(str(node_count) + '.Term Accession Number')
                         offset += 1
                 except KeyError:
                     pass
-                nodes_from_config.append(node)
+                finally:
+                    node_count += 1
         except KeyError:
             try:
                 if field['protocol-type'] != '':
-                    node = {'name': field['protocol-type'], 'parameters': []}
+                    headers_from_config.append(str(node_count) + '.Protocol REF')
                     offset = 1
                     try:
                         while fields[x+offset]['header'].startswith('Parameter Value['):
-                            node['parameters'].append(fields[x+offset]['header'])
+                            headers_from_config.append(str(node_count) + '.' + fields[x+offset]['header'])
                             offset += 1
                     except KeyError:
                         pass
-                    nodes_from_config.append(node)
+                    finally:
+                        node_count += 1
             except KeyError:
                 pass
-    print(nodes_from_config)
+
+    # Build list of headers from ISAtab. Prefix headers with an int indicating node ID
+    node_count = 0
+    cols_from_study_tab = list(study_tab_df.columns)
+    headers_from_tab = list()
+    for x, col in enumerate(cols_from_study_tab):
+        if col == 'Source Name' or col == 'Sample Name':
+            headers_from_tab.append(str(node_count) + '.' + col)
+            offset = 1
+            try:
+                while cols_from_study_tab[x+offset].startswith('Characteristics[') or \
+                        cols_from_study_tab[x+offset].startswith('Factor Value[') or \
+                        cols_from_study_tab[x+offset].startswith('Term Source REF') or \
+                        cols_from_study_tab[x+offset].startswith('Term Accession Number'):
+                    if cols_from_study_tab[x+offset].startswith('Characteristics['):
+                        headers_from_tab.append(str(node_count) + '.' + cols_from_study_tab[x+offset])
+                    if cols_from_study_tab[x+offset].startswith('Factor Value['):
+                        headers_from_tab.append(str(node_count) + '.' + cols_from_study_tab[x+offset])
+                    if cols_from_study_tab[x+offset].startswith('Term Source REF'):
+                        headers_from_tab.append(str(node_count) + '.Term Source REF')
+                    if cols_from_study_tab[x+offset].startswith('Term Accession Number'):
+                        headers_from_tab.append(str(node_count) + '.Term Accession Number')
+                    # TODO: Deal with units
+                    offset += 1
+            except KeyError:
+                pass
+            finally:
+                node_count += 1
+        if col == 'Protocol REF':
+            headers_from_tab.append(str(node_count) + '.Protocol REF')
+            offset = 1
+            try:
+                while cols_from_study_tab[x+offset].startswith('Parameter Value['):
+                    headers_from_config.append(str(node_count) + '.' + cols_from_study_tab[x+offset])
+                    offset += 1
+            except KeyError:
+                pass
+            finally:
+                node_count += 1
+
+    # Now the node headers should match up, unless there's an extra node thrown in somewhere...
+    print(headers_from_config)
+    print(headers_from_tab)
 
 
 
