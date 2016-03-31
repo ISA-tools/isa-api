@@ -433,8 +433,8 @@ def validatei(i_fp):
                     headers_list.append(header + ' Term Accession Number')
                     headers_list.append(header + ' Term Source REF')
             headers = set(headers_list)
-            if not headers.issubset(set(sec_df)):
-                report.fatal("{} section does not contain required fields".format(sec_label))
+            if not headers.issubset(set(sec_df.columns)):
+                report.fatal("{0} section does not contain all the required fields. Missing field(s): {1}".format(sec_label, headers - set(sec_df.columns)))
 
             # check if required values are set
             for i in range(0, len(sec_df.index)):
@@ -479,14 +479,6 @@ def validatei(i_fp):
         s_protocols_is_req = [field for field in inv_config['fields'] if field['section'] == 'STUDY PROTOCOLS']
         s_contacts_is_req = [field for field in inv_config['fields'] if field['section'] == 'STUDY CONTACTS']
 
-        i_ont_src_headers = {
-            'Term Source Name',
-            'Term Source File',
-            'Term Source Version',
-            'Term Source Description'
-        }
-        if not i_ont_src_headers.issubset(set(sec_df_dict['ONTOLOGY SOURCE REFERENCE'].columns)):
-            report.fatal("ONTOLOGY SOURCE REFERENCE section does not contain required fields")
         _check_i_labels_values(sec_df_dict, 'INVESTIGATION', i_fields)
         _check_i_labels_values(sec_df_dict, 'INVESTIGATION PUBLICATIONS', i_pub_fields)
         _check_i_labels_values(sec_df_dict, 'INVESTIGATION CONTACTS', i_contacts_fields)
@@ -505,47 +497,59 @@ def validatei(i_fp):
     sec_df_dict = _check_i_section_shape(sec_memf_dict=sec_memf_dict, report=report)  # if successful, returns dataframes of sections
     _check_i_sections_content(sec_df_dict=sec_df_dict, report=report)  # check if required labels and values are there (not ordered)
 
-    # ontology_source_references_dict = dict()  # key is Term Source Name
-    # for i, row in i_df_dict['ONTOLOGY SOURCE REFERENCE'].iterrows():  # load ontology source references
-    #     ontology_source_reference = OntologySourceReference(
-    #         name=row['Term Source Name'],
-    #         file=row['Term Source File'],
-    #         version=row['Term Source Version'],
-    #         description=row['Term Source Description']
-    #     )
-    #     ontology_source_references_dict[ontology_source_reference.name] = ontology_source_reference
-    # for i, row in i_df_dict['INVESTIGATION'].iterrows():  # check INVESTIGATION section
-    #     _check_iso8601_date(row['Investigation Submission Date'])
-    #     _check_iso8601_date(row['Investigation Public Release Date'])
-    #
-    # for i, row in i_df_dict['INVESTIGATION PUBLICATIONS'].iterrows():  # check INVESTIGATION PUBLICATIONS section
-    #     _check_pubmed_id(row['Investigation PubMed ID'])
-    #     _check_doi(row['Investigation Publication DOI'])
-    #
-    #     if row['Investigation Publication Status'] is not '':
-    #         if row['Investigation Publication Status Term Accession Number'] is '':
-    #             logger.warn("Missing {} Term Accession Number".format('Investigation Publication Status'))
-    #         if row['Investigation Publication Status Term Source REF'] is '':
-    #             logger.warn("Missing {} Term Source REF".format('Investigation Publication Status'))
-    #         else:
-    #             try:
-    #                 ontology_source_references_dict[row['Investigation Publication Status Term Source REF']]
-    #             except KeyError:
-    #                 logger.error("Term Source REF not declared in Ontology Source References")
-    #
-    # for i, row in i_df_dict['INVESTIGATION CONTACTS'].iterrows():  # check INVESTIGATION PUBLICATIONS section
-    #
-    #     if row['Investigation Person Roles'] is not '':
-    #         if row['Investigation Person Roles Term Accession Number'] is '':
-    #             logger.warn("Missing {} Term Accession Number".format('Investigation Person Roles'))
-    #         if row['Investigation Person Roles Term Source REF'] is '':
-    #             logger.warn("Missing {} Term Source REF".format('Investigation Person Roles'))
-    #         else:
-    #             try:
-    #                 ontology_source_references_dict[row['Investigation Person Roles Term Source REF']]
-    #             except KeyError:
-    #                 logger.error("Term Source REF not declared in Ontology Source References")
-    #
+    # try and find linked files
+    for study_count in range(0, len([k for k in sec_memf_dict.keys() if k.startswith('STUDY.')])):
+        study_df = sec_df_dict['STUDY.' + str(study_count)]
+        study_file_name = study_df.iloc[0]['Study File Name']
+        if not os.path.isfile(os.path.join(os.path.dirname(i_fp.name), study_file_name)):
+            report.fatal("The referenced study file '{}' does not exist or is not a file".format(study_file_name))
+    for study_assay_count in range(0, len([k for k in sec_memf_dict.keys() if k.startswith('STUDY ASSAYS.')])):
+        study_assay_df = sec_df_dict['STUDY ASSAYS.' + str(study_assay_count)]
+        for i in range(0, len(study_assay_df.index)):
+            assay_file_name = study_assay_df.iloc[i]['Study Assay File Name']
+            if not os.path.isfile(os.path.join(os.path.dirname(i_fp.name), assay_file_name)):
+                report.fatal("The referenced assay file '{}' does not exist or is not a file".format(assay_file_name))
+
+    if len(report.generate_report_json()['fatal']) > 0:
+        report.print_report()
+        return
+
+    # now try and open the files
+    for study_count in range(0, len([k for k in sec_memf_dict.keys() if k.startswith('STUDY.')])):
+        study_df = sec_df_dict['STUDY.' + str(study_count)]
+        study_file_name = study_df.iloc[0]['Study File Name']
+        study_tab_df = pd.read_csv(open(os.path.join(os.path.dirname(i_fp.name), study_file_name)), sep='\t', header=None)
+        print(study_tab_df)
+    for study_assay_count in range(0, len([k for k in sec_memf_dict.keys() if k.startswith('STUDY ASSAYS.')])):
+        study_assay_df = sec_df_dict['STUDY ASSAYS.' + str(study_assay_count)]
+        for i in range(0, len(study_assay_df.index)):
+            assay_file_name = study_assay_df.iloc[i]['Study Assay File Name']
+            if not os.path.isfile(os.path.join(os.path.dirname(i_fp.name), assay_file_name)):
+                report.fatal("The referenced assay file '{}' does not exist or is not a file".format(assay_file_name))
+
+    i_ont_src_headers = {
+        'Term Source Name',
+        'Term Source File',
+        'Term Source Version',
+        'Term Source Description'
+    }
+    if not i_ont_src_headers.issubset(set(sec_df_dict['ONTOLOGY SOURCE REFERENCE'].columns)):
+        report.fatal("ONTOLOGY SOURCE REFERENCE section does not contain required fields\nSkipping Term Source REF checks")
+    else:
+        ontology_source_references_dict = dict()  # key is Term Source Name
+        for i, row in sec_df_dict['ONTOLOGY SOURCE REFERENCE'].iterrows():  # load ontology source references
+            if row['Term Source Name'] == '':
+                report.warn("Ontology source at position {} has no name so cannot be linked by Term Source REF")
+            else:
+                ontology_source_reference = OntologySourceReference(
+                    name=row['Term Source Name'],
+                    file=row['Term Source File'],
+                    version=row['Term Source Version'],
+                    description=row['Term Source Description']
+                )
+                ontology_source_references_dict[ontology_source_reference.name] = ontology_source_reference
+
+
 
     for s_key in [k for k in sec_df_dict if 'STUDY' in k]:
         pass
