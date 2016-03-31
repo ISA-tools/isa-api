@@ -292,7 +292,7 @@ def _check_encoding(fp, report):
                     .format(charset['encoding'], charset['confidence']))
 
 def validatei(i_fp):
-    """Validate an ISA tab, starting from i file"""
+    """Validate an ISA tab, starting from i_ file"""
 
     def _check_i_sections(fp, report):
 
@@ -556,9 +556,47 @@ def validatei(i_fp):
     report.print_report()
 
 
-def validatez(isatab_dir, config_dir):
-    """Validate an ISA tab zip archive"""
-    pass
+def validates(s_fp):
+    """Validate an ISA tab s_ file"""
+
+    study_tab_df = pd.read_csv(s_fp, sep='\t', header=None)
+    from isatools.io import isatab_configurator
+    config = isatab_configurator.load(os.path.join(os.path.dirname(__file__), '../tests/data/Configurations/isaconfig-default_v2015-07-02'))
+    study_config = config[('[Sample]', '')]
+    nodes_from_config = list()
+    fields = study_config['fields']
+    for x, field in enumerate(fields):
+        try:
+            header = field['header']
+            if header == 'Source Name' or header == 'Sample Name':
+                node = dict()
+                node['name'] = header
+                node['characteristics'] = list()
+                offset = 1
+                try:
+                    while fields[x+offset]['header'].startswith('Characteristics[') or fields[x+offset]['header'].startswith('Factors['):
+                        node['characteristics'].append(fields[x+offset]['header'])
+                        offset += 1
+                except KeyError:
+                    pass
+                nodes_from_config.append(node)
+        except KeyError:
+            try:
+                if field['protocol-type'] != '':
+                    node = {'name': field['protocol-type'], 'parameters': []}
+                    offset = 1
+                    try:
+                        while fields[x+offset]['header'].startswith('Parameter Value['):
+                            node['parameters'].append(fields[x+offset]['header'])
+                            offset += 1
+                    except KeyError:
+                        pass
+                    nodes_from_config.append(node)
+            except KeyError:
+                pass
+    print(nodes_from_config)
+
+
 
 
 
