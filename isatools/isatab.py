@@ -700,7 +700,9 @@ def validates(s_fp):
         if not set(headers_from_config).issubset(set(headers_from_tab)):
             report.fatal("Required node headers in study file '{0} are not present.\n"
                          "Configuration specifies: {1}\n"
-                         "Found in ISAtab: {2}".format(s_fp.name, headers_from_config, headers_from_tab))
+                         "Found in ISAtab: {2}\n"
+                         "Missing headers are {3}: ".format(s_fp.name, headers_from_config, headers_from_tab,
+                                                            set(headers_from_config) - set(headers_from_tab)))
 
     report = ValidationReport()
     _check_encoding(fp=s_fp, report=report)  # check file encoding of i file
