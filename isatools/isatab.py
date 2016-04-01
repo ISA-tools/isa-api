@@ -22,11 +22,12 @@ class ValidationError(Exception): pass
 
 class ValidationReport:
 
-    def __init__(self):
+    def __init__(self, file_name):
         self.report = dict()
         self.report['warnings'] = list()
         self.report['errors'] = list()
         self.report['fatal'] = list()
+        self.file_name = file_name
 
     def fatal(self, msg):
         self.report['fatal'].append({
@@ -61,13 +62,13 @@ class ValidationReport:
 
     def print_report(self, reporting_level=3):
         report_json = self.generate_report_json(reporting_level)
-        if len(self.report['fatal']) > 0: print('Fatal errors:')
+        if len(self.report['fatal']) > 0: print(self.file_name + ' ::: Fatal errors:')
         for message in report_json['fatal']:
             print(message['message'])
-        if len(self.report['errors']) > 0: print('Errors:')
+        if len(self.report['errors']) > 0: print(self.file_name + ' ::: Errors:')
         for message in report_json['errors']:
             print(message['message'])
-        if len(self.report['warnings']) > 0: print('Warnings:')
+        if len(self.report['warnings']) > 0: print(self.file_name + ' ::: Warnings:')
         for message in report_json['warnings']:
             print(message['message'])
 
@@ -464,7 +465,6 @@ def validatei(i_fp):
                         else:
                             report.warn("Field '{0}' in {1} section is missing a required value".format(col, sec_label))
 
-
         from isatools.io import isatab_configurator
         config = isatab_configurator.load(os.path.join(os.path.dirname(__file__), '../tests/data/Configurations/isaconfig-default_v2015-07-02'))
         inv_config = config[('[investigation]', '')]
@@ -491,7 +491,7 @@ def validatei(i_fp):
             _check_i_labels_values(sec_df_dict, 'STUDY PROTOCOLS.' + str(study_count), s_protocols_is_req)
             _check_i_labels_values(sec_df_dict, 'STUDY CONTACTS.' + str(study_count), s_contacts_is_req)
 
-    report = ValidationReport()
+    report = ValidationReport(file_name=i_fp.name)
     _check_encoding(fp=i_fp, report=report)  # check file encoding of i file
     sec_memf_dict = _check_i_sections(fp=i_fp, report=report)  # if successful, returns a dict of sections split into memory files
     sec_df_dict = _check_i_section_shape(sec_memf_dict=sec_memf_dict, report=report)  # if successful, returns dataframes of sections
@@ -513,46 +513,33 @@ def validatei(i_fp):
     if len(report.generate_report_json()['fatal']) > 0:
         report.print_report()
         return
+    #
+    # i_ont_src_headers = {
+    #     'Term Source Name',
+    #     'Term Source File',
+    #     'Term Source Version',
+    #     'Term Source Description'
+    # }
+    # if not i_ont_src_headers.issubset(set(sec_df_dict['ONTOLOGY SOURCE REFERENCE'].columns)):
+    #     report.fatal("ONTOLOGY SOURCE REFERENCE section does not contain required fields\nSkipping Term Source REF checks")
+    # else:
+    #     ontology_source_references_dict = dict()  # key is Term Source Name
+    #     for i, row in sec_df_dict['ONTOLOGY SOURCE REFERENCE'].iterrows():  # load ontology source references
+    #         if row['Term Source Name'] == '':
+    #             report.warn("Ontology source at position {} has no name so cannot be linked by Term Source REF")
+    #         else:
+    #             ontology_source_reference = OntologySourceReference(
+    #                 name=row['Term Source Name'],
+    #                 file=row['Term Source File'],
+    #                 version=row['Term Source Version'],
+    #                 description=row['Term Source Description']
+    #             )
+    #             ontology_source_references_dict[ontology_source_reference.name] = ontology_source_reference
 
-    # now try and open the files
     for study_count in range(0, len([k for k in sec_memf_dict.keys() if k.startswith('STUDY.')])):
         study_df = sec_df_dict['STUDY.' + str(study_count)]
         study_file_name = study_df.iloc[0]['Study File Name']
-        study_tab_df = pd.read_csv(open(os.path.join(os.path.dirname(i_fp.name), study_file_name)), sep='\t', header=None)
-        print(study_tab_df)
-    for study_assay_count in range(0, len([k for k in sec_memf_dict.keys() if k.startswith('STUDY ASSAYS.')])):
-        study_assay_df = sec_df_dict['STUDY ASSAYS.' + str(study_assay_count)]
-        for i in range(0, len(study_assay_df.index)):
-            assay_file_name = study_assay_df.iloc[i]['Study Assay File Name']
-            if not os.path.isfile(os.path.join(os.path.dirname(i_fp.name), assay_file_name)):
-                report.fatal("The referenced assay file '{}' does not exist or is not a file".format(assay_file_name))
-
-    i_ont_src_headers = {
-        'Term Source Name',
-        'Term Source File',
-        'Term Source Version',
-        'Term Source Description'
-    }
-    if not i_ont_src_headers.issubset(set(sec_df_dict['ONTOLOGY SOURCE REFERENCE'].columns)):
-        report.fatal("ONTOLOGY SOURCE REFERENCE section does not contain required fields\nSkipping Term Source REF checks")
-    else:
-        ontology_source_references_dict = dict()  # key is Term Source Name
-        for i, row in sec_df_dict['ONTOLOGY SOURCE REFERENCE'].iterrows():  # load ontology source references
-            if row['Term Source Name'] == '':
-                report.warn("Ontology source at position {} has no name so cannot be linked by Term Source REF")
-            else:
-                ontology_source_reference = OntologySourceReference(
-                    name=row['Term Source Name'],
-                    file=row['Term Source File'],
-                    version=row['Term Source Version'],
-                    description=row['Term Source Description']
-                )
-                ontology_source_references_dict[ontology_source_reference.name] = ontology_source_reference
-
-
-
-    for s_key in [k for k in sec_df_dict if 'STUDY' in k]:
-        pass
+        validates(open(os.path.join(os.path.dirname(i_fp.name), study_file_name)))
     report.print_report()
 
 
@@ -682,6 +669,8 @@ def validates(s_fp):
                         offset += 1
                 except KeyError:
                     pass
+                except IndexError:
+                    pass
                 finally:
                     node_count += 1
             if col == 'Protocol REF':
@@ -704,7 +693,7 @@ def validates(s_fp):
                          "Missing headers are {3}: ".format(s_fp.name, headers_from_config, headers_from_tab,
                                                             set(headers_from_config) - set(headers_from_tab)))
 
-    report = ValidationReport()
+    report = ValidationReport(file_name=s_fp.name)
     _check_encoding(fp=s_fp, report=report)  # check file encoding of i file
     clean_s_fp = _clean_comments_from_file(fp=s_fp)
     _check_s_headers(fp=clean_s_fp, report=report)
