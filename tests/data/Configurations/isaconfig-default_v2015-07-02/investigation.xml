@@ -362,6 +362,5 @@
             <description><![CDATA[The type of Components used in this Protocol.]]></description>
             <default-value/>
         </field>
-        <structured-field name="factors"/>
     </isatab-configuration>
 </isatab-config-file>
