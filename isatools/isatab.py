@@ -699,6 +699,7 @@ def validates(s_fp):
     _check_s_headers(fp=clean_s_fp, report=report)
     study_tab_df = pd.read_csv(clean_s_fp, sep='\t')  # should fail is shape is wrong
     _check_s_headers_against_config(df=study_tab_df, report=report)
+    # _check_s_content_against_i_content(i_df=inv_tab_df, study_df=study_tab_df, report=report)
     report.print_report()
 
 

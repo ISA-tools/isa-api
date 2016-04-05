@@ -181,11 +181,29 @@ def validates(isa_json, report):
                 prot_obj_ids.append(protocol['@id'])
             _check_object_usage(section=study['identifier'], objects_declared=prot_obj_ids, id_refs=_collect_id_refs(isa_json=isa_json, id_refs=list()), report=report)
 
-
         _check_data_files(isa_json=isa_json, report=report)
     except ValidationError as isa_schema_validation_error:
         raise isa_schema_validation_error
     print(report.generate_report())
+
+
+def validate_against_config(fp):
+    study_config = json.load(open('/Users/dj/PycharmProjects/isa-api/isatools/schemas/isa_model_version_1_0_schemas/configurations/study_sample_config.json'))
+    print("Validating against config: {}".format(study_config))
+    isa_json = load(fp=fp)
+    G = isa_json.studies[0].graph
+    from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
+    start_nodes, end_nodes = _get_start_end_nodes(G)
+    for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
+        chain_str = ""
+        for node in path:
+            if isinstance(node, Source):
+                chain_str += "({})->".format(node.name)
+            elif isinstance(node, Sample):
+                chain_str += "({})->".format(node.name)
+            elif isinstance(node, Process):
+                chain_str += "({})->".format(node.executes_protocol.protocol_type.name)
+        print(chain_str[:len(chain_str)-2])
 
 
 def validate(fp):  # default reporting
