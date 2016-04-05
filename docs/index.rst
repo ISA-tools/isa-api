@@ -12,6 +12,8 @@ The ISA tools API is published as the `isatools` Python package. The package aim
 #. :doc:`Downloading files stored in Github </github>`
 #. :doc:`Validating ISA tab and ISA JSON </validation>`
 #. :doc:`Known Issues </knownissues>`
+=======
+#. :doc:`Installation </installation>`
 
 -------
 License
