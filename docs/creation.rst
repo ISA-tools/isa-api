@@ -5,9 +5,9 @@ Creating ISA objects
 The API provides a set of Python objects that you can create ISA content with.
 
 The three main objects that you need to create ISA content are:
-* ``Investigation``
-* ``Study``
-* ``Assay``
+- ``Investigation``
+- ``Study``
+- ``Assay``
 
 ...of course!
 
