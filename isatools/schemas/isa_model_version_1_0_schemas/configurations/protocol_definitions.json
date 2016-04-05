@@ -1,0 +1,8 @@
+{
+   "protocol-mappings": [
+    {
+      "protocol-type": "sample collection",
+      "synonyms": [ "growth", "environmental material collection", "feces collection" ]
+    }
+  ]
+}

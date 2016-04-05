@@ -1,0 +1,58 @@
+{
+  "node-types": [
+    {
+      "@id": "Sample",
+      "type-ref": "sample_schema.json"
+    },
+    {
+      "@id": "RNAextraction",
+      "type-ref": "process_schema.json"
+    },
+    {
+      "@id": "Extract",
+      "type-ref": "material_schema.json"
+    },
+    {
+      "@id": "Labeling",
+      "type-ref": "process_schema.json"
+    },
+    {
+      "@id": "LabeledExtract",
+      "type-ref": "material_schema.json"
+    },
+    {
+      "@id": "NucleicAcidHybridization",
+      "type-ref": "process_schema.json"
+    },
+    {
+      "@id": "DataCollection",
+      "type-ref": "process_schema.json"
+    },
+    {
+      "@id": "DataCollectionFiles",
+      "type-ref": "datafiles_schema.json"
+    },
+    {
+      "@id": "NormalizationDataTransformation",
+      "type-ref": "process_schema.json"
+    },
+    {
+      "@id": "DerivedArrayDataFile",
+      "type-ref": "data_schema.json"
+    },
+    {
+      "@id": "DataTransformation",
+      "type-ref": "process_schema.json"
+    },
+    {
+      "@id": "DerivedArrayDataMatrixFile",
+      "type-ref": "data_schema.json"
+    }
+  ],
+  "patterns": [
+    "(:Sample)->(:RNAextraction)->(:Extract)->(:Labeling)->(:LabeledExtract)->(:NucleicAcidHybridization)->(:DataCollection)->(:DataCollectionFiles)->(:NormalizationDataTransformation)->(:DerivedArrayDataFile)->(:DataTransformation)->(:DerivedArrayDataMatrixFile)"
+  ]
+  "example-instances": [
+    "(:Sample)->(:RNAextraction)->(:Extract)->(:Labeling)->(:LabeledExtract)->(:NucleicAcidHybridization)->(:DataCollection)->(:DataCollectionFiles)->(:NormalizationDataTransformation)->(:DerivedArrayDataFile)->(:DataTransformation)->(:DerivedArrayDataMatrixFile)"
+  ]
+}
