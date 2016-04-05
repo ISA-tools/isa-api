@@ -13,7 +13,4 @@ The ISA tools API is published as the `isatools` Python package. The package aim
 #. :doc:`Validating ISA tab and ISA JSON </validation>`
 #. :doc:`Known Issues </knownissues>`
 
--------
-License
--------
-This code is licensed under the `CPAL License <https://raw.githubusercontent.com/ISA-tools/isa-api/master/LICENSE.txt>`_.
+The source code is licensed under the `CPAL License <https://raw.githubusercontent.com/ISA-tools/isa-api/master/LICENSE.txt>`_.
