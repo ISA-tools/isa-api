@@ -18,6 +18,6 @@ For full instructions on installing and using ``virtualenv`` see `their document
 
 The ISA API is published on the Python Package Index (PyPI) as the ``isatools`` package, and you can use ``pip`` to install it.
 
-``pip install isatools``
+``$ pip install isatools``
 
 Now you're ready to get started!

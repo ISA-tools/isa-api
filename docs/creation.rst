@@ -5,6 +5,7 @@ Creating ISA objects
 The API provides a set of Python objects that you can create ISA content with.
 
 The three main objects that you need to create ISA content are:
+
 - ``Investigation``
 - ``Study``
 - ``Assay``
@@ -78,4 +79,4 @@ If all went as expected, you should find an ``i_investigation.txt`` file with th
     Study Factor Type Term Accession Number
     Study Factor Type Term Source REF
 
-Obviously this isn't enough to create a fully populated ISA investigation, but we would recommend that you have a look at the full worked example for reproducing an ISA representation of our :doc:`BII-S-3 example </example>`]] of *Detection of Large Numbers of Novel Sequences in the Metatranscriptomes of Complex Marine Microbial Communities* by Jack A. Gilbert et al, 2008, and in the ``isatools.model.v1`` package to inspect all the docstring documentation that is included with each of the ISA model classes.
+Obviously this isn't enough to create a fully populated ISA investigation, but we would recommend that you have a look at the full worked example for reproducing an ISA representation of our :doc:`BII-S-3 example </example>`_ of *Detection of Large Numbers of Novel Sequences in the Metatranscriptomes of Complex Marine Microbial Communities* by Jack A. Gilbert et al, 2008, and in the ``isatools.model.v1`` package to inspect all the docstring documentation that is included with each of the ISA model classes.

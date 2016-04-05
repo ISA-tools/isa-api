@@ -7,7 +7,7 @@ The ISA API includes a set of functions to allow you to convert between ISA form
 Converting from ISA tab to ISA JSON
 -----------------------------------
 
-To convert from a directory `./tabdir/` containing valid ISA tab files (e.g. ``i_investigation.txt``, ``s_...txt`` and ``a_...txt`` files) to a write the target JSON to another directory ``./outdir/``:
+To convert from a directory ``./tabdir/`` containing valid ISA tab files (e.g. ``i_investigation.txt``, ``s_...txt`` and ``a_...txt`` files) to a write the target JSON to another directory ``./outdir/``:
 
 .. code-block:: python
     from isatools.convert import isatab2json
@@ -16,7 +16,7 @@ To convert from a directory `./tabdir/` containing valid ISA tab files (e.g. ``i
 Converting from ISA JSON to ISA tab
 -----------------------------------
 
-To convert from a ISA JSON file `isa.json`directory to write out ISA tab files to a target directory ``./outdir/``:
+To convert from a ISA JSON file ``isa.json`` directory to write out ISA tab files to a target directory ``./outdir/``:
 
 .. code-block:: python
     from isatools.convert import json2isatab

@@ -22,4 +22,4 @@ To validate an ISA JSON file against the ISA version 1.0 schemas, you need to va
     from isatools.validate import validate_json
     validate_json.validateJsonAgainstSchemas('investigation_schema.json', 'isa.json')
 
-Make sure you put the full path to the to the location of `investigation_schema.json`.
+Make sure you put the full path to the to the location of ``investigation_schema.json``.
