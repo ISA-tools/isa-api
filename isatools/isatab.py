@@ -8,10 +8,9 @@ import io
 import networkx as nx
 import itertools
 import logging
-import iso8601
 import numpy as np
 import re
-import chardet
+from isatools.validate.utils import check_doi, check_encoding, is_iso8601_date, check_pubmed_id
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -256,42 +255,6 @@ def validate_tab(isatab_dir, reporting_level=logging.INFO):
         raise i_file_validation_error
 
 
-def _check_iso8601_date(date_str, report):
-    if date_str is not '':
-        try:
-            iso8601.parse_date(date_str)
-        except iso8601.ParseError:
-            report.warn("Date {} does not conform to ISO8601 format".format(date_str))
-
-def _is_iso8601_date(date_str):
-    if date_str is not '':
-        try:
-            iso8601.parse_date(date_str)
-        except iso8601.ParseError:
-            return False
-        return True
-    return False
-
-
-def _check_pubmed_id(pubmed_id_str, report):
-    if pubmed_id_str is not '':
-        pmid_regex = re.compile('[0-9]{8}')
-        pmcid_regex = re.compile('PMC[0-9]{8}')
-        if pmid_regex.match(pubmed_id_str) is not None and pmcid_regex.match(pubmed_id_str) is not None:
-            report.warn("PubMed ID {} is not valid format".format(pubmed_id_str))
-    # TODO: Check if publication exists and consistency with other metadata in section; needs network connection
-
-
-def _check_doi(doi_str, report):
-    pass
-
-
-def _check_encoding(fp, report):
-    charset = chardet.detect(open(fp.name, 'rb').read())
-    if charset['encoding'] is not 'UTF-8':
-        report.warn("File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
-                    .format(charset['encoding'], charset['confidence']))
-
 def validatei(i_fp):
     """Validate an ISA tab, starting from i_ file"""
 
@@ -457,7 +420,7 @@ def validatei(i_fp):
                     if len(data_type) > 0:
                         if isinstance(value, str):
                             if data_type[0] == 'Date':
-                                if not _is_iso8601_date(value):
+                                if not is_iso8601_date(value):
                                     report.warn("Value '{0}' in section {1} in field '{2}' does not conform to ISO8601 (date) formatting".format(value, sec_label, col))
                     if fail:
                         if i > 0:
@@ -492,7 +455,7 @@ def validatei(i_fp):
             _check_i_labels_values(sec_df_dict, 'STUDY CONTACTS.' + str(study_count), s_contacts_is_req)
 
     report = ValidationReport(file_name=i_fp.name)
-    _check_encoding(fp=i_fp, report=report)  # check file encoding of i file
+    check_encoding(fp=i_fp, report=report)  # check file encoding of i file
     sec_memf_dict = _check_i_sections(fp=i_fp, report=report)  # if successful, returns a dict of sections split into memory files
     sec_df_dict = _check_i_section_shape(sec_memf_dict=sec_memf_dict, report=report)  # if successful, returns dataframes of sections
     _check_i_sections_content(sec_df_dict=sec_df_dict, report=report)  # check if required labels and values are there (not ordered)
@@ -539,7 +502,7 @@ def validatei(i_fp):
     for study_count in range(0, len([k for k in sec_memf_dict.keys() if k.startswith('STUDY.')])):
         study_df = sec_df_dict['STUDY.' + str(study_count)]
         study_file_name = study_df.iloc[0]['Study File Name']
-        validates(open(os.path.join(os.path.dirname(i_fp.name), study_file_name)))
+        validate_s_file(open(os.path.join(os.path.dirname(i_fp.name), study_file_name)))
     report.print_report()
 
 
@@ -550,7 +513,7 @@ def _is_valid_tab_header(header):
     return (header in static_tab_headers) or char_regex.match(header) is not None or fv_regex.match(header) is not None
 
 
-def validates(s_fp):
+def validate_s_file(s_fp):
     """Validate an ISA tab s_ file"""
 
     def _clean_comments_from_file(fp):
@@ -694,7 +657,7 @@ def validates(s_fp):
                                                             set(headers_from_config) - set(headers_from_tab)))
 
     report = ValidationReport(file_name=s_fp.name)
-    _check_encoding(fp=s_fp, report=report)  # check file encoding of i file
+    check_encoding(fp=s_fp, report=report)  # check file encoding of i file
     clean_s_fp = _clean_comments_from_file(fp=s_fp)
     _check_s_headers(fp=clean_s_fp, report=report)
     study_tab_df = pd.read_csv(clean_s_fp, sep='\t')  # should fail is shape is wrong

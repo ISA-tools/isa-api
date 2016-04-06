@@ -5,6 +5,7 @@ from networkx import DiGraph
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
 from isatools.isatab import ValidationReport
+from isatools.validate.utils import check_iso8601_date, check_encoding
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
@@ -12,6 +13,14 @@ logger = logging.getLogger(__name__)
 
 def validates(isa_json, report):
     """Validate JSON"""
+
+    def _check_isa_schemas(isa_json):
+        investigation_schema_path = os.path.join(
+            os.path.dirname(__file__) + '/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json')
+        investigation_schema = json.load(open(investigation_schema_path))
+        resolver = RefResolver('file://' + investigation_schema_path, investigation_schema)
+        validator = Draft4Validator(investigation_schema, resolver=resolver)
+        validator.validate(isa_json)
 
     def _check_filenames(isa_json, report):
         for study in isa_json['studies']:
@@ -31,14 +40,13 @@ def validates(isa_json, report):
         return ontology_source_refs
 
     def _check_date_formats(isa_json, report):
-        from isatools.isatab import _check_iso8601_date
-        _check_iso8601_date(isa_json['publicReleaseDate'], report)
-        _check_iso8601_date(isa_json['submissionDate'], report)
+        check_iso8601_date(isa_json['publicReleaseDate'], report)
+        check_iso8601_date(isa_json['submissionDate'], report)
         for study in isa_json['studies']:
-            _check_iso8601_date(study['publicReleaseDate'], report)
-            _check_iso8601_date(study['submissionDate'], report)
+            check_iso8601_date(study['publicReleaseDate'], report)
+            check_iso8601_date(study['submissionDate'], report)
             for process in study['processSequence']:
-                _check_iso8601_date(process['date'], report)
+                check_iso8601_date(process['date'], report)
 
     def _check_term_source_refs(isa_json, ontology_source_refs, report):
         # get all matching annotation patterns by traversing the whole json structure
@@ -55,12 +63,12 @@ def validates(isa_json, report):
                 _check_term_source_refs(j, ontology_source_refs, report)
 
     def _check_pubmed_ids(isa_json, report):
-        from isatools.isatab import _check_pubmed_id
+        from isatools.isatab import check_pubmed_id
         for ipub in isa_json['publications']:
-            _check_pubmed_id(ipub['pubMedID'], report)
+            check_pubmed_id(ipub['pubMedID'], report)
         for study in isa_json['studies']:
             for spub in study['publications']:
-                _check_pubmed_id(spub['pubMedID'], report)
+                check_pubmed_id(spub['pubMedID'], report)
 
     def _check_protocol_names(isa_json, report):
         protocol_refs = ['']  # initalize with empty string as the default none ref
@@ -149,12 +157,7 @@ def validates(isa_json, report):
                         report.warn("Cannot open file {}".format(filename))
 
     try:  # if can load the JSON (if the JSON is well-formed already), validate the JSON against our schemas
-        investigation_schema_path = os.path.join(os.path.dirname(__file__) + '/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json')
-        investigation_schema = json.load(open(investigation_schema_path))
-        resolver = RefResolver('file://' + investigation_schema_path, investigation_schema)
-        validator = Draft4Validator(investigation_schema, resolver=resolver)
-        validator.validate(isa_json)
-
+        _check_isa_schemas(isa_json)
         # if the JSON is validated against ISA JSON, let's start checking content
         _check_filenames(isa_json=isa_json, report=report)  # check if tab filenames are present for converting back
         ontology_source_refs = _check_ontology_sources(isa_json=isa_json, report=report)  # check if ontology sources are declared with enough info
@@ -182,6 +185,10 @@ def validates(isa_json, report):
             _check_object_usage(section=study['identifier'], objects_declared=prot_obj_ids, id_refs=_collect_id_refs(isa_json=isa_json, id_refs=list()), report=report)
 
         _check_data_files(isa_json=isa_json, report=report)
+
+        # if we got this far, let's load using isajson.load()
+        i = load(open(investigation_schema_path))
+
     except ValidationError as isa_schema_validation_error:
         raise isa_schema_validation_error
     print(report.generate_report())
@@ -209,9 +216,7 @@ def validate_against_config(fp):
 def validate(fp):  # default reporting
     """Validate JSON file"""
     report = ValidationReport()
-    from isatools.isatab import _check_encoding
-    report = ValidationReport()
-    _check_encoding(fp, report)
+    check_encoding(fp, report)
     try:  # first, try open the file as a JSON
         try:
             isa_json = json.load(fp=fp)
