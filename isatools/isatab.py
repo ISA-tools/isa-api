@@ -10,66 +10,10 @@ import itertools
 import logging
 import numpy as np
 import re
-from isatools.validate.utils import check_doi, check_encoding, is_iso8601_date, check_pubmed_id
+from isatools.validate.utils import check_doi, check_encoding, is_iso8601_date, check_pubmed_id, ValidationReport, ValidationError
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-
-class ValidationError(Exception): pass
-
-
-class ValidationReport:
-
-    def __init__(self, file_name):
-        self.report = dict()
-        self.report['warnings'] = list()
-        self.report['errors'] = list()
-        self.report['fatal'] = list()
-        self.file_name = file_name
-
-    def fatal(self, msg):
-        self.report['fatal'].append({
-            'message': msg,
-        })
-
-    def warn(self, msg):
-        self.report['warnings'].append({
-            'message': msg,
-        })
-
-    def error(self, msg):
-        self.report['errors'].append({
-            'message': msg,
-        })
-
-    def generate_report_json(self, reporting_level=3):
-        if reporting_level == 0:
-            return {
-                'warnings': self.report['warnings']
-            }
-        if reporting_level == 1:
-            return {
-                'errors': self.report['errors']
-            }
-        if reporting_level == 2:
-            return {
-                'warnings': self.report['fatal']
-            }
-        if reporting_level == 3:
-            return self.report
-
-    def print_report(self, reporting_level=3):
-        report_json = self.generate_report_json(reporting_level)
-        if len(self.report['fatal']) > 0: print(self.file_name + ' ::: Fatal errors:')
-        for message in report_json['fatal']:
-            print(message['message'])
-        if len(self.report['errors']) > 0: print(self.file_name + ' ::: Errors:')
-        for message in report_json['errors']:
-            print(message['message'])
-        if len(self.report['warnings']) > 0: print(self.file_name + ' ::: Warnings:')
-        for message in report_json['warnings']:
-            print(message['message'])
 
 
 def _read_investigation_file(fp, report):

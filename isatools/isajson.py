@@ -2,10 +2,9 @@ from isatools.model.v1 import *
 import json
 import logging
 from networkx import DiGraph
-from jsonschema import Draft4Validator, RefResolver, ValidationError
+from jsonschema import Draft4Validator, RefResolver
 import os
-from isatools.isatab import ValidationReport
-from isatools.validate.utils import check_iso8601_date, check_encoding
+from isatools.validate.utils import check_iso8601_date, check_encoding, ValidationReport, ValidationError
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
