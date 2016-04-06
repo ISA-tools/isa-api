@@ -1,0 +1,23 @@
+{
+  "required": [ "identifier", "title", "description" ],
+  "nodes": [
+    {
+      "@id": "Source",
+      "nodeType": "source_schema.json"
+    {
+      "@id": "Sample",
+      "nodeType": "sample_schema.json"
+    },
+    {
+      "@id": "SampleCollectionProcess",
+      "nodeType": "process_schema.json",
+      "protocolType": "sample collection"
+    }
+  ],
+  "additionalCharacteristics": true,
+  "additionalFactorValues": true,
+  "graphPatterns": [
+    "(Source)->(SampleCollectionProcess)->(Sample)",
+    "(Source)->(Sample)"
+  ]
+}
