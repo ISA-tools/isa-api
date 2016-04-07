@@ -69,6 +69,21 @@ def check_pubmed_id(pubmed_id_str, report):
     # TODO: Check if publication exists and consistency with other metadata in section; needs network connection
 
 
+def date_is_iso8601(string):
+    r"""Dates must be ISO8601 formatted, e.g. YYYY-MM-DD, YYYY-MM, YYYYMMDD
+
+    Okay: 2016-04-07
+    Okay: 2016-04
+    Okay: 20160407
+    Exxx: 201604
+    """
+    if string is not '':
+        try:
+            iso8601.parse_date(string)
+        except iso8601.ParseError:
+            return string, "Date is not ISO8601 format"
+
+
 def check_iso8601_date(date_str, report):
     if date_str is not '':
         try:
