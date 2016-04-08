@@ -308,7 +308,7 @@ def load_ontology_annotation(ontology_annotation_json):
     if 'termAccession' in keys:
         ontology_annotation.term_accession = ontology_annotation_json['termAccession']
     if 'termSource' in keys:
-        ontology_annotation.term_accession = ontology_annotation_json['termSource']
+        ontology_annotation.term_source = ontology_annotation_json['termSource']
     return ontology_annotation
 
 
@@ -386,10 +386,8 @@ def load(fp):
             for comment in load_comments(isajson['comments']):
                 investigation.comments.append(comment)
         if 'ontologySourceReferences' in inv_keys:
-            term_source_dict = {'': None}
             for ontology_source_reference in load_ontology_source_references(isajson['ontologySourceReferences']):
                 logger.debug('Build Ontology Source Reference object')
-                term_source_dict[ontology_source_reference.name] = ontology_source_reference
                 investigation.ontology_source_references.append(ontology_source_reference)
         if 'publications' in inv_keys:
             for publication in load_publications(isajson['publications']):
@@ -453,20 +451,18 @@ def load(fp):
                 study.contacts.append(study_person)
             for study_characteristics_category_json in study_json['characteristicCategories']:
                 characteristic_category = load_ontology_annotation(study_characteristics_category_json['characteristicType'])
-                characteristic_category.id = study_characteristics_category_json['@id']
+                object_refs_by_id[study_characteristics_category_json['@id']] = characteristic_category
                 study.characteristic_categories.append(characteristic_category)
-                categories_dict[characteristic_category.id] = characteristic_category
             for study_unit_json in study_json['unitCategories']:
                 unit = load_ontology_annotation(study_unit_json)
-                unit.id = study_unit_json['@id']
-                units_dict[unit.id] = unit
+                object_refs_by_id[study_unit_json['@id']] = unit
+                study.units.append(unit)
             for design_descriptor in load_ontology_annotations(study_json['studyDesignDescriptors']):
                 logger.debug('Build Ontology Annotation object (Study Design Descriptor)')
                 study.design_descriptors.append(design_descriptor)
             for protocol_json in study_json['protocols']:
                 logger.debug('Build Study Protocol object')
                 protocol = Protocol(
-                    id_=protocol_json['@id'],
                     name=protocol_json['name'],
                     uri=protocol_json['uri'],
                     description=protocol_json['description'],
@@ -475,11 +471,10 @@ def load(fp):
                 )
                 for parameter_json in protocol_json['parameters']:
                     parameter = ProtocolParameter(
-                        id_=parameter_json['@id'],
                         parameter_name=load_ontology_annotation(parameter_json['parameterName'])
                     )
                     protocol.parameters.append(parameter)
-                    parameters_dict[parameter.id] = parameter
+                    object_refs_by_id[parameter_json['@id']] = parameter
                 for component_json in protocol_json['components']:
                     component = ProtocolComponent(
                         name=component_json['componentName'],
@@ -487,27 +482,25 @@ def load(fp):
                     )
                     protocol.components.append(component)
                 study.protocols.append(protocol)
-                protocols_dict[protocol.id] = protocol
+                object_refs_by_id[protocol_json['@id']] = protocol
             for factor_json in study_json['factors']:
                 logger.debug('Build Study Factor object')
                 factor = StudyFactor(
-                    id_=factor_json['@id'],
                     name=factor_json['factorName'],
                     factor_type=load_ontology_annotation(factor_json['factorType'])
                 )
                 study.factors.append(factor)
-                factors_dict[factor.id] = factor
+                object_refs_by_id[factor_json['@id']] = factor
             for source_json in study_json['materials']['sources']:
                 logger.debug('Build Source object')
                 source = Source(
-                    id_=source_json['@id'],
                     name=source_json['name'][7:],
                 )
                 for characteristic_json in source_json['characteristics']:
                     logger.debug('Build Ontology Annotation object (Characteristic)')
                     value = characteristic_json['value']
                     unit = None
-                    characteristic = Characteristic(category=categories_dict[characteristic_json['category']['@id']],)
+                    characteristic = Characteristic(category=object_refs_by_id[characteristic_json['category']['@id']],)
                     if isinstance(value, dict):
                         try:
                             value = load_ontology_annotation(characteristic_json['value'])
@@ -515,7 +508,7 @@ def load(fp):
                             raise IOError("Can't create value as annotation")
                     elif isinstance(value, int) or isinstance(value, float):
                         try:
-                            unit = units_dict[characteristic_json['unit']['@id']]
+                            unit = object_refs_by_id[characteristic_json['unit']['@id']]
                         except KeyError:
                             raise IOError("Can't create unit annotation")
                     elif not isinstance(value, str):
@@ -523,12 +516,11 @@ def load(fp):
                     characteristic.value = value
                     characteristic.unit = unit
                     source.characteristics.append(characteristic)
-                sources_dict[source.id] = source
+                    object_refs_by_id[source_json['@id']] = source
                 study.materials['sources'].append(source)
             for sample_json in study_json['materials']['samples']:
                 logger.debug('Build Sample object')
                 sample = Sample(
-                    id_=sample_json['@id'],
                     name=sample_json['name'][7:],
                     derives_from=sample_json['derivesFrom']
                 )
@@ -537,7 +529,7 @@ def load(fp):
                     value = characteristic_json['value']
                     unit = None
                     characteristic = Characteristic(
-                            category=categories_dict[characteristic_json['category']['@id']])
+                            category=object_refs_by_id[characteristic_json['category']['@id']])
                     if isinstance(value, dict):
                         try:
                             value = load_ontology_annotation(characteristic_json['value'])
@@ -545,7 +537,7 @@ def load(fp):
                             raise IOError("Can't create value as annotation")
                     elif isinstance(value, int) or isinstance(value, float):
                         try:
-                            unit = units_dict[characteristic_json['unit']['@id']]
+                            unit = object_refs_by_id[characteristic_json['unit']['@id']]
                         except KeyError:
                             raise IOError("Can't create unit annotation")
                     elif not isinstance(value, str):
@@ -557,31 +549,26 @@ def load(fp):
                     logger.debug('Build Ontology Annotation object (Sample Factor Value)')
                     try:
                         factor_value = FactorValue(
-                            factor_name=factors_dict[factor_value_json['category']['@id']],
+                            factor_name=object_refs_by_id[factor_value_json['category']['@id']],
                             value=load_ontology_annotation(factor_value_json['value'])
 
                         )
                     except TypeError:
                         factor_value = FactorValue(
-                            factor_name=factors_dict[factor_value_json['category']['@id']],
+                            factor_name=object_refs_by_id[factor_value_json['category']['@id']],
                             value=factor_value_json['value'],
-                            unit=units_dict[factor_value_json['unit']['@id']],
+                            unit=object_refs_by_id[factor_value_json['unit']['@id']],
                         )
                     sample.factor_values.append(factor_value)
-                samples_dict[sample.id] = sample
+                object_refs_by_id[sample_json['@id']] = sample
                 study.materials['samples'].append(sample)
             for study_process_json in study_json['processSequence']:
                 logger.debug('Build Process object')
                 process = Process(
-                    id_=study_process_json['@id'],
-                    executes_protocol=protocols_dict[study_process_json['executesProtocol']['@id']],
+                    executes_protocol=object_refs_by_id[study_process_json['executesProtocol']['@id']],
                 )
                 try:
-                    for comment_json in study_process_json['comments']:
-                        comment = Comment(
-                            name=comment_json['name'],
-                            value=comment_json['value'],
-                        )
+                    for comment in load_comments(study_process_json['comments']):
                         process.comments.append(comment)
                 except KeyError:
                     pass
@@ -596,32 +583,32 @@ def load(fp):
                 for parameter_value_json in study_process_json['parameterValues']:
                     if isinstance(parameter_value_json['value'], int) or isinstance(parameter_value_json['value'], float):
                         parameter_value = ParameterValue(
-                            category=parameters_dict[parameter_value_json['category']['@id']],
+                            category=object_refs_by_id[parameter_value_json['category']['@id']],
                             value=parameter_value_json['value'],
-                            unit=units_dict[parameter_value_json['unit']['@id']],
+                            unit=object_refs_by_id[parameter_value_json['unit']['@id']],
                         )
                         process.parameter_values.append(parameter_value)
                     else:
                         parameter_value = ParameterValue(
-                            category=parameters_dict[parameter_value_json['category']['@id']],
+                            category=object_refs_by_id[parameter_value_json['category']['@id']],
                             )
                         try:
                             parameter_value.value = OntologyAnnotation(
                                 name=parameter_value_json['value']['annotationValue'],
                                 term_accession=parameter_value_json['value']['termAccession'],
-                                term_source=term_source_dict[parameter_value_json['value']['termSource']],)
+                                term_source=parameter_value_json['value']['termSource'])
                         except TypeError:
                             parameter_value.value = parameter_value_json['value']
                         process.parameter_values.append(parameter_value)
                 for input_json in study_process_json['inputs']:
                     input_ = None
                     try:
-                        input_ = sources_dict[input_json['@id']]
+                        input_ = object_refs_by_id[input_json['@id']]
                     except KeyError:
                         pass
                     finally:
                         try:
-                            input_ = samples_dict[input_json['@id']]
+                            input_ = object_refs_by_id[input_json['@id']]
                         except KeyError:
                             pass
                     if input_ is None:
@@ -630,28 +617,28 @@ def load(fp):
                 for output_json in study_process_json['outputs']:
                     output = None
                     try:
-                        output = sources_dict[output_json['@id']]
+                        output = object_refs_by_id[output_json['@id']]
                     except KeyError:
                         pass
                     finally:
                         try:
-                            output = samples_dict[output_json['@id']]
+                            output = object_refs_by_id[output_json['@id']]
                         except KeyError:
                             pass
                     if output is None:
                         raise IOError("Could not find output node in sources or samples dicts: " + output_json['@id'])
                     process.outputs.append(output)
                 study.process_sequence.append(process)
-                process_dict[process.id] = process
+                object_refs_by_id[study_process_json['@id']] = process
             for study_process_json in study_json['processSequence']:  # 2nd pass
                 try:
                     prev_proc = study_process_json['previousProcess']['@id']
-                    process_dict[study_process_json['@id']].prev_process = process_dict[prev_proc]
+                    object_refs_by_id[study_process_json['@id']].prev_process = object_refs_by_id[prev_proc]
                 except KeyError:
                     pass
                 try:
                     next_proc = study_process_json['nextProcess']['@id']
-                    process_dict[study_process_json['@id']].next_process = process_dict[next_proc]
+                    object_refs_by_id[study_process_json['@id']].next_process = object_refs_by_id[next_proc]
                 except KeyError:
                     pass
             study.graph = _build_assay_graph(study.process_sequence)
@@ -666,13 +653,11 @@ def load(fp):
                 )
                 for assay_unit_json in assay_json['unitCategories']:
                     unit = load_ontology_annotation(assay_unit_json)
-                    unit.id = assay_unit_json['@id']
-                    units_dict[unit.id] = unit
+                    object_refs_by_id[assay_unit_json['@id']] = unit
                 data_dict = dict()
                 for data_json in assay_json['dataFiles']:
                     logger.debug('Build Data object')
                     data_file = DataFile(
-                        id_=data_json['@id'],
                         filename=data_json['name'],
                         label=data_json['type'],
                     )
@@ -681,16 +666,15 @@ def load(fp):
                             data_file.comments.append(comment)
                     except KeyError:
                         pass
-                    data_dict[data_file.id] = data_file
+                    object_refs_by_id[data_json['@id']] = data_file
                     assay.data_files.append(data_file)
                 for sample_json in assay_json['materials']['samples']:
-                    sample = samples_dict[sample_json['@id']]
+                    sample = object_refs_by_id[sample_json['@id']]
                     assay.materials['samples'].append(sample)
                 for assay_characteristics_category_json in assay_json['characteristicCategories']:
                     characteristic_category = load_ontology_annotation(assay_characteristics_category_json)
-                    characteristic_category.id = assay_characteristics_category_json['@id']
                     study.characteristic_categories.append(characteristic_category)
-                    categories_dict[characteristic_category.id] = characteristic_category
+                    object_refs_by_id[assay_characteristics_category_json['@id']] = characteristic_category
                 other_materials_dict = dict()
                 for other_material_json in assay_json['materials']['otherMaterials']:
                     logger.debug('Build Material object')  # need to detect material types
@@ -700,22 +684,21 @@ def load(fp):
                     else:
                         material_name = material_name[8:]
                     material = Material(
-                        id_=other_material_json['@id'],
                         name=material_name,
                         type_=other_material_json['type'],
                     )
                     for characteristic_json in other_material_json['characteristics']:
                         characteristic = Characteristic(
-                            category=categories_dict[characteristic_json['category']['@id']],
+                            category=object_refs_by_id[characteristic_json['category']['@id']],
                             value=load_ontology_annotation(characteristic_json['value'])
                         )
                         material.characteristics.append(characteristic)
                     assay.materials['other_material'].append(material)
-                    other_materials_dict[material.id] = material
+                    object_refs_by_id[other_material_json['@id']] = material
                 for assay_process_json in assay_json['processSequence']:
                     process = Process(
                         id_=assay_process_json['@id'],
-                        executes_protocol=protocols_dict[assay_process_json['executesProtocol']['@id']]
+                        executes_protocol=object_refs_by_id[assay_process_json['executesProtocol']['@id']]
                     )
                     try:
                         for comment in load_comments(assay_process_json['comments']):
@@ -736,17 +719,17 @@ def load(fp):
                     for input_json in assay_process_json['inputs']:
                         input_ = None
                         try:
-                            input_ = samples_dict[input_json['@id']]
+                            input_ = object_refs_by_id[input_json['@id']]
                         except KeyError:
                             pass
                         finally:
                             try:
-                                input_ = other_materials_dict[input_json['@id']]
+                                input_ = object_refs_by_id[input_json['@id']]
                             except KeyError:
                                 pass
                             finally:
                                 try:
-                                    input_ = data_dict[input_json['@id']]
+                                    input_ = object_refs_by_id[input_json['@id']]
                                 except KeyError:
                                     pass
                         if input_ is None:
@@ -756,17 +739,17 @@ def load(fp):
                     for output_json in assay_process_json['outputs']:
                         output = None
                         try:
-                            output = samples_dict[output_json['@id']]
+                            output = object_refs_by_id[output_json['@id']]
                         except KeyError:
                             pass
                         finally:
                             try:
-                                output = other_materials_dict[output_json['@id']]
+                                output = object_refs_by_id[output_json['@id']]
                             except KeyError:
                                 pass
                             finally:
                                     try:
-                                        output = data_dict[output_json['@id']]
+                                        output = object_refs_by_id[output_json['@id']]
                                     except KeyError:
                                         pass
                         if output is None:
@@ -779,14 +762,14 @@ def load(fp):
                         elif isinstance(parameter_value_json['value'], int) or \
                                 isinstance(parameter_value_json['value'], float):
                             parameter_value = ParameterValue(
-                                category=parameters_dict[parameter_value_json['category']['@id']],
+                                category=object_refs_by_id[parameter_value_json['category']['@id']],
                                 value=parameter_value_json['value'],
                                 unit=units_dict[parameter_value_json['unit']['@id']]
                             )
                             process.parameter_values.append(parameter_value)
                         else:
                             parameter_value = ParameterValue(
-                                category=parameters_dict[parameter_value_json['category']['@id']],
+                                category=object_refs_by_id[parameter_value_json['category']['@id']],
                                 )
                             try:
                                 if isinstance(parameter_value_json['value'], dict):
@@ -797,16 +780,16 @@ def load(fp):
                                 parameter_value.value = parameter_value_json['value']
                             process.parameter_values.append(parameter_value)
                     assay.process_sequence.append(process)
-                    process_dict[process.id] = process
+                    object_refs_by_id[process.id] = process
                     for assay_process_json in assay_json['processSequence']:  # 2nd pass
                         try:
                             prev_proc = assay_process_json['previousProcess']['@id']
-                            process_dict[assay_process_json['@id']].prev_process = process_dict[prev_proc]
+                            object_refs_by_id[assay_process_json['@id']].prev_process = object_refs_by_id[prev_proc]
                         except KeyError:
                             pass
                         try:
                             next_proc = assay_process_json['nextProcess']['@id']
-                            process_dict[assay_process_json['@id']].next_process = process_dict[next_proc]
+                            object_refs_by_id[assay_process_json['@id']].next_process = object_refs_by_id[next_proc]
                         except KeyError:
                             pass
                     assay.graph = _build_assay_graph(assay.process_sequence)
@@ -816,3 +799,18 @@ def load(fp):
         logger.debug('End building Studies objects')
         logger.debug('End building Investigation object')
     return investigation
+
+
+def collect_term_source_refs(obj):
+    if isinstance(obj, list):
+        for i in obj:
+            collect_term_source_refs(i)
+    else:
+        if '__dict__' in dir(obj):
+            for k in list(vars(obj).keys()):
+                o = getattr(obj, k)
+                if k == 'term_source' and o != '':
+                    print(obj, k, o)
+                if k != 'prev_process' or k != 'next_process':
+                    collect_term_source_refs(o)
+
