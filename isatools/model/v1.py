@@ -240,7 +240,7 @@ class Study(IsaObject, StudyConfigurableObject, object):
     def __init__(self, id_='', filename="", identifier="",  title="", description="", submission_date='',
                  public_release_date='', contacts=None, design_descriptors=None, publications=None,
                  factors=None, protocols=None, assays=None, sources=None, samples=None,
-                 process_sequence=None, other_material=None, characteristic_categories=None, comments=None):
+                 process_sequence=None, other_material=None, characteristic_categories=None, units=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.filename = filename
@@ -301,6 +301,12 @@ class Study(IsaObject, StudyConfigurableObject, object):
             self.characteristic_categories = list()
         else:
             self.characteristic_categories = characteristic_categories
+
+        if units is None:
+            self.units = list()
+        else:
+            self.units = units
+
         self.graph = None
     def build_graph(self):
         self.graph = _build_assay_graph(self.process_sequence)
@@ -394,9 +400,10 @@ class Protocol(IsaObject):
         parameters:
         components:
     """
-    def __init__(self, name="", protocol_type=None, uri="", description="", version="", parameters=None,
+    def __init__(self, id_='', name="", protocol_type=None, uri="", description="", version="", parameters=None,
                  components=None, comments=None):
         super().__init__(comments)
+        self.id = id_
         self.name = name
         if protocol_type is None:
             self.protocol_type = OntologyAnnotation()
