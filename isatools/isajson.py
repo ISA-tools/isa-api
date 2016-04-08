@@ -145,12 +145,13 @@ def validates(isa_json, report):
                 report.error("Object reference {0} not used anywhere in {1}".format(obj_ref, section))
 
     def _check_data_files(isa_json, report):
+        isajson_dir = os.path.dirname(report.file_name)
         for study in isa_json['studies']:
             for assay in study['assays']:
                 for data_file in assay['dataFiles']:
                     try:
                         filename = data_file['name']
-                        with open(filename) as file:
+                        with open(os.path.join(isajson_dir, filename)) as file:
                             pass
                     except IOError as e:
                         report.warn("Cannot open file {}".format(filename))
@@ -186,11 +187,30 @@ def validates(isa_json, report):
         _check_data_files(isa_json=isa_json, report=report)
 
         # if we got this far, let's load using isajson.load()
-        #i = load(open(investigation_schema_path))
+        i = load(open(report.file_name))
+        for study in i.studies:
+            G = study.graph
+            report.warn("Experimental graphs in study: {}".format(study.identifier))
+            from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
+            start_nodes, end_nodes = _get_start_end_nodes(G)
+            for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
+                type_seq_str = ""
+                node_seq_str = ""
+                for node in path:
+                    if isinstance(node, Source):
+                        type_seq_str += "(Source:{})->".format(node.name)
+                        node_seq_str += "(Source)->"
+                    elif isinstance(node, Sample):
+                        type_seq_str += "(Sample:{})->".format(node.name)
+                        node_seq_str += "(Sample)->"
+                    elif isinstance(node, Process):
+                        type_seq_str += "(Process:{})->".format(node.executes_protocol.protocol_type.name)
+                        node_seq_str += "(Process)->"
+                report.warn(type_seq_str[:len(type_seq_str) - 2])
 
     except ValidationError as isa_schema_validation_error:
         raise isa_schema_validation_error
-    print(report.generate_report())
+    print(report.print_report())
 
 
 def validate_against_config(fp):
@@ -214,7 +234,7 @@ def validate_against_config(fp):
 
 def validate(fp):  # default reporting
     """Validate JSON file"""
-    report = ValidationReport()
+    report = ValidationReport(fp.name)
     check_encoding(fp, report)
     try:  # first, try open the file as a JSON
         try:
@@ -342,6 +362,43 @@ def load_publications(publications_json):
         yield load_publication(publication_json)
 
 
+def load_protocol(protocol_json):
+    keys = protocol_json.keys()
+    protocol = Protocol()
+    if 'name' in keys:
+        protocol.name = protocol_json['name']
+    if 'uri' in keys:
+        protocol.uri = protocol_json['uri']
+    if 'description' in keys:
+        protocol.description = protocol_json['description']
+    if 'version' in keys:
+        protocol.version = protocol_json['version']
+    if 'protocolType' in keys:
+        protocol.protocol_type = protocol_json['protocolType']
+    if 'parameters' in keys:
+        for parameter_json in protocol_json['parameters']:
+            if 'parameterName' in parameter_json.keys():
+                parameter = ProtocolParameter(
+                    parameter_name=load_ontology_annotation(parameter_json['parameterName'])
+                )
+                protocol.parameters.append(parameter)
+    if 'components' in keys:
+        for component_json in protocol_json['components']:
+            component_keys = component_json.keys()
+            component = ProtocolComponent()
+            if 'componentName' in component_keys:
+                component.name = component_json['componentName']
+            if 'componentType' in component_keys:
+                component.component_type = component_json['componentType']
+            protocol.components.append(component)
+    return protocol
+
+
+def load_protocols(protocols_json):
+    for protocol_json in protocols_json:
+        yield load_protocol(protocol_json)
+
+
 def load(fp):
 
     def _build_assay_graph(process_sequence=list()):
@@ -460,29 +517,9 @@ def load(fp):
             for design_descriptor in load_ontology_annotations(study_json['studyDesignDescriptors']):
                 logger.debug('Build Ontology Annotation object (Study Design Descriptor)')
                 study.design_descriptors.append(design_descriptor)
-            for protocol_json in study_json['protocols']:
+            for protocol in load_protocols(['protocols']):
                 logger.debug('Build Study Protocol object')
-                protocol = Protocol(
-                    name=protocol_json['name'],
-                    uri=protocol_json['uri'],
-                    description=protocol_json['description'],
-                    version=protocol_json['version'],
-                    protocol_type=load_ontology_annotation(protocol_json['protocolType'])
-                )
-                for parameter_json in protocol_json['parameters']:
-                    parameter = ProtocolParameter(
-                        parameter_name=load_ontology_annotation(parameter_json['parameterName'])
-                    )
-                    protocol.parameters.append(parameter)
-                    object_refs_by_id[parameter_json['@id']] = parameter
-                for component_json in protocol_json['components']:
-                    component = ProtocolComponent(
-                        name=component_json['componentName'],
-                        component_type=load_ontology_annotation(component_json['componentType'])
-                    )
-                    protocol.components.append(component)
                 study.protocols.append(protocol)
-                object_refs_by_id[protocol_json['@id']] = protocol
             for factor_json in study_json['factors']:
                 logger.debug('Build Study Factor object')
                 factor = StudyFactor(
