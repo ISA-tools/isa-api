@@ -4,6 +4,7 @@
     {
       "@id": "Source",
       "nodeType": "source_schema.json"
+    },
     {
       "@id": "Sample",
       "nodeType": "sample_schema.json"
