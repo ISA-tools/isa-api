@@ -21,7 +21,7 @@ This code is licensed under the `CPAL License <https://raw.githubusercontent.com
    :maxdepth: 2
    :titlesonly:
 
-   Installation
+   Installation <installation>
    ISA model <isamodel>
    Creating objects <creation>
    Converting between ISA formats <conversions>
