@@ -16,3 +16,16 @@ The ISA tools API is published on PyPI as the ``isatools`` Python package. The p
 License
 -------
 This code is licensed under the `CPAL License <https://raw.githubusercontent.com/ISA-tools/isa-api/master/LICENSE.txt>`_.
+
+.. toctree::
+   :maxdepth: 2
+   :titlesonly:
+
+   Installation
+   ISA model <isamodel>
+   Creating objects <creation>
+   Converting between ISA formats <conversions>
+   Contributing your work <contributing>
+   Importing and exporting SRA formatted datasets <sraconversion>
+   Downloading files stored in Github <github>
+   Known Issues <knownissues>
