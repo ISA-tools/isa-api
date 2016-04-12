@@ -731,8 +731,6 @@ class ParameterValue(object):
     """
     def __init__(self, category=None, value=None, unit=None):
         super().__init__()
-        if category is None:
-            raise TypeError("You must specify a category")
         self.category = category
         self.value = value
         self.unit = unit
