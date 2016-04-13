@@ -455,7 +455,7 @@ def load_characteristic(characteristic_json):
         if isinstance(value, int) or isinstance(value, float):
             characteristic.value = value
             if 'unit' in keys:
-                characteristic.unit = load_ontology_annotation(characteristic_json['unit'])
+                characteristic.unit = characteristic_json['unit']['@id']
         elif isinstance(value, dict):
             characteristic.value = load_ontology_annotation(value)
         elif isinstance(value, str):
@@ -494,6 +494,8 @@ def load_factor_values(factor_values_json):
 def load_data_file(data_json):
     keys = data_json.keys()
     data_file = DataFile()
+    if '@id' in keys:
+        data_file.id = data_json['@id']
     if 'name' in keys:
         data_file.filename = data_json['name']
     if 'type' in keys:
@@ -566,7 +568,6 @@ def load(fp):
 
         logger.debug('Start building Studies objects')
         categories_dict = dict()
-        units_dict = dict()
 
         # populate ASSAY characteristicCategories first
         for study_json in isajson['studies']:
@@ -674,6 +675,7 @@ def load(fp):
                 )
                 for assay_unit_json in assay_json['unitCategories']:
                     unit = load_ontology_annotation(assay_unit_json)
+                    # assay.units.append(unit)
                 for data_file in load_data_files(assay_json['dataFiles']):
                     assay.data_files.append(data_file)
                 for sample_json in assay_json['materials']['samples']:
@@ -722,14 +724,14 @@ def load(fp):
 
 
 def link_objects(investigation, report=None):
+
+    def link_units(obj):
+        keys = vars(obj)
+        if 'unit' in keys:
+            unit_obj = getattr(obj, 'unit')
+
+    # TODO: Need to refactor as it's getting too messy
     for study in investigation.studies:
-        # concat all materials into one list
-        source_samples_list = list()
-        materials_keys = study.materials.keys()
-        if 'sources' in materials_keys:
-            source_samples_list = source_samples_list + study.materials['sources']
-        if 'samples' in materials_keys:
-            source_samples_list = source_samples_list + study.materials['samples']
         for source in study.materials['sources']:
             # link source and samples characteristics to categories
             for x, characteristic in enumerate(source.characteristics):
@@ -744,6 +746,17 @@ def link_objects(investigation, report=None):
                 else:
                     obj = obj_list[0]
                     source.characteristics[x].category = obj
+                # link UNITS
+                obj_list = [o for o in study.units if o.id == characteristic.unit]
+                if len(obj_list) > 1:
+                    if report is not None:
+                        report.error("Duplicate object identifier '{}' declared, impossible to resolve object links".format(characteristic.unit))
+                elif characteristic.unit != '' and len(obj_list) == 0:
+                    if report is not None:
+                        report.error("A unit '{}' has been referenced that has not been declared at the Study level".format(characteristic.unit))
+                else:
+                    obj = obj_list[0]
+                    source.characteristics[x].unit = obj
         for sample in study.materials['samples']:
             for x, characteristic in enumerate(sample.characteristics):
                 obj_list = [o for o in study.characteristic_categories if o.id == characteristic.category]
@@ -760,6 +773,21 @@ def link_objects(investigation, report=None):
                 else:
                     obj = obj_list[0]
                     sample.characteristics[x].category = obj
+                # link UNITS
+                obj_list = [o for o in study.units if o.id == characteristic.unit]
+                if len(obj_list) > 1:
+                    if report is not None:
+                        report.error(
+                            "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
+                                characteristic.unit))
+                elif characteristic.unit != '' and len(obj_list) == 0:
+                    if report is not None:
+                        report.error(
+                            "A unit '{}' has been referenced that has not been declared at the Study level".format(
+                                characteristic.unit))
+                else:
+                    obj = obj_list[0]
+                    sample.characteristics[x].unit = obj
             for x, factor_value in enumerate(sample.factor_values):
                 obj_list = [o for o in study.factors if o.id == factor_value.category]
                 if len(obj_list) > 1:
@@ -775,7 +803,21 @@ def link_objects(investigation, report=None):
                 else:
                     obj = obj_list[0]
                     sample.factor_values[x].category = obj
-
+                # link UNITS
+                obj_list = [o for o in study.units if o.id == factor_value.unit]
+                if len(obj_list) > 1:
+                    if report is not None:
+                        report.error(
+                            "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
+                                factor_value.unit))
+                elif characteristic.unit != '' and len(obj_list) == 0:
+                    if report is not None:
+                        report.error(
+                            "A unit '{}' has been referenced that has not been declared at the Study level".format(
+                                factor_value.unit))
+                else:
+                    obj = obj_list[0]
+                    sample.factor_values[x].unit = obj
         for x, process in enumerate(study.process_sequence):
             # build study sources links
             for y, input_ in enumerate(process.inputs):
@@ -832,9 +874,25 @@ def link_objects(investigation, report=None):
                 else:
                     obj = obj_list[0]
                     process.parameter_values[y].category = obj
+                # link UNITS
+                obj_list = [o for o in study.units if o.id == parameter_value.unit]
+                if len(obj_list) > 1:
+                    if report is not None:
+                        report.error(
+                            "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
+                                parameter_value.unit))
+                elif characteristic.unit != '' and len(obj_list) == 0:
+                    if report is not None:
+                        report.error(
+                            "A unit '{}' has been referenced that has not been declared at the Study level".format(
+                                parameter_value.unit))
+                else:
+                    obj = obj_list[0]
+                    process.parameter_value[x].unit = obj
 
         # build prev-next process links
         for assay in study.assays:
+            # TODO: Here we need to go through other_material and link characteristics, and characteristics to units
             for x, process in enumerate(assay.process_sequence):
                 # build study sources links
                 obj_list = [o for o in assay.process_sequence if o.id == process.prev_process]
@@ -864,24 +922,71 @@ def link_objects(investigation, report=None):
                 else:
                     obj = obj_list[0]
                     assay.process_sequence[x].executes_protocol = obj
-            # concat all materials into one list
-            materials_list = list()
-            materials_keys = study.materials.keys()
-            if 'other_material' in materials_keys:
-                materials_list = materials_list + assay.materials['other_material']
-            for material in materials_list:
-                # link source and samples characteristics to categories
-                for x, characteristic in enumerate(material.characteristics):
-                    obj_list = [o for o in assay.characteristic_categories if o.id == characteristic.category]
+                # build pv links
+                for y, parameter_value in enumerate(process.parameter_values):
+                    protocol = [o for o in study.protocols if o.id == process.executes_protocol.id][0]  # just assume it works
+                    obj_list = [o for o in protocol.parameters if o.id == parameter_value.category]
                     if len(obj_list) > 1:
                         if report is not None:
-                            report.error("Duplicate object identifier '{}' declared, impossible to resolve object links".format(characteristic.category))
-                    elif characteristic.category != '' and len(obj_list) == 0:
+                            report.error(
+                                "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
+                                    parameter_value.category))
+                    elif output != '' and len(obj_list) == 0:
                         if report is not None:
-                            report.error("A characteristic category '{}' has been referenced at the Assay level that has not been declared at the Study level".format(characteristic.category))
+                            report.error(
+                                "A parameter '{}' has been referenced that has not been declared at the Study level".format(
+                                    parameter_value.category))
                     else:
                         obj = obj_list[0]
-                        material.characteristics[x].category = obj
+                        process.parameter_values[y].category = obj
+                    # link UNITS
+                    obj_list = [o for o in study.units if o.id == parameter_value.unit]
+                    if len(obj_list) > 1:
+                        if report is not None:
+                            report.error(
+                                "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
+                                    parameter_value.unit))
+                    elif characteristic.unit != '' and len(obj_list) == 0:
+                        if report is not None:
+                            report.error(
+                                "A unit '{}' has been referenced that has not been declared at the Study level".format(
+                                    parameter_value.unit))
+                    else:
+                        obj = obj_list[0]
+                        process.parameter_value[x].unit = obj
+                # build ASSAY i/o links
+                node_list = study.materials['samples'] + assay.materials['other_material'] + assay.data_files
+                for y, input_ in enumerate(process.inputs):
+                    obj_list = [o for o in node_list if o.id == input_]
+                    if len(obj_list) > 1:
+                        if report is not None:
+                            report.error(
+                                "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
+                                    input_))
+                    elif input != '' and len(obj_list) == 0:
+                        if report is not None:
+                            report.error(
+                                "An input node '{}' has been referenced that has not been declared at the Assay level".format(
+                                    input_))
+                    else:
+                        obj = obj_list[0]
+                        process.inputs[y] = obj
+                for y, output in enumerate(process.outputs):
+                    obj_list = [o for o in node_list if o.id == output]
+                    if len(obj_list) > 1:
+                        if report is not None:
+                            report.error(
+                                "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
+                                    output))
+                    elif output != '' and len(obj_list) == 0:
+                        if report is not None:
+                            report.error(
+                                "An output node '{}' has been referenced that has not been declared at the Assay level".format(
+                                    output))
+                    else:
+                        obj = obj_list[0]
+                        process.outputs[y] = obj
+
 
 def collect_term_source_refs(obj):
     if isinstance(obj, list):
