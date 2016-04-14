@@ -779,6 +779,54 @@ def link_objects(investigation, report=None):
                     obj = obj_list[0]
                     process.parameter_values[x].unit = obj
 
+    def _link_process_to_in_out_and_prots(process, node_list, prots, report):
+        for x, input_ in enumerate(process.inputs):
+            obj_list = [o for o in node_list if o.id == input_]
+            if len(obj_list) > 1:
+                if report is not None:
+                    report.error(
+                        "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
+                            input_))
+            elif input_ != '' and len(obj_list) == 0:
+                if report is not None:
+                    report.error(
+                        "A source '{}' has been referenced that has not been declared at the Study level".format(
+                            input_))
+            else:
+                obj = obj_list[0]
+                process.inputs[x] = obj
+        # build study samples links
+        for x, output in enumerate(process.outputs):
+            obj_list = [o for o in node_list if o.id == output]
+            if len(obj_list) > 1:
+                if report is not None:
+                    report.error(
+                        "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
+                            output))
+            elif output != '' and len(obj_list) == 0:
+                if report is not None:
+                    report.error(
+                        "A sample '{}' has been referenced that has not been declared at the Study level".format(
+                            output))
+            else:
+                obj = obj_list[0]
+                process.outputs[x] = obj
+        # build protocol link
+        obj_list = [o for o in prots if o.id == process.executes_protocol]
+        if len(obj_list) > 1:
+            if report is not None:
+                report.error(
+                    "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
+                        process.executes_protocol))
+        elif process.executes_protocol != '' and len(obj_list) == 0:
+            if report is not None:
+                report.error(
+                    "A protocol '{}' has been referenced that has not been declared at the Study level".format(
+                        process.executes_protocol))
+        else:
+            obj = obj_list[0]
+            process.executes_protocol = obj
+
     # TODO: Need to refactor as it's getting too messy
     for study in investigation.studies:
         # build links for SOURCES
@@ -788,7 +836,7 @@ def link_objects(investigation, report=None):
         # build links for SAMPLES
         for sample in study.materials['samples']:
             _link_chars_to_cats(chars=sample.characteristics, cats=study.characteristic_categories, units=study.units, report=report)
-
+            # currently only samples have factor values
             for x, factor_value in enumerate(sample.factor_values):
                 if factor_value.category is not None:
                     obj_list = [o for o in study.factors if o.id == factor_value.category]
@@ -822,117 +870,42 @@ def link_objects(investigation, report=None):
                         obj = obj_list[0]
                         sample.factor_values[x].unit = obj
         # build links in PROCESSES
-        for x, process in enumerate(study.process_sequence):
-            # build study sources links
-            for y, input_ in enumerate(process.inputs):
-                obj_list = [o for o in study.materials['sources'] if o.id == input_]
-                if len(obj_list) > 1:
-                    if report is not None:
-                        report.error("Duplicate object identifier '{}' declared, impossible to resolve object links".format(input_))
-                elif input_ != '' and len(obj_list) == 0:
-                    if report is not None:
-                        report.error("A source '{}' has been referenced that has not been declared at the Study level".format(input_))
-                else:
-                    obj = obj_list[0]
-                    process.inputs[y] = obj
-            # build study samples links
-            for y, output in enumerate(process.outputs):
-                obj_list = [o for o in study.materials['samples'] if o.id == output]
-                if len(obj_list) > 1:
-                    if report is not None:
-                        report.error("Duplicate object identifier '{}' declared, impossible to resolve object links".format(output))
-                elif output != '' and len(obj_list) == 0:
-                    if report is not None:
-                        report.error(
-                            "A sample '{}' has been referenced that has not been declared at the Study level".format(output))
-                else:
-                    obj = obj_list[0]
-                    process.outputs[y] = obj
-            # build protocol link
-            obj_list = [o for o in study.protocols if o.id == process.executes_protocol]
-            if len(obj_list) > 1:
-                if report is not None:
-                    report.error(
-                        "Duplicate object identifier '{}' declared, impossible to resolve object links".format(process.executes_protocol))
-            elif output != '' and len(obj_list) == 0:
-                if report is not None:
-                    report.error(
-                        "A protocol '{}' has been referenced that has not been declared at the Study level".format(process.executes_protocol))
-            else:
-                obj = obj_list[0]
-                study.process_sequence[x].executes_protocol = obj
-            # build pv links
+        # build study sources links
+        node_list = study.materials['sources'] + study.materials['samples']
+        for process in study.process_sequence:
+            _link_process_to_in_out_and_prots(process=process, node_list=node_list, prots=study.protocols, report=report)
             _link_pvs_to_params(process=process, units=study.units, report=report)
         # build prev-next process links
         for assay in study.assays:
-            # TODO: Here we need to go through other_material and link characteristics, and characteristics to units
+            node_list = study.materials['samples'] + assay.materials['other_material'] + assay.data_files
             for material in assay.materials['other_material']:
                 _link_chars_to_cats(chars=material.characteristics, cats=study.characteristic_categories,
                                     units=study.units, report=report)
             for x, process in enumerate(assay.process_sequence):
-                # build study sources links
+                _link_process_to_in_out_and_prots(process=process, node_list=node_list, prots=study.protocols,
+                                                  report=report)
+                # build pv links
+                _link_pvs_to_params(process=process, units=study.units, report=report)
+                # build prev link
                 obj_list = [o for o in assay.process_sequence if o.id == process.prev_process]
                 if len(obj_list) > 1:
                     if report is not None:
-                        report.error("Duplicate object identifier '{}' declared, impossible to resolve object links".format(process.prev_process))
+                        report.error(
+                            "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
+                                process.prev_process))
                 elif len(obj_list) == 1:
                     obj = obj_list[0]
                     assay.process_sequence[x].prev_process = obj
-                # build study samples links
+                # build next link
                 obj_list = [o for o in assay.process_sequence if o.id == process.next_process]
                 if len(obj_list) > 1:
                     if report is not None:
-                        report.error("Duplicate object identifier '{}' declared, impossible to resolve object links".format(process.next_process))
+                        report.error(
+                            "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
+                                process.next_process))
                 elif len(obj_list) == 1:
                     obj = obj_list[0]
                     assay.process_sequence[x].next_process = obj
-                # build protocol link
-                obj_list = [o for o in study.protocols if o.id == process.executes_protocol]
-                if len(obj_list) > 1:
-                    if report is not None:
-                        report.error(
-                            "Duplicate object identifier '{}' declared, impossible to resolve object links".format(process.executes_protocol))
-                elif output != '' and len(obj_list) == 0:
-                    if report is not None:
-                        report.error("A protocol '{}' has been referenced that has not been declared at the Study level".format(process.executes_protocol))
-                else:
-                    obj = obj_list[0]
-                    assay.process_sequence[x].executes_protocol = obj
-                # build pv links
-                _link_pvs_to_params(process=process, units=study.units, report=report)
-
-                # build ASSAY i/o links
-                node_list = study.materials['samples'] + assay.materials['other_material'] + assay.data_files
-                for y, input_ in enumerate(process.inputs):
-                    obj_list = [o for o in node_list if o.id == input_]
-                    if len(obj_list) > 1:
-                        if report is not None:
-                            report.error(
-                                "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
-                                    input_))
-                    elif input != '' and len(obj_list) == 0:
-                        if report is not None:
-                            report.error(
-                                "An input node '{}' has been referenced that has not been declared at the Assay level".format(
-                                    input_))
-                    else:
-                        obj = obj_list[0]
-                        process.inputs[y] = obj
-                for y, output in enumerate(process.outputs):
-                    obj_list = [o for o in node_list if o.id == output]
-                    if len(obj_list) > 1:
-                        if report is not None:
-                            report.error(
-                                "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
-                                    output))
-                    elif output != '' and len(obj_list) == 0:
-                        if report is not None:
-                            report.error(
-                                "An output node '{}' has been referenced that has not been declared at the Assay level".format(
-                                    output))
-                    else:
-                        obj = obj_list[0]
-                        process.outputs[y] = obj
 
 
 def collect_term_source_refs(obj):
