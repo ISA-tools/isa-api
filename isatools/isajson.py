@@ -827,7 +827,6 @@ def link_objects(investigation, report=None):
             obj = obj_list[0]
             process.executes_protocol = obj
 
-    # TODO: Need to refactor as it's getting too messy
     for study in investigation.studies:
         # build links for SOURCES
         for source in study.materials['sources']:
@@ -909,15 +908,18 @@ def link_objects(investigation, report=None):
 
 
 def collect_term_source_refs(obj):
+    t_list = list()
     if isinstance(obj, list):
-        for i in obj:
-            collect_term_source_refs(i)
-    else:
-        if '__dict__' in dir(obj):
+        for item in obj:
+            t = collect_term_source_refs(item)
+            t_list += t
+    elif '__dict__' in dir(obj):
             for k in list(vars(obj).keys()):
                 o = getattr(obj, k)
-                if k == 'term_source' and o != '':
-                    print(obj, k, o)
-                if k != 'prev_process' or k != 'next_process':
-                    collect_term_source_refs(o)
+                t = collect_term_source_refs(o)
+                t_list += t
+    else:
+        t_list.append(obj)
+    return t_list
+
 
