@@ -6,13 +6,13 @@
       "nodeType": "source_schema.json"
     },
     {
-      "@id": "Sample",
-      "nodeType": "sample_schema.json"
-    },
-    {
       "@id": "SampleCollectionProcess",
       "nodeType": "process_schema.json",
       "protocolType": "sample collection"
+    },
+    {
+      "@id": "Sample",
+      "nodeType": "sample_schema.json"
     }
   ],
   "additionalCharacteristics": true,
