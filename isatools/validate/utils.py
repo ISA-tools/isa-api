@@ -1,6 +1,7 @@
 import re
 import iso8601
 import chardet
+import os
 
 
 class ValidationError(Exception):
@@ -103,7 +104,10 @@ def is_iso8601_date(date_str):
 
 
 def check_doi(doi_str, report):
-    pass
+    if doi_str is not '':
+        regexDOI = re.compile('[doi|DOI][\s\.\:]{0,2}(10\.\d{4}[\d\:\.\-\/a-z]+)[A-Z\s]')
+        if not regexDOI.match(doi_str):
+            report.warn("DOI {} does not conform to DOI format".format(doi_str))
 
 
 def check_encoding(fp, report):
@@ -111,3 +115,13 @@ def check_encoding(fp, report):
     if charset['encoding'] is not 'UTF-8':
         report.warn("File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
                     .format(charset['encoding'], charset['confidence']))
+
+
+def check_data_files(data_files, dir_context, report):
+    for data_file in data_files:
+        try:
+            filename = data_file['name']
+            with open(os.path.join(dir_context, filename)) as file:
+                pass
+        except IOError as e:
+            report.warn("Cannot open file {}".format(filename))
