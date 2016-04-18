@@ -184,7 +184,7 @@ def validates(isa_json, report):
                 check_data_files(data_files=assay['dataFiles'], dir_context=dir_context, report=report)
 
         if len(report.generate_report_json()['errors']) < 1:
-            # if we got this far, let's load using isajson.load()
+            # if we got this far and there are no ERRORS (warnings are OK), let's load using isajson.load()
             i = load(open(report.file_name))
             link_objects(investigation=i, report=report)
             for study in i.studies:
@@ -200,7 +200,7 @@ def validates(isa_json, report):
                 for graph_pattern in graph_patterns:
                     for process_node_config in process_node_configs:
                         new_graph_patterns.append(graph_pattern.replace(process_node_config['@id'], process_node_config['protocolType']))
-                print("Checking graph configs: " + str(new_graph_patterns))
+                print("Checking against graph configs: " + str(new_graph_patterns))
                 for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
                     type_seq_str = ""
                     for node in path:
@@ -227,7 +227,7 @@ def validates(isa_json, report):
 
 
 def validate_against_config(i):
-    study_config = json.load(open('/Users/dj/PycharmProjects/isa-api/isatools/schemas/isa_model_version_1_0_schemas/configurations/study_config.json'))
+    study_config = json.load(open(os.path.join(os.path.dirname(os.path.dirname(__file__)), '/isatools/schemas/isa_model_version_1_0_schemas/configurations/study_config.json')))
     print("Validating against config: {}".format(study_config))
     print("Matching against:", study_config['graphPatterns'])
     G = i.studies[0].graph
