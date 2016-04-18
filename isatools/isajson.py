@@ -148,7 +148,7 @@ def validates(isa_json, report):
     def _check_object_usage(section, objects_declared, id_refs, report):
         for obj_ref in objects_declared:
             if obj_ref not in id_refs:
-                report.error("Object reference {0} not used anywhere in {1}".format(obj_ref, section))
+                report.warn("Object reference {0} not used anywhere in {1}".format(obj_ref, section))
 
     try:  # if can load the JSON (if the JSON is well-formed already), validate the JSON against our schemas
         _check_isa_schemas(isa_json)
@@ -183,38 +183,54 @@ def validates(isa_json, report):
             for assay in study['assays']:
                 check_data_files(data_files=assay['dataFiles'], dir_context=dir_context, report=report)
 
-        # if we got this far, let's load using isajson.load()
-        i = load(open(report.file_name))
-        for study in i.studies:
-            G = study.graph
-            report.warn("Experimental graphs in study: {}".format(study.identifier))
-            from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
-            start_nodes, end_nodes = _get_start_end_nodes(G)
-            for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
-                type_seq_str = ""
-                node_seq_str = ""
-                for node in path:
-                    if isinstance(node, Source):
-                        type_seq_str += "(Source:{})->".format(node.name)
-                        node_seq_str += "(Source)->"
-                    elif isinstance(node, Sample):
-                        type_seq_str += "(Sample:{})->".format(node.name)
-                        node_seq_str += "(Sample)->"
-                    elif isinstance(node, Process):
-                        type_seq_str += "(Process:{})->".format(node.executes_protocol)
-                        node_seq_str += "(Process)->"
-                report.warn(type_seq_str[:len(type_seq_str) - 2])
-
+        if len(report.generate_report_json()['errors']) < 1:
+            # if we got this far, let's load using isajson.load()
+            i = load(open(report.file_name))
+            link_objects(investigation=i, report=report)
+            for study in i.studies:
+                study.build_graph()
+                G = study.graph
+                from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
+                start_nodes, end_nodes = _get_start_end_nodes(G)
+                protocol_types = json.load(open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'isatools/schemas/isa_model_version_1_0_schemas/configurations/protocol_definitions.json')))
+                study_config = json.load(open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'isatools/schemas/isa_model_version_1_0_schemas/configurations/study_config.json')))
+                process_node_configs = [n for n in study_config['nodes'] if n['nodeType'] == 'process_schema.json']
+                graph_patterns = study_config['graphPatterns']
+                new_graph_patterns = list()
+                for graph_pattern in graph_patterns:
+                    for process_node_config in process_node_configs:
+                        new_graph_patterns.append(graph_pattern.replace(process_node_config['@id'], process_node_config['protocolType']))
+                print("Checking graph configs: " + str(new_graph_patterns))
+                for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
+                    type_seq_str = ""
+                    for node in path:
+                        if isinstance(node, Source):
+                            type_seq_str += "(Source)->"
+                        elif isinstance(node, Sample):
+                            type_seq_str += "(Sample)->"
+                        elif isinstance(node, Process):
+                            protocol_type = node.executes_protocol.protocol_type.name
+                            if len([p for p in protocol_types['protocol-mappings'] if
+                                    protocol_type in p['synonyms'] and p['protocol-type']
+                                            == 'sample collection']) == 1:
+                                protocol_type = 'sample collection'
+                            else:
+                                report.warn("{} does not contain correct protocol type {}"
+                                            .format(type_seq_str[:len(type_seq_str) - 2]), 'sample collection')
+                            type_seq_str += "({})->".format(protocol_type)
+                    type_seq_str = type_seq_str[:len(type_seq_str)-2]
+                    if type_seq_str not in new_graph_patterns:
+                        print(type_seq_str + "is not in " + str(new_graph_patterns))
     except ValidationError as isa_schema_validation_error:
         raise isa_schema_validation_error
     print(report.print_report())
 
 
-def validate_against_config(fp):
-    study_config = json.load(open('/Users/dj/PycharmProjects/isa-api/isatools/schemas/isa_model_version_1_0_schemas/configurations/study_sample_config.json'))
+def validate_against_config(i):
+    study_config = json.load(open('/Users/dj/PycharmProjects/isa-api/isatools/schemas/isa_model_version_1_0_schemas/configurations/study_config.json'))
     print("Validating against config: {}".format(study_config))
-    isa_json = load(fp=fp)
-    G = isa_json.studies[0].graph
+    print("Matching against:", study_config['graphPatterns'])
+    G = i.studies[0].graph
     from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
     start_nodes, end_nodes = _get_start_end_nodes(G)
     for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
@@ -375,7 +391,7 @@ def load_protocol(protocol_json):
     if 'version' in keys:
         protocol.version = protocol_json['version']
     if 'protocolType' in keys:
-        protocol.protocol_type = protocol_json['protocolType']
+        protocol.protocol_type = load_ontology_annotation(protocol_json['protocolType'])
     if 'parameters' in keys:
         for parameter_json in protocol_json['parameters']:
             parameter = ProtocolParameter()
@@ -646,7 +662,6 @@ def load(fp):
                     if '@id' in output_json.keys():
                         process.outputs.append(output_json['@id'])
                 study.process_sequence.append(process)
-            study.graph = _build_assay_graph(study.process_sequence)
             for assay_json in study_json['assays']:
                 logger.debug('Start building Assay object')
                 logger.debug('Build Study Assay object')
@@ -694,8 +709,6 @@ def load(fp):
                         if '@id' in output_json.keys():
                             process.outputs.append(output_json['@id'])
                     assay.process_sequence.append(process)
-                    assay.graph = _build_assay_graph(assay.process_sequence)
-                study.assays.append(assay)
             logger.debug('End building Study object')
             investigation.studies.append(study)
         logger.debug('End building Studies objects')
