@@ -4,7 +4,7 @@ import logging
 from networkx import DiGraph
 from jsonschema import Draft4Validator, RefResolver
 import os
-from isatools.validate.utils import check_iso8601_date, check_encoding, ValidationReport, ValidationError
+from isatools.validate.utils import check_iso8601_date, check_encoding, check_data_files, check_pubmed_id, check_doi, ValidationReport, ValidationError
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
@@ -62,12 +62,18 @@ def validates(isa_json, report):
                 _check_term_source_refs(j, ontology_source_refs, report)
 
     def _check_pubmed_ids(isa_json, report):
-        from isatools.isatab import check_pubmed_id
         for ipub in isa_json['publications']:
             check_pubmed_id(ipub['pubMedID'], report)
         for study in isa_json['studies']:
             for spub in study['publications']:
                 check_pubmed_id(spub['pubMedID'], report)
+
+    def _check_dois(isa_json, report):
+        for ipub in isa_json['publications']:
+            check_doi(ipub['doi'], report)
+        for study in isa_json['studies']:
+            for spub in study['publications']:
+                check_doi(spub['doi'], report)
 
     def _check_protocol_names(isa_json, report):
         protocol_refs = ['']  # initalize with empty string as the default none ref
@@ -144,18 +150,6 @@ def validates(isa_json, report):
             if obj_ref not in id_refs:
                 report.error("Object reference {0} not used anywhere in {1}".format(obj_ref, section))
 
-    def _check_data_files(isa_json, report):
-        isajson_dir = os.path.dirname(report.file_name)
-        for study in isa_json['studies']:
-            for assay in study['assays']:
-                for data_file in assay['dataFiles']:
-                    try:
-                        filename = data_file['name']
-                        with open(os.path.join(isajson_dir, filename)) as file:
-                            pass
-                    except IOError as e:
-                        report.warn("Cannot open file {}".format(filename))
-
     try:  # if can load the JSON (if the JSON is well-formed already), validate the JSON against our schemas
         _check_isa_schemas(isa_json)
         # if the JSON is validated against ISA JSON, let's start checking content
@@ -164,7 +158,7 @@ def validates(isa_json, report):
         _check_date_formats(isa_json=isa_json, report=report)  # check if dates are all ISO8601 compliant
         _check_term_source_refs(isa_json=isa_json, ontology_source_refs=ontology_source_refs, report=report)  # check if ontology refs refer to ontology source
         _check_pubmed_ids(isa_json=isa_json, report=report)
-        # _check_dois(isa_json=isa_json, report=report)
+        _check_dois(isa_json=isa_json, report=report)
         _check_protocol_names(isa_json=isa_json, report=report)
         _check_protocol_parameter_names(isa_json=isa_json, report=report)
         _check_study_factor_names(isa_json=isa_json, report=report)
@@ -184,7 +178,10 @@ def validates(isa_json, report):
                 prot_obj_ids.append(protocol['@id'])
             _check_object_usage(section=study['identifier'], objects_declared=prot_obj_ids, id_refs=_collect_id_refs(isa_json=isa_json, id_refs=list()), report=report)
 
-        _check_data_files(isa_json=isa_json, report=report)
+        dir_context = os.path.dirname(report.file_name)
+        for study in isa_json['studies']:
+            for assay in study['assays']:
+                check_data_files(data_files=assay['dataFiles'], dir_context=dir_context, report=report)
 
         # if we got this far, let's load using isajson.load()
         i = load(open(report.file_name))
@@ -905,21 +902,3 @@ def link_objects(investigation, report=None):
                 elif len(obj_list) == 1:
                     obj = obj_list[0]
                     assay.process_sequence[x].next_process = obj
-
-
-def collect_term_source_refs(obj):
-    t_list = list()
-    if isinstance(obj, list):
-        for item in obj:
-            t = collect_term_source_refs(item)
-            t_list += t
-    elif '__dict__' in dir(obj):
-            for k in list(vars(obj).keys()):
-                o = getattr(obj, k)
-                t = collect_term_source_refs(o)
-                t_list += t
-    else:
-        t_list.append(obj)
-    return t_list
-
-
