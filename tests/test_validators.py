@@ -82,9 +82,8 @@ class ValidateIsaJsonTest(TestCase):
             self.fail(
                 "Validation error missing when should report error - data has broken sample link but not reported in validation report")
 
-
     def test_data_file_link(self):
-        """Tests against 1003"""
+        """Tests against 1004"""
         v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'datafile_link.json')))
         validation_report = v.generate_report_json()
         object_ref_error = [m['message'] for m in validation_report['errors'] if
@@ -100,6 +99,25 @@ class ValidateIsaJsonTest(TestCase):
         if len(object_ref_error) == 0:
             self.fail(
                 "Validation error missing when should report error - data has broken data file link but not reported in validation report")
+
+    def test_material_link(self):
+        """Tests against 1005"""
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'material_link.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['errors'] if
+                            "Object reference #material/1 not declared" in m['message']]
+        if len(object_ref_error) > 0:
+            self.fail(
+                "Validation error present when should pass without error - material link reports broken when present in data")
+
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'material_link_fail.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['errors'] if
+                            "Object reference #material/1 not declared" in m['message']]
+        if len(object_ref_error) == 0:
+            self.fail(
+                "Validation error missing when should report error - data has broken material link but not reported in validation report")
+
 # class ValidateIsaTabTest(TestCase):
 #
 #     def setUp(self):
