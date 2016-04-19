@@ -4,7 +4,7 @@ import logging
 from networkx import DiGraph
 from jsonschema import Draft4Validator, RefResolver
 import os
-from isatools.validate.utils import check_iso8601_date, check_encoding, check_data_files, check_pubmed_id, check_doi, ValidationReport, ValidationError
+from isatools.validate.utils import check_iso8601_date, check_encoding, check_data_files, check_pubmed_id, check_doi, is_utf8, ValidationReport, ValidationError
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
@@ -248,17 +248,21 @@ def validate_against_config(i):
 def validate(fp):  # default reporting
     """Validate JSON file"""
     report = ValidationReport(fp.name)
-    check_encoding(fp, report)
-    try:  # first, try open the file as a JSON
-        try:
-            isa_json = json.load(fp=fp)
-            validates(isa_json, report)
-        except ValueError as json_load_error:
-            report.fatal("There was an error when trying to parse the JSON")
-            raise json_load_error
-    except SystemError as system_error:
-        report.fatal("There was a general system error")
-        raise system_error
+    check_encoding(fp, report=report)
+    if not is_utf8(fp):
+        report.fatal("File is not UTF-8 encoded, not proceeding with json.load as it will fail")
+    else:
+        try:  # first, try open the file as a JSON
+            try:
+                isa_json = json.load(fp=fp)
+                validates(isa_json, report)
+            except ValueError as json_load_error:
+                report.fatal("There was an error when trying to parse the JSON")
+                raise json_load_error
+        except SystemError as system_error:
+            report.fatal("There was a general system error")
+            raise system_error
+    return report
 
 
 def load_ontology_source_reference(ontology_source_reference_json):

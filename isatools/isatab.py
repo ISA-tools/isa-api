@@ -193,13 +193,13 @@ def validate_tab(isatab_dir, reporting_level=logging.INFO):
         if len(i_file) > 1:
             logger.fatal("More than one investigation was found in the given directory")
             raise ValidationError
-        validatei(open(os.path.join(isatab_dir, i_file[0])))
+        validate_i_file(open(os.path.join(isatab_dir, i_file[0])))
     except ValidationError as i_file_validation_error:
         logger.fatal("There was an error when validating the structure of the ISA tab investigation file")
         raise i_file_validation_error
 
 
-def validatei(i_fp):
+def validate_i_file(i_fp):
     """Validate an ISA tab, starting from i_ file"""
 
     def _check_i_sections(fp, report):
@@ -214,7 +214,7 @@ def validatei(i_fp):
 
             line = f.readline()
             if not line.rstrip() == sec_key:
-                report.fatal("Expected {0} section but got {1}".format(line.rstrip(), sec_key))
+                report.fatal("Expected {} section but got {}".format(line.rstrip(), sec_key))
                 raise ValidationError(report.generate_report())
             memf = io.StringIO()
             while not _peek(f=f).rstrip() == next_sec_key:
@@ -417,9 +417,9 @@ def validatei(i_fp):
             if not os.path.isfile(os.path.join(os.path.dirname(i_fp.name), assay_file_name)):
                 report.fatal("The referenced assay file '{}' does not exist or is not a file".format(assay_file_name))
 
-    if len(report.generate_report_json()['fatal']) > 0:
-        report.print_report()
-        return
+    # if len(report.generate_report_json()['fatal']) > 0:
+    report.print_report()
+    return
     #
     # i_ont_src_headers = {
     #     'Term Source Name',
@@ -481,18 +481,18 @@ def validate_s_file(s_fp):
         for x, header in enumerate(headers):
             if header.startswith('"') and header.endswith('"'): header = header[1:-1]
             if not _is_valid_tab_header(header):
-                report.fatal("Found an invalid header '{0}' at column position {1}.".format(header, x))
+                report.fatal("Found an invalid header '{}' at column position {}.".format(header, x))
             if prev_header == header:
-                report.warn("Consecutive duplicates not allows: header '{0}' at column position {1} is same as at position {2}.".format(header, x-1, x))
+                report.warn("Consecutive duplicates not allows: header '{}' at column position {} is same as at position {2}.".format(header, x-1, x))
             # check for 'Term Accession Number' after 'Term Source REF' for Characteristics
             if char_regex.match(header):
                 try:
                     if headers[x+1] == 'Term Source REF':
                         try:
                             if headers[x+2] != 'Term Accession Number':
-                                report.fatal("Header '{0}' at column position {1} is missing 'Term Accession Number'".format(header, x+2))
+                                report.fatal("Header '{}' at column position {} is missing 'Term Accession Number'".format(header, x+2))
                         except IndexError:
-                            report.fatal("Header '{0}' at column position {1} is missing 'Term Accession Number'".format(header, x+2))
+                            report.fatal("Header '{}' at column position {} is missing 'Term Accession Number'".format(header, x+2))
                 except IndexError:
                     pass
             # check for 'Term Accession Number' after 'Term Source REF' for Factor Values
@@ -501,9 +501,9 @@ def validate_s_file(s_fp):
                     if headers[x+1] == 'Term Source REF':
                         try:
                             if headers[x+2] != 'Term Accession Number':
-                                report.fatal("Header '{0}' at column position {1} is missing 'Term Accession Number'".format(header, x+2))
+                                report.fatal("Header '{}' at column position {} is missing 'Term Accession Number'".format(header, x+2))
                         except IndexError:
-                            report.fatal("Header '{0}' at column position {1} is missing 'Term Accession Number'".format(header, x+2))
+                            report.fatal("Header '{}' at column position {} is missing 'Term Accession Number'".format(header, x+2))
                 except IndexError:
                     pass
             prev_header = header
