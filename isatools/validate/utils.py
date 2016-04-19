@@ -112,7 +112,7 @@ def check_doi(doi_str, report):
 
 def check_encoding(fp, report):
     charset = chardet.detect(open(fp.name, 'rb').read())
-    if charset['encoding'] is not 'UTF-8':
+    if charset['encoding'] is not 'UTF-8' and charset['encoding'] is not 'ascii':
         report.warn("File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
                     .format(charset['encoding'], charset['confidence']))
 
