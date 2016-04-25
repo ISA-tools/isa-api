@@ -118,6 +118,24 @@ class ValidateIsaJsonTest(TestCase):
             self.fail(
                 "Validation error missing when should report error - data has broken material link but not reported in validation report")
 
+    def test_process_link(self):
+        """Tests against 1006"""
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'process_link.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['errors'] if
+                            "Object reference #process/1 not declared" in m['message']]
+        if len(object_ref_error) > 0:
+            self.fail(
+                "Validation error present when should pass without error - process link reports broken when present in data")
+
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'process_link_fail.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['errors'] if
+                            "Object reference #process/1 not declared" in m['message']]
+        if len(object_ref_error) == 0:
+            self.fail(
+                "Validation error missing when should report error - data has broken process link but not reported in validation report")
+
 # class ValidateIsaTabTest(TestCase):
 #
 #     def setUp(self):
