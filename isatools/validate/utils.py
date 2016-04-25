@@ -105,7 +105,7 @@ def is_iso8601_date(date_str):
 
 def check_doi(doi_str, report):
     if doi_str is not '':
-        regexDOI = re.compile('[doi|DOI][\s\.\:]{0,2}(10\.\d{4}[\d\:\.\-\/a-z]+)[A-Z\s]')
+        regexDOI = re.compile('(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
         if not regexDOI.match(doi_str):
             report.warn("DOI {} does not conform to DOI format".format(doi_str))
 
@@ -115,6 +115,14 @@ def check_encoding(fp, report):
     if charset['encoding'] is not 'UTF-8' and charset['encoding'] is not 'ascii':
         report.warn("File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
                     .format(charset['encoding'], charset['confidence']))
+
+
+def is_utf8(fp):
+    charset = chardet.detect(open(fp.name, 'rb').read())
+    if charset['encoding'] is not 'UTF-8' and charset['encoding'] is not 'ascii':
+        return False
+    else:
+        return True
 
 
 def check_data_files(data_files, dir_context, report):
