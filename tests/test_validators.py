@@ -173,7 +173,7 @@ class ValidateIsaJsonTest(TestCase):
                 "Validation error missing when should report error - data has broken factor link in factorValue but not reported in validation report")
 
     def test_protocol_parameter_link(self):
-        """Tests against 1008"""
+        """Tests against 1009"""
         v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'protocol_parameter_link.json')))
         validation_report = v.generate_report_json()
         object_ref_error = [m['message'] for m in validation_report['errors'] if
@@ -189,6 +189,43 @@ class ValidateIsaJsonTest(TestCase):
         if len(object_ref_error) == 0:
             self.fail(
                 "Validation error missing when should report error - data has broken parameter link in parameterValue but not reported in validation report")
+
+    def test_iso8601(self):
+        """Tests against 3001"""
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'iso8601.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['warnings'] if
+                            "Date 2008-08-15 does not conform to ISO8601 format" in m['message']]
+        if len(object_ref_error) > 0:
+            self.fail(
+                "Validation error present when should pass without error - incorrectly formatted ISO8601 date in publicReleaseDate reports invalid when valid data")
+
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'iso8601_fail.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['warnings'] if
+                            "Date 15/08/2008 does not conform to ISO8601 format" in m['message']]
+        if len(object_ref_error) == 0:
+            self.fail(
+                "Validation error missing when should report error - data has incorrectly formatted ISO8601 date in publicReleaseDate but not reported in validation report")
+
+
+    def test_doi(self):
+        """Tests against 3002"""
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'doi.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['warnings'] if
+                            "DOI 10.1371/journal.pone.0003042 does not conform to DOI format" in m['message']]
+        if len(object_ref_error) > 0:
+            self.fail(
+                "Validation error present when should pass without error - incorrectly formatted DOI in publication reports invalid when valid data")
+
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'doi_fail.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['warnings'] if
+                            "DOI 1371/journal.pone.0003042 does not conform to DOI format" in m['message']]
+        if len(object_ref_error) == 0:
+            self.fail(
+                "Validation error missing when should report error - data has incorrectly formatted DOI in publication but not reported in validation report")
 
 # class ValidateIsaTabTest(TestCase):
 #
