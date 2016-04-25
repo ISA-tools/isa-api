@@ -172,6 +172,24 @@ class ValidateIsaJsonTest(TestCase):
             self.fail(
                 "Validation error missing when should report error - data has broken factor link in factorValue but not reported in validation report")
 
+    def test_protocol_parameter_link(self):
+        """Tests against 1008"""
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'protocol_parameter_link.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['errors'] if
+                            "Object reference #parameter/1 not declared" in m['message']]
+        if len(object_ref_error) > 0:
+            self.fail(
+                "Validation error present when should pass without error - parameter link in parameterValue reports broken when present in data")
+
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'protocol_parameter_link_fail.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['errors'] if
+                            "Object reference #parameter/1 not declared" in m['message']]
+        if len(object_ref_error) == 0:
+            self.fail(
+                "Validation error missing when should report error - data has broken parameter link in parameterValue but not reported in validation report")
+
 # class ValidateIsaTabTest(TestCase):
 #
 #     def setUp(self):
