@@ -231,7 +231,7 @@ class ValidateIsaJsonTest(TestCase):
         v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'pubmed.json')))
         validation_report = v.generate_report_json()
         object_ref_error = [m['message'] for m in validation_report['warnings'] if
-                            "DOI 10.1371/journal.pone.0003042 does not conform to DOI format" in m['message']]
+                            "PubMed ID 18725995 is not valid format" in m['message']]
         if len(object_ref_error) > 0:
             self.fail(
                 "Validation error present when should pass without error - incorrectly formatted Pubmed ID in publication reports invalid when valid data")
@@ -239,7 +239,7 @@ class ValidateIsaJsonTest(TestCase):
         v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'pubmed_fail.json')))
         validation_report = v.generate_report_json()
         object_ref_error = [m['message'] for m in validation_report['warnings'] if
-                            "DOI 1371/journal.pone.0003042 does not conform to DOI format" in m['message']]
+                            "PubMed ID 1872599 is not valid format" in m['message']]
         if len(object_ref_error) == 0:
             self.fail(
                 "Validation error missing when should report error - data has incorrectly formatted Pubmed ID in publication but not reported in validation report")
