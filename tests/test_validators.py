@@ -208,7 +208,6 @@ class ValidateIsaJsonTest(TestCase):
             self.fail(
                 "Validation error missing when should report error - data has incorrectly formatted ISO8601 date in publicReleaseDate but not reported in validation report")
 
-
     def test_doi(self):
         """Tests against 3002"""
         v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'doi.json')))
@@ -226,6 +225,24 @@ class ValidateIsaJsonTest(TestCase):
         if len(object_ref_error) == 0:
             self.fail(
                 "Validation error missing when should report error - data has incorrectly formatted DOI in publication but not reported in validation report")
+
+    def test_pubmed(self):
+        """Tests against 3003"""
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'pubmed.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['warnings'] if
+                            "DOI 10.1371/journal.pone.0003042 does not conform to DOI format" in m['message']]
+        if len(object_ref_error) > 0:
+            self.fail(
+                "Validation error present when should pass without error - incorrectly formatted Pubmed ID in publication reports invalid when valid data")
+
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'pubmed_fail.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['warnings'] if
+                            "DOI 1371/journal.pone.0003042 does not conform to DOI format" in m['message']]
+        if len(object_ref_error) == 0:
+            self.fail(
+                "Validation error missing when should report error - data has incorrectly formatted Pubmed ID in publication but not reported in validation report")
 
 # class ValidateIsaTabTest(TestCase):
 #
