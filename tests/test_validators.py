@@ -244,6 +244,24 @@ class ValidateIsaJsonTest(TestCase):
             self.fail(
                 "Validation error missing when should report error - data has incorrectly formatted Pubmed ID in publication but not reported in validation report")
 
+    def test_datafiles(self):
+        """Tests against 3004"""
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'datafiles.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['warnings'] if
+                            "Cannot open file a_file.dat" in m['message']]
+        if len(object_ref_error) > 0:
+            self.fail(
+                "Validation error present when should pass without error - incorrectly reports a_file.dat is missing when a_file.dat is present")
+
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'datafiles_fail.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['warnings'] if
+                            "Cannot open file b_file.dat" in m['message']]
+        if len(object_ref_error) == 0:
+            self.fail(
+                "Validation error missing when should report error - data has incorrectly reported everything is OK but not reported b_file.dat is missing")
+
 # class ValidateIsaTabTest(TestCase):
 #
 #     def setUp(self):
