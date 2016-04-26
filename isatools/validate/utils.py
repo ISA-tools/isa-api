@@ -65,7 +65,7 @@ def check_pubmed_id(pubmed_id_str, report):
     if pubmed_id_str is not '':
         pmid_regex = re.compile('[0-9]{8}')
         pmcid_regex = re.compile('PMC[0-9]{8}')
-        if pmid_regex.match(pubmed_id_str) is not None and pmcid_regex.match(pubmed_id_str) is not None:
+        if (pmid_regex.match(pubmed_id_str) is None) and (pmcid_regex.match(pubmed_id_str) is None):
             report.warn("PubMed ID {} is not valid format".format(pubmed_id_str))
     # TODO: Check if publication exists and consistency with other metadata in section; needs network connection
 
