@@ -262,6 +262,24 @@ class ValidateIsaJsonTest(TestCase):
             self.fail(
                 "Validation error missing when should report error - data has incorrectly reported everything is OK but not reported b_file.dat is missing")
 
+    def test_protocol_used(self):
+        """Tests against 3005"""
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'protocol_used.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['warnings'] if
+                            "Object reference #protocol/1 not used anywhere in study loc 1 (study location autocalculated by validator - Study ID in JSON not present)" in m['message']]
+        if len(object_ref_error) > 0:
+            self.fail(
+                "Validation error present when should pass without error - incorrectly reports #protocol/1 not used when it has been used in #process/1")
+
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'protocol_used_fail.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['warnings'] if
+                            "Object reference #protocol/1 not used anywhere in study loc 1 (study location autocalculated by validator - Study ID in JSON not present)" in m['message']]
+        if len(object_ref_error) == 0:
+            self.fail(
+                "Validation error missing when should report error - data has incorrectly reported everything is OK but not reported #protocol/1 as being unused")
+
 # class ValidateIsaTabTest(TestCase):
 #
 #     def setUp(self):
