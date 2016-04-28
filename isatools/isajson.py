@@ -132,8 +132,21 @@ def validates(isa_json, report):
                 _collect_id_refs(j, id_refs)
         return id_refs
 
-    def _check_object_refs(isa_json, object_refs, report):
+    def _collect_term_source_refs(isa_json, id_refs):
         # get all matching annotation patterns by traversing the whole json structure
+        if isinstance(isa_json, dict):
+            if 'termSource' in set(isa_json.keys()) and len(set(isa_json.keys())) == 3:
+                if isa_json['termSource'] not in id_refs:
+                    id_refs.append(isa_json['termSource'])
+            for i in isa_json.keys():
+                _collect_term_source_refs(isa_json[i], id_refs)
+        elif isinstance(isa_json, list):
+            for j in isa_json:
+                _collect_term_source_refs(j, id_refs)
+        return id_refs
+
+    def _check_object_refs(isa_json, object_refs, report):
+        # get all matching id patterns by traversing the whole json structure
         if isinstance(isa_json, dict):
             if '@id' in set(isa_json.keys()) and len(set(isa_json.keys())) == 1:
                 if isa_json['@id'] not in object_refs and isa_json['@id'] != '#parameter/Array_Design_REF':
@@ -165,18 +178,26 @@ def validates(isa_json, report):
         _check_object_refs(isa_json=isa_json, object_refs=_collect_object_refs(isa_json=isa_json, object_refs=list()), report=report)
 
         # check protocols declared are used
-        for study in isa_json['studies']:
+        for i, study in enumerate(isa_json['studies']):
             prot_obj_ids = list()
             for protocol in study['protocols']:
                 prot_obj_ids.append(protocol['@id'])
-            _check_object_usage(section=study['identifier'], objects_declared=prot_obj_ids, id_refs=_collect_id_refs(isa_json=isa_json, id_refs=list()), report=report)
+            study_id = "study loc {} (study location autocalculated by validator - Study ID in JSON not present)".format(i+1)
+            if study['identifier'] != '':
+                study_id = study['identifier']
+            _check_object_usage(section=study_id, objects_declared=prot_obj_ids, id_refs=_collect_id_refs(isa_json=isa_json, id_refs=list()), report=report)
 
         # check study factors declared are used
-        for study in isa_json['studies']:
-            prot_obj_ids = list()
-            for protocol in study['factors']:
-                prot_obj_ids.append(protocol['@id'])
-            _check_object_usage(section=study['identifier'], objects_declared=prot_obj_ids, id_refs=_collect_id_refs(isa_json=isa_json, id_refs=list()), report=report)
+        for i, study in enumerate(isa_json['studies']):
+            factor_obj_ids = list()
+            for factor in study['factors']:
+                factor_obj_ids.append(factor['@id'])
+            study_id = "study loc {} (study location autocalculated by validator - Study ID in JSON not present)".format(i+1)
+            if study['identifier'] != '':
+                study_id = study['identifier']
+            _check_object_usage(section=study_id, objects_declared=factor_obj_ids, id_refs=_collect_id_refs(isa_json=isa_json, id_refs=list()), report=report)
+        ontology_source_refs = [ref['name'] for ref in isa_json['ontologySourceReferences']]
+        _check_object_usage(section='investigation (term source check)', objects_declared=ontology_source_refs, id_refs=_collect_term_source_refs(isa_json=isa_json, id_refs=list()), report=report)
 
         dir_context = os.path.dirname(report.file_name)
         for study in isa_json['studies']:
@@ -223,7 +244,7 @@ def validates(isa_json, report):
                         print(type_seq_str + "is not in " + str(new_graph_patterns))
     except ValidationError as isa_schema_validation_error:
         raise isa_schema_validation_error
-    print(report.print_report())
+    # print(report.print_report())
 
 
 def validate_against_config(i):
