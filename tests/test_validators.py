@@ -281,7 +281,7 @@ class ValidateIsaJsonTest(TestCase):
                 "Validation error missing when should report error - data has incorrectly reported everything is OK but not reported #protocol/1 as being unused")
 
     def test_factor_used(self):
-        """Tests against 3005"""
+        """Tests against 3006"""
         v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'factor_used.json')))
         validation_report = v.generate_report_json()
         object_ref_error = [m['message'] for m in validation_report['warnings'] if
@@ -299,6 +299,26 @@ class ValidateIsaJsonTest(TestCase):
         if len(object_ref_error) == 0:
             self.fail(
                 "Validation error missing when should report error - data has incorrectly reported everything is OK but not reported #factor/1 as being unused")
+
+    def test_term_source_used(self):
+        """Tests against 3007"""
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'term_source_used.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['warnings'] if
+                            "Object reference PATO not used anywhere in investigation (term source check)" in
+                            m['message']]
+        if len(object_ref_error) > 0:
+            self.fail(
+                "Validation error present when should pass without error - incorrectly reports PATO not used when it has been used in #factor/1")
+
+        v = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'term_source_used_fail.json')))
+        validation_report = v.generate_report_json()
+        object_ref_error = [m['message'] for m in validation_report['warnings'] if
+                            "Object reference PATO not used anywhere in investigation (term source check)" in
+                            m['message']]
+        if len(object_ref_error) == 0:
+            self.fail(
+                "Validation error missing when should report error - data has incorrectly reported everything is OK but not reported PATO as being unused")
 
 # class ValidateIsaTabTest(TestCase):
 #
