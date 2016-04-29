@@ -80,7 +80,7 @@ def validates(isa_json, report):
         for study in isa_json['studies']:
             for protocol in study['protocols']:
                 if protocol['name'] is '':
-                    report.warn("A Protocol is missing Protocol Name, so can't be referenced")
+                    report.warn("A Protocol is missing Protocol Name, so can't be referenced in ISA-tab")
                 else:
                     protocol_refs.append(protocol['name'])
         return protocol_refs
@@ -91,7 +91,7 @@ def validates(isa_json, report):
             for protocol in study['protocols']:
                 for parameter in protocol['parameters']:
                     if parameter['parameterName'] is '':
-                        report.warn("A Protocol Parameter is missing Name, so can't be referenced")
+                        report.warn("A Protocol Parameter is missing Name, so can't be referenced in ISA-tab")
                     else:
                         protocol_parameter_refs.append(parameter['parameterName'])
         return protocol_parameter_refs
@@ -101,7 +101,7 @@ def validates(isa_json, report):
         for study in isa_json['studies']:
             for factor in study['factors']:
                     if factor['factorName'] is '':
-                        report.warn("A Study Factor is missing Name, so can't be referenced")
+                        report.warn("A Study Factor is missing Name, so can't be referenced in ISA-tab")
                     else:
                         study_factor_refs.append(study_factor_refs)
         return study_factor_refs
