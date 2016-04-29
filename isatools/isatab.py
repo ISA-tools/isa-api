@@ -641,7 +641,7 @@ def dump(isa_obj, output_path):
         for role in roles:
             roles_names += role.name + ';'
             roles_accession_numbers += role.term_accession + ';'
-            roles_source_refs += role.term_source.name + ';'
+            roles_source_refs += role.term_source + ';'
         if len(roles) > 0:
             roles_names = roles_names[:-1]
             roles_accession_numbers = roles_accession_numbers[:-1]
@@ -706,7 +706,7 @@ def dump(isa_obj, output_path):
                 publication.title,
                 publication.status.name,
                 publication.status.term_accession,
-                publication.status.term_source.name,
+                publication.status.term_source,
             ]
             for comment in publication.comments:
                 publications_df_row.append(comment.value)
@@ -814,7 +814,7 @@ def dump(isa_obj, output_path):
             study_design_descriptors_df.loc[i] = [
                 design_descriptor.name,
                 design_descriptor.term_accession,
-                design_descriptor.term_source.name
+                design_descriptor.term_source
             ]
             study_design_descriptors_df = study_design_descriptors_df.set_index('Study Design Type').T
             fp.write('STUDY DESIGN DESCRIPTORS\n')
@@ -838,7 +838,7 @@ def dump(isa_obj, output_path):
                 factor.name,
                 factor.factor_type.name,
                 factor.factor_type.term_accession,
-                factor.factor_type.term_source.name
+                factor.factor_type.term_source
             ]
         study_factors_df = study_factors_df.set_index('Study Factor Name').T
         fp.write('STUDY FACTORS\n')
@@ -862,10 +862,10 @@ def dump(isa_obj, output_path):
                 assay.filename,
                 assay.measurement_type.name,
                 assay.measurement_type.term_accession,
-                assay.measurement_type.term_source.name,
+                assay.measurement_type.term_source,
                 assay.technology_type.name,
                 assay.technology_type.term_accession,
-                assay.technology_type.term_source.name,
+                assay.technology_type.term_source,
                 assay.technology_platform
             ]
         study_assays_df = study_assays_df.set_index('Study Assay File Name').T
@@ -897,7 +897,7 @@ def dump(isa_obj, output_path):
             for parameter in protocol.parameters:
                 parameters_names += parameter.parameter_name.name + ';'
                 parameters_accession_numbers += parameter.parameter_name.term_accession + ';'
-                parameters_source_refs += parameter.parameter_name.term_source.name + ';'
+                parameters_source_refs += parameter.parameter_name.term_source + ';'
             if len(protocol.parameters) > 0:
                 parameters_names = parameters_names[:-1]
                 parameters_accession_numbers = parameters_accession_numbers[:-1]
@@ -910,7 +910,7 @@ def dump(isa_obj, output_path):
                 component_names += component.name + ';'
                 component_types += component.component_type.name + ';'
                 component_types_accession_numbers += component.component_type.term_accession + ';'
-                component_types_source_refs += component.component_type.term_source.name + ';'
+                component_types_source_refs += component.component_type.term_source + ';'
             if len(protocol.components) > 0:
                 component_names = component_names[:-1]
                 component_types = component_types[:-1]
@@ -920,7 +920,7 @@ def dump(isa_obj, output_path):
                 protocol.name,
                 protocol.protocol_type.name,
                 protocol.protocol_type.term_accession,
-                protocol.protocol_type.term_source.name,
+                protocol.protocol_type.term_source,
                 protocol.description,
                 protocol.uri,
                 protocol.version,
@@ -1036,11 +1036,11 @@ def _set_charac_vals(prefix, characteristics, df, i):
         df.loc[i, obj_charac_key] = c.value
         if isinstance(c.value, int) or isinstance(c.value, float):
             df.loc[i, obj_charac_key + KEY_POSTFIX_UNIT] = c.unit.name
-            df.loc[i, obj_charac_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE] = c.unit.term_source.name
+            df.loc[i, obj_charac_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE] = c.unit.term_source
             df.loc[i, obj_charac_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMACCESSION] = c.unit.term_accession
         elif isinstance(c.value, OntologyAnnotation):
             df.loc[i, obj_charac_key] = c.value.name
-            df.loc[i, obj_charac_key + KEY_POSTFIX_TERMSOURCE] = c.value.term_source.name
+            df.loc[i, obj_charac_key + KEY_POSTFIX_TERMSOURCE] = c.value.term_source
             df.loc[i, obj_charac_key + KEY_POSTFIX_TERMACCESSION] = c.value.term_accession
 
 
@@ -1069,11 +1069,11 @@ def _set_factor_value_vals(prefix, factor_values, df, i):
         df.loc[i, obj_fv_key] = fv.value
         if isinstance(fv.value, int) or isinstance(fv.value, float):
             df.loc[i, obj_fv_key + KEY_POSTFIX_UNIT] = fv.unit.name
-            df.loc[i, obj_fv_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE] = fv.unit.term_source.name
+            df.loc[i, obj_fv_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE] = fv.unit.term_source
             df.loc[i, obj_fv_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMACCESSION] = fv.unit.term_accession
         elif isinstance(fv.value, OntologyAnnotation):
             df.loc[i, obj_fv_key] = fv.value.name
-            df.loc[i, obj_fv_key + KEY_POSTFIX_TERMSOURCE] = fv.value.term_source.name
+            df.loc[i, obj_fv_key + KEY_POSTFIX_TERMSOURCE] = fv.value.term_source
             df.loc[i, obj_fv_key + KEY_POSTFIX_TERMACCESSION] = fv.value.term_accession
 
 KEY_POSTFIX_DATE = '_date'
@@ -1233,7 +1233,7 @@ def write_assay_table_files(inv_obj, output_dir):
                                 df.loc[i, 'lextract'] = node.name
                                 compound_key += node.name + '/'
                                 df.loc[i, 'lextract_label'] = node.characteristics[0].value.name
-                                df.loc[i, 'lextract_label_termsource'] = node.characteristics[0].value.term_source.name
+                                df.loc[i, 'lextract_label_termsource'] = node.characteristics[0].value.term_source
                                 df.loc[i, 'lextract_label_termaccession'] = node.characteristics[0].value.term_accession
                             elif node.type == 'Extract Name':
                                 df.loc[i, 'extract'] = node.name
@@ -1262,11 +1262,11 @@ def write_assay_table_files(inv_obj, output_dir):
                                 if isinstance(pv.value, int) or isinstance(pv.value, float):
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit'] = pv.unit.name
-                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource'] = pv.unit.term_source.name
+                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource'] = pv.unit.term_source
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termaccession'] = pv.unit.term_accession
                                 elif isinstance(pv.value, OntologyAnnotation):
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value.name
-                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termsource'] = pv.value.term_source.name
+                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termsource'] = pv.value.term_source
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termaccession'] = pv.value.term_accession
                                 else:
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
@@ -1419,7 +1419,7 @@ def write_study_table_files(inv_obj, output_dir):
                         if isinstance(pv.value, int) or isinstance(pv.value, float):
                             df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
                             df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit'] = pv.unit.name
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource'] = pv.unit.term_source.name
+                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource'] = pv.unit.term_source
                             df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termaccession'] = pv.unit.term_accession
                         elif isinstance(pv.value, OntologyAnnotation):
                             df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value.name

@@ -734,6 +734,7 @@ def load(fp):
                         if '@id' in output_json.keys():
                             process.outputs.append(output_json['@id'])
                     assay.process_sequence.append(process)
+                study.assays.append(assay)
             logger.debug('End building Study object')
             investigation.studies.append(study)
         logger.debug('End building Studies objects')
@@ -864,9 +865,9 @@ def link_objects(investigation, report=None):
 
     for study in investigation.studies:
         # build links for SOURCES
-        for source in study.materials['sources']:
+        for source_or_sample in study.materials['sources'] + study.materials['samples']:
             # link source and samples characteristics to categories
-            _link_chars_to_cats(chars=source.characteristics, cats=study.characteristic_categories, units=study.units, report=report)
+            _link_chars_to_cats(chars=source_or_sample.characteristics, cats=study.characteristic_categories, units=study.units, report=report)
         # build links for SAMPLES
         for sample in study.materials['samples']:
             _link_chars_to_cats(chars=sample.characteristics, cats=study.characteristic_categories, units=study.units, report=report)
@@ -911,6 +912,7 @@ def link_objects(investigation, report=None):
             _link_pvs_to_params(process=process, units=study.units, report=report)
         # build prev-next process links
         for assay in study.assays:
+            # first link assay-level samples back to study-level samples
             node_list = study.materials['samples'] + assay.materials['other_material'] + assay.data_files
             for material in assay.materials['other_material']:
                 _link_chars_to_cats(chars=material.characteristics, cats=study.characteristic_categories,
