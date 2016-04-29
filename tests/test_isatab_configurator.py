@@ -42,5 +42,5 @@ class ISATabConfiguratorTest(TestCase):
         from isatools.io import isatab_configurator as configurator
         config_dict = configurator.load(self._config_dir)
         self.assertEqual(len(config_dict), 30)
-        self.assertEqual(config_dict[('metagenome sequencing', 'nucleotide sequencing')].isatab_configuration[0]
-                         .table_name,'metagenome_seq')
+        self.assertEqual(config_dict[('metagenome sequencing', 'nucleotide sequencing')]['measurement-type'],
+                         'metagenome sequencing')
