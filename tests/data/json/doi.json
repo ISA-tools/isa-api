@@ -10,7 +10,19 @@
     "ontologySourceReferences": [],
     "people": [],
     "publicReleaseDate": "",
-    "publications": [],
+    "publications": [
+        {
+            "authorList": "",
+            "doi": "10.1371/journal.pone.0003042",
+            "pubMedID": "",
+            "status": {
+                "annotationValue": "",
+                "termAccession": "",
+                "termSource": ""
+            },
+            "title": ""
+        }
+    ],
     "studies": [
         {
             "@id": "",

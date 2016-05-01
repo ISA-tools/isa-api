@@ -29,7 +29,24 @@
                         "termAccession": "",
                         "termSource": ""
                     },
-                    "processSequence": [],
+                    "processSequence": [
+                        {
+                            "@id": "",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": ""
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#data/a_file.dat"
+                                }
+                            ],
+                            "outputs": [],
+                            "parameterValues": [],
+                            "performer": ""
+                        }
+                    ],
                     "technologyPlatform": "",
                     "technologyType": {
                         "annotationValue": "",

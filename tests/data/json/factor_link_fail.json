@@ -29,7 +29,24 @@
                         "termAccession": "",
                         "termSource": ""
                     },
-                    "processSequence": [],
+                    "processSequence": [
+                        {
+                            "@id": "",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": ""
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/1"
+                                }
+                            ],
+                            "outputs": [],
+                            "parameterValues": [],
+                            "performer": ""
+                        }
+                    ],
                     "technologyPlatform": "",
                     "technologyType": {
                         "annotationValue": "",
@@ -46,7 +63,26 @@
             "identifier": "",
             "materials": {
                 "otherMaterials": [],
-                "samples": [],
+                "samples": [
+                    {
+                        "@id": "#sample/1",
+                        "name": "",
+                        "characteristics": [],
+                        "derivesFrom": [],
+                        "factorValues": [
+                            {
+                                  "category": {
+                                      "@id": "#factor/1"
+                                  },
+                                  "value": {
+                                      "annotationValue": "",
+                                      "termAccession": "",
+                                      "termSource": ""
+                                  }
+                              }
+                        ]
+                    }
+                ],
                 "sources": []
             },
             "people": [],

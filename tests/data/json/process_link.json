@@ -29,7 +29,38 @@
                         "termAccession": "",
                         "termSource": ""
                     },
-                    "processSequence": [],
+                    "processSequence": [
+                        {
+                            "@id": "#process/1",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": ""
+                            },
+                            "nextProcess": {
+                                "@id": "#process/2"
+                            },
+                            "inputs": [],
+                            "outputs": [],
+                            "parameterValues": [],
+                            "performer": ""
+                        },
+                        {
+                            "@id": "#process/2",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": ""
+                            },
+                            "inputs": [],
+                            "outputs": [],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/1"
+                            }
+                        }
+                    ],
                     "technologyPlatform": "",
                     "technologyType": {
                         "annotationValue": "",
