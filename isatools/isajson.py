@@ -2,6 +2,9 @@ from isatools.model.v1 import *
 import json
 import logging
 from networkx import DiGraph
+from jsonschema import Draft4Validator, RefResolver
+import os
+from isatools.validate.utils import check_iso8601_date, check_encoding, check_data_files, check_pubmed_id, check_doi, is_utf8, ValidationReport, ValidationError
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
@@ -628,3 +631,219 @@ def load(fp):
         logger.debug('End building Studies objects')
         logger.debug('End building Investigation object')
     return investigation
+
+def validate_isajson(isa_json, report):
+    """Validate JSON"""
+
+    def _check_isa_schemas(isa_json):
+        investigation_schema_path = os.path.join(
+            os.path.dirname(__file__) + '/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json')
+        investigation_schema = json.load(open(investigation_schema_path))
+        resolver = RefResolver('file://' + investigation_schema_path, investigation_schema)
+        validator = Draft4Validator(investigation_schema, resolver=resolver)
+        validator.validate(isa_json)
+
+    def _check_filenames(isa_json, report):
+        for study in isa_json['studies']:
+            if study['filename'] is '':
+                report.warn("A study filename is missing")
+            for assay in study['assays']:
+                if assay['filename'] is '':
+                    report.warn("An assay filename is missing")
+
+    def _check_ontology_sources(isa_json, report):
+        ontology_source_refs = ['']  # initalize with empty string as the default none ref
+        for ontology_source in isa_json['ontologySourceReferences']:
+            if ontology_source['name'] is '':
+                report.warn("An Ontology Source Reference is missing Term Source Name, so can't be referenced")
+            else:
+                ontology_source_refs.append(ontology_source['name'])
+        return ontology_source_refs
+
+    def _check_date_formats(isa_json, report):
+        check_iso8601_date(isa_json['publicReleaseDate'], report)
+        check_iso8601_date(isa_json['submissionDate'], report)
+        for study in isa_json['studies']:
+            check_iso8601_date(study['publicReleaseDate'], report)
+            check_iso8601_date(study['submissionDate'], report)
+            for process in study['processSequence']:
+                check_iso8601_date(process['date'], report)
+
+    def _check_term_source_refs(isa_json, ontology_source_refs, report):
+        # get all matching annotation patterns by traversing the whole json structure
+        if isinstance(isa_json, dict):
+            if set(isa_json.keys()) == {'annotationValue', 'termAccession', 'termSource'} or \
+                            set(isa_json.keys()) == {'@id', 'annotationValue', 'termAccession', 'termSource'}:
+                if isa_json['termSource'] not in ontology_source_refs:
+                    report.warn("Annotation {0} references {1} term source that has not been declared"
+                                .format(isa_json['annotationValue'], isa_json['termSource']))
+            for i in isa_json.keys():
+                _check_term_source_refs(isa_json[i], ontology_source_refs, report)
+        elif isinstance(isa_json, list):
+            for j in isa_json:
+                _check_term_source_refs(j, ontology_source_refs, report)
+
+    def _check_pubmed_ids(isa_json, report):
+        for ipub in isa_json['publications']:
+            check_pubmed_id(ipub['pubMedID'], report)
+        for study in isa_json['studies']:
+            for spub in study['publications']:
+                check_pubmed_id(spub['pubMedID'], report)
+
+    def _check_dois(isa_json, report):
+        for ipub in isa_json['publications']:
+            check_doi(ipub['doi'], report)
+        for study in isa_json['studies']:
+            for spub in study['publications']:
+                check_doi(spub['doi'], report)
+
+    def _check_protocol_names(isa_json, report):
+        protocol_refs = ['']  # initalize with empty string as the default none ref
+        for study in isa_json['studies']:
+            for protocol in study['protocols']:
+                if protocol['name'] is '':
+                    report.warn("A Protocol is missing Protocol Name, so can't be referenced in ISA-tab")
+                else:
+                    protocol_refs.append(protocol['name'])
+        return protocol_refs
+
+    def _check_protocol_parameter_names(isa_json, report):
+        protocol_parameter_refs = ['']  # initalize with empty string as the default none ref
+        for study in isa_json['studies']:
+            for protocol in study['protocols']:
+                for parameter in protocol['parameters']:
+                    if parameter['parameterName'] is '':
+                        report.warn("A Protocol Parameter is missing Name, so can't be referenced in ISA-tab")
+                    else:
+                        protocol_parameter_refs.append(parameter['parameterName'])
+        return protocol_parameter_refs
+
+    def _check_study_factor_names(isa_json, report):
+        study_factor_refs = ['']  # initalize with empty string as the default none ref
+        for study in isa_json['studies']:
+            for factor in study['factors']:
+                    if factor['factorName'] is '':
+                        report.warn("A Study Factor is missing Name, so can't be referenced in ISA-tab")
+                    else:
+                        study_factor_refs.append(study_factor_refs)
+        return study_factor_refs
+
+    def _collect_object_refs(isa_json, object_refs):
+        # get all matching annotation patterns by traversing the whole json structure
+        if isinstance(isa_json, dict):
+            if '@id' in set(isa_json.keys()) and len(set(isa_json.keys())) > 1:
+                if isa_json['@id'] not in object_refs:
+                    object_refs.append(isa_json['@id'])
+            for i in isa_json.keys():
+                _collect_object_refs(isa_json[i], object_refs)
+        elif isinstance(isa_json, list):
+            for j in isa_json:
+                _collect_object_refs(j, object_refs)
+        return object_refs
+
+    def _collect_id_refs(isa_json, id_refs):
+        # get all matching annotation patterns by traversing the whole json structure
+        if isinstance(isa_json, dict):
+            if '@id' in set(isa_json.keys()) and len(set(isa_json.keys())) == 1:
+                if isa_json['@id'] not in id_refs:
+                    id_refs.append(isa_json['@id'])
+            for i in isa_json.keys():
+                _collect_id_refs(isa_json[i], id_refs)
+        elif isinstance(isa_json, list):
+            for j in isa_json:
+                _collect_id_refs(j, id_refs)
+        return id_refs
+
+    def _collect_term_source_refs(isa_json, id_refs):
+        # get all matching annotation patterns by traversing the whole json structure
+        if isinstance(isa_json, dict):
+            if 'termSource' in set(isa_json.keys()) and len(set(isa_json.keys())) == 3:
+                if isa_json['termSource'] not in id_refs:
+                    id_refs.append(isa_json['termSource'])
+            for i in isa_json.keys():
+                _collect_term_source_refs(isa_json[i], id_refs)
+        elif isinstance(isa_json, list):
+            for j in isa_json:
+                _collect_term_source_refs(j, id_refs)
+        return id_refs
+
+    def _check_object_refs(isa_json, object_refs, report):
+        # get all matching id patterns by traversing the whole json structure
+        if isinstance(isa_json, dict):
+            if '@id' in set(isa_json.keys()) and len(set(isa_json.keys())) == 1:
+                if isa_json['@id'] not in object_refs and isa_json['@id'] != '#parameter/Array_Design_REF':
+                    report.error("Object reference {} not declared anywhere".format(isa_json['@id']))
+            for i in isa_json.keys():
+                _check_object_refs(isa_json=isa_json[i], object_refs=object_refs, report=report)
+        elif isinstance(isa_json, list):
+            for j in isa_json:
+                _check_object_refs(j, object_refs, report)
+        return object_refs
+
+    def _check_object_usage(section, objects_declared, id_refs, report):
+        for obj_ref in objects_declared:
+            if obj_ref not in id_refs:
+                report.warn("Object reference {0} not used anywhere in {1}".format(obj_ref, section))
+
+    try:  # if can load the JSON (if the JSON is well-formed already), validate the JSON against our schemas
+        _check_isa_schemas(isa_json)
+        # if the JSON is validated against ISA JSON, let's start checking content
+        _check_filenames(isa_json=isa_json, report=report)  # check if tab filenames are present for converting back
+        ontology_source_refs = _check_ontology_sources(isa_json=isa_json, report=report)  # check if ontology sources are declared with enough info
+        _check_date_formats(isa_json=isa_json, report=report)  # check if dates are all ISO8601 compliant
+        _check_term_source_refs(isa_json=isa_json, ontology_source_refs=ontology_source_refs, report=report)  # check if ontology refs refer to ontology source
+        _check_pubmed_ids(isa_json=isa_json, report=report)
+        _check_dois(isa_json=isa_json, report=report)
+        _check_protocol_names(isa_json=isa_json, report=report)
+        _check_protocol_parameter_names(isa_json=isa_json, report=report)
+        _check_study_factor_names(isa_json=isa_json, report=report)
+        _check_object_refs(isa_json=isa_json, object_refs=_collect_object_refs(isa_json=isa_json, object_refs=list()), report=report)
+
+        # check protocols declared are used
+        for i, study in enumerate(isa_json['studies']):
+            prot_obj_ids = list()
+            for protocol in study['protocols']:
+                prot_obj_ids.append(protocol['@id'])
+            study_id = "study loc {} (study location autocalculated by validator - Study ID in JSON not present)".format(i+1)
+            if study['identifier'] != '':
+                study_id = study['identifier']
+            _check_object_usage(section=study_id, objects_declared=prot_obj_ids, id_refs=_collect_id_refs(isa_json=isa_json, id_refs=list()), report=report)
+
+        # check study factors declared are used
+        for i, study in enumerate(isa_json['studies']):
+            factor_obj_ids = list()
+            for factor in study['factors']:
+                factor_obj_ids.append(factor['@id'])
+            study_id = "study loc {} (study location autocalculated by validator - Study ID in JSON not present)".format(i+1)
+            if study['identifier'] != '':
+                study_id = study['identifier']
+            _check_object_usage(section=study_id, objects_declared=factor_obj_ids, id_refs=_collect_id_refs(isa_json=isa_json, id_refs=list()), report=report)
+        ontology_source_refs = [ref['name'] for ref in isa_json['ontologySourceReferences']]
+        _check_object_usage(section='investigation (term source check)', objects_declared=ontology_source_refs, id_refs=_collect_term_source_refs(isa_json=isa_json, id_refs=list()), report=report)
+
+        dir_context = os.path.dirname(report.file_name)
+        for study in isa_json['studies']:
+            for assay in study['assays']:
+                check_data_files(data_files=assay['dataFiles'], dir_context=dir_context, report=report)
+    except ValidationError as isa_schema_validation_error:
+        raise isa_schema_validation_error
+
+
+def validate(fp):  # default reporting
+    """Validate JSON file"""
+    report = ValidationReport(fp.name)
+    check_encoding(fp, report=report)
+    if not is_utf8(fp):
+        report.fatal("File is not UTF-8 encoded, not proceeding with json.load as it will fail")
+    else:
+        try:  # first, try open the file as a JSON
+            try:
+                isa_json = json.load(fp=fp)
+                validate_isajson(isa_json, report)
+            except ValueError as json_load_error:
+                report.fatal("There was an error when trying to parse the JSON")
+                raise json_load_error
+        except SystemError as system_error:
+            report.fatal("There was a general system error")
+            raise system_error
+    return report
