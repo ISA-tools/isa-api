@@ -696,17 +696,18 @@ def load(fp):
                     technology_platform=assay_json['technologyPlatform'],
                     filename=assay_json['filename']
                 )
-                for assay_unit_json in assay_json['unitCategories']:
-                    unit = load_ontology_annotation(assay_unit_json)
-                    # assay.units.append(unit)
+                # for assay_unit_json in assay_json['unitCategories']:
+                #     unit = load_ontology_annotation(assay_unit_json)
+                #     assay.units.append(unit)
                 for data_file in load_data_files(assay_json['dataFiles']):
                     assay.data_files.append(data_file)
                 for sample_json in assay_json['materials']['samples']:
                     sample = sample_json['@id']
                     assay.materials['samples'].append(sample)
                 for assay_characteristics_category_json in assay_json['characteristicCategories']:
-                    characteristic_category = load_ontology_annotation(assay_characteristics_category_json)
-                    study.characteristic_categories.append(characteristic_category)  # PUT AT STUDY LEVEL
+                    assay_characteristics_category_json['characteristicType']['@id'] = assay_characteristics_category_json['@id']
+                    characteristic_category = load_ontology_annotation(assay_characteristics_category_json['characteristicType'])
+                    study.characteristic_categories.append(characteristic_category)
                 for other_material_json in assay_json['materials']['otherMaterials']:
                     logger.debug('Build Material object')  # need to detect material types
                     material_name = other_material_json['name']
@@ -739,9 +740,13 @@ def load(fp):
             investigation.studies.append(study)
         logger.debug('End building Studies objects')
         logger.debug('End building Investigation object')
-
         # now try and build links
-        # link_objects(investigation)
+        link_objects(investigation=investigation)
+        # one more pass to build graphs
+        for study in investigation.studies:
+            study.build_graph()
+            for assay in study.assays:
+                assay.build_graph()
     return investigation
 
 
@@ -785,6 +790,11 @@ def link_objects(investigation, report=None):
             protocol = [o for o in study.protocols if o.id == process.executes_protocol.id][0]  # just assume it works
             if parameter_value.category is not None:
                 obj_list = [o for o in protocol.parameters if o.id == parameter_value.category]
+                if parameter_value.category == '#parameter/Array_Design_REF' and len(obj_list) == 0:
+                    pv = ProtocolParameter(id_='#parameter/Array_Design_REF',
+                                           parameter_name=OntologyAnnotation(name="Array Design REF"))
+                    protocol.parameters.append(pv)
+                    obj_list.append(pv)
                 if len(obj_list) > 1:
                     if report is not None:
                         report.error(
@@ -860,7 +870,6 @@ def link_objects(investigation, report=None):
                     "A protocol '{}' has been referenced that has not been declared at the Study level".format(
                         process.executes_protocol))
         else:
-            print(obj, process.executes_protocol)
             obj = obj_list[0]
             process.executes_protocol = obj
 

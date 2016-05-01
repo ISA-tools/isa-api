@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def _read_investigation_file(fp, report):
+def _read_investigation_file(fp, report=None):
     """Parses investigation file and returns a dictionary of dataframes of each section"""
 
     def _peek(f):
@@ -897,7 +897,10 @@ def dump(isa_obj, output_path):
             for parameter in protocol.parameters:
                 parameters_names += parameter.parameter_name.name + ';'
                 parameters_accession_numbers += parameter.parameter_name.term_accession + ';'
-                parameters_source_refs += parameter.parameter_name.term_source + ';'
+                if parameter.parameter_name.term_source == '':
+                    parameters_source_refs += parameter.parameter_name.term_source + ';'
+                elif isinstance(parameter.parameter_name.term_source, OntologySourceReference):
+                    parameters_source_refs += parameter.parameter_name.term_source.name + ';'
             if len(protocol.parameters) > 0:
                 parameters_names = parameters_names[:-1]
                 parameters_accession_numbers = parameters_accession_numbers[:-1]
@@ -1013,6 +1016,7 @@ def _charac_label(charac_type_name): return 'Characteristics[' + charac_type_nam
 
 def _set_charac_cols(prefix, characteristics, cols, col_map):
     for c in sorted(characteristics, key=lambda x: id(x.category)):
+        if c.category.name == '': print(c.value.name)
         obj_charac_key = prefix + '_char[' + c.category.name + ']'
         cols.append(obj_charac_key)
         col_map[obj_charac_key] = _charac_label(c.category.name)
@@ -1045,10 +1049,11 @@ def _set_charac_vals(prefix, characteristics, df, i):
 
 
 def _set_factor_value_cols(prefix, factor_values, cols, col_map):
-    for fv in sorted(factor_values, key=lambda x: id(x.factor_name)):
-        obj_fv_key = prefix + '_fv[' + fv.factor_name.name + ']'
+    for fv in sorted(factor_values, key=lambda x: id(x.category.factor_type.name)):
+        factor_name = fv.category.factor_type.name
+        obj_fv_key = prefix + '_fv[' + factor_name + ']'
         cols.append(obj_fv_key)
-        col_map[obj_fv_key] = _fv_label(fv.factor_name.name)
+        col_map[obj_fv_key] = _fv_label(factor_name)
         if isinstance(fv.value, int) or isinstance(fv.value, float):
             cols.extend((obj_fv_key + KEY_POSTFIX_UNIT,
                          obj_fv_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE,
@@ -1064,8 +1069,9 @@ def _set_factor_value_cols(prefix, factor_values, cols, col_map):
 
 
 def _set_factor_value_vals(prefix, factor_values, df, i):
-    for fv in sorted(factor_values, key=lambda x: id(x.factor_name)):
-        obj_fv_key = prefix + '_fv[' + fv.factor_name.name + ']'
+    for fv in sorted(factor_values, key=lambda x: id(x.category.factor_type.name)):
+        factor_name = fv.category.factor_type.name
+        obj_fv_key = prefix + '_fv[' + factor_name + ']'
         df.loc[i, obj_fv_key] = fv.value
         if isinstance(fv.value, int) or isinstance(fv.value, float):
             df.loc[i, obj_fv_key + KEY_POSTFIX_UNIT] = fv.unit.name
@@ -1315,6 +1321,8 @@ def write_assay_table_files(inv_obj, output_dir):
                     cols[i] = col_map[col]
                     if col_map[col] == 'Characteristics[Material Type]':
                         cols[i] = 'Material Type'
+                    elif col_map[col] == 'Parameter Value[Array Design REF]':
+                        cols[i] = 'Array Design REF'
                     if data_regex.match(col) is not None:
                         if data_regex.findall(col)[0] == 'Raw Data File':
                             if assay_obj.technology_type.name == 'DNA microarray':
@@ -1343,6 +1351,7 @@ def write_study_table_files(inv_obj, output_dir):
     if not isinstance(inv_obj, Investigation):
         raise NotImplementedError
     for study_obj in inv_obj.studies:
+        study_obj.build_graph()
         if study_obj.graph is None: break
         cols = list()
         protrefcount = 0
