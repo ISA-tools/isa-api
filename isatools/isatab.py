@@ -1208,6 +1208,9 @@ def write_assay_table_files(inv_obj, output_dir):
                             else:
                                 cols.append('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']',)
                                 col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = 'Parameter Value[' + pv.category.parameter_name.name + ']'
+                        # special case of 'nucleic acid sequencing' technology type
+                        if node.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
+                            node.additional_properties['Assay Name'] = node.name
                         for prop in reversed(sorted(node.additional_properties.keys())):
                             cols.append('protocol[' + str(protrefcount) + ']_prop[' + prop + ']')
                             col_map['protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = prop
@@ -1364,7 +1367,6 @@ def write_study_table_files(inv_obj, output_dir):
                 col_map['source'] = 'Source Name'
                 _set_charac_cols('source', node.characteristics, cols, col_map)
             elif isinstance(node, Process):
-
                 cols.append('protocol[' + str(protrefcount) + ']')
                 col_map['protocol[' + str(protrefcount) + ']'] = 'Protocol REF'
                 if node.date is not None:
@@ -1393,6 +1395,8 @@ def write_study_table_files(inv_obj, output_dir):
                     else:
                         cols.append('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']')
                         col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = 'Parameter Value[' + pv.category.parameter_name.name + ']'
+                if node.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
+                    col_map['protocol[' + str(protrefcount) + ']_name[Assay Name]'] = 'Assay Name'
                 if node.executes_protocol.name not in protnames.keys():
                     protnames[node.executes_protocol.name] = protrefcount
                     protrefcount += 1
@@ -1436,6 +1440,8 @@ def write_study_table_files(inv_obj, output_dir):
                             df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termaccession'] = pv.value.term_accession
                         else:
                             df.loc[i, i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value
+                    if node.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
+                        df.loc[i, 'protocol[' + str(protrefcount) + ']_name[Assay Name]'] = node.name
                 elif isinstance(node, Sample):
                     df.loc[i, 'sample'] = node.name
                     _set_charac_vals('sample', node.characteristics, df, i)
