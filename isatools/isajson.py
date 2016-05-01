@@ -432,7 +432,7 @@ def load_protocol(protocol_json):
             if 'componentName' in component_keys:
                 component.name = component_json['componentName']
             if 'componentType' in component_keys:
-                component.component_type = component_json['componentType']
+                component.component_type = load_ontology_annotation(component_json['componentType'])
             protocol.components.append(component)
     return protocol
 
@@ -860,6 +860,7 @@ def link_objects(investigation, report=None):
                     "A protocol '{}' has been referenced that has not been declared at the Study level".format(
                         process.executes_protocol))
         else:
+            print(obj, process.executes_protocol)
             obj = obj_list[0]
             process.executes_protocol = obj
 
