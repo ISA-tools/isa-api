@@ -15,59 +15,21 @@ import warnings as warnings_
 from lxml import etree as etree_
 import os
 
-configs_dict = dict()
+config_dict = dict()
 
 
 def load(config_dir):
-    global configs_dict
+    global config_dict
     for file in os.listdir(config_dir):
         if file.endswith(".xml"):
             try:
                 config_obj = parse(inFileName=os.path.join(config_dir, file), silence=True)
-                config = config_obj.get_isatab_configuration()[0]
-                measurement_type = config.get_measurement().get_term_label()
-                technology_type = config.get_technology().get_term_label()
-                config_fields = dict()
-                for field in config.field:
-                    config_field = {
-                        'header': field.header,
-                        'is-required': field.is_required,
-                        'data-type': field.data_type,
-                        'is-multiple-value': field.is_multiple_value
-                    }
-                    if field.section is not None:
-                        config_field['section'] = field.section
-                    if field.data_type == 'List' and field.list_values is not None:
-                        config_field['list-values'] = field.list_values.split(',')
-                    if field.generated_value_template is not None:
-                        config_field['generated-value-template'] = field.generated_value_template.strip()
-                    config_fields[field.pos] = config_field
-                for protocol_field in config.protocol_field:
-                    config_field = {
-                        'protocol-type': protocol_field.protocol_type
-                    }
-                    config_fields[protocol_field.pos] = config_field
-                for structured_field in config.structured_field:
-                    if structured_field.name == 'characteristics':
-                        config_field = {
-                            'allow-extra-characteristics': True
-                        }
-                        config_fields[structured_field.pos] = config_field
-                    elif structured_field.name == 'factors':
-                        config_field = {
-                            'allow-extra-factors': True
-                        }
-                        config_fields[structured_field.pos] = config_field
-                from collections import OrderedDict
-                sorted_fields = OrderedDict(sorted(config_fields.items(), key=lambda x: x[0]))
-                configs_dict[(measurement_type, technology_type)] = {
-                    'measurement-type': measurement_type,
-                    'technology-type': technology_type,
-                    'fields': list(sorted_fields.values())
-                }
+                measurement_type = config_obj.get_isatab_configuration()[0].get_measurement().get_term_label()
+                technology_type = config_obj.get_isatab_configuration()[0].get_technology().get_term_label()
+                config_dict[(measurement_type, technology_type)] = config_obj
             except GDSParseError as parse_error:
                 print(parse_error)
-    return configs_dict
+    return config_dict
 
 
 def get_config(measurement_type=None, technology_type=None):
