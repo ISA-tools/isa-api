@@ -852,3 +852,119 @@ def validate(fp):  # default reporting
             report.fatal("There was a general system error")
             raise system_error
     return report
+
+
+def walk(node, func):
+    if isinstance(node, dict):
+        items = node.items()
+        for item in items:
+            walk(item, func)
+    elif isinstance(node, list):
+        for item in node:
+            walk(item, func)
+    elif isinstance(node, tuple):
+        walk(node[1], func)
+    else:
+        func(node)
+
+
+def get_source_ids(study_json):
+    """Used for rule 1002"""
+    return [source['@id'] for source in study_json['materials']['sources']]
+
+
+def get_sample_ids(study_json):
+    """Used for rule 1003"""
+    return [sample['@id'] for sample in study_json['materials']['samples']]
+
+
+def get_material_ids(assay_json):
+    """Used for rule 1005"""
+    return [material['@id'] for material in assay_json['materials']['otherMaterial']]
+
+
+def get_data_file_ids(assay_json):
+    """Used for rule 1004"""
+    return [data_file['@id'] for data_file in assay_json['dataFiles']]
+
+
+def get_io_ids_in_process_sequence(process_sequence_json):
+    """Used for rules 1001-1005"""
+    for process in process_sequence_json:
+        return [i['@id'] for i in process['inputs']] + [o['@id'] for o in process['outputs']]
+
+
+def check_process_sequence_links(process_sequence_json):
+    """Used for rule 1006"""
+    process_ids = [process['@id'] for process in process_sequence_json]
+    for process in process_sequence_json:
+        try:
+            if process['previousProcess'] not in process_ids:
+                print("previousProcess link in process {} does not refer to another process in sequence"
+                      .format(process['@id']))
+        except KeyError:
+            pass
+        try:
+            if process['nextProcess'] not in process_ids:
+                print("nextProcess link in process {} does not refer to another process in sequence"
+                      .format(process['@id']))
+        except KeyError:
+            pass
+
+
+def get_study_protocol_ids(study_json):
+    """Used for rule 1007"""
+    return [protocol['@id'] for protocol in study_json['protocols']]
+
+
+def get_study_protocols_parameter_ids(study_json):
+    """Used for rule 1009"""
+    return [elem for iterabl in [[param['@id'] for param in protocol['parameters']] for protocol in
+                                 study_json['protocols']] for elem in iterabl]
+
+
+def get_characteristic_category_ids(study_or_assay_json):
+    """Used for rule 1013"""
+    return [category['@id'] for category in study_or_assay_json['characteristicCategories']]
+
+
+def get_characteristic_category_ids_in_study_materials(study_json):
+    """Used for rule 1013"""
+    return [elem for iterabl in
+            [[characteristic['category']['@id'] for characteristic in material['characteristics']] for material in
+             study_json['sources'] + study_json['samples']] for elem in iterabl]
+
+
+def get_characteristic_category_ids_in_assay_materials(assay_json):
+    """Used for rule 1013"""
+    return [elem for iterabl in
+            [[characteristic['category']['@id'] for characteristic in material['characteristics']] for material in
+              assay_json['samples'] + assay_json['otherMaterials']] for elem in iterabl]
+
+
+def get_study_factor_ids(study_json):
+    """Used for rule 1008"""
+    return [factor['@id'] for factor in study_json['factors']]
+
+
+def get_study_factor_ids_in_samples(study_json):
+    """Used for rule 1008"""
+    return [elem for iterabl in [[factor['category']['@id'] for factor in sample['factors']] for sample in
+                                 study_json['samples']] for elem in iterabl]
+
+
+def get_unit_category_ids(study_or_assay_json):
+    """Used for rule 1014"""
+    return [category['@id'] for category in study_or_assay_json['unitCategories']]
+
+
+def get_unit_category_ids_in_materials_and_processes(study_json):
+    """Used for rule 1014"""
+    return [x for x in [elem for iterabl in
+            [[characteristic['unit']['@id'] if 'unit' in characteristic.keys() else None for characteristic in material['characteristics']] for material in
+             study_json['materials']['sources'] + study_json['materials']['samples']] for elem in iterabl] + [elem for iterabl in
+                [[factor_value['unit']['@id'] if 'unit' in factor_value.keys() else None for factor_value in material['factorValues']] for material in
+                 study_json['materials']['samples']] for elem in iterabl] + [elem for iterabl in [[parameter_value['unit']['@id'] for
+                   parameter_value in process['parameterValues']] for process in study_json['processSequence']] for
+                                                                elem in iterabl] if x is not None]
+
