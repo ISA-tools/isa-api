@@ -880,7 +880,7 @@ def get_sample_ids(study_json):
 
 def get_material_ids(assay_json):
     """Used for rule 1005"""
-    return [material['@id'] for material in assay_json['materials']['otherMaterial']]
+    return [material['@id'] for material in assay_json['materials']['otherMaterials']]
 
 
 def get_data_file_ids(assay_json):
@@ -888,10 +888,33 @@ def get_data_file_ids(assay_json):
     return [data_file['@id'] for data_file in assay_json['dataFiles']]
 
 
-def get_io_ids_in_process_sequence(process_sequence_json):
+def get_io_ids_in_process_sequence(study_or_assay_json):
     """Used for rules 1001-1005"""
-    for process in process_sequence_json:
-        return [i['@id'] for i in process['inputs']] + [o['@id'] for o in process['outputs']]
+    process_sequence = study_or_assay_json['processSequence']
+    return [elem for iterabl in [[i['@id'] for i in process['inputs']] + [o['@id'] for o in process['outputs']] for process in
+                                 process_sequence] for elem in iterabl]
+
+
+def check_material_ids_declared_used(study_json, id_collector_func):
+    """Used for rules 1001-1005
+
+    e.g. check_ids_used(study, get_source_ids)  # study is some json, get_source_ids is the collector function
+    """
+    source_ids = id_collector_func(study_json)
+    io_ids_in_process_sequence = get_io_ids_in_process_sequence(study_json)
+    is_source_ids_used = set(source_ids).issubset(set(io_ids_in_process_sequence))
+    if not is_source_ids_used:
+        print("Not all material IDs in {} used by inputs/outputs {}".format(source_ids, io_ids_in_process_sequence))
+
+
+def check_material_ids_not_declared_used(study_json):
+    node_ids = get_source_ids(study_json) + get_sample_ids(study_json) + get_material_ids(study_json) + \
+               get_data_file_ids(study_json)
+    io_ids_in_process_sequence = get_io_ids_in_process_sequence(study_json)
+    if len(set(io_ids_in_process_sequence)) - len(set(node_ids)) > 0:
+        diff = set(io_ids_in_process_sequence) - set(node_ids)
+        print("There are some inputs/outputs IDs {} not found in sources, samples, materials or data files declared"
+              .format(list(diff)))
 
 
 def check_process_sequence_links(process_sequence_json):
@@ -899,15 +922,15 @@ def check_process_sequence_links(process_sequence_json):
     process_ids = [process['@id'] for process in process_sequence_json]
     for process in process_sequence_json:
         try:
-            if process['previousProcess'] not in process_ids:
-                print("previousProcess link in process {} does not refer to another process in sequence"
-                      .format(process['@id']))
+            if process['previousProcess']['@id'] not in process_ids:
+                print("previousProcess link {} in process {} does not refer to another process in sequence"
+                      .format(process['previousProcess']['@id'], process['@id']))
         except KeyError:
             pass
         try:
-            if process['nextProcess'] not in process_ids:
-                print("nextProcess link in process {} does not refer to another process in sequence"
-                      .format(process['@id']))
+            if process['nextProcess']['@id'] not in process_ids:
+                print("nextProcess link {} in process {} does not refer to another process in sequence"
+                      .format(process['nextProcess']['@id'], process['@id']))
         except KeyError:
             pass
 
@@ -932,14 +955,14 @@ def get_characteristic_category_ids_in_study_materials(study_json):
     """Used for rule 1013"""
     return [elem for iterabl in
             [[characteristic['category']['@id'] for characteristic in material['characteristics']] for material in
-             study_json['sources'] + study_json['samples']] for elem in iterabl]
+             study_json['materials']['sources'] + study_json['materials']['samples']] for elem in iterabl]
 
 
 def get_characteristic_category_ids_in_assay_materials(assay_json):
     """Used for rule 1013"""
-    return [elem for iterabl in
-            [[characteristic['category']['@id'] for characteristic in material['characteristics']] for material in
-              assay_json['samples'] + assay_json['otherMaterials']] for elem in iterabl]
+    return [elem for iterabl in [[characteristic['category']['@id']  for characteristic in material['characteristics']]
+                                 if 'characteristics' in material.keys() else [] for material in
+              assay_json['materials']['samples'] + assay_json['materials']['otherMaterials']] for elem in iterabl]
 
 
 def get_study_factor_ids(study_json):
@@ -947,10 +970,10 @@ def get_study_factor_ids(study_json):
     return [factor['@id'] for factor in study_json['factors']]
 
 
-def get_study_factor_ids_in_samples(study_json):
+def get_study_factor_ids_in_sample_factor_values(study_json):
     """Used for rule 1008"""
-    return [elem for iterabl in [[factor['category']['@id'] for factor in sample['factors']] for sample in
-                                 study_json['samples']] for elem in iterabl]
+    return [elem for iterabl in [[factor['category']['@id'] for factor in sample['factorValues']] for sample in
+                                 study_json['materials']['samples']] for elem in iterabl]
 
 
 def get_unit_category_ids(study_or_assay_json):
