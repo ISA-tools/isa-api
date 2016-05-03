@@ -4,7 +4,8 @@ import logging
 from networkx import DiGraph
 from jsonschema import Draft4Validator, RefResolver
 import os
-from isatools.validate.utils import check_iso8601_date, check_encoding, check_data_files, check_pubmed_id, check_doi, is_utf8, ValidationReport, ValidationError
+from isatools.validate.utils import check_iso8601_date, check_encoding, check_data_files, check_pubmed_id, check_doi, \
+    is_utf8, ValidationReport, ValidationError, isajson_load, isajson_link_objects
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
@@ -825,6 +826,10 @@ def validate_isajson(isa_json, report):
         for study in isa_json['studies']:
             for assay in study['assays']:
                 check_data_files(data_files=assay['dataFiles'], dir_context=dir_context, report=report)
+        i = isajson_load(open(report.file_name))  # load with alternative implementation to enable link checking
+        isajson_link_objects(investigation=i, report=report)
+        # i = load(open(report.file_name))  # load with fully featured working isajson.load()
+        # check_against_config(i.studies)
     except ValidationError as isa_schema_validation_error:
         raise isa_schema_validation_error
 
