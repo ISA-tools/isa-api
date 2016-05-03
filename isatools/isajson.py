@@ -4,13 +4,636 @@ import logging
 from networkx import DiGraph
 from jsonschema import Draft4Validator, RefResolver
 import os
-from isatools.validate.utils import check_iso8601_date, check_encoding, check_data_files, check_pubmed_id, check_doi, is_utf8, ValidationReport, ValidationError
+from isatools.validate.utils import check_iso8601_date, check_encoding, check_data_files, check_pubmed_id, check_doi, \
+    is_utf8, ValidationReport, ValidationError, isajson_load, isajson_link_objects
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 
-def validates(isa_json, report):
+def load(fp):
+
+    def _build_assay_graph(process_sequence=list()):
+        G = DiGraph()
+        for process in process_sequence:
+            if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
+                if len(process.outputs) > 0:
+                    for output in [n for n in process.outputs if not isinstance(n, DataFile)]:
+                        G.add_edge(process, output)
+                else:  # otherwise just connect the process to the next one
+                    G.add_edge(process, process.next_process)
+            if process.prev_process is not None or len(process.inputs) > 0:
+                if len(process.inputs) > 0:
+                    for input_ in process.inputs:
+                        G.add_edge(input_, process)
+                else:
+                    G.add_edge(process.prev_process, process)
+        return G
+
+    investigation = None
+    logger.info('Opening file %s', fp)
+    isajson = json.load(fp)
+    if isajson is None:
+        logger.error('There was a problem opening the JSON file')
+    else:
+        logger.debug('Start building the Investigation object')
+        investigation = Investigation(
+            identifier=isajson['identifier'],
+            title=isajson['title'],
+            description=isajson['description'],
+            submission_date=isajson['submissionDate'],
+            public_release_date=isajson['publicReleaseDate']
+        )
+        for comment_json in isajson['comments']:
+            comment = Comment(
+                name=comment_json['name'],
+                value=comment_json['value'],
+            )
+            investigation.comments.append(comment)
+        logger.debug('Populate the ontology source references')
+        term_source_dict = {'': None}
+        for ontologySourceReference_json in isajson['ontologySourceReferences']:
+            logger.debug('Build Ontology Source Reference object')
+            ontology_source_reference = OntologySourceReference(
+                name=ontologySourceReference_json['name'],
+                file=ontologySourceReference_json['file'],
+                version=ontologySourceReference_json['version'],
+                description=ontologySourceReference_json['description']
+            )
+            term_source_dict[ontology_source_reference.name] = ontology_source_reference
+            investigation.ontology_source_references.append(ontology_source_reference)
+        for publication_json in isajson['publications']:
+            logger.debug('Build Investigation Publication object')
+            publication = Publication(
+                pubmed_id=publication_json['pubMedID'],
+                doi=publication_json['doi'],
+                author_list=publication_json['authorList'],
+                title=publication_json['title'],
+                status=OntologyAnnotation(
+                    name=publication_json['status']['annotationValue'],
+                    term_accession=publication_json['status']['termAccession'],
+                    term_source=term_source_dict[publication_json['status']['termSource']]
+                )
+            )
+            try:
+                for comment_json in publication_json['comments']:
+                    comment = Comment(
+                        name=comment_json['name'],
+                        value=comment_json['value']
+                    )
+                    publication.comments.append(comment)
+            except KeyError:
+                pass
+            investigation.publications.append(publication)
+        for person_json in isajson['people']:
+            logger.debug('Build Investigation Person object')
+            person = Person(
+                last_name=person_json['lastName'],
+                first_name=person_json['firstName'],
+                mid_initials=person_json['midInitials'],
+                email=person_json['email'],
+                phone=person_json['phone'],
+                fax=person_json['fax'],
+                address=person_json['address'],
+                affiliation=person_json['affiliation'],
+            )
+            for role_json in person_json['roles']:
+                role = OntologyAnnotation(
+                    name=role_json['annotationValue'],
+                    term_accession=role_json['termAccession'],
+                    term_source=term_source_dict[role_json['termSource']]
+                )
+                person.roles.append(role)
+            for comment_json in person_json['comments']:
+                comment = Comment(
+                    name=comment_json['name'],
+                    value=comment_json['value'],
+                )
+                person.comments.append(comment)
+            investigation.contacts.append(person)
+        logger.debug('Start building Studies objects')
+        samples_dict = dict()
+        sources_dict = dict()
+        categories_dict = dict()
+        protocols_dict = dict()
+        factors_dict = dict()
+        parameters_dict = dict()
+        units_dict = dict()
+        process_dict = dict()
+
+        # populate assay characteristicCategories first
+        for study_json in isajson['studies']:
+            for assay_json in study_json['assays']:
+                for assay_characteristics_category_json in assay_json['characteristicCategories']:
+                    characteristic_category = OntologyAnnotation(
+                        id_=assay_characteristics_category_json['@id'],
+                        name=assay_characteristics_category_json['characteristicType']['annotationValue'],
+                        term_source=term_source_dict[assay_characteristics_category_json['characteristicType']['termSource']],
+                        term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
+                    )
+                    # study.characteristic_categories.append(characteristic_category)
+                    categories_dict[characteristic_category.id] = characteristic_category
+        for study_json in isajson['studies']:
+            logger.debug('Start building Study object')
+            study = Study(
+                identifier=study_json['identifier'],
+                title=study_json['title'],
+                description=study_json['description'],
+                submission_date=study_json['submissionDate'],
+                public_release_date=study_json['publicReleaseDate'],
+                filename=study_json['filename']
+            )
+            try:
+                for comment_json in study_json['comments']:
+                    comment = Comment(
+                        name=comment_json['name'],
+                        value=comment_json['value'],
+                    )
+                    study.comments.append(comment)
+            except KeyError:
+                pass
+            for study_characteristics_category_json in study_json['characteristicCategories']:
+                characteristic_category = OntologyAnnotation(
+                    id_=study_characteristics_category_json['@id'],
+                    name=study_characteristics_category_json['characteristicType']['annotationValue'],
+                    term_source=term_source_dict[study_characteristics_category_json['characteristicType']['termSource']],
+                    term_accession=study_characteristics_category_json['characteristicType']['termAccession'],
+                )
+                study.characteristic_categories.append(characteristic_category)
+                categories_dict[characteristic_category.id] = characteristic_category
+            for study_unit_json in study_json['unitCategories']:
+                unit = OntologyAnnotation(id_=study_unit_json['@id'],
+                                          name=study_unit_json['annotationValue'],
+                                          term_source=term_source_dict[study_unit_json['termSource']],
+                                          term_accession=study_unit_json['termAccession'])
+                units_dict[unit.id] = unit
+            for study_publication_json in study_json['publications']:
+                logger.debug('Build Study Publication object')
+                study_publication = Publication(
+                    pubmed_id=study_publication_json['pubMedID'],
+                    doi=study_publication_json['doi'],
+                    author_list=study_publication_json['authorList'],
+                    title=study_publication_json['title'],
+                    status=OntologyAnnotation(
+                        name=study_publication_json['status']['annotationValue'],
+                        term_source=term_source_dict[study_publication_json['status']['termSource']],
+                        term_accession=study_publication_json['status']['termAccession'],
+                    )
+                )
+                try:
+                    for comment_json in study_publication_json['comments']:
+                        comment = Comment(
+                            name=comment_json['name'],
+                            value=comment_json['value']
+                        )
+                        study_publication.comments.append(comment)
+                except KeyError:
+                    pass
+                study.publications.append(study_publication)
+            for study_person_json in study_json['people']:
+                logger.debug('Build Study Person object')
+                study_person = Person(
+                    last_name=study_person_json['lastName'],
+                    first_name=study_person_json['firstName'],
+                    mid_initials=study_person_json['midInitials'],
+                    email=study_person_json['email'],
+                    phone=study_person_json['phone'],
+                    fax=study_person_json['fax'],
+                    address=study_person_json['address'],
+                    affiliation=study_person_json['affiliation'],
+                )
+                for role_json in study_person_json['roles']:
+                    role = OntologyAnnotation(
+                        name=role_json['annotationValue'],
+                        term_accession=role_json['termAccession'],
+                        term_source=term_source_dict[role_json['termSource']]
+                    )
+                    study_person.roles.append(role)
+                try:
+                    for comment_json in study_person_json['comments']:
+                        comment = Comment(
+                            name=comment_json['name'],
+                            value=comment_json['value'],
+                        )
+                        study_person.comments.append(comment)
+                except KeyError:
+                    pass
+                study.contacts.append(study_person)
+            for design_descriptor_json in study_json['studyDesignDescriptors']:
+                logger.debug('Build Ontology Annotation object (Study Design Descriptor)')
+                design_descriptor = OntologyAnnotation(
+                    name=design_descriptor_json['annotationValue'],
+                    term_accession=design_descriptor_json['termAccession'],
+                    term_source=term_source_dict[design_descriptor_json['termSource']]
+                )
+                study.design_descriptors.append(design_descriptor)
+            for protocol_json in study_json['protocols']:
+                logger.debug('Build Study Protocol object')
+                protocol = Protocol(
+                    id_=protocol_json['@id'],
+                    name=protocol_json['name'],
+                    uri=protocol_json['uri'],
+                    description=protocol_json['description'],
+                    version=protocol_json['version'],
+                    protocol_type=OntologyAnnotation(
+                        name=protocol_json['protocolType']['annotationValue'],
+                        term_accession=protocol_json['protocolType']['termAccession'],
+                        term_source=term_source_dict[protocol_json['protocolType']['termSource']]
+                    )
+                )
+                for parameter_json in protocol_json['parameters']:
+                    parameter = ProtocolParameter(
+                        id_=parameter_json['@id'],
+                        parameter_name=OntologyAnnotation(
+                            name=parameter_json['parameterName']['annotationValue'],
+                            term_source=term_source_dict[parameter_json['parameterName']['termSource']],
+                            term_accession=parameter_json['parameterName']['termAccession']
+                        )
+                    )
+                    protocol.parameters.append(parameter)
+                    parameters_dict[parameter.id] = parameter
+                for component_json in protocol_json['components']:
+                    component = ProtocolComponent(
+                        name=component_json['componentName'],
+                        component_type=OntologyAnnotation(
+                            name=component_json['componentType']['annotationValue'],
+                            term_source=term_source_dict[component_json['componentType']['termSource']],
+                            term_accession=component_json['componentType']['termAccession']
+                        )
+                    )
+                    protocol.components.append(component)
+                study.protocols.append(protocol)
+                protocols_dict[protocol.id] = protocol
+            for factor_json in study_json['factors']:
+                logger.debug('Build Study Factor object')
+                factor = StudyFactor(
+                    id_=factor_json['@id'],
+                    name=factor_json['factorName'],
+                    factor_type=OntologyAnnotation(
+                        name=factor_json['factorType']['annotationValue'],
+                        term_accession=factor_json['factorType']['termAccession'],
+                        term_source=term_source_dict[factor_json['factorType']['termSource']]
+                    )
+                )
+                study.factors.append(factor)
+                factors_dict[factor.id] = factor
+            for source_json in study_json['materials']['sources']:
+                logger.debug('Build Source object')
+                source = Source(
+                    id_=source_json['@id'],
+                    name=source_json['name'][7:],
+                )
+                for characteristic_json in source_json['characteristics']:
+                    logger.debug('Build Ontology Annotation object (Characteristic)')
+                    value = characteristic_json['value']
+                    unit = None
+                    characteristic = Characteristic(category=categories_dict[characteristic_json['category']['@id']],)
+                    if isinstance(value, dict):
+                        try:
+                            value = OntologyAnnotation(
+                                name=characteristic_json['value']['annotationValue'],
+                                term_source=term_source_dict[characteristic_json['value']['termSource']],
+                                term_accession=characteristic_json['value']['termAccession'])
+                        except KeyError:
+                            raise IOError("Can't create value as annotation")
+                    elif isinstance(value, int) or isinstance(value, float):
+                        try:
+                            unit = units_dict[characteristic_json['unit']['@id']]
+                        except KeyError:
+                            raise IOError("Can't create unit annotation")
+                    elif not isinstance(value, str):
+                        raise IOError("Unexpected type in characteristic value")
+                    characteristic.value = value
+                    characteristic.unit = unit
+                    source.characteristics.append(characteristic)
+                sources_dict[source.id] = source
+                study.materials['sources'].append(source)
+            for sample_json in study_json['materials']['samples']:
+                logger.debug('Build Sample object')
+                sample = Sample(
+                    id_=sample_json['@id'],
+                    name=sample_json['name'][7:],
+                    derives_from=sample_json['derivesFrom']
+                )
+                for characteristic_json in sample_json['characteristics']:
+                    logger.debug('Build Ontology Annotation object (Characteristic)')
+                    value = characteristic_json['value']
+                    unit = None
+                    characteristic = Characteristic(
+                            category=categories_dict[characteristic_json['category']['@id']])
+                    if isinstance(value, dict):
+                        try:
+                            value = OntologyAnnotation(
+                                name=characteristic_json['value']['annotationValue'],
+                                term_source=term_source_dict[characteristic_json['value']['termSource']],
+                                term_accession=characteristic_json['value']['termAccession'])
+                        except KeyError:
+                            raise IOError("Can't create value as annotation")
+                    elif isinstance(value, int) or isinstance(value, float):
+                        try:
+                            unit = units_dict[characteristic_json['unit']['@id']]
+                        except KeyError:
+                            raise IOError("Can't create unit annotation")
+                    elif not isinstance(value, str):
+                        raise IOError("Unexpected type in characteristic value")
+                    characteristic.value = value
+                    characteristic.unit = unit
+                    sample.characteristics.append(characteristic)
+                for factor_value_json in sample_json['factorValues']:
+                    logger.debug('Build Ontology Annotation object (Sample Factor Value)')
+                    try:
+                        factor_value = FactorValue(
+                            factor_name=factors_dict[factor_value_json['category']['@id']],
+                            value=OntologyAnnotation(
+                                name=factor_value_json['value']['annotationValue'],
+                                term_accession=factor_value_json['value']['termAccession'],
+                                term_source=term_source_dict[factor_value_json['value']['termSource']],
+                            ),
+
+                        )
+                    except TypeError:
+                        factor_value = FactorValue(
+                            factor_name=factors_dict[factor_value_json['category']['@id']],
+                            value=factor_value_json['value'],
+                            unit=units_dict[factor_value_json['unit']['@id']],
+                        )
+                    sample.factor_values.append(factor_value)
+                samples_dict[sample.id] = sample
+                study.materials['samples'].append(sample)
+            for study_process_json in study_json['processSequence']:
+                logger.debug('Build Process object')
+                process = Process(
+                    id_=study_process_json['@id'],
+                    executes_protocol=protocols_dict[study_process_json['executesProtocol']['@id']],
+                )
+                try:
+                    for comment_json in study_process_json['comments']:
+                        comment = Comment(
+                            name=comment_json['name'],
+                            value=comment_json['value'],
+                        )
+                        process.comments.append(comment)
+                except KeyError:
+                    pass
+                try:
+                    process.date = study_process_json['date']
+                except KeyError:
+                    pass
+                try:
+                    process.performer = study_process_json['performer']
+                except KeyError:
+                    pass
+                for parameter_value_json in study_process_json['parameterValues']:
+                    if isinstance(parameter_value_json['value'], int) or isinstance(parameter_value_json['value'], float):
+                        parameter_value = ParameterValue(
+                            category=parameters_dict[parameter_value_json['category']['@id']],
+                            value=parameter_value_json['value'],
+                            unit=units_dict[parameter_value_json['unit']['@id']],
+                        )
+                        process.parameter_values.append(parameter_value)
+                    else:
+                        parameter_value = ParameterValue(
+                            category=parameters_dict[parameter_value_json['category']['@id']],
+                            )
+                        try:
+                            parameter_value.value = OntologyAnnotation(
+                                name=parameter_value_json['value']['annotationValue'],
+                                term_accession=parameter_value_json['value']['termAccession'],
+                                term_source=term_source_dict[parameter_value_json['value']['termSource']],)
+                        except TypeError:
+                            parameter_value.value = parameter_value_json['value']
+                        process.parameter_values.append(parameter_value)
+                for input_json in study_process_json['inputs']:
+                    input_ = None
+                    try:
+                        input_ = sources_dict[input_json['@id']]
+                    except KeyError:
+                        pass
+                    finally:
+                        try:
+                            input_ = samples_dict[input_json['@id']]
+                        except KeyError:
+                            pass
+                    if input_ is None:
+                        raise IOError("Could not find input node in sources or samples dicts: " + input_json['@id'])
+                    process.inputs.append(input_)
+                for output_json in study_process_json['outputs']:
+                    output = None
+                    try:
+                        output = sources_dict[output_json['@id']]
+                    except KeyError:
+                        pass
+                    finally:
+                        try:
+                            output = samples_dict[output_json['@id']]
+                        except KeyError:
+                            pass
+                    if output is None:
+                        raise IOError("Could not find output node in sources or samples dicts: " + output_json['@id'])
+                    process.outputs.append(output)
+                study.process_sequence.append(process)
+                process_dict[process.id] = process
+            for study_process_json in study_json['processSequence']:  # 2nd pass
+                try:
+                    prev_proc = study_process_json['previousProcess']['@id']
+                    process_dict[study_process_json['@id']].prev_process = process_dict[prev_proc]
+                except KeyError:
+                    pass
+                try:
+                    next_proc = study_process_json['nextProcess']['@id']
+                    process_dict[study_process_json['@id']].next_process = process_dict[next_proc]
+                except KeyError:
+                    pass
+            study.graph = _build_assay_graph(study.process_sequence)
+            for assay_json in study_json['assays']:
+                logger.debug('Start building Assay object')
+                logger.debug('Build Study Assay object')
+                assay = Assay(
+                    measurement_type=OntologyAnnotation(
+                        name=assay_json['measurementType']['annotationValue'],
+                        term_accession=assay_json['measurementType']['termAccession'],
+                        term_source=term_source_dict[assay_json['measurementType']['termSource']]
+                    ),
+                    technology_type=OntologyAnnotation(
+                        name=assay_json['technologyType']['annotationValue'],
+                        term_accession=assay_json['technologyType']['termAccession'],
+                        term_source=term_source_dict[assay_json['technologyType']['termSource']]
+                    ),
+                    technology_platform=assay_json['technologyPlatform'],
+                    filename=assay_json['filename']
+                )
+                for assay_unit_json in assay_json['unitCategories']:
+                    unit = OntologyAnnotation(id_=assay_unit_json['@id'],
+                                              name=assay_unit_json['annotationValue'],
+                                              term_source=term_source_dict[assay_unit_json['termSource']],
+                                              term_accession=assay_unit_json['termAccession'])
+                    units_dict[unit.id] = unit
+                data_dict = dict()
+                for data_json in assay_json['dataFiles']:
+                    logger.debug('Build Data object')
+                    data_file = DataFile(
+                        id_=data_json['@id'],
+                        filename=data_json['name'],
+                        label=data_json['type'],
+                    )
+                    try:
+                        for comment_json in data_json['comments']:
+                            comment = Comment(
+                                name=comment_json['name'],
+                                value=comment_json['value'],
+                            )
+                            data_file.comments.append(comment)
+                    except KeyError:
+                        pass
+                    data_dict[data_file.id] = data_file
+                    assay.data_files.append(data_file)
+                for sample_json in assay_json['materials']['samples']:
+                    sample = samples_dict[sample_json['@id']]
+                    assay.materials['samples'].append(sample)
+                for assay_characteristics_category_json in assay_json['characteristicCategories']:
+                    characteristic_category =OntologyAnnotation(
+                        id_=assay_characteristics_category_json['@id'],
+                        name=assay_characteristics_category_json['characteristicType']['annotationValue'],
+                        term_source=term_source_dict[assay_characteristics_category_json['characteristicType']['termSource']],
+                        term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
+                    )
+                    study.characteristic_categories.append(characteristic_category)
+                    categories_dict[characteristic_category.id] = characteristic_category
+                other_materials_dict = dict()
+                for other_material_json in assay_json['materials']['otherMaterials']:
+                    logger.debug('Build Material object')  # need to detect material types
+                    material_name = other_material_json['name']
+                    if material_name.startswith('labeledextract-'):
+                        material_name = material_name[15:]
+                    else:
+                        material_name = material_name[8:]
+                    material = Material(
+                        id_=other_material_json['@id'],
+                        name=material_name,
+                        type_=other_material_json['type'],
+                    )
+                    for characteristic_json in other_material_json['characteristics']:
+                        characteristic = Characteristic(
+                            category=categories_dict[characteristic_json['category']['@id']],
+                            value=OntologyAnnotation(
+                                name=characteristic_json['value']['annotationValue'],
+                                term_source=term_source_dict[characteristic_json['value']['termSource']],
+                                term_accession=characteristic_json['value']['termAccession'],
+                            )
+                        )
+                        material.characteristics.append(characteristic)
+                    assay.materials['other_material'].append(material)
+                    other_materials_dict[material.id] = material
+                for assay_process_json in assay_json['processSequence']:
+                    process = Process(
+                        id_=assay_process_json['@id'],
+                        executes_protocol=protocols_dict[assay_process_json['executesProtocol']['@id']]
+                    )
+                    try:
+                        for comment_json in assay_process_json['comments']:
+                            comment = Comment(
+                                name=comment_json['name'],
+                                value=comment_json['value'],
+                            )
+                            process.comments.append(comment)
+                    except KeyError:
+                        pass
+                    # additional properties, currently hard-coded special cases
+                    if process.executes_protocol.protocol_type.name == 'data collection' and assay.technology_type.name == 'DNA microarray':
+                        process.additional_properties['Scan Name'] = assay_process_json['name']
+                    elif process.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
+                        process.additional_properties['Assay Name'] = assay_process_json['name']
+                    elif process.executes_protocol.protocol_type.name == 'nucleic acid hybridization':
+                        process.additional_properties['Hybridization Assay Name'] = assay_process_json['name']
+                    elif process.executes_protocol.protocol_type.name == 'data transformation':
+                        process.additional_properties['Data Transformation Name'] = assay_process_json['name']
+                    elif process.executes_protocol.protocol_type.name == 'data normalization':
+                        process.additional_properties['Normalization Name'] = assay_process_json['name']
+                    for input_json in assay_process_json['inputs']:
+                        input_ = None
+                        try:
+                            input_ = samples_dict[input_json['@id']]
+                        except KeyError:
+                            pass
+                        finally:
+                            try:
+                                input_ = other_materials_dict[input_json['@id']]
+                            except KeyError:
+                                pass
+                            finally:
+                                try:
+                                    input_ = data_dict[input_json['@id']]
+                                except KeyError:
+                                    pass
+                        if input_ is None:
+                            raise IOError("Could not find input node in samples or materials or data dicts: " +
+                                          input_json['@id'])
+                        process.inputs.append(input_)
+                    for output_json in assay_process_json['outputs']:
+                        output = None
+                        try:
+                            output = samples_dict[output_json['@id']]
+                        except KeyError:
+                            pass
+                        finally:
+                            try:
+                                output = other_materials_dict[output_json['@id']]
+                            except KeyError:
+                                pass
+                            finally:
+                                    try:
+                                        output = data_dict[output_json['@id']]
+                                    except KeyError:
+                                        pass
+                        if output is None:
+                            raise IOError("Could not find output node in samples or materials or data dicts: " +
+                                          output_json['@id'])
+                        process.outputs.append(output)
+                    for parameter_value_json in assay_process_json['parameterValues']:
+                        if parameter_value_json['category']['@id'] == '#parameter/Array_Design_REF':  # Special case
+                            process.additional_properties['Array Design REF'] = parameter_value_json['value']
+                        elif isinstance(parameter_value_json['value'], int) or \
+                                isinstance(parameter_value_json['value'], float):
+                            parameter_value = ParameterValue(
+                                category=parameters_dict[parameter_value_json['category']['@id']],
+                                value=parameter_value_json['value'],
+                                unit=units_dict[parameter_value_json['unit']['@id']]
+                            )
+                            process.parameter_values.append(parameter_value)
+                        else:
+                            parameter_value = ParameterValue(
+                                category=parameters_dict[parameter_value_json['category']['@id']],
+                                )
+                            try:
+                                parameter_value.value = OntologyAnnotation(
+                                    name=parameter_value_json['value']['annotationValue'],
+                                    term_accession=parameter_value_json['value']['termAccession'],
+                                    term_source=term_source_dict[parameter_value_json['value']['termSource']],)
+                            except TypeError:
+                                parameter_value.value = parameter_value_json['value']
+                            process.parameter_values.append(parameter_value)
+                    assay.process_sequence.append(process)
+                    process_dict[process.id] = process
+                    for assay_process_json in assay_json['processSequence']:  # 2nd pass
+                        try:
+                            prev_proc = assay_process_json['previousProcess']['@id']
+                            process_dict[assay_process_json['@id']].prev_process = process_dict[prev_proc]
+                        except KeyError:
+                            pass
+                        try:
+                            next_proc = assay_process_json['nextProcess']['@id']
+                            process_dict[assay_process_json['@id']].next_process = process_dict[next_proc]
+                        except KeyError:
+                            pass
+                    assay.graph = _build_assay_graph(assay.process_sequence)
+                study.assays.append(assay)
+            logger.debug('End building Study object')
+            investigation.studies.append(study)
+        logger.debug('End building Studies objects')
+        logger.debug('End building Investigation object')
+    return investigation
+
+def validate_isajson(isa_json, report):
     """Validate JSON"""
 
     def _check_isa_schemas(isa_json):
@@ -203,67 +826,12 @@ def validates(isa_json, report):
         for study in isa_json['studies']:
             for assay in study['assays']:
                 check_data_files(data_files=assay['dataFiles'], dir_context=dir_context, report=report)
-
-        if len(report.generate_report_json()['errors']) < 1:
-            # if we got this far and there are no ERRORS (warnings are OK), let's load using isajson.load()
-            i = load(open(report.file_name))
-            link_objects(investigation=i, report=report)
-            for study in i.studies:
-                study.build_graph()
-                G = study.graph
-                from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
-                start_nodes, end_nodes = _get_start_end_nodes(G)
-                protocol_types = json.load(open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'isatools/schemas/isa_model_version_1_0_schemas/configurations/protocol_definitions.json')))
-                study_config = json.load(open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'isatools/schemas/isa_model_version_1_0_schemas/configurations/study_config.json')))
-                process_node_configs = [n for n in study_config['nodes'] if n['nodeType'] == 'process_schema.json']
-                graph_patterns = study_config['graphPatterns']
-                new_graph_patterns = list()
-                for graph_pattern in graph_patterns:
-                    for process_node_config in process_node_configs:
-                        new_graph_patterns.append(graph_pattern.replace(process_node_config['@id'], process_node_config['protocolType']))
-                print("Checking against graph configs: " + str(new_graph_patterns))
-                for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
-                    type_seq_str = ""
-                    for node in path:
-                        if isinstance(node, Source):
-                            type_seq_str += "(Source)->"
-                        elif isinstance(node, Sample):
-                            type_seq_str += "(Sample)->"
-                        elif isinstance(node, Process):
-                            protocol_type = node.executes_protocol.protocol_type.name
-                            if len([p for p in protocol_types['protocol-mappings'] if
-                                    protocol_type in p['synonyms'] and p['protocol-type']
-                                            == 'sample collection']) == 1:
-                                protocol_type = 'sample collection'
-                            else:
-                                report.warn("{} does not contain correct protocol type {}"
-                                            .format(type_seq_str[:len(type_seq_str) - 2]), 'sample collection')
-                            type_seq_str += "({})->".format(protocol_type)
-                    type_seq_str = type_seq_str[:len(type_seq_str)-2]
-                    if type_seq_str not in new_graph_patterns:
-                        print(type_seq_str + "is not in " + str(new_graph_patterns))
+        i = isajson_load(open(report.file_name))  # load with alternative implementation to enable link checking
+        isajson_link_objects(investigation=i, report=report)
+        # i = load(open(report.file_name))  # load with fully featured working isajson.load()
+        # check_against_config(i.studies)
     except ValidationError as isa_schema_validation_error:
         raise isa_schema_validation_error
-    # print(report.print_report())
-
-
-def validate_against_config(i):
-    study_config = json.load(open(os.path.join(os.path.dirname(os.path.dirname(__file__)), '/isatools/schemas/isa_model_version_1_0_schemas/configurations/study_config.json')))
-    print("Validating against config: {}".format(study_config))
-    print("Matching against:", study_config['graphPatterns'])
-    G = i.studies[0].graph
-    from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
-    start_nodes, end_nodes = _get_start_end_nodes(G)
-    for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
-        chain_str = ""
-        for node in path:
-            if isinstance(node, Source):
-                chain_str += "({})->".format(node.name)
-            elif isinstance(node, Sample):
-                chain_str += "({})->".format(node.name)
-            elif isinstance(node, Process):
-                chain_str += "({})->".format(node.executes_protocol.protocol_type.name)
-        print(chain_str[:len(chain_str)-2])
 
 
 def validate(fp):  # default reporting
@@ -276,7 +844,7 @@ def validate(fp):  # default reporting
         try:  # first, try open the file as a JSON
             try:
                 isa_json = json.load(fp=fp)
-                validates(isa_json, report)
+                validate_isajson(isa_json, report)
             except ValueError as json_load_error:
                 report.fatal("There was an error when trying to parse the JSON")
                 raise json_load_error
@@ -284,671 +852,3 @@ def validate(fp):  # default reporting
             report.fatal("There was a general system error")
             raise system_error
     return report
-
-
-def load_ontology_source_reference(ontology_source_reference_json):
-    ontology_source_reference = OntologySourceReference()
-    keys = ontology_source_reference_json.keys()
-    if 'name' in keys:
-        ontology_source_reference.name = ontology_source_reference_json['name']
-    if 'file' in keys:
-        ontology_source_reference.file = ontology_source_reference_json['file']
-    if 'version' in keys:
-        ontology_source_reference.version = ontology_source_reference_json['version']
-    if 'description' in keys:
-        ontology_source_reference.description = ontology_source_reference_json['description']
-    return ontology_source_reference
-
-
-def load_ontology_source_references(ontology_source_references_json):
-    for ontology_source_reference_json in ontology_source_references_json:
-        yield load_ontology_source_reference(ontology_source_reference_json)
-
-
-def load_comment(comment_json):
-    keys = comment_json.keys()
-    comment = Comment()
-    if 'name' in keys:
-        comment.name = comment_json['name']
-    if 'value' in keys:
-        comment.value = comment_json['value']
-    return comment
-
-
-def load_comments(comments_json):
-    for comment_json in comments_json:
-        yield load_comment(comment_json)
-
-
-def load_person(person_json):
-    person = Person()
-    keys = person_json.keys()
-    if 'lastName' in keys:
-        person.last_name = person_json['lastName']
-    if 'firstName' in keys:
-        person.first_name = person_json['firstName']
-    if 'midInitials' in keys:
-        person.mid_initials = person_json['midInitials']
-    if 'email' in keys:
-        person.email = person_json['email']
-    if 'phone' in keys:
-        person.phone = person_json['phone']
-    if 'fax' in keys:
-        person.fax = person_json['fax']
-    if 'address' in keys:
-        person.address = person_json['address']
-    if 'affiliation' in keys:
-        person.affiliation = person_json['affiliation']
-    if 'roles' in keys:
-        for role_json in person_json['roles']:
-            role = OntologyAnnotation(
-                name=role_json['annotationValue'],
-                term_accession=role_json['termAccession'],
-                term_source=role_json['termSource']
-            )
-            person.roles.append(role)
-    if 'comments' in keys:
-        for comment in load_comments(person_json['comments']):
-            person.comments.append(comment)
-    return person
-
-
-def load_people(people_json):
-    for person_json in people_json:
-        yield load_person(person_json)
-
-
-def load_ontology_annotation(ontology_annotation_json):
-    keys = ontology_annotation_json.keys()
-    ontology_annotation = OntologyAnnotation()
-    if '@id' in keys:
-        ontology_annotation.id = ontology_annotation_json['@id']
-    if 'annotationValue' in keys:
-        ontology_annotation.name = ontology_annotation_json['annotationValue']
-    if 'termAccession' in keys:
-        ontology_annotation.term_accession = ontology_annotation_json['termAccession']
-    if 'termSource' in keys:
-        ontology_annotation.term_source = ontology_annotation_json['termSource']
-    return ontology_annotation
-
-
-def load_ontology_annotations(ontology_annotations_json):
-    for ontology_annotation_json in ontology_annotations_json:
-        yield load_ontology_annotation(ontology_annotation_json)
-
-
-def load_publication(publication_json):
-    keys = publication_json.keys()
-    publication = Publication()
-    if 'pubMedID' in keys:
-        publication.pubmed_id = publication_json['pubMedID']
-    if 'doi' in keys:
-        publication.doi = publication_json['doi']
-    if 'authorList' in keys:
-        publication.author_list = publication_json['authorList']
-    if 'status' in keys:
-        if isinstance(publication_json['status'], dict):
-            publication.status = load_ontology_annotation(publication_json['status'])
-        else:
-            publication.status = publication_json['status']
-    if 'comments' in keys:
-        for comment in load_comments(publication_json['comments']):
-            publication.comments.append(comment)
-    return publication
-
-
-def load_publications(publications_json):
-    for publication_json in publications_json:
-        yield load_publication(publication_json)
-
-
-def load_protocol(protocol_json):
-    keys = protocol_json.keys()
-    protocol = Protocol()
-    if '@id' in keys:
-        protocol.id = protocol_json['@id']
-    if 'name' in keys:
-        protocol.name = protocol_json['name']
-    if 'uri' in keys:
-        protocol.uri = protocol_json['uri']
-    if 'description' in keys:
-        protocol.description = protocol_json['description']
-    if 'version' in keys:
-        protocol.version = protocol_json['version']
-    if 'protocolType' in keys:
-        protocol.protocol_type = load_ontology_annotation(protocol_json['protocolType'])
-    if 'parameters' in keys:
-        for parameter_json in protocol_json['parameters']:
-            parameter = ProtocolParameter()
-            if '@id' in parameter_json.keys():
-                parameter.id = parameter_json['@id']
-            if 'parameterName' in parameter_json.keys():
-                parameter.parameter_name = load_ontology_annotation(parameter_json['parameterName'])
-            protocol.parameters.append(parameter)
-    if 'components' in keys:
-        for component_json in protocol_json['components']:
-            component_keys = component_json.keys()
-            component = ProtocolComponent()
-            if 'componentName' in component_keys:
-                component.name = component_json['componentName']
-            if 'componentType' in component_keys:
-                component.component_type = load_ontology_annotation(component_json['componentType'])
-            protocol.components.append(component)
-    return protocol
-
-
-def load_protocols(protocols_json):
-    for protocol_json in protocols_json:
-        yield load_protocol(protocol_json)
-
-
-def load_process(process_json):
-    keys = process_json.keys()
-    process = Process()
-    if '@id' in keys:
-        process.id = process_json['@id']
-    if 'executesProtocol' in keys:
-        process.executes_protocol = process_json['executesProtocol']['@id']
-    if 'name' in keys:
-        process.name = process_json['name']
-    if 'comments' in keys:
-        for comment in load_comments(process_json['comments']):
-            process.comments.append(comment)
-    if 'date' in keys:
-        process.date = process_json['date']
-    if 'performer' in keys:
-        process.performer = process_json['performer']
-    if 'previousProcess' in keys:
-        process.prev_process = process_json['previousProcess']['@id']
-    if 'nextProcess' in keys:
-        process.next_process = process_json['nextProcess']['@id']
-    return process
-
-
-def load_parameter_value(parameter_value_json):
-    keys = parameter_value_json.keys()
-    pv = ParameterValue()
-    if 'category' in keys:
-        pv.category = parameter_value_json['category']['@id']
-    if 'value' in keys:
-        value = parameter_value_json['value']
-        if isinstance(value, int) or isinstance(value, float):
-            pv.value = value
-            if 'unit' in keys:
-                pv.unit = parameter_value_json['unit']['@id']
-        elif isinstance(value, dict):
-            pv.value = load_ontology_annotation(value)
-        elif isinstance(value, str):
-            pv.value = value
-    return pv
-
-
-def load_characteristic(characteristic_json):
-    keys = characteristic_json.keys()
-    characteristic = Characteristic()
-    if 'category' in keys:
-        characteristic.category = characteristic_json['category']['@id']
-    if 'value' in keys:
-        value = characteristic_json['value']
-        if isinstance(value, int) or isinstance(value, float):
-            characteristic.value = value
-            if 'unit' in keys:
-                characteristic.unit = characteristic_json['unit']['@id']
-        elif isinstance(value, dict):
-            characteristic.value = load_ontology_annotation(value)
-        elif isinstance(value, str):
-            characteristic.value = value
-    return characteristic
-
-
-def load_characteristics(characteristics_json):
-    for characteristic_json in characteristics_json:
-        yield load_characteristic(characteristic_json)
-
-
-def load_factor_value(factor_value_json):
-    keys = factor_value_json.keys()
-    fv = FactorValue()
-    if 'category' in keys:
-        fv.category = factor_value_json['category']['@id']
-    if 'value' in keys:
-        value = factor_value_json['value']
-        if isinstance(value, int) or isinstance(value, float):
-            fv.value = value
-            if 'unit' in keys:
-                fv.unit = factor_value_json['unit']['@id']
-        elif isinstance(value, dict):
-            fv.value = load_ontology_annotation(value)
-        elif isinstance(value, str):
-            fv.value = value
-    return fv
-
-
-def load_factor_values(factor_values_json):
-    for factor_value_json in factor_values_json:
-        yield load_factor_value(factor_value_json)
-
-
-def load_data_file(data_json):
-    keys = data_json.keys()
-    data_file = DataFile()
-    if '@id' in keys:
-        data_file.id = data_json['@id']
-    if 'name' in keys:
-        data_file.filename = data_json['name']
-    if 'type' in keys:
-        data_file.label = data_json['type']
-    for comment in load_comments(data_json['comments']):
-        data_file.comments.append(comment)
-    return data_file
-
-
-def load_data_files(data_files_json):
-    for data_file_json in data_files_json:
-        yield load_data_file(data_file_json)
-
-
-def load(fp):
-
-    def _build_assay_graph(process_sequence=list()):
-        G = DiGraph()
-        for process in process_sequence:
-            if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
-                if len(process.outputs) > 0:
-                    for output in [n for n in process.outputs if not isinstance(n, DataFile)]:
-                        G.add_edge(process, output)
-                else:  # otherwise just connect the process to the next one
-                    G.add_edge(process, process.next_process)
-            if process.prev_process is not None or len(process.inputs) > 0:
-                if len(process.inputs) > 0:
-                    for input_ in process.inputs:
-                        G.add_edge(input_, process)
-                else:
-                    G.add_edge(process.prev_process, process)
-        return G
-
-    investigation = None
-    logger.info('Opening file %s', fp)
-    isajson = json.load(fp)
-    if isajson is None:
-        logger.error('There was a problem opening the JSON file')
-    else:
-        logger.debug('Start building the Investigation object')
-        inv_keys = isajson.keys()
-        investigation = Investigation()
-        if 'identifier' in inv_keys:
-            investigation.identifier = isajson['identifier']
-        if 'title' in inv_keys:
-            investigation.title = isajson['title']
-        if 'description' in inv_keys:
-            investigation.description = isajson['description']
-        if 'submissionDate' in inv_keys:
-            investigation.submission_date = isajson['submissionDate']
-        if 'publicReleaseDate' in inv_keys:
-            investigation.public_release_date = isajson['publicReleaseDate']
-        if 'filename' in inv_keys:
-            investigation.filename = isajson['filename']
-        if 'comments' in inv_keys:
-            for comment in load_comments(isajson['comments']):
-                investigation.comments.append(comment)
-        if 'ontologySourceReferences' in inv_keys:
-            for ontology_source_reference in load_ontology_source_references(isajson['ontologySourceReferences']):
-                logger.debug('Build Ontology Source Reference object')
-                investigation.ontology_source_references.append(ontology_source_reference)
-        if 'publications' in inv_keys:
-            for publication in load_publications(isajson['publications']):
-                logger.debug('Build Investigation Publication object')
-                investigation.publications.append(publication)
-        if 'people' in inv_keys:
-            for person in load_people(isajson['people']):
-                logger.debug('Build Investigation Person object')
-                investigation.contacts.append(person)
-
-        logger.debug('Start building Studies objects')
-        for study_json in isajson['studies']:
-            logger.debug('Start building Study object')
-            study_keys = study_json.keys()
-            study = Study()
-            if 'identifier' in study_keys:
-                study.identifier = study_json['identifier']
-            if 'title' in study_keys:
-                study.title = study_json['title']
-            if 'description' in study_keys:
-                study.description = study_json['description']
-            if 'submissionDate' in study_keys:
-                study.submission_date = study_json['submissionDate']
-            if 'publicReleaseDate' in study_keys:
-                study.public_release_date = study_json['publicReleaseDate']
-            if 'filename' in study_keys:
-                study.filename = study_json['filename']
-            if 'comments' in study_keys:
-                for comment in load_comments(study_json['comments']):
-                    study.comments.append(comment)
-            if 'publications' in study_keys:
-                for study_publication in load_publications(study_json['publications']):
-                    logger.debug('Build Study Publication object')
-                    study.publications.append(study_publication)
-            for study_person in load_people(study_json['people']):
-                logger.debug('Build Study Person object')
-                study.contacts.append(study_person)
-            for study_characteristics_category_json in study_json['characteristicCategories']:
-                study_characteristics_category_json['characteristicType']['@id'] = study_characteristics_category_json['@id']
-                characteristic_category = load_ontology_annotation(study_characteristics_category_json['characteristicType'])
-                study.characteristic_categories.append(characteristic_category)
-                # print(characteristic_category.id)
-            for study_unit_json in study_json['unitCategories']:
-                unit = load_ontology_annotation(study_unit_json)
-                study.units.append(unit)
-            for design_descriptor in load_ontology_annotations(study_json['studyDesignDescriptors']):
-                logger.debug('Build Ontology Annotation object (Study Design Descriptor)')
-                study.design_descriptors.append(design_descriptor)
-            for protocol in load_protocols(study_json['protocols']):
-                logger.debug('Build Study Protocol object')
-                study.protocols.append(protocol)
-            for factor_json in study_json['factors']:
-                logger.debug('Build Study Factor object')
-                factor = StudyFactor(
-                    id_=factor_json['@id'],
-                    name=factor_json['factorName'],
-                    factor_type=load_ontology_annotation(factor_json['factorType'])
-                )
-                study.factors.append(factor)
-            for source_json in study_json['materials']['sources']:
-                logger.debug('Build Source object')
-                source = Source(
-                    id_=source_json['@id'],
-                    name=source_json['name'][7:],
-                )
-                for characteristic in load_characteristics(source_json['characteristics']):
-                    source.characteristics.append(characteristic)
-                study.materials['sources'].append(source)
-            for sample_json in study_json['materials']['samples']:
-                logger.debug('Build Sample object')
-                sample = Sample(
-                    id_=sample_json['@id'],
-                    name=sample_json['name'][7:],
-                    derives_from=sample_json['derivesFrom']
-                )
-                for characteristic in load_characteristics(sample_json['characteristics']):
-                    sample.characteristics.append(characteristic)
-                for factor_value in load_factor_values(sample_json['factorValues']):
-                    sample.factor_values.append(factor_value)
-                study.materials['samples'].append(sample)
-            for study_process_json in study_json['processSequence']:
-                logger.debug('Build Process object')
-                process = load_process(study_process_json)
-                for parameter_value_json in study_process_json['parameterValues']:
-                    parameter_value = load_parameter_value(parameter_value_json)
-                    process.parameter_values.append(parameter_value)
-                for input_json in study_process_json['inputs']:
-                    if '@id' in input_json.keys():
-                        process.inputs.append(input_json['@id'])
-                for output_json in study_process_json['outputs']:
-                    if '@id' in output_json.keys():
-                        process.outputs.append(output_json['@id'])
-                study.process_sequence.append(process)
-            for assay_json in study_json['assays']:
-                logger.debug('Start building Assay object')
-                logger.debug('Build Study Assay object')
-                assay = Assay(
-                    measurement_type=load_ontology_annotation(assay_json['measurementType']),
-                    technology_type=load_ontology_annotation(assay_json['technologyType']),
-                    technology_platform=assay_json['technologyPlatform'],
-                    filename=assay_json['filename']
-                )
-                # for assay_unit_json in assay_json['unitCategories']:
-                #     unit = load_ontology_annotation(assay_unit_json)
-                #     assay.units.append(unit)
-                for data_file in load_data_files(assay_json['dataFiles']):
-                    assay.data_files.append(data_file)
-                for sample_json in assay_json['materials']['samples']:
-                    sample = sample_json['@id']
-                    assay.materials['samples'].append(sample)
-                for assay_characteristics_category_json in assay_json['characteristicCategories']:
-                    assay_characteristics_category_json['characteristicType']['@id'] = assay_characteristics_category_json['@id']
-                    characteristic_category = load_ontology_annotation(assay_characteristics_category_json['characteristicType'])
-                    study.characteristic_categories.append(characteristic_category)
-                for other_material_json in assay_json['materials']['otherMaterials']:
-                    logger.debug('Build Material object')  # need to detect material types
-                    material_name = other_material_json['name']
-                    if material_name.startswith('labeledextract-'):
-                        material_name = material_name[15:]
-                    else:
-                        material_name = material_name[8:]
-                    material = Material(
-                        id_=other_material_json['@id'],
-                        name=material_name,
-                        type_=other_material_json['type'],
-                    )
-                    for characteristic in load_characteristics(other_material_json['characteristics']):
-                        material.characteristics.append(characteristic)
-                    assay.materials['other_material'].append(material)
-                for assay_process_json in assay_json['processSequence']:
-                    process = load_process(assay_process_json)
-                    for parameter_value_json in assay_process_json['parameterValues']:
-                        parameter_value = load_parameter_value(parameter_value_json)
-                        process.parameter_values.append(parameter_value)
-                    for input_json in assay_process_json['inputs']:
-                        if '@id' in input_json.keys():
-                            process.inputs.append(input_json['@id'])
-                    for output_json in assay_process_json['outputs']:
-                        if '@id' in output_json.keys():
-                            process.outputs.append(output_json['@id'])
-                    assay.process_sequence.append(process)
-                study.assays.append(assay)
-            logger.debug('End building Study object')
-            investigation.studies.append(study)
-        logger.debug('End building Studies objects')
-        logger.debug('End building Investigation object')
-        # now try and build links
-        link_objects(investigation=investigation)
-        # one more pass to build graphs
-        for study in investigation.studies:
-            study.build_graph()
-            for assay in study.assays:
-                assay.build_graph()
-    return investigation
-
-
-def link_objects(investigation, report=None):
-
-    def _link_chars_to_cats(chars, cats, units, report):
-        for x, char in enumerate(chars):
-            if char.category is not None:
-                obj_list = [o for o in cats if o.id == char.category]
-                if len(obj_list) > 1:
-                    if report is not None:
-                        report.error(
-                            "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
-                                char.category))
-                elif char.category != '' and len(obj_list) == 0:
-                    if report is not None:
-                        report.error(
-                            "A characteristic category '{}' has been referenced that has not been declared at the Study level".format(
-                                char.category))
-                else:
-                    obj = obj_list[0]
-                    chars[x].category = obj
-            if char.unit is not None:
-                obj_list = [o for o in units if o.id == char.unit]
-                if len(obj_list) > 1:
-                    if report is not None:
-                        report.error(
-                            "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
-                                char.unit))
-                elif char.unit != '' and len(obj_list) == 0:
-                    if report is not None:
-                        report.error(
-                            "A unit '{}' has been referenced that has not been declared at the Study level".format(
-                                char.unit))
-                else:
-                    obj = obj_list[0]
-                    chars[x].unit = obj
-
-    def _link_pvs_to_params(process, units, report):
-        for x, parameter_value in enumerate(process.parameter_values):
-            protocol = [o for o in study.protocols if o.id == process.executes_protocol.id][0]  # just assume it works
-            if parameter_value.category is not None:
-                obj_list = [o for o in protocol.parameters if o.id == parameter_value.category]
-                if parameter_value.category == '#parameter/Array_Design_REF' and len(obj_list) == 0:
-                    pv = ProtocolParameter(id_='#parameter/Array_Design_REF',
-                                           parameter_name=OntologyAnnotation(name="Array Design REF"))
-                    protocol.parameters.append(pv)
-                    obj_list.append(pv)
-                if len(obj_list) > 1:
-                    if report is not None:
-                        report.error(
-                            "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
-                                parameter_value.category))
-                elif parameter_value.category != '' and len(obj_list) == 0:
-                    if report is not None:
-                        report.error(
-                            "A parameter '{}' has been referenced that has not been declared at the Study level".format(
-                                parameter_value.category))
-                else:
-                    obj = obj_list[0]
-                    process.parameter_values[x].category = obj
-            # link UNITS
-            if parameter_value.unit is not None:
-                obj_list = [o for o in units if o.id == parameter_value.unit]
-                if len(obj_list) > 1:
-                    if report is not None:
-                        report.error(
-                            "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
-                                parameter_value.unit))
-                elif parameter_value.unit != '' and len(obj_list) == 0:
-                    if report is not None:
-                        report.error(
-                            "A unit '{}' has been referenced that has not been declared at the Study level".format(
-                                parameter_value.unit))
-                else:
-                    obj = obj_list[0]
-                    process.parameter_values[x].unit = obj
-
-    def _link_process_to_in_out_and_prots(process, node_list, prots, report):
-        for x, input_ in enumerate(process.inputs):
-            obj_list = [o for o in node_list if o.id == input_]
-            if len(obj_list) > 1:
-                if report is not None:
-                    report.error(
-                        "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
-                            input_))
-            elif input_ != '' and len(obj_list) == 0:
-                if report is not None:
-                    report.error(
-                        "A source '{}' has been referenced that has not been declared at the Study level".format(
-                            input_))
-            else:
-                obj = obj_list[0]
-                process.inputs[x] = obj
-        # build study samples links
-        for x, output in enumerate(process.outputs):
-            obj_list = [o for o in node_list if o.id == output]
-            if len(obj_list) > 1:
-                if report is not None:
-                    report.error(
-                        "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
-                            output))
-            elif output != '' and len(obj_list) == 0:
-                if report is not None:
-                    report.error(
-                        "A sample '{}' has been referenced that has not been declared at the Study level".format(
-                            output))
-            else:
-                obj = obj_list[0]
-                process.outputs[x] = obj
-        # build protocol link
-        obj_list = [o for o in prots if o.id == process.executes_protocol]
-        if len(obj_list) > 1:
-            if report is not None:
-                report.error(
-                    "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
-                        process.executes_protocol))
-        elif process.executes_protocol != '' and len(obj_list) == 0:
-            if report is not None:
-                report.error(
-                    "A protocol '{}' has been referenced that has not been declared at the Study level".format(
-                        process.executes_protocol))
-        else:
-            obj = obj_list[0]
-            process.executes_protocol = obj
-
-    for study in investigation.studies:
-        # build links for SOURCES
-        for source_or_sample in study.materials['sources'] + study.materials['samples']:
-            # link source and samples characteristics to categories
-            _link_chars_to_cats(chars=source_or_sample.characteristics, cats=study.characteristic_categories, units=study.units, report=report)
-        # build links for SAMPLES
-        for sample in study.materials['samples']:
-            _link_chars_to_cats(chars=sample.characteristics, cats=study.characteristic_categories, units=study.units, report=report)
-            # currently only samples have factor values
-            for x, factor_value in enumerate(sample.factor_values):
-                if factor_value.category is not None:
-                    obj_list = [o for o in study.factors if o.id == factor_value.category]
-                    if len(obj_list) > 1:
-                        if report is not None:
-                            report.error(
-                                "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
-                                    factor_value.category))
-                    elif factor_value.category != '' and len(obj_list) == 0:
-                        if report is not None:
-                            report.error(
-                                "A factor '{}' has been referenced that has not been declared at the Study level".format(
-                                    factor_value.category))
-                    else:
-                        obj = obj_list[0]
-                        sample.factor_values[x].category = obj
-                # link UNITS
-                if factor_value.unit is not None:
-                    obj_list = [o for o in study.units if o.id == factor_value.unit]
-                    if len(obj_list) > 1:
-                        if report is not None:
-                            report.error(
-                                "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
-                                    factor_value.unit))
-                    elif factor_value.unit != '' and len(obj_list) == 0:
-                        if report is not None:
-                            report.error(
-                                "A unit '{}' has been referenced in {} {} that has not been declared at the Study level".format(
-                                    factor_value.unit, sample.id, factor_value.category.name))
-                    else:
-                        obj = obj_list[0]
-                        sample.factor_values[x].unit = obj
-        # build links in PROCESSES
-        # build study sources links
-        node_list = study.materials['sources'] + study.materials['samples']
-        for process in study.process_sequence:
-            _link_process_to_in_out_and_prots(process=process, node_list=node_list, prots=study.protocols, report=report)
-            _link_pvs_to_params(process=process, units=study.units, report=report)
-        # build prev-next process links
-        for assay in study.assays:
-            # first link assay-level samples back to study-level samples
-            node_list = study.materials['samples'] + assay.materials['other_material'] + assay.data_files
-            for material in assay.materials['other_material']:
-                _link_chars_to_cats(chars=material.characteristics, cats=study.characteristic_categories,
-                                    units=study.units, report=report)
-            for x, process in enumerate(assay.process_sequence):
-                _link_process_to_in_out_and_prots(process=process, node_list=node_list, prots=study.protocols,
-                                                  report=report)
-                # build pv links
-                _link_pvs_to_params(process=process, units=study.units, report=report)
-                # build prev link
-                obj_list = [o for o in assay.process_sequence if o.id == process.prev_process]
-                if len(obj_list) > 1:
-                    if report is not None:
-                        report.error(
-                            "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
-                                process.prev_process))
-                elif len(obj_list) == 1:
-                    obj = obj_list[0]
-                    assay.process_sequence[x].prev_process = obj
-                # build next link
-                obj_list = [o for o in assay.process_sequence if o.id == process.next_process]
-                if len(obj_list) > 1:
-                    if report is not None:
-                        report.error(
-                            "Duplicate object identifier '{}' declared, impossible to resolve object links".format(
-                                process.next_process))
-                elif len(obj_list) == 1:
-                    obj = obj_list[0]
-                    assay.process_sequence[x].next_process = obj

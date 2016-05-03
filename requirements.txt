@@ -8,3 +8,5 @@ sure
 lxml
 requests
 coveralls
+iso8601
+chardet
