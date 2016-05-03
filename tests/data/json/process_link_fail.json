@@ -18,7 +18,14 @@
                 {
                     "@id": "",
                     "characteristicCategories": [],
-                    "dataFiles": [],
+                    "dataFiles": [
+                        {
+                            "@id": "#data/a_file.dat",
+                            "comments": [],
+                            "name": "",
+                            "type": "Raw Data File"
+                        }
+                    ],
                     "filename": "",
                     "materials": {
                         "otherMaterials": [],
@@ -29,7 +36,38 @@
                         "termAccession": "",
                         "termSource": ""
                     },
-                    "processSequence": [],
+                    "processSequence": [
+                        {
+                            "@id": "#process/0",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": ""
+                            },
+                            "nextProcess": {
+                                "@id": "#process/2"
+                            },
+                            "inputs": [],
+                            "outputs": [],
+                            "parameterValues": [],
+                            "performer": ""
+                        },
+                        {
+                            "@id": "#process/2",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": ""
+                            },
+                            "inputs": [],
+                            "outputs": [],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/1"
+                            }
+                        }
+                    ],
                     "technologyPlatform": "",
                     "technologyType": {
                         "annotationValue": "",

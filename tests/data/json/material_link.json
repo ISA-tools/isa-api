@@ -21,7 +21,14 @@
                     "dataFiles": [],
                     "filename": "",
                     "materials": {
-                        "otherMaterials": [],
+                        "otherMaterials": [
+                            {
+                                "@id": "#material/1",
+                                "characteristics": [],
+                                "name": "",
+                                "type": "Extract Name"
+                            }
+                        ],
                         "samples": []
                     },
                     "measurementType": {
@@ -29,7 +36,24 @@
                         "termAccession": "",
                         "termSource": ""
                     },
-                    "processSequence": [],
+                    "processSequence": [
+                        {
+                            "@id": "",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": ""
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/1"
+                                }
+                            ],
+                            "outputs": [],
+                            "parameterValues": [],
+                            "performer": ""
+                        }
+                    ],
                     "technologyPlatform": "",
                     "technologyType": {
                         "annotationValue": "",

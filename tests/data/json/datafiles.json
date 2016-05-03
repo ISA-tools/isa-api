@@ -18,7 +18,14 @@
                 {
                     "@id": "",
                     "characteristicCategories": [],
-                    "dataFiles": [],
+                    "dataFiles": [
+                        {
+                            "@id": "#data/a_file.dat",
+                            "comments": [],
+                            "name": "a_file.dat",
+                            "type": "Raw Data File"
+                        }
+                    ],
                     "filename": "",
                     "materials": {
                         "otherMaterials": [],
@@ -29,7 +36,20 @@
                         "termAccession": "",
                         "termSource": ""
                     },
-                    "processSequence": [],
+                    "processSequence": [
+                        {
+                            "@id": "",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": ""
+                            },
+                            "inputs": [],
+                            "outputs": [],
+                            "parameterValues": [],
+                            "performer": ""
+                        }
+                    ],
                     "technologyPlatform": "",
                     "technologyType": {
                         "annotationValue": "",

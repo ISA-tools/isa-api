@@ -7,7 +7,14 @@
     ],
     "description": "",
     "identifier": "",
-    "ontologySourceReferences": [],
+    "ontologySourceReferences": [
+        {
+            "description": "Phenotypic Quality Ontology",
+            "file": "http://data.bioontology.org/ontologies/PATO",
+            "name": "PATO",
+            "version": "160"
+        }
+    ],
     "people": [],
     "publicReleaseDate": "",
     "publications": [],

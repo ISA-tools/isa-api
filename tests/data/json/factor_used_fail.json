@@ -29,7 +29,20 @@
                         "termAccession": "",
                         "termSource": ""
                     },
-                    "processSequence": [],
+                    "processSequence": [
+                        {
+                            "@id": "",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": ""
+                            },
+                            "inputs": [],
+                            "outputs": [],
+                            "parameterValues": [],
+                            "performer": ""
+                        }
+                    ],
                     "technologyPlatform": "",
                     "technologyType": {
                         "annotationValue": "",
@@ -41,7 +54,17 @@
             ],
             "characteristicCategories": [],
             "description": "",
-            "factors": [],
+            "factors": [
+                {
+                    "@id": "#factor/1",
+                    "factorName": "",
+                    "factorType": {
+                        "annotationValue": "",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                }
+            ],
             "filename": "",
             "identifier": "",
             "materials": {

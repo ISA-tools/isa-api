@@ -51,7 +51,22 @@
             },
             "people": [],
             "processSequence": [],
-            "protocols": [],
+            "protocols": [
+                {
+                    "@id": "#protocol/1",
+                    "components": [],
+                    "description": "",
+                    "name": "",
+                    "parameters": [],
+                    "protocolType": {
+                        "annotationValue": "",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                }
+            ],
             "publicReleaseDate": "",
             "publications": [],
             "studyDesignDescriptors": [],
