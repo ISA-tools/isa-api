@@ -940,10 +940,64 @@ def get_study_protocol_ids(study_json):
     return [protocol['@id'] for protocol in study_json['protocols']]
 
 
+def check_process_protocol_ids_usage(study_json):
+    """Used for rules 1007 and 1019"""
+    protocol_ids_declared = get_study_protocol_ids(study_json)
+    process_sequence = study_json['processSequence']
+    protocol_ids_used = list()
+    for process in process_sequence:
+        try:
+            protocol_ids_used.append(process['executesProtocol']['@id'])
+        except KeyError:
+            pass
+    for assay in study_json['assays']:
+        process_sequence = assay['processSequence']
+        for process in process_sequence:
+            try:
+                protocol_ids_used.append(process['executesProtocol']['@id'])
+            except KeyError:
+                pass
+    if len(set(protocol_ids_used) - set(protocol_ids_declared)) > 0:
+        diff = set(protocol_ids_used) - set(protocol_ids_declared)
+        print("There are protocol IDs {} used in a study or assay process sequence not declared"
+              .format(list(diff)))
+    elif len(set(protocol_ids_declared) - set(protocol_ids_used)) > 0:
+        diff = set(protocol_ids_declared) - set(protocol_ids_used)
+        print("There are some protocol IDs declared {} not used in any study or assay process sequence"
+              .format(list(diff)))
+
+
 def get_study_protocols_parameter_ids(study_json):
     """Used for rule 1009"""
     return [elem for iterabl in [[param['@id'] for param in protocol['parameters']] for protocol in
                                  study_json['protocols']] for elem in iterabl]
+
+
+def get_parameter_value_parameter_ids(study_json):
+    """Used for rule 1009"""
+    study_pv_parameter_ids = [elem for iterabl in
+                              [[parameter_value['category']['@id'] for parameter_value in process['parameterValues']]
+                               for process in study_json['processSequence']] for elem in iterabl]
+    for assay in study_json['assays']:
+        study_pv_parameter_ids.extend([elem for iterabl in
+                                       [[parameter_value['category']['@id'] for parameter_value in
+                                         process['parameterValues']]
+                                        for process in assay['processSequence']] for elem in iterabl]
+                                      )
+    return study_pv_parameter_ids
+
+
+def check_protocol_parameter_ids_usage(study_json):
+    protocols_declared = get_study_protocols_parameter_ids(study_json)
+    protocols_used = get_parameter_value_parameter_ids(study_json)
+    if len(set(protocols_used) - set(protocols_declared)) > 0:
+        diff = set(protocols_used) - set(protocols_declared)
+        print("There are protocol parameters {} used in a study or assay process not declared in any protocol"
+              .format(list(diff)))
+    elif len(set(protocols_declared) - set(protocols_used)) > 0:
+        diff = set(protocols_declared) - set(protocols_used)
+        print("There are some protocol parameters declared {} not used in any study or assay process"
+              .format(list(diff)))
 
 
 def get_characteristic_category_ids(study_or_assay_json):
@@ -966,14 +1020,28 @@ def get_characteristic_category_ids_in_assay_materials(assay_json):
 
 
 def get_study_factor_ids(study_json):
-    """Used for rule 1008"""
+    """Used for rule 1008 and 1020"""
     return [factor['@id'] for factor in study_json['factors']]
 
 
 def get_study_factor_ids_in_sample_factor_values(study_json):
-    """Used for rule 1008"""
+    """Used for rule 1008 and 1020"""
     return [elem for iterabl in [[factor['category']['@id'] for factor in sample['factorValues']] for sample in
                                  study_json['materials']['samples']] for elem in iterabl]
+
+
+def check_study_factor_usage(study_json):
+    """Used for rules 1008 and 1020"""
+    factors_declared = get_study_factor_ids(study_json)
+    factors_used = get_study_factor_ids_in_sample_factor_values(study_json)
+    if len(set(factors_used) - set(factors_declared)) > 0:
+        diff = set(factors_used) - set(factors_declared)
+        print("There are study factors {} used in a sample factor value that have not been not declared"
+              .format(list(diff)))
+    elif len(set(factors_declared) - set(factors_used)) > 0:
+        diff = set(factors_declared) - set(factors_used)
+        print("There are some study factors declared {} that have not been used in any sample factor value"
+              .format(list(diff)))
 
 
 def get_unit_category_ids(study_or_assay_json):
@@ -991,3 +1059,49 @@ def get_unit_category_ids_in_materials_and_processes(study_json):
                    parameter_value in process['parameterValues']] for process in study_json['processSequence']] for
                                                                 elem in iterabl] if x is not None]
 
+
+def check_utf8(fp):
+    """Used for rule 0010"""
+    import chardet
+    charset = chardet.detect(open(fp.name, 'rb').read())
+    if charset['encoding'] is not 'UTF-8' and charset['encoding'] is not 'ascii':
+        print("File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
+                    .format(charset['encoding'], charset['confidence']))
+        raise SystemError
+
+
+def check_isa_schemas(isa_json):
+    investigation_schema_path = os.path.join(
+        os.path.dirname(__file__) + '/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json')
+    investigation_schema = json.load(open(investigation_schema_path))
+    resolver = RefResolver('file://' + investigation_schema_path, investigation_schema)
+    validator = Draft4Validator(investigation_schema, resolver=resolver)
+    validator.validate(isa_json)
+
+
+def validate2(fp):
+    try:
+        check_utf8(fp=fp)  # Rule 0010
+        try:
+            isa_json = json.load(fp=fp)  # Rule 0002
+            check_isa_schemas(isa_json=isa_json)  # Rule 0003
+            for study_json in isa_json['studies']:
+                check_material_ids_not_declared_used(study_json)  # Rules 1002-1005
+            for study_json in isa_json['studies']:
+                check_material_ids_declared_used(study_json, get_source_ids)  # Rule 1015
+                check_material_ids_declared_used(study_json, get_sample_ids)  # Rule 1016
+                for assay_json in study_json['assays']:
+                    check_material_ids_declared_used(assay_json, get_material_ids)  # Rule 1017
+                    check_material_ids_declared_used(assay_json, get_data_file_ids)  # Rule 1018
+            for study_json in isa_json['studies']:
+                check_process_sequence_links(study_json['processSequence'])  # Rule 1006
+                for assay_json in study_json['assays']:
+                    check_process_sequence_links(assay_json['processSequence'])  # Rule 1006
+            for study_json in isa_json['studies']:
+                check_process_protocol_ids_usage(study_json)  # Rules 1007 and 1019
+        except ValueError as json_load_error:
+            print("There was an error when trying to parse the JSON")
+            raise json_load_error
+    except SystemError as system_error:
+        print("There was a general system error")
+        raise system_error
