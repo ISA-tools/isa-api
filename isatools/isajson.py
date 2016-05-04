@@ -854,20 +854,6 @@ def validate(fp):  # default reporting
     return report
 
 
-def walk(node, func):
-    if isinstance(node, dict):
-        items = node.items()
-        for item in items:
-            walk(item, func)
-    elif isinstance(node, list):
-        for item in node:
-            walk(item, func)
-    elif isinstance(node, tuple):
-        walk(node[1], func)
-    else:
-        func(node)
-
-
 def get_source_ids(study_json):
     """Used for rule 1002"""
     return [source['@id'] for source in study_json['materials']['sources']]
@@ -1244,6 +1230,56 @@ def check_ontology_sources(isa_json):
             print("An Ontology Source Reference is missing Term Source Name, so can't be referenced in ISA-tab")
 
 
+def get_ontology_source_refs(isa_json):
+    """Used for rules 3007 and 3009"""
+    return [ontology_source_ref['name'] for ontology_source_ref in isa_json['ontologySourceReferences']]
+
+
+def walk_and_get_annotations(isa_json, collector):
+    """Used for rules 3007 and 3009
+
+    Usage:
+      collector = list()
+      walk_and_get_annotations(isa_json, collector)
+      # and then like magic all your annotations from the JSON should be in the collector list
+    """
+    #  Walk JSON tree looking for ontology annotation structures in the JSON
+    if isinstance(isa_json, dict):
+        if set(isa_json.keys()) == {'annotationValue', 'termAccession', 'termSource'} or \
+                        set(isa_json.keys()) == {'@id', 'annotationValue', 'termAccession', 'termSource'}:
+            collector.append(isa_json)
+        for i in isa_json.keys():
+            walk_and_get_annotations(isa_json[i], collector)
+    elif isinstance(isa_json, list):
+        for j in isa_json:
+            walk_and_get_annotations(j, collector)
+
+
+def check_term_source_refs(isa_json):
+    """Used for rules 3007 and 3009"""
+    term_sources_declared = get_ontology_source_refs(isa_json)
+    collector = list()
+    walk_and_get_annotations(isa_json, collector)
+    term_sources_used = [annotation['termSource'] for annotation in collector if annotation['termSource'] is not '']
+    if len(set(term_sources_used) - set(term_sources_declared)) > 0:
+        diff = set(term_sources_used) - set(term_sources_declared)
+        print("There are ontology sources {} referenced in an annotation that have not been not declared"
+              .format(list(diff)))
+    elif len(set(term_sources_declared) - set(term_sources_used)) > 0:
+        diff = set(term_sources_declared) - set(term_sources_used)
+        print("There are some ontology sources declared {} that have not been used in any annotation"
+              .format(list(diff)))
+
+
+def check_term_accession_used_no_source_ref(isa_json):
+    """Used for rule 3010"""
+    collector = list()
+    walk_and_get_annotations(isa_json, collector)
+    terms_using_accession_no_source_ref = [annotation for annotation in collector if annotation['termAccession'] is not '' and annotation['termSource'] is '']
+    if len(terms_using_accession_no_source_ref) > 0:
+        print("There are ontology annotations with termAccession set but no termSource referenced: {}".format(terms_using_accession_no_source_ref))
+
+
 def validate2(fp):
     try:
         check_utf8(fp=fp)  # Rule 0010
@@ -1257,8 +1293,10 @@ def validate2(fp):
                 check_material_ids_declared_used(study_json, get_sample_ids)  # Rule 1016
                 check_material_ids_declared_used(study_json, get_material_ids)  # Rule 1017
                 check_material_ids_declared_used(study_json, get_data_file_ids)  # Rule 1018
-            check_characteristic_category_ids_usage(study_json)  # Rules 1013 and 1021
-            check_unit_category_ids_usage(study_json)  # Rules 1014 and 1022
+            for study_json in isa_json['studies']:
+                check_characteristic_category_ids_usage(study_json)  # Rules 1013 and 1021
+            for study_json in isa_json['studies']:
+                check_unit_category_ids_usage(study_json)  # Rules 1014 and 1022
             for study_json in isa_json['studies']:
                 check_process_sequence_links(study_json['processSequence'])  # Rule 1006
                 for assay_json in study_json['assays']:
@@ -1273,6 +1311,9 @@ def validate2(fp):
             check_protocol_parameter_names(isa_json)  # Rule 1011
             check_study_factor_names(isa_json)  # Rule 1012
             check_ontology_sources(isa_json)  # Rule 3008
+            check_term_source_refs(isa_json)  # Rules 3007 and 3009
+            check_term_accession_used_no_source_ref(isa_json)  # Rule 3010
+            # if all ERRORS are resolved, then try and validate against configuration
         except ValueError as json_load_error:
             print("There was an error when trying to parse the JSON")
             raise json_load_error
