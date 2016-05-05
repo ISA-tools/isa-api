@@ -4,10 +4,15 @@ from isatools.io import isatab_parser
 import os
 import sys
 import pandas as pd
+from pandas.parser import CParserError
 import io
 import networkx as nx
 import itertools
+import logging
+import re
 
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def validate(isatab_dir, config_dir):
     """ Validate an ISA-Tab archive using the Java validator that is embedded in the Python ISA-API
@@ -870,8 +875,8 @@ def assert_tab_content_equal(fp_x, fp_y):
 
     from os.path import basename
     if basename(fp_x.name).startswith('i_'):
-        df_dict_x = _read_investigation_file(fp_x)
-        df_dict_y = _read_investigation_file(fp_y)
+        df_dict_x = read_investigation_file(fp_x)
+        df_dict_y = read_investigation_file(fp_y)
         eq = True
         for k in df_dict_x.keys():
             dfx = df_dict_x[k]
@@ -970,7 +975,7 @@ def assert_tab_content_equal(fp_x, fp_y):
             return False
 
 
-def _read_investigation_file(fp):
+def read_investigation_file(fp):
 
     def _peek(f):
         position = f.tell()
@@ -1529,3 +1534,198 @@ def read_study_file(fp):
             experimental_graph[processing_event] = list()
             experimental_graph[processing_event].append(sample)
     return experimental_graph
+
+
+def check_utf8(fp):
+    """Used for rule 0010"""
+    import chardet
+    charset = chardet.detect(open(fp.name, 'rb').read())
+    if charset['encoding'] is not 'UTF-8' and charset['encoding'] is not 'ascii':
+        logger.warning("File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
+                    .format(charset['encoding'], charset['confidence']))
+        raise SystemError
+
+
+def load2(fp):
+    """Used for rules 0004 and 0005"""
+    def _read_investigation_file(fp):
+
+        def _peek(f):
+            position = f.tell()
+            l = f.readline()
+            f.seek(position)
+            return l
+
+        def _read_tab_section(f, sec_key, next_sec_key=None):
+
+            line = f.readline()
+            if not line.rstrip() == sec_key:
+                raise ValueError("Expected: " + sec_key + " section, but got: " + line)
+            memf = io.StringIO()
+            while not _peek(f=f).rstrip() == next_sec_key:
+                line = f.readline()
+                if not line:
+                    break
+                memf.write(line.rstrip() + '\n')
+            memf.seek(0)
+            return memf
+
+        def _build_section_df(f):
+            import numpy as np
+            df = pd.read_csv(f, sep='\t').T  # Load and transpose ISA file section
+            df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
+            df.reset_index(inplace=True)  # Reset index so it is accessible as column
+            df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
+            df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
+            return df
+
+        df_dict = dict()
+
+        def check_labels(section, labels_expected, labels_found):
+            comment_regex = re.compile('Comment\[(.*?)\]')
+            if not labels_expected.issubset(labels_found):
+                logger.fatal("In {} section, expected labels {} not found in {}"
+                             .format(section, labels_expected, labels_found))
+            if len(labels_found - labels_expected) > 0:
+                # check extra labels, i.e. make sure they're all comments
+                extra_labels = labels_found - labels_expected
+                for label in extra_labels:
+                    if comment_regex.match(label) is None:
+                        logger.fatal("In {} section, label {} is not allowed".format(section, label))
+
+        # Read in investigation file into DataFrames first
+        df_dict['ONTOLOGY SOURCE REFERENCE'] = _build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='ONTOLOGY SOURCE REFERENCE',
+            next_sec_key='INVESTIGATION'
+        ))
+        section = 'ONTOLOGY SOURCE REFERENCE'
+        labels_expected = {'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
+        labels_found = set(df_dict[section].columns)
+        check_labels(section, labels_expected, labels_found)
+
+        df_dict['INVESTIGATION'] = _build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='INVESTIGATION',
+            next_sec_key='INVESTIGATION PUBLICATIONS'
+        ))
+        section = 'INVESTIGATION'
+        labels_expected = {'Investigation Identifier', 'Investigation Title', 'Investigation Description',
+                           'Investigation Submission Date', 'Investigation Public Release Date'}
+        labels_found = set(df_dict[section].columns)
+        check_labels(section, labels_expected, labels_found)
+
+        df_dict['INVESTIGATION PUBLICATIONS'] = _build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='INVESTIGATION PUBLICATIONS',
+            next_sec_key='INVESTIGATION CONTACTS'
+        ))
+        df_dict['INVESTIGATION CONTACTS'] = _build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='INVESTIGATION CONTACTS',
+            next_sec_key='STUDY'
+        ))
+        df_dict['STUDY'] = list()
+        df_dict['STUDY DESIGN DESCRIPTORS'] = list()
+        df_dict['STUDY PUBLICATIONS'] = list()
+        df_dict['STUDY FACTORS'] = list()
+        df_dict['STUDY ASSAYS'] = list()
+        df_dict['STUDY PROTOCOLS'] = list()
+        df_dict['STUDY CONTACTS'] = list()
+        while _peek(fp):  # Iterate through STUDY blocks until end of file
+            df_dict['STUDY'].append(_build_section_df(_read_tab_section(
+                f=fp,
+                sec_key='STUDY',
+                next_sec_key='STUDY DESIGN DESCRIPTORS'
+            )))
+            df_dict['STUDY DESIGN DESCRIPTORS'] .append(_build_section_df(_read_tab_section(
+                f=fp,
+                sec_key='STUDY DESIGN DESCRIPTORS',
+                next_sec_key='STUDY PUBLICATIONS'
+            )))
+            df_dict['STUDY PUBLICATIONS'].append(_build_section_df(_read_tab_section(
+                f=fp,
+                sec_key='STUDY PUBLICATIONS',
+                next_sec_key='STUDY FACTORS'
+            )))
+            df_dict['STUDY FACTORS'].append(_build_section_df(_read_tab_section(
+                f=fp,
+                sec_key='STUDY FACTORS',
+                next_sec_key='STUDY ASSAYS'
+            )))
+            df_dict['STUDY ASSAYS'].append(_build_section_df(_read_tab_section(
+                f=fp,
+                sec_key='STUDY ASSAYS',
+                next_sec_key='STUDY PROTOCOLS'
+            )))
+            df_dict['STUDY PROTOCOLS'].append(_build_section_df(_read_tab_section(
+                f=fp,
+                sec_key='STUDY PROTOCOLS',
+                next_sec_key='STUDY CONTACTS'
+            )))
+            df_dict['STUDY CONTACTS'].append(_build_section_df(_read_tab_section(
+                f=fp,
+                sec_key='STUDY CONTACTS',
+                next_sec_key='STUDY'
+            )))
+        return df_dict
+
+    i_dfs = _read_investigation_file(fp)
+
+    return i_dfs
+
+
+def validate2(fp, log_level=logging.INFO):
+    logger.setLevel(log_level)
+    logger.info("ISA tab Validator from ISA tools API v0.2")
+    from io import StringIO
+    stream = StringIO()
+    handler = logging.StreamHandler(stream)
+    logger.addHandler(handler)
+    try:
+        check_utf8(fp=fp)  # Rule 0010
+        i_df = load2(fp=fp)  # Rules 0004 and 0005
+        # check_isa_schemas(isa_json=isa_json)  # Rule 0003
+        # for study_json in isa_json['studies']:
+        #     check_material_ids_not_declared_used(study_json)  # Rules 1002-1005
+        # for study_json in isa_json['studies']:
+        #     check_material_ids_declared_used(study_json, get_source_ids)  # Rule 1015
+        #     check_material_ids_declared_used(study_json, get_sample_ids)  # Rule 1016
+        #     check_material_ids_declared_used(study_json, get_material_ids)  # Rule 1017
+        #     check_material_ids_declared_used(study_json, get_data_file_ids)  # Rule 1018
+        # for study_json in isa_json['studies']:
+        #     check_characteristic_category_ids_usage(study_json)  # Rules 1013 and 1022
+        # for study_json in isa_json['studies']:
+        #     check_study_factor_usage(study_json)  # Rules 1008 and 1021
+        # for study_json in isa_json['studies']:
+        #     check_unit_category_ids_usage(study_json)  # Rules 1014 and 1022
+        # for study_json in isa_json['studies']:
+        #     check_process_sequence_links(study_json['processSequence'])  # Rule 1006
+        #     for assay_json in study_json['assays']:
+        #         check_process_sequence_links(assay_json['processSequence'])  # Rule 1006
+        # for study_json in isa_json['studies']:
+        #     check_process_protocol_ids_usage(study_json)  # Rules 1007 and 1019
+        # check_date_formats(isa_json)  # Rule 3001
+        # check_dois(isa_json)  # Rule 3002
+        # check_pubmed_ids_format(isa_json)  # Rule 3003
+        # check_filenames_present(isa_json)  # Rule 3005
+        # check_protocol_names(isa_json)  # Rule 1010
+        # check_protocol_parameter_names(isa_json)  # Rule 1011
+        # check_study_factor_names(isa_json)  # Rule 1012
+        # check_ontology_sources(isa_json)  # Rule 3008
+        # check_term_source_refs(isa_json)  # Rules 3007 and 3009
+        # check_term_accession_used_no_source_ref(isa_json)  # Rule 3010
+        # if all ERRORS are resolved, then try and validate against configuration
+        # load_configurations()
+        # check_measurement_technology_types(isa_json)
+
+    except CParserError:
+        logger.fatal("There was an error when trying to parse the ISA tab")
+    except ValueError as ve:
+        logger.fatal("There was an error when trying to parse the ISA tab")
+        logger.fatal(ve)
+    except SystemError:
+        logger.fatal("Something went very very wrong! :(")
+    finally:
+        handler.flush()
+        return stream
