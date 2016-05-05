@@ -2,7 +2,7 @@ from isatools.model.v1 import *
 import json
 import logging
 from networkx import DiGraph
-from jsonschema import Draft4Validator, RefResolver
+from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
@@ -790,18 +790,18 @@ def check_characteristic_category_ids_usage(study_json):
 
 
 def get_study_factor_ids(study_json):
-    """Used for rule 1008 and 1020"""
+    """Used for rule 1008 and 1021"""
     return [factor['@id'] for factor in study_json['factors']]
 
 
 def get_study_factor_ids_in_sample_factor_values(study_json):
-    """Used for rule 1008 and 1020"""
+    """Used for rule 1008 and 1021"""
     return [elem for iterabl in [[factor['category']['@id'] for factor in sample['factorValues']] for sample in
                                  study_json['materials']['samples']] for elem in iterabl]
 
 
 def check_study_factor_usage(study_json):
-    """Used for rules 1008 and 1020"""
+    """Used for rules 1008 and 1021"""
     factors_declared = get_study_factor_ids(study_json)
     factors_used = get_study_factor_ids_in_sample_factor_values(study_json)
     if len(set(factors_used) - set(factors_declared)) > 0:
@@ -880,12 +880,16 @@ def check_utf8(fp):
 
 def check_isa_schemas(isa_json):
     """Used for rule 0003"""
-    investigation_schema_path = os.path.join(
-        os.path.dirname(__file__) + '/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json')
-    investigation_schema = json.load(open(investigation_schema_path))
-    resolver = RefResolver('file://' + investigation_schema_path, investigation_schema)
-    validator = Draft4Validator(investigation_schema, resolver=resolver)
-    validator.validate(isa_json)
+    try:
+        investigation_schema_path = os.path.join(
+            os.path.dirname(__file__) + '/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json')
+        investigation_schema = json.load(open(investigation_schema_path))
+        resolver = RefResolver('file://' + investigation_schema_path, investigation_schema)
+        validator = Draft4Validator(investigation_schema, resolver=resolver)
+        validator.validate(isa_json)
+    except ValidationError:
+        logger.fatal("The JSON does not validate against the ISA-JSON schemas!")
+        raise SystemError
 
 
 def check_date_formats(isa_json):
@@ -1038,42 +1042,44 @@ def validate(fp, log_level=logging.INFO):
     logger.addHandler(handler)
     try:
         check_utf8(fp=fp)  # Rule 0010
-        try:
-            isa_json = json.load(fp=fp)  # Rule 0002
-            check_isa_schemas(isa_json=isa_json)  # Rule 0003
-            for study_json in isa_json['studies']:
-                check_material_ids_not_declared_used(study_json)  # Rules 1002-1005
-            for study_json in isa_json['studies']:
-                check_material_ids_declared_used(study_json, get_source_ids)  # Rule 1015
-                check_material_ids_declared_used(study_json, get_sample_ids)  # Rule 1016
-                check_material_ids_declared_used(study_json, get_material_ids)  # Rule 1017
-                check_material_ids_declared_used(study_json, get_data_file_ids)  # Rule 1018
-            for study_json in isa_json['studies']:
-                check_characteristic_category_ids_usage(study_json)  # Rules 1013 and 1021
-            for study_json in isa_json['studies']:
-                check_unit_category_ids_usage(study_json)  # Rules 1014 and 1022
-            for study_json in isa_json['studies']:
-                check_process_sequence_links(study_json['processSequence'])  # Rule 1006
-                for assay_json in study_json['assays']:
-                    check_process_sequence_links(assay_json['processSequence'])  # Rule 1006
-            for study_json in isa_json['studies']:
-                check_process_protocol_ids_usage(study_json)  # Rules 1007 and 1019
-            check_date_formats(isa_json)  # Rule 3001
-            check_dois(isa_json)  # Rule 3002
-            check_pubmed_ids_format(isa_json)  # Rule 3003
-            check_filenames_present(isa_json)  # Rule 3005
-            check_protocol_names(isa_json)  # Rule 1010
-            check_protocol_parameter_names(isa_json)  # Rule 1011
-            check_study_factor_names(isa_json)  # Rule 1012
-            check_ontology_sources(isa_json)  # Rule 3008
-            check_term_source_refs(isa_json)  # Rules 3007 and 3009
-            check_term_accession_used_no_source_ref(isa_json)  # Rule 3010
-            # if all ERRORS are resolved, then try and validate against configuration
-            # load_configurations()
-            # check_measurement_technology_types(isa_json)
-        except ValueError as json_load_error:
-            logger.fatal("There was an error when trying to parse the JSON")
-    except SystemError as system_error:
-        logger.fatal("There was a general system error")
-    handler.flush()
-    return stream
+        isa_json = json.load(fp=fp)  # Rule 0002
+        check_isa_schemas(isa_json=isa_json)  # Rule 0003
+        for study_json in isa_json['studies']:
+            check_material_ids_not_declared_used(study_json)  # Rules 1002-1005
+        for study_json in isa_json['studies']:
+            check_material_ids_declared_used(study_json, get_source_ids)  # Rule 1015
+            check_material_ids_declared_used(study_json, get_sample_ids)  # Rule 1016
+            check_material_ids_declared_used(study_json, get_material_ids)  # Rule 1017
+            check_material_ids_declared_used(study_json, get_data_file_ids)  # Rule 1018
+        for study_json in isa_json['studies']:
+            check_characteristic_category_ids_usage(study_json)  # Rules 1013 and 1022
+        for study_json in isa_json['studies']:
+            check_study_factor_usage(study_json)  # Rules 1008 and 1021
+        for study_json in isa_json['studies']:
+            check_unit_category_ids_usage(study_json)  # Rules 1014 and 1022
+        for study_json in isa_json['studies']:
+            check_process_sequence_links(study_json['processSequence'])  # Rule 1006
+            for assay_json in study_json['assays']:
+                check_process_sequence_links(assay_json['processSequence'])  # Rule 1006
+        for study_json in isa_json['studies']:
+            check_process_protocol_ids_usage(study_json)  # Rules 1007 and 1019
+        check_date_formats(isa_json)  # Rule 3001
+        check_dois(isa_json)  # Rule 3002
+        check_pubmed_ids_format(isa_json)  # Rule 3003
+        check_filenames_present(isa_json)  # Rule 3005
+        check_protocol_names(isa_json)  # Rule 1010
+        check_protocol_parameter_names(isa_json)  # Rule 1011
+        check_study_factor_names(isa_json)  # Rule 1012
+        check_ontology_sources(isa_json)  # Rule 3008
+        check_term_source_refs(isa_json)  # Rules 3007 and 3009
+        check_term_accession_used_no_source_ref(isa_json)  # Rule 3010
+        # if all ERRORS are resolved, then try and validate against configuration
+        # load_configurations()
+        # check_measurement_technology_types(isa_json)
+    except ValueError:
+        logger.fatal("There was an error when trying to parse the JSON")
+    except SystemError:
+        logger.fatal("Something went very very wrong! :(")
+    finally:
+        handler.flush()
+        return stream
