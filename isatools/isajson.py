@@ -1033,6 +1033,31 @@ def check_term_accession_used_no_source_ref(isa_json):
         logger.warning("There are ontology annotations with termAccession set but no termSource referenced: {}".format(terms_using_accession_no_source_ref))
 
 
+def print_graph(study_or_assay):
+    print(study_or_assay.filename)
+    G = study_or_assay.graph
+    from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
+    start_nodes, end_nodes = _get_start_end_nodes(G)
+    for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
+        type_seq_str = ""
+        for node in path:
+            if isinstance(node, Source):
+                type_seq_str += '(' + node.name + ":Source)->"
+            elif isinstance(node, Sample):
+                type_seq_str += '(' + node.name + ":Sample)->"
+            elif isinstance(node, Material):
+                type_seq_str += '(' + node.name + ":Material)->"
+            elif isinstance(node, Process):
+                protocol_type = node.executes_protocol.protocol_type.name
+                type_seq_str += "({})->".format(protocol_type)
+                for data in [node for node in node.outputs if isinstance(node, DataFile)]:
+                    type_seq_str += '(' + data.filename + ":DataFile)->"
+            else:
+                type_seq_str += "({})->".format(type(node))
+        if type_seq_str.endswith('->'):
+            type_seq_str = type_seq_str[:len(type_seq_str) - 2]
+        print(type_seq_str)
+
 def check_study_graph(study):
     G = study.graph
     from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
@@ -1056,6 +1081,8 @@ def check_study_graph(study):
                 type_seq_str += "(Source)->"
             elif isinstance(node, Sample):
                 type_seq_str += "(Sample)->"
+            elif isinstance(node, Material):
+                type_seq_str += "(Material)->"
             elif isinstance(node, Process):
                 protocol_type = node.executes_protocol.protocol_type.name
                 if len([p for p in protocol_types['protocol-mappings'] if
@@ -1109,12 +1136,15 @@ def validate(fp, log_level=logging.INFO):
         check_ontology_sources(isa_json)  # Rule 3008
         check_term_source_refs(isa_json)  # Rules 3007 and 3009
         check_term_accession_used_no_source_ref(isa_json)  # Rule 3010
+        # check_measurement_technology_types(isa_json, config)
         # if all ERRORS are resolved, then try and validate against configuration
         fp.seek(0)  # reset file pointer
         i = load(fp=fp)
         for study in i.studies:
             check_study_graph(study)
-        # check_measurement_technology_types(isa_json)
+            # for assay in study.assays:
+            #     check_assay_graph(assay, config)
+
     except ValueError as v:
         logger.fatal("There was an error when trying to parse the JSON")
         logger.fatal(v)
