@@ -1845,13 +1845,19 @@ def check_table_files_read(i_df, dir_context):
 
 
 def load_table(fp):
-
-    def nodeize(columns):
-        nodes_cols = list()
-        for col in columns:
-            if col is 'Source Name':
-                pass
+    characteristics_regex = re.compile('Characteristics\[(.*?)\]')
+    parameter_value_regex = re.compile('Parameter Value\[(.*?)\]')
     df = pd.read_csv(fp, sep='\t')
+    columns = df.columns
+    context = None
+    for x, column in enumerate(columns):
+        if column is ('Source Name' or 'Sample Name' or 'Term Source REF'):
+            context = column
+        elif context is ('Source Name' or 'Sample Name') and not characteristics_regex.match(column):
+            if columns[x+1] is 'Term Source REF' and column[x+2] is 'Term Accession Number':
+                logger.error('Source and Sample nodes must only contain Characteristics, not {}'.format(column))
+        elif context is 'Protocol REF' and not parameter_value_regex.match(column):
+            logger.error('Protocol REF nodes must only contain Parameter Values, not {}'.format(column))
     return df
 
 
