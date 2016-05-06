@@ -1581,7 +1581,8 @@ def load2(fp):
 
         df_dict = dict()
 
-        def check_labels(section, labels_expected, labels_found):
+        def check_labels(section, labels_expected, df):
+            labels_found = set(df.columns)
             comment_regex = re.compile('Comment\[(.*?)\]')
             if not labels_expected.issubset(labels_found):
                 logger.fatal("In {} section, expected labels {} not found in {}"
@@ -1599,32 +1600,43 @@ def load2(fp):
             sec_key='ONTOLOGY SOURCE REFERENCE',
             next_sec_key='INVESTIGATION'
         ))
-        section = 'ONTOLOGY SOURCE REFERENCE'
         labels_expected = {'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
-        labels_found = set(df_dict[section].columns)
-        check_labels(section, labels_expected, labels_found)
+        check_labels('ONTOLOGY SOURCE REFERENCE', labels_expected, df_dict['ONTOLOGY SOURCE REFERENCE'])
 
         df_dict['INVESTIGATION'] = _build_section_df(_read_tab_section(
             f=fp,
             sec_key='INVESTIGATION',
             next_sec_key='INVESTIGATION PUBLICATIONS'
         ))
-        section = 'INVESTIGATION'
         labels_expected = {'Investigation Identifier', 'Investigation Title', 'Investigation Description',
                            'Investigation Submission Date', 'Investigation Public Release Date'}
-        labels_found = set(df_dict[section].columns)
-        check_labels(section, labels_expected, labels_found)
+        check_labels('INVESTIGATION', labels_expected, df_dict['INVESTIGATION'])
 
         df_dict['INVESTIGATION PUBLICATIONS'] = _build_section_df(_read_tab_section(
             f=fp,
             sec_key='INVESTIGATION PUBLICATIONS',
             next_sec_key='INVESTIGATION CONTACTS'
         ))
+        labels_expected = {'Investigation PubMed ID', 'Investigation Publication DOI',
+                           'Investigation Publication Author List', 'Investigation Publication Title',
+                           'Investigation Publication Status', 'Investigation Publication Status Term Accession Number',
+                           'Investigation Publication Status Term Source REF'}
+        check_labels('INVESTIGATION PUBLICATIONS', labels_expected, df_dict['INVESTIGATION PUBLICATIONS'])
+
         df_dict['INVESTIGATION CONTACTS'] = _build_section_df(_read_tab_section(
             f=fp,
             sec_key='INVESTIGATION CONTACTS',
             next_sec_key='STUDY'
         ))
+        labels_expected = {'Investigation Person Last Name', 'Investigation Person First Name',
+                           'Investigation Person Mid Initials', 'Investigation Person Email',
+                           'Investigation Person Phone', 'Investigation Person Fax',
+                           'Investigation Person Address', 'Investigation Person Affiliation',
+                           'Investigation Person Roles', 'Investigation Person Roles',
+                           'Investigation Person Roles Term Accession Number',
+                           'Investigation Person Roles Term Source REF'}
+        check_labels('INVESTIGATION CONTACTS', labels_expected, df_dict['INVESTIGATION CONTACTS'])
+
         df_dict['STUDY'] = list()
         df_dict['STUDY DESIGN DESCRIPTORS'] = list()
         df_dict['STUDY PUBLICATIONS'] = list()
@@ -1638,41 +1650,209 @@ def load2(fp):
                 sec_key='STUDY',
                 next_sec_key='STUDY DESIGN DESCRIPTORS'
             )))
+            labels_expected = {'Study Identifier', 'Study Title', 'Study Description',
+                               'Study Submission Date', 'Study Public Release Date',
+                               'Study File Name'}
+            check_labels('STUDY', labels_expected, df_dict['STUDY'][len(df_dict['STUDY']) - 1])
+
             df_dict['STUDY DESIGN DESCRIPTORS'] .append(_build_section_df(_read_tab_section(
                 f=fp,
                 sec_key='STUDY DESIGN DESCRIPTORS',
                 next_sec_key='STUDY PUBLICATIONS'
             )))
+            labels_expected = {'Study Design Type', 'Study Design Type Term Accession Number',
+                               'Study Design Type Term Source REF'}
+            check_labels('STUDY DESIGN DESCRIPTORS', labels_expected,
+                         df_dict['STUDY DESIGN DESCRIPTORS'][len(df_dict['STUDY DESIGN DESCRIPTORS']) - 1])
+
             df_dict['STUDY PUBLICATIONS'].append(_build_section_df(_read_tab_section(
                 f=fp,
                 sec_key='STUDY PUBLICATIONS',
                 next_sec_key='STUDY FACTORS'
             )))
+            labels_expected = {'Study PubMed ID', 'Study Publication DOI',
+                               'Study Publication Author List', 'Study Publication Title',
+                               'Study Publication Status',
+                               'Study Publication Status Term Accession Number',
+                               'Study Publication Status Term Source REF'}
+            check_labels('STUDY PUBLICATIONS', labels_expected,
+                         df_dict['STUDY PUBLICATIONS'][len(df_dict['STUDY PUBLICATIONS']) - 1])
+
             df_dict['STUDY FACTORS'].append(_build_section_df(_read_tab_section(
                 f=fp,
                 sec_key='STUDY FACTORS',
                 next_sec_key='STUDY ASSAYS'
             )))
+            labels_expected = {'Study Factor Name', 'Study Factor Type', 'Study Factor Type Term Accession Number',
+                               'Study Factor Type Term Source REF'}
+            check_labels('STUDY FACTORS', labels_expected, df_dict['STUDY FACTORS'][len(df_dict['STUDY FACTORS']) - 1])
+
             df_dict['STUDY ASSAYS'].append(_build_section_df(_read_tab_section(
                 f=fp,
                 sec_key='STUDY ASSAYS',
                 next_sec_key='STUDY PROTOCOLS'
             )))
+            labels_expected = {'Study Assay Measurement Type', 'Study Assay Measurement Type Term Accession Number',
+                               'Study Assay Measurement Type Term Source REF', 'Study Assay Technology Type',
+                               'Study Assay Technology Type Term Accession Number',
+                               'Study Assay Technology Type Term Source REF', 'Study Assay Technology Platform',
+                               'Study Assay File Name'}
+            check_labels('STUDY ASSAYS', labels_expected, df_dict['STUDY ASSAYS'][len(df_dict['STUDY ASSAYS']) - 1])
+
             df_dict['STUDY PROTOCOLS'].append(_build_section_df(_read_tab_section(
                 f=fp,
                 sec_key='STUDY PROTOCOLS',
                 next_sec_key='STUDY CONTACTS'
             )))
+            labels_expected = {'Study Protocol Name', 'Study Protocol Type',
+                               'Study Protocol Type Term Accession Number', 'Study Protocol Type Term Source REF',
+                               'Study Protocol Description', 'Study Protocol URI', 'Study Protocol Version',
+                               'Study Protocol Parameters Name', 'Study Protocol Parameters Name Term Accession Number',
+                               'Study Protocol Parameters Name Term Source REF', 'Study Protocol Components Name',
+                               'Study Protocol Components Type', 'Study Protocol Components Type Term Accession Number',
+                               'Study Protocol Components Type Term Source REF'}
+            check_labels('STUDY PROTOCOLS', labels_expected, df_dict['STUDY PROTOCOLS'][len(df_dict['STUDY PROTOCOLS']) - 1])
+
             df_dict['STUDY CONTACTS'].append(_build_section_df(_read_tab_section(
                 f=fp,
                 sec_key='STUDY CONTACTS',
                 next_sec_key='STUDY'
             )))
+            labels_expected = {'Study Person Last Name', 'Study Person First Name',
+                               'Study Person Mid Initials', 'Study Person Email',
+                               'Study Person Phone', 'Study Person Fax',
+                               'Study Person Address', 'Study Person Affiliation',
+                               'Study Person Roles', 'Study Person Roles',
+                               'Study Person Roles Term Accession Number',
+                               'Study Person Roles Term Source REF'}
+            check_labels('STUDY CONTACTS', labels_expected,
+                         df_dict['STUDY CONTACTS'][len(df_dict['STUDY CONTACTS']) - 1])
+
         return df_dict
 
     i_dfs = _read_investigation_file(fp)
-
     return i_dfs
+
+
+def check_filenames_present(i_df):
+    """Used for rule 3005"""
+    for i, study_df in enumerate(i_df['STUDY']):
+        if study_df.iloc[0]['Study File Name'] is '':
+            logger.warning("A study filename is missing for STUDY.{}".format(i))
+        for j, filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if filename is '':
+                logger.warning("An assay filename is missing for STUDY ASSAY.{}".format(j))
+
+
+def check_date_formats(i_df):
+    """Used for rule 3001"""
+    def check_iso8601_date(date_str):
+        if date_str is not '':
+            try:
+                iso8601.parse_date(date_str)
+            except iso8601.ParseError:
+                logger.warning("Date {} does not conform to ISO8601 format".format(date_str))
+    import iso8601
+    check_iso8601_date(i_df['INVESTIGATION']['Investigation Public Release Date'].tolist()[0])
+    check_iso8601_date(i_df['INVESTIGATION']['Investigation Submission Date'].tolist()[0])
+    for i, study_df in enumerate(i_df['STUDY']):
+        check_iso8601_date(study_df['Study Public Release Date'].tolist()[0])
+        check_iso8601_date(study_df['Study Submission Date'].tolist()[0])
+        # for process in study['processSequence']:
+        #     check_iso8601_date(process['date'])
+
+
+def check_dois(i_df):
+    """Used for rule 3002"""
+    def check_doi(doi_str):
+        if doi_str is not '':
+            regexDOI = re.compile('(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
+            if not regexDOI.match(doi_str):
+                logger.warning("DOI {} does not conform to DOI format".format(doi_str))
+    import re
+    for doi in i_df['INVESTIGATION PUBLICATIONS']['Investigation Publication DOI'].tolist():
+        check_doi(doi)
+    for i, study_df in enumerate(i_df['STUDY PUBLICATIONS']):
+        for doi in study_df['Study Publication DOI'].tolist():
+            check_doi(doi)
+
+
+def check_pubmed_ids_format(i_df):
+    """Used for rule 3003"""
+    def check_pubmed_id(pubmed_id_str):
+        if pubmed_id_str is not '':
+            pmid_regex = re.compile('[0-9]{8}')
+            pmcid_regex = re.compile('PMC[0-9]{8}')
+            if (pmid_regex.match(pubmed_id_str) is None) and (pmcid_regex.match(pubmed_id_str) is None):
+                logger.warning("PubMed ID {} is not valid format".format(pubmed_id_str))
+    import re
+    for doi in i_df['INVESTIGATION PUBLICATIONS']['Investigation PubMed ID'].tolist():
+        check_pubmed_id(doi)
+    for study_pubs_df in i_df['STUDY PUBLICATIONS']:
+        for doi in study_pubs_df['Study PubMed ID'].tolist():
+            check_pubmed_id(doi)
+
+
+def check_protocol_names(i_df):
+    """Used for rule 1010"""
+    for study_protocols_df in i_df['STUDY PROTOCOLS']:
+        for i, protocol_name in enumerate(study_protocols_df['Study Protocol Name'].tolist()):
+            if protocol_name is '' or 'Unnamed: ' in protocol_name:  #  DataFrames labels empty cells as 'Unnamed: n'
+                logger.warning("A Protocol at position {} is missing Protocol Name, so can't be referenced in ISA-tab".format(i))
+
+
+def check_protocol_parameter_names(i_df):
+    """Used for rule 1011"""
+    for study_protocols_df in i_df['STUDY PROTOCOLS']:
+        for i, protocol_parameters_names in enumerate(study_protocols_df['Study Protocol Parameters Name'].tolist()):
+            if len(protocol_parameters_names.split(sep=';')) > 1:  # There's an empty cell if no protocols
+                for protocol_parameter_name in protocol_parameters_names.split(sep=';'):
+                    if protocol_parameter_name is '' or 'Unnamed: ' in protocol_parameter_name:  # DataFrames labels empty cells as 'Unnamed: n'
+                        logger.warning(
+                            "A Protocol Parameter used in Protocol position {} is missing a Name, so can't be referenced in ISA-tab".format(i))
+
+
+def check_study_factor_names(i_df):
+    """Used for rule 1012"""
+    for study_protocols_df in i_df['STUDY FACTORS']:
+        for i, protocol_name in enumerate(study_protocols_df['Study Factor Name'].tolist()):
+            if protocol_name is '' or 'Unnamed: ' in protocol_name:  #  DataFrames labels empty cells as 'Unnamed: n'
+                logger.warning("A Study Factor at position {} is missing a name, so can't be referenced in ISA-tab".format(i))
+
+
+def check_ontology_sources(i_df):
+    """Used for rule 3008"""
+    for ontology_source_name in i_df['ONTOLOGY SOURCE REFERENCE']['Term Source Name'].tolist():
+        if ontology_source_name is '' or 'Unnamed: ' in ontology_source_name:
+            logger.warning("An Ontology Source Reference is missing Term Source Name, so can't be referenced")
+
+
+def check_table_files_read(i_df, dir_context):
+    """Used for rules 0006 and 0008"""
+    for i, study_df in enumerate(i_df['STUDY']):
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename is not '':
+            try:
+                open(os.path.join(dir_context, study_filename))
+            except FileNotFoundError:
+                logger.error("Study File {} does not appear to exist".format(study_filename))
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    open(os.path.join(dir_context, assay_filename))
+                except FileNotFoundError:
+                    logger.error("Assay File {} does not appear to exist".format(assay_filename))
+
+
+def load_table(fp):
+
+    def nodeize(columns):
+        nodes_cols = list()
+        for col in columns:
+            if col is 'Source Name':
+                pass
+    df = pd.read_csv(fp, sep='\t')
+    return df
 
 
 def validate2(fp, log_level=logging.INFO):
@@ -1685,7 +1865,8 @@ def validate2(fp, log_level=logging.INFO):
     try:
         check_utf8(fp=fp)  # Rule 0010
         i_df = load2(fp=fp)  # Rules 0004 and 0005
-        # check_isa_schemas(isa_json=isa_json)  # Rule 0003
+        check_filenames_present(i_df)  # Rule 3005
+        check_table_files_read(i_df, os.path.dirname(fp.name))  # Rules 0006 and 0008
         # for study_json in isa_json['studies']:
         #     check_material_ids_not_declared_used(study_json)  # Rules 1002-1005
         # for study_json in isa_json['studies']:
@@ -1705,14 +1886,13 @@ def validate2(fp, log_level=logging.INFO):
         #         check_process_sequence_links(assay_json['processSequence'])  # Rule 1006
         # for study_json in isa_json['studies']:
         #     check_process_protocol_ids_usage(study_json)  # Rules 1007 and 1019
-        # check_date_formats(isa_json)  # Rule 3001
-        # check_dois(isa_json)  # Rule 3002
-        # check_pubmed_ids_format(isa_json)  # Rule 3003
-        # check_filenames_present(isa_json)  # Rule 3005
-        # check_protocol_names(isa_json)  # Rule 1010
-        # check_protocol_parameter_names(isa_json)  # Rule 1011
-        # check_study_factor_names(isa_json)  # Rule 1012
-        # check_ontology_sources(isa_json)  # Rule 3008
+        check_date_formats(i_df)  # Rule 3001
+        check_dois(i_df)  # Rule 3002
+        check_pubmed_ids_format(i_df)  # Rule 3003
+        check_protocol_names(i_df)  # Rule 1010
+        check_protocol_parameter_names(i_df)  # Rule 1011
+        check_study_factor_names(i_df)  # Rule 1012
+        check_ontology_sources(i_df)  # Rule 3008
         # check_term_source_refs(isa_json)  # Rules 3007 and 3009
         # check_term_accession_used_no_source_ref(isa_json)  # Rule 3010
         # if all ERRORS are resolved, then try and validate against configuration
