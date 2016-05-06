@@ -1033,6 +1033,42 @@ def check_term_accession_used_no_source_ref(isa_json):
         logger.warning("There are ontology annotations with termAccession set but no termSource referenced: {}".format(terms_using_accession_no_source_ref))
 
 
+def check_study_graph(study):
+    G = study.graph
+    from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
+    start_nodes, end_nodes = _get_start_end_nodes(G)
+    protocol_types = json.load(open(os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                                                 'isatools/schemas/isa_model_version_1_0_schemas/configurations/protocol_definitions.json')))
+    study_config = json.load(open(os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                                               'isatools/schemas/isa_model_version_1_0_schemas/configurations/study_config.json')))
+    process_node_configs = [n for n in study_config['nodes'] if n['nodeType'] == 'process_schema.json']
+    graph_patterns = study_config['graphPatterns']
+    new_graph_patterns = list()
+    for graph_pattern in graph_patterns:
+        for process_node_config in process_node_configs:
+            new_graph_patterns.append(
+                graph_pattern.replace(process_node_config['@id'], process_node_config['protocolType']))
+    logger.info("Checking against graph configs: " + str(new_graph_patterns))
+    for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
+        type_seq_str = ""
+        for node in path:
+            if isinstance(node, Source):
+                type_seq_str += "(Source)->"
+            elif isinstance(node, Sample):
+                type_seq_str += "(Sample)->"
+            elif isinstance(node, Process):
+                protocol_type = node.executes_protocol.protocol_type.name
+                if len([p for p in protocol_types['protocol-mappings'] if
+                        protocol_type in p['synonyms'] and p['protocol-type'] == 'sample collection']) == 1:
+                    protocol_type = 'sample collection'
+                else:
+                    logger.warn("{} does not contain correct protocol type {}".format(type_seq_str[:len(type_seq_str) - 2]), 'sample collection')
+                type_seq_str += "({})->".format(protocol_type)
+        type_seq_str = type_seq_str[:len(type_seq_str) - 2]
+        if type_seq_str not in new_graph_patterns:
+            logger.warn(type_seq_str + "is not in " + str(new_graph_patterns))
+
+
 def validate(fp, log_level=logging.INFO):
     logger.setLevel(log_level)
     logger.info("ISA JSON Validator from ISA tools API v0.2")
@@ -1074,10 +1110,14 @@ def validate(fp, log_level=logging.INFO):
         check_term_source_refs(isa_json)  # Rules 3007 and 3009
         check_term_accession_used_no_source_ref(isa_json)  # Rule 3010
         # if all ERRORS are resolved, then try and validate against configuration
-        # load_configurations()
+        fp.seek(0)  # reset file pointer
+        i = load(fp=fp)
+        for study in i.studies:
+            check_study_graph(study)
         # check_measurement_technology_types(isa_json)
-    except ValueError:
+    except ValueError as v:
         logger.fatal("There was an error when trying to parse the JSON")
+        logger.fatal(v)
     except SystemError:
         logger.fatal("Something went very very wrong! :(")
     finally:
