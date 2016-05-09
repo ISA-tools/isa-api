@@ -1,6 +1,7 @@
 from isatools import isajson
 from isatools import isatab
 import os
+import shutil
 
 
 def convert(json_fp, path):
@@ -19,4 +20,11 @@ def convert(json_fp, path):
 
     """
     isa_obj = isajson.load(fp=json_fp)
-    isatab.dump(isa_obj=isa_obj, path=path)
+    isatab.dump(isa_obj=isa_obj, output_path=path)
+    #  copy data files across from source directory where JSON is located
+    for file in [f for f in os.listdir(os.path.dirname(json_fp.name))
+                 if not (f.endswith('.txt') and (f.startswith('i_') or f.startswith('s_') or f.startswith('a_'))) and
+                 not (f.endswith('.json'))]:
+        filepath = os.path.join(os.path.dirname(json_fp.name), file)
+        if os.path.isfile(filepath):
+            shutil.copy(filepath, path)

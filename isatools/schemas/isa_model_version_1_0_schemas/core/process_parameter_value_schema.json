@@ -4,7 +4,19 @@
     "description" : "JSON-schema representing a Parameter Value (associated with a Protocol REF) in the ISA model",
     "type" : "object",
     "properties" : {
-        "name" : { "type" : "string"}
+        "category" : {
+             "$ref": "protocol_parameter_schema.json#"
+            },
+        "value": {
+            "anyOf" : [
+                { "$ref": "ontology_annotation_schema.json#"},
+                { "type": "string"},
+                { "type": "number"}
+                ]
+        },
+        "unit": {
+            "$ref": "ontology_annotation_schema.json#"
+        }
     },
     "additionalProperties": false
 }

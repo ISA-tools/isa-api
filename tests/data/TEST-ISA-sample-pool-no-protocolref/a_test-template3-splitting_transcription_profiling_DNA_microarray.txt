@@ -1,0 +1,1 @@
+Sample Name	Extract Name	Labeled Extract Name	Label	Term Source REF	Term Accession Number	Hybridization Assay Name	Array Design REF	Scan Name	Image File	Array Data Filesample1	extract1	extract1.le1	biotin	CHEBI	http://purl.obolibrary.org/obo/CHEBI_15956	hyb1	HG_U133_2.0	hyb1.scan1	1.dat	1.cel

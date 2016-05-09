@@ -1,0 +1,96 @@
+ONTOLOGY SOURCE REFERENCE
+Term Source Name	"NCBITAXON"	"CHEBI"	"UBERON"	"OBI"
+Term Source File	"http://data.bioontology.org/ontologies/NCBITAXON"	"http://data.bioontology.org/ontologies/CHEBI"	"http://data.bioontology.org/ontologies/UBERON"	"http://data.bioontology.org/ontologies/OBI"
+Term Source Version	"2"	"84"	"216"	"22"
+Term Source Description	"National Center for Biotechnology Information (NCBI) Organismal Classification"	"Chemical Entities of Biological Interest Ontology"	"Uber Anatomy Ontology"	"Ontology for Biomedical Investigations"
+INVESTIGATION
+Investigation Identifier	"TEST-ISA-source-split"
+Investigation Title	"Investigation"
+Investigation Description	""
+Investigation Submission Date	""
+Investigation Public Release Date	""
+Comment[Created With Configuration]	""
+Comment[Last Opened With Configuration]	""
+INVESTIGATION PUBLICATIONS
+Investigation PubMed ID
+Investigation Publication DOI
+Investigation Publication Author List
+Investigation Publication Title
+Investigation Publication Status
+Investigation Publication Status Term Accession Number
+Investigation Publication Status Term Source REF
+INVESTIGATION CONTACTS
+Investigation Person Last Name
+Investigation Person First Name
+Investigation Person Mid Initials
+Investigation Person Email
+Investigation Person Phone
+Investigation Person Fax
+Investigation Person Address
+Investigation Person Affiliation
+Investigation Person Roles
+Investigation Person Roles Term Accession Number
+Investigation Person Roles Term Source REF
+STUDY
+Study Identifier	"TEST-Template1-Splitting"
+Study Title	"TEST-Template1-Splitting"
+Study Description	"TEST-Template1-Splitting"
+Study Submission Date	""
+Study Public Release Date	""
+Study File Name	"s_TEST-Template1-Splitting.txt"
+Comment[Study Funding Agency]	""
+Comment[Study Grant Number]	""
+STUDY DESIGN DESCRIPTORS
+Study Design Type	"parallel group design"
+Study Design Type Term Accession Number	"http://purl.obolibrary.org/obo/OBI_0500006"
+Study Design Type Term Source REF	"OBI"
+STUDY PUBLICATIONS
+Study PubMed ID	"1435624"
+Study Publication DOI	""
+Study Publication Author List	"el-Attar A, Adu-Gyamfi Y, Tawfique K."
+Study Publication Title	"Flumazenil reversal of midazolam sedation for dental procedures."
+Study Publication Status	"Published"
+Study Publication Status Term Accession Number	""
+Study Publication Status Term Source REF	""
+STUDY FACTORS
+Study Factor Name	"location"
+Study Factor Type	"geographical location"
+Study Factor Type Term Accession Number	""
+Study Factor Type Term Source REF	""
+STUDY ASSAYS
+Study Assay File Name	"a_test-template1-splitting_transcription_profiling_DNA_microarray.txt"
+Study Assay Measurement Type	"transcription profiling"
+Study Assay Measurement Type Term Accession Number	"http://purl.obolibrary.org/obo/OBI_0000424"
+Study Assay Measurement Type Term Source REF	"OBI"
+Study Assay Technology Type	"DNA microarray"
+Study Assay Technology Type Term Accession Number	"http://purl.obolibrary.org/obo/OBI_0400148"
+Study Assay Technology Type Term Source REF	"OBI"
+Study Assay Technology Platform	""
+STUDY PROTOCOLS
+Study Protocol Name	"sample collection"	"RNA extraction"	"labeling"	"nucleic acid hybridization"	"data collection"
+Study Protocol Type	"sample collection"	"RNA extraction"	"labeling"	"nucleic acid hybridization"	"data collection"
+Study Protocol Type Term Accession Number	""	""	""	""	""
+Study Protocol Type Term Source REF	""	""	""	""	""
+Study Protocol Description	"a sample collection protocol description"	""	""	""	""
+Study Protocol URI	"http://www.research.org/protocol1.pdf"	""	""	""	""
+Study Protocol Version	"1.0"	""	""	""	""
+Study Protocol Parameters Name	"storage container;storage medium"	""	""	""	""
+Study Protocol Parameters Name Term Accession Number	";"	""	""	""	""
+Study Protocol Parameters Name Term Source REF	";"	""	""	""	""
+Study Protocol Components Name	"barcode reader;handling automat"	""	""	""	""
+Study Protocol Components Type	"device;device"	""	""	""	""
+Study Protocol Components Type Term Accession Number	";"	""	""	""	""
+Study Protocol Components Type Term Source REF	";"	""	""	""	""
+STUDY CONTACTS
+Study Person Last Name	"Smith"
+Study Person First Name	"John"
+Study Person Mid Initials	"F"
+Study Person Email	"john.f.smith@research.org"
+Study Person Phone	"+44 (0) 1865 645 234"
+Study Person Fax	"+44 (0) 1865 645 000"
+Study Person Address	"34, Beaumont Street"
+Study Person Affiliation	"University of Oxford"
+Study Person Roles	"principale investigator"
+Study Person Roles Term Accession Number	""
+Study Person Roles Term Source REF	""
+Comment[Study Person REF]	""

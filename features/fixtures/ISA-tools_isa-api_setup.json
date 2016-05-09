@@ -1,0 +1,18 @@
+{
+  "name": "setup.py",
+  "path": "setup.py",
+  "sha": "d30680bd53541b6f7de475ff33468784f8bdd622",
+  "size": 546,
+  "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/setup.py?ref=master",
+  "html_url": "https://github.com/ISA-tools/isa-api/blob/master/setup.py",
+  "git_url": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/d30680bd53541b6f7de475ff33468784f8bdd622",
+  "download_url": "https://raw.githubusercontent.com/ISA-tools/isa-api/master/setup.py",
+  "type": "file",
+  "content": "ZnJvbSBkaXN0dXRpbHMuY29yZSBpbXBvcnQgc2V0dXAKCnNldHVwKAogICAg\nbmFtZT0naXNhdG9vbHMnLAogICAgdmVyc2lvbj0nMC4wLjQnLAogICAgcGFj\na2FnZXM9Wydpc2F0b29scycsICdpc2F0b29scy5jb252ZXJ0JywgJ2lzYXRv\nb2xzLmlvJywgJ2lzYXRvb2xzLm1vZGVsJ10sCiAgICBkZXNjcmlwdGlvbj0n\nSVNBIHZlcnNpb24gMS4wIEFQSScsCiAgICBhdXRob3I9J0lTQSBJbmZyYXN0\ncnVjdHVyZSBUZWFtJywKICAgIGF1dGhvcl9lbWFpbD0naXNhQGdvb2dsZWdy\nb3Vwcy5jb20nLAogICAgY2xhc3NpZmllcnM9WwogICAgICAgICdEZXZlbG9w\nbWVudCBTdGF0dXMgOjogMyAtIEFscGhhJywKICAgICAgICAnSW50ZW5kZWQg\nQXVkaWVuY2UgOjogRGV2ZWxvcGVycycsCiAgICAgICAgJ1RvcGljIDo6IFNj\naWVudGlmaWMvRW5naW5lZXJpbmcgOjogQmlvLUluZm9ybWF0aWNzJywKICAg\nICAgICAnUHJvZ3JhbW1pbmcgTGFuZ3VhZ2UgOjogUHl0aG9uIDo6IDMuNCcs\nCiAgICAgICAgXSwKICAgIHVybD0naHR0cDovL3d3dy5pc2EtdG9vbHMub3Jn\nLycsCikK\n",
+  "encoding": "base64",
+  "_links": {
+    "self": "https://api.github.com/repos/ISA-tools/isa-api/contents/setup.py?ref=master",
+    "git": "https://api.github.com/repos/ISA-tools/isa-api/git/blobs/d30680bd53541b6f7de475ff33468784f8bdd622",
+    "html": "https://github.com/ISA-tools/isa-api/blob/master/setup.py"
+  }
+}

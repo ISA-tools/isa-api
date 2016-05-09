@@ -1,0 +1,1016 @@
+{
+    "comments": [
+        {
+            "name": "Last Opened With Configuration",
+            "value": ""
+        },
+        {
+            "name": "Created With Configuration",
+            "value": ""
+        }
+    ],
+    "description": "",
+    "identifier": "TEST-ISA-source-split",
+    "ontologySourceReferences": [
+        {
+            "description": "National Center for Biotechnology Information (NCBI) Organismal Classification",
+            "file": "http://data.bioontology.org/ontologies/NCBITAXON",
+            "name": "NCBITAXON",
+            "version": "2"
+        },
+        {
+            "description": "Chemical Entities of Biological Interest Ontology",
+            "file": "http://data.bioontology.org/ontologies/CHEBI",
+            "name": "CHEBI",
+            "version": "84"
+        },
+        {
+            "description": "Uber Anatomy Ontology",
+            "file": "http://data.bioontology.org/ontologies/UBERON",
+            "name": "UBERON",
+            "version": "216"
+        },
+        {
+            "description": "Ontology for Biomedical Investigations",
+            "file": "http://data.bioontology.org/ontologies/OBI",
+            "name": "OBI",
+            "version": "22"
+        }
+    ],
+    "people": [],
+    "publicReleaseDate": "",
+    "publications": [],
+    "studies": [
+        {
+            "@id": "#study/TEST-Template1-Splitting",
+            "assays": [
+                {
+                    "@id": "#assay/a_test-template1-splitting_transcription_profiling_DNA_microarray.txt",
+                    "characteristicCategories": [
+                        {
+                            "@id": "#characteristic_category/Label",
+                            "characteristicType": {
+                                "annotationValue": "Label",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "dataFiles": [
+                        {
+                            "@id": "#data/rawdatafile-3.cel",
+                            "comments": [],
+                            "name": "3.cel",
+                            "type": "Raw Data File"
+                        },
+                        {
+                            "@id": "#data/imagefile-2.dat",
+                            "comments": [],
+                            "name": "2.dat",
+                            "type": "Image File"
+                        },
+                        {
+                            "@id": "#data/imagefile-3.dat",
+                            "comments": [],
+                            "name": "3.dat",
+                            "type": "Image File"
+                        },
+                        {
+                            "@id": "#data/rawdatafile-1.cel",
+                            "comments": [],
+                            "name": "1.cel",
+                            "type": "Raw Data File"
+                        },
+                        {
+                            "@id": "#data/imagefile-4.dat",
+                            "comments": [],
+                            "name": "4.dat",
+                            "type": "Image File"
+                        },
+                        {
+                            "@id": "#data/imagefile-1.dat",
+                            "comments": [],
+                            "name": "1.dat",
+                            "type": "Image File"
+                        },
+                        {
+                            "@id": "#data/rawdatafile-2.cel",
+                            "comments": [],
+                            "name": "2.cel",
+                            "type": "Raw Data File"
+                        },
+                        {
+                            "@id": "#data/rawdatafile-4.cel",
+                            "comments": [],
+                            "name": "4.cel",
+                            "type": "Raw Data File"
+                        }
+                    ],
+                    "filename": "a_test-template1-splitting_transcription_profiling_DNA_microarray.txt",
+                    "materials": {
+                        "otherMaterials": [
+                            {
+                                "@id": "#material/extract-extract2",
+                                "characteristics": [],
+                                "name": "extract-extract2",
+                                "type": "Extract Name"
+                            },
+                            {
+                                "@id": "#material/labeledextract-extract4.le1",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#characteristic_category/Label"
+                                        },
+                                        "value": {
+                                            "annotationValue": "biotin",
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_15956",
+                                            "termSource": "CHEBI"
+                                        }
+                                    }
+                                ],
+                                "name": "labeledextract-extract4.le1",
+                                "type": "Labeled Extract Name"
+                            },
+                            {
+                                "@id": "#material/labeledextract-extract1.le1",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#characteristic_category/Label"
+                                        },
+                                        "value": {
+                                            "annotationValue": "biotin",
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_15956",
+                                            "termSource": "CHEBI"
+                                        }
+                                    }
+                                ],
+                                "name": "labeledextract-extract1.le1",
+                                "type": "Labeled Extract Name"
+                            },
+                            {
+                                "@id": "#material/extract-extract1",
+                                "characteristics": [],
+                                "name": "extract-extract1",
+                                "type": "Extract Name"
+                            },
+                            {
+                                "@id": "#material/labeledextract-extract3.le1",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#characteristic_category/Label"
+                                        },
+                                        "value": {
+                                            "annotationValue": "biotin",
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_15956",
+                                            "termSource": "CHEBI"
+                                        }
+                                    }
+                                ],
+                                "name": "labeledextract-extract3.le1",
+                                "type": "Labeled Extract Name"
+                            },
+                            {
+                                "@id": "#material/extract-extract4",
+                                "characteristics": [],
+                                "name": "extract-extract4",
+                                "type": "Extract Name"
+                            },
+                            {
+                                "@id": "#material/extract-extract3",
+                                "characteristics": [],
+                                "name": "extract-extract3",
+                                "type": "Extract Name"
+                            },
+                            {
+                                "@id": "#material/labeledextract-extract2.le1",
+                                "characteristics": [
+                                    {
+                                        "category": {
+                                            "@id": "#characteristic_category/Label"
+                                        },
+                                        "value": {
+                                            "annotationValue": "biotin",
+                                            "termAccession": "http://purl.obolibrary.org/obo/CHEBI_15956",
+                                            "termSource": "CHEBI"
+                                        }
+                                    }
+                                ],
+                                "name": "labeledextract-extract2.le1",
+                                "type": "Labeled Extract Name"
+                            }
+                        ],
+                        "samples": [
+                            {
+                                "@id": "#sample/sample-sample2"
+                            },
+                            {
+                                "@id": "#sample/sample-sample1"
+                            },
+                            {
+                                "@id": "#sample/sample-sample3"
+                            },
+                            {
+                                "@id": "#sample/sample-sample4"
+                            }
+                        ]
+                    },
+                    "measurementType": {
+                        "annotationValue": "transcription profiling",
+                        "termAccession": "http://purl.obolibrary.org/obo/OBI_0000424",
+                        "termSource": "OBI"
+                    },
+                    "processSequence": [
+                        {
+                            "@id": "#process/RNA_extraction2",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/RNA_extraction"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/sample-sample2"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/labeling2"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/extract-extract2"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": ""
+                        },
+                        {
+                            "@id": "#process/hyb3",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/nucleic_acid_hybridization"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract3.le1"
+                                }
+                            ],
+                            "name": "hyb3",
+                            "nextProcess": {
+                                "@id": "#process/hyb3.scan1"
+                            },
+                            "outputs": [],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#parameter/Array_Design_REF"
+                                    },
+                                    "value": "HG_U133_2.0"
+                                }
+                            ],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/labeling3"
+                            }
+                        },
+                        {
+                            "@id": "#process/hyb1",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/nucleic_acid_hybridization"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract1.le1"
+                                }
+                            ],
+                            "name": "hyb1",
+                            "nextProcess": {
+                                "@id": "#process/hyb1.scan1"
+                            },
+                            "outputs": [],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#parameter/Array_Design_REF"
+                                    },
+                                    "value": "HG_U133_2.0"
+                                }
+                            ],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/labeling1"
+                            }
+                        },
+                        {
+                            "@id": "#process/hyb4.scan1",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/data_collection"
+                            },
+                            "inputs": [],
+                            "name": "hyb4.scan1",
+                            "outputs": [
+                                {
+                                    "@id": "#data/imagefile-4.dat"
+                                },
+                                {
+                                    "@id": "#data/rawdatafile-4.cel"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/hyb4"
+                            }
+                        },
+                        {
+                            "@id": "#process/labeling3",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/labeling"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/extract-extract3"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/hyb3"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract3.le1"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/RNA_extraction3"
+                            }
+                        },
+                        {
+                            "@id": "#process/RNA_extraction3",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/RNA_extraction"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/sample-sample3"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/labeling3"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/extract-extract3"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": ""
+                        },
+                        {
+                            "@id": "#process/RNA_extraction1",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/RNA_extraction"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/sample-sample1"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/labeling1"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/extract-extract1"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": ""
+                        },
+                        {
+                            "@id": "#process/labeling2",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/labeling"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/extract-extract2"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/hyb2"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract2.le1"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/RNA_extraction2"
+                            }
+                        },
+                        {
+                            "@id": "#process/labeling1",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/labeling"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/extract-extract1"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/hyb1"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract1.le1"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/RNA_extraction1"
+                            }
+                        },
+                        {
+                            "@id": "#process/hyb3.scan1",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/data_collection"
+                            },
+                            "inputs": [],
+                            "name": "hyb3.scan1",
+                            "outputs": [
+                                {
+                                    "@id": "#data/imagefile-3.dat"
+                                },
+                                {
+                                    "@id": "#data/rawdatafile-3.cel"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/hyb3"
+                            }
+                        },
+                        {
+                            "@id": "#process/RNA_extraction4",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/RNA_extraction"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#sample/sample-sample4"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/labeling4"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/extract-extract4"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": ""
+                        },
+                        {
+                            "@id": "#process/hyb2",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/nucleic_acid_hybridization"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract2.le1"
+                                }
+                            ],
+                            "name": "hyb2",
+                            "nextProcess": {
+                                "@id": "#process/hyb2.scan1"
+                            },
+                            "outputs": [],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#parameter/Array_Design_REF"
+                                    },
+                                    "value": "HG_U133_2.0"
+                                }
+                            ],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/labeling2"
+                            }
+                        },
+                        {
+                            "@id": "#process/labeling4",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/labeling"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/extract-extract4"
+                                }
+                            ],
+                            "nextProcess": {
+                                "@id": "#process/hyb4"
+                            },
+                            "outputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract4.le1"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/RNA_extraction4"
+                            }
+                        },
+                        {
+                            "@id": "#process/hyb4",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/nucleic_acid_hybridization"
+                            },
+                            "inputs": [
+                                {
+                                    "@id": "#material/labeledextract-extract4.le1"
+                                }
+                            ],
+                            "name": "hyb4",
+                            "nextProcess": {
+                                "@id": "#process/hyb4.scan1"
+                            },
+                            "outputs": [],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#parameter/Array_Design_REF"
+                                    },
+                                    "value": "HG_U133_2.0"
+                                }
+                            ],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/labeling4"
+                            }
+                        },
+                        {
+                            "@id": "#process/hyb2.scan1",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/data_collection"
+                            },
+                            "inputs": [],
+                            "name": "hyb2.scan1",
+                            "outputs": [
+                                {
+                                    "@id": "#data/imagefile-2.dat"
+                                },
+                                {
+                                    "@id": "#data/rawdatafile-2.cel"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/hyb2"
+                            }
+                        },
+                        {
+                            "@id": "#process/hyb1.scan1",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/data_collection"
+                            },
+                            "inputs": [],
+                            "name": "hyb1.scan1",
+                            "outputs": [
+                                {
+                                    "@id": "#data/imagefile-1.dat"
+                                },
+                                {
+                                    "@id": "#data/rawdatafile-1.cel"
+                                }
+                            ],
+                            "parameterValues": [],
+                            "performer": "",
+                            "previousProcess": {
+                                "@id": "#process/hyb1"
+                            }
+                        }
+                    ],
+                    "technologyPlatform": "",
+                    "technologyType": {
+                        "annotationValue": "DNA microarray",
+                        "termAccession": "http://purl.obolibrary.org/obo/OBI_0400148",
+                        "termSource": "OBI"
+                    },
+                    "unitCategories": []
+                }
+            ],
+            "characteristicCategories": [
+                {
+                    "@id": "#characteristic_category/Material_Type",
+                    "characteristicType": {
+                        "annotationValue": "Material Type",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/organism_part",
+                    "characteristicType": {
+                        "annotationValue": "organism part",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/reference_descriptor",
+                    "characteristicType": {
+                        "annotationValue": "reference descriptor",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/organism",
+                    "characteristicType": {
+                        "annotationValue": "organism",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                }
+            ],
+            "comments": [
+                {
+                    "name": "Study Funding Agency",
+                    "value": ""
+                },
+                {
+                    "name": "Study Grant Number",
+                    "value": ""
+                }
+            ],
+            "description": "TEST-Template1-Splitting",
+            "factors": [
+                {
+                    "@id": "#factor/location",
+                    "factorName": "location",
+                    "factorType": {
+                        "annotationValue": "geographical location",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                }
+            ],
+            "filename": "s_TEST-Template1-Splitting.txt",
+            "identifier": "TEST-Template1-Splitting",
+            "materials": {
+                "otherMaterials": [],
+                "samples": [
+                    {
+                        "@id": "#sample/sample-sample3",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/organism_part"
+                                },
+                                "value": {
+                                    "annotationValue": "blood",
+                                    "termAccession": "http://purl.obolibrary.org/obo/UBERON_0000178",
+                                    "termSource": "UBERON"
+                                }
+                            }
+                        ],
+                        "derivesFrom": [
+                            {
+                                "@id": "#source/source-source1"
+                            }
+                        ],
+                        "factorValues": [],
+                        "name": "sample-sample3"
+                    },
+                    {
+                        "@id": "#sample/sample-sample2",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/organism_part"
+                                },
+                                "value": {
+                                    "annotationValue": "heart",
+                                    "termAccession": "http://purl.obolibrary.org/obo/UBERON_0000948",
+                                    "termSource": "UBERON"
+                                }
+                            }
+                        ],
+                        "derivesFrom": [
+                            {
+                                "@id": "#source/source-source1"
+                            }
+                        ],
+                        "factorValues": [],
+                        "name": "sample-sample2"
+                    },
+                    {
+                        "@id": "#sample/sample-sample1",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/organism_part"
+                                },
+                                "value": {
+                                    "annotationValue": "liver",
+                                    "termAccession": "http://purl.obolibrary.org/obo/UBERON_0002107",
+                                    "termSource": "UBERON"
+                                }
+                            }
+                        ],
+                        "derivesFrom": [
+                            {
+                                "@id": "#source/source-source1"
+                            }
+                        ],
+                        "factorValues": [],
+                        "name": "sample-sample1"
+                    },
+                    {
+                        "@id": "#sample/sample-sample4",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/organism_part"
+                                },
+                                "value": {
+                                    "annotationValue": "blood",
+                                    "termAccession": "http://purl.obolibrary.org/obo/UBERON_0000178",
+                                    "termSource": "UBERON"
+                                }
+                            }
+                        ],
+                        "derivesFrom": [
+                            {
+                                "@id": "#source/source-source1"
+                            }
+                        ],
+                        "factorValues": [],
+                        "name": "sample-sample4"
+                    }
+                ],
+                "sources": [
+                    {
+                        "@id": "#source/source-source1",
+                        "characteristics": [
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/Material_Type"
+                                },
+                                "value": "specimen"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/reference_descriptor"
+                                },
+                                "value": "not applicable"
+                            },
+                            {
+                                "category": {
+                                    "@id": "#characteristic_category/organism"
+                                },
+                                "value": {
+                                    "annotationValue": "Human",
+                                    "termAccession": "http://purl.bioontology.org/ontology/STY/T016",
+                                    "termSource": "NCBITAXON"
+                                }
+                            }
+                        ],
+                        "name": "source-source1"
+                    }
+                ]
+            },
+            "people": [
+                {
+                    "@id": "#person/Smith",
+                    "address": "34, Beaumont Street",
+                    "affiliation": "University of Oxford",
+                    "comments": [
+                        {
+                            "name": "Study Person REF",
+                            "value": ""
+                        }
+                    ],
+                    "email": "john.f.smith@research.org",
+                    "fax": "+44 (0) 1865 645 000",
+                    "firstName": "John",
+                    "lastName": "Smith",
+                    "midInitials": "F",
+                    "phone": "+44 (0) 1865 645 234",
+                    "roles": [
+                        {
+                            "annotationValue": "principale investigator",
+                            "termAccession": "",
+                            "termSource": ""
+                        }
+                    ]
+                }
+            ],
+            "processSequence": [
+                {
+                    "@id": "#process/sample_collection1",
+                    "comments": [],
+                    "date": "",
+                    "executesProtocol": {
+                        "@id": "#protocol/sample_collection"
+                    },
+                    "inputs": [
+                        {
+                            "@id": "#source/source-source1"
+                        }
+                    ],
+                    "outputs": [
+                        {
+                            "@id": "#sample/sample-sample1"
+                        },
+                        {
+                            "@id": "#sample/sample-sample2"
+                        },
+                        {
+                            "@id": "#sample/sample-sample3"
+                        },
+                        {
+                            "@id": "#sample/sample-sample4"
+                        }
+                    ],
+                    "parameterValues": [],
+                    "performer": ""
+                }
+            ],
+            "protocols": [
+                {
+                    "@id": "#protocol/sample_collection",
+                    "components": [
+                        {
+                            "componentName": "barcode reader",
+                            "componentType": {
+                                "annotationValue": "device",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "componentName": "handling automat",
+                            "componentType": {
+                                "annotationValue": "device",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "description": "a sample collection protocol description",
+                    "name": "sample collection",
+                    "parameters": [
+                        {
+                            "@id": "#parameter/storage_container",
+                            "parameterName": {
+                                "annotationValue": "storage container",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        },
+                        {
+                            "@id": "#parameter/storage_medium",
+                            "parameterName": {
+                                "annotationValue": "storage medium",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "annotationValue": "sample collection",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "http://www.research.org/protocol1.pdf",
+                    "version": "1.0"
+                },
+                {
+                    "@id": "#protocol/RNA_extraction",
+                    "components": [],
+                    "description": "",
+                    "name": "RNA extraction",
+                    "parameters": [],
+                    "protocolType": {
+                        "annotationValue": "RNA extraction",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "#protocol/labeling",
+                    "components": [],
+                    "description": "",
+                    "name": "labeling",
+                    "parameters": [],
+                    "protocolType": {
+                        "annotationValue": "labeling",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "#protocol/nucleic_acid_hybridization",
+                    "components": [],
+                    "description": "",
+                    "name": "nucleic acid hybridization",
+                    "parameters": [],
+                    "protocolType": {
+                        "annotationValue": "nucleic acid hybridization",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                },
+                {
+                    "@id": "#protocol/data_collection",
+                    "components": [],
+                    "description": "",
+                    "name": "data collection",
+                    "parameters": [],
+                    "protocolType": {
+                        "annotationValue": "data collection",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                }
+            ],
+            "publicReleaseDate": "",
+            "publications": [
+                {
+                    "authorList": "el-Attar A, Adu-Gyamfi Y, Tawfique K.",
+                    "doi": "",
+                    "pubMedID": "1435624",
+                    "status": {
+                        "annotationValue": "Published",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "title": "Flumazenil reversal of midazolam sedation for dental procedures."
+                }
+            ],
+            "studyDesignDescriptors": [
+                {
+                    "annotationValue": "parallel group design",
+                    "termAccession": "http://purl.obolibrary.org/obo/OBI_0500006",
+                    "termSource": "OBI"
+                }
+            ],
+            "submissionDate": "",
+            "title": "TEST-Template1-Splitting",
+            "unitCategories": []
+        }
+    ],
+    "submissionDate": "",
+    "title": "Investigation"
+}

@@ -1,5 +1,10 @@
-warlock
 biopy-isatab
 jsonschema
-warlock
 pandas
+networkx
+behave
+httpretty
+sure
+lxml
+requests
+coveralls
