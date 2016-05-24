@@ -222,6 +222,28 @@ class ValidateIsaJsonTest(TestCase):
             self.fail(
                 "Validation error missing when should report error - data has incorrectly reported everything is OK but not reported PATO as being unused")
 
+    def test_load_config(self):
+        """Tests against 4001"""
+        try:
+            isajson.load_config(os.path.join(self._dir, 'data', 'json', 'configs'))
+        except IOError as e:
+            self.fail("Could not load config because... " + str(e))
+
+    def test_get_config(self):
+        """Tests against 4002"""
+        try:
+            configs = isajson.load_config(os.path.join(self._dir, 'data', 'json', 'configs'))
+            if configs is None:
+                self.fail("There was a problem and config is null")
+            else:
+                self.assertIsNotNone(configs[('transcription profiling', 'DNA microarray')])
+        except IOError as e:
+            self.fail("Could not load config because... " + str(e))
+
+    def test_study_config_validation(self):
+        isajson.validate()
+
+
 # class ValidateIsaTabTest(TestCase):
 #
 #     def setUp(self):

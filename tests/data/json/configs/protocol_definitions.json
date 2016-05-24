@@ -1,0 +1,24 @@
+{
+   "protocol-mappings": [
+    {
+      "protocol-type": "sample collection",
+      "synonyms": [ "growth", "environmental material collection", "feces collection" ]
+    },
+    {
+      "protocol-type": "RNA extraction",
+      "synonyms": [ "mRNA extraction" ]
+    },
+    {
+      "protocol-type": "labeling",
+      "synonyms": [ "biotin labeling" ]
+    },
+    {
+      "protocol-type": "nucleic acid hybridization",
+      "synonyms": [ "EukGE-WS4" ]
+    },
+    {
+      "protocol-type": "data collection",
+      "synonyms": [ "data processing" ]
+    }
+  ]
+}

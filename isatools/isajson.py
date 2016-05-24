@@ -1058,14 +1058,13 @@ def print_graph(study_or_assay):
             type_seq_str = type_seq_str[:len(type_seq_str) - 2]
         print(type_seq_str)
 
-def check_study_graph(study):
-    G = study.graph
-    from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
+
+def check_study_graph(study_or_assay, configs):
+    G = study_or_assay.graph
+    from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths  # TODO: Refactor this back to isajson package
     start_nodes, end_nodes = _get_start_end_nodes(G)
-    protocol_types = json.load(open(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                                                 'isatools/schemas/isa_model_version_1_0_schemas/configurations/protocol_definitions.json')))
-    study_config = json.load(open(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                                               'isatools/schemas/isa_model_version_1_0_schemas/configurations/study_config.json')))
+    protocol_types = configs['protocol_definitions']
+    study_config = configs['study']
     process_node_configs = [n for n in study_config['nodes'] if n['nodeType'] == 'process_schema.json']
     graph_patterns = study_config['graphPatterns']
     new_graph_patterns = list()
@@ -1087,16 +1086,43 @@ def check_study_graph(study):
                 protocol_type = node.executes_protocol.protocol_type.name
                 if len([p for p in protocol_types['protocol-mappings'] if
                         protocol_type in p['synonyms'] and p['protocol-type'] == 'sample collection']) == 1:
-                    protocol_type = 'sample collection'
-                else:
-                    logger.warn("{} does not contain correct protocol type {}".format(type_seq_str[:len(type_seq_str) - 2]), 'sample collection')
+                    protocol_type = 'sample collection'  # cast to uppermost protocol type class
                 type_seq_str += "({})->".format(protocol_type)
         type_seq_str = type_seq_str[:len(type_seq_str) - 2]
         if type_seq_str not in new_graph_patterns:
-            logger.warn(type_seq_str + "is not in " + str(new_graph_patterns))
+            logger.warn("Graph pattern " + type_seq_str + " is not in " + str(new_graph_patterns))
 
 
-def validate(fp, log_level=logging.INFO):
+def load_config(config_dir):
+    import json
+    configs = dict()
+    for file in os.listdir(config_dir):
+        if file.endswith(".json"):  # ignore non json files
+            try:
+                config_dict = json.load(open(os.path.join(config_dir, file)))
+                if os.path.basename(file) == 'protocol_definitions.json':
+                    configs['protocol_definitions'] = config_dict
+                elif os.path.basename(file) == 'study_config.json':
+                    configs['study'] = config_dict
+                else:
+                    configs[(config_dict['measurementType'], config_dict['technologyType'])] = config_dict
+            except ValidationError:
+                logger.error("Could not load configuration file {}".format(str(file)))
+    return configs
+
+
+def check_measurement_technology_types(assay_json, configs):
+    try:
+        measurement_type = assay_json['measurementType']['annotationValue']
+        technology_type = assay_json['technologyType']['annotationValue']
+        config = configs[(measurement_type, technology_type)]
+        if config is None:
+            raise KeyError
+    except KeyError:
+        logger.error("Could not load configuration for measurement type '{}' and technology type '{}'".format(measurement_type, technology_type))
+
+
+def validate(fp, config_dir='', log_level=logging.INFO):
     logger.setLevel(log_level)
     logger.info("ISA JSON Validator from ISA tools API v0.2")
     from io import StringIO
@@ -1136,15 +1162,20 @@ def validate(fp, log_level=logging.INFO):
         check_ontology_sources(isa_json)  # Rule 3008
         check_term_source_refs(isa_json)  # Rules 3007 and 3009
         check_term_accession_used_no_source_ref(isa_json)  # Rule 3010
-        # check_measurement_technology_types(isa_json, config)
+        configs = load_config(config_dir)
+        for study_json in isa_json['studies']:
+            for assay_json in study_json['assays']:
+                check_measurement_technology_types(assay_json, configs)
         # if all ERRORS are resolved, then try and validate against configuration
         fp.seek(0)  # reset file pointer
         i = load(fp=fp)
         for study in i.studies:
-            check_study_graph(study)
+            check_study_graph(study_or_assay=study, configs=configs)
             # for assay in study.assays:
             #     check_assay_graph(assay, config)
-
+    except KeyError as k:
+        logger.fatal("There was an error when trying to read the JSON")
+        logger.fatal(k)
     except ValueError as v:
         logger.fatal("There was an error when trying to parse the JSON")
         logger.fatal(v)
