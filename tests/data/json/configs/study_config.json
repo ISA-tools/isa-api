@@ -1,5 +1,4 @@
 {
-  "required": [ "identifier", "title", "description" ],
   "nodes": [
     {
       "@id": "Source",
