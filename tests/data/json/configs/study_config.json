@@ -1,23 +1,11 @@
 {
-  "nodes": [
-    {
-      "@id": "Source",
-      "nodeType": "source_schema.json"
-    },
-    {
-      "@id": "SampleCollectionProcess",
-      "nodeType": "process_schema.json",
-      "protocolType": "sample collection"
-    },
-    {
-      "@id": "Sample",
-      "nodeType": "sample_schema.json"
-    }
-  ],
   "additionalCharacteristics": true,
   "additionalFactorValues": true,
+  "protocols": [
+    "sample collection"
+  ],
   "graphPatterns": [
-    "(Source)->(SampleCollectionProcess)->(Sample)",
+    "(Source)->(sample collection)->(Sample)",
     "(Source)->(Sample)"
   ]
 }
