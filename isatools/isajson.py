@@ -887,7 +887,7 @@ def check_isa_schemas(isa_json, investigation_schema_path):
         validator.validate(isa_json)
     except ValidationError:
         logger.fatal("(F) The JSON does not validate against the provided ISA-JSON schemas!")
-        raise SystemError
+        raise SystemError("(F) The JSON does not validate against the provided ISA-JSON schemas!")
 
 
 def check_date_formats(isa_json):
@@ -1044,7 +1044,10 @@ def print_graph(study_or_assay):
             elif isinstance(node, Sample):
                 type_seq_str += '(' + node.name + ":Sample)->"
             elif isinstance(node, Material):
-                type_seq_str += '(' + node.name + ":Material)->"
+                if '#material/extract' in node.id:
+                    type_seq_str += '(' + node.name + ":Extract)->"
+                else:
+                    type_seq_str += '(' + node.name + ":Material)->"
             elif isinstance(node, Process):
                 protocol_type = node.executes_protocol.protocol_type.name
                 type_seq_str += "({})->".format(protocol_type)
@@ -1061,25 +1064,19 @@ def check_study_or_assay_graph(study_or_assay, configs):
     G = study_or_assay.graph
     from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths  # TODO: Refactor this back to isajson package
     start_nodes, end_nodes = _get_start_end_nodes(G)
-    protocol_types = configs['protocol_definitions']
     if isinstance(study_or_assay, Study):
         graph_config = configs['study']
     else:
         graph_config = configs[(study_or_assay.measurement_type.name, study_or_assay.technology_type.name)]
-    process_node_configs = [n for n in graph_config['nodes'] if n['nodeType'] == 'process_schema.json']
+    protocols = graph_config['protocols']
     graph_patterns = graph_config['graphPatterns']
-    new_graph_patterns = list()
-    for graph_pattern in graph_patterns:
-        for process_node_config in process_node_configs:
-            new_graph_patterns.append(
-                graph_pattern.replace(process_node_config['@id'], process_node_config['protocolType']))
     study_or_assay_id = ''
     if isinstance(study_or_assay, Study):
         study_or_assay_id = study_or_assay.identifier
     elif isinstance(study_or_assay, Assay):
         study_or_assay_id = study_or_assay.filename
-    logger.info("Checking {} against graph configs: ".format(study_or_assay_id) + str(new_graph_patterns))
-    for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
+    logger.info("Checking {} against graph configs: ".format(study_or_assay_id) + str(graph_patterns))
+    for x, path in enumerate(_all_end_to_end_paths(G, start_nodes, end_nodes)):
         type_seq_str = ""
         for node in path:
             if isinstance(node, Source):
@@ -1087,16 +1084,22 @@ def check_study_or_assay_graph(study_or_assay, configs):
             elif isinstance(node, Sample):
                 type_seq_str += "(Sample)->"
             elif isinstance(node, Material):
-                type_seq_str += "(Material)->"
+                if '#material/extract' in node.id:
+                    type_seq_str += "(Extract)->"
+                else:
+                    type_seq_str += "(Material)->"
             elif isinstance(node, Process):
                 protocol_type = node.executes_protocol.protocol_type.name
-                # if len([p for p in protocol_types['protocol-mappings'] if
-                #         protocol_type in p['synonyms'] and p['protocol-type'] == 'sample collection']) == 1:
-                #     protocol_type = 'sample collection'  # cast to uppermost protocol type class
-                type_seq_str += "({})->".format(protocol_type)
+                if protocol_type in protocols:
+                    type_seq_str += "({})->".format(protocol_type)
+                else:
+                    pass
+                for data in [node for node in node.outputs if isinstance(node, DataFile)]:
+                    type_seq_str += "(DataFile)->"
         type_seq_str = type_seq_str[:len(type_seq_str) - 2]
-        if type_seq_str not in new_graph_patterns:
-            logger.warn("(W) Graph pattern " + type_seq_str + " is not in " + str(new_graph_patterns))
+        # id_seq_str = id_seq_str[:len(id_seq_str) - 2]
+        if type_seq_str not in graph_patterns:
+            logger.warn("(W) Graph pattern " + type_seq_str + " is not in " + str(graph_patterns))
 
 
 def load_config(config_dir):
@@ -1172,7 +1175,7 @@ def validate(fp, config_dir='', log_level=logging.INFO):
         for study_json in isa_json['studies']:
             for assay_json in study_json['assays']:
                 check_measurement_technology_types(assay_json, configs)  # Rule 4002
-        check_isa_schemas(isa_json=isa_json, investigation_schema_path=os.path.join(config_dir, 'schemas'))  # Rule 4003
+        check_isa_schemas(isa_json=isa_json, investigation_schema_path=os.path.join(config_dir, 'schemas', 'investigation_schema.json'))  # Rule 4003
         # if all ERRORS are resolved, then try and validate against configuration
         handler.flush()
         if "(E)" in stream.getvalue():
