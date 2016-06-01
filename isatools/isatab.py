@@ -1844,20 +1844,158 @@ def check_table_files_read(i_df, dir_context):
                     logger.error("Assay File {} does not appear to exist".format(assay_filename))
 
 
+def check_table_files_load(i_df, dir_context):
+    """Used for rules 0007 and 0009"""
+    for i, study_df in enumerate(i_df['STUDY']):
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename is not '':
+            try:
+                load_table_checks(open(os.path.join(dir_context, study_filename)))
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    load_table_checks(open(os.path.join(dir_context, assay_filename)))
+                except FileNotFoundError:
+                    pass
+
+
+def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
+    for i, study_df in enumerate(i_df['STUDY']):
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename is not '':
+            try:
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                study_samples = set(study_df['Sample Name'])
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    assay_samples = set(assay_df['Sample Name'])
+                    if not assay_samples.issubset(study_samples):
+                        logger.error("Some samples in an assay file {} are not declared in the study file {}: {}".format(assay_filename, study_filename, list(assay_samples - study_samples)))
+                except FileNotFoundError:
+                    pass
+
+
+def check_protocol_usage(i_df, dir_context):
+    for i, study_df in enumerate(i_df['STUDY']):
+        protocols_declared = set(i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist())
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename is not '':
+            try:
+                protocol_refs_used = set()
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
+                    protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
+                if not protocol_refs_used.issubset(protocols_declared):
+                    logger.error(
+                        "Some protocols used in an study file {} are not declared in the investigation file: {}".format(
+                            study_filename, list(protocol_refs_used - protocols_declared)))
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    protocol_refs_used = set()
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
+                        protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
+                    if not protocol_refs_used.issubset(protocols_declared):
+                        logger.error(
+                            "Some protocols used in an assay file {} are not declared in the investigation file: {}".format(
+                                assay_filename, list(protocol_refs_used - protocols_declared)))
+                except FileNotFoundError:
+                    pass
+
+
 def load_table(fp):
+    df = pd.read_csv(fp, sep='\t')
+    return df
+
+
+def load_table_checks(fp):
     characteristics_regex = re.compile('Characteristics\[(.*?)\]')
     parameter_value_regex = re.compile('Parameter Value\[(.*?)\]')
-    df = pd.read_csv(fp, sep='\t')
+    factor_value_regex = re.compile('Factor Value\[(.*?)\]')
+    comment_regex = re.compile('Comment\[(.*?)\]')
+    indexed_col_regex = re.compile('(.*?)\.\d+')
+    df = load_table(fp)
     columns = df.columns
-    context = None
+    for x, column in enumerate(columns):  # check if columns have valid labels
+        if indexed_col_regex.match(column):
+            column = column[:column.rfind('.')]
+        if (column not in ['Source Name', 'Sample Name', 'Term Source REF', 'Protocol REF', 'Term Accession Number',
+                           'Unit', 'Assay Name', 'Extract Name', 'Raw Data File', 'Material Type', 'MS Assay Name',
+                           'Raw Spectral Data File', 'Labeled Extract Name', 'Label', 'Hybridization Assay Name',
+                           'Array Design REF', 'Scan Name', 'Array Data File', 'Protein Assignment File',
+                           'Peptide Assignment File', 'Post Translational Modification Assignment File',
+                           'Data Transformation Name', 'Derived Spectral Data File', 'Normalization Name',
+                           'Derived Array Data File']) and not characteristics_regex.match(column) and not parameter_value_regex.match(column) and not factor_value_regex.match(column) and not comment_regex.match(column):
+            logger.error("Unrecognised column heading {} at column position {} in table file {}".format(column, x, os.path.basename(fp.name)))
+    norm_columns = list()
     for x, column in enumerate(columns):
-        if column is ('Source Name' or 'Sample Name' or 'Term Source REF'):
-            context = column
-        elif context is ('Source Name' or 'Sample Name') and not characteristics_regex.match(column):
-            if columns[x+1] is 'Term Source REF' and column[x+2] is 'Term Accession Number':
-                logger.error('Source and Sample nodes must only contain Characteristics, not {}'.format(column))
-        elif context is 'Protocol REF' and not parameter_value_regex.match(column):
-            logger.error('Protocol REF nodes must only contain Parameter Values, not {}'.format(column))
+        if indexed_col_regex.match(column):
+            norm_columns.append(column[:column.rfind('.')])
+        else:
+            norm_columns.append(column)
+    object_index = [i for i, x in enumerate(norm_columns) if x in ['Source Name', 'Sample Name', 'Protocol REF',
+                                                              'Extract Name', 'Labeled Extract Name', 'Raw Data File',
+                                                              'Raw Spectral Data File', 'Array Data File',
+                                                              'Protein Assignment File', 'Peptide Assignment File',
+                                                              'Post Translational Modification Assignment File',
+                                                              'Derived Spectral Data File', 'Derived Array Data File']
+                    or factor_value_regex.match(x)]
+    object_columns_list = list()
+    prev_i = object_index[0]
+    for curr_i in object_index:  # collect each object's columns
+        if prev_i == curr_i: pass  # skip if there's no diff, i.e. first one
+        else: object_columns_list.append(norm_columns[prev_i:curr_i])
+        prev_i = curr_i
+    object_columns_list.append(norm_columns[prev_i:])  # finally collect last object's columns
+    for object_columns in object_columns_list:
+        prop_name = object_columns[0]
+        if prop_name in ['Sample Name', 'Source Name']:
+            for x, col in enumerate(object_columns[1:]):
+                if col not in ['Term Source REF', 'Term Accession Number', 'Unit'] and not characteristics_regex.match(col) and not factor_value_regex.match(col) and not comment_regex.match(col):
+                    logger.error("Expected only Characteristics, Factor Values or Comments following {} columns but found {} at offset {}".format(prop_name, col, x+1))
+        elif prop_name == 'Protocol REF':
+            for x, col in enumerate(object_columns[1:]):
+                if col not in ['Term Source REF', 'Term Accession Number', 'Unit', 'Assay Name',
+                               'Hybridization Assay Name', 'Array Design REF', 'Scan Name'] and not parameter_value_regex.match(col) and not comment_regex.match(col):
+                    logger.error("Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, col, x+1))
+        elif prop_name == 'Extract Name':
+            if len(object_columns) > 1:
+                logger.error(
+                    "Unexpected column heading(s) following {} column. Found {} at offset {}".format(prop_name, object_columns[1:], 2))
+        elif prop_name == 'Labeled Extract Name':
+            if len(object_columns) > 1:
+                if object_columns[1] == 'Label':
+                    for x, col in enumerate(object_columns[2:]):
+                        if col not in ['Term Source REF', 'Term Accession Number']:
+                            logger.error("Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, col, x+1))
+                else:
+                    logger.error("Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, object_columns[1:], 2))
+            else:
+                logger.error("Expected Label column after Labeled Extract Name but none found")
+        elif prop_name in ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
+                           'Raw Spectral Data File', 'Protein Assignment File', 'Peptide Assignment File',
+                           'Post Translational Modification Assignment File']:
+            for x, col in enumerate(object_columns[1:]):
+                if not comment_regex.match(col):
+                    logger.error("Expected only Comments following {} columns but found {} at offset {}".format(prop_name, col, x+1))
+        elif factor_value_regex.match(prop_name):
+            for x, col in enumerate(object_columns[2:]):
+                if col not in ['Term Source REF', 'Term Accession Number']:
+                    logger.error(
+                        "Unexpected column heading following {} column. Found {} at offset {}".format(prop_name,
+                                                                                                      col, x + 1))
+        else:
+            logger.info("Need to implement a rule for... " + prop_name)
+            logger.info(object_columns)
     return df
 
 
@@ -1873,15 +2011,8 @@ def validate2(fp, log_level=logging.INFO):
         i_df = load2(fp=fp)  # Rules 0004 and 0005
         check_filenames_present(i_df)  # Rule 3005
         check_table_files_read(i_df, os.path.dirname(fp.name))  # Rules 0006 and 0008
-        # for study_json in isa_json['studies']:
-        #     check_material_ids_not_declared_used(study_json)  # Rules 1002-1005
-        # for study_json in isa_json['studies']:
-        #     check_material_ids_declared_used(study_json, get_source_ids)  # Rule 1015
-        #     check_material_ids_declared_used(study_json, get_sample_ids)  # Rule 1016
-        #     check_material_ids_declared_used(study_json, get_material_ids)  # Rule 1017
-        #     check_material_ids_declared_used(study_json, get_data_file_ids)  # Rule 1018
-        # for study_json in isa_json['studies']:
-        #     check_characteristic_category_ids_usage(study_json)  # Rules 1013 and 1022
+        check_table_files_load(i_df, os.path.dirname(fp.name))  # Rules 0007 and 0009
+        check_samples_not_declared_in_study_used_in_assay(i_df, os.path.dirname(fp.name))  # Rule 1003
         # for study_json in isa_json['studies']:
         #     check_study_factor_usage(study_json)  # Rules 1008 and 1021
         # for study_json in isa_json['studies']:
@@ -1890,8 +2021,7 @@ def validate2(fp, log_level=logging.INFO):
         #     check_process_sequence_links(study_json['processSequence'])  # Rule 1006
         #     for assay_json in study_json['assays']:
         #         check_process_sequence_links(assay_json['processSequence'])  # Rule 1006
-        # for study_json in isa_json['studies']:
-        #     check_process_protocol_ids_usage(study_json)  # Rules 1007 and 1019
+        check_protocol_usage(i_df, os.path.dirname(fp.name))  # Rules 1007 and (1019 to do)
         check_date_formats(i_df)  # Rule 3001
         check_dois(i_df)  # Rule 3002
         check_pubmed_ids_format(i_df)  # Rule 3003
