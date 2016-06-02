@@ -1882,6 +1882,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
 
 
 def check_protocol_usage(i_df, dir_context):
+    """Used for rules 1007 and 1019"""
     for i, study_df in enumerate(i_df['STUDY']):
         protocols_declared = set(i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist())
         study_filename = study_df.iloc[0]['Study File Name']
@@ -1910,6 +1911,27 @@ def check_protocol_usage(i_df, dir_context):
                                 assay_filename, list(protocol_refs_used - protocols_declared)))
                 except FileNotFoundError:
                     pass
+        # now collect all protocols in all assays to compare to declared protocols
+        protocol_refs_used = set()
+        if study_filename is not '':
+            try:
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
+                    protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
+                        protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
+                except FileNotFoundError:
+                    pass
+        if len(protocols_declared - protocol_refs_used) > 0:
+            logger.warn(
+                "Some protocols declared in a study file {} are not used in any assay file: {}".format(
+                    study_filename, list(protocols_declared - protocol_refs_used)))
 
 
 def load_table(fp):
@@ -1949,6 +1971,7 @@ def load_table_checks(fp):
                                                               'Post Translational Modification Assignment File',
                                                               'Derived Spectral Data File', 'Derived Array Data File']
                     or factor_value_regex.match(x)]
+    # this bit strips out the postfix .n that DataFrames adds to multiples of column labels
     object_columns_list = list()
     prev_i = object_index[0]
     for curr_i in object_index:  # collect each object's columns
@@ -1956,6 +1979,7 @@ def load_table_checks(fp):
         else: object_columns_list.append(norm_columns[prev_i:curr_i])
         prev_i = curr_i
     object_columns_list.append(norm_columns[prev_i:])  # finally collect last object's columns
+
     for object_columns in object_columns_list:
         prop_name = object_columns[0]
         if prop_name in ['Sample Name', 'Source Name']:
@@ -1999,6 +2023,134 @@ def load_table_checks(fp):
     return df
 
 
+def check_study_factor_usage(i_df, dir_context):
+    """Used for rules 1008 and 1021"""
+    factor_value_regex = re.compile('Factor Value\[(.*?)\]')
+    for i, study_df in enumerate(i_df['STUDY']):
+        study_factors_declared = set(i_df['STUDY FACTORS'][i]['Study Factor Name'].tolist())
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename is not '':
+            try:
+                study_factors_used = set()
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                study_factor_ref_cols = [i for i in study_df.columns if factor_value_regex.match(i)]
+                for col in study_factor_ref_cols:
+                    fv = factor_value_regex.findall(col)
+                    study_factors_used = study_factors_used.union(set(fv))
+                if not study_factors_used.issubset(study_factors_declared):
+                    logger.error(
+                        "Some factors used in an study file {} are not declared in the investigation file: {}".format(
+                            study_filename, list(study_factors_used - study_factors_declared)))
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    study_factors_used = set()
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    study_factor_ref_cols = set([i for i in assay_df.columns if factor_value_regex.match(i)])
+                    for col in study_factor_ref_cols:
+                        fv = factor_value_regex.findall(col)
+                        study_factors_used = study_factors_used.union(set(fv))
+                    if not study_factors_used.issubset(study_factors_declared):
+                        logger.error(
+                            "Some factors used in an assay file {} are not declared in the investigation file: {}".format(
+                                assay_filename, list(study_factors_used - study_factors_declared)))
+                except FileNotFoundError:
+                    pass
+        study_factors_used = set()
+        if study_filename is not '':
+            try:
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                study_factor_ref_cols = [i for i in study_df.columns if factor_value_regex.match(i)]
+                for col in study_factor_ref_cols:
+                    fv = factor_value_regex.findall(col)
+                    study_factors_used = study_factors_used.union(set(fv))
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    study_factor_ref_cols = set([i for i in assay_df.columns if factor_value_regex.match(i)])
+                    for col in study_factor_ref_cols:
+                        fv = factor_value_regex.findall(col)
+                        study_factors_used = study_factors_used.union(set(fv))
+                except FileNotFoundError:
+                    pass
+        if len(study_factors_declared - study_factors_used) > 0:
+            logger.warn(
+                "Some study factors declared in the investigation file are not used in any assay file: {}".format(
+                    list(study_factors_declared - study_factors_used)))
+
+
+def check_protocol_parameter_usage(i_df, dir_context):
+    """Used for rules 1009 and 1020"""
+    parameter_value_regex = re.compile('Parameter Value\[(.*?)\]')
+    for i, study_df in enumerate(i_df['STUDY']):
+        protocol_parameters_declared = set()
+        protocol_parameters_per_protocol = set(i_df['STUDY PROTOCOLS'][i]['Study Protocol Parameters Name'].tolist())
+        for protocol_parameters in protocol_parameters_per_protocol:
+            parameters_list = protocol_parameters.split(';')
+            protocol_parameters_declared = protocol_parameters_declared.union(set(parameters_list))
+        protocol_parameters_declared = protocol_parameters_declared - {''}  # empty string is not a valid protocol parameter
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename is not '':
+            try:
+                protocol_parameters_used = set()
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                parameter_value_cols = [i for i in study_df.columns if parameter_value_regex.match(i)]
+                for col in parameter_value_cols:
+                    pv = parameter_value_regex.findall(col)
+                    protocol_parameters_used = protocol_parameters_used.union(set(pv))
+                if not protocol_parameters_used.issubset(protocol_parameters_declared):
+                    logger.error(
+                        "Some protocol parameters referenced in an study file {} are not declared in the investigation file: {}".format(
+                            study_filename, list(protocol_parameters_used - protocol_parameters_declared)))
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    protocol_parameters_used = set()
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    parameter_value_cols = [i for i in assay_df.columns if parameter_value_regex.match(i)]
+                    for col in parameter_value_cols:
+                        pv = parameter_value_regex.findall(col)
+                        protocol_parameters_used = protocol_parameters_used.union(set(pv))
+                    if not protocol_parameters_used.issubset(protocol_parameters_declared):
+                        logger.error(
+                            "Some protocol parameters referenced in an assay file {} are not declared in the investigation file: {}".format(
+                                assay_filename, list(protocol_parameters_used - protocol_parameters_declared)))
+                except FileNotFoundError:
+                    pass
+        # now collect all protocol parameters in all assays to compare to declared protocol parameters
+        protocol_parameters_used = set()
+        if study_filename is not '':
+            try:
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                parameter_value_cols = [i for i in study_df.columns if parameter_value_regex.match(i)]
+                for col in parameter_value_cols:
+                    pv = parameter_value_regex.findall(col)
+                    protocol_parameters_used = protocol_parameters_used.union(set(pv))
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    parameter_value_cols = [i for i in assay_df.columns if parameter_value_regex.match(i)]
+                    for col in parameter_value_cols:
+                        pv = parameter_value_regex.findall(col)
+                        protocol_parameters_used = protocol_parameters_used.union(set(pv))
+                except FileNotFoundError:
+                    pass
+        if len(protocol_parameters_declared - protocol_parameters_used) > 0:
+            logger.warn(
+                "Some protocol parameters declared in the investigation file are not used in any assay file: {}".format(
+                    list(protocol_parameters_declared - protocol_parameters_used)))
+
+
 def validate2(fp, log_level=logging.INFO):
     logger.setLevel(log_level)
     logger.info("ISA tab Validator from ISA tools API v0.2")
@@ -2013,15 +2165,9 @@ def validate2(fp, log_level=logging.INFO):
         check_table_files_read(i_df, os.path.dirname(fp.name))  # Rules 0006 and 0008
         check_table_files_load(i_df, os.path.dirname(fp.name))  # Rules 0007 and 0009
         check_samples_not_declared_in_study_used_in_assay(i_df, os.path.dirname(fp.name))  # Rule 1003
-        # for study_json in isa_json['studies']:
-        #     check_study_factor_usage(study_json)  # Rules 1008 and 1021
-        # for study_json in isa_json['studies']:
-        #     check_unit_category_ids_usage(study_json)  # Rules 1014 and 1022
-        # for study_json in isa_json['studies']:
-        #     check_process_sequence_links(study_json['processSequence'])  # Rule 1006
-        #     for assay_json in study_json['assays']:
-        #         check_process_sequence_links(assay_json['processSequence'])  # Rule 1006
-        check_protocol_usage(i_df, os.path.dirname(fp.name))  # Rules 1007 and (1019 to do)
+        check_study_factor_usage(i_df, os.path.dirname(fp.name))  # Rules 1008 and 1021
+        check_protocol_usage(i_df, os.path.dirname(fp.name))  # Rules 1007 and 1019
+        check_protocol_parameter_usage(i_df, os.path.dirname(fp.name))  # Rules 1009 and 1020
         check_date_formats(i_df)  # Rule 3001
         check_dois(i_df)  # Rule 3002
         check_pubmed_ids_format(i_df)  # Rule 3003
