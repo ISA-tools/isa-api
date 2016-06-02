@@ -1557,7 +1557,6 @@ def load2(fp):
             return l
 
         def _read_tab_section(f, sec_key, next_sec_key=None):
-
             line = f.readline()
             if not line.rstrip() == sec_key:
                 raise ValueError("Expected: " + sec_key + " section, but got: " + line)
@@ -1572,7 +1571,7 @@ def load2(fp):
 
         def _build_section_df(f):
             import numpy as np
-            df = pd.read_csv(f, sep='\t').T  # Load and transpose ISA file section
+            df = pd.read_csv(f, sep='\t', error_bad_lines=False).T  # Load and transpose ISA file section
             df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
             df.reset_index(inplace=True)  # Reset index so it is accessible as column
             df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
@@ -1956,7 +1955,7 @@ def load_table_checks(fp):
                            'Array Design REF', 'Scan Name', 'Array Data File', 'Protein Assignment File',
                            'Peptide Assignment File', 'Post Translational Modification Assignment File',
                            'Data Transformation Name', 'Derived Spectral Data File', 'Normalization Name',
-                           'Derived Array Data File']) and not characteristics_regex.match(column) and not parameter_value_regex.match(column) and not factor_value_regex.match(column) and not comment_regex.match(column):
+                           'Derived Array Data File', 'Image File']) and not characteristics_regex.match(column) and not parameter_value_regex.match(column) and not factor_value_regex.match(column) and not comment_regex.match(column):
             logger.error("Unrecognised column heading {} at column position {} in table file {}".format(column, x, os.path.basename(fp.name)))
     norm_columns = list()
     for x, column in enumerate(columns):
@@ -2151,6 +2150,43 @@ def check_protocol_parameter_usage(i_df, dir_context):
                     list(protocol_parameters_declared - protocol_parameters_used)))
 
 
+def get_ontology_source_refs(i_df):
+    return i_df['ONTOLOGY SOURCE REFERENCE']['Term Source Name'].tolist()
+
+
+def check_term_source_refs_in_investigation(i_df):
+    """Used for rules 3007 and 3009"""
+    ontology_sources_list = set(get_ontology_source_refs(i_df))
+
+    def check_study_term_sources_in_secton_field(section_label, pos, column_label):
+        section_term_source_refs = [i for i in i_df[section_label][pos][column_label].tolist() if i != '']
+        # print(section_term_source_refs)
+        if not set(section_term_source_refs).issubset(ontology_sources_list):
+            logger.warn("In {} one or more of {} has not been declared in {}.{} section".format(column_label,
+                                                                                                section_term_source_refs,
+                                                                                                section_label, pos))
+
+    i_publication_status_term_source_ref = i_df['INVESTIGATION PUBLICATIONS']['Investigation Publication Status Term Source REF'].tolist()
+    if not set(i_publication_status_term_source_ref).issubset(ontology_sources_list):
+        logger.warn("Investigation Publication Status Term Source REF {} has not been declared in ONTOLOGY SOURCE REFERENCE section".format(i_publication_status_term_source_ref))
+    i_person_roles_term_source_ref = i_df['INVESTIGATION CONTACTS']['Investigation Person Roles Term Source REF'].tolist()
+    if not set(i_person_roles_term_source_ref).issubset(ontology_sources_list):
+        logger.warn(
+            "Investigation Person Roles Term Source REF {} has not been declared in ONTOLOGY SOURCE REFERENCE section".format(
+                i_person_roles_term_source_ref))
+
+    for i, study_df in enumerate(i_df['STUDY']):
+        check_study_term_sources_in_secton_field('STUDY DESIGN DESCRIPTORS', i, 'Study Design Type Term Source REF')
+        check_study_term_sources_in_secton_field('STUDY PUBLICATIONS', i, 'Study Publication Status Term Source REF')
+        check_study_term_sources_in_secton_field('STUDY ASSAYS', i, 'Study Assay Measurement Type Term Source REF')
+        check_study_term_sources_in_secton_field('STUDY ASSAYS', i, 'Study Assay Technology Type Term Source REF')
+        check_study_term_sources_in_secton_field('STUDY PROTOCOLS', i, 'Study Protocol Type Term Source REF')
+        check_study_term_sources_in_secton_field('STUDY PROTOCOLS', i, 'Study Protocol Parameters Name Term Source REF')
+        check_study_term_sources_in_secton_field('STUDY PROTOCOLS', i, 'Study Protocol Components Type Term Source REF')
+        check_study_term_sources_in_secton_field('STUDY CONTACTS', i, 'Study Person Roles Term Source REF')
+
+
+
 def validate2(fp, log_level=logging.INFO):
     logger.setLevel(log_level)
     logger.info("ISA tab Validator from ISA tools API v0.2")
@@ -2175,14 +2211,17 @@ def validate2(fp, log_level=logging.INFO):
         check_protocol_parameter_names(i_df)  # Rule 1011
         check_study_factor_names(i_df)  # Rule 1012
         check_ontology_sources(i_df)  # Rule 3008
-        # check_term_source_refs(isa_json)  # Rules 3007 and 3009
+        check_term_source_refs_in_investigation(i_df)  # Rules 3007 and 3009
+        # check_term_source_refs_in_assay_tables(i_df, os.path.dirname(fp.name))  # Rules 3007 and 3009
+
         # check_term_accession_used_no_source_ref(isa_json)  # Rule 3010
         # if all ERRORS are resolved, then try and validate against configuration
         # load_configurations()
         # check_measurement_technology_types(isa_json)
 
-    except CParserError:
+    except CParserError as cpe:
         logger.fatal("There was an error when trying to parse the ISA tab")
+        logger.fatal(cpe)
     except ValueError as ve:
         logger.fatal("There was an error when trying to parse the ISA tab")
         logger.fatal(ve)
