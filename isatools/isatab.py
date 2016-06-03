@@ -2160,16 +2160,24 @@ def check_term_source_refs_in_investigation(i_df):
 
     def check_study_term_sources_in_secton_field(section_label, pos, column_label):
         section_term_source_refs = [i for i in i_df[section_label][pos][column_label].tolist() if i != '']
-        # print(section_term_source_refs)
+        # this for loop deals with semicolon separated lists of term source refs
+        section_term_source_refs_to_remove = list()
+        for section_term_source_ref in section_term_source_refs:
+            if ';' in section_term_source_ref:
+                term_sources = [i for i in section_term_source_ref.split(';') if i != '']
+                section_term_source_refs_to_remove.append(section_term_source_ref)
+                section_term_source_refs.extend(term_sources)
+        for section_term_source_ref_to_remove in section_term_source_refs_to_remove:
+            section_term_source_refs.remove(section_term_source_ref_to_remove)
         if not set(section_term_source_refs).issubset(ontology_sources_list):
             logger.warn("In {} one or more of {} has not been declared in {}.{} section".format(column_label,
                                                                                                 section_term_source_refs,
                                                                                                 section_label, pos))
 
-    i_publication_status_term_source_ref = i_df['INVESTIGATION PUBLICATIONS']['Investigation Publication Status Term Source REF'].tolist()
+    i_publication_status_term_source_ref = [i for i in i_df['INVESTIGATION PUBLICATIONS']['Investigation Publication Status Term Source REF'].tolist() if i != '']
     if not set(i_publication_status_term_source_ref).issubset(ontology_sources_list):
         logger.warn("Investigation Publication Status Term Source REF {} has not been declared in ONTOLOGY SOURCE REFERENCE section".format(i_publication_status_term_source_ref))
-    i_person_roles_term_source_ref = i_df['INVESTIGATION CONTACTS']['Investigation Person Roles Term Source REF'].tolist()
+    i_person_roles_term_source_ref = [i for i in i_df['INVESTIGATION CONTACTS']['Investigation Person Roles Term Source REF'].tolist() if i != '']
     if not set(i_person_roles_term_source_ref).issubset(ontology_sources_list):
         logger.warn(
             "Investigation Person Roles Term Source REF {} has not been declared in ONTOLOGY SOURCE REFERENCE section".format(
@@ -2186,8 +2194,97 @@ def check_term_source_refs_in_investigation(i_df):
         check_study_term_sources_in_secton_field('STUDY CONTACTS', i, 'Study Person Roles Term Source REF')
 
 
+def check_term_source_refs_in_assay_tables(i_df, dir_context):
+    """Used for rules 3007 and 3009"""
+    import math
+    ontology_sources_list = set(get_ontology_source_refs(i_df))
+    for i, study_df in enumerate(i_df['STUDY']):
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename is not '':
+            try:
+                df = load_table(open(os.path.join(dir_context, study_filename)))
+                columns = df.columns
+                object_index = [i for i, x in enumerate(columns) if x.startswith('Term Source REF')]
+                prev_i = object_index[0]
+                object_columns_list = [columns[prev_i]]
+                for curr_i in object_index:  # collect each object's columns
+                    if prev_i == curr_i:
+                        pass  # skip if there's no diff, i.e. first one
+                    else:
+                        object_columns_list.append(columns[curr_i])
+                    prev_i = curr_i
+                for x, col in enumerate(object_columns_list):
+                    for y, row in enumerate(df[col]):
+                        if row not in ontology_sources_list:
+                            if isinstance(row, float):
+                                if not math.isnan(row):
+                                    logger.warn("Term Source REF {} at column position {} and row {} in {} not declared in ontology sources {}".format(row+1, object_index[x], y+1, study_filename, list(ontology_sources_list)))
+                            else:
+                                logger.warn("Term Source REF {} at column position {} and row {} in {} not in declared ontology sources {}".format(row+1, object_index[x], y+1, study_filename, list(ontology_sources_list)))
+            except FileNotFoundError:
+                pass
+            for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+                if assay_filename is not '':
+                    try:
+                        df = load_table(open(os.path.join(dir_context, assay_filename)))
+                        columns = df.columns
+                        object_index = [i for i, x in enumerate(columns) if x.startswith('Term Source REF')]
+                        prev_i = object_index[0]
+                        object_columns_list = [columns[prev_i]]
+                        for curr_i in object_index:  # collect each object's columns
+                            if prev_i == curr_i:
+                                pass  # skip if there's no diff, i.e. first one
+                            else:
+                                object_columns_list.append(columns[curr_i])
+                            prev_i = curr_i
+                        for x, col in enumerate(object_columns_list):
+                            for y, row in enumerate(df[col]):
+                                if row not in ontology_sources_list:
+                                    if isinstance(row, float):
+                                        if not math.isnan(row):
+                                            logger.warn(
+                                                "Term Source REF {} at column position {} and row {} in {} not declared in ontology sources {}".format(
+                                                    row+1, object_index[x], y+1, study_filename,
+                                                    list(ontology_sources_list)))
+                                    else:
+                                        logger.warn(
+                                            "Term Source REF {} at column position {} and row {} in {} not in declared ontology sources {}".format(
+                                                row+1, object_index[x], y+1, study_filename, list(ontology_sources_list)))
+                    except FileNotFoundError:
+                        pass
 
-def validate2(fp, log_level=logging.INFO):
+
+def check_term_source_refs_usage(i_df, dir_context):
+    check_term_source_refs_in_investigation(i_df)
+    check_term_source_refs_in_assay_tables(i_df, dir_context)
+
+
+def load_config(config_dir):
+    """Rule 4001"""
+    from isatools.io import isatab_configurator
+    configs = isatab_configurator.load(config_dir)
+    if configs is None:
+        logger.error("Could not load configurations from {}".format(config_dir))
+    return configs
+
+
+def check_measurement_technology_types(i_df, configs):
+    """Rule 4002"""
+    for i, assay_df in enumerate(i_df['STUDY ASSAYS']):
+        measurement_type = assay_df['Study Assay Measurement Type'].tolist()
+        technology_type = assay_df['Study Assay Technology Type'].tolist()
+        if len(measurement_type) == 1 and len(technology_type) == 1:
+            if (measurement_type[0], technology_type[0]) not in configs.keys():
+                logger.error(
+                    "(E) Could not load configuration for measurement type '{}' and technology type '{} for STUDY ASSAY.{}'".format(
+                        measurement_type, technology_type, i))
+        else:
+            logger.error(
+                    "(E) Too many measurement or technology types (mt:{}, tt:{} in STUDY ASSAY.{}'".format(
+                        len(measurement_type), len(technology_type), i))
+
+
+def validate2(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02'):
     logger.setLevel(log_level)
     logger.info("ISA tab Validator from ISA tools API v0.2")
     from io import StringIO
@@ -2211,12 +2308,11 @@ def validate2(fp, log_level=logging.INFO):
         check_protocol_parameter_names(i_df)  # Rule 1011
         check_study_factor_names(i_df)  # Rule 1012
         check_ontology_sources(i_df)  # Rule 3008
-        check_term_source_refs_in_investigation(i_df)  # Rules 3007 and 3009
-        # check_term_source_refs_in_assay_tables(i_df, os.path.dirname(fp.name))  # Rules 3007 and 3009
-
+        check_term_source_refs_usage(i_df, os.path.dirname(fp.name))  # Rules 3009 and todo: 3007
         # check_term_accession_used_no_source_ref(isa_json)  # Rule 3010
         # if all ERRORS are resolved, then try and validate against configuration
-        # load_configurations()
+        configs = load_config(config_dir)  # Rule 4001
+        check_measurement_technology_types(i_df, configs)  # Rule 4002
         # check_measurement_technology_types(isa_json)
 
     except CParserError as cpe:
