@@ -2284,6 +2284,52 @@ def check_measurement_technology_types(i_df, configs):
                         len(measurement_type), len(technology_type), i))
 
 
+def check_investigation_against_config(i_df, configs):
+    import math
+
+    def check_section_against_required_fields_one_value(section, required, i=0):
+        fields_required = [i for i in section.columns if i in required]
+        for col in fields_required:
+            required_values = section[col]
+            if len(required_values) > 0:
+                for x, required_value in enumerate(required_values):
+                    required_value = required_values.iloc[x]
+                    if isinstance(required_value, float):
+                        if math.isnan(required_value):
+                            if i > 0:
+                                logger.warn(
+                                    "A property value in {}.{} of investigation file at column {} is required".format(
+                                        col, i+1, x + 1))
+                            else:
+                                logger.warn(
+                                    "A property value in {} of investigation file at column {} is required".format(
+                                        col, x + 1))
+                    else:
+                        if required_value == '' or 'Unnamed: ' in required_value:
+                            if i > 0:
+                                logger.warn(
+                                    "A property value in {}.{} of investigation file at column {} is required".format(
+                                        col, i+1, x + 1))
+                            else:
+                                logger.warn(
+                                    "A property value in {} of investigation file at column {} is required".format(
+                                        col, x + 1))
+
+    required_fields = [i.header for i in configs[('[investigation]', '')].get_isatab_configuration()[0].get_field() if i.is_required]
+    check_section_against_required_fields_one_value(i_df['INVESTIGATION'], required_fields)
+    check_section_against_required_fields_one_value(i_df['INVESTIGATION PUBLICATIONS'], required_fields)
+    check_section_against_required_fields_one_value(i_df['INVESTIGATION CONTACTS'], required_fields)
+
+    for x, study_df in enumerate(i_df['STUDY']):
+        check_section_against_required_fields_one_value(i_df['STUDY'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df['STUDY DESIGN DESCRIPTORS'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df['STUDY PUBLICATIONS'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df['STUDY FACTORS'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df['STUDY ASSAYS'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df['STUDY PROTOCOLS'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df['STUDY CONTACTS'][x], required_fields, x)
+
+
 def validate2(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02'):
     logger.setLevel(log_level)
     logger.info("ISA tab Validator from ISA tools API v0.2")
@@ -2313,7 +2359,9 @@ def validate2(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
         # if all ERRORS are resolved, then try and validate against configuration
         configs = load_config(config_dir)  # Rule 4001
         check_measurement_technology_types(i_df, configs)  # Rule 4002
-        # check_measurement_technology_types(isa_json)
+        check_investigation_against_config(i_df, configs)
+        # check_study_tables_against_config(i_df, configs)
+        # check_assay_tables_against_config(i_df, configs)
 
     except CParserError as cpe:
         logger.fatal("There was an error when trying to parse the ISA tab")
