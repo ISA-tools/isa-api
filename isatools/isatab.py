@@ -1929,7 +1929,7 @@ def check_protocol_usage(i_df, dir_context):
                     pass
         if len(protocols_declared - protocol_refs_used) > 0:
             logger.warn(
-                "Some protocols declared in a study file {} are not used in any assay file: {}".format(
+                "Some protocols declared in the investigation file {} are not used in any assay file: {}".format(
                     study_filename, list(protocols_declared - protocol_refs_used)))
 
 
@@ -2271,17 +2271,14 @@ def load_config(config_dir):
 def check_measurement_technology_types(i_df, configs):
     """Rule 4002"""
     for i, assay_df in enumerate(i_df['STUDY ASSAYS']):
-        measurement_type = assay_df['Study Assay Measurement Type'].tolist()
-        technology_type = assay_df['Study Assay Technology Type'].tolist()
-        if len(measurement_type) == 1 and len(technology_type) == 1:
-            if (measurement_type[0], technology_type[0]) not in configs.keys():
-                logger.error(
-                    "(E) Could not load configuration for measurement type '{}' and technology type '{} for STUDY ASSAY.{}'".format(
-                        measurement_type, technology_type, i))
-        else:
-            logger.error(
-                    "(E) Too many measurement or technology types (mt:{}, tt:{} in STUDY ASSAY.{}'".format(
-                        len(measurement_type), len(technology_type), i))
+        measurement_types = assay_df['Study Assay Measurement Type'].tolist()
+        technology_types = assay_df['Study Assay Technology Type'].tolist()
+        if len(measurement_types) == len(technology_types):
+            for x, measurement_type in enumerate(measurement_types):
+                if (measurement_types[x], technology_types[x]) not in configs.keys():
+                    logger.error(
+                        "(E) Could not load configuration for measurement type '{}' and technology type '{} for STUDY ASSAY.{}'".format(
+                            measurement_types[x], technology_types[x], i))
 
 
 def check_investigation_against_config(i_df, configs):
@@ -2330,6 +2327,134 @@ def check_investigation_against_config(i_df, configs):
         check_section_against_required_fields_one_value(i_df['STUDY CONTACTS'][x], required_fields, x)
 
 
+def check_study_table_against_config(s_df, protocols_declared, config):
+    # We are assuming the table load validation earlier passed
+
+    # First check column order is correct against the configuration
+    columns = s_df.columns
+    object_index = [(x, i) for x, i in enumerate(columns) if i in ['Source Name', 'Sample Name',
+                                                              'Extract Name', 'Labeled Extract Name', 'Raw Data File',
+                                                              'Raw Spectral Data File', 'Array Data File',
+                                                              'Protein Assignment File', 'Peptide Assignment File',
+                                                              'Post Translational Modification Assignment File',
+                                                              'Derived Spectral Data File',
+                                                              'Derived Array Data File'] or 'Protocol REF' in i or
+                    'Characteristics[' in i or 'Factor Value[' in i or 'Parameter Value[ in i']
+    fields = [i.header for i in config.get_isatab_configuration()[0].get_field()]
+    protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
+    for protocol in protocols:
+        fields.insert(protocol[0], 'Protocol REF')
+    # strip out non-config columns
+    object_index = [i for i in object_index if i[1] in fields]
+    for x, object in enumerate(object_index):
+        if fields[x] != object[1]:
+            logger.warn("Unexpected heading found. Expected {} but found {} at column number {}".format(fields[x], object[1], object[0]))
+
+    # Second, check if Protocol REFs are of valid types
+    for row in s_df['Protocol REF']:
+        print(row, protocols_declared[row] in [i[1] for i in protocols], [i[1] for i in protocols])
+    # Third, check if required values are present
+
+
+def check_assay_table_against_config(s_df, config):
+    import itertools
+    indexed_col_regex = re.compile('(.*?)\.\d+')
+    # We are assuming the table load validation earlier passed
+    # First check column order is correct against the configuration
+    columns = s_df.columns
+    norm_columns = list()
+    for x, column in enumerate(columns):
+        if indexed_col_regex.match(column):
+            norm_columns.append(column[:column.rfind('.')])
+        else:
+            norm_columns.append(column)
+    norm_columns = [k for k, g in itertools.groupby(norm_columns)]  # remove adjacent dups - i.e. chained Protocol REFs
+    object_index = [(x, i) for x, i in enumerate(norm_columns) if i in ['Source Name', 'Sample Name',
+                                                              'Extract Name', 'Labeled Extract Name', 'Raw Data File',
+                                                              'Raw Spectral Data File', 'Array Data File',
+                                                              'Protein Assignment File', 'Peptide Assignment File',
+                                                              'Post Translational Modification Assignment File',
+                                                              'Derived Spectral Data File',
+                                                              'Derived Array Data File', 'Assay Name'] or 'Protocol REF' in i or
+                    'Characteristics[' in i or 'Factor Value[' in i or 'Parameter Value[ in i' or 'Comment[' in i]
+    fields = [i.header for i in config.get_isatab_configuration()[0].get_field()]
+    protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
+    for protocol in protocols:
+        fields.insert(protocol[0], 'Protocol REF')
+    # strip out non-config columns
+    object_index = [i for i in object_index if i[1] in fields]
+    for x, object in enumerate(object_index):
+        if fields[x] != object[1]:
+            logger.warn("Unexpected heading found. Expected {} but found {} at column number {}".format(fields[x], object[1], object[0]))
+
+
+def check_assay_table_with_config(df, protocols, config, filename):
+    indexed_col_regex = re.compile('(.*?)\.\d+')
+    columns = df.columns
+    # Get headers from config
+    fields = [i.header for i in config.get_isatab_configuration()[0].get_field()]
+    # Get protocols from config
+    protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
+    # Map Protocol REF header positions to where indicated by protocol in config
+    for protocol in protocols:
+        fields.insert(protocol[0], 'Protocol REF')
+    # Map index positions of all column headers
+    object_index = [(x, i) for x, i in enumerate(columns) if i in ['Source Name', 'Sample Name',
+                                                                        'Extract Name', 'Labeled Extract Name',
+                                                                        'Raw Data File',
+                                                                        'Raw Spectral Data File', 'Array Data File',
+                                                                        'Protein Assignment File',
+                                                                        'Peptide Assignment File',
+                                                                        'Post Translational Modification Assignment File',
+                                                                        'Derived Spectral Data File',
+                                                                        'Derived Array Data File',
+                                                                        'Assay Name'] or 'Protocol REF' in i or
+                    'Characteristics[' in i or 'Factor Value[' in i or 'Parameter Value[ in i' or 'Comment[' in i]
+    # Filter column headers by the ones we're interested in, indicated by config
+    for x, o in enumerate(object_index):  # remove postix numbering from object_index
+        if indexed_col_regex.match(o[1]):
+            object_index[x] = (o[0], o[1][:o[1].rfind('.')])
+    object_index = [i for i in object_index if i[1] in fields]
+    object_index_nodups = list()
+    prev = ('','')
+    for o in object_index:
+        if prev[1] == o[1]:
+            pass
+        else: object_index_nodups.append(o)
+        prev = o
+    for x, object in enumerate(object_index_nodups):
+        if fields[x] not in object[1]:  # use 'not in' and not '!=' to compare postfixed '.n' columns
+            logger.warn("Unexpected heading found. Expected {} but found {} at column number {} in {}".format(fields[x], object[1], object[0], filename))
+
+
+def check_study_assay_tables_against_config(i_df, dir_context, configs):
+    """Used for rules 4003-4008"""
+    for i, study_df in enumerate(i_df['STUDY']):
+        study_filename = study_df.iloc[0]['Study File Name']
+        protocol_names = i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist()
+        protocol_types = i_df['STUDY PROTOCOLS'][i]['Study Protocol Type'].tolist()
+        protocols = dict(zip(protocol_names, protocol_types))
+        if study_filename is not '':
+            try:
+                df = load_table(open(os.path.join(dir_context, study_filename)))
+                config = configs[('[Sample]', '')]
+                check_assay_table_with_config(df, protocols, config, study_filename)
+            except FileNotFoundError:
+                pass
+        for j, assay_df in enumerate(i_df['STUDY ASSAYS']):
+            assay_filename = assay_df['Study Assay File Name'].tolist()[0]
+            measurement_type = assay_df['Study Assay Measurement Type'].tolist()[0]
+            technology_type = assay_df['Study Assay Technology Type'].tolist()[0]
+            if assay_filename is not '':
+                try:
+                    df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    config = configs[(measurement_type, technology_type)]
+                    check_assay_table_with_config(df, protocols, config, assay_filename)
+                except FileNotFoundError:
+                    pass
+        # TODO: Check protocol usage - Rule 4009
+
+
 def validate2(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02'):
     logger.setLevel(log_level)
     logger.info("ISA tab Validator from ISA tools API v0.2")
@@ -2355,14 +2480,12 @@ def validate2(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
         check_study_factor_names(i_df)  # Rule 1012
         check_ontology_sources(i_df)  # Rule 3008
         check_term_source_refs_usage(i_df, os.path.dirname(fp.name))  # Rules 3009 and todo: 3007
-        # check_term_accession_used_no_source_ref(isa_json)  # Rule 3010
-        # if all ERRORS are resolved, then try and validate against configuration
+        # check_term_accession_used_no_source_ref(isa_json)  # Todo: Rule 3010
+        # if all ERRORS are resolved, then try and validate against configuration - todo: implement this check
         configs = load_config(config_dir)  # Rule 4001
         check_measurement_technology_types(i_df, configs)  # Rule 4002
-        check_investigation_against_config(i_df, configs)
-        # check_study_tables_against_config(i_df, configs)
-        # check_assay_tables_against_config(i_df, configs)
-
+        check_investigation_against_config(i_df, configs)  # Rule 4003 for investigation file only
+        check_study_assay_tables_against_config(i_df, os.path.dirname(fp.name), configs) # Rules 4003-4008 and todo: 4009
     except CParserError as cpe:
         logger.fatal("There was an error when trying to parse the ISA tab")
         logger.fatal(cpe)
