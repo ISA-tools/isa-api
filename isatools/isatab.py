@@ -4,10 +4,15 @@ from isatools.io import isatab_parser
 import os
 import sys
 import pandas as pd
+from pandas.parser import CParserError
 import io
 import networkx as nx
 import itertools
+import logging
+import re
 
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def validate(isatab_dir, config_dir):
     """ Validate an ISA-Tab archive using the Java validator that is embedded in the Python ISA-API
@@ -870,8 +875,8 @@ def assert_tab_content_equal(fp_x, fp_y):
 
     from os.path import basename
     if basename(fp_x.name).startswith('i_'):
-        df_dict_x = _read_investigation_file(fp_x)
-        df_dict_y = _read_investigation_file(fp_y)
+        df_dict_x = read_investigation_file(fp_x)
+        df_dict_y = read_investigation_file(fp_y)
         eq = True
         for k in df_dict_x.keys():
             dfx = df_dict_x[k]
@@ -970,7 +975,7 @@ def assert_tab_content_equal(fp_x, fp_y):
             return False
 
 
-def _read_investigation_file(fp):
+def read_investigation_file(fp):
 
     def _peek(f):
         position = f.tell()
@@ -1529,3 +1534,966 @@ def read_study_file(fp):
             experimental_graph[processing_event] = list()
             experimental_graph[processing_event].append(sample)
     return experimental_graph
+
+
+def check_utf8(fp):
+    """Used for rule 0010"""
+    import chardet
+    charset = chardet.detect(open(fp.name, 'rb').read())
+    if charset['encoding'] is not 'UTF-8' and charset['encoding'] is not 'ascii':
+        logger.warning("File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
+                    .format(charset['encoding'], charset['confidence']))
+        raise SystemError
+
+
+def load2(fp):
+    """Used for rules 0004 and 0005"""
+    def _read_investigation_file(fp):
+
+        def _peek(f):
+            position = f.tell()
+            l = f.readline()
+            f.seek(position)
+            return l
+
+        def _read_tab_section(f, sec_key, next_sec_key=None):
+            line = f.readline()
+            if not line.rstrip() == sec_key:
+                raise ValueError("Expected: " + sec_key + " section, but got: " + line)
+            memf = io.StringIO()
+            while not _peek(f=f).rstrip() == next_sec_key:
+                line = f.readline()
+                if not line:
+                    break
+                memf.write(line.rstrip() + '\n')
+            memf.seek(0)
+            return memf
+
+        def _build_section_df(f):
+            import numpy as np
+            df = pd.read_csv(f, sep='\t', error_bad_lines=False).T  # Load and transpose ISA file section
+            df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
+            df.reset_index(inplace=True)  # Reset index so it is accessible as column
+            df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
+            df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
+            return df
+
+        df_dict = dict()
+
+        def check_labels(section, labels_expected, df):
+            labels_found = set(df.columns)
+            comment_regex = re.compile('Comment\[(.*?)\]')
+            if not labels_expected.issubset(labels_found):
+                logger.fatal("In {} section, expected labels {} not found in {}"
+                             .format(section, labels_expected, labels_found))
+            if len(labels_found - labels_expected) > 0:
+                # check extra labels, i.e. make sure they're all comments
+                extra_labels = labels_found - labels_expected
+                for label in extra_labels:
+                    if comment_regex.match(label) is None:
+                        logger.fatal("In {} section, label {} is not allowed".format(section, label))
+
+        # Read in investigation file into DataFrames first
+        df_dict['ONTOLOGY SOURCE REFERENCE'] = _build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='ONTOLOGY SOURCE REFERENCE',
+            next_sec_key='INVESTIGATION'
+        ))
+        labels_expected = {'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
+        check_labels('ONTOLOGY SOURCE REFERENCE', labels_expected, df_dict['ONTOLOGY SOURCE REFERENCE'])
+
+        df_dict['INVESTIGATION'] = _build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='INVESTIGATION',
+            next_sec_key='INVESTIGATION PUBLICATIONS'
+        ))
+        labels_expected = {'Investigation Identifier', 'Investigation Title', 'Investigation Description',
+                           'Investigation Submission Date', 'Investigation Public Release Date'}
+        check_labels('INVESTIGATION', labels_expected, df_dict['INVESTIGATION'])
+
+        df_dict['INVESTIGATION PUBLICATIONS'] = _build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='INVESTIGATION PUBLICATIONS',
+            next_sec_key='INVESTIGATION CONTACTS'
+        ))
+        labels_expected = {'Investigation PubMed ID', 'Investigation Publication DOI',
+                           'Investigation Publication Author List', 'Investigation Publication Title',
+                           'Investigation Publication Status', 'Investigation Publication Status Term Accession Number',
+                           'Investigation Publication Status Term Source REF'}
+        check_labels('INVESTIGATION PUBLICATIONS', labels_expected, df_dict['INVESTIGATION PUBLICATIONS'])
+
+        df_dict['INVESTIGATION CONTACTS'] = _build_section_df(_read_tab_section(
+            f=fp,
+            sec_key='INVESTIGATION CONTACTS',
+            next_sec_key='STUDY'
+        ))
+        labels_expected = {'Investigation Person Last Name', 'Investigation Person First Name',
+                           'Investigation Person Mid Initials', 'Investigation Person Email',
+                           'Investigation Person Phone', 'Investigation Person Fax',
+                           'Investigation Person Address', 'Investigation Person Affiliation',
+                           'Investigation Person Roles', 'Investigation Person Roles',
+                           'Investigation Person Roles Term Accession Number',
+                           'Investigation Person Roles Term Source REF'}
+        check_labels('INVESTIGATION CONTACTS', labels_expected, df_dict['INVESTIGATION CONTACTS'])
+
+        df_dict['STUDY'] = list()
+        df_dict['STUDY DESIGN DESCRIPTORS'] = list()
+        df_dict['STUDY PUBLICATIONS'] = list()
+        df_dict['STUDY FACTORS'] = list()
+        df_dict['STUDY ASSAYS'] = list()
+        df_dict['STUDY PROTOCOLS'] = list()
+        df_dict['STUDY CONTACTS'] = list()
+        while _peek(fp):  # Iterate through STUDY blocks until end of file
+            df_dict['STUDY'].append(_build_section_df(_read_tab_section(
+                f=fp,
+                sec_key='STUDY',
+                next_sec_key='STUDY DESIGN DESCRIPTORS'
+            )))
+            labels_expected = {'Study Identifier', 'Study Title', 'Study Description',
+                               'Study Submission Date', 'Study Public Release Date',
+                               'Study File Name'}
+            check_labels('STUDY', labels_expected, df_dict['STUDY'][len(df_dict['STUDY']) - 1])
+
+            df_dict['STUDY DESIGN DESCRIPTORS'] .append(_build_section_df(_read_tab_section(
+                f=fp,
+                sec_key='STUDY DESIGN DESCRIPTORS',
+                next_sec_key='STUDY PUBLICATIONS'
+            )))
+            labels_expected = {'Study Design Type', 'Study Design Type Term Accession Number',
+                               'Study Design Type Term Source REF'}
+            check_labels('STUDY DESIGN DESCRIPTORS', labels_expected,
+                         df_dict['STUDY DESIGN DESCRIPTORS'][len(df_dict['STUDY DESIGN DESCRIPTORS']) - 1])
+
+            df_dict['STUDY PUBLICATIONS'].append(_build_section_df(_read_tab_section(
+                f=fp,
+                sec_key='STUDY PUBLICATIONS',
+                next_sec_key='STUDY FACTORS'
+            )))
+            labels_expected = {'Study PubMed ID', 'Study Publication DOI',
+                               'Study Publication Author List', 'Study Publication Title',
+                               'Study Publication Status',
+                               'Study Publication Status Term Accession Number',
+                               'Study Publication Status Term Source REF'}
+            check_labels('STUDY PUBLICATIONS', labels_expected,
+                         df_dict['STUDY PUBLICATIONS'][len(df_dict['STUDY PUBLICATIONS']) - 1])
+
+            df_dict['STUDY FACTORS'].append(_build_section_df(_read_tab_section(
+                f=fp,
+                sec_key='STUDY FACTORS',
+                next_sec_key='STUDY ASSAYS'
+            )))
+            labels_expected = {'Study Factor Name', 'Study Factor Type', 'Study Factor Type Term Accession Number',
+                               'Study Factor Type Term Source REF'}
+            check_labels('STUDY FACTORS', labels_expected, df_dict['STUDY FACTORS'][len(df_dict['STUDY FACTORS']) - 1])
+
+            df_dict['STUDY ASSAYS'].append(_build_section_df(_read_tab_section(
+                f=fp,
+                sec_key='STUDY ASSAYS',
+                next_sec_key='STUDY PROTOCOLS'
+            )))
+            labels_expected = {'Study Assay Measurement Type', 'Study Assay Measurement Type Term Accession Number',
+                               'Study Assay Measurement Type Term Source REF', 'Study Assay Technology Type',
+                               'Study Assay Technology Type Term Accession Number',
+                               'Study Assay Technology Type Term Source REF', 'Study Assay Technology Platform',
+                               'Study Assay File Name'}
+            check_labels('STUDY ASSAYS', labels_expected, df_dict['STUDY ASSAYS'][len(df_dict['STUDY ASSAYS']) - 1])
+
+            df_dict['STUDY PROTOCOLS'].append(_build_section_df(_read_tab_section(
+                f=fp,
+                sec_key='STUDY PROTOCOLS',
+                next_sec_key='STUDY CONTACTS'
+            )))
+            labels_expected = {'Study Protocol Name', 'Study Protocol Type',
+                               'Study Protocol Type Term Accession Number', 'Study Protocol Type Term Source REF',
+                               'Study Protocol Description', 'Study Protocol URI', 'Study Protocol Version',
+                               'Study Protocol Parameters Name', 'Study Protocol Parameters Name Term Accession Number',
+                               'Study Protocol Parameters Name Term Source REF', 'Study Protocol Components Name',
+                               'Study Protocol Components Type', 'Study Protocol Components Type Term Accession Number',
+                               'Study Protocol Components Type Term Source REF'}
+            check_labels('STUDY PROTOCOLS', labels_expected, df_dict['STUDY PROTOCOLS'][len(df_dict['STUDY PROTOCOLS']) - 1])
+
+            df_dict['STUDY CONTACTS'].append(_build_section_df(_read_tab_section(
+                f=fp,
+                sec_key='STUDY CONTACTS',
+                next_sec_key='STUDY'
+            )))
+            labels_expected = {'Study Person Last Name', 'Study Person First Name',
+                               'Study Person Mid Initials', 'Study Person Email',
+                               'Study Person Phone', 'Study Person Fax',
+                               'Study Person Address', 'Study Person Affiliation',
+                               'Study Person Roles', 'Study Person Roles',
+                               'Study Person Roles Term Accession Number',
+                               'Study Person Roles Term Source REF'}
+            check_labels('STUDY CONTACTS', labels_expected,
+                         df_dict['STUDY CONTACTS'][len(df_dict['STUDY CONTACTS']) - 1])
+
+        return df_dict
+
+    i_dfs = _read_investigation_file(fp)
+    return i_dfs
+
+
+def check_filenames_present(i_df):
+    """Used for rule 3005"""
+    for i, study_df in enumerate(i_df['STUDY']):
+        if study_df.iloc[0]['Study File Name'] is '':
+            logger.warning("A study filename is missing for STUDY.{}".format(i))
+        for j, filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if filename is '':
+                logger.warning("An assay filename is missing for STUDY ASSAY.{}".format(j))
+
+
+def check_date_formats(i_df):
+    """Used for rule 3001"""
+    def check_iso8601_date(date_str):
+        if date_str is not '':
+            try:
+                iso8601.parse_date(date_str)
+            except iso8601.ParseError:
+                logger.warning("Date {} does not conform to ISO8601 format".format(date_str))
+    import iso8601
+    check_iso8601_date(i_df['INVESTIGATION']['Investigation Public Release Date'].tolist()[0])
+    check_iso8601_date(i_df['INVESTIGATION']['Investigation Submission Date'].tolist()[0])
+    for i, study_df in enumerate(i_df['STUDY']):
+        check_iso8601_date(study_df['Study Public Release Date'].tolist()[0])
+        check_iso8601_date(study_df['Study Submission Date'].tolist()[0])
+        # for process in study['processSequence']:
+        #     check_iso8601_date(process['date'])
+
+
+def check_dois(i_df):
+    """Used for rule 3002"""
+    def check_doi(doi_str):
+        if doi_str is not '':
+            regexDOI = re.compile('(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
+            if not regexDOI.match(doi_str):
+                logger.warning("DOI {} does not conform to DOI format".format(doi_str))
+    import re
+    for doi in i_df['INVESTIGATION PUBLICATIONS']['Investigation Publication DOI'].tolist():
+        check_doi(doi)
+    for i, study_df in enumerate(i_df['STUDY PUBLICATIONS']):
+        for doi in study_df['Study Publication DOI'].tolist():
+            check_doi(doi)
+
+
+def check_pubmed_ids_format(i_df):
+    """Used for rule 3003"""
+    def check_pubmed_id(pubmed_id_str):
+        if pubmed_id_str is not '':
+            pmid_regex = re.compile('[0-9]{8}')
+            pmcid_regex = re.compile('PMC[0-9]{8}')
+            if (pmid_regex.match(pubmed_id_str) is None) and (pmcid_regex.match(pubmed_id_str) is None):
+                logger.warning("PubMed ID {} is not valid format".format(pubmed_id_str))
+    import re
+    for doi in i_df['INVESTIGATION PUBLICATIONS']['Investigation PubMed ID'].tolist():
+        check_pubmed_id(doi)
+    for study_pubs_df in i_df['STUDY PUBLICATIONS']:
+        for doi in study_pubs_df['Study PubMed ID'].tolist():
+            check_pubmed_id(doi)
+
+
+def check_protocol_names(i_df):
+    """Used for rule 1010"""
+    for study_protocols_df in i_df['STUDY PROTOCOLS']:
+        for i, protocol_name in enumerate(study_protocols_df['Study Protocol Name'].tolist()):
+            if protocol_name is '' or 'Unnamed: ' in protocol_name:  #  DataFrames labels empty cells as 'Unnamed: n'
+                logger.warning("A Protocol at position {} is missing Protocol Name, so can't be referenced in ISA-tab".format(i))
+
+
+def check_protocol_parameter_names(i_df):
+    """Used for rule 1011"""
+    for study_protocols_df in i_df['STUDY PROTOCOLS']:
+        for i, protocol_parameters_names in enumerate(study_protocols_df['Study Protocol Parameters Name'].tolist()):
+            if len(protocol_parameters_names.split(sep=';')) > 1:  # There's an empty cell if no protocols
+                for protocol_parameter_name in protocol_parameters_names.split(sep=';'):
+                    if protocol_parameter_name is '' or 'Unnamed: ' in protocol_parameter_name:  # DataFrames labels empty cells as 'Unnamed: n'
+                        logger.warning(
+                            "A Protocol Parameter used in Protocol position {} is missing a Name, so can't be referenced in ISA-tab".format(i))
+
+
+def check_study_factor_names(i_df):
+    """Used for rule 1012"""
+    for study_protocols_df in i_df['STUDY FACTORS']:
+        for i, protocol_name in enumerate(study_protocols_df['Study Factor Name'].tolist()):
+            if protocol_name is '' or 'Unnamed: ' in protocol_name:  #  DataFrames labels empty cells as 'Unnamed: n'
+                logger.warning("A Study Factor at position {} is missing a name, so can't be referenced in ISA-tab".format(i))
+
+
+def check_ontology_sources(i_df):
+    """Used for rule 3008"""
+    for ontology_source_name in i_df['ONTOLOGY SOURCE REFERENCE']['Term Source Name'].tolist():
+        if ontology_source_name is '' or 'Unnamed: ' in ontology_source_name:
+            logger.warning("An Ontology Source Reference is missing Term Source Name, so can't be referenced")
+
+
+def check_table_files_read(i_df, dir_context):
+    """Used for rules 0006 and 0008"""
+    for i, study_df in enumerate(i_df['STUDY']):
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename is not '':
+            try:
+                open(os.path.join(dir_context, study_filename))
+            except FileNotFoundError:
+                logger.error("Study File {} does not appear to exist".format(study_filename))
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    open(os.path.join(dir_context, assay_filename))
+                except FileNotFoundError:
+                    logger.error("Assay File {} does not appear to exist".format(assay_filename))
+
+
+def check_table_files_load(i_df, dir_context):
+    """Used for rules 0007 and 0009"""
+    for i, study_df in enumerate(i_df['STUDY']):
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename is not '':
+            try:
+                load_table_checks(open(os.path.join(dir_context, study_filename)))
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    load_table_checks(open(os.path.join(dir_context, assay_filename)))
+                except FileNotFoundError:
+                    pass
+
+
+def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
+    for i, study_df in enumerate(i_df['STUDY']):
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename is not '':
+            try:
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                study_samples = set(study_df['Sample Name'])
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    assay_samples = set(assay_df['Sample Name'])
+                    if not assay_samples.issubset(study_samples):
+                        logger.error("Some samples in an assay file {} are not declared in the study file {}: {}".format(assay_filename, study_filename, list(assay_samples - study_samples)))
+                except FileNotFoundError:
+                    pass
+
+
+def check_protocol_usage(i_df, dir_context):
+    """Used for rules 1007 and 1019"""
+    for i, study_df in enumerate(i_df['STUDY']):
+        protocols_declared = set(i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist())
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename is not '':
+            try:
+                protocol_refs_used = set()
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
+                    protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
+                if not protocol_refs_used.issubset(protocols_declared):
+                    logger.error(
+                        "Some protocols used in an study file {} are not declared in the investigation file: {}".format(
+                            study_filename, list(protocol_refs_used - protocols_declared)))
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    protocol_refs_used = set()
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
+                        protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
+                    if not protocol_refs_used.issubset(protocols_declared):
+                        logger.error(
+                            "Some protocols used in an assay file {} are not declared in the investigation file: {}".format(
+                                assay_filename, list(protocol_refs_used - protocols_declared)))
+                except FileNotFoundError:
+                    pass
+        # now collect all protocols in all assays to compare to declared protocols
+        protocol_refs_used = set()
+        if study_filename is not '':
+            try:
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
+                    protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
+                        protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
+                except FileNotFoundError:
+                    pass
+        if len(protocols_declared - protocol_refs_used) > 0:
+            logger.warn(
+                "Some protocols declared in the investigation file {} are not used in any assay file: {}".format(
+                    study_filename, list(protocols_declared - protocol_refs_used)))
+
+
+def load_table(fp):
+    df = pd.read_csv(fp, sep='\t')
+    return df
+
+
+def load_table_checks(fp):
+    characteristics_regex = re.compile('Characteristics\[(.*?)\]')
+    parameter_value_regex = re.compile('Parameter Value\[(.*?)\]')
+    factor_value_regex = re.compile('Factor Value\[(.*?)\]')
+    comment_regex = re.compile('Comment\[(.*?)\]')
+    indexed_col_regex = re.compile('(.*?)\.\d+')
+    df = load_table(fp)
+    columns = df.columns
+    for x, column in enumerate(columns):  # check if columns have valid labels
+        if indexed_col_regex.match(column):
+            column = column[:column.rfind('.')]
+        if (column not in ['Source Name', 'Sample Name', 'Term Source REF', 'Protocol REF', 'Term Accession Number',
+                           'Unit', 'Assay Name', 'Extract Name', 'Raw Data File', 'Material Type', 'MS Assay Name',
+                           'Raw Spectral Data File', 'Labeled Extract Name', 'Label', 'Hybridization Assay Name',
+                           'Array Design REF', 'Scan Name', 'Array Data File', 'Protein Assignment File',
+                           'Peptide Assignment File', 'Post Translational Modification Assignment File',
+                           'Data Transformation Name', 'Derived Spectral Data File', 'Normalization Name',
+                           'Derived Array Data File', 'Image File']) and not characteristics_regex.match(column) and not parameter_value_regex.match(column) and not factor_value_regex.match(column) and not comment_regex.match(column):
+            logger.error("Unrecognised column heading {} at column position {} in table file {}".format(column, x, os.path.basename(fp.name)))
+    norm_columns = list()
+    for x, column in enumerate(columns):
+        if indexed_col_regex.match(column):
+            norm_columns.append(column[:column.rfind('.')])
+        else:
+            norm_columns.append(column)
+    object_index = [i for i, x in enumerate(norm_columns) if x in ['Source Name', 'Sample Name', 'Protocol REF',
+                                                              'Extract Name', 'Labeled Extract Name', 'Raw Data File',
+                                                              'Raw Spectral Data File', 'Array Data File',
+                                                              'Protein Assignment File', 'Peptide Assignment File',
+                                                              'Post Translational Modification Assignment File',
+                                                              'Derived Spectral Data File', 'Derived Array Data File']
+                    or factor_value_regex.match(x)]
+    # this bit strips out the postfix .n that DataFrames adds to multiples of column labels
+    object_columns_list = list()
+    prev_i = object_index[0]
+    for curr_i in object_index:  # collect each object's columns
+        if prev_i == curr_i: pass  # skip if there's no diff, i.e. first one
+        else: object_columns_list.append(norm_columns[prev_i:curr_i])
+        prev_i = curr_i
+    object_columns_list.append(norm_columns[prev_i:])  # finally collect last object's columns
+
+    for object_columns in object_columns_list:
+        prop_name = object_columns[0]
+        if prop_name in ['Sample Name', 'Source Name']:
+            for x, col in enumerate(object_columns[1:]):
+                if col not in ['Term Source REF', 'Term Accession Number', 'Unit'] and not characteristics_regex.match(col) and not factor_value_regex.match(col) and not comment_regex.match(col):
+                    logger.error("Expected only Characteristics, Factor Values or Comments following {} columns but found {} at offset {}".format(prop_name, col, x+1))
+        elif prop_name == 'Protocol REF':
+            for x, col in enumerate(object_columns[1:]):
+                if col not in ['Term Source REF', 'Term Accession Number', 'Unit', 'Assay Name',
+                               'Hybridization Assay Name', 'Array Design REF', 'Scan Name'] and not parameter_value_regex.match(col) and not comment_regex.match(col):
+                    logger.error("Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, col, x+1))
+        elif prop_name == 'Extract Name':
+            if len(object_columns) > 1:
+                logger.error(
+                    "Unexpected column heading(s) following {} column. Found {} at offset {}".format(prop_name, object_columns[1:], 2))
+        elif prop_name == 'Labeled Extract Name':
+            if len(object_columns) > 1:
+                if object_columns[1] == 'Label':
+                    for x, col in enumerate(object_columns[2:]):
+                        if col not in ['Term Source REF', 'Term Accession Number']:
+                            logger.error("Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, col, x+1))
+                else:
+                    logger.error("Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, object_columns[1:], 2))
+            else:
+                logger.error("Expected Label column after Labeled Extract Name but none found")
+        elif prop_name in ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
+                           'Raw Spectral Data File', 'Protein Assignment File', 'Peptide Assignment File',
+                           'Post Translational Modification Assignment File']:
+            for x, col in enumerate(object_columns[1:]):
+                if not comment_regex.match(col):
+                    logger.error("Expected only Comments following {} columns but found {} at offset {}".format(prop_name, col, x+1))
+        elif factor_value_regex.match(prop_name):
+            for x, col in enumerate(object_columns[2:]):
+                if col not in ['Term Source REF', 'Term Accession Number']:
+                    logger.error(
+                        "Unexpected column heading following {} column. Found {} at offset {}".format(prop_name,
+                                                                                                      col, x + 1))
+        else:
+            logger.info("Need to implement a rule for... " + prop_name)
+            logger.info(object_columns)
+    return df
+
+
+def check_study_factor_usage(i_df, dir_context):
+    """Used for rules 1008 and 1021"""
+    factor_value_regex = re.compile('Factor Value\[(.*?)\]')
+    for i, study_df in enumerate(i_df['STUDY']):
+        study_factors_declared = set(i_df['STUDY FACTORS'][i]['Study Factor Name'].tolist())
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename is not '':
+            try:
+                study_factors_used = set()
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                study_factor_ref_cols = [i for i in study_df.columns if factor_value_regex.match(i)]
+                for col in study_factor_ref_cols:
+                    fv = factor_value_regex.findall(col)
+                    study_factors_used = study_factors_used.union(set(fv))
+                if not study_factors_used.issubset(study_factors_declared):
+                    logger.error(
+                        "Some factors used in an study file {} are not declared in the investigation file: {}".format(
+                            study_filename, list(study_factors_used - study_factors_declared)))
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    study_factors_used = set()
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    study_factor_ref_cols = set([i for i in assay_df.columns if factor_value_regex.match(i)])
+                    for col in study_factor_ref_cols:
+                        fv = factor_value_regex.findall(col)
+                        study_factors_used = study_factors_used.union(set(fv))
+                    if not study_factors_used.issubset(study_factors_declared):
+                        logger.error(
+                            "Some factors used in an assay file {} are not declared in the investigation file: {}".format(
+                                assay_filename, list(study_factors_used - study_factors_declared)))
+                except FileNotFoundError:
+                    pass
+        study_factors_used = set()
+        if study_filename is not '':
+            try:
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                study_factor_ref_cols = [i for i in study_df.columns if factor_value_regex.match(i)]
+                for col in study_factor_ref_cols:
+                    fv = factor_value_regex.findall(col)
+                    study_factors_used = study_factors_used.union(set(fv))
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    study_factor_ref_cols = set([i for i in assay_df.columns if factor_value_regex.match(i)])
+                    for col in study_factor_ref_cols:
+                        fv = factor_value_regex.findall(col)
+                        study_factors_used = study_factors_used.union(set(fv))
+                except FileNotFoundError:
+                    pass
+        if len(study_factors_declared - study_factors_used) > 0:
+            logger.warn(
+                "Some study factors declared in the investigation file are not used in any assay file: {}".format(
+                    list(study_factors_declared - study_factors_used)))
+
+
+def check_protocol_parameter_usage(i_df, dir_context):
+    """Used for rules 1009 and 1020"""
+    parameter_value_regex = re.compile('Parameter Value\[(.*?)\]')
+    for i, study_df in enumerate(i_df['STUDY']):
+        protocol_parameters_declared = set()
+        protocol_parameters_per_protocol = set(i_df['STUDY PROTOCOLS'][i]['Study Protocol Parameters Name'].tolist())
+        for protocol_parameters in protocol_parameters_per_protocol:
+            parameters_list = protocol_parameters.split(';')
+            protocol_parameters_declared = protocol_parameters_declared.union(set(parameters_list))
+        protocol_parameters_declared = protocol_parameters_declared - {''}  # empty string is not a valid protocol parameter
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename is not '':
+            try:
+                protocol_parameters_used = set()
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                parameter_value_cols = [i for i in study_df.columns if parameter_value_regex.match(i)]
+                for col in parameter_value_cols:
+                    pv = parameter_value_regex.findall(col)
+                    protocol_parameters_used = protocol_parameters_used.union(set(pv))
+                if not protocol_parameters_used.issubset(protocol_parameters_declared):
+                    logger.error(
+                        "Some protocol parameters referenced in an study file {} are not declared in the investigation file: {}".format(
+                            study_filename, list(protocol_parameters_used - protocol_parameters_declared)))
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    protocol_parameters_used = set()
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    parameter_value_cols = [i for i in assay_df.columns if parameter_value_regex.match(i)]
+                    for col in parameter_value_cols:
+                        pv = parameter_value_regex.findall(col)
+                        protocol_parameters_used = protocol_parameters_used.union(set(pv))
+                    if not protocol_parameters_used.issubset(protocol_parameters_declared):
+                        logger.error(
+                            "Some protocol parameters referenced in an assay file {} are not declared in the investigation file: {}".format(
+                                assay_filename, list(protocol_parameters_used - protocol_parameters_declared)))
+                except FileNotFoundError:
+                    pass
+        # now collect all protocol parameters in all assays to compare to declared protocol parameters
+        protocol_parameters_used = set()
+        if study_filename is not '':
+            try:
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                parameter_value_cols = [i for i in study_df.columns if parameter_value_regex.match(i)]
+                for col in parameter_value_cols:
+                    pv = parameter_value_regex.findall(col)
+                    protocol_parameters_used = protocol_parameters_used.union(set(pv))
+            except FileNotFoundError:
+                pass
+        for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            if assay_filename is not '':
+                try:
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    parameter_value_cols = [i for i in assay_df.columns if parameter_value_regex.match(i)]
+                    for col in parameter_value_cols:
+                        pv = parameter_value_regex.findall(col)
+                        protocol_parameters_used = protocol_parameters_used.union(set(pv))
+                except FileNotFoundError:
+                    pass
+        if len(protocol_parameters_declared - protocol_parameters_used) > 0:
+            logger.warn(
+                "Some protocol parameters declared in the investigation file are not used in any assay file: {}".format(
+                    list(protocol_parameters_declared - protocol_parameters_used)))
+
+
+def get_ontology_source_refs(i_df):
+    return i_df['ONTOLOGY SOURCE REFERENCE']['Term Source Name'].tolist()
+
+
+def check_term_source_refs_in_investigation(i_df):
+    """Used for rules 3007 and 3009"""
+    ontology_sources_list = set(get_ontology_source_refs(i_df))
+
+    def check_study_term_sources_in_secton_field(section_label, pos, column_label):
+        section_term_source_refs = [i for i in i_df[section_label][pos][column_label].tolist() if i != '']
+        # this for loop deals with semicolon separated lists of term source refs
+        section_term_source_refs_to_remove = list()
+        for section_term_source_ref in section_term_source_refs:
+            if ';' in section_term_source_ref:
+                term_sources = [i for i in section_term_source_ref.split(';') if i != '']
+                section_term_source_refs_to_remove.append(section_term_source_ref)
+                section_term_source_refs.extend(term_sources)
+        for section_term_source_ref_to_remove in section_term_source_refs_to_remove:
+            section_term_source_refs.remove(section_term_source_ref_to_remove)
+        if not set(section_term_source_refs).issubset(ontology_sources_list):
+            logger.warn("In {} one or more of {} has not been declared in {}.{} section".format(column_label,
+                                                                                                section_term_source_refs,
+                                                                                                section_label, pos))
+
+    i_publication_status_term_source_ref = [i for i in i_df['INVESTIGATION PUBLICATIONS']['Investigation Publication Status Term Source REF'].tolist() if i != '']
+    if not set(i_publication_status_term_source_ref).issubset(ontology_sources_list):
+        logger.warn("Investigation Publication Status Term Source REF {} has not been declared in ONTOLOGY SOURCE REFERENCE section".format(i_publication_status_term_source_ref))
+    i_person_roles_term_source_ref = [i for i in i_df['INVESTIGATION CONTACTS']['Investigation Person Roles Term Source REF'].tolist() if i != '']
+    if not set(i_person_roles_term_source_ref).issubset(ontology_sources_list):
+        logger.warn(
+            "Investigation Person Roles Term Source REF {} has not been declared in ONTOLOGY SOURCE REFERENCE section".format(
+                i_person_roles_term_source_ref))
+
+    for i, study_df in enumerate(i_df['STUDY']):
+        check_study_term_sources_in_secton_field('STUDY DESIGN DESCRIPTORS', i, 'Study Design Type Term Source REF')
+        check_study_term_sources_in_secton_field('STUDY PUBLICATIONS', i, 'Study Publication Status Term Source REF')
+        check_study_term_sources_in_secton_field('STUDY ASSAYS', i, 'Study Assay Measurement Type Term Source REF')
+        check_study_term_sources_in_secton_field('STUDY ASSAYS', i, 'Study Assay Technology Type Term Source REF')
+        check_study_term_sources_in_secton_field('STUDY PROTOCOLS', i, 'Study Protocol Type Term Source REF')
+        check_study_term_sources_in_secton_field('STUDY PROTOCOLS', i, 'Study Protocol Parameters Name Term Source REF')
+        check_study_term_sources_in_secton_field('STUDY PROTOCOLS', i, 'Study Protocol Components Type Term Source REF')
+        check_study_term_sources_in_secton_field('STUDY CONTACTS', i, 'Study Person Roles Term Source REF')
+
+
+def check_term_source_refs_in_assay_tables(i_df, dir_context):
+    """Used for rules 3007 and 3009"""
+    import math
+    ontology_sources_list = set(get_ontology_source_refs(i_df))
+    for i, study_df in enumerate(i_df['STUDY']):
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename is not '':
+            try:
+                df = load_table(open(os.path.join(dir_context, study_filename)))
+                columns = df.columns
+                object_index = [i for i, x in enumerate(columns) if x.startswith('Term Source REF')]
+                prev_i = object_index[0]
+                object_columns_list = [columns[prev_i]]
+                for curr_i in object_index:  # collect each object's columns
+                    if prev_i == curr_i:
+                        pass  # skip if there's no diff, i.e. first one
+                    else:
+                        object_columns_list.append(columns[curr_i])
+                    prev_i = curr_i
+                for x, col in enumerate(object_columns_list):
+                    for y, row in enumerate(df[col]):
+                        if row not in ontology_sources_list:
+                            if isinstance(row, float):
+                                if not math.isnan(row):
+                                    logger.warn("Term Source REF {} at column position {} and row {} in {} not declared in ontology sources {}".format(row+1, object_index[x], y+1, study_filename, list(ontology_sources_list)))
+                            else:
+                                logger.warn("Term Source REF {} at column position {} and row {} in {} not in declared ontology sources {}".format(row+1, object_index[x], y+1, study_filename, list(ontology_sources_list)))
+            except FileNotFoundError:
+                pass
+            for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+                if assay_filename is not '':
+                    try:
+                        df = load_table(open(os.path.join(dir_context, assay_filename)))
+                        columns = df.columns
+                        object_index = [i for i, x in enumerate(columns) if x.startswith('Term Source REF')]
+                        prev_i = object_index[0]
+                        object_columns_list = [columns[prev_i]]
+                        for curr_i in object_index:  # collect each object's columns
+                            if prev_i == curr_i:
+                                pass  # skip if there's no diff, i.e. first one
+                            else:
+                                object_columns_list.append(columns[curr_i])
+                            prev_i = curr_i
+                        for x, col in enumerate(object_columns_list):
+                            for y, row in enumerate(df[col]):
+                                if row not in ontology_sources_list:
+                                    if isinstance(row, float):
+                                        if not math.isnan(row):
+                                            logger.warn(
+                                                "Term Source REF {} at column position {} and row {} in {} not declared in ontology sources {}".format(
+                                                    row+1, object_index[x], y+1, study_filename,
+                                                    list(ontology_sources_list)))
+                                    else:
+                                        logger.warn(
+                                            "Term Source REF {} at column position {} and row {} in {} not in declared ontology sources {}".format(
+                                                row+1, object_index[x], y+1, study_filename, list(ontology_sources_list)))
+                    except FileNotFoundError:
+                        pass
+
+
+def check_term_source_refs_usage(i_df, dir_context):
+    check_term_source_refs_in_investigation(i_df)
+    check_term_source_refs_in_assay_tables(i_df, dir_context)
+
+
+def load_config(config_dir):
+    """Rule 4001"""
+    from isatools.io import isatab_configurator
+    configs = isatab_configurator.load(config_dir)
+    if configs is None:
+        logger.error("Could not load configurations from {}".format(config_dir))
+    return configs
+
+
+def check_measurement_technology_types(i_df, configs):
+    """Rule 4002"""
+    for i, assay_df in enumerate(i_df['STUDY ASSAYS']):
+        measurement_types = assay_df['Study Assay Measurement Type'].tolist()
+        technology_types = assay_df['Study Assay Technology Type'].tolist()
+        if len(measurement_types) == len(technology_types):
+            for x, measurement_type in enumerate(measurement_types):
+                if (measurement_types[x], technology_types[x]) not in configs.keys():
+                    logger.error(
+                        "(E) Could not load configuration for measurement type '{}' and technology type '{} for STUDY ASSAY.{}'".format(
+                            measurement_types[x], technology_types[x], i))
+
+
+def check_investigation_against_config(i_df, configs):
+    import math
+
+    def check_section_against_required_fields_one_value(section, required, i=0):
+        fields_required = [i for i in section.columns if i in required]
+        for col in fields_required:
+            required_values = section[col]
+            if len(required_values) > 0:
+                for x, required_value in enumerate(required_values):
+                    required_value = required_values.iloc[x]
+                    if isinstance(required_value, float):
+                        if math.isnan(required_value):
+                            if i > 0:
+                                logger.warn(
+                                    "A property value in {}.{} of investigation file at column {} is required".format(
+                                        col, i+1, x + 1))
+                            else:
+                                logger.warn(
+                                    "A property value in {} of investigation file at column {} is required".format(
+                                        col, x + 1))
+                    else:
+                        if required_value == '' or 'Unnamed: ' in required_value:
+                            if i > 0:
+                                logger.warn(
+                                    "A property value in {}.{} of investigation file at column {} is required".format(
+                                        col, i+1, x + 1))
+                            else:
+                                logger.warn(
+                                    "A property value in {} of investigation file at column {} is required".format(
+                                        col, x + 1))
+
+    required_fields = [i.header for i in configs[('[investigation]', '')].get_isatab_configuration()[0].get_field() if i.is_required]
+    check_section_against_required_fields_one_value(i_df['INVESTIGATION'], required_fields)
+    check_section_against_required_fields_one_value(i_df['INVESTIGATION PUBLICATIONS'], required_fields)
+    check_section_against_required_fields_one_value(i_df['INVESTIGATION CONTACTS'], required_fields)
+
+    for x, study_df in enumerate(i_df['STUDY']):
+        check_section_against_required_fields_one_value(i_df['STUDY'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df['STUDY DESIGN DESCRIPTORS'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df['STUDY PUBLICATIONS'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df['STUDY FACTORS'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df['STUDY ASSAYS'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df['STUDY PROTOCOLS'][x], required_fields, x)
+        check_section_against_required_fields_one_value(i_df['STUDY CONTACTS'][x], required_fields, x)
+
+
+def check_study_table_against_config(s_df, protocols_declared, config):
+    # We are assuming the table load validation earlier passed
+
+    # First check column order is correct against the configuration
+    columns = s_df.columns
+    object_index = [(x, i) for x, i in enumerate(columns) if i in ['Source Name', 'Sample Name',
+                                                              'Extract Name', 'Labeled Extract Name', 'Raw Data File',
+                                                              'Raw Spectral Data File', 'Array Data File',
+                                                              'Protein Assignment File', 'Peptide Assignment File',
+                                                              'Post Translational Modification Assignment File',
+                                                              'Derived Spectral Data File',
+                                                              'Derived Array Data File'] or 'Protocol REF' in i or
+                    'Characteristics[' in i or 'Factor Value[' in i or 'Parameter Value[ in i']
+    fields = [i.header for i in config.get_isatab_configuration()[0].get_field()]
+    protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
+    for protocol in protocols:
+        fields.insert(protocol[0], 'Protocol REF')
+    # strip out non-config columns
+    object_index = [i for i in object_index if i[1] in fields]
+    for x, object in enumerate(object_index):
+        if fields[x] != object[1]:
+            logger.warn("Unexpected heading found. Expected {} but found {} at column number {}".format(fields[x], object[1], object[0]))
+
+    # Second, check if Protocol REFs are of valid types
+    for row in s_df['Protocol REF']:
+        print(row, protocols_declared[row] in [i[1] for i in protocols], [i[1] for i in protocols])
+    # Third, check if required values are present
+
+
+def check_assay_table_against_config(s_df, config):
+    import itertools
+    indexed_col_regex = re.compile('(.*?)\.\d+')
+    # We are assuming the table load validation earlier passed
+    # First check column order is correct against the configuration
+    columns = s_df.columns
+    norm_columns = list()
+    for x, column in enumerate(columns):
+        if indexed_col_regex.match(column):
+            norm_columns.append(column[:column.rfind('.')])
+        else:
+            norm_columns.append(column)
+    norm_columns = [k for k, g in itertools.groupby(norm_columns)]  # remove adjacent dups - i.e. chained Protocol REFs
+    object_index = [(x, i) for x, i in enumerate(norm_columns) if i in ['Source Name', 'Sample Name',
+                                                              'Extract Name', 'Labeled Extract Name', 'Raw Data File',
+                                                              'Raw Spectral Data File', 'Array Data File',
+                                                              'Protein Assignment File', 'Peptide Assignment File',
+                                                              'Post Translational Modification Assignment File',
+                                                              'Derived Spectral Data File',
+                                                              'Derived Array Data File', 'Assay Name'] or 'Protocol REF' in i or
+                    'Characteristics[' in i or 'Factor Value[' in i or 'Parameter Value[ in i' or 'Comment[' in i]
+    fields = [i.header for i in config.get_isatab_configuration()[0].get_field()]
+    protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
+    for protocol in protocols:
+        fields.insert(protocol[0], 'Protocol REF')
+    # strip out non-config columns
+    object_index = [i for i in object_index if i[1] in fields]
+    for x, object in enumerate(object_index):
+        if fields[x] != object[1]:
+            logger.warn("Unexpected heading found. Expected {} but found {} at column number {}".format(fields[x], object[1], object[0]))
+
+
+def check_assay_table_with_config(df, protocols, config, filename):
+    indexed_col_regex = re.compile('(.*?)\.\d+')
+    columns = df.columns
+    # Get headers from config
+    fields = [i.header for i in config.get_isatab_configuration()[0].get_field()]
+    # Get protocols from config
+    protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
+    # Map Protocol REF header positions to where indicated by protocol in config
+    for protocol in protocols:
+        fields.insert(protocol[0], 'Protocol REF')
+    # Map index positions of all column headers
+    object_index = [(x, i) for x, i in enumerate(columns) if i in ['Source Name', 'Sample Name',
+                                                                        'Extract Name', 'Labeled Extract Name',
+                                                                        'Raw Data File',
+                                                                        'Raw Spectral Data File', 'Array Data File',
+                                                                        'Protein Assignment File',
+                                                                        'Peptide Assignment File',
+                                                                        'Post Translational Modification Assignment File',
+                                                                        'Derived Spectral Data File',
+                                                                        'Derived Array Data File',
+                                                                        'Assay Name'] or 'Protocol REF' in i or
+                    'Characteristics[' in i or 'Factor Value[' in i or 'Parameter Value[ in i' or 'Comment[' in i]
+    # Filter column headers by the ones we're interested in, indicated by config
+    for x, o in enumerate(object_index):  # remove postix numbering from object_index
+        if indexed_col_regex.match(o[1]):
+            object_index[x] = (o[0], o[1][:o[1].rfind('.')])
+    object_index = [i for i in object_index if i[1] in fields]
+    object_index_nodups = list()
+    prev = ('','')
+    for o in object_index:
+        if prev[1] == o[1]:
+            pass
+        else: object_index_nodups.append(o)
+        prev = o
+    for x, object in enumerate(object_index_nodups):
+        if fields[x] not in object[1]:  # use 'not in' and not '!=' to compare postfixed '.n' columns
+            logger.warn("Unexpected heading found. Expected {} but found {} at column number {} in {}".format(fields[x], object[1], object[0], filename))
+
+
+def check_study_assay_tables_against_config(i_df, dir_context, configs):
+    """Used for rules 4003-4008"""
+    for i, study_df in enumerate(i_df['STUDY']):
+        study_filename = study_df.iloc[0]['Study File Name']
+        protocol_names = i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist()
+        protocol_types = i_df['STUDY PROTOCOLS'][i]['Study Protocol Type'].tolist()
+        protocols = dict(zip(protocol_names, protocol_types))
+        if study_filename is not '':
+            try:
+                df = load_table(open(os.path.join(dir_context, study_filename)))
+                config = configs[('[Sample]', '')]
+                check_assay_table_with_config(df, protocols, config, study_filename)
+            except FileNotFoundError:
+                pass
+        for j, assay_df in enumerate(i_df['STUDY ASSAYS']):
+            assay_filename = assay_df['Study Assay File Name'].tolist()[0]
+            measurement_type = assay_df['Study Assay Measurement Type'].tolist()[0]
+            technology_type = assay_df['Study Assay Technology Type'].tolist()[0]
+            if assay_filename is not '':
+                try:
+                    df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    config = configs[(measurement_type, technology_type)]
+                    check_assay_table_with_config(df, protocols, config, assay_filename)
+                except FileNotFoundError:
+                    pass
+        # TODO: Check protocol usage - Rule 4009
+
+
+def validate2(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02'):
+    logger.setLevel(log_level)
+    logger.info("ISA tab Validator from ISA tools API v0.2")
+    from io import StringIO
+    stream = StringIO()
+    handler = logging.StreamHandler(stream)
+    logger.addHandler(handler)
+    try:
+        check_utf8(fp=fp)  # Rule 0010
+        i_df = load2(fp=fp)  # Rules 0004 and 0005
+        check_filenames_present(i_df)  # Rule 3005
+        check_table_files_read(i_df, os.path.dirname(fp.name))  # Rules 0006 and 0008
+        check_table_files_load(i_df, os.path.dirname(fp.name))  # Rules 0007 and 0009
+        check_samples_not_declared_in_study_used_in_assay(i_df, os.path.dirname(fp.name))  # Rule 1003
+        check_study_factor_usage(i_df, os.path.dirname(fp.name))  # Rules 1008 and 1021
+        check_protocol_usage(i_df, os.path.dirname(fp.name))  # Rules 1007 and 1019
+        check_protocol_parameter_usage(i_df, os.path.dirname(fp.name))  # Rules 1009 and 1020
+        check_date_formats(i_df)  # Rule 3001
+        check_dois(i_df)  # Rule 3002
+        check_pubmed_ids_format(i_df)  # Rule 3003
+        check_protocol_names(i_df)  # Rule 1010
+        check_protocol_parameter_names(i_df)  # Rule 1011
+        check_study_factor_names(i_df)  # Rule 1012
+        check_ontology_sources(i_df)  # Rule 3008
+        check_term_source_refs_usage(i_df, os.path.dirname(fp.name))  # Rules 3009 and todo: 3007
+        # check_term_accession_used_no_source_ref(isa_json)  # Todo: Rule 3010
+        # if all ERRORS are resolved, then try and validate against configuration - todo: implement this check
+        configs = load_config(config_dir)  # Rule 4001
+        check_measurement_technology_types(i_df, configs)  # Rule 4002
+        check_investigation_against_config(i_df, configs)  # Rule 4003 for investigation file only
+        check_study_assay_tables_against_config(i_df, os.path.dirname(fp.name), configs) # Rules 4003-4008 and todo: 4009
+    except CParserError as cpe:
+        logger.fatal("There was an error when trying to parse the ISA tab")
+        logger.fatal(cpe)
+    except ValueError as ve:
+        logger.fatal("There was an error when trying to parse the ISA tab")
+        logger.fatal(ve)
+    except SystemError:
+        logger.fatal("Something went very very wrong! :(")
+    finally:
+        handler.flush()
+        return stream
