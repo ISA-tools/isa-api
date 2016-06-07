@@ -1211,8 +1211,11 @@ def check_study_and_assay_graphs(study_json, configs):
         config = configs[(m, t)]
         check_assay_graph(assay_json['processSequence'], config)
 
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+default_config_dir = os.path.join(BASE_DIR, 'isatools', 'schemas', 'configs')
 
-def validate(fp, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/json/configs', log_level=logging.INFO):
+
+def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
     logger.setLevel(log_level)
     logger.info("ISA JSON Validator from ISA tools API v0.2")
     from io import StringIO
