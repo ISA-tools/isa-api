@@ -774,7 +774,16 @@
                 },
                 {
                     "@id": "#assay/a_gilbert-assay-Tx.txt",
-                    "characteristicCategories": [],
+                    "characteristicCategories": [
+                        {
+                            "@id": "#characteristic_category/Material_Type",
+                            "characteristicType": {
+                                "annotationValue": "Material Type",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
                     "dataFiles": [
                         {
                             "@id": "#data/rawdatafile-EVHINN101.sff",

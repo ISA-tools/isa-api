@@ -12,12 +12,10 @@ class ValidateJsonTest(TestCase):
         self.investigation_schema_dir = os.path.join(self._dir, "..", "isatools", "schemas",
                                                      "isa_model_version_1_0_schemas", "core",
                                                      "investigation_schema.json")
-
-    # def test_cedar_example(self):
-    #   validateJsonAgainstSchemas("../isatools/schemas/cedar/InvestigationSchema.json","../isatools/schemas/cedar/InvestigationExampleInstances.json")
-    #
-    # def test_cedar_bii_i_1(self):
-    #   validateJsonAgainstSchemas("../isatools/schemas/cedar/InvestigationSchema.json","./data/BII-I-1.json")
+        self.cedar_dir = os.path.join(self._dir, "..", "isatools", "schemas",
+                                                     "cedar",
+                                                     "investigation_template.json")
+        self._mtbls_test_json_dir = os.path.join(os.path.dirname(__file__), "./data", "metabolights")
 
     def test_sampledata_bii_i_1(self):
         try:
@@ -37,9 +35,9 @@ class ValidateJsonTest(TestCase):
         except ValidationError:
             self.fail('JSON Validation against schema failed')
 
-    # def test_ideally_canonical(self):
+    # def test_mtbls34(self):
     #     try:
-    #         validateJsonAgainstSchemas(self.investigation_schema_dir, os.path.join(self._test_json_dir,
-    #                                                                                "ideally-canonical.json"))
+    #         validateJsonAgainstSchemas(self.cedar_dir, os.path.join(self._mtbls_test_json_dir, "MTBLS34.json"))
     #     except ValidationError:
+    #         print(ValidationError.message)
     #         self.fail('JSON Validation against schema failed')
