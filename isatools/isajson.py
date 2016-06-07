@@ -1211,8 +1211,8 @@ def check_study_and_assay_graphs(study_json, configs):
         config = configs[(m, t)]
         check_assay_graph(assay_json['processSequence'], config)
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-default_config_dir = os.path.join(BASE_DIR, 'isatools', 'schemas', 'configs')
+BASE_DIR = os.path.dirname(__file__)
+default_config_dir = os.path.join(BASE_DIR, 'schemas', 'configs')
 
 
 def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
