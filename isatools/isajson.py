@@ -885,8 +885,9 @@ def check_isa_schemas(isa_json, investigation_schema_path):
         resolver = RefResolver('file://' + investigation_schema_path, investigation_schema)
         validator = Draft4Validator(investigation_schema, resolver=resolver)
         validator.validate(isa_json)
-    except ValidationError:
+    except ValidationError as ve:
         logger.fatal("(F) The JSON does not validate against the provided ISA-JSON schemas!")
+        logger.fatal("Fatal error: " + str(ve))
         raise SystemError("(F) The JSON does not validate against the provided ISA-JSON schemas!")
 
 
@@ -1276,7 +1277,7 @@ def validate(fp, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/json/c
     except ValueError as v:
         logger.fatal("(F) There was an error when trying to parse the JSON")
         logger.fatal("Value: " + str(v))
-    except SystemError:
+    except SystemError as e:
         logger.fatal("(F) Something went very very wrong! :(")
     finally:
         handler.flush()
