@@ -13,13 +13,20 @@ To validate ISA tab files in a given directory ``./tabdir/`` against a given con
     from isatools import isatab
     isatab.validate('./tabdir/', './isaconfig-default_v2015-07-02/')
 
+From v0.2 of the ISA API, we have started implementing a replacement validator written in Python. To use this one, do something like:
+
+.. code-block:: python
+    from isatools import isatab
+    isatab.validate2('i_investigation.txt', './isaconfig-default_v2015-07-02/')
+
+making sure to point to the investigation file of your ISA tab, and again providing the old XML configurations.
+
+
 Validating ISA JSON
 -------------------
 
-To validate an ISA JSON file against the ISA version 1.0 schemas, you need to validate against the ``investigation_schema.json`` schema. You can do this by doing something like:
+To validate an ISA JSON file against the ISA JSON version 1.0 specification you can use our new validator from v0.2, by doing this by doing something like:
 
 .. code-block:: python
-    from isatools.validate import validate_json
-    validate_json.validateJsonAgainstSchemas('investigation_schema.json', 'isa.json')
-
-Make sure you put the full path to the to the location of ``investigation_schema.json``.
+    from isatools import isajson
+    isajson.validate('isa.json')

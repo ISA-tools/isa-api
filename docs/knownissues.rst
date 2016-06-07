@@ -2,6 +2,10 @@
 Known issues
 ############
 
+isatools v0.2 package
+---------------------
+(v0.2 known issues to go here)
+
 isatools v0.1 package
 ---------------------
 
