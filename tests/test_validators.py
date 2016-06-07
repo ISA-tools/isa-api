@@ -230,6 +230,15 @@ class ValidateIsaJsonTest(TestCase):
         if "protocol sequence ['sample collection'] does not match study graph" not in log_msg_stream.getvalue():
             self.fail("Validation passed against default study configuration, when it should have failed")
 
+    def test_assay_config_validation(self):
+        """Tests against 4004"""
+        log_msg_stream = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'assay_config.json')))
+        if "protocol sequence ['nucleic acid extraction', 'library construction', 'nucleic acid sequencing', 'sequence analysis data transformation'] does not match study graph" in log_msg_stream.getvalue():
+            self.fail("Validation failed against transcription_seq.json configuration, when it should have passed")
+        log_msg_stream = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'assay_config_fail.json')))
+        if "protocol sequence ['nucleic acid extraction', 'library construction', 'nucleic acid sequencing', 'sequence analysis data transformation'] does not match study graph" not in log_msg_stream.getvalue():
+            self.fail("Validation passed against transcription_seq.json configuration, when it should have failed")
+
 # class ValidateIsaTabTest(TestCase):
 #
 #     def setUp(self):

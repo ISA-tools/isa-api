@@ -1,0 +1,189 @@
+{
+  "comments": [
+    {
+      "name": "",
+      "value": ""
+    }
+  ],
+  "description": "",
+  "identifier": "",
+  "ontologySourceReferences": [],
+  "people": [],
+  "publicReleaseDate": "",
+  "publications": [],
+  "studies": [
+    {
+      "@id": "",
+      "assays": [
+        {
+          "@id": "",
+          "characteristicCategories": [],
+          "dataFiles": [],
+          "filename": "",
+          "materials": {
+            "otherMaterials": [],
+            "samples": []
+          },
+          "measurementType": {
+            "annotationValue": "transcription profiling",
+            "termAccession": "",
+            "termSource": ""
+          },
+          "processSequence": [
+            {
+              "@id": "#process/1",
+              "comments": [],
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/1"
+              },
+              "nextProcess": {
+                "@id": "#process/2"
+              },
+              "inputs": [],
+              "outputs": [],
+              "parameterValues": [],
+              "performer": ""
+            },
+            {
+              "@id": "#process/2",
+              "comments": [],
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/2"
+              },
+              "nextProcess": {
+                "@id": "#process/3"
+              },
+              "inputs": [],
+              "outputs": [],
+              "parameterValues": [],
+              "performer": "",
+              "previousProcess": {
+                "@id": "#process/1"
+              }
+            },
+            {
+              "@id": "#process/3",
+              "comments": [],
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/3"
+              },
+              "nextProcess": {
+                "@id": "#process/4"
+              },
+              "inputs": [],
+              "outputs": [],
+              "parameterValues": [],
+              "performer": "",
+              "previousProcess": {
+                "@id": "#process/2"
+              }
+            },
+            {
+              "@id": "#process/4",
+              "comments": [],
+              "date": "",
+              "executesProtocol": {
+                "@id": "#protocol/4"
+              },
+              "inputs": [],
+              "outputs": [],
+              "parameterValues": [],
+              "performer": "",
+              "previousProcess": {
+                "@id": "#process/3"
+              }
+            }
+          ],
+          "technologyPlatform": "",
+          "technologyType": {
+            "annotationValue": "nucleotide sequencing",
+            "termAccession": "",
+            "termSource": ""
+          },
+          "unitCategories": []
+        }
+      ],
+      "characteristicCategories": [],
+      "description": "",
+      "factors": [],
+      "filename": "",
+      "identifier": "",
+      "materials": {
+        "otherMaterials": [],
+        "samples": [],
+        "sources": []
+      },
+      "people": [],
+      "processSequence": [],
+      "protocols": [
+        {
+          "@id": "#protocol/1",
+          "components": [],
+          "description": "",
+          "name": "",
+          "parameters": [],
+          "protocolType": {
+            "annotationValue": "nucleic acid extraction",
+            "termAccession": "",
+            "termSource": ""
+          },
+          "uri": "",
+          "version": ""
+        },
+        {
+          "@id": "#protocol/2",
+          "components": [],
+          "description": "",
+          "name": "",
+          "parameters": [],
+          "protocolType": {
+            "annotationValue": "library construction",
+            "termAccession": "",
+            "termSource": ""
+          },
+          "uri": "",
+          "version": ""
+        },
+        {
+          "@id": "#protocol/3",
+          "components": [],
+          "description": "",
+          "name": "",
+          "parameters": [],
+          "protocolType": {
+            "annotationValue": "nucleic acid sequencing",
+            "termAccession": "",
+            "termSource": ""
+          },
+          "uri": "",
+          "version": ""
+        },
+        {
+          "@id": "#protocol/4",
+          "components": [],
+          "description": "",
+          "name": "",
+          "parameters": [],
+          "protocolType": {
+            "annotationValue": "sequence analysis data transformation",
+            "termAccession": "",
+            "termSource": ""
+          },
+          "uri": "",
+          "version": ""
+        }
+      ],
+      "publicReleaseDate": "",
+      "publications": [],
+      "studyDesignDescriptors": [],
+      "submissionDate": "",
+      "title": "",
+      "unitCategories": []
+    }
+  ],
+  "submissionDate": "",
+  "title": ""
+}
