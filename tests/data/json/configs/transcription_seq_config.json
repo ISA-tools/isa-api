@@ -1,5 +1,5 @@
 {
-  "measurementType": "environmental gene survey",
+  "measurementType": "transcription profiling",
   "technologyType": "nucleotide sequencing",
   "protocols": [
     {
@@ -13,12 +13,12 @@
     {
       "protocol": "nucleic acid sequencing",
       "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "sequence analysis data transformation",
+      "outputs": "#data"
     }
-  ],
-  "protocolSequence": [
-    "nucleic acid extraction",
-    "library construction",
-    "nucleic acid sequencing"
   ],
   "description": [
     "(Sample)->(nucleic acid extraction)->(Extract)->(library construction)->(nucleic acid sequencing)->(DataFile)->(sequence analysis data transformation)->(DataFile)",

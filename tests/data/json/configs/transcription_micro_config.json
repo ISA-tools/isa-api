@@ -9,7 +9,7 @@
     "normalization",
     "data transformation"
   ],
-  "graphPatterns": [
+  "description": [
     "(Sample)->(RNA extraction)->(Extract)->(labeling)->(LabeledExtract)->(nucleic acid hybridization)->(data collection)->(DataCollectionFiles)->(normalization)->(DerivedArrayDataFile)->(data transformation)->(DerivedArrayDataMatrixFile)"
   ]
 }
