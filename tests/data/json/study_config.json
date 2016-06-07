@@ -1,0 +1,93 @@
+{
+    "comments": [
+        {
+            "name": "",
+            "value": ""
+        }
+    ],
+    "description": "",
+    "identifier": "",
+    "ontologySourceReferences": [],
+    "people": [],
+    "publicReleaseDate": "",
+    "publications": [],
+    "studies": [
+        {
+            "@id": "",
+            "assays": [
+                {
+                    "@id": "",
+                    "characteristicCategories": [],
+                    "dataFiles": [],
+                    "filename": "",
+                    "materials": {
+                        "otherMaterials": [],
+                        "samples": []
+                    },
+                    "measurementType": {
+                        "annotationValue": "transcription profiling",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "processSequence": [],
+                    "technologyPlatform": "",
+                    "technologyType": {
+                        "annotationValue": "nucleotide sequencing",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "unitCategories": []
+                }
+            ],
+            "characteristicCategories": [],
+            "description": "",
+            "factors": [],
+            "filename": "",
+            "identifier": "",
+            "materials": {
+                "otherMaterials": [],
+                "samples": [],
+                "sources": []
+            },
+            "people": [],
+            "processSequence": [
+                {
+                    "@id": "#process/1",
+                    "comments": [],
+                    "date": "",
+                    "executesProtocol": {
+                        "@id": "#protocol/1"
+                    },
+                    "inputs": [],
+                    "outputs": [],
+                    "parameterValues": [],
+                    "performer": ""
+                }
+            ],
+            "protocols": [
+                {
+                    "@id": "#protocol/1",
+                    "components": [],
+                    "description": "",
+                    "name": "",
+                    "parameters": [],
+                    "protocolType": {
+                        "annotationValue": "sample collection",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                }
+            ],
+            "publicReleaseDate": "",
+            "publications": [],
+            "studyDesignDescriptors": [],
+            "submissionDate": "",
+            "title": "",
+            "unitCategories": []
+        }
+    ],
+    "submissionDate": "",
+    "title": ""
+}
