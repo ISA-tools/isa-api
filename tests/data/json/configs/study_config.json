@@ -12,7 +12,6 @@
     "sample collection"
   ],
   "description": [
-    "(Source)->(sample collection)->(Sample)",
-    "(Source)->(Sample)"
+    "(Source)->(sample collection)->(Sample)"
   ]
 }

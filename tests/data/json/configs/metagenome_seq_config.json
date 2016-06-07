@@ -28,6 +28,5 @@
   ],
   "description": [
     "(Sample)->(nucleic acid extraction)->(Extract)->(library construction)->(nucleic acid sequencing)->(DataFile)->(sequence analysis data transformation)->(DataFile)",
-    "(Sample)->(nucleic acid extraction)->(Extract)->(library construction)->(nucleic acid sequencing)->(DataFile)"
   ]
 }
