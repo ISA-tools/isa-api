@@ -120,6 +120,32 @@ class ValidateIsaJsonTest(TestCase):
             self.fail(
                 "Validation error missing when should report error - data has broken factor link in factorValue but not reported in validation report")
 
+    def test_characteristic_link(self):
+        """Tests against 1008"""
+        log_msg_stream = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'characteristic_link.json')))
+        if "['#characteristic/1'] used in a study or assay process sequence not declared" in log_msg_stream.getvalue():
+            self.fail(
+                "Validation error present when should pass without error - characteristic link reports broken when present in data")
+
+        log_msg_stream = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'characteristic_link_fail.json')))
+        if "['#characteristic/1'] used in a study or assay process sequence not declared" in log_msg_stream.getvalue():
+            self.fail(
+                "Validation error missing when should report error - data has broken factor link in factorValue but not reported in validation report")
+
+
+    # def test_unit_categories_link(self):
+    #     """Tests against 1008"""
+    #     log_msg_stream = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'unit_link.json')))
+    #     if "['#Unit/1'] used in a study or assay process sequence not declared" in log_msg_stream.getvalue():
+    #         self.fail(
+    #             "Validation error present when should pass without error - unit link in factorValue reports broken when present in data")
+    #
+    #     log_msg_stream = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'unit_link.json')))
+    #     if "['#Unit/1'] used in a study or assay process sequence not declared" not in log_msg_stream.getvalue():
+    #         self.fail(
+    #             "Validation error missing when should report error - data has broken factor link in factorValue but not reported in validation report")
+
+
     def test_protocol_parameter_link(self):
         """Tests against 1009"""
         log_msg_stream = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'protocol_parameter_link.json')))
@@ -169,7 +195,7 @@ class ValidateIsaJsonTest(TestCase):
                 "Validation error missing when should report error - data has incorrectly formatted Pubmed ID in publication but not reported in validation report")
 
     def test_protocol_used(self):
-        """Tests against 3005"""
+        """Tests against 1019"""
         log_msg_stream = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'protocol_used.json')))
         if "['#protocol/1'] not used" in log_msg_stream.getvalue():
             self.fail(
@@ -181,7 +207,7 @@ class ValidateIsaJsonTest(TestCase):
                 "Validation error missing when should report error - data has incorrectly reported everything is OK but not reported #protocol/1 as being unused")
 
     def test_factor_used(self):
-        """Tests against 3006"""
+        """Tests against 1021"""
         log_msg_stream = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'factor_used.json')))
         if "factors declared ['#factor/1'] that have not been used" in log_msg_stream.getvalue():
             self.fail(
