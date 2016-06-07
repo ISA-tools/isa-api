@@ -631,7 +631,7 @@ def get_data_file_ids(study_json):
 
 def get_io_ids_in_process_sequence(study_json):
     """Used for rules 1001-1005"""
-    all_process_sequences = study_json['processSequence']
+    all_process_sequences = list(study_json['processSequence'])
     for assay_json in study_json['assays']:
         all_process_sequences.extend(assay_json['processSequence'])
     return [elem for iterabl in [[i['@id'] for i in process['inputs']] + [o['@id'] for o in process['outputs']] for process in
@@ -1131,7 +1131,87 @@ def check_measurement_technology_types(assay_json, configs):
         logger.error("(E) Could not load configuration for measurement type '{}' and technology type '{}'".format(measurement_type, technology_type))
 
 
-def validate(fp, config_dir='', log_level=logging.INFO):
+def list_process_sequences(process_sequence_json):
+    list_of_last_processes_in_sequence = [i for i in process_sequence_json if 'nextProcess' not in i.keys()]
+    for process in list_of_last_processes_in_sequence:  # build graphs backwards
+        assay_graph = list()
+        try:
+            while True:
+                process_graph = list()
+                if 'outputs' in process.keys():
+                    outputs = process['outputs']
+                    if len(outputs) > 0:
+                        for output in outputs:
+                            output_id = output['@id']
+                            process_graph.append(output_id)
+                protocol_id = process['executesProtocol']['@id']
+                process_graph.append(protocol_id)
+                if 'inputs' in process.keys():
+                    inputs = process['inputs']
+                    if len(inputs) > 0:
+                        for input_ in inputs:
+                            input_id = input_['@id']
+                            process_graph.append(input_id)
+                process_graph.reverse()
+                assay_graph.append(process_graph)
+                process = [i for i in process_sequence_json if i['@id'] == process['previousProcess']['@id']][0]
+        except KeyError:
+            pass
+        assay_graph.reverse()
+        yield assay_graph
+
+
+def check_study_and_assay_graphs(study_json, configs):
+
+    def check_assay_graph(process_sequence_json, config):
+        list_of_last_processes_in_sequence = [i for i in process_sequence_json if 'nextProcess' not in i.keys()]
+        logger.info("Checking against assay protocol sequence configuration {}".format(config['description']))
+        config_protocol_sequence = [i['protocol'] for i in config['protocols']]
+        for process in list_of_last_processes_in_sequence:  # build graphs backwards
+            assay_graph = list()
+            try:
+                while True:
+                    process_graph = list()
+                    if 'outputs' in process.keys():
+                        outputs = process['outputs']
+                        if len(outputs) > 0:
+                            for output in outputs:
+                                output_id = output['@id']
+                                process_graph.append(output_id)
+                    protocol_id = protocols_and_types[process['executesProtocol']['@id']]
+                    process_graph.append(protocol_id)
+                    if 'inputs' in process.keys():
+                        inputs = process['inputs']
+                        if len(inputs) > 0:
+                            for input_ in inputs:
+                                input_id = input_['@id']
+                                process_graph.append(input_id)
+                    process_graph.reverse()
+                    assay_graph.append(process_graph)
+                    process = [i for i in process_sequence_json if i['@id'] == process['previousProcess']['@id']][0]
+            except KeyError:  # this happens when we can't find a previousProcess
+                pass
+            assay_graph.reverse()
+            assay_protocol_sequence = [[j for j in i if not j.startswith('#')] for i in assay_graph]
+            assay_protocol_sequence = [i for j in assay_protocol_sequence for i in j]  # flatten list
+            assay_protocol_sequence_of_interest = [i for i in assay_protocol_sequence if i in config_protocol_sequence]#  filter out protocols in sequence that are not of interest (additional ones to required by config)
+            if config_protocol_sequence != assay_protocol_sequence_of_interest:
+                logger.warn("Configuration protocol sequence {} does not match study graph found in {}".format(config_protocol_sequence, assay_protocol_sequence))
+
+    protocols_and_types = dict([(i['@id'], i['protocolType']['annotationValue']) for i in study_json['protocols']])
+    # first check study graph
+    logger.info("Loading configuration (study)")
+    config = configs['study']
+    check_assay_graph(study_json['processSequence'], config)
+    for assay_json in study_json['assays']:
+        m = assay_json['measurementType']['annotationValue']
+        t = assay_json['technologyType']['annotationValue']
+        logger.info("Loading configuration ({}, {})".format(m, t))
+        config = configs[(m, t)]
+        check_assay_graph(assay_json['processSequence'], config)
+
+
+def validate(fp, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/json/configs', log_level=logging.INFO):
     logger.setLevel(log_level)
     logger.info("ISA JSON Validator from ISA tools API v0.2")
     from io import StringIO
@@ -1182,12 +1262,14 @@ def validate(fp, config_dir='', log_level=logging.INFO):
             logger.fatal("(F) There are some errors that mean validation against configurations cannot proceed.")
             return stream
         fp.seek(0)  # reset file pointer
-        i = load(fp=fp)
-        for study in i.studies:
-            check_study_or_assay_graph(study_or_assay=study, configs=configs)  # Rule 4004
-        for study in i.studies:
-            for assay in study.assays:
-                check_study_or_assay_graph(study_or_assay=assay, configs=configs)  # Rule 4004
+        for study_json in isa_json['studies']:
+            check_study_and_assay_graphs(study_json, configs)  # Rule 4004
+        # i = load(fp=fp)
+        # for study in i.studies:
+        #     check_study_or_assay_graph(study_or_assay=study, configs=configs)  # Rule 4004
+        # for study in i.studies:
+        #     for assay in study.assays:
+        #         check_study_or_assay_graph(study_or_assay=assay, configs=configs)  # Rule 4004
     except KeyError as k:
         logger.fatal("(F) There was an error when trying to read the JSON")
         logger.fatal("Key: " + str(k))
