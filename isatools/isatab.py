@@ -10,6 +10,7 @@ import networkx as nx
 import itertools
 import logging
 import re
+import math
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -2388,43 +2389,143 @@ def check_assay_table_against_config(s_df, config):
             logger.warn("Unexpected heading found. Expected {} but found {} at column number {}".format(fields[x], object[1], object[0]))
 
 
-def check_assay_table_with_config(df, protocols, config, filename):
+def cell_has_value(cell):
+    if isinstance(cell, float):
+        if math.isnan(cell):
+            return True
+        else:
+            return False
+    else:
+        if cell == '':
+            return False
+        elif 'Unnamed: ' in cell:
+            return False
+        else:
+            return True
+
+
+def check_assay_table_with_config(df, config, filename, protocols_declared):
     indexed_col_regex = re.compile('(.*?)\.\d+')
-    columns = df.columns
-    # Get headers from config
-    fields = [i.header for i in config.get_isatab_configuration()[0].get_field()]
-    # Get protocols from config
-    protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
-    # Map Protocol REF header positions to where indicated by protocol in config
-    for protocol in protocols:
-        fields.insert(protocol[0], 'Protocol REF')
-    # Map index positions of all column headers
-    object_index = [(x, i) for x, i in enumerate(columns) if i in ['Source Name', 'Sample Name',
-                                                                        'Extract Name', 'Labeled Extract Name',
-                                                                        'Raw Data File',
-                                                                        'Raw Spectral Data File', 'Array Data File',
-                                                                        'Protein Assignment File',
-                                                                        'Peptide Assignment File',
-                                                                        'Post Translational Modification Assignment File',
-                                                                        'Derived Spectral Data File',
-                                                                        'Derived Array Data File',
-                                                                        'Assay Name'] or 'Protocol REF' in i or
-                    'Characteristics[' in i or 'Factor Value[' in i or 'Parameter Value[ in i' or 'Comment[' in i]
-    # Filter column headers by the ones we're interested in, indicated by config
-    for x, o in enumerate(object_index):  # remove postix numbering from object_index
-        if indexed_col_regex.match(o[1]):
-            object_index[x] = (o[0], o[1][:o[1].rfind('.')])
-    object_index = [i for i in object_index if i[1] in fields]
-    object_index_nodups = list()
-    prev = ('','')
-    for o in object_index:
-        if prev[1] == o[1]:
-            pass
-        else: object_index_nodups.append(o)
-        prev = o
-    for x, object in enumerate(object_index_nodups):
-        if fields[x] not in object[1]:  # use 'not in' and not '!=' to compare postfixed '.n' columns
-            logger.warn("Unexpected heading found. Expected {} but found {} at column number {} in {}".format(fields[x], object[1], object[0], filename))
+    columns = list(df.columns)
+    # Get required headers from config and check if they are present in the table; Rule 4010
+    required_fields = [i.header for i in config.get_isatab_configuration()[0].get_field() if i.is_required]
+    for required_field in required_fields:
+        if required_field not in columns:
+            logger.warn("In {} the required column {} missing from column headings".format(filename, required_field))
+        else:
+            # Now check that the required column cells all have values, Rules 4003-4008
+            for y, cell in enumerate(df[required_field]):
+                if not cell_has_value(cell):
+                    logger.warn("Cell at row {} in column '{}' has no value, but it is required by the configuration".format(y, required_field))
+
+    # Check if protocol ref column values are consistently structured
+    protocol_ref_index = [i for i in columns if 'protocol ref' in i.lower()]
+    prots_ok = True
+    for each in protocol_ref_index:
+        prots_found = set()
+        for cell in df[each]:
+            prots_found.add(cell)
+        if len(prots_found) > 1:
+            logger.warn("Multiple protocol references {} are found in {}".format(prots_found, each))
+            logger.warn("Only one protocol reference should be used in a Protocol REF column.")
+            prots_ok = False
+    if prots_ok:  # build a protocol map of refs to column positions
+        prot_map = dict()
+        for each in protocol_ref_index:
+            protocol_ref = df[each][0]
+            # only add to protocol map if protocol is of interest to config, otherwise we ignore it
+            if protocol_ref in protocols_declared:
+                prot_map[each] = protocol_ref
+            else:
+                logger.info("Ignoring protocol ref {} as not found in protocols declared {} in study file".format(protocol_ref, protocols_declared))
+
+        # Now check if protocol ref is in correct position
+        config_headers = [i.header for i in config.get_isatab_configuration()[0].get_field()]
+        config_protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
+        # Map Protocol REF header positions to where indicated by protocol in config, with type cast into the heading
+        for protocol in config_protocols:
+            config_headers.insert(protocol[0], 'Protocol REF[{}]'.format(protocol[1]))
+        # Filter out only the protocol refs and the objects of interest to the config, found earlier in required_fields
+        config_headers_objects_only = [i for i in config_headers if 'protocol ref' in i.lower() or i in required_fields]
+
+        headers_objects_only = [i for i in enumerate(columns) if i.lower().endswith(' name')
+                        or i.lower().endswith(' data file') or i.lower().endswith(' data matrix file')
+                        or 'protocol ref' in i.lower()]
+        to_del = list()  # remove protocols not in prot map
+        for prot in [i for i in headers_objects_only if 'protocol ref' in i.lower()]:
+            if prot not in prot_map.keys():
+                to_del.append(prot)
+        for d in to_del:
+            headers_objects_only.remove(prot)
+
+        for protocol in prot_map.keys():
+            protocol_in_header_pos = headers_objects_only.index(protocol)
+            lhs_header = headers_objects_only[protocol_in_header_pos - 1]
+            rhs_header = headers_objects_only[protocol_in_header_pos + 1]
+            if 'protocol ref.' in lhs_header.lower():
+                lhs_header = 'Protocol REF[' + prot_map[lhs_header] + ']'
+            if 'protocol ref.' in rhs_header.lower():
+                rhs_header = 'Protocol REF[' + prot_map[rhs_header] + ']'
+            protocol_in_config_pos = config_headers_objects_only.index('Protocol REF[' + prot_map[protocol] + ']')
+            lhs_config = config_headers_objects_only[protocol_in_config_pos - 1]
+            rhs_config = config_headers_objects_only[protocol_in_config_pos + 1]
+
+            print(lhs_header, lhs_config, lhs_header == lhs_config)
+            print(rhs_header, rhs_config, rhs_header == rhs_config)
+
+    # Now check the node order
+    # # Get protocols from config
+    # protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
+    # # Map Protocol REF header positions to where indicated by protocol in config
+    # for protocol in protocols:
+    #     fields.insert(protocol[0], 'Protocol REF')
+    # # How to handle cases where there is no Protocol REF? Insert fake columns where things like Assay Name and Hybridization Name occur but no Protocol REF?
+    # # First find processess with no Protocol REF
+    # no_protocol_ref_index = [(x, i) for x, i in enumerate(columns) if i in ['Assay Name', 'Hybridization Name',
+    #                                                                         'Data Transformation Name',
+    #                                                                         'Normalization Name', 'MS Assay']]
+    #
+    # def is_material_or_data_node_header(header):
+    #     if header in ['Source Name', 'Sample Name', 'Extract Name', 'Labeled Extract Name', 'Data File',
+    #                   'Raw Data File', 'Raw Spectral Data File', 'Array Data File' ]:
+    #         return True
+    # # add Protocol REFs
+    # for index in no_protocol_ref_index:
+    #     if is_material_or_data_node_header(columns[index]):
+    #         columns.insert(index, 'Protocol REF')
+    # no_protocol_ref_index = [(x, i) for x, i in enumerate(columns) if i in ['Assay Name', 'Hybridization Name',
+    #                                                                             'Data Transformation Name',
+    #                                                                             'Normalization Name']]
+    # if len(no_protocol_ref_index) == 0:
+    #     print('OK!')
+    #
+    # # Map index positions of all column headers
+    # object_index = [(x, i) for x, i in enumerate(columns) if i in ['Source Name', 'Sample Name',
+    #                                                                 'Extract Name', 'Labeled Extract Name',
+    #                                                                 'Raw Data File',
+    #                                                                 'Raw Spectral Data File', 'Array Data File',
+    #                                                                 'Protein Assignment File',
+    #                                                                 'Peptide Assignment File',
+    #                                                                 'Post Translational Modification Assignment File',
+    #                                                                 'Derived Spectral Data File',
+    #                                                                 'Derived Array Data File',
+    #                                                                 'Assay Name'] or 'Protocol REF' in i or
+    #                 'Factor Value[' in i or 'Normalization Name' or 'Data Transformation Name']
+    # # Filter column headers by the ones we're interested in, indicated by config
+    # for x, o in enumerate(object_index):  # remove postix numbering from object_index
+    #     if indexed_col_regex.match(o[1]):
+    #         object_index[x] = (o[0], o[1][:o[1].rfind('.')])
+    # object_index = [i for i in object_index if i[1] in fields]
+    # object_index_nodups = list()
+    # prev = ('','')
+    # for o in object_index:
+    #     if prev[1] == o[1]:
+    #         pass
+    #     else: object_index_nodups.append(o)
+    #     prev = o
+    # for x, object in enumerate(object_index_nodups):
+    #     if fields[x] not in object[1]:  # use 'not in' and not '!=' to compare postfixed '.n' columns
+    #         logger.warn("Unexpected heading found. Expected {} but found {} at column number {} in {}".format(fields[x], object[1], object[0], filename))
 
 
 def check_study_assay_tables_against_config(i_df, dir_context, configs):
@@ -2438,7 +2539,8 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
             try:
                 df = load_table(open(os.path.join(dir_context, study_filename)))
                 config = configs[('[Sample]', '')]
-                check_assay_table_with_config(df, protocols, config, study_filename)
+                logger.info("Checking study file {} against default study table configuration...".format(study_filename))
+                check_assay_table_with_config(df, config, study_filename, protocol_names)
             except FileNotFoundError:
                 pass
         for j, assay_df in enumerate(i_df['STUDY ASSAYS']):
@@ -2449,7 +2551,10 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                 try:
                     df = load_table(open(os.path.join(dir_context, assay_filename)))
                     config = configs[(measurement_type, technology_type)]
-                    check_assay_table_with_config(df, protocols, config, assay_filename)
+                    logger.info(
+                        "Checking assay file {} against default table configuration ({}, {})...".format(assay_filename, measurement_type, technology_type))
+                    check_assay_table_with_config(df, config, assay_filename, protocol_names)
+                    # check_assay_table_with_config(df, protocols, config, assay_filename)
                 except FileNotFoundError:
                     pass
         # TODO: Check protocol usage - Rule 4009
