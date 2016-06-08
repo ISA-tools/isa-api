@@ -2404,7 +2404,7 @@ def cell_has_value(cell):
             return True
 
 
-def check_assay_table_with_config(df, config, filename, protocols_declared):
+def check_assay_table_with_config(df, config, filename, protocol_names_and_types):
     indexed_col_regex = re.compile('(.*?)\.\d+')
     columns = list(df.columns)
     # Get required headers from config and check if they are present in the table; Rule 4010
@@ -2429,49 +2429,49 @@ def check_assay_table_with_config(df, config, filename, protocols_declared):
             logger.warn("Multiple protocol references {} are found in {}".format(prots_found, each))
             logger.warn("Only one protocol reference should be used in a Protocol REF column.")
             prots_ok = False
-    if prots_ok:  # build a protocol map of refs to column positions
-        prot_map = dict()
-        for each in protocol_ref_index:
-            protocol_ref = df[each][0]
-            # only add to protocol map if protocol is of interest to config, otherwise we ignore it
-            if protocol_ref in protocols_declared:
-                prot_map[each] = protocol_ref
-            else:
-                logger.info("Ignoring protocol ref {} as not found in protocols declared {} in study file".format(protocol_ref, protocols_declared))
-
-        # Now check if protocol ref is in correct position
-        config_headers = [i.header for i in config.get_isatab_configuration()[0].get_field()]
-        config_protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
-        # Map Protocol REF header positions to where indicated by protocol in config, with type cast into the heading
-        for protocol in config_protocols:
-            config_headers.insert(protocol[0], 'Protocol REF[{}]'.format(protocol[1]))
-        # Filter out only the protocol refs and the objects of interest to the config, found earlier in required_fields
-        config_headers_objects_only = [i for i in config_headers if 'protocol ref' in i.lower() or i in required_fields]
-
-        headers_objects_only = [i for i in enumerate(columns) if i.lower().endswith(' name')
-                        or i.lower().endswith(' data file') or i.lower().endswith(' data matrix file')
-                        or 'protocol ref' in i.lower()]
-        to_del = list()  # remove protocols not in prot map
-        for prot in [i for i in headers_objects_only if 'protocol ref' in i.lower()]:
-            if prot not in prot_map.keys():
-                to_del.append(prot)
-        for d in to_del:
-            headers_objects_only.remove(prot)
-
-        for protocol in prot_map.keys():
-            protocol_in_header_pos = headers_objects_only.index(protocol)
-            lhs_header = headers_objects_only[protocol_in_header_pos - 1]
-            rhs_header = headers_objects_only[protocol_in_header_pos + 1]
-            if 'protocol ref.' in lhs_header.lower():
-                lhs_header = 'Protocol REF[' + prot_map[lhs_header] + ']'
-            if 'protocol ref.' in rhs_header.lower():
-                rhs_header = 'Protocol REF[' + prot_map[rhs_header] + ']'
-            protocol_in_config_pos = config_headers_objects_only.index('Protocol REF[' + prot_map[protocol] + ']')
-            lhs_config = config_headers_objects_only[protocol_in_config_pos - 1]
-            rhs_config = config_headers_objects_only[protocol_in_config_pos + 1]
-
-            print(lhs_header, lhs_config, lhs_header == lhs_config)
-            print(rhs_header, rhs_config, rhs_header == rhs_config)
+    # if prots_ok:  # build a protocol map of refs to column positions
+    #     prot_map = dict()
+    #     for each in protocol_ref_index:
+    #         protocol_ref = df[each][0]
+    #         # only add to protocol map if protocol is of interest to config, otherwise we ignore it
+    #         if protocol_ref in protocol_names_and_types.keys():
+    #             prot_map[each] = protocol_names_and_types[protocol_ref]
+    #         else:
+    #             logger.info("Ignoring protocol ref {} as not found in protocols declared {} in study file".format(protocol_ref, protocol_names_and_types.keys()))
+    #
+    #     # Now check if protocol ref is in correct position
+    #     config_headers = [i.header for i in config.get_isatab_configuration()[0].get_field()]
+    #     config_protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
+    #     # Map Protocol REF header positions to where indicated by protocol in config, with type cast into the heading
+    #     for protocol in config_protocols:
+    #         config_headers.insert(protocol[0], 'Protocol REF[{}]'.format(protocol[1]))
+    #     # Filter out only the protocol refs and the objects of interest to the config, found earlier in required_fields
+    #     config_headers_objects_only = [i for i in config_headers if 'protocol ref' in i.lower() or i in required_fields]
+    #
+    #     headers_objects_only = [i for i in columns if i.lower().endswith(' name')
+    #                     or i.lower().endswith(' data file') or i.lower().endswith(' data matrix file')
+    #                     or 'protocol ref' in i.lower()]
+    #     to_del = list()  # remove protocols not in prot map
+    #     for prot in [i for i in headers_objects_only if 'protocol ref' in i.lower()]:
+    #         if prot not in prot_map.keys():
+    #             to_del.append(prot)
+    #     for d in to_del:
+    #         headers_objects_only.remove(d)
+    #
+    #     for protocol in prot_map.keys():
+    #         protocol_in_header_pos = headers_objects_only.index(protocol)
+    #         lhs_header = headers_objects_only[protocol_in_header_pos - 1]
+    #         rhs_header = headers_objects_only[protocol_in_header_pos + 1]
+    #         if 'protocol ref.' in lhs_header.lower():
+    #             lhs_header = 'Protocol REF[' + prot_map[lhs_header] + ']'
+    #         if 'protocol ref.' in rhs_header.lower():
+    #             rhs_header = 'Protocol REF[' + prot_map[rhs_header] + ']'
+    #         protocol_in_config_pos = config_headers_objects_only.index('Protocol REF[' + prot_map[protocol] + ']')
+    #         lhs_config = config_headers_objects_only[protocol_in_config_pos - 1]
+    #         rhs_config = config_headers_objects_only[protocol_in_config_pos + 1]
+    #
+    #         print(lhs_header, protocol, lhs_config, lhs_header == lhs_config)
+    #         print(rhs_header, protocol, rhs_config, rhs_header == rhs_config)
 
     # Now check the node order
     # # Get protocols from config
@@ -2534,13 +2534,13 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
         study_filename = study_df.iloc[0]['Study File Name']
         protocol_names = i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist()
         protocol_types = i_df['STUDY PROTOCOLS'][i]['Study Protocol Type'].tolist()
-        protocols = dict(zip(protocol_names, protocol_types))
+        protocol_names_and_types = dict(zip(protocol_names, protocol_types))
         if study_filename is not '':
             try:
                 df = load_table(open(os.path.join(dir_context, study_filename)))
                 config = configs[('[Sample]', '')]
                 logger.info("Checking study file {} against default study table configuration...".format(study_filename))
-                check_assay_table_with_config(df, config, study_filename, protocol_names)
+                check_assay_table_with_config(df, config, study_filename, protocol_names_and_types)
             except FileNotFoundError:
                 pass
         for j, assay_df in enumerate(i_df['STUDY ASSAYS']):
@@ -2553,7 +2553,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                     config = configs[(measurement_type, technology_type)]
                     logger.info(
                         "Checking assay file {} against default table configuration ({}, {})...".format(assay_filename, measurement_type, technology_type))
-                    check_assay_table_with_config(df, config, assay_filename, protocol_names)
+                    check_assay_table_with_config(df, config, assay_filename, protocol_names_and_types)
                     # check_assay_table_with_config(df, protocols, config, assay_filename)
                 except FileNotFoundError:
                     pass
