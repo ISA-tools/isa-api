@@ -11,6 +11,7 @@ import itertools
 import logging
 import re
 import math
+import iso8601
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -1548,7 +1549,7 @@ def check_utf8(fp):
 
 
 def load2(fp):
-    """Used for rules 0004 and 0005"""
+    """Used for rules 0005"""
     def _read_investigation_file(fp):
 
         def _peek(f):
@@ -2591,6 +2592,204 @@ def validate2(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
         check_measurement_technology_types(i_df, configs)  # Rule 4002
         check_investigation_against_config(i_df, configs)  # Rule 4003 for investigation file only
         check_study_assay_tables_against_config(i_df, os.path.dirname(fp.name), configs) # Rules 4003-4008 and todo: 4009
+    except CParserError as cpe:
+        logger.fatal("There was an error when trying to parse the ISA tab")
+        logger.fatal(cpe)
+    except ValueError as ve:
+        logger.fatal("There was an error when trying to parse the ISA tab")
+        logger.fatal(ve)
+    except SystemError:
+        logger.fatal("Something went very very wrong! :(")
+    finally:
+        handler.flush()
+        return stream
+
+
+def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02'):
+
+    def check_factor_value_presence(table):
+        # Implements https://github.com/ISA-tools/ISAvalidator-ISAconverter-BIImanager/blob/master/import_layer/src/main/java/org/isatools/isatab/isaconfigurator/validators/FactorValuePresenceValidator.java
+        factor_fields = [i for i in table.columns if i.lower().startswith('factor value')]
+        for factor_field in factor_fields:
+            for x, cell_value in enumerate(table.fillna('')[factor_field]):
+                if cell_value == '':
+                    logger.warn("Missing value for '" + factor_field + "' at row " + str(x) + " in " + table.filename)
+
+    def check_required_fields(table, cfg):
+        # Implements https://github.com/ISA-tools/ISAvalidator-ISAconverter-BIImanager/blob/master/import_layer/src/main/java/org/isatools/isatab/isaconfigurator/validators/RequiredFieldsValidator.java
+        for fheader in [i.header for i in cfg.get_isatab_configuration()[0].get_field() if i.is_required]:
+            found_field = [i for i in table.columns if i.lower() == fheader.lower()]
+            if len(found_field) == 0:
+                logger.warn("Required field '" + fheader + "' not found in the file '" + table.filename + "'")
+            elif len(found_field) > 1:
+                logger.warn("Field '" + fheader + "' cannot have multiple values in the file '" + table.filename)
+
+    def check_sample_names(study_sample_table, assay_tables=list()):
+        # Implements https://github.com/ISA-tools/ISAvalidator-ISAconverter-BIImanager/blob/master/import_layer/src/main/java/org/isatools/isatab/isaconfigurator/validators/SampleNameValidator.java
+        if len(assay_tables) > 0:
+            study_samples = set(study_sample_table['Sample Name'])
+            for assay_table in assay_tables:
+                assay_samples = set(assay_table['Sample Name'])
+                for assay_sample in assay_samples:
+                    if assay_sample not in study_samples:
+                        logger.warn("{} is a Sample Name in {}, but it is not defined in the Study Sample File {}."
+                                    .format(assay_sample, assay_table.filename, study_sample_table.filename))
+
+    def check_field_values(table, cfg):
+        def check_single_field(cell_value, cfg_field):
+            # First check if the value is required by config
+            if isinstance(cell_value, float):
+                if math.isnan(cell_value):
+                    if cfg_field.is_required:
+                        logger.warn("Missing value for the required field '" + cfg_field.header + "' in the file '" +
+                                    table.filename + "'")
+                    return True
+            elif isinstance(cell_value, str):
+                value = cell_value.strip()
+                if value == '':
+                    if cfg_field.is_required:
+                        logger.warn("Missing value for the required field '" + cfg_field.header + "' in the file '" +
+                                    table.filename + "'")
+                    return True
+            is_valid_value = True
+            data_type = cfg_field.data_type.lower().strip()
+            if data_type in ['', 'string']:
+                return True
+            if 'boolean' == data_type:
+                is_valid_value = 'true' == cell_value.strip() or 'false' == cell_value.strip()
+            elif 'date' == data_type:
+                try:
+                    iso8601.parse_date(cell_value)
+                except iso8601.ParseError:
+                    is_valid_value = False
+            elif 'integer' == data_type:
+                try:
+                    int(cell_value)
+                except ValueError:
+                    is_valid_value = False
+            elif 'float' == data_type:
+                try:
+                    float(cell_value)
+                except ValueError:
+                    is_valid_value = False
+            elif data_type == 'list':
+                list_values = [i.lower() for i in cfg_field.list_values.split(',')]
+                if cell_value.lower() not in list_values:
+                    is_valid_value = False
+            # TODO: Implement ontology term check. Currently report it as unknown type
+            # elif data_type in ['ontology-term', 'ontology term']:
+            #     return True
+            else:
+                logger.warn("Unknown data type '" + data_type + "' for field '" + cfg_field.header +
+                            "' in the file '" + table.filename + "'")
+                return False
+            if not is_valid_value:
+                logger.warn("Invalid value '" + cell_value + "' for type '" + data_type + "' of the field '" +
+                            cfg_field.header + "'")
+                if data_type == 'list':
+                    logger.warn("Value must be one of: " + cfg_field.list_values)
+            return is_valid_value
+
+        result = True
+        for irow in range(len(table.index)):
+            ncols = len(table.columns)
+            for icol in range(0, ncols):
+                cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == table.columns[icol]]
+                if len(cfields) == 1:
+                    cfield = cfields[0]
+                    result = result and check_single_field(table.iloc[irow][cfield.header], cfield)
+        return result
+
+    def check_unit_field(table, cfg):
+        def check_unit_value(cell_value, cfg_field):
+            # TODO implement unit value checking
+            return True
+
+        result = True
+        for icol, header in enumerate(table.columns):
+            cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
+            if len(cfields) != 1:
+                return False
+            cfield = cfields[0]
+            ucfields = [i for i in cfg.get_isatab_configuration()[0].get_unit_field() if i.pos == cfield.pos + 1]
+            if len(ucfields) != 1:
+                return False
+            ucfield = ucfields[0]
+            if ucfield.is_required:
+                rheader = None
+                if icol < len(table.columns):
+                    rheader = table.columns[icol + 1]
+                if rheader is None or rheader.lower() != 'unit':
+                    logger.warn("The field '" + header + "' in the file '" + table.filename +
+                                "' misses a required 'Unit' column")
+                    result = False
+                else:
+                    for irow in range(len(table.index)):
+                        result = result and check_unit_value(table.iloc[irow][cfield.header], cfield)
+        return result
+
+    logger.setLevel(log_level)
+    logger.info("ISA tab Validator from ISA tools API v0.2")
+    from io import StringIO
+    stream = StringIO()
+    handler = logging.StreamHandler(stream)
+    logger.addHandler(handler)
+    try:
+        i_df = load2(fp=fp)
+        configs = load_config(config_dir)
+        for i, study_df in enumerate(i_df['STUDY']):
+            study_filename = study_df.iloc[0]['Study File Name']
+            protocol_names = i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist()
+            protocol_types = i_df['STUDY PROTOCOLS'][i]['Study Protocol Type'].tolist()
+            protocol_names_and_types = dict(zip(protocol_names, protocol_types))
+            study_sample_table = None
+            assay_tables = list()
+            if study_filename is not '':
+                try:
+                    study_sample_table = load_table(open(os.path.join(os.path.dirname(fp.name), study_filename)))
+                    study_sample_table.filename = study_filename
+                    config = configs[('[Sample]', '')]
+                    logger.info(
+                        "Checking study file {} against default study table configuration...".format(study_filename))
+                    check_factor_value_presence(study_sample_table)
+                    check_required_fields(study_sample_table, config)
+                    if not check_field_values(study_sample_table, config):
+                        logger.warn("There are some field value inconsistencies in {} against {} "
+                                    "configuration".format(study_sample_table.filename, 'Study Sample'))
+                    if not check_unit_field(study_sample_table, config):
+                        logger.warn("There are some unit value inconsistencies in {} against {} "
+                                    "configuration".format(study_sample_table.filename, 'Study Sample'))
+
+                except FileNotFoundError:
+                    pass
+            for j, assay_df in enumerate(i_df['STUDY ASSAYS']):
+                assay_filename = assay_df['Study Assay File Name'].tolist()[0]
+                measurement_type = assay_df['Study Assay Measurement Type'].tolist()[0]
+                technology_type = assay_df['Study Assay Technology Type'].tolist()[0]
+                if assay_filename is not '':
+                    try:
+                        assay_table = load_table(open(os.path.join(os.path.dirname(fp.name), assay_filename)))
+                        assay_table.filename = assay_filename
+                        assay_tables.append(assay_table)
+                        config = configs[(measurement_type, technology_type)]
+                        logger.info(
+                            "Checking assay file {} against default table configuration ({}, {})...".format(
+                                assay_filename, measurement_type, technology_type))
+                        check_factor_value_presence(assay_table)
+                        check_required_fields(assay_table, config)
+                        if not check_field_values(assay_table, config):
+                            logger.warn(
+                                "There are some field value inconsistencies in {} against {} configuration".format(
+                                    assay_table.filename, (measurement_type, technology_type)))
+                        if not check_unit_field(assay_table, config):
+                            logger.warn(
+                                "There are some unit value inconsistencies in {} against {} configuration".format(
+                                    assay_table.filename, (measurement_type, technology_type)))
+                        # check_assay_table_with_config(df, protocols, config, assay_filename)
+                    except FileNotFoundError:
+                        pass
+            if study_sample_table is not None:
+                check_sample_names(study_sample_table, assay_tables)
     except CParserError as cpe:
         logger.fatal("There was an error when trying to parse the ISA tab")
         logger.fatal(cpe)
