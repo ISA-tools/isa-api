@@ -2702,7 +2702,7 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
 
     def check_unit_field(table, cfg):
         def check_unit_value(cell_value, cfg_field):
-            # TODO implement unit value checking
+            # TODO implement unit value checking and test
             return True
 
         result = True
@@ -2727,6 +2727,9 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
                     for irow in range(len(table.index)):
                         result = result and check_unit_value(table.iloc[irow][cfield.header], cfield)
         return result
+
+
+
 
     logger.setLevel(log_level)
     logger.info("ISA tab Validator from ISA tools API v0.2")
@@ -2801,3 +2804,55 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
     finally:
         handler.flush()
         return stream
+
+
+def check_protocol_fields(table, cfg):
+
+    from itertools import tee
+
+    def pairwise(iterable):  # A lovely pairwise iterator
+        a, b = tee(iterable)
+        next(b, None)
+        return zip(a, b)
+
+    proto_ref_index = [i for i in table.columns if 'protocol ref' in i.lower()]
+    prots_ok = True
+    for each in proto_ref_index:
+        prots_found = set()
+        for cell in table[each]:
+            prots_found.add(cell)
+        if len(prots_found) > 1:
+            logger.warn("Multiple protocol references {} are found in {}".format(prots_found, each))
+            logger.warn("Only one protocol reference should be used in a Protocol REF column.")
+            prots_ok = False
+    if prots_ok:
+        field_headers = [i for i in table.columns if
+                              i.lower().endswith(' name') or i.lower().endswith(' data file') or i.lower().endswith(
+                                  ' data matrix file')]
+        protos = [i for i in table.columns if i.lower() == 'protocol ref']
+        last_proto_indx = table.columns.get_loc(protos[len(protos)-1])
+        last_mat_or_dat_indx = table.columns.get_loc(field_headers[len(field_headers)-1])
+        if last_proto_indx > last_mat_or_dat_indx:
+            logger.warn("Protocol REF column without output in file '" + table.filename + "'")
+        for left, right in pairwise(field_headers):
+            cleft = None
+            cright = None
+            clefts = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header.lower() == left.lower()]
+            if len(clefts) == 1:
+                cleft = clefts[0]
+            crights = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header.lower() == right.lower()]
+            if len(crights) == 1:
+                cright = crights[0]
+            if cleft is not None and cright is not None:
+                cprotos = [i.protocol_type for i in cfg.get_isatab_configuration()[0].get_protocol_field() if cleft.pos < i.pos and cright.pos > i.pos]
+                fprotos_headers = [i for i in table.columns[table.columns.get_loc(cleft.header):table.columns.get_loc(cright.header)] if
+                 'protocol ref' in i.lower()]
+                fprotos = list()
+                for header in fprotos_headers:
+                    fprotos.append(table.iloc[0][header])  # TODO: Make sure these pull the Protocol Types from i_ file, not just check the Protocol Name
+                invalid_prots = set(cprotos) - set(fprotos)
+                if len(invalid_prots) > 0:
+                    logger.warn("The used protocol(s) of type '" + str(invalid_prots) + "' is not defined in the ISA-configuration as a protocol between '"
+                                    + cleft.header + "' and '" + cright.header + "', in the file '" + '' + "'")
+                    prots_ok = False
+    return prots_ok
