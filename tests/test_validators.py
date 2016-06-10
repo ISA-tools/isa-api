@@ -232,6 +232,42 @@ class ValidateIsaJsonTest(TestCase):
                 "Validation error missing when should report error - data has incorrectly reported everything is OK "
                 "but not reported PATO as being unused")
 
+    def test_load_config(self):
+        """Tests against 4001"""
+        try:
+            isajson.load_config(os.path.join(self._dir, 'data', 'json', 'configs'))
+        except IOError as e:
+            self.fail("Could not load config because... " + str(e))
+
+    def test_get_config(self):
+        """Tests against 4002"""
+        try:
+            configs = isajson.load_config(os.path.join(self._dir, 'data', 'json', 'configs'))
+            if configs is None:
+                self.fail("There was a problem and config is null")
+            else:
+                self.assertIsNotNone(configs[('metagenome sequencing', 'nucleotide sequencing')])
+        except IOError as e:
+            self.fail("Could not load config because... " + str(e))
+
+    def test_study_config_validation(self):
+        """Tests against 4004"""
+        log_msg_stream = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'study_config.json')))
+        if "protocol sequence ['sample collection'] does not match study graph" in log_msg_stream.getvalue():
+            self.fail("Validation failed against default study configuration, when it should have passed")
+        log_msg_stream = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'study_config_fail.json')))
+        if "protocol sequence ['sample collection'] does not match study graph" not in log_msg_stream.getvalue():
+            self.fail("Validation passed against default study configuration, when it should have failed")
+
+    def test_assay_config_validation(self):
+        """Tests against 4004"""
+        log_msg_stream = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'assay_config.json')))
+        if "protocol sequence ['nucleic acid extraction', 'library construction', 'nucleic acid sequencing', 'sequence analysis data transformation'] does not match study graph" in log_msg_stream.getvalue():
+            self.fail("Validation failed against transcription_seq.json configuration, when it should have passed")
+        log_msg_stream = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'assay_config_fail.json')))
+        if "protocol sequence ['nucleic acid extraction', 'library construction', 'nucleic acid sequencing', 'sequence analysis data transformation'] does not match study graph" not in log_msg_stream.getvalue():
+            self.fail("Validation passed against transcription_seq.json configuration, when it should have failed")
+
 
 class ValidateIsaTabTest(TestCase):
 
