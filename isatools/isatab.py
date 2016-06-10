@@ -2267,6 +2267,9 @@ def load_config(config_dir):
     configs = isatab_configurator.load(config_dir)
     if configs is None:
         logger.error("Could not load configurations from {}".format(config_dir))
+    else:
+        for k in configs.keys():
+            logger.info("Loaded table configuration '" + str(configs[k].get_isatab_configuration()[0].table_name) + "' for measurement and technology " + str(k))
     return configs
 
 
@@ -2508,231 +2511,237 @@ def validate2(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
         return stream
 
 
-def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02'):
+def check_factor_value_presence(table):
+    factor_fields = [i for i in table.columns if i.lower().startswith('factor value')]
+    for factor_field in factor_fields:
+        for x, cell_value in enumerate(table.fillna('')[factor_field]):
+            if cell_value == '':
+                logger.warn("Missing value for '" + factor_field + "' at row " + str(x) + " in " + table.filename)
 
-    def check_factor_value_presence(table):
-        factor_fields = [i for i in table.columns if i.lower().startswith('factor value')]
-        for factor_field in factor_fields:
-            for x, cell_value in enumerate(table.fillna('')[factor_field]):
-                if cell_value == '':
-                    logger.warn("Missing value for '" + factor_field + "' at row " + str(x) + " in " + table.filename)
 
-    def check_required_fields(table, cfg):
-        for fheader in [i.header for i in cfg.get_isatab_configuration()[0].get_field() if i.is_required]:
-            found_field = [i for i in table.columns if i.lower() == fheader.lower()]
-            if len(found_field) == 0:
-                logger.warn("Required field '" + fheader + "' not found in the file '" + table.filename + "'")
-            elif len(found_field) > 1:
-                logger.warn("Field '" + fheader + "' cannot have multiple values in the file '" + table.filename)
+def check_required_fields(table, cfg):
+    for fheader in [i.header for i in cfg.get_isatab_configuration()[0].get_field() if i.is_required]:
+        found_field = [i for i in table.columns if i.lower() == fheader.lower()]
+        if len(found_field) == 0:
+            logger.warn("Required field '" + fheader + "' not found in the file '" + table.filename + "'")
+        elif len(found_field) > 1:
+            logger.warn("Field '" + fheader + "' cannot have multiple values in the file '" + table.filename)
 
-    def check_sample_names(study_sample_table, assay_tables=list()):
-        if len(assay_tables) > 0:
-            study_samples = set(study_sample_table['Sample Name'])
-            for assay_table in assay_tables:
-                assay_samples = set(assay_table['Sample Name'])
-                for assay_sample in assay_samples:
-                    if assay_sample not in study_samples:
-                        logger.warn("{} is a Sample Name in {}, but it is not defined in the Study Sample File {}."
-                                    .format(assay_sample, assay_table.filename, study_sample_table.filename))
 
-    def check_field_values(table, cfg):
-        def check_single_field(cell_value, cfg_field):
-            # First check if the value is required by config
-            if isinstance(cell_value, float):
-                if math.isnan(cell_value):
-                    if cfg_field.is_required:
-                        logger.warn("Missing value for the required field '" + cfg_field.header + "' in the file '" +
-                                    table.filename + "'")
-                    return True
-            elif isinstance(cell_value, str):
-                value = cell_value.strip()
-                if value == '':
-                    if cfg_field.is_required:
-                        logger.warn("Missing value for the required field '" + cfg_field.header + "' in the file '" +
-                                    table.filename + "'")
-                    return True
-            is_valid_value = True
-            data_type = cfg_field.data_type.lower().strip()
-            if data_type in ['', 'string']:
+def check_sample_names(study_sample_table, assay_tables=list()):
+    if len(assay_tables) > 0:
+        study_samples = set(study_sample_table['Sample Name'])
+        for assay_table in assay_tables:
+            assay_samples = set(assay_table['Sample Name'])
+            for assay_sample in assay_samples:
+                if assay_sample not in study_samples:
+                    logger.warn("{} is a Sample Name in {}, but it is not defined in the Study Sample File {}."
+                                .format(assay_sample, assay_table.filename, study_sample_table.filename))
+
+
+def check_field_values(table, cfg):
+    def check_single_field(cell_value, cfg_field):
+        # First check if the value is required by config
+        if isinstance(cell_value, float):
+            if math.isnan(cell_value):
+                if cfg_field.is_required:
+                    logger.warn("Missing value for the required field '" + cfg_field.header + "' in the file '" +
+                                table.filename + "'")
                 return True
-            if 'boolean' == data_type:
-                is_valid_value = 'true' == cell_value.strip() or 'false' == cell_value.strip()
-            elif 'date' == data_type:
-                try:
-                    iso8601.parse_date(cell_value)
-                except iso8601.ParseError:
-                    is_valid_value = False
-            elif 'integer' == data_type:
-                try:
-                    int(cell_value)
-                except ValueError:
-                    is_valid_value = False
-            elif 'float' == data_type:
-                try:
-                    float(cell_value)
-                except ValueError:
-                    is_valid_value = False
-            elif data_type == 'list':
-                list_values = [i.lower() for i in cfg_field.list_values.split(',')]
-                if cell_value.lower() not in list_values:
-                    is_valid_value = False
-            elif data_type in ['ontology-term', 'ontology term']:
-                return True  # Structure and values checked in check_ontology_fields()
-            else:
-                logger.warn("Unknown data type '" + data_type + "' for field '" + cfg_field.header +
-                            "' in the file '" + table.filename + "'")
-                return False
-            if not is_valid_value:
-                logger.warn("Invalid value '" + cell_value + "' for type '" + data_type + "' of the field '" +
-                            cfg_field.header + "'")
-                if data_type == 'list':
-                    logger.warn("Value must be one of: " + cfg_field.list_values)
-            return is_valid_value
-
-        result = True
-        for irow in range(len(table.index)):
-            ncols = len(table.columns)
-            for icol in range(0, ncols):
-                cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == table.columns[icol]]
-                if len(cfields) == 1:
-                    cfield = cfields[0]
-                    result = result and check_single_field(table.iloc[irow][cfield.header], cfield)
-        return result
-
-    def check_unit_field(table, cfg):
-        def check_unit_value(cell_value, unit_value, cfield, filename):
-            if cell_has_value(cell_value) or cell_has_value(unit_value):
-                logger.warn("Field '" + cfield.header + "' has a unit but not a value in the file '" + filename + "'");
-                return False
+        elif isinstance(cell_value, str):
+            value = cell_value.strip()
+            if value == '':
+                if cfg_field.is_required:
+                    logger.warn("Missing value for the required field '" + cfg_field.header + "' in the file '" +
+                                table.filename + "'")
+                return True
+        is_valid_value = True
+        data_type = cfg_field.data_type.lower().strip()
+        if data_type in ['', 'string']:
             return True
+        if 'boolean' == data_type:
+            is_valid_value = 'true' == cell_value.strip() or 'false' == cell_value.strip()
+        elif 'date' == data_type:
+            try:
+                iso8601.parse_date(cell_value)
+            except iso8601.ParseError:
+                is_valid_value = False
+        elif 'integer' == data_type:
+            try:
+                int(cell_value)
+            except ValueError:
+                is_valid_value = False
+        elif 'float' == data_type:
+            try:
+                float(cell_value)
+            except ValueError:
+                is_valid_value = False
+        elif data_type == 'list':
+            list_values = [i.lower() for i in cfg_field.list_values.split(',')]
+            if cell_value.lower() not in list_values:
+                is_valid_value = False
+        elif data_type in ['ontology-term', 'ontology term']:
+            return True  # Structure and values checked in check_ontology_fields()
+        else:
+            logger.warn("Unknown data type '" + data_type + "' for field '" + cfg_field.header +
+                        "' in the file '" + table.filename + "'")
+            return False
+        if not is_valid_value:
+            logger.warn("Invalid value '" + cell_value + "' for type '" + data_type + "' of the field '" +
+                        cfg_field.header + "'")
+            if data_type == 'list':
+                logger.warn("Value must be one of: " + cfg_field.list_values)
+        return is_valid_value
 
-        result = True
-        for icol, header in enumerate(table.columns):
-            cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
-            if len(cfields) != 1:
-                continue
-            cfield = cfields[0]
-            ucfields = [i for i in cfg.get_isatab_configuration()[0].get_unit_field() if i.pos == cfield.pos + 1]
-            if len(ucfields) != 1:
-                continue
-            ucfield = ucfields[0]
-            if ucfield.is_required:
-                rheader = None
-                rindx = icol + 1
-                if rindx < len(table.columns):
-                    rheader = table.columns[rindx]
-                if rheader is None or rheader.lower() != 'unit':
-                    logger.warn("The field '" + header + "' in the file '" + table.filename +
-                                "' misses a required 'Unit' column")
-                    result = False
-                else:
-                    for irow in range(len(table.index)):
-                        result = result and check_unit_value(table.iloc[irow][icol], table.iloc[irow][rindx],
-                                                             cfield, table.filename)
-        return result
+    result = True
+    for irow in range(len(table.index)):
+        ncols = len(table.columns)
+        for icol in range(0, ncols):
+            cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == table.columns[icol]]
+            if len(cfields) == 1:
+                cfield = cfields[0]
+                result = result and check_single_field(table.iloc[irow][cfield.header], cfield)
+    return result
 
-    def check_protocol_fields(table, cfg, proto_map):
 
-        from itertools import tee
+def check_unit_field(table, cfg):
+    def check_unit_value(cell_value, unit_value, cfield, filename):
+        if cell_has_value(cell_value) or cell_has_value(unit_value):
+            logger.warn("Field '" + cfield.header + "' has a unit but not a value in the file '" + filename + "'");
+            return False
+        return True
 
-        def pairwise(iterable):  # A lovely pairwise iterator
-            a, b = tee(iterable)
-            next(b, None)
-            return zip(a, b)
-
-        proto_ref_index = [i for i in table.columns if 'protocol ref' in i.lower()]
-        result = True
-        for each in proto_ref_index:
-            prots_found = set()
-            for cell in table[each]:
-                prots_found.add(cell)
-            if len(prots_found) > 1:
-                logger.warn("Multiple protocol references {} are found in {}".format(prots_found, each))
-                logger.warn("Only one protocol reference should be used in a Protocol REF column.")
-                result = False
-        if result:
-            field_headers = [i for i in table.columns if
-                             i.lower().endswith(' name') or i.lower().endswith(' data file') or i.lower().endswith(
-                                 ' data matrix file')]
-            protos = [i for i in table.columns if i.lower() == 'protocol ref']
-            last_proto_indx = table.columns.get_loc(protos[len(protos) - 1])
-            last_mat_or_dat_indx = table.columns.get_loc(field_headers[len(field_headers) - 1])
-            if last_proto_indx > last_mat_or_dat_indx:
-                logger.warn("Protocol REF column without output in file '" + table.filename + "'")
-            for left, right in pairwise(field_headers):
-                cleft = None
-                cright = None
-                clefts = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header.lower() == left.lower()]
-                if len(clefts) == 1:
-                    cleft = clefts[0]
-                crights = [i for i in cfg.get_isatab_configuration()[0].get_field() if
-                           i.header.lower() == right.lower()]
-                if len(crights) == 1:
-                    cright = crights[0]
-                if cleft is not None and cright is not None:
-                    cprotos = [i.protocol_type for i in cfg.get_isatab_configuration()[0].get_protocol_field() if
-                               cleft.pos < i.pos and cright.pos > i.pos]
-                    fprotos_headers = [i for i in table.columns[
-                                                  table.columns.get_loc(cleft.header):table.columns.get_loc(
-                                                      cright.header)] if
-                                       'protocol ref' in i.lower()]
-                    fprotos = list()
-                    for header in fprotos_headers:
-                        proto_name = table.iloc[0][header]
-                        try:
-                            proto_type = proto_map[proto_name]
-                            fprotos.append(proto_type)
-                        except KeyError:
-                            logger.warn("Could not find protocol type for protocol name '{}', trying to validate against name only".format(proto_name))
-                            fprotos.append(proto_name)
-                    invalid_protos = set(cprotos) - set(fprotos)
-                    if len(invalid_protos) > 0:
-                        logger.warn("Protocol(s) of type " + str(
-                            list(invalid_protos)) + " defined in the ISA-configuration expected as a between '" +
-                                    cleft.header + "' and '" + cright.header + "' but has not been found, in the file '" + table.filename + "'")
-                        result = False
-        return result
-
-    def check_ontology_fields(table, cfg):
-
-        def check_single_field(cell_value, source, acc, cfield, filename):
-            if cell_has_value(cell_value) or cell_has_value(source) or cell_has_value(acc):
-                logger.warn(
-                    "Incomplete values for ontology headers, for the field '" + cfield.header + "' in the file '" +
-                    filename + "'. Check that all the label/accession/source are provided.")
-                return False
-            # TODO: Implement check against declared ontology sources in investigation file
-            return True
-
-        result = True
-        nfields = len(table.columns)
-        for icol, header in enumerate(table.columns):
-            cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
-            if len(cfields) != 1:
-                continue
-            cfield = cfields[0]
-            if cfield.get_recommended_ontologies() is None:
-                continue
+    result = True
+    for icol, header in enumerate(table.columns):
+        cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
+        if len(cfields) != 1:
+            continue
+        cfield = cfields[0]
+        ucfields = [i for i in cfg.get_isatab_configuration()[0].get_unit_field() if i.pos == cfield.pos + 1]
+        if len(ucfields) != 1:
+            continue
+        ucfield = ucfields[0]
+        if ucfield.is_required:
+            rheader = None
             rindx = icol + 1
-            rrindx = icol + 2
-            rheader = ''
-            rrheader = ''
-            if rindx < nfields:
+            if rindx < len(table.columns):
                 rheader = table.columns[rindx]
-            if rrindx < nfields:
-                rrheader = table.columns[rrindx]
-            if 'term source ref' not in rheader.lower() or 'term accession number' not in rrheader.lower():
-                logger.warn(
-                    "The Field '" + header + "' should have values from ontologies and has no ontology headers instead")
+            if rheader is None or rheader.lower() != 'unit':
+                logger.warn("The field '" + header + "' in the file '" + table.filename +
+                            "' misses a required 'Unit' column")
                 result = False
-                continue
+            else:
+                for irow in range(len(table.index)):
+                    result = result and check_unit_value(table.iloc[irow][icol], table.iloc[irow][rindx],
+                                                         cfield, table.filename)
+    return result
 
-            for irow in range(len(table.index)):
-                result = result and check_single_field(table.iloc[irow][icol], table.iloc[irow][rindx],
-                                                       table.iloc[irow][rrindx], cfield, table.filename)
 
-        return result
+def check_protocol_fields(table, cfg, proto_map):
+    from itertools import tee
 
+    def pairwise(iterable):  # A lovely pairwise iterator
+        a, b = tee(iterable)
+        next(b, None)
+        return zip(a, b)
+
+    proto_ref_index = [i for i in table.columns if 'protocol ref' in i.lower()]
+    result = True
+    for each in proto_ref_index:
+        prots_found = set()
+        for cell in table[each]:
+            prots_found.add(cell)
+        if len(prots_found) > 1:
+            logger.warn("Multiple protocol references {} are found in {}".format(prots_found, each))
+            logger.warn("Only one protocol reference should be used in a Protocol REF column.")
+            result = False
+    if result:
+        field_headers = [i for i in table.columns if
+                         i.lower().endswith(' name') or i.lower().endswith(' data file') or i.lower().endswith(
+                             ' data matrix file')]
+        protos = [i for i in table.columns if i.lower() == 'protocol ref']
+        last_proto_indx = table.columns.get_loc(protos[len(protos) - 1])
+        last_mat_or_dat_indx = table.columns.get_loc(field_headers[len(field_headers) - 1])
+        if last_proto_indx > last_mat_or_dat_indx:
+            logger.warn("Protocol REF column without output in file '" + table.filename + "'")
+        for left, right in pairwise(field_headers):
+            cleft = None
+            cright = None
+            clefts = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header.lower() == left.lower()]
+            if len(clefts) == 1:
+                cleft = clefts[0]
+            crights = [i for i in cfg.get_isatab_configuration()[0].get_field() if
+                       i.header.lower() == right.lower()]
+            if len(crights) == 1:
+                cright = crights[0]
+            if cleft is not None and cright is not None:
+                cprotos = [i.protocol_type for i in cfg.get_isatab_configuration()[0].get_protocol_field() if
+                           cleft.pos < i.pos and cright.pos > i.pos]
+                fprotos_headers = [i for i in table.columns[
+                                              table.columns.get_loc(cleft.header):table.columns.get_loc(
+                                                  cright.header)] if
+                                   'protocol ref' in i.lower()]
+                fprotos = list()
+                for header in fprotos_headers:
+                    proto_name = table.iloc[0][header]
+                    try:
+                        proto_type = proto_map[proto_name]
+                        fprotos.append(proto_type)
+                    except KeyError:
+                        logger.warn(
+                            "Could not find protocol type for protocol name '{}', trying to validate against name only".format(
+                                proto_name))
+                        fprotos.append(proto_name)
+                invalid_protos = set(cprotos) - set(fprotos)
+                if len(invalid_protos) > 0:
+                    logger.warn("Protocol(s) of type " + str(
+                        list(invalid_protos)) + " defined in the ISA-configuration expected as a between '" +
+                                cleft.header + "' and '" + cright.header + "' but has not been found, in the file '" + table.filename + "'")
+                    result = False
+    return result
+
+
+def check_ontology_fields(table, cfg):
+    def check_single_field(cell_value, source, acc, cfield, filename):
+        if cell_has_value(cell_value) or cell_has_value(source) or cell_has_value(acc):
+            logger.warn(
+                "Incomplete values for ontology headers, for the field '" + cfield.header + "' in the file '" +
+                filename + "'. Check that all the label/accession/source are provided.")
+            return False
+        # TODO: Implement check against declared ontology sources in investigation file
+        return True
+
+    result = True
+    nfields = len(table.columns)
+    for icol, header in enumerate(table.columns):
+        cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
+        if len(cfields) != 1:
+            continue
+        cfield = cfields[0]
+        if cfield.get_recommended_ontologies() is None:
+            continue
+        rindx = icol + 1
+        rrindx = icol + 2
+        rheader = ''
+        rrheader = ''
+        if rindx < nfields:
+            rheader = table.columns[rindx]
+        if rrindx < nfields:
+            rrheader = table.columns[rrindx]
+        if 'term source ref' not in rheader.lower() or 'term accession number' not in rrheader.lower():
+            logger.warn(
+                "The Field '" + header + "' should have values from ontologies and has no ontology headers instead")
+            result = False
+            continue
+
+        for irow in range(len(table.index)):
+            result = result and check_single_field(table.iloc[irow][icol], table.iloc[irow][rindx],
+                                                   table.iloc[irow][rrindx], cfield, table.filename)
+
+    return result
+
+
+def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02'):
     logger.setLevel(log_level)
     logger.info("ISA tab Validator from ISA tools API v0.2")
     from io import StringIO
@@ -2740,8 +2749,31 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
     handler = logging.StreamHandler(stream)
     logger.addHandler(handler)
     try:
+        logger.info("Loading... {}".format(fp.name))
         i_df = load2(fp=fp)
+        logger.info("Running prechecks...")
+        check_filenames_present(i_df)  # Rule 3005
+        check_table_files_read(i_df, os.path.dirname(fp.name))  # Rules 0006 and 0008
+        # check_table_files_load(i_df, os.path.dirname(fp.name))  # Rules 0007 and 0009, covered by later validation?
+        check_samples_not_declared_in_study_used_in_assay(i_df, os.path.dirname(fp.name))  # Rule 1003
+        check_study_factor_usage(i_df, os.path.dirname(fp.name))  # Rules 1008 and 1021
+        check_protocol_usage(i_df, os.path.dirname(fp.name))  # Rules 1007 and 1019
+        check_protocol_parameter_usage(i_df, os.path.dirname(fp.name))  # Rules 1009 and 1020
+        check_date_formats(i_df)  # Rule 3001
+        check_dois(i_df)  # Rule 3002
+        check_pubmed_ids_format(i_df)  # Rule 3003
+        check_protocol_names(i_df)  # Rule 1010
+        check_protocol_parameter_names(i_df)  # Rule 1011
+        check_study_factor_names(i_df)  # Rule 1012
+        check_ontology_sources(i_df)  # Rule 3008
+        logger.info("Finished prechecks...")
+        logger.info("Loading configurations found in {}".format(config_dir))
         configs = load_config(config_dir)
+        logger.info("Using configurations found in {}".format(config_dir))
+        check_measurement_technology_types(i_df, configs)  # Rule 4002
+        logger.info("Checking investigation file against configuration...")
+        check_investigation_against_config(i_df, configs)  # Rule 4003 for investigation file only
+        logger.info("Finished checking investigation file")
         for i, study_df in enumerate(i_df['STUDY']):
             study_filename = study_df.iloc[0]['Study File Name']
             if study_filename is not '':
@@ -2751,62 +2783,78 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
                 protocol_types = i_df['STUDY PROTOCOLS'][i]['Study Protocol Type'].tolist()
                 protocol_names_and_types = dict(zip(protocol_names, protocol_types))
                 try:
+                    logger.info("Loading... {}".format(study_filename))
                     study_sample_table = load_table(open(os.path.join(os.path.dirname(fp.name), study_filename)))
                     study_sample_table.filename = study_filename
                     config = configs[('[Sample]', '')]
                     logger.info(
-                        "Checking file {}".format(study_filename))
+                        "Validating {} against default study table configuration".format(study_filename))
+                    logger.info("Checking Factor Value presence...")
                     check_factor_value_presence(study_sample_table)
+                    logger.info("Checking required fields...")
                     check_required_fields(study_sample_table, config)
+                    logger.info("Checking generic fields...")
                     if not check_field_values(study_sample_table, config):
                         logger.warn("There are some field value inconsistencies in {} against {} "
                                     "configuration".format(study_sample_table.filename, 'Study Sample'))
+                    logger.info("Checking unit fields...")
                     if not check_unit_field(study_sample_table, config):
                         logger.warn("There are some unit value inconsistencies in {} against {} "
                                     "configuration".format(study_sample_table.filename, 'Study Sample'))
+                    logger.info("Checking protocol fields...")
                     if not check_protocol_fields(study_sample_table, config, protocol_names_and_types):
                         logger.warn("There are some protocol inconsistencies in {} against {} "
                                     "configuration".format(study_sample_table.filename, 'Study Sample'))
+                    logger.info("Checking ontology fields...")
                     if not check_ontology_fields(study_sample_table, config):
                         logger.warn("There are some ontology annotation inconsistencies in {} against {} "
                                     "configuration".format(study_sample_table.filename, 'Study Sample'))
+                    logger.info("Finished validation on {}".format(study_filename))
                 except FileNotFoundError:
                     pass
                 assay_df = i_df['STUDY ASSAYS'][i]
                 for x, assay_filename in enumerate(assay_df['Study Assay File Name'].tolist()):
-                    logger.info("Checking file: " + assay_filename)
                     measurement_type = assay_df['Study Assay Measurement Type'].tolist()[x]
                     technology_type = assay_df['Study Assay Technology Type'].tolist()[x]
                     if assay_filename is not '':
                         try:
+                            logger.info("Loading... {}".format(assay_filename))
                             assay_table = load_table(open(os.path.join(os.path.dirname(fp.name), assay_filename)))
                             assay_table.filename = assay_filename
                             assay_tables.append(assay_table)
                             config = configs[(measurement_type, technology_type)]
                             logger.info(
-                                "Checking assay file {} against default table configuration ({}, {})...".format(
+                                "Validating {} against assay table configuration ({}, {})...".format(
                                     assay_filename, measurement_type, technology_type))
+                            logger.info("Checking Factor Value presence...")
                             check_factor_value_presence(assay_table)
+                            logger.info("Checking required fields...")
                             check_required_fields(assay_table, config)
+                            logger.info("Checking generic fields...")
                             if not check_field_values(assay_table, config):
                                 logger.warn(
                                     "There are some field value inconsistencies in {} against {} configuration".format(
                                         assay_table.filename, (measurement_type, technology_type)))
+                            logger.info("Checking unit fields...")
                             if not check_unit_field(assay_table, config):
                                 logger.warn(
                                     "There are some unit value inconsistencies in {} against {} configuration".format(
                                         assay_table.filename, (measurement_type, technology_type)))
+                            logger.info("Checking protocol fields...")
                             if not check_protocol_fields(assay_table, config, protocol_names_and_types):
                                 logger.warn("There are some protocol inconsistencies in {} against {} "
                                             "configuration".format(assay_table.filename, (measurement_type, technology_type)))
+                            logger.info("Checking ontology fields...")
                             if not check_ontology_fields(assay_table, config):
                                 logger.warn("There are some ontology annotation inconsistencies in {} against {} "
                                             "configuration".format(assay_table.filename, (measurement_type, technology_type)))
+                            logger.info("Finished validation on {}".format(assay_filename))
                         except FileNotFoundError:
                             pass
                     if study_sample_table is not None:
+                        logger.info("Checking consistencies between study sample table and assay tables...")
                         check_sample_names(study_sample_table, assay_tables)
-            # TODO: Material counter?
+                        logger.info("Finished checking study sample table against assay tables...")
     except CParserError as cpe:
         logger.fatal("There was an error when trying to parse the ISA tab")
         logger.fatal(cpe)
