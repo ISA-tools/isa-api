@@ -831,20 +831,25 @@ def get_study_unit_category_ids_in_materials_and_processes(study_json):
                                        factor_value in material['factorValues']] for material in
                                       study_json['materials']['samples']] for
                                      elem in iterabl]
-    parameter_value_units_used = [elem for iterabl in[[parameter_value['unit']['@id'] if 'unit' in parameter_value.keys() else None for
+    parameter_value_units_used = [elem for iterabl in[[parameter_value['unit']['@id']
+                                                       if 'unit' in parameter_value.keys() else None for
                                    parameter_value in process['parameterValues']] for process in
                                   study_json['processSequence']] for
                                   elem in iterabl]
-    return [x for x in study_characteristics_units_used + study_factor_value_units_used + parameter_value_units_used if x is not None]
+    return [x for x in study_characteristics_units_used + study_factor_value_units_used + parameter_value_units_used
+            if x is not None]
 
 
 def get_assay_unit_category_ids_in_materials_and_processes(assay_json):
     """Used for rule 1014"""
     assay_characteristics_units_used = [elem for iterabl in [[characteristic['unit']['@id'] if 'unit' in
-                                        characteristic.keys() else None for characteristic in material['characteristics']] if 'characteristics' in material.keys() else None for
+                                        characteristic.keys() else None
+                                                              for characteristic in material['characteristics']]
+                                                             if 'characteristics' in material.keys() else None for
                                      material in assay_json['materials']['otherMaterials']] for elem in iterabl]
-    parameter_value_units_used = [elem for iterabl in[[parameter_value['unit']['@id'] if 'unit' in parameter_value.keys() else None for
-                                   parameter_value in process['parameterValues']] for process in
+    parameter_value_units_used = [elem for iterabl in[[parameter_value['unit']['@id']
+                                                       if 'unit' in parameter_value.keys() else None
+                                                       for parameter_value in process['parameterValues']] for process in
                                                       assay_json['processSequence']] for
                                   elem in iterabl]
     return [x for x in assay_characteristics_units_used + parameter_value_units_used if x is not None]
@@ -955,7 +960,8 @@ def check_protocol_names(isa_json):
     for study in isa_json['studies']:
         for protocol in study['protocols']:
             if protocol['name'] is '':
-                logger.warning("(W) A Protocol {} is missing Protocol Name, so can't be referenced in ISA-tab".format(protocol['@id']))
+                logger.warning("(W) A Protocol {} is missing Protocol Name, so can't be referenced in ISA-tab"
+                               .format(protocol['@id']))
 
 
 def check_protocol_parameter_names(isa_json):
@@ -964,7 +970,8 @@ def check_protocol_parameter_names(isa_json):
         for protocol in study['protocols']:
             for parameter in protocol['parameters']:
                 if parameter['parameterName'] is '':
-                    logger.warning("(W) A Protocol Parameter {} is missing name, so can't be referenced in ISA-tab".format(parameter['@id']))
+                    logger.warning("(W) A Protocol Parameter {} is missing name, so can't be referenced in ISA-tab"
+                                   .format(parameter['@id']))
 
 
 def check_study_factor_names(isa_json):
@@ -972,7 +979,8 @@ def check_study_factor_names(isa_json):
     for study in isa_json['studies']:
         for factor in study['factors']:
             if factor['factorName'] is '':
-                logger.warning("(W) A Study Factor is missing name, so can't be referenced in ISA-tab".format(factor['@id']))
+                logger.warning("(W) A Study Factor is missing name, so can't be referenced in ISA-tab"
+                               .format(factor['@id']))
 
 
 def check_ontology_sources(isa_json):
@@ -1027,9 +1035,11 @@ def check_term_accession_used_no_source_ref(isa_json):
     """Used for rule 3010"""
     collector = list()
     walk_and_get_annotations(isa_json, collector)
-    terms_using_accession_no_source_ref = [annotation for annotation in collector if annotation['termAccession'] is not '' and annotation['termSource'] is '']
+    terms_using_accession_no_source_ref = [annotation for annotation in collector if annotation['termAccession']
+                                           is not '' and annotation['termSource'] is '']
     if len(terms_using_accession_no_source_ref) > 0:
-        logger.warning("(W) There are ontology annotations with termAccession set but no termSource referenced: {}".format(terms_using_accession_no_source_ref))
+        logger.warning("(W) There are ontology annotations with termAccession set but no termSource referenced: {}"
+                       .format(terms_using_accession_no_source_ref))
 
 
 def print_graph(study_or_assay):
@@ -1061,48 +1071,6 @@ def print_graph(study_or_assay):
         print(type_seq_str)
 
 
-def check_study_or_assay_graph(study_or_assay, configs):
-    G = study_or_assay.graph
-    from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths  # TODO: Refactor this back to isajson package
-    start_nodes, end_nodes = _get_start_end_nodes(G)
-    if isinstance(study_or_assay, Study):
-        graph_config = configs['study']
-    else:
-        graph_config = configs[(study_or_assay.measurement_type.name, study_or_assay.technology_type.name)]
-    protocols = graph_config['protocols']
-    graph_patterns = graph_config['graphPatterns']
-    study_or_assay_id = ''
-    if isinstance(study_or_assay, Study):
-        study_or_assay_id = study_or_assay.identifier
-    elif isinstance(study_or_assay, Assay):
-        study_or_assay_id = study_or_assay.filename
-    logger.info("Checking {} against graph configs: ".format(study_or_assay_id) + str(graph_patterns))
-    for x, path in enumerate(_all_end_to_end_paths(G, start_nodes, end_nodes)):
-        type_seq_str = ""
-        for node in path:
-            if isinstance(node, Source):
-                type_seq_str += "(Source)->"
-            elif isinstance(node, Sample):
-                type_seq_str += "(Sample)->"
-            elif isinstance(node, Material):
-                if '#material/extract' in node.id:
-                    type_seq_str += "(Extract)->"
-                else:
-                    type_seq_str += "(Material)->"
-            elif isinstance(node, Process):
-                protocol_type = node.executes_protocol.protocol_type.name
-                if protocol_type in protocols:
-                    type_seq_str += "({})->".format(protocol_type)
-                else:
-                    pass
-                for data in [node for node in node.outputs if isinstance(node, DataFile)]:
-                    type_seq_str += "(DataFile)->"
-        type_seq_str = type_seq_str[:len(type_seq_str) - 2]
-        # id_seq_str = id_seq_str[:len(id_seq_str) - 2]
-        if type_seq_str not in graph_patterns:
-            logger.warn("(W) Graph pattern " + type_seq_str + " is not in " + str(graph_patterns))
-
-
 def load_config(config_dir):
     import json
     configs = dict()
@@ -1129,7 +1097,8 @@ def check_measurement_technology_types(assay_json, configs):
         if config is None:
             raise KeyError
     except KeyError:
-        logger.error("(E) Could not load configuration for measurement type '{}' and technology type '{}'".format(measurement_type, technology_type))
+        logger.error("(E) Could not load configuration for measurement type '{}' and technology type '{}'"
+                     .format(measurement_type, technology_type))
 
 
 def list_process_sequences(process_sequence_json):
@@ -1195,9 +1164,11 @@ def check_study_and_assay_graphs(study_json, configs):
             assay_graph.reverse()
             assay_protocol_sequence = [[j for j in i if not j.startswith('#')] for i in assay_graph]
             assay_protocol_sequence = [i for j in assay_protocol_sequence for i in j]  # flatten list
-            assay_protocol_sequence_of_interest = [i for i in assay_protocol_sequence if i in config_protocol_sequence]#  filter out protocols in sequence that are not of interest (additional ones to required by config)
+            assay_protocol_sequence_of_interest = [i for i in assay_protocol_sequence if i in config_protocol_sequence]
+            #  filter out protocols in sequence that are not of interest (additional ones to required by config)
             if config_protocol_sequence != assay_protocol_sequence_of_interest:
-                logger.warn("Configuration protocol sequence {} does not match study graph found in {}".format(config_protocol_sequence, assay_protocol_sequence))
+                logger.warn("Configuration protocol sequence {} does not match study graph found in {}"
+                            .format(config_protocol_sequence, assay_protocol_sequence))
 
     protocols_and_types = dict([(i['@id'], i['protocolType']['annotationValue']) for i in study_json['protocols']])
     # first check study graph
@@ -1212,7 +1183,11 @@ def check_study_and_assay_graphs(study_json, configs):
         check_assay_graph(assay_json['processSequence'], config)
 
 
-def validate(fp, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/json/configs', log_level=logging.INFO):
+BASE_DIR = os.path.dirname(__file__)
+default_config_dir = os.path.join(BASE_DIR, 'config', 'json')
+
+
+def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
     logger.setLevel(log_level)
     logger.info("ISA JSON Validator from ISA tools API v0.2")
     from io import StringIO
@@ -1222,7 +1197,9 @@ def validate(fp, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/json/c
     try:
         check_utf8(fp=fp)  # Rule 0010
         isa_json = json.load(fp=fp)  # Rule 0002
-        check_isa_schemas(isa_json=isa_json, investigation_schema_path=os.path.join(os.path.dirname(__file__) + '/schemas/isa_model_version_1_0_schemas/core/investigation_schema.json'))  # Rule 0003
+        check_isa_schemas(isa_json=isa_json,
+                          investigation_schema_path=os.path.join(BASE_DIR, 'schemas', 'isa_model_version_1_0_schemas',
+                                                                 'core', 'investigation_schema.json'))  # Rule 0003
         for study_json in isa_json['studies']:
             check_material_ids_not_declared_used(study_json)  # Rules 1002-1005
         for study_json in isa_json['studies']:
@@ -1256,7 +1233,9 @@ def validate(fp, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/json/c
         for study_json in isa_json['studies']:
             for assay_json in study_json['assays']:
                 check_measurement_technology_types(assay_json, configs)  # Rule 4002
-        check_isa_schemas(isa_json=isa_json, investigation_schema_path=os.path.join(config_dir, 'schemas', 'investigation_schema.json'))  # Rule 4003
+        check_isa_schemas(isa_json=isa_json,
+                          investigation_schema_path=os.path.join(config_dir, 'schemas',
+                                                                 'investigation_schema.json'))  # Rule 4003
         # if all ERRORS are resolved, then try and validate against configuration
         handler.flush()
         if "(E)" in stream.getvalue():
