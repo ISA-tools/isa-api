@@ -243,15 +243,24 @@ class ValidateIsaTabTest(TestCase):
 
     def test_validate_bii_i_1(self):
         log_msg_stream = isatab.validate2(open(os.path.join(self._dir, 'data', 'BII-I-1', 'i_investigation.txt')))
-        if '(W)' not in log_msg_stream.getvalue() and '(E)' not in log_msg_stream.getvalue():
+        log = log_msg_stream.getvalue()
+        if "Finished validation..." not in log:
+            self.fail("Validation did not complete successfully when it should have!")
+        if '(W)' not in log or '(E)' not in log:
             self.fail("Validation error and warnings are missing when should report some with BII-I-1")
 
     def test_validate_bii_s_3(self):
         log_msg_stream = isatab.validate2(open(os.path.join(self._dir, 'data', 'BII-S-3', 'i_gilbert.txt')))
-        if '(W)' not in log_msg_stream.getvalue() and '(E)' not in log_msg_stream.getvalue():
+        log = log_msg_stream.getvalue()
+        if "Finished validation..." not in log:
+            self.fail("Validation did not complete successfully when it should have!")
+        elif '(W)' not in log:
             self.fail("Validation error and warnings are missing when should report some with BII-S-3")
 
     def test_validate_bii_s_7(self):
         log_msg_stream = isatab.validate2(open(os.path.join(self._dir, 'data', 'BII-S-7', 'i_matteo.txt')))
-        if '(W)' not in log_msg_stream.getvalue() and '(E)' not in log_msg_stream.getvalue():
+        log = log_msg_stream.getvalue()
+        if "Finished validation..." not in log:
+            self.fail("Validation did not complete successfully when it should have!")
+        elif '(W)' not in log:
             self.fail("Validation error and warnings are missing when should report some with BII-S-7")
