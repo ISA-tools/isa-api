@@ -1,0 +1,29 @@
+{
+  "measurementType": "cell sorting",
+  "technologyType": "flow cytometry",
+  "protocols": [
+    {
+      "inputs": "#sample",
+      "protocol": "labeling",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "data collection",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "gating",
+      "outputs": "#data"
+    }
+  ],
+  "protocolSequence": [
+    "labeling",
+    "data collection",
+    "gating"
+  ],
+  "description": [
+    "(Sample)->labeling)->(Material)->(data collection)->(DataFiles)->(gating)->(DerivedDataFile)"
+  ]
+}

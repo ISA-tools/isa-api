@@ -1,0 +1,44 @@
+{
+  "measurementType": "metabolite profiling",
+  "technologyType": "NMR spectroscopy",
+  "protocols": [
+    {
+      "inputs": "#sample",
+      "protocol": "extraction",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "labeling",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "NMR spectroscopy",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "nmr assay",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "data normalization"
+    },
+    {
+      "protocol": "data transformation",
+      "outputs": "#data"
+    }
+  ],
+  "protocolSequence": [
+    "extraction",
+    "labeling",
+    "NMR spectroscopy",
+    "nmr assay",
+    "data normalization",
+    "data transformation"
+  ],
+  "description": [
+    "(Sample)->(extraction)->(Material)->(labeling)->(Material)->(NMR spectroscopy)->(DataFiles)->(nmr assay)->(DataFiles)->(data normalization)->(data transformation)->(DataFiles)" ]
+}
