@@ -2676,9 +2676,8 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
                 list_values = [i.lower() for i in cfg_field.list_values.split(',')]
                 if cell_value.lower() not in list_values:
                     is_valid_value = False
-            # TODO: Implement ontology term check. Currently report it as unknown type
-            # elif data_type in ['ontology-term', 'ontology term']:
-            #     return True
+            elif data_type in ['ontology-term', 'ontology term']:
+                return True  # TODO: Implement ontology term check (not implemented in Java validator either)
             else:
                 logger.warn("Unknown data type '" + data_type + "' for field '" + cfg_field.header +
                             "' in the file '" + table.filename + "'")
@@ -2702,18 +2701,17 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
 
     def check_unit_field(table, cfg):
         def check_unit_value(cell_value, cfg_field):
-            # TODO implement unit value checking and test
-            return True
+            return True  # TODO implement unit value checking and test
 
         result = True
         for icol, header in enumerate(table.columns):
             cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
             if len(cfields) != 1:
-                return False
+                return True
             cfield = cfields[0]
             ucfields = [i for i in cfg.get_isatab_configuration()[0].get_unit_field() if i.pos == cfield.pos + 1]
             if len(ucfields) != 1:
-                return False
+                return True
             ucfield = ucfields[0]
             if ucfield.is_required:
                 rheader = None
@@ -2801,18 +2799,18 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
         configs = load_config(config_dir)
         for i, study_df in enumerate(i_df['STUDY']):
             study_filename = study_df.iloc[0]['Study File Name']
-            protocol_names = i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist()
-            protocol_types = i_df['STUDY PROTOCOLS'][i]['Study Protocol Type'].tolist()
-            protocol_names_and_types = dict(zip(protocol_names, protocol_types))
-            study_sample_table = None
-            assay_tables = list()
             if study_filename is not '':
+                study_sample_table = None
+                assay_tables = list()
+                protocol_names = i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist()
+                protocol_types = i_df['STUDY PROTOCOLS'][i]['Study Protocol Type'].tolist()
+                protocol_names_and_types = dict(zip(protocol_names, protocol_types))
                 try:
                     study_sample_table = load_table(open(os.path.join(os.path.dirname(fp.name), study_filename)))
                     study_sample_table.filename = study_filename
                     config = configs[('[Sample]', '')]
                     logger.info(
-                        "Checking study file {} against default study table configuration...".format(study_filename))
+                        "Checking file {}".format(study_filename))
                     check_factor_value_presence(study_sample_table)
                     check_required_fields(study_sample_table, config)
                     if not check_field_values(study_sample_table, config):
@@ -2822,38 +2820,39 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
                         logger.warn("There are some unit value inconsistencies in {} against {} "
                                     "configuration".format(study_sample_table.filename, 'Study Sample'))
                     if not check_protocol_fields(study_sample_table, config, protocol_names_and_types):
-                        logger.warn("There are some unit value inconsistencies in {} against {} "
+                        logger.warn("There are some protocol inconsistencies in {} against {} "
                                     "configuration".format(study_sample_table.filename, 'Study Sample'))
                 except FileNotFoundError:
                     pass
-            for j, assay_df in enumerate(i_df['STUDY ASSAYS']):
-                assay_filename = assay_df['Study Assay File Name'].tolist()[0]
-                measurement_type = assay_df['Study Assay Measurement Type'].tolist()[0]
-                technology_type = assay_df['Study Assay Technology Type'].tolist()[0]
-                if assay_filename is not '':
-                    try:
-                        assay_table = load_table(open(os.path.join(os.path.dirname(fp.name), assay_filename)))
-                        assay_table.filename = assay_filename
-                        assay_tables.append(assay_table)
-                        config = configs[(measurement_type, technology_type)]
-                        logger.info(
-                            "Checking assay file {} against default table configuration ({}, {})...".format(
-                                assay_filename, measurement_type, technology_type))
-                        check_factor_value_presence(assay_table)
-                        check_required_fields(assay_table, config)
-                        if not check_field_values(assay_table, config):
-                            logger.warn(
-                                "There are some field value inconsistencies in {} against {} configuration".format(
-                                    assay_table.filename, (measurement_type, technology_type)))
-                        if not check_unit_field(assay_table, config):
-                            logger.warn(
-                                "There are some unit value inconsistencies in {} against {} configuration".format(
-                                    assay_table.filename, (measurement_type, technology_type)))
-                        # check_assay_table_with_config(df, protocols, config, assay_filename)
-                    except FileNotFoundError:
-                        pass
-            if study_sample_table is not None:
-                check_sample_names(study_sample_table, assay_tables)
+                assay_df = i_df['STUDY ASSAYS'][i]
+                for x, assay_filename in enumerate(assay_df['Study Assay File Name'].tolist()):
+                    logger.info("Checking file: " + assay_filename)
+                    measurement_type = assay_df['Study Assay Measurement Type'].tolist()[x]
+                    technology_type = assay_df['Study Assay Technology Type'].tolist()[x]
+                    if assay_filename is not '':
+                        try:
+                            assay_table = load_table(open(os.path.join(os.path.dirname(fp.name), assay_filename)))
+                            assay_table.filename = assay_filename
+                            assay_tables.append(assay_table)
+                            config = configs[(measurement_type, technology_type)]
+                            logger.info(
+                                "Checking assay file {} against default table configuration ({}, {})...".format(
+                                    assay_filename, measurement_type, technology_type))
+                            check_factor_value_presence(assay_table)
+                            check_required_fields(assay_table, config)
+                            if not check_field_values(assay_table, config):
+                                logger.warn(
+                                    "There are some field value inconsistencies in {} against {} configuration".format(
+                                        assay_table.filename, (measurement_type, technology_type)))
+                            if not check_unit_field(assay_table, config):
+                                logger.warn(
+                                    "There are some unit value inconsistencies in {} against {} configuration".format(
+                                        assay_table.filename, (measurement_type, technology_type)))
+                            # check_assay_table_with_config(df, protocols, config, assay_filename)
+                        except FileNotFoundError:
+                            pass
+                    if study_sample_table is not None:
+                        check_sample_names(study_sample_table, assay_tables)
             # TODO: Material counter?
     except CParserError as cpe:
         logger.fatal("There was an error when trying to parse the ISA tab")
