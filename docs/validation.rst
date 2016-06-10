@@ -2,10 +2,11 @@
 Validating ISA tab and ISA JSON
 ###############################
 
-Using the ISA API you can validate ISA tab and ISA JSON files. The ISA tab validation utilises the legacy Java validator, so you must have Java 1.6 or later installed on your host machine. The ISA JSON validation checks JSON against the JSON schemas that are included in the API in the `isatools/schemas/isa_model_version_1_0_schemas/core` directory.
+Using the ISA API you can validate ISA tab and ISA JSON files. The ISA tab validation utilises the legacy Java validator, so you must have Java 1.6 or later installed on your host machine. The new validators are in pure Python 3+.
 
-Validating ISA tab
-------------------
+
+Validating ISA tab (legacy)
+---------------------------
 
 To validate ISA tab files in a given directory ``./tabdir/`` against a given configuration found in a directory ``./isaconfig-default_v2015-07-02/``, do something like the following:
 
@@ -13,14 +14,25 @@ To validate ISA tab files in a given directory ``./tabdir/`` against a given con
     from isatools import isatab
     isatab.validate('./tabdir/', './isaconfig-default_v2015-07-02/')
 
+to run the legacy Java ISA tab validator.
+
+Validating ISA tab (new)
+------------------------
+
 From v0.2 of the ISA API, we have started implementing a replacement validator written in Python. To use this one, do something like:
 
 .. code-block:: python
     from isatools import isatab
     isatab.validate2('i_investigation.txt', './isaconfig-default_v2015-07-02/')
 
-making sure to point to the investigation file of your ISA tab, and again providing the old XML configurations.
+making sure to *point to the investigation file* of your ISA tab, and again providing the old XML configurations. The validator will then read the location of your study and assay table files from the investigation file in order to validate those.
 
+Take care to note that function is called ``validate2()`` and not ``validate()``.
+
+This new ISA tab validator has been tested against the sample data sets `BII-I-1
+<https://github.com/ISA-tools/isa-api/tree/master/tests/data/BII-I-1>`_, `BII-S-3
+<https://github.com/ISA-tools/isa-api/tree/master/tests/data/BII-S-3>`_ and `BII-S-7
+<https://github.com/ISA-tools/isa-api/tree/master/tests/data/BII-S-7>`_, that are found in the ``isatools`` package.
 
 Validating ISA JSON
 -------------------
@@ -30,3 +42,7 @@ To validate an ISA JSON file against the ISA JSON version 1.0 specification you 
 .. code-block:: python
     from isatools import isajson
     isajson.validate('isa.json')
+
+The rules we check for in the new validators are documented in `this working document <https://goo.gl/l0YzZt>`_  in Google spreadsheets. Please be aware as this is a working document, some of these rules may be amended as we get more feedback and evolve the ISA API code.
+
+This ISA JSON validator has been tested against `a range of dummy test data <https://github.com/ISA-tools/isa-api/tree/master/tests/data/json>`_ found in ``isatools`` tests package.
