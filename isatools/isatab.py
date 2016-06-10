@@ -2243,7 +2243,11 @@ def check_ontology_fields(table, cfg):
     return result
 
 
-def validate2(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02'):
+BASE_DIR = os.path.dirname(__file__)
+default_config_dir = os.path.join(BASE_DIR, 'config', 'xml')
+
+
+def validate2(fp, log_level=logging.INFO, config_dir=default_config_dir):
     logger.setLevel(log_level)
     logger.info("ISA tab Validator from ISA tools API v0.2")
     from io import StringIO
