@@ -1,0 +1,32 @@
+{
+  "measurementType": "metagenome sequencing",
+  "technologyType": "nucleotide sequencing",
+  "protocols": [
+    {
+      "inputs": "#sample",
+      "protocol": "nucleic acid extraction",
+      "outputs": "#material"
+    },
+    {
+      "protocol": "library construction"
+    },
+    {
+      "protocol": "nucleic acid sequencing",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "sequence analysis data transformation",
+      "outputs": "#data"
+    }
+  ],
+  "protocolSequence": [
+    "nucleic acid extraction",
+    "library construction",
+    "nucleic acid sequencing",
+    "sequence analysis data transformation"
+  ],
+  "description": [
+    "(Sample)->(nucleic acid extraction)->(Extract)->(library construction)->(nucleic acid sequencing)->(DataFile)->(sequence analysis data transformation)->(DataFile)"
+  ]
+}
