@@ -2608,7 +2608,6 @@ def validate2(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
 def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/isa-api/tests/data/Configurations/isaconfig-default_v2015-07-02'):
 
     def check_factor_value_presence(table):
-        # Implements https://github.com/ISA-tools/ISAvalidator-ISAconverter-BIImanager/blob/master/import_layer/src/main/java/org/isatools/isatab/isaconfigurator/validators/FactorValuePresenceValidator.java
         factor_fields = [i for i in table.columns if i.lower().startswith('factor value')]
         for factor_field in factor_fields:
             for x, cell_value in enumerate(table.fillna('')[factor_field]):
@@ -2616,7 +2615,6 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
                     logger.warn("Missing value for '" + factor_field + "' at row " + str(x) + " in " + table.filename)
 
     def check_required_fields(table, cfg):
-        # Implements https://github.com/ISA-tools/ISAvalidator-ISAconverter-BIImanager/blob/master/import_layer/src/main/java/org/isatools/isatab/isaconfigurator/validators/RequiredFieldsValidator.java
         for fheader in [i.header for i in cfg.get_isatab_configuration()[0].get_field() if i.is_required]:
             found_field = [i for i in table.columns if i.lower() == fheader.lower()]
             if len(found_field) == 0:
@@ -2625,7 +2623,6 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
                 logger.warn("Field '" + fheader + "' cannot have multiple values in the file '" + table.filename)
 
     def check_sample_names(study_sample_table, assay_tables=list()):
-        # Implements https://github.com/ISA-tools/ISAvalidator-ISAconverter-BIImanager/blob/master/import_layer/src/main/java/org/isatools/isatab/isaconfigurator/validators/SampleNameValidator.java
         if len(assay_tables) > 0:
             study_samples = set(study_sample_table['Sample Name'])
             for assay_table in assay_tables:
@@ -2707,11 +2704,11 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
         for icol, header in enumerate(table.columns):
             cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
             if len(cfields) != 1:
-                return True
+                continue
             cfield = cfields[0]
             ucfields = [i for i in cfg.get_isatab_configuration()[0].get_unit_field() if i.pos == cfield.pos + 1]
             if len(ucfields) != 1:
-                return True
+                continue
             ucfield = ucfields[0]
             if ucfield.is_required:
                 rheader = None
@@ -2736,7 +2733,7 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
             return zip(a, b)
 
         proto_ref_index = [i for i in table.columns if 'protocol ref' in i.lower()]
-        prots_ok = True
+        result = True
         for each in proto_ref_index:
             prots_found = set()
             for cell in table[each]:
@@ -2744,8 +2741,8 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
             if len(prots_found) > 1:
                 logger.warn("Multiple protocol references {} are found in {}".format(prots_found, each))
                 logger.warn("Only one protocol reference should be used in a Protocol REF column.")
-                prots_ok = False
-        if prots_ok:
+                result = False
+        if result:
             field_headers = [i for i in table.columns if
                              i.lower().endswith(' name') or i.lower().endswith(' data file') or i.lower().endswith(
                                  ' data matrix file')]
@@ -2782,11 +2779,66 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
                             fprotos.append(proto_name)
                     invalid_protos = set(cprotos) - set(fprotos)
                     if len(invalid_protos) > 0:
-                        logger.warn("The used protocol(s) of type " + str(
-                            list(invalid_protos)) + " is not defined in the ISA-configuration as a protocol between "
-                                    + cleft.header + "' and '" + cright.header + "', in the file '" + table.filename + "'")
-                        prots_ok = False
-        return prots_ok
+                        logger.warn("Protocol(s) of type " + str(
+                            list(invalid_protos)) + " defined in the ISA-configuration expected as a between '" +
+                                    cleft.header + "' and '" + cright.header + "' but has not been found, in the file '" + table.filename + "'")
+                        result = False
+        return result
+
+    def check_ontology_fields(table, cfg):
+
+        def check_single_field(cell_value, source, acc, cfield, filename):
+            if isinstance(cell_value, float):
+                if math.isnan(cell_value):
+                    cell_value = ''
+            elif isinstance(cell_value, str):
+                cell_value = cell_value.strip()
+            if isinstance(source, float):
+                if math.isnan(source):
+                    source = ''
+            elif isinstance(source, str):
+                source = source.strip()
+            if isinstance(acc, float):
+                if math.isnan(acc):
+                    acc = ''
+            elif isinstance(acc, str):
+                acc = acc.strip()
+            if cell_value == '' or source == '' or acc == '':
+                logger.warn(
+                    "Incomplete values for ontology headers, for the field '" + cfield.header + "' in the file '" +
+                    filename + "'. Check that all the label/accession/source are provided.")
+                return False
+            # TODO: Implement check against declared ontology sources in investigation file
+            return True
+
+        result = True
+        nfields = len(table.columns)
+        for icol, header in enumerate(table.columns):
+            cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
+            if len(cfields) != 1:
+                continue
+            cfield = cfields[0]
+            if cfield.get_recommended_ontologies() is None:
+                continue
+            rindx = icol + 1
+            rrindx = icol + 2
+            rheader = ''
+            rrheader = ''
+            if rindx < nfields:
+                rheader = table.columns[rindx]
+            if rrindx < nfields:
+                rrheader = table.columns[rrindx]
+            if 'term source ref' not in rheader.lower() or 'term accession number' not in rrheader.lower():
+                logger.warn(
+                    "The Field '" + header + "' should have values from ontologies and has no ontology headers instead")
+                result = False
+                continue
+
+            for irow in range(len(table.index)):
+                result = result and check_single_field(table.iloc[irow][icol], table.iloc[irow][rindx],
+                                                       table.iloc[irow][rrindx], cfield, table.filename)
+
+        return result
 
     logger.setLevel(log_level)
     logger.info("ISA tab Validator from ISA tools API v0.2")
@@ -2822,6 +2874,9 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
                     if not check_protocol_fields(study_sample_table, config, protocol_names_and_types):
                         logger.warn("There are some protocol inconsistencies in {} against {} "
                                     "configuration".format(study_sample_table.filename, 'Study Sample'))
+                    if not check_ontology_fields(study_sample_table, config):
+                        logger.warn("There are some ontology annotation inconsistencies in {} against {} "
+                                    "configuration".format(study_sample_table.filename, 'Study Sample'))
                 except FileNotFoundError:
                     pass
                 assay_df = i_df['STUDY ASSAYS'][i]
@@ -2848,7 +2903,12 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
                                 logger.warn(
                                     "There are some unit value inconsistencies in {} against {} configuration".format(
                                         assay_table.filename, (measurement_type, technology_type)))
-                            # check_assay_table_with_config(df, protocols, config, assay_filename)
+                            if not check_protocol_fields(assay_table, config, protocol_names_and_types):
+                                logger.warn("There are some protocol inconsistencies in {} against {} "
+                                            "configuration".format(assay_table.filename, (measurement_type, technology_type)))
+                            if not check_ontology_fields(assay_table, config):
+                                logger.warn("There are some ontology annotation inconsistencies in {} against {} "
+                                            "configuration".format(assay_table.filename, (measurement_type, technology_type)))
                         except FileNotFoundError:
                             pass
                     if study_sample_table is not None:
