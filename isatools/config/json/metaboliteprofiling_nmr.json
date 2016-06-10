@@ -28,7 +28,7 @@
     },
     {
       "protocol": "data transformation",
-      "#data"
+      "outputs": "#data"
     }
   ],
   "protocolSequence": [

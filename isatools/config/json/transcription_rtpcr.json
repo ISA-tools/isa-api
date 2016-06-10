@@ -14,7 +14,7 @@
     },
     {
       "inputs": "#material",
-      "protocol": "reverse transcribed pcr",
+      "protocol": "reverse transcribed pcr"
     },
     {
       "protocol": "data collection",

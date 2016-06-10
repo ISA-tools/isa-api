@@ -13,7 +13,7 @@
       "outputs": "#data"
     },
     {
-      "inputs": "#data"
+      "inputs": "#data",
       "protocol": "gating",
       "outputs": "#data"
     }
