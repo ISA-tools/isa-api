@@ -43,7 +43,7 @@ setup(
         'lxml',
         'requests',
         'chardet',
-        'iso9601'
+        'iso8601'
     ],
     test_suite='tests'
 )
