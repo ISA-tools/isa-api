@@ -2397,7 +2397,7 @@ def cell_has_value(cell):
         else:
             return False
     else:
-        if cell == '':
+        if cell.strip() == '':
             return False
         elif 'Unnamed: ' in cell:
             return False
@@ -2430,103 +2430,6 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
             logger.warn("Multiple protocol references {} are found in {}".format(prots_found, each))
             logger.warn("Only one protocol reference should be used in a Protocol REF column.")
             prots_ok = False
-    # if prots_ok:  # build a protocol map of refs to column positions
-    #     prot_map = dict()
-    #     for each in protocol_ref_index:
-    #         protocol_ref = df[each][0]
-    #         # only add to protocol map if protocol is of interest to config, otherwise we ignore it
-    #         if protocol_ref in protocol_names_and_types.keys():
-    #             prot_map[each] = protocol_names_and_types[protocol_ref]
-    #         else:
-    #             logger.info("Ignoring protocol ref {} as not found in protocols declared {} in study file".format(protocol_ref, protocol_names_and_types.keys()))
-    #
-    #     # Now check if protocol ref is in correct position
-    #     config_headers = [i.header for i in config.get_isatab_configuration()[0].get_field()]
-    #     config_protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
-    #     # Map Protocol REF header positions to where indicated by protocol in config, with type cast into the heading
-    #     for protocol in config_protocols:
-    #         config_headers.insert(protocol[0], 'Protocol REF[{}]'.format(protocol[1]))
-    #     # Filter out only the protocol refs and the objects of interest to the config, found earlier in required_fields
-    #     config_headers_objects_only = [i for i in config_headers if 'protocol ref' in i.lower() or i in required_fields]
-    #
-    #     headers_objects_only = [i for i in columns if i.lower().endswith(' name')
-    #                     or i.lower().endswith(' data file') or i.lower().endswith(' data matrix file')
-    #                     or 'protocol ref' in i.lower()]
-    #     to_del = list()  # remove protocols not in prot map
-    #     for prot in [i for i in headers_objects_only if 'protocol ref' in i.lower()]:
-    #         if prot not in prot_map.keys():
-    #             to_del.append(prot)
-    #     for d in to_del:
-    #         headers_objects_only.remove(d)
-    #
-    #     for protocol in prot_map.keys():
-    #         protocol_in_header_pos = headers_objects_only.index(protocol)
-    #         lhs_header = headers_objects_only[protocol_in_header_pos - 1]
-    #         rhs_header = headers_objects_only[protocol_in_header_pos + 1]
-    #         if 'protocol ref.' in lhs_header.lower():
-    #             lhs_header = 'Protocol REF[' + prot_map[lhs_header] + ']'
-    #         if 'protocol ref.' in rhs_header.lower():
-    #             rhs_header = 'Protocol REF[' + prot_map[rhs_header] + ']'
-    #         protocol_in_config_pos = config_headers_objects_only.index('Protocol REF[' + prot_map[protocol] + ']')
-    #         lhs_config = config_headers_objects_only[protocol_in_config_pos - 1]
-    #         rhs_config = config_headers_objects_only[protocol_in_config_pos + 1]
-    #
-    #         print(lhs_header, protocol, lhs_config, lhs_header == lhs_config)
-    #         print(rhs_header, protocol, rhs_config, rhs_header == rhs_config)
-
-    # Now check the node order
-    # # Get protocols from config
-    # protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
-    # # Map Protocol REF header positions to where indicated by protocol in config
-    # for protocol in protocols:
-    #     fields.insert(protocol[0], 'Protocol REF')
-    # # How to handle cases where there is no Protocol REF? Insert fake columns where things like Assay Name and Hybridization Name occur but no Protocol REF?
-    # # First find processess with no Protocol REF
-    # no_protocol_ref_index = [(x, i) for x, i in enumerate(columns) if i in ['Assay Name', 'Hybridization Name',
-    #                                                                         'Data Transformation Name',
-    #                                                                         'Normalization Name', 'MS Assay']]
-    #
-    # def is_material_or_data_node_header(header):
-    #     if header in ['Source Name', 'Sample Name', 'Extract Name', 'Labeled Extract Name', 'Data File',
-    #                   'Raw Data File', 'Raw Spectral Data File', 'Array Data File' ]:
-    #         return True
-    # # add Protocol REFs
-    # for index in no_protocol_ref_index:
-    #     if is_material_or_data_node_header(columns[index]):
-    #         columns.insert(index, 'Protocol REF')
-    # no_protocol_ref_index = [(x, i) for x, i in enumerate(columns) if i in ['Assay Name', 'Hybridization Name',
-    #                                                                             'Data Transformation Name',
-    #                                                                             'Normalization Name']]
-    # if len(no_protocol_ref_index) == 0:
-    #     print('OK!')
-    #
-    # # Map index positions of all column headers
-    # object_index = [(x, i) for x, i in enumerate(columns) if i in ['Source Name', 'Sample Name',
-    #                                                                 'Extract Name', 'Labeled Extract Name',
-    #                                                                 'Raw Data File',
-    #                                                                 'Raw Spectral Data File', 'Array Data File',
-    #                                                                 'Protein Assignment File',
-    #                                                                 'Peptide Assignment File',
-    #                                                                 'Post Translational Modification Assignment File',
-    #                                                                 'Derived Spectral Data File',
-    #                                                                 'Derived Array Data File',
-    #                                                                 'Assay Name'] or 'Protocol REF' in i or
-    #                 'Factor Value[' in i or 'Normalization Name' or 'Data Transformation Name']
-    # # Filter column headers by the ones we're interested in, indicated by config
-    # for x, o in enumerate(object_index):  # remove postix numbering from object_index
-    #     if indexed_col_regex.match(o[1]):
-    #         object_index[x] = (o[0], o[1][:o[1].rfind('.')])
-    # object_index = [i for i in object_index if i[1] in fields]
-    # object_index_nodups = list()
-    # prev = ('','')
-    # for o in object_index:
-    #     if prev[1] == o[1]:
-    #         pass
-    #     else: object_index_nodups.append(o)
-    #     prev = o
-    # for x, object in enumerate(object_index_nodups):
-    #     if fields[x] not in object[1]:  # use 'not in' and not '!=' to compare postfixed '.n' columns
-    #         logger.warn("Unexpected heading found. Expected {} but found {} at column number {} in {}".format(fields[x], object[1], object[0], filename))
 
 
 def check_study_assay_tables_against_config(i_df, dir_context, configs):
@@ -2674,7 +2577,7 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
                 if cell_value.lower() not in list_values:
                     is_valid_value = False
             elif data_type in ['ontology-term', 'ontology term']:
-                return True  # TODO: Implement ontology term check (not implemented in Java validator either)
+                return True  # Structure and values checked in check_ontology_fields()
             else:
                 logger.warn("Unknown data type '" + data_type + "' for field '" + cfg_field.header +
                             "' in the file '" + table.filename + "'")
@@ -2697,8 +2600,11 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
         return result
 
     def check_unit_field(table, cfg):
-        def check_unit_value(cell_value, cfg_field):
-            return True  # TODO implement unit value checking and test
+        def check_unit_value(cell_value, unit_value, cfield, filename):
+            if cell_has_value(cell_value) or cell_has_value(unit_value):
+                logger.warn("Field '" + cfield.header + "' has a unit but not a value in the file '" + filename + "'");
+                return False
+            return True
 
         result = True
         for icol, header in enumerate(table.columns):
@@ -2712,15 +2618,17 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
             ucfield = ucfields[0]
             if ucfield.is_required:
                 rheader = None
-                if icol < len(table.columns):
-                    rheader = table.columns[icol + 1]
+                rindx = icol + 1
+                if rindx < len(table.columns):
+                    rheader = table.columns[rindx]
                 if rheader is None or rheader.lower() != 'unit':
                     logger.warn("The field '" + header + "' in the file '" + table.filename +
                                 "' misses a required 'Unit' column")
                     result = False
                 else:
                     for irow in range(len(table.index)):
-                        result = result and check_unit_value(table.iloc[irow][cfield.header], cfield)
+                        result = result and check_unit_value(table.iloc[irow][icol], table.iloc[irow][rindx],
+                                                             cfield, table.filename)
         return result
 
     def check_protocol_fields(table, cfg, proto_map):
@@ -2788,22 +2696,7 @@ def validate3(fp, log_level=logging.INFO, config_dir='/Users/dj/PycharmProjects/
     def check_ontology_fields(table, cfg):
 
         def check_single_field(cell_value, source, acc, cfield, filename):
-            if isinstance(cell_value, float):
-                if math.isnan(cell_value):
-                    cell_value = ''
-            elif isinstance(cell_value, str):
-                cell_value = cell_value.strip()
-            if isinstance(source, float):
-                if math.isnan(source):
-                    source = ''
-            elif isinstance(source, str):
-                source = source.strip()
-            if isinstance(acc, float):
-                if math.isnan(acc):
-                    acc = ''
-            elif isinstance(acc, str):
-                acc = acc.strip()
-            if cell_value == '' or source == '' or acc == '':
+            if cell_has_value(cell_value) or cell_has_value(source) or cell_has_value(acc):
                 logger.warn(
                     "Incomplete values for ontology headers, for the field '" + cfield.header + "' in the file '" +
                     filename + "'. Check that all the label/accession/source are provided.")
