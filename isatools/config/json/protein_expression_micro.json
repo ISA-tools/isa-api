@@ -1,0 +1,47 @@
+{
+  "measurementType": "protein expression profiling",
+  "technologyType": "protein microarray",
+  "protocols": [
+    {
+      "inputs": "#sample",
+      "protocol": "DNA extraction",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "labeling",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "hybridization",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "data collection",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "data transformation",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "data transformation",
+      "outputs": "#data"
+    }
+  ],
+  "protocolSequence": [
+    "DNA extraction",
+    "labeling",
+    "hybridization",
+    "data collection",
+    "data transformation",
+    "data transformation"
+  ],
+  "description": [
+    "(Sample)->(DNA extraction)->(Material)->(labeling)->(Material)->(hybridization)->(Material)->(data collection)->(DataFiles)->(data transformation)->(DerivedDataFile)->(data transformation)->(DataMatrixFile)"
+  ]
+}

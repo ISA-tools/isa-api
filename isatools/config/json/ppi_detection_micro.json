@@ -1,0 +1,39 @@
+{
+  "measurementType": "protein-protein interaction detection",
+  "technologyType": "protein microarray",
+  "protocols": [
+    {
+      "inputs": "#sample",
+      "protocol": "extraction",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "protocol",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "hybridization",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "data normalization",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "data transformation",
+      "outputs": "#data"
+    }
+  ],
+  "protocolSequence": [
+    "extraction",
+    "protocol",
+    "hybridization",
+    "data normalization"
+  ],
+  "description": [
+    "(Sample)->(extraction)->(Material)->(protocol)->(Material)->(hybridization)->(DataFiles)->(data normalization)->(DataFiles)->(data transformation)->(DataFiles)" ]
+}

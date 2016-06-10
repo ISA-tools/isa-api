@@ -1,0 +1,16 @@
+{
+  "measurementType": "histology",
+  "technologyType": "",
+  "protocols": [
+    {
+      "inputs": "#sample",
+      "protocol": "histology",
+      "outputs": "#data"
+    }
+  ],
+  "protocolSequence": [
+    "histology"],
+  "description": [
+    "(Sample)->(histology)->(DataFiles)"
+  ]
+}
