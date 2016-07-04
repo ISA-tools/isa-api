@@ -92,15 +92,13 @@ def dump(isa_obj, output_path):
         return contacts_df.set_index(prefix + ' Person Last Name').T
 
     def _build_publications_section_df(prefix='Investigation', publications=list()):
-        publications_df_cols = pd.DataFrame(columns=(prefix + ' PubMed ID',
-                                                     prefix + ' Publication DOI',
-                                                     prefix + ' Publication Author List',
-                                                     prefix + ' Publication Title',
-                                                     prefix + ' Publication Status',
-                                                     prefix + ' Publication Status Term Accession Number',
-                                                     prefix + ' Publication Status Term Source REF'
-                                                     )
-                                            )
+        publications_df_cols = [prefix + ' PubMed ID',
+                                prefix + ' Publication DOI',
+                                prefix + ' Publication Author List',
+                                prefix + ' Publication Title',
+                                prefix + ' Publication Status',
+                                prefix + ' Publication Status Term Accession Number',
+                                prefix + ' Publication Status Term Source REF']
         if len(publications) > 0:
             for comment in publications[0].comments:
                 publications_df_cols.append('Comment[' + comment.name + ']')
