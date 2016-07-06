@@ -10,7 +10,7 @@ Validating ISA tab (legacy)
 
 To validate ISA tab files in a given directory ``./tabdir/`` against a given configuration found in a directory ``./isaconfig-default_v2015-07-02/``, do something like the following:
 
-.. code-block:: python
+... code-block:: python
     from isatools import isatab
     isatab.validate('./tabdir/', './isaconfig-default_v2015-07-02/')
 
@@ -21,7 +21,7 @@ Validating ISA tab (new)
 
 From v0.2 of the ISA API, we have started implementing a replacement validator written in Python. To use this one, do something like:
 
-.. code-block:: python
+... code-block:: python
     from isatools import isatab
     isatab.validate2('i_investigation.txt', './isaconfig-default_v2015-07-02/')
 
