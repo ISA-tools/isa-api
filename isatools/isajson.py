@@ -857,12 +857,16 @@ def get_assay_unit_category_ids_in_materials_and_processes(assay_json):
 
 def check_unit_category_ids_usage(study_json):
     """Used for rules 1014 and 1022"""
+    logger.info("Getting units declared...")
     units_declared = get_unit_category_ids(study_json)
     for assay in study_json['assays']:
         units_declared.extend(get_unit_category_ids(assay))
+    logger.info("Getting units used (study)...")
     units_used = get_study_unit_category_ids_in_materials_and_processes(study_json)
+    logger.info("Getting units used (assay)...")
     for assay in study_json['assays']:
         units_used.extend(get_assay_unit_category_ids_in_materials_and_processes(assay))
+    logger.info("Comparing units declared vs units used...")
     if len(set(units_used) - set(units_declared)) > 0:
         diff = set(units_used) - set(units_declared)
         logger.error("(E) There are units {} used in a material or parameter value that have not been not declared"
@@ -1195,11 +1199,15 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
     handler = logging.StreamHandler(stream)
     logger.addHandler(handler)
     try:
+        logger.info("Checking if encoding is UTF8")
         check_utf8(fp=fp)  # Rule 0010
+        logger.info("Loading json from " + fp.name)
         isa_json = json.load(fp=fp)  # Rule 0002
+        logger.info("Validating JSON against schemas using Draft4Validator")
         check_isa_schemas(isa_json=isa_json,
                           investigation_schema_path=os.path.join(BASE_DIR, 'schemas', 'isa_model_version_1_0_schemas',
                                                                  'core', 'investigation_schema.json'))  # Rule 0003
+        logger.info("Checking if material IDs used are declared...")
         for study_json in isa_json['studies']:
             check_material_ids_not_declared_used(study_json)  # Rules 1002-1005
         for study_json in isa_json['studies']:
@@ -1207,32 +1215,51 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
             check_material_ids_declared_used(study_json, get_sample_ids)  # Rule 1016
             check_material_ids_declared_used(study_json, get_material_ids)  # Rule 1017
             check_material_ids_declared_used(study_json, get_data_file_ids)  # Rule 1018
+        logger.info("Checking characteristic categories usage...")
         for study_json in isa_json['studies']:
             check_characteristic_category_ids_usage(study_json)  # Rules 1013 and 1022
+        logger.info("Checking study factor usage...")
         for study_json in isa_json['studies']:
             check_study_factor_usage(study_json)  # Rules 1008 and 1021
+        logger.info("Checking unit category usage...")
         for study_json in isa_json['studies']:
             check_unit_category_ids_usage(study_json)  # Rules 1014 and 1022
+        logger.info("Checking process sequences (study)...")
         for study_json in isa_json['studies']:
             check_process_sequence_links(study_json['processSequence'])  # Rule 1006
+            logger.info("Checking process sequences (assay)...")
             for assay_json in study_json['assays']:
                 check_process_sequence_links(assay_json['processSequence'])  # Rule 1006
+        logger.info("Checking process protocol usage...")
         for study_json in isa_json['studies']:
             check_process_protocol_ids_usage(study_json)  # Rules 1007 and 1019
+        logger.info("Checking date formats...")
         check_date_formats(isa_json)  # Rule 3001
+        logger.info("Checking DOI formats...")
         check_dois(isa_json)  # Rule 3002
+        logger.info("Checking Pubmed ID formats...")
         check_pubmed_ids_format(isa_json)  # Rule 3003
+        logger.info("Checking filenames are present...")
         check_filenames_present(isa_json)  # Rule 3005
+        logger.info("Checking protocol names...")
         check_protocol_names(isa_json)  # Rule 1010
+        logger.info("Checking protocol parameter names...")
         check_protocol_parameter_names(isa_json)  # Rule 1011
+        logger.info("Checking study factor names...")
         check_study_factor_names(isa_json)  # Rule 1012
+        logger.info("Checking ontology sources...")
         check_ontology_sources(isa_json)  # Rule 3008
+        logger.info("Checking term source REFs...")
         check_term_source_refs(isa_json)  # Rules 3007 and 3009
+        logger.info("Checking missing term source REFs...")
         check_term_accession_used_no_source_ref(isa_json)  # Rule 3010
+        logger.info("Loading configurations from " + config_dir)
         configs = load_config(config_dir)  # Rule 4001
+        logger.info("Checking measurement and technology types...")
         for study_json in isa_json['studies']:
             for assay_json in study_json['assays']:
                 check_measurement_technology_types(assay_json, configs)  # Rule 4002
+        logger.info("Checking against configuration schemas...")
         check_isa_schemas(isa_json=isa_json,
                           investigation_schema_path=os.path.join(config_dir, 'schemas',
                                                                  'investigation_schema.json'))  # Rule 4003
@@ -1242,6 +1269,7 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
             logger.fatal("(F) There are some errors that mean validation against configurations cannot proceed.")
             return stream
         fp.seek(0)  # reset file pointer
+        logger.info("Checking study and assay graphs...")
         for study_json in isa_json['studies']:
             check_study_and_assay_graphs(study_json, configs)  # Rule 4004
         # i = load(fp=fp)
@@ -1250,6 +1278,7 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
         # for study in i.studies:
         #     for assay in study.assays:
         #         check_study_or_assay_graph(study_or_assay=assay, configs=configs)  # Rule 4004
+        logger.info("Finished validation...")
     except KeyError as k:
         logger.fatal("(F) There was an error when trying to read the JSON")
         logger.fatal("Key: " + str(k))
