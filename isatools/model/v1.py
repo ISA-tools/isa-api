@@ -1,5 +1,4 @@
 from networkx import DiGraph
-from enum import Enum
 
 
 def _build_assay_graph(process_sequence=list()):
@@ -316,7 +315,8 @@ class StudyFactor(IsaObject):
     affect biological systems in a way that can be measured by an assay.
 
     Attributes:
-        ontology_annotation: A representation of an ontology source reference
+        name: Study factor name
+        factor_type: An ontology source reference of the study factor type
     """
 
     def __init__(self, id_='', name="", factor_type=None, comments=None):

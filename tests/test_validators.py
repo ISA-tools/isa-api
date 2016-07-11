@@ -269,6 +269,21 @@ class ValidateIsaJsonTest(TestCase):
             self.fail("Validation passed against transcription_seq.json configuration, when it should have failed")
 
 
+class ValidateIsaSraTest(TestCase):
+
+    def setUp(self):
+        self._dir = os.path.dirname(__file__)
+        self._default_config_dir = os.path.join(self._dir, 'data', 'json', 'configs', 'sra')
+
+    def tearDown(self):
+        pass
+
+    def test_assay_config_validation(self):
+        """Tests against 4004"""
+        log_msg_stream = isajson.validate(open(os.path.join(self._dir, 'data', 'json', 'copo.json')),
+                                          self._default_config_dir)
+
+
 class ValidateIsaTabTest(TestCase):
 
     def setUp(self):

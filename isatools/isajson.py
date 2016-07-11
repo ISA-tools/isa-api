@@ -1188,7 +1188,7 @@ def check_study_and_assay_graphs(study_json, configs):
 
 
 BASE_DIR = os.path.dirname(__file__)
-default_config_dir = os.path.join(BASE_DIR, 'config', 'json')
+default_config_dir = os.path.join(BASE_DIR, 'config', 'json', 'default')
 
 
 def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
@@ -1272,12 +1272,6 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
         logger.info("Checking study and assay graphs...")
         for study_json in isa_json['studies']:
             check_study_and_assay_graphs(study_json, configs)  # Rule 4004
-        # i = load(fp=fp)
-        # for study in i.studies:
-        #     check_study_or_assay_graph(study_or_assay=study, configs=configs)  # Rule 4004
-        # for study in i.studies:
-        #     for assay in study.assays:
-        #         check_study_or_assay_graph(study_or_assay=assay, configs=configs)  # Rule 4004
         logger.info("Finished validation...")
     except KeyError as k:
         logger.fatal("(F) There was an error when trying to read the JSON")

@@ -1,0 +1,34 @@
+{
+  "measurementType": "genome sequencing",
+  "technologyType": "nucleotide sequencing",
+  "protocols": [
+    {
+      "inputs": "#sample",
+      "protocol": "nucleic acid extraction",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "library construction",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "nucleic acid sequencing",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "sequence assembly",
+      "outputs": "#data"
+    }
+  ],
+  "protocolSequence": [
+    "nucleic acid extraction",
+    "library construction",
+    "sequence assembly",
+    "sequence analysis data transformation"
+  ],
+  "description": [
+    "(Sample)->(nucleic acid extraction)->(Material)->(library construction)->(Material)->(nucleic acid sequencing)->(DataFiles)->(sequence assembly)->(DataFiles)" ]
+}
