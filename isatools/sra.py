@@ -14,7 +14,18 @@ def dump(isa_obj, output_path):
             if len(matches) == 0:
                 return None
             else:
-                raise AttributeError("Could not find comment with name '{}'".format(name))
+                raise AttributeError("Could not resolve comment with name '{}'".format(name))
+
+    def _get_sra_contact(contacts):
+        matches = [c for c in contacts if 'SRA Inform On Status' in [r.name for r in c.roles]
+                   or 'SRA Inform On Error' in [r.name for r in c.roles]]
+        if len(matches) == 1:
+            return matches[0]
+        else:
+            if len(matches) == 0:
+                return None
+            else:
+                raise AttributeError("Could not resolve SRA contact")
 
     def _get_study_type(assays):
         measurement_types = [a.measurement_type.name for a in assays]
@@ -34,6 +45,44 @@ def dump(isa_obj, output_path):
             return 'Population Genomics'
         else:
             return 'Other'
+
+    def _write_submission_xml(s):
+        sra_center_name = _get_comment(s.comments, 'SRA Center Name')
+        sra_broker_name = _get_comment(s.comments, 'SRA Broker Name')
+        sra_contact = _get_sra_contact(s.contacts)
+        submission_xml = """
+        <SUBMISSION xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.submission.xsd"
+        center_name="{sra_center_name}" accession="" alias="{study_identifier}" broker_name="{sra_broker_name}"
+        submission_date="{submission_date}">
+          <CONTACTS>
+            <CONTACT name="{contact_name}" inform_on_status="{inform_on_status_email}"
+            inform_on_error="{inform_on_error_email}"/>
+          </CONTACTS>
+          <ACTIONS>
+            <ACTION>
+              <ADD schema="study" source="study.xml"/>
+            </ACTION>
+            <ACTION>
+              <ADD schema="sample" source="sample_set.xml"/>
+            </ACTION>
+            <ACTION>
+              <ADD schema="experiment" source="experiment_set.xml"/>
+            </ACTION>
+            <ACTION>
+              <ADD schema="run" source="run_set.xml"/>
+            </ACTION>
+          </ACTIONS>
+        </SUBMISSION>""".format(
+            sra_center_name=sra_center_name,
+            sra_broker_name=sra_broker_name,
+            study_identifier=s.identifier,
+            submission_date=s.submission_date,
+            contact_name=sra_contact.first_name + ' ' + sra_contact.last_name,
+            inform_on_status_email=sra_contact.email,
+            inform_on_error_email=sra_contact.email
+        )
+        return submission_xml
 
     def _write_study_xml(s):
         sra_center_name = _get_comment(s.comments, 'SRA Center Name')
@@ -140,7 +189,6 @@ def dump(isa_obj, output_path):
         study_xml += """</STUDY>"""
         return study_xml
 
-
     def _write_experiment_set_xml():
         pass
 
@@ -150,19 +198,16 @@ def dump(isa_obj, output_path):
     def _write_sample_set_xml():
         pass
 
-
-    def _write_submission_xml():
-        pass
-
     """
         >>> from isatools import sra, isajson
         >>> i = isajson.load(open('.../BII-S-3.json'))
         >>> sra.dump(i, None)
     """
-
+    from lxml import etree
     for study in isa_obj.studies:
+        submission_xml = _write_submission_xml(study)
+        logger.info(submission_xml)
+        etree.fromstring(submission_xml)
         study_xml = _write_study_xml(study)
         logger.info(study_xml)
-        from lxml import etree
-        parser = etree.XMLParser(dtd_validation=True)
-        root = etree.fromstring(study_xml)  # checks if validates against XSD
+        etree.fromstring(study_xml)  # checks if validates against XSD
