@@ -9,6 +9,7 @@ import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class ISATabTest(TestCase):
 
     def setUp(self):
@@ -107,7 +108,7 @@ class ISATabTest(TestCase):
         self.assertTrue(os.path.exists(os.path.join(self._tmp, 'sra')))
 
         # SRA should always produce experiment_set.xml, run_set.xml, sample_set.xml study.xml and submission.xml
-        expected_sra_path = os.path.join(self._tmp, 'sra', 'BII-S-3')
+        expected_sra_path = os.path.join(self._tmp, 'sra', 'BII-S-7')
         expected_file_set = {'experiment_set.xml', 'run_set.xml', 'sample_set.xml', 'study.xml', 'submission.xml'}
         if os.path.exists(expected_sra_path):
             sra_output_files_list = set(os.listdir(expected_sra_path))
