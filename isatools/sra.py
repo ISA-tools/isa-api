@@ -155,10 +155,10 @@ def _write_study_xml(s):
         """.format(public_release_date=s.public_release_date)
     for contact in s.contacts:
         contact_info = """
-        Name: {contact_name}
-        e-mail: {contact_email}
-        Affiliation: {contact_affiliation}
-        Address: {contact_address}
+Name: {contact_name}
+e-mail: {contact_email}
+Affiliation: {contact_affiliation}
+Address: {contact_address}
         """.format(contact_name=contact.first_name + ' ' + contact.last_name,
                    contact_email=contact.email,
                    contact_affiliation=contact.affiliation,
@@ -175,11 +175,12 @@ def _write_study_xml(s):
         attr_xml += """
         <STUDY_ATTRIBUTE>
             <TAG>Study Publication</TAG>
-            <VALUE>Title: {title}
-                   Authors: {author_list}
-                   Status: {status}
-                   PUBMED ID: {pubmed_id}
-                   DOI: {doi}</VALUE>
+            <VALUE>
+Title: {title}
+Authors: {author_list}
+Status: {status}
+PUBMED ID: {pubmed_id}
+DOI: {doi}</VALUE>
         </STUDY_ATTRIBUTE>
         """.format(
             title=publication.title,
