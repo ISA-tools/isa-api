@@ -19,13 +19,11 @@ class SraExporterTests(TestCase):
                                                                  'rb').read())
 
     def test_dump_submission_xml(self):
-        submission_xml = sra._write_submission_xml(self._inv_obj.studies[0])
+        submission_xml = sra._write_submission_xml(self._inv_obj)
         actual_submission_xml_obj = objectify.fromstring(submission_xml)
         self.assertEqual(etree.tostring(self._expected_submission_xml_obj), etree.tostring(actual_submission_xml_obj))
 
     def test_dump_study_xml(self):
-        study_xml = sra._write_study_xml(self._inv_obj.studies[0])
+        study_xml = sra._write_study_xml(self._inv_obj)
         actual_study_xml_obj = objectify.fromstring(study_xml)
-        # self.assertEqual(etree.tostring(self._expected_study_xml_obj), etree.tostring(actual_study_xml_obj))
-        print(etree.tostring(self._expected_study_xml_obj))
-        print(etree.tostring(actual_study_xml_obj))
+        self.assertEqual(etree.tostring(self._expected_study_xml_obj), etree.tostring(actual_study_xml_obj))
