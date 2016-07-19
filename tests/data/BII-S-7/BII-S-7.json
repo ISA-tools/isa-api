@@ -841,7 +841,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -957,7 +957,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -1095,7 +1095,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -1431,7 +1431,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -1547,7 +1547,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -1814,7 +1814,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -2051,7 +2051,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -2190,7 +2190,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -2389,7 +2389,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -2573,7 +2573,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -2810,7 +2810,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -3008,7 +3008,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -3230,7 +3230,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -3498,7 +3498,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -3636,7 +3636,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -3790,7 +3790,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -3952,7 +3952,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -4068,7 +4068,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -4184,7 +4184,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -4300,7 +4300,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -4499,7 +4499,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -4727,7 +4727,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -4979,7 +4979,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -5207,7 +5207,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -5407,7 +5407,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -5682,7 +5682,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -5969,7 +5969,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -6152,7 +6152,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -6306,7 +6306,7 @@
                                         "@id": "#parameter/target_gene"
                                     },
                                     "value": {
-                                        "annotationValue": "16S RNA",
+                                        "annotationValue": "16S rRNA",
                                         "termAccession": "",
                                         "termSource": ""
                                     }
@@ -6432,7 +6432,7 @@
                             }
                         }
                     ],
-                    "technologyPlatform": "454 Genome Sequencer FLX",
+                    "technologyPlatform": "454 GS FLX",
                     "technologyType": {
                         "annotationValue": "nucleotide sequencing",
                         "termAccession": "http://purl.obolibrary.org/obo/OBI_0000626",
@@ -12971,7 +12971,7 @@
                 {
                     "@id": "#protocol/PCR_amplification",
                     "components": [],
-                    "description": "PCR amplification of the V5-V6 region of bacterial 16S rRNA genes. For each sample, we amplified 16S rRNA genes using a primer set corresponding to primers 784F and 1061R described by Andersson et al. (S3). These PCR primers target the V5 and V6 hyper-variable 16S RNA region. The forward primer contained the sequence of the Titanium A adaptor (5'-CCATCTCATCCCTGCGTGTCTCCGACTCAG-3') and a barcode sequence. For each sample, a PCR mix of 100 ?l was prepared containing 1X PCR buffer, 5U of Faststart High Fidelity polymerase blend and dNTPs from the FastStart High Fidelity PCR system (Roche), 200 nM of primers (Eurogentec) and 100 ng of gDNA. Thermal cycling consisted of initial denaturation at 95 C for 5 minutes followed by 30 cycles of denaturation at 95 C for 40 seconds, annealing at 55 C for 40 seconds, and extension at 72 C for 1 minute, with a final extension of 7 minutes at 72 C for. Amplicons were visualized on 1.0% agarose gels using SYBR Safe DNA gel stain in 0.5X TBE (Invitrogen). Amplicons were cleaned using the HighPure Cleanup kit (Roche) according to the manufacturer instructions.",
+                    "description": "PCR amplification of the V5-V6 region of bacterial 16S rRNA genes. For each sample, we amplified 16S rRNA genes using a primer set corresponding to primers 784F and 1061R described by Andersson et al. (S3). These PCR primers target the V5 and V6 hyper-variable 16S rRNA region. The forward primer contained the sequence of the Titanium A adaptor (5'-CCATCTCATCCCTGCGTGTCTCCGACTCAG-3') and a barcode sequence. For each sample, a PCR mix of 100 ?l was prepared containing 1X PCR buffer, 5U of Faststart High Fidelity polymerase blend and dNTPs from the FastStart High Fidelity PCR system (Roche), 200 nM of primers (Eurogentec) and 100 ng of gDNA. Thermal cycling consisted of initial denaturation at 95 C for 5 minutes followed by 30 cycles of denaturation at 95 C for 40 seconds, annealing at 55 C for 40 seconds, and extension at 72 C for 1 minute, with a final extension of 7 minutes at 72 C for. Amplicons were visualized on 1.0% agarose gels using SYBR Safe DNA gel stain in 0.5X TBE (Invitrogen). Amplicons were cleaned using the HighPure Cleanup kit (Roche) according to the manufacturer instructions.",
                     "name": "PCR amplification",
                     "parameters": [],
                     "protocolType": {
@@ -12985,7 +12985,7 @@
                 {
                     "@id": "#protocol/library_construction",
                     "components": [],
-                    "description": "Amplicon DNA concentrations were determined using the Quant-iT PicoGreen dsDNA reagent and kit (Invitrogen) following manufacturer instruction. Assays were carried out using 10 ?l of cleaned PCR product in a total reaction volume of 200 ?l in black, 96-well microtiter plates. Fluorescence was measured on Perkin Elmer Victor Plate reader using the 485/530 nm excitation/emission filter pair with measurement time 0.1 second. Following quantitation, cleaned amplicons were combined in equimolar ratios into a single tube. The final pool of DNA was precipitated on ice for 45 minutes following the addition of 5 M NaCl (0.2 M final concentration) and two volumes of ice-cold 100% ethanol. The precipitated DNA was centrifuged at 7,800 g for 40 minutes at 4?C, and the resulting pellet was washed with an equal volume of ice-cold 70% ethanol and centrifuged again at 7,800 g for 20 minutes at 4?C. The supernatant was removed and the pellet was air dried for 10 minutes at room temperature and then resuspended in 100 ?l of nuclease-free water (Ambion). The final concentration of the pooled DNA was determined using a NanoDrop spectrophotometer (Thermo Fisher). Pyrosequencing was carried out using primer A on a 454 Life Sciences Genome Sequencer FLX instrument (Roche) following the Titanium chemistry.",
+                    "description": "Amplicon DNA concentrations were determined using the Quant-iT PicoGreen dsDNA reagent and kit (Invitrogen) following manufacturer instruction. Assays were carried out using 10 ?l of cleaned PCR product in a total reaction volume of 200 ?l in black, 96-well microtiter plates. Fluorescence was measured on Perkin Elmer Victor Plate reader using the 485/530 nm excitation/emission filter pair with measurement time 0.1 second. Following quantitation, cleaned amplicons were combined in equimolar ratios into a single tube. The final pool of DNA was precipitated on ice for 45 minutes following the addition of 5 M NaCl (0.2 M final concentration) and two volumes of ice-cold 100% ethanol. The precipitated DNA was centrifuged at 7,800 g for 40 minutes at 4?C, and the resulting pellet was washed with an equal volume of ice-cold 70% ethanol and centrifuged again at 7,800 g for 20 minutes at 4?C. The supernatant was removed and the pellet was air dried for 10 minutes at room temperature and then resuspended in 100 ?l of nuclease-free water (Ambion). The final concentration of the pooled DNA was determined using a NanoDrop spectrophotometer (Thermo Fisher). Pyrosequencing was carried out using primer A on a 454 Life Sciences GS FLX instrument (Roche) following the Titanium chemistry.",
                     "name": "library construction",
                     "parameters": [
                         {
