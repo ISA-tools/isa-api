@@ -21,6 +21,8 @@ class SraExporterTests(TestCase):
                                                                  'rb').read())
         self._expected_exp_set_xml_obj = etree.fromstring(open(os.path.join(self._dir, 'sra', 'experiment_set.xml'),
                                                                   'rb').read())
+        self._expected_run_set_xml_obj = etree.fromstring(open(os.path.join(self._dir, 'sra', 'run_set.xml'),
+                                                               'rb').read())
 
         self._sra_default_config = {
             "broker_name": "",
@@ -118,3 +120,13 @@ class SraExporterTests(TestCase):
         self.assertEqual(self._expected_exp_set_xml_obj.xpath('count(//LS454)'), actual_exp_set_xml_obj.xpath('count(//LS454)'))
         self.assertEqual(self._expected_exp_set_xml_obj.xpath('count(//INSTRUMENT_MODEL)'), actual_exp_set_xml_obj.xpath('count(//INSTRUMENT_MODEL)'))
 
+    def test_dump_run_set_xml(self):
+        run_set_xml = sra._write_run_set_xml(self._inv_obj, self._sra_default_config)
+        actual_run_set_xml_obj = etree.fromstring(run_set_xml)
+        print(etree.tostring(actual_run_set_xml_obj))
+        self.assertEqual(self._expected_run_set_xml_obj.xpath('count(//RUN_SET)'), actual_run_set_xml_obj.xpath('count(//RUN_SET)'))
+        self.assertEqual(self._expected_run_set_xml_obj.xpath('count(//RUN)'), actual_run_set_xml_obj.xpath('count(//RUN)'))
+        self.assertEqual(self._expected_run_set_xml_obj.xpath('count(//EXPERIMENT_REF)'), actual_run_set_xml_obj.xpath('count(//EXPERIMENT_REF)'))
+        self.assertEqual(self._expected_run_set_xml_obj.xpath('count(//DATA_BLOCK)'), actual_run_set_xml_obj.xpath('count(//DATA_BLOCK)'))
+        self.assertEqual(self._expected_run_set_xml_obj.xpath('count(//FILES)'), actual_run_set_xml_obj.xpath('count(//FILES)'))
+        self.assertEqual(self._expected_run_set_xml_obj.xpath('count(//FILE)'), actual_run_set_xml_obj.xpath('count(//FILE)'))
