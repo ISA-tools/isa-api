@@ -19,11 +19,11 @@
   <STUDY_ATTRIBUTES>
     <STUDY_ATTRIBUTE>
       <TAG>Submission Date</TAG>
-      <VALUE>29/03/0010</VALUE>
+      <VALUE>2010-03-29T00:00:00+00:00</VALUE>
     </STUDY_ATTRIBUTE>
     <STUDY_ATTRIBUTE>
       <TAG>Release Date</TAG>
-      <VALUE>29/03/0010</VALUE>
+      <VALUE>2010-03-29T00:00:00+00:00</VALUE>
     </STUDY_ATTRIBUTE>
     <STUDY_ATTRIBUTE>
       <TAG>BII Study Accession</TAG>
@@ -32,6 +32,27 @@
     <STUDY_ATTRIBUTE>
       <TAG>BII Investigation Accession</TAG>
       <VALUE>BII-S-7</VALUE>
+    </STUDY_ATTRIBUTE>
+    <STUDY_ATTRIBUTE>
+      <TAG>Study Contact</TAG>
+      <VALUE>Name: de Filippo Carlotta
+e-mail: carlotta.defilippo@unifi.it
+Affiliation: University of Florence, Italy
+Role: principal investigator role</VALUE>
+    </STUDY_ATTRIBUTE>
+    <STUDY_ATTRIBUTE>
+      <TAG>Study Contact</TAG>
+      <VALUE>Name: Ramazzotti Matteo
+e-mail: matteo.ramazzotti@unifi.it
+Affiliation: University of Florence, Italy
+Role: scientist</VALUE>
+    </STUDY_ATTRIBUTE>
+    <STUDY_ATTRIBUTE>
+      <TAG>Study Contact</TAG>
+      <VALUE>Name: Lionetti Paolo
+e-mail: paolo.lionetti@unifi.itpaolo.lionetti@unifi.it
+Affiliation: University of Florence, Italy
+Role: principal investigator role</VALUE>
     </STUDY_ATTRIBUTE>
     <STUDY_ATTRIBUTE>
       <TAG>Study Contact</TAG>
@@ -49,29 +70,9 @@ Role: scientist</VALUE>
     </STUDY_ATTRIBUTE>
     <STUDY_ATTRIBUTE>
       <TAG>Study Contact</TAG>
-      <VALUE>Name: Philippe Rocca-Serra
-e-mail: proccaserra@gmail.com
-Role: SRA Inform On Status
-Role: SRA Inform On Error</VALUE>
-    </STUDY_ATTRIBUTE>
-    <STUDY_ATTRIBUTE>
-      <TAG>Study Contact</TAG>
-      <VALUE>Name: Lionetti Paolo
-e-mail: paolo.lionetti@unifi.itpaolo.lionetti@unifi.it
-Affiliation: University of Florence, Italy
-Role: principal investigator role</VALUE>
-    </STUDY_ATTRIBUTE>
-    <STUDY_ATTRIBUTE>
-      <TAG>Study Contact</TAG>
-      <VALUE>Name: de Filippo Carlotta
-e-mail: carlotta.defilippo@unifi.it
-Affiliation: University of Florence, Italy
-Role: principal investigator role</VALUE>
-    </STUDY_ATTRIBUTE>
-    <STUDY_ATTRIBUTE>
-      <TAG>Study Contact</TAG>
-      <VALUE>Name: Collini Silvia
-Affiliation: University of Florence, Italy
+      <VALUE>Name: Poullet Jean-Baptiste
+e-mail: jean-baptistepoullet@dnavision.be
+Affiliation: DNA Vision
 Role: scientist</VALUE>
     </STUDY_ATTRIBUTE>
     <STUDY_ATTRIBUTE>
@@ -83,23 +84,22 @@ Role: scientist</VALUE>
     </STUDY_ATTRIBUTE>
     <STUDY_ATTRIBUTE>
       <TAG>Study Contact</TAG>
-      <VALUE>Name: Ramazzotti Matteo
-e-mail: matteo.ramazzotti@unifi.it
-Affiliation: University of Florence, Italy
-Role: scientist</VALUE>
-    </STUDY_ATTRIBUTE>
-    <STUDY_ATTRIBUTE>
-      <TAG>Study Contact</TAG>
-      <VALUE>Name: Poullet Jean-Baptiste
-e-mail: jean-baptistepoullet@dnavision.be
-Affiliation: DNA Vision
-Role: scientist</VALUE>
-    </STUDY_ATTRIBUTE>
-    <STUDY_ATTRIBUTE>
-      <TAG>Study Contact</TAG>
       <VALUE>Name: Pieraccini Giuseppe
 Affiliation: University of Florence, Italy
 Role: scientist</VALUE>
+    </STUDY_ATTRIBUTE>
+    <STUDY_ATTRIBUTE>
+      <TAG>Study Contact</TAG>
+      <VALUE>Name: Collini Silvia
+Affiliation: University of Florence, Italy
+Role: scientist</VALUE>
+    </STUDY_ATTRIBUTE>
+    <STUDY_ATTRIBUTE>
+      <TAG>Study Contact</TAG>
+      <VALUE>Name: Philippe Rocca-Serra
+e-mail: proccaserra@gmail.com
+Role: SRA Inform On Status
+Role: SRA Inform On Error</VALUE>
     </STUDY_ATTRIBUTE>
     <STUDY_ATTRIBUTE>
       <TAG>Study Publication</TAG>

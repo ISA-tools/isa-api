@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SUBMISSION xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.submission.xsd" center_name="OXFORD" accession="" alias="BII-S-7" broker_name="" submission_date="0010-03-29T00:00:00.000Z">
+<SUBMISSION xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.submission.xsd" center_name="OXFORD" accession="" alias="BII-S-7" broker_name="ISAcreator" submission_date="2010-03-29T00:00:00+00:00">
   <CONTACTS>
     <CONTACT name="Philippe Rocca-Serra" inform_on_status="proccaserra@gmail.com" inform_on_error="proccaserra@gmail.com"/>
   </CONTACTS>
