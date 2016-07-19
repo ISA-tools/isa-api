@@ -406,10 +406,46 @@ def _write_experiment_set_xml(i, sc):
     exp_set_xml += """</EXPERIMENT_SET>"""
     return exp_set_xml
 
-def _write_run_set_xml():
+
+def _get_output_filename(process):
+    output_files = process.outputs
+    if len(output_files) == 1:
+        return output_files[0].filename
+    else:
+        raise AttributeError("Could not resolve output file - zero or > 1 files found")
+
+
+def _write_run_set_xml(i, sc):
     run_set_xml = """
     <RUN_SET xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.run.xsd">
     """
+    for s in i.studies:
+        for a in s.assays:
+            seq_processes = [p for p in a.process_sequence if p.executes_protocol.protocol_type.name == 'nucleic acid sequencing']
+            for seq_process in seq_processes:
+                assay_name = seq_process.additional_properties['Assay Name']
+                filename_no_ext = a.filename[:-4]
+                study_id = s.identifier
+                output_filename = _get_output_filename(seq_process)
+                run_set_xml += """
+                <RUN alias="{study_id}:assay:{assay_name}" center_name="{center_name}" broker_name="{broker_name}">
+                    <EXPERIMENT_REF refname="{study_id}:generic_assay:{filename_no_ext}.{assay_name}"/>
+                        <DATA_BLOCK>
+                            <FILES>
+                                <FILE filetype="{output_file_ext}" filename="{output_filename}" checksum_method="MD5" checksum="0000000000000000000000000"/>
+                            </FILES>
+                        </DATA_BLOCK>
+                </RUN>
+                """.format(study_id=study_id,
+                           assay_name=assay_name,
+                           filename_no_ext=filename_no_ext,
+                           center_name=sc['center_name'],
+                           broker_name=sc['broker_name'],
+                           output_filename=output_filename,
+                           output_file_ext=output_filename[-4:]
+                           )
+    run_set_xml += """</RUN_SET>"""
+    return run_set_xml
 
 
 def dump(isa_obj, sra_config=sra_default_config, output_path=None):
