@@ -20,6 +20,7 @@ class JsonToSraTest(TestCase):
 
         if not os.path.exists(self._tmp_dir):
             os.mkdir(self._tmp_dir)
+
         self._expected_submission_xml_biis3 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-3', 'submission.xml'), 'rb').read())
         self._expected_study_xml_biis3 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-3', 'study.xml'), 'rb').read())
         self._expected_sample_set_xml_biis3 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-3', 'sample_set.xml'), 'rb').read())
