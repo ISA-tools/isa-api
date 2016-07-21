@@ -65,3 +65,8 @@ def load(mtbls_study_id):
     finally:
         if tmp_dir is not None:
             shutil.rmtree(tmp_dir)
+
+
+def get_data_files_urls(mtbls_study_id, factor_selection=None):
+    isa_json = load(mtbls_study_id)
+
