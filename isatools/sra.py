@@ -2,6 +2,10 @@ import logging
 from lxml import etree
 from xml.sax.saxutils import escape
 import isatools.model.v1 as model
+from ena.sra import submission, study, sample, experiment
+import pyxb
+import pyxb.binding.datatypes as xs
+import iso8601
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -69,38 +73,20 @@ def _write_submission_xml(i, sc):
         raise AttributeError("Detected more than one study in investigation. For an SRA submission, only one study per "
                              "ISA submission can be handled.")
     s = i.studies[0]
-    submission_xml = """
-    <SUBMISSION xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.submission.xsd"
-    center_name="{sra_center_name}" accession="" alias="{study_identifier}" broker_name="{sra_broker_name}"
-    submission_date="{submission_date}">
-      <CONTACTS>
-        <CONTACT name="{contact_name}" inform_on_status="{inform_on_status_email}"
-        inform_on_error="{inform_on_error_email}"/>
-      </CONTACTS>
-      <ACTIONS>
-        <ACTION>
-          <ADD schema="study" source="study.xml"/>
-        </ACTION>
-        <ACTION>
-          <ADD schema="sample" source="sample_set.xml"/>
-        </ACTION>
-        <ACTION>
-          <ADD schema="experiment" source="experiment_set.xml"/>
-        </ACTION>
-        <ACTION>
-          <ADD schema="run" source="run_set.xml"/>
-        </ACTION>
-      </ACTIONS>
-    </SUBMISSION>""".format(
-        sra_center_name=sc['center_name'],
-        sra_broker_name=sc['broker_name'],
-        study_identifier=s.identifier,
-        submission_date=s.submission_date,
-        contact_name=sc['inform_on_status_name'],
-        inform_on_status_email=sc['inform_on_status_email'],
-        inform_on_error_email=sc['inform_on_error_email']
-    )
+    submission_binding = submission.SUBMISSION()
+    submission_binding.alias = s.identifier
+    submission_binding.broker_name = sc['broker_name']
+    submission_binding.center_name = sc['center_name']
+    submission_binding.submission_date = xs.date(iso8601.parse_date(s.submission_date, iso8601.UTC))
+
+    submission_binding.CONTACTS = pyxb.BIND(pyxb.BIND(name=sc['inform_on_status_name'],
+                                                      inform_on_status=sc['inform_on_status_email'],
+                                                      inform_on_error=sc['inform_on_error_email']))
+    submission_binding.ACTIONS = pyxb.BIND(pyxb.BIND(ADD=pyxb.BIND(schema='study', source='study.xml')),
+                                           pyxb.BIND(ADD=pyxb.BIND(schema='sample', source='sample.xml')),
+                                           pyxb.BIND(ADD=pyxb.BIND(schema='experiment', source='experiment_set.xml')),
+                                           pyxb.BIND(ADD=pyxb.BIND(schema='run', source='run_set.xml')))
+    submission_xml = submission_binding.toxml()
     return submission_xml
 
 
@@ -109,122 +95,65 @@ def _write_study_xml(i, sc):
         raise AttributeError("Detected more than one study in investigation. For an SRA submission, only one study per "
                              "ISA submission can be handled.")
     s = i.studies[0]
-    study_type = _get_study_type(s.assays)
-    study_xml = """<STUDY
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.study.xsd"
-    alias="{study_id}" center_name="{sra_center_name}">""".format(
-        study_id=s.identifier,
-        sra_center_name=sc['center_name'])
-    # build STUDY DESCRIPTOR
-    study_xml += """
-        <DESCRIPTOR>
-            <CENTER_NAME>{sra_center_name}</CENTER_NAME>
-            <CENTER_PROJECT_NAME>{sra_center_project_name}</CENTER_PROJECT_NAME>
-            <STUDY_TITLE>{study_title}</STUDY_TITLE>
-            <STUDY_ABSTRACT>{study_description}</STUDY_ABSTRACT>
-            <STUDY_DESCRIPTION>{study_description}</STUDY_DESCRIPTION>
-            <STUDY_TYPE existing_study_type="{study_type}"/>
-        </DESCRIPTOR>
-    """.format(sra_center_name=sc['center_name'],
-               sra_center_project_name=sc['center_project_name'],
-               study_title=s.title,
-               study_abstract=escape(s.description),
-               study_description=escape(s.description),
-               study_type=study_type)
-    # build STUDY LINKS (to publications)
-    link_xml = """<STUDY_LINKS>"""
+    study_binding = study.STUDY()
+    study_binding.alias = s.identifier
+    study_binding.center_name = sc['center_name']
+    study_binding.DESCRIPTOR = pyxb.BIND()
+    study_binding.DESCRIPTOR.CENTER_NAME = sc['center_name']
+    study_binding.DESCRIPTOR.CENTER_PROJECT_NAME = sc['center_project_name']
+    study_binding.DESCRIPTOR.STUDY_TITLE = s.title
+    study_binding.DESCRIPTOR.STUDY_ABSTRACT = escape(s.description)
+    study_binding.DESCRIPTOR.STUDY_DESCRIPTION = study_binding.DESCRIPTOR.STUDY_ABSTRACT
+    study_binding.DESCRIPTOR.STUDY_TYPE = pyxb.BIND(existing_study_type=_get_study_type(s.assays))
+    study_binding.STUDY_LINKS = pyxb.BIND()
     for publication in s.publications:
         if publication.pubmed_id is not None and publication.pubmed_id != '':
-            link_xml += """
-                <STUDY_LINK>
-                    <ENTREZ_LINK>
-                        <DB>pubmed</DB>
-                        <ID>{pubmed_id}</ID>
-                    </ENTREZ_LINK>
-                </STUDY_LINK>
-            """.format(pubmed_id=publication.pubmed_id)
+            study_binding.STUDY_LINKS.STUDY_LINK.append(
+                pyxb.BIND(ENTREZ_LINK=pyxb.BIND(DB='pubmed', ID=int(publication.pubmed_id))))
         if publication.doi is not None and publication.doi != '':
-            link_xml += """
-                <STUDY_LINK>
-                    <URL_LINK>
-                        <LABEL>Study Publication DOI</LABEL>
-                        <URL>{doi}</URL>
-                    </URL_LINK>
-                </STUDY_LINK>
-            """.format(doi=publication.doi)
-    link_xml += """</STUDY_LINKS>"""
-    study_xml += link_xml
-    # build STUDY ATTRIBUTES
-    attr_xml = """<STUDY_ATTRIBUTES>"""
-    if s.submission_date is not None and s.submission_date != '':
-        attr_xml += """
-        <STUDY_ATTRIBUTE>
-            <TAG>Submission Date</TAG>
-            <VALUE>{submission_date}</VALUE>
-        </STUDY_ATTRIBUTE>
-        """.format(submission_date=s.submission_date)
-    if s.public_release_date is not None and s.public_release_date != '':
-        attr_xml += """
-        <STUDY_ATTRIBUTE>
-            <TAG>Release Date</TAG>
-            <VALUE>{public_release_date}</VALUE>
-        </STUDY_ATTRIBUTE>
-        """.format(public_release_date=s.public_release_date)
-    if s.identifier is not None and s.identifier != '':
-        attr_xml += """
-        <STUDY_ATTRIBUTE>
-            <TAG>BII Study Accession</TAG>
-            <VALUE>{study_id}</VALUE>
-        </STUDY_ATTRIBUTE>
-        """.format(study_id=s.identifier)
-    if i.identifier is not None and i.identifier != '':
-        attr_xml += """
-        <STUDY_ATTRIBUTE>
-            <TAG>BII Investigation Accession</TAG>
-            <VALUE>{inv_id}</VALUE>
-        </STUDY_ATTRIBUTE>
-        """.format(inv_id=i.identifier)
-    for contact in s.contacts:
-        contact_txt = """"""
-        if contact.first_name is not None and contact.first_name != '' and contact.last_name is not None and contact.last_name != '':
-            contact_txt += "Name: {first} {last}\n".format(first=contact.first_name, last=contact.last_name)
-        if contact.email is not None and contact.email != '':
-            contact_txt += "e-mail: {email}\n".format(email=contact.email)
-        if contact.affiliation is not None and contact.affiliation != '':
-            contact_txt += "Affiliation: {affiliation}\n".format(affiliation=contact.affiliation)
-        if contact.address is not None and contact.address != '':
-            contact_txt += "Address: {address}\n".format(address=contact.address)
-        for role in contact.roles:
-            contact_txt += "Role: {role}\n".format(role=role.name)
-        attr_xml += """
-        <STUDY_ATTRIBUTE>
-            <TAG>Study Contact</TAG>
-            <VALUE>{contact_info}</VALUE>
-        </STUDY_ATTRIBUTE>
-        """.format(contact_info=contact_txt[:len(contact_txt)-1])  # drop trailing line break
-    for publication in s.publications:
-        pub_txt = """"""
-        if publication.title is not None and publication.title != '':
-            pub_txt += "Title: {title}\n".format(title=publication.title.strip())
-        if publication.author_list is not None and publication.author_list != '':
-            pub_txt += "Authors: {author_list}\n".format(author_list=publication.author_list.strip())
-        if publication.status is not None and publication.status != '':
-            pub_txt += "Status: {status}\n".format(status=publication.status.name.strip())
-        if publication.pubmed_id is not None and publication.pubmed_id != '':
-            pub_txt += "PUBMED ID: {pubmed_id}\n".format(pubmed_id=publication.pubmed_id.strip())
-        if publication.doi is not None and publication.doi != '':
-            pub_txt += "DOI: {doi}\n".format(doi=publication.doi.strip())
-        attr_xml += """
-        <STUDY_ATTRIBUTE>
-            <TAG>Study Publication</TAG>
-            <VALUE>{pub_txt}</VALUE>
-        </STUDY_ATTRIBUTE>
-        """.format(pub_txt=pub_txt[:len(pub_txt)-1])  # drop trailing line break
-    attr_xml += """</STUDY_ATTRIBUTES>"""
-    study_xml += attr_xml
-    study_xml += """</STUDY>"""
-    return study_xml
+            study_binding.STUDY_LINKS.STUDY_LINK.append(
+                pyxb.BIND(URL_LINK=pyxb.BIND(LABEL='Study Publication DOI', URL=int(publication.doi))))
+        study_binding.STUDY_ATTRIBUTES = pyxb.BIND()
+        study_binding.STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(pyxb.BIND(TAG='Submission Date', VALUE=s.submission_date))
+        if s.public_release_date is not None and s.public_release_date != '':
+            study_binding.STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(
+                pyxb.BIND(TAG='Release Date', VALUE=s.public_release_date))
+        if s.identifier is not None and s.identifier != '':
+            study_binding.STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(
+                pyxb.BIND(TAG='BII Study Accession', VALUE=s.identifier))
+        if i.identifier is not None and i.identifier != '':
+            study_binding.STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(
+                pyxb.BIND(TAG='BII Investigation Accession', VALUE=i.identifier))
+        for contact in s.contacts:
+            contact_txt = """"""
+            if contact.first_name is not None and contact.first_name != '' and contact.last_name is not None \
+                    and contact.last_name != '':
+                contact_txt += "Name: {first} {last}\n".format(first=contact.first_name, last=contact.last_name)
+            if contact.email is not None and contact.email != '':
+                contact_txt += "e-mail: {email}\n".format(email=contact.email)
+            if contact.affiliation is not None and contact.affiliation != '':
+                contact_txt += "Affiliation: {affiliation}\n".format(affiliation=contact.affiliation)
+            if contact.address is not None and contact.address != '':
+                contact_txt += "Address: {address}\n".format(address=contact.address)
+            for role in contact.roles:
+                contact_txt += "Role: {role}\n".format(role=role.name)
+            study_binding.STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(
+                pyxb.BIND(TAG='Study Contact', VALUE=contact_txt[:-1]))
+        for publication in s.publications:
+            pub_txt = """"""
+            if publication.title is not None and publication.title != '':
+                pub_txt += "Title: {title}\n".format(title=publication.title.strip())
+            if publication.author_list is not None and publication.author_list != '':
+                pub_txt += "Authors: {author_list}\n".format(author_list=publication.author_list.strip())
+            if publication.status is not None and publication.status != '':
+                pub_txt += "Status: {status}\n".format(status=publication.status.name.strip())
+            if publication.pubmed_id is not None and publication.pubmed_id != '':
+                pub_txt += "PUBMED ID: {pubmed_id}\n".format(pubmed_id=publication.pubmed_id.strip())
+            if publication.doi is not None and publication.doi != '':
+                pub_txt += "DOI: {doi}\n".format(doi=publication.doi.strip())
+            study_binding.STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(
+                pyxb.BIND(TAG='Study Publication', VALUE=pub_txt[:-1]))
+    return study_binding.toxml()
 
 
 def _get_characteristic(m, cname):
@@ -236,30 +165,20 @@ def _get_characteristic(m, cname):
 
 
 def _write_sample_set_xml(i, sc):
-    sample_set_xml = """
-    <SAMPLE_SET xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.sample.xsd">
-    """
+    sample_set_binding = sample.SAMPLE_SET()
     for s in i.studies:
         for src in s.materials['sources']:
             characteristic_organism = _get_characteristic(src, 'organism')
-            organism_ncbi_taxon_id = characteristic_organism.value.term_accession[len("http://purl.obolibrary.org/obo/NCBITaxon_"):]
-            # write sample header and name
-            sample_set_xml += """
-            <SAMPLE center_name="{center_name}" broker_name="{broker_name}" alias="{study_id}:source:{source_id}">
-                <TITLE>{study_id}:source:{source_id}</TITLE>
-                <SAMPLE_NAME>
-                    <TAXON_ID>{organism_ncbi_taxon_id}</TAXON_ID>
-                    <SCIENTIFIC_NAME>{organism}</SCIENTIFIC_NAME>
-                </SAMPLE_NAME>
-            """.format(center_name=sc['center_name'],
-                       broker_name=sc['broker_name'],
-                       study_id=s.identifier,
-                       source_id=src.name,
-                       organism=characteristic_organism.value.name,
-                       organism_ncbi_taxon_id=organism_ncbi_taxon_id)
-            # write sample attributes if there is more than just organism
+            sample_binding = sample.SAMPLE()
+            sample_binding.alias = s.identifier + ':source:' + src.name
+            sample_binding.broker_name = sc['broker_name']
+            sample_binding.center_name = sc['center_name']
+            sample_binding.TITLE = sample_binding.alias
+            sample_binding.SAMPLE_NAME = pyxb.BIND(SCIENTIFIC_NAME=characteristic_organism.value.name,
+                                                   TAXON_ID=characteristic_organism.value.term_accession[
+                                                            len("http://purl.obolibrary.org/obo/NCBITaxon_"):])
             if len(src.characteristics) > 1:
-                sample_set_xml += """<SAMPLE_ATTRIBUTES>"""
+                sample_binding.SAMPLE_ATTRIBUTES = pyxb.BIND()
                 for characteristic in src.characteristics:
                     if characteristic.category.name == 'organism':
                         pass
@@ -273,20 +192,17 @@ def _write_sample_set_xml(i, sc):
                             cvalue = characteristic.value.strip()
                         else:
                             cvalue = characteristic.value
-                        sample_set_xml += """
-                        <SAMPLE_ATTRIBUTE>
-                            <TAG>{cname}</TAG>
-                            <VALUE>{cvalue}</VALUE>
-                        """.format(cname=characteristic.category.name,
-                                   cvalue=cvalue)
-                        if isinstance(cvalue, float) or isinstance(cvalue, int):
-                            if characteristic.unit is not None:
-                                sample_set_xml += """<UNITS>{unit}</UNITS>""".format(unit=characteristic.unit.name)
-                        sample_set_xml += """</SAMPLE_ATTRIBUTE>"""
-                sample_set_xml += """</SAMPLE_ATTRIBUTES>"""
-            sample_set_xml += """</SAMPLE>"""
-    sample_set_xml += """</SAMPLE_SET>"""
-    return sample_set_xml
+                        if characteristic.unit is not None:
+                            sample_binding.SAMPLE_ATTRIBUTES.SAMPLE_ATTRIBUTE.append(pyxb.BIND(
+                                TAG=characteristic.category.name,
+                                VALUE=str(cvalue),
+                                UNITS=characteristic.unit.name))
+                        else:
+                            sample_binding.SAMPLE_ATTRIBUTES.SAMPLE_ATTRIBUTE.append(pyxb.BIND(
+                                TAG=characteristic.category.name,
+                                VALUE=str(cvalue)))
+            sample_set_binding.SAMPLE.append(sample_binding)
+    return sample_set_binding.toxml()
 
 
 def _get_parameter_value(p, pvname):
@@ -450,9 +366,9 @@ def _write_run_set_xml(i, sc):
 
 def dump(isa_obj, sra_config=sra_default_config, output_path=None):
     """
-        >>> from isatools import sra, isajson
+        >>> from isatools import sra_bind, isajson
         >>> i = isajson.load(open('.../BII-S-7.json'))
-        >>> sra.dump(i, None)
+        >>> sra_bind.dump(i, None)
     """
     logger.info("Using config: {}".format(sra_config))
     submission_xml = _write_submission_xml(isa_obj, sra_config)

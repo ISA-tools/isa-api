@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- INSDC Sequence Read Archive resource Study (SRP/ERP/DRP) object XML specification -->
+<!-- $Id: SRA.study.xsd,v 1.1 2013/01/22 14:49:55 rasko Exp $ -->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:com="SRA.common">
+<xs:import schemaLocation="SRA.common.xsd" namespace="SRA.common"/>
+
+<xs:complexType name="StudyType">
+  <xs:annotation>
+      <xs:documentation>
+          A Study is a container for a sequencing investigation that may comprise multiple experiments.
+          The Study has an overall goal, but is otherwise minimally defined in the SRA.
+          A Study is composed of a descriptor, zero or more experiments, and zero or more analyses.
+          The submitter may decorate the Study with web links and properties.
+      </xs:documentation>
+  </xs:annotation>
+
+  <xs:sequence>
+
+      <xs:element name="IDENTIFIERS" type="com:IdentifierType" maxOccurs="1" minOccurs="0">
+      </xs:element>
+      <xs:element name="DESCRIPTOR" maxOccurs="1" minOccurs="1" nillable="false">
+        <xs:complexType>
+          <xs:all minOccurs="0">
+            <xs:element name="STUDY_TITLE" maxOccurs="1" minOccurs="1" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        Title of the study as would be used in a publication.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="STUDY_TYPE" maxOccurs="1" minOccurs="1">
+              <xs:annotation>
+                <xs:documentation>The STUDY_TYPE presents a controlled vocabulary for expressing the overall purpose of the study.</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+              <xs:attribute name="existing_study_type" use="required">
+                <xs:simpleType>
+                    <xs:restriction base = "xs:string">
+                        <xs:enumeration value = "Whole Genome Sequencing">
+                          <xs:annotation>
+                              <xs:documentation>
+                                 Sequencing of a single organism.
+                              </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value = "Metagenomics">
+                          <xs:annotation>
+                              <xs:documentation>
+                                 Sequencing of a community.
+                              </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value = "Transcriptome Analysis">
+                          <xs:annotation>
+                              <xs:documentation>
+                                 Sequencing and characterization of transcription elements.
+                              </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value = "Resequencing">
+                          <xs:annotation>
+                              <xs:documentation>
+                                 Sequencing of a sample with respect to a reference.
+                              </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value = "Epigenetics">
+                          <xs:annotation>
+                              <xs:documentation>
+                                 Cellular differentiation study.
+                              </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value = "Synthetic Genomics">
+                          <xs:annotation>
+                              <xs:documentation>
+                                 Sequencing of modified, synthetic, or transplanted genomes.
+                              </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value = "Forensic or Paleo-genomics">
+                          <xs:annotation>
+                              <xs:documentation>
+                                 Sequencing of recovered genomic material.
+                              </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value = "Gene Regulation Study">
+                          <xs:annotation>
+                              <xs:documentation>
+                                 Study of gene expression regulation.
+                              </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+                      <xs:enumeration value = "Cancer Genomics">
+                        <xs:annotation>
+                          <xs:documentation>
+                            Study of cancer genomics.
+                          </xs:documentation>
+                        </xs:annotation>
+                      </xs:enumeration>
+                      <xs:enumeration value = "Population Genomics">
+                        <xs:annotation>
+                          <xs:documentation>
+                            Study of populations and evolution through genomics.
+                          </xs:documentation>
+                        </xs:annotation>
+                      </xs:enumeration>
+                      <xs:enumeration value = "RNASeq">
+                        <xs:annotation>
+                          <xs:documentation>
+                            RNA sequencing study.
+                          </xs:documentation>
+                        </xs:annotation>
+                      </xs:enumeration>
+                      <xs:enumeration value="Exome Sequencing">
+                        <xs:annotation>
+                          <xs:documentation>
+                            The study investigates the exons of the genome.
+                          </xs:documentation>
+                        </xs:annotation>
+                      </xs:enumeration>
+                      <xs:enumeration value="Pooled Clone Sequencing">
+                        <xs:annotation>
+                          <xs:documentation>
+                            The study is sequencing clone pools (BACs, fosmids, other constructs).
+                          </xs:documentation>
+                        </xs:annotation>
+                      </xs:enumeration>
+                        <xs:enumeration value = "Other">
+                          <xs:annotation>
+                              <xs:documentation>
+                                 Study type not listed.
+                              </xs:documentation>
+                          </xs:annotation>
+                        </xs:enumeration>
+
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:attribute>
+                <xs:attribute name="new_study_type" use="optional" type="xs:string">
+                  <xs:annotation>
+                    <xs:documentation>
+                      To propose a new term, select Other and enter a new study type.
+                    </xs:documentation>
+                  </xs:annotation>
+                </xs:attribute>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="STUDY_ABSTRACT" maxOccurs="1" minOccurs="0" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        Briefly describes the goals, purpose, and scope of the Study.  This need not be listed if it can be
+                        inherited from a referenced publication.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CENTER_NAME" type="xs:string" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        DEPRECATED.  Use STUDY@center_name instead.
+                        Controlled vocabulary identifying the sequencing center, core facility, consortium, or laboratory responsible for the study.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CENTER_PROJECT_NAME" type="xs:string" minOccurs="0" maxOccurs="1"  nillable="false">
+                <xs:annotation>
+                    <xs:documentation>
+                        Submitter defined project name.  This field is intended for backward tracking of the study record to the submitter's LIMS.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PROJECT_ID"   type="xs:nonNegativeInteger"  maxOccurs="1" minOccurs="0" nillable="false">
+                <xs:annotation>
+                    <xs:documentation>
+                        DEPRECATED (use RELATED_STUDIES.STUDY instead).
+                        The required PROJECT_ID accession is generated by the Genome Project database at NCBI
+                        and will be valid also at the other archival institutions.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RELATED_STUDIES" minOccurs="0" maxOccurs="1">
+              <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="RELATED_STUDY" maxOccurs="unbounded" minOccurs="1">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="RELATED_LINK" type="com:XRefType" minOccurs="1" maxOccurs="1">
+                            <xs:annotation>
+                              <xs:documentation>
+                                Related study or project record from a list of supported databases.
+                                The study's information is derived from this project record rather
+                                than stored as first class information.
+                              </xs:documentation>
+                            </xs:annotation>
+                          </xs:element>
+                          <xs:element name="IS_PRIMARY" type="xs:boolean" minOccurs="1" maxOccurs="1">
+                            <xs:annotation>
+                              <xs:documentation>
+                                Whether this study object is designated as the primary source
+                                of the study or project information.
+                              </xs:documentation>
+                            </xs:annotation>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+
+                  </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+
+            <xs:element name="STUDY_DESCRIPTION" maxOccurs="1" minOccurs="0" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        More extensive free-form description of the study.
+                    </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:all>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="STUDY_LINKS" minOccurs="0" maxOccurs="1">
+          <xs:annotation>
+              <xs:documentation>
+                  Links to resources related to this study (publication, datasets, online databases).
+              </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence minOccurs="1" maxOccurs="unbounded">
+              <xs:element name="STUDY_LINK" type="com:LinkType" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="STUDY_ATTRIBUTES" minOccurs="0" maxOccurs="1">
+          <xs:annotation>
+            <xs:documentation>
+               Properties and attributes of the study.  These can be entered as free-form
+               tag-value pairs. For certain studies, submitters may be asked to follow a
+               community established ontology when describing the work.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType >
+            <xs:sequence maxOccurs="unbounded" minOccurs="1">
+              <xs:element name="STUDY_ATTRIBUTE" type="com:AttributeType"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+  </xs:sequence>
+  <xs:attributeGroup ref="com:NameGroup"/>
+
+
+</xs:complexType>
+
+  <xs:complexType name="StudySetType">
+    <xs:sequence minOccurs="1" maxOccurs="unbounded">
+      <xs:element name="STUDY" type="StudyType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+<xs:element name="STUDY_SET" type="StudySetType">
+  <xs:annotation>
+    <xs:documentation>
+      An STUDY_SET is a container for a set of studies and a common namespace.
+    </xs:documentation>
+  </xs:annotation>
+
+</xs:element>
+
+<xs:element name="STUDY" type="StudyType"/>
+
+</xs:schema>

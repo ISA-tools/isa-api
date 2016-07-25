@@ -1,0 +1,788 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- INSDC Sequence Read Archive resource Experiment (SRX/ERX/DRX) object XML specification -->
+<!-- $Id: SRA.experiment.xsd,v 1.2 2014/08/06 12:28:27 rajeshr Exp $ -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:com="SRA.common">
+    <xs:import schemaLocation="SRA.common.xsd" namespace="SRA.common"/>
+
+    <xs:complexType name="PoolMemberType">
+        <xs:annotation>
+            <xs:documentation> Impementation of lookup table between Sample Pool member and identified read_group_tags for a given
+                READ_LABEL </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="IDENTIFIERS" type="com:IdentifierType" minOccurs="0" maxOccurs="1"> </xs:element>
+            <xs:element name="READ_LABEL" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                            <xs:attribute name="read_group_tag" type="xs:string">
+                                <xs:annotation>
+                                    <xs:documentation> Assignment of read_group_tag to decoded read </xs:documentation>
+                                </xs:annotation>
+                            </xs:attribute>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attributeGroup ref="com:RefNameGroup"/>
+        <xs:attribute name="member_name" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation> Label a sample within a scope of the pool </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="proportion" type="xs:float" use="optional">
+            <xs:annotation>
+                <xs:documentation> Proportion of this sample (in percent) that was included in sample pool. </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="SampleDescriptorType">
+        <xs:annotation>
+            <xs:documentation> The SAMPLE_DESCRIPTOR specifies how to decode the individual reads
+                of interest from the monolithic spot sequence. The spot descriptor contains aspects
+                of the experimental design, platform, and processing information. There will be two
+                methods of specification: one will be an index into a table of typical decodings,
+                the other being an exact specification. </xs:documentation>
+        </xs:annotation>
+        <xs:choice minOccurs="0" maxOccurs="1">
+            <xs:element name="IDENTIFIERS" type="com:IdentifierType"/>
+            <xs:element name="POOL">
+                <xs:annotation>
+                    <xs:documentation>
+                        Identifies a list of group/pool/multiplex sample members.  This implies that
+                        this sample record is a group, pool, or multiplex, but is continues to receive
+                        its own accession and can be referenced by an experiment.  By default if
+                        no match to any of the listed members can be determined, then the default
+                        sampel reference is used.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="DEFAULT_MEMBER" type="PoolMemberType" minOccurs="0" maxOccurs="1"> </xs:element>
+                        <xs:element name="MEMBER" type="PoolMemberType" minOccurs="1" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:choice>
+        <xs:attributeGroup ref="com:RefNameGroup"/>
+    </xs:complexType>
+    <xs:complexType name="LibraryDescriptorType">
+        <xs:annotation>
+            <xs:documentation> The LIBRARY_DESCRIPTOR specifies the origin of the material being
+                sequenced and any treatments that the material might have undergone that affect the
+                sequencing result. This specification is needed even if the platform does not
+                require a library construction step per se. </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="LIBRARY_NAME" type="xs:string" maxOccurs="1" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                      The submitter's name for this library.
+                  </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="LIBRARY_STRATEGY" maxOccurs="1" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                      Sequencing technique intended for this library.
+                  </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="WGS">
+                            <xs:annotation>
+                                <xs:documentation>Whole Genome Sequencing - random sequencing of the
+                                    whole genome (see pubmed 10731132 for details)
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="WGA">
+                            <xs:annotation>
+                                <xs:documentation>Whole Genome Amplification followed by random
+                                    sequencing. (see pubmed 1631067,8962113 for details)
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="WXS">
+                            <xs:annotation>
+                                <xs:documentation> Random sequencing of exonic regions selected from
+                                    the genome. (see pubmed 20111037 for details)
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="RNA-Seq">
+                            <xs:annotation>
+                                <xs:documentation> Random sequencing of whole transcriptome, also
+                                    known as Whole Transcriptome Shotgun Sequencing, or WTSS). (see
+                                    pubmed 18611170 for details) </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="miRNA-Seq">
+                            <xs:annotation>
+                                <xs:documentation> Micro RNA sequencing strategy designed to capture
+                                    post-transcriptional RNA elements and include non-coding
+                                    functional elements. (see pubmed 21787409 for details)
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="ncRNA-Seq">
+                            <xs:annotation>
+                                <xs:documentation>Capture of other non-coding RNA types, including
+                                    post-translation modification types such as snRNA (small nuclear
+                                    RNA) or snoRNA (small nucleolar RNA), or expression regulation
+                                    types such as siRNA (small interfering RNA) or piRNA/piwi/RNA
+                                    (piwi-interacting RNA).</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="WCS">
+                            <xs:annotation>
+                                <xs:documentation> Random sequencing of a whole chromosome or other
+                                    replicon isolated from a genome. </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="CLONE">
+                            <xs:annotation>
+                                <xs:documentation> Genomic clone based (hierarchical) sequencing.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="POOLCLONE">
+                            <xs:annotation>
+                                <xs:documentation> Shotgun of pooled clones (usually BACs and
+                                    Fosmids). </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="AMPLICON">
+                            <xs:annotation>
+                                <xs:documentation> Sequencing of overlapping or distinct PCR or
+                                    RT-PCR products. For example, metagenomic community profiling
+                                    using SSU rRNA . </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="CLONEEND">
+                            <xs:annotation>
+                                <xs:documentation> Clone end (5', 3', or both) sequencing.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="FINISHING">
+                            <xs:annotation>
+                                <xs:documentation> Sequencing intended to finish (close) gaps in
+                                    existing coverage. </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="ChIP-Seq">
+                            <xs:annotation>
+                                <xs:documentation> chromatin immunoprecipitation.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="MNase-Seq">
+                            <xs:annotation>
+                                <xs:documentation> following MNase digestion. </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="DNase-Hypersensitivity">
+                            <xs:annotation>
+                                <xs:documentation> Sequencing of hypersensitive sites, or segments
+                                    of open chromatin that are more readily cleaved by DNaseI.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="Bisulfite-Seq">
+                            <xs:annotation>
+                                <xs:documentation>MethylC-seq. Sequencing following treatment of DNA
+                                    with bisulfite to convert cytosine residues to uracil depending
+                                    on methylation status. </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="EST">
+                            <xs:annotation>
+                                <xs:documentation> Single pass sequencing of cDNA templates
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="FL-cDNA">
+                            <xs:annotation>
+                                <xs:documentation> Full-length sequencing of cDNA templates
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="CTS">
+                            <xs:annotation>
+                                <xs:documentation> Concatenated Tag Sequencing </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="MRE-Seq">
+                            <xs:annotation>
+                                <xs:documentation> Methylation-Sensitive Restriction Enzyme
+                                    Sequencing. </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="MeDIP-Seq">
+                            <xs:annotation>
+                                <xs:documentation> Methylated DNA Immunoprecipitation Sequencing.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="MBD-Seq">
+                            <xs:annotation>
+                                <xs:documentation> Methyl CpG Binding Domain Sequencing.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="Tn-Seq">
+                            <xs:annotation>
+                                <xs:documentation>Quantitatively determine fitness of bacterial
+                                    genes based on how many times a purposely seeded transposon gets
+                                    inserted into each gene of a colony after some time.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="VALIDATION">
+                            <xs:annotation>
+                                <xs:documentation>CGHub special request: Independent experiment to
+                                    re-evaluate putative variants. </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="FAIRE-seq">
+                            <xs:annotation>
+                                <xs:documentation>Formaldehyde Assisted Isolation of Regulatory
+                                    Elements</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="SELEX">
+                            <xs:annotation>
+                                <xs:documentation>Systematic Evolution of Ligands by EXponential
+                                    enrichment</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="RIP-Seq">
+                            <xs:annotation>
+                                <xs:documentation>Direct sequencing of RNA immunoprecipitates
+                                    (includes CLIP-Seq, HITS-CLIP and PAR-CLIP). </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="ChIA-PET">
+                            <xs:annotation>
+                                <xs:documentation>Direct sequencing of proximity-ligated chromatin
+                                    immunoprecipitates.</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="RAD-Seq">
+                            <xs:annotation>
+                                <xs:documentation>RAD (Restriction site Associated DNA) Sequencing is a
+                                method for sampling the genomes of multiple individuals in a population
+                                using next generation DNA sequencing.</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="OTHER">
+                            <xs:annotation>
+                                <xs:documentation> Library strategy not listed. </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="LIBRARY_SOURCE">
+                <xs:annotation>
+                    <xs:documentation>
+                      The LIBRARY_SOURCE specifies the type of source material that is being sequenced.
+                  </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="GENOMIC">
+                            <xs:annotation>
+                                <xs:documentation>
+                              Genomic DNA (includes PCR products from genomic DNA).
+                          </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="TRANSCRIPTOMIC">
+                            <xs:annotation>
+                                <xs:documentation>
+                                  Transcription products or non genomic DNA (EST, cDNA, RT-PCR, screened libraries).
+                              </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="METAGENOMIC">
+                            <xs:annotation>
+                                <xs:documentation>
+                                  Mixed material from metagenome.
+                              </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="METATRANSCRIPTOMIC">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Transcription products from community targets
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="SYNTHETIC">
+                            <xs:annotation>
+                                <xs:documentation>
+                              Synthetic DNA.
+                          </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="VIRAL RNA">
+                            <xs:annotation>
+                                <xs:documentation>
+                              Viral RNA.
+                          </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="OTHER">
+                            <xs:annotation>
+                                <xs:documentation>
+                              Other, unspecified, or unknown library source material.
+                          </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="LIBRARY_SELECTION">
+                <xs:annotation>
+                    <xs:documentation> Method used to enrich the target in the sequence library
+                        preparation </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="RANDOM">
+                            <xs:annotation>
+                                <xs:documentation>No selection or random selection.</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="PCR">
+                            <xs:annotation>
+                                <xs:documentation>Target selection and enrichment via PCR.</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="RANDOM PCR">
+                            <xs:annotation>
+                                <xs:documentation>Source material was selected by randomly generated primers.</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="RT-PCR">
+                            <xs:annotation>
+                                <xs:documentation>Selection by reverse transcription PCR.</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="HMPR">
+                            <xs:annotation>
+                                <xs:documentation>Hypo-methylated partial restriction digest</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="MF">
+                            <xs:annotation>
+                                <xs:documentation>Methyl Filtrated</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="repeat fractionation">
+                            <xs:annotation>
+                                <xs:documentation>Selection for less repetitive (and more gene rich)
+                                    sequence through Cot filtration (CF) or other fractionation
+                                    techniques based on DNA kinetics. </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="size fractionation">
+                            <xs:annotation>
+                                <xs:documentation> Physical selection of size appropriate targets.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="MSLL">
+                            <xs:annotation>
+                                <xs:documentation>Methylation Spanning Linking Library</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="cDNA">
+                            <xs:annotation>
+                                <xs:documentation>PolyA selection or enrichment for messenger RNA
+                                    (mRNA). complementary DNA. </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="ChIP">
+                            <xs:annotation>
+                                <xs:documentation>Chromatin immunoprecipitation</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="MNase">
+                            <xs:annotation>
+                                <xs:documentation>Micrococcal Nuclease (MNase) digestion</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="DNase">
+                            <xs:annotation>
+                                <xs:documentation>Deoxyribonuclease (MNase) digestion</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="Hybrid Selection">
+                            <xs:annotation>
+                                <xs:documentation>Selection by hybridization in array or solution.</xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="Reduced Representation">
+                            <xs:annotation>
+                                <xs:documentation>Reproducible genomic subsets, often generated by restriction fragment size selection,
+                                  containing a manageable number of loci to facilitate re-sampling.
+                              </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="Restriction Digest">
+                            <xs:annotation>
+                                <xs:documentation>
+                                  DNA fractionation using restriction enzymes.
+                              </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="5-methylcytidine antibody">
+                            <xs:annotation>
+                                <xs:documentation>
+                                  Selection of methylated DNA fragments using an antibody raised against 5-methylcytosine or 5-methylcytidine (m5C).
+                              </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="MBD2 protein methyl-CpG binding domain">
+                            <xs:annotation>
+                                <xs:documentation>
+                                  Enrichment by methyl-CpG binding domain.
+                              </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="CAGE">
+                            <xs:annotation>
+                                <xs:documentation>
+                                  Cap-analysis gene expression.
+                              </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="RACE">
+                            <xs:annotation>
+                                <xs:documentation>
+                                  Rapid Amplification of cDNA Ends.
+                              </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="MDA">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Multiple Displacement Amplification, a non-PCR based DNA amplification technique
+                                    that amplifies a minute quantifies of DNA to levels suitable for genomic analysis.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="padlock probes capture method">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Targeted sequence capture protocol covering an arbitrary set of nonrepetitive
+                                    genomics targets. An example is capture bisulfite sequencing using padlock probes (BSPP).
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="Oligo-dT">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Select primarily messenger RNA, which conveniently is polyadenylated so these
+                                    transcripts can be captured with oligo-dT beads (mRNA-seq).
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="Inverse rRNA selection">
+                            <xs:annotation>
+                                <xs:documentation>
+                                	Remove the ribosomal transcripts by inverse selection: you capture them by annealing with specific
+                                	oligos, also bound to beads, and then discard that (total RNA-seq).
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="other">
+                            <xs:annotation>
+                                <xs:documentation>
+                              Other library enrichment, screening, or selection process.
+                          </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                        <xs:enumeration value="unspecified">
+                            <xs:annotation>
+                                <xs:documentation>
+                              Library enrichment, screening, or selection is not specified.
+                          </xs:documentation>
+                            </xs:annotation>
+                        </xs:enumeration>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="LIBRARY_LAYOUT">
+                <xs:annotation>
+                    <xs:documentation>
+                      LIBRARY_LAYOUT specifies whether to expect single, paired, or other configuration of reads.
+                      In the case of paired reads, information about the relative distance and orientation is specified.
+                  </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:choice>
+                        <xs:element name="SINGLE">
+                            <xs:complexType>
+                                <xs:annotation>
+                                    <xs:documentation>
+                            Reads are unpaired (usual case).
+                          </xs:documentation>
+                                </xs:annotation>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="PAIRED">
+                            <xs:complexType>
+                                <xs:attribute name="NOMINAL_LENGTH" type="xs:nonNegativeInteger"/>
+                                <xs:attribute name="NOMINAL_SDEV" type="xs:double"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:choice>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="TARGETED_LOCI" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:annotation>
+                        <xs:documentation>
+                          Names the gene(s) or locus(loci) or other genomic feature(s) targeted by the sequence.
+                      </xs:documentation>
+                    </xs:annotation>
+                    <xs:sequence>
+                        <xs:element name="LOCUS" maxOccurs="unbounded" minOccurs="1">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="PROBE_SET" type="com:XRefType" maxOccurs="1" minOccurs="0">
+                                        <xs:annotation>
+                                            <xs:documentation> Reference to an archived primer or
+                                                probe set. Example: dbProbe </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                </xs:sequence>
+                                <xs:attribute name="locus_name">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:string">
+                                            <xs:enumeration value="16S rRNA">
+                                                <xs:annotation>
+                                                  <xs:documentation> Bacterial small subunit ribosomal RNA, a locus used for
+                                                        phylogenetic studies of bacteria and as a target for random target PCR in
+                                                        environmental biodiversity screening. </xs:documentation>
+                                                </xs:annotation>
+                                            </xs:enumeration>
+                                            <xs:enumeration value="18S rRNA">
+                                                <xs:annotation>
+                                                  <xs:documentation> Eukaryotic small subunit ribosomal RNA, a locus used for
+                                                        phylogenetic studies of eukaryotes and as a target for random target PCR in
+                                                        environmental biodiversity screening. </xs:documentation>
+                                                </xs:annotation>
+                                            </xs:enumeration>
+                                            <xs:enumeration value="RBCL">
+                                                <xs:annotation>
+                                                  <xs:documentation> RuBisCO large subunit : ribulose-1,5-bisphosphate
+                                                        carboxylase/oxygenase large subunit, a locus used for phylogenetic studies
+                                                        of plants. </xs:documentation>
+                                                </xs:annotation>
+                                            </xs:enumeration>
+                                            <xs:enumeration value="matK">
+                                                <xs:annotation>
+                                                  <xs:documentation> Maturase K gene, a locus used for phylogenetic studies of
+                                                        plants. </xs:documentation>
+                                                </xs:annotation>
+                                            </xs:enumeration>
+                                            <xs:enumeration value="COX1">
+                                                <xs:annotation>
+                                                  <xs:documentation> Mitochondrial cytochrome c oxidase 1 gene, a locus used for
+                                                        phylogenetic studies of animals </xs:documentation>
+                                                </xs:annotation>
+                                            </xs:enumeration>
+                                            <xs:enumeration value="ITS1-5.8S-ITS2">
+                                                <xs:annotation>
+                                                  <xs:documentation> Internal transcribed spacers 1 and 2 plus 5.8S rRNA region,
+                                                        a locus used for phylogenetic studies of fungi. </xs:documentation>
+                                                </xs:annotation>
+                                            </xs:enumeration>
+                                            <xs:enumeration value="exome">
+                                                <xs:annotation>
+                                                  <xs:documentation> All exonic regions of the genome. </xs:documentation>
+                                                </xs:annotation>
+                                            </xs:enumeration>
+                                            <xs:enumeration value="other">
+                                                <xs:annotation>
+                                                  <xs:documentation> Other locus, please describe.
+                                                  </xs:documentation>
+                                                </xs:annotation>
+                                            </xs:enumeration>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:attribute>
+                                <xs:attribute name="description" type="xs:string">
+                                    <xs:annotation>
+                                        <xs:documentation> Submitter supplied description of alternate locus and auxiliary
+                                            information. </xs:documentation>
+                                    </xs:annotation>
+                                </xs:attribute>
+                            </xs:complexType>
+                        </xs:element>
+
+                    </xs:sequence>
+
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="POOLING_STRATEGY" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                      The optional pooling strategy indicates how the library or libraries are organized if multiple samples are involved.
+                  </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string"> </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="LIBRARY_CONSTRUCTION_PROTOCOL" type="xs:string" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                      Free form text describing the protocol by which the sequencing library was constructed.
+                  </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="LibraryType">
+        <xs:sequence>
+            <xs:element name="DESIGN_DESCRIPTION" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Goal and setup of the individual library.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="SAMPLE_DESCRIPTOR" type="SampleDescriptorType">
+                <xs:annotation>
+                    <xs:documentation> Pick a sample to associate this experiment with. The sample may be an individual or a pool,
+                        depending on how it is specified. </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="LIBRARY_DESCRIPTOR" type="LibraryDescriptorType">
+                <xs:annotation>
+                    <xs:documentation> The LIBRARY_DESCRIPTOR specifies the origin of the material being sequenced and any
+                        treatments that the material might have undergone that affect the sequencing result. This specification is
+                        needed even if the platform does not require a library construction step per se. </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="SPOT_DESCRIPTOR" type="com:SpotDescriptorType" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation> The SPOT_DESCRIPTOR specifies how to decode the individual reads of interest from the
+                        monolithic spot sequence. The spot descriptor contains aspects of the experimental design, platform, and
+                        processing information. There will be two methods of specification: one will be an index into a table of
+                        typical decodings, the other being an exact specification. This construct is needed for loading data and for
+                        interpreting the loaded runs. It can be omitted if the loader can infer read layout (from multiple input
+                        files or from one input files). </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+
+    </xs:complexType>
+    <xs:complexType name="ExperimentType">
+
+        <xs:annotation>
+            <xs:documentation>
+                  An Experiment specifies of what will be sequenced and how the sequencing will be performed.
+                  It does not contain results.
+                  An Experiment is composed of a design, a platform selection, and processing parameters.
+                </xs:documentation>
+        </xs:annotation>
+
+        <xs:sequence>
+
+            <xs:element name="IDENTIFIERS" type="com:IdentifierType" maxOccurs="1" minOccurs="0"> </xs:element>
+            <xs:element name="TITLE" type="xs:string" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        Short text that can be used to call out experiment records in searches or in displays.
+                        This element is technically optional but should be used for all new records.
+                      </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="STUDY_REF" minOccurs="1" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        The STUDY_REF descriptor establishes the relationship of the experiment to the parent
+                        study.  This can either be the accession of an existing archived study record, or
+                        a reference to a new study record in the same submission (which does not yet have an
+                        accession).
+                      </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="IDENTIFIERS" type="com:IdentifierType" maxOccurs="1" minOccurs="0"> </xs:element>
+                    </xs:sequence>
+                    <xs:attributeGroup ref="com:RefNameGroup"/>
+
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DESIGN" type="LibraryType" maxOccurs="1" minOccurs="1"> </xs:element>
+
+            <xs:element name="PLATFORM" type="com:PlatformType" maxOccurs="1" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                      The PLATFORM record selects which sequencing platform and platform-specific runtime parameters.
+                      This will be determined by the Center.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="PROCESSING" type="com:ProcessingType" minOccurs="0" maxOccurs="1"/>
+
+            <xs:element name="EXPERIMENT_LINKS" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+			  Links to resources related to this experiment or experiment set (publication, datasets, online databases).
+		      </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence minOccurs="1" maxOccurs="unbounded">
+                        <xs:element name="EXPERIMENT_LINK" type="com:LinkType"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="EXPERIMENT_ATTRIBUTES" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                       Properties and attributes of the experiment.  These can be entered as free-form
+                       tag-value pairs.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded" minOccurs="1">
+                        <xs:element name="EXPERIMENT_ATTRIBUTE" type="com:AttributeType"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attributeGroup ref="com:NameGroup"/>
+
+    </xs:complexType>
+
+    <xs:complexType name="ExperimentSetType">
+        <xs:sequence minOccurs="1" maxOccurs="1">
+            <xs:element name="EXPERIMENT" type="ExperimentType" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="EXPERIMENT_SET" type="ExperimentSetType">
+        <xs:annotation>
+            <xs:documentation>
+      An EXPERMENT_SET is a container for a set of experiments and a common namespace.
+    </xs:documentation>
+        </xs:annotation>
+
+    </xs:element>
+
+    <xs:element name="EXPERIMENT" type="ExperimentType"/>
+</xs:schema>
