@@ -217,9 +217,7 @@ def _get_parameter_value(p, pvname):
 
 
 def _write_experiment_set_xml(i, sc):
-    exp_set_xml = """
-    <EXPERIMENT_SET xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.experiment.xsd">
-    """
+    experiment_set_binding = experiment.EXPERIMENT_SET()
     for s in i.studies:
         for a in s.assays:
             seq_processes = [p for p in a.process_sequence if p.executes_protocol.protocol_type.name == 'nucleic acid sequencing']
@@ -228,7 +226,6 @@ def _write_experiment_set_xml(i, sc):
                 filename_no_ext = a.filename[:-4]
                 study_id = s.identifier
                 technology_platform = a.technology_platform
-
                 lib_construction_process = seq_process.prev_process
                 lib_strategy = _get_parameter_value(lib_construction_process, 'library strategy')
                 lib_source = _get_parameter_value(lib_construction_process, 'library source')
@@ -242,85 +239,115 @@ def _write_experiment_set_xml(i, sc):
                 pcr_cond = _get_parameter_value(lib_construction_process, 'pcr_cond')
                 mid = _get_parameter_value(lib_construction_process, 'mid')
                 source_name = seq_process.prev_process.prev_process.prev_process.inputs[0].name  # assume one input sample to the process sequence
-                exp_set_xml += """
-                <EXPERIMENT alias="{study_identifier}:generic_assay:{filename_no_ext}.{assay_name}" center_name="{center_name}" broker_name="{broker_name}">
-                    <TITLE>Sequencing library derived from sample {assay_name}</TITLE>
-                    <STUDY_REF refname="{study_identifier}"/>
-                    <DESIGN>
-                      <DESIGN_DESCRIPTION>See study and sample descriptions for details</DESIGN_DESCRIPTION>
-                      <SAMPLE_DESCRIPTOR refname="{study_identifier}:source:{source_name}"/>
-                      <LIBRARY_DESCRIPTOR>
-                        <LIBRARY_NAME>{study_identifier}:assay:{assay_name}.{target_taxon}</LIBRARY_NAME>
-                        <LIBRARY_STRATEGY>{lib_strategy}</LIBRARY_STRATEGY>
-                        <LIBRARY_SOURCE>{lib_source}</LIBRARY_SOURCE>
-                        <LIBRARY_SELECTION>{lib_selection}</LIBRARY_SELECTION>
-                        <LIBRARY_LAYOUT>
-                          <{lib_layout}/>
-                        </LIBRARY_LAYOUT>
-                        <TARGETED_LOCI>
-                          <LOCUS locus_name="{target_gene}"/>
-                        </TARGETED_LOCI>
-                        <POOLING_STRATEGY/>
-                        <LIBRARY_CONSTRUCTION_PROTOCOL>protocol_description: {protocol_description}
- target_taxon: {target_taxon}
- target_gene: {target_gene}
- target_subfragment: {target_subfragment}
- pcr_primers: {pcr_primers}
- pcr_cond: {pcr_cond}
- mid: {mid}</LIBRARY_CONSTRUCTION_PROTOCOL>
-                      </LIBRARY_DESCRIPTOR>
-                      <SPOT_DESCRIPTOR>
-                        <SPOT_DECODE_SPEC>
-                          <READ_SPEC>
-                            <READ_INDEX>0</READ_INDEX>
-                            <READ_CLASS>Technical Read</READ_CLASS>
-                            <READ_TYPE>Adapter</READ_TYPE>
-                            <BASE_COORD>1</BASE_COORD>
-                          </READ_SPEC>
-                          <READ_SPEC>
-                            <READ_INDEX>1</READ_INDEX>
-                            <READ_CLASS>Technical Read</READ_CLASS>
-                            <READ_TYPE>BarCode</READ_TYPE>
-                            <EXPECTED_BASECALL_TABLE>
-                              <BASECALL min_match="9" max_mismatch="0" match_edge="full" read_group_tag="{mid}">{mid}</BASECALL>
-                            </EXPECTED_BASECALL_TABLE>
-                          </READ_SPEC>
-                          <READ_SPEC>
-                            <READ_INDEX>2</READ_INDEX>
-                            <READ_CLASS>Application Read</READ_CLASS>
-                            <READ_TYPE>Forward</READ_TYPE>
-                            <RELATIVE_ORDER follows_read_index="1"/>
-                          </READ_SPEC>
-                        </SPOT_DECODE_SPEC>
-                      </SPOT_DESCRIPTOR>
-                    </DESIGN>
-                    <PLATFORM>
-                      <LS454>
-                        <INSTRUMENT_MODEL>{technology_platform}</INSTRUMENT_MODEL>
-                      </LS454>
-                    </PLATFORM>
-                  </EXPERIMENT>
-                """.format(assay_name=assay_name,
-                           filename_no_ext=filename_no_ext,
-                           study_identifier=study_id,
-                           technology_platform=technology_platform,
-                           lib_strategy=lib_strategy,
-                           lib_source=lib_source,
-                           lib_selection=lib_selection,
-                           lib_layout=lib_layout,
-                           target_gene=target_gene,
-                           protocol_description=protocol_description,
-                           target_taxon=target_taxon,
-                           target_subfragment=target_subfragment,
-                           pcr_primers=pcr_primers,
-                           pcr_cond=pcr_cond,
-                           mid=mid,
-                           center_name=sc['center_name'],
-                           broker_name=sc['broker_name'],
-                           source_name=source_name
-                           )
-    exp_set_xml += """</EXPERIMENT_SET>"""
-    return exp_set_xml
+                experiment_binding = experiment.EXPERIMENT()
+                experiment_binding.EXPERIMENT = pyxb.BIND(
+                    alias='%s:generic_assay:%s.%s'.format(s.identifier, filename_no_ext, assay_name),
+                    center_name=sc['center_name'],
+                    broker_name=sc['broker_name']
+                )
+                experiment_binding.TITLE = "Sequencing library derived from sample %s".format(assay_name)
+                experiment_binding.STUDY_REF = pyxb.BIND(refname=study_id)
+                experiment_binding.DESIGN = pyxb.BIND(
+                    DESIGN_DESCRIPTION="See study and sample descriptions for details",
+                    SAMPLE_DESCRIPTOR=pyxb.BIND(refname='%s:source:%s'.format(study_id, source_name))
+                )
+                experiment_binding.DESIGN.LIBRARY_DESCRIPTOR = pyxb.BIND(
+                        LIBRARY_NAME='%s:assay:%s.%s'.format(study_id, assay_name, target_taxon),
+                        LIBRARY_STRATEGY=lib_strategy,
+                        LIBRARY_SOURCE=lib_source,
+                        LIBRARY_SELECTION=lib_selection,
+                        LIBRARY_LAYOUT=lib_layout,
+                        TARGETED_LOCI=pyxb.BIND(LOCUS=pyxb.BIND(locus_name=target_gene),
+                        POOLING_STRATEGY=pyxb.BIND(),
+                        LIBRARY_CONSTRUCTION_PROTOCOL="""protocol_description: {protocol_description}
+target_taxon: {target_taxon}
+target_gene: {target_gene}
+target_subfragment: {target_subfragment}
+pcr_primers: {pcr_primers}
+pcr_cond: {pcr_cond}
+mid: {mid}"""
+                    )
+                )
+                experiment_binding.DESIGN.SPOT_DESCRIPTOR = pyxb.BIND(pyxb.BIND(READ_INDEX=0,
+                                                                                READ_CLASS='Technical Read',
+                                                                                READ_TYPE='Adapter',
+                                                                                BASE_COORD=1),
+                                                                      pyxb.BIND(READ_INDEX=1,
+                                                                                READ_CLASS='Application Read',
+                                                                                READ_TYPE='Forward',
+                                                                                BASE_COORD=5))
+                experiment_binding.PLATFORM = pyxb.BIND(LS454=pyxb.BIND(INSTRUMENT_MODEL='unspecified'))
+                print(experiment_binding.toxml())
+                experiment_set_binding.EXPERIMENT.append(experiment_binding)
+    return experiment_set_binding.toxml()
+
+ #                        <LIBRARY_LAYOUT>
+ #                          <{lib_layout}/>
+ #                        </LIBRARY_LAYOUT>
+ #                        <TARGETED_LOCI>
+ #                          <LOCUS locus_name="{target_gene}"/>
+ #                        </TARGETED_LOCI>
+ #                        <POOLING_STRATEGY/>
+ #                        <LIBRARY_CONSTRUCTION_PROTOCOL>protocol_description: {protocol_description}
+ # target_taxon: {target_taxon}
+ # target_gene: {target_gene}
+ # target_subfragment: {target_subfragment}
+ # pcr_primers: {pcr_primers}
+ # pcr_cond: {pcr_cond}
+ # mid: {mid}</LIBRARY_CONSTRUCTION_PROTOCOL>
+ #                      </LIBRARY_DESCRIPTOR>
+ #                      <SPOT_DESCRIPTOR>
+ #                        <SPOT_DECODE_SPEC>
+ #                          <READ_SPEC>
+ #                            <READ_INDEX>0</READ_INDEX>
+ #                            <READ_CLASS>Technical Read</READ_CLASS>
+ #                            <READ_TYPE>Adapter</READ_TYPE>
+ #                            <BASE_COORD>1</BASE_COORD>
+ #                          </READ_SPEC>
+ #                          <READ_SPEC>
+ #                            <READ_INDEX>1</READ_INDEX>
+ #                            <READ_CLASS>Technical Read</READ_CLASS>
+ #                            <READ_TYPE>BarCode</READ_TYPE>
+ #                            <EXPECTED_BASECALL_TABLE>
+ #                              <BASECALL min_match="9" max_mismatch="0" match_edge="full" read_group_tag="{mid}">{mid}</BASECALL>
+ #                            </EXPECTED_BASECALL_TABLE>
+ #                          </READ_SPEC>
+ #                          <READ_SPEC>
+ #                            <READ_INDEX>2</READ_INDEX>
+ #                            <READ_CLASS>Application Read</READ_CLASS>
+ #                            <READ_TYPE>Forward</READ_TYPE>
+ #                            <RELATIVE_ORDER follows_read_index="1"/>
+ #                          </READ_SPEC>
+ #                        </SPOT_DECODE_SPEC>
+ #                      </SPOT_DESCRIPTOR>
+ #                    </DESIGN>
+ #                    <PLATFORM>
+ #                      <LS454>
+ #                        <INSTRUMENT_MODEL>{technology_platform}</INSTRUMENT_MODEL>
+ #                      </LS454>
+ #                    </PLATFORM>
+ #                  </EXPERIMENT>
+ #                """.format(assay_name=assay_name,
+ #                           filename_no_ext=filename_no_ext,
+ #                           study_identifier=study_id,
+ #                           technology_platform=technology_platform,
+ #                           lib_strategy=lib_strategy,
+ #                           lib_source=lib_source,
+ #                           lib_selection=lib_selection,
+ #                           lib_layout=lib_layout,
+ #                           target_gene=target_gene,
+ #                           protocol_description=protocol_description,
+ #                           target_taxon=target_taxon,
+ #                           target_subfragment=target_subfragment,
+ #                           pcr_primers=pcr_primers,
+ #                           pcr_cond=pcr_cond,
+ #                           mid=mid,
+ #                           center_name=sc['center_name'],
+ #                           broker_name=sc['broker_name'],
+ #                           source_name=source_name
+ #                           )
+ #    exp_set_xml += """</EXPERIMENT_SET>"""
+    return experiment_binding.toxml()
 
 
 def _get_output_filename(process):
