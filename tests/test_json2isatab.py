@@ -2,7 +2,7 @@ from unittest import TestCase
 import os
 import shutil
 from isatools.convert import json2isatab
-from isatools.isatab import assert_tab_content_equal
+from tests.utils import assert_tab_content_equal
 
 
 class JsonToTabTest(TestCase):
