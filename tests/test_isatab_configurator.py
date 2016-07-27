@@ -5,9 +5,8 @@ import os
 class ISATabConfiguratorTest(TestCase):
 
     def setUp(self):
-        """set up directories etc"""
-        self._dir = os.path.join(os.path.dirname(__file__), "data")
-        self._config_dir = os.path.join(self._dir, "Configurations/isaconfig-default_v2015-07-02")
+        self._config_dir = os.path.join(os.path.dirname(__file__), 'data', 'configs', 'xml',
+                                        'isaconfig-default_v2015-07-02')
 
     def tearDown(self):
         pass

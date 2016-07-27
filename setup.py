@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='isatools',
-    version='0.1.3',
+    version='0.2.4',
     packages=['isatools', 'isatools.convert', 'isatools.io', 'isatools.model', 'isatools.sampledata', 
               'isatools.schemas', 'isatools.validate'],
     package_data={'isatools': ['schemas/cedar/*.json',
@@ -15,7 +15,10 @@ setup(
                                'convert/isa_line_commands/bin/convert.sh',
                                'convert/isa_line_commands/bin/validate.sh', 
                                'convert/isa_line_commands/import_layer_deps.jar',
-                               'convert/resources/sra/*.xsl'],
+                               'convert/resources/sra/*.xsl',
+                               'config/json/*.json',
+                               'config/json/schemas/*.json',
+                               'config/xml/*.xml'],
                   '': ['LICENSE.txt', 'README.md']},
     description='ISA-API',
     author='ISA Infrastructure Team',
@@ -38,7 +41,9 @@ setup(
         'httpretty',
         'sure',
         'lxml',
-        'requests'
+        'requests',
+        'chardet',
+        'iso8601'
     ],
     test_suite='tests'
 )

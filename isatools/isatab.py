@@ -92,15 +92,13 @@ def dump(isa_obj, output_path):
         return contacts_df.set_index(prefix + ' Person Last Name').T
 
     def _build_publications_section_df(prefix='Investigation', publications=list()):
-        publications_df_cols = pd.DataFrame(columns=(prefix + ' PubMed ID',
-                                                     prefix + ' Publication DOI',
-                                                     prefix + ' Publication Author List',
-                                                     prefix + ' Publication Title',
-                                                     prefix + ' Publication Status',
-                                                     prefix + ' Publication Status Term Accession Number',
-                                                     prefix + ' Publication Status Term Source REF'
-                                                     )
-                                            )
+        publications_df_cols = [prefix + ' PubMed ID',
+                                prefix + ' Publication DOI',
+                                prefix + ' Publication Author List',
+                                prefix + ' Publication Title',
+                                prefix + ' Publication Status',
+                                prefix + ' Publication Status Term Accession Number',
+                                prefix + ' Publication Status Term Source REF']
         if len(publications) > 0:
             for comment in publications[0].comments:
                 publications_df_cols.append('Comment[' + comment.name + ']')
@@ -989,8 +987,13 @@ def read_investigation_file(fp):
     def _read_tab_section(f, sec_key, next_sec_key=None):
 
         line = f.readline()
-        if not line.rstrip() == sec_key:
-            raise IOError("Expected: " + sec_key + " section, but got: " + line)
+        normed_line = line.rstrip()
+        if normed_line[0] == '"':
+            normed_line = normed_line[1:]
+        if normed_line[len(normed_line)-1] == '"':
+            normed_line = normed_line[:len(normed_line)-1]
+        if not normed_line == sec_key:
+            raise IOError("Expected: " + sec_key + " section, but got: " + normed_line)
         memf = io.StringIO()
         while not _peek(f=f).rstrip() == next_sec_key:
             line = f.readline()
@@ -1096,16 +1099,28 @@ def load2(fp):
 
         def _peek(f):
             position = f.tell()
-            l = f.readline()
-            f.seek(position)
+            try:
+                l = _strip_label(f.readline())
+            except IndexError:
+                l = None
+            finally:
+                f.seek(position)
             return l
 
+        def _strip_label(s):
+            stripped_s = s.rstrip()
+            if stripped_s[0] == '"':
+                stripped_s = stripped_s[1:]
+            if stripped_s[len(stripped_s) - 1] == '"':
+                stripped_s = stripped_s[:len(stripped_s) - 1]
+            return stripped_s
+
         def _read_tab_section(f, sec_key, next_sec_key=None):
-            line = f.readline()
-            if not line.rstrip() == sec_key:
-                raise ValueError("Expected: " + sec_key + " section, but got: " + line)
+            line = _strip_label(f.readline())
+            if not line == sec_key:
+                raise IOError("Expected: " + sec_key + " section, but got: " + line)
             memf = io.StringIO()
-            while not _peek(f=f).rstrip() == next_sec_key:
+            while not _peek(f=f) == next_sec_key:
                 line = f.readline()
                 if not line:
                     break
@@ -1128,8 +1143,9 @@ def load2(fp):
             labels_found = set(df.columns)
             comment_regex = re.compile('Comment\[(.*?)\]')
             if not labels_expected.issubset(labels_found):
+                missing_labels = labels_expected - labels_found
                 logger.fatal("In {} section, expected labels {} not found in {}"
-                             .format(section, labels_expected, labels_found))
+                             .format(section, missing_labels, labels_found))
             if len(labels_found - labels_expected) > 0:
                 # check extra labels, i.e. make sure they're all comments
                 extra_labels = labels_found - labels_expected
@@ -1138,6 +1154,7 @@ def load2(fp):
                         logger.fatal("In {} section, label {} is not allowed".format(section, label))
 
         # Read in investigation file into DataFrames first
+        logger.info("Loading ONTOLOGY SOURCE REFERENCE section")
         df_dict['ONTOLOGY SOURCE REFERENCE'] = _build_section_df(_read_tab_section(
             f=fp,
             sec_key='ONTOLOGY SOURCE REFERENCE',
@@ -1145,7 +1162,7 @@ def load2(fp):
         ))
         labels_expected = {'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
         check_labels('ONTOLOGY SOURCE REFERENCE', labels_expected, df_dict['ONTOLOGY SOURCE REFERENCE'])
-
+        logger.info("Loading INVESTIGATION section")
         df_dict['INVESTIGATION'] = _build_section_df(_read_tab_section(
             f=fp,
             sec_key='INVESTIGATION',
@@ -1154,7 +1171,7 @@ def load2(fp):
         labels_expected = {'Investigation Identifier', 'Investigation Title', 'Investigation Description',
                            'Investigation Submission Date', 'Investigation Public Release Date'}
         check_labels('INVESTIGATION', labels_expected, df_dict['INVESTIGATION'])
-
+        logger.info("Loading INVESTIGATION PUBLICATIONS section")
         df_dict['INVESTIGATION PUBLICATIONS'] = _build_section_df(_read_tab_section(
             f=fp,
             sec_key='INVESTIGATION PUBLICATIONS',
@@ -1165,7 +1182,7 @@ def load2(fp):
                            'Investigation Publication Status', 'Investigation Publication Status Term Accession Number',
                            'Investigation Publication Status Term Source REF'}
         check_labels('INVESTIGATION PUBLICATIONS', labels_expected, df_dict['INVESTIGATION PUBLICATIONS'])
-
+        logger.info("Loading INVESTIGATION CONTACTS section")
         df_dict['INVESTIGATION CONTACTS'] = _build_section_df(_read_tab_section(
             f=fp,
             sec_key='INVESTIGATION CONTACTS',
@@ -1188,6 +1205,7 @@ def load2(fp):
         df_dict['STUDY PROTOCOLS'] = list()
         df_dict['STUDY CONTACTS'] = list()
         while _peek(fp):  # Iterate through STUDY blocks until end of file
+            logger.info("Loading STUDY section")
             df_dict['STUDY'].append(_build_section_df(_read_tab_section(
                 f=fp,
                 sec_key='STUDY',
@@ -1197,7 +1215,7 @@ def load2(fp):
                                'Study Submission Date', 'Study Public Release Date',
                                'Study File Name'}
             check_labels('STUDY', labels_expected, df_dict['STUDY'][len(df_dict['STUDY']) - 1])
-
+            logger.info("Loading STUDY DESIGN DESCRIPTORS section")
             df_dict['STUDY DESIGN DESCRIPTORS'] .append(_build_section_df(_read_tab_section(
                 f=fp,
                 sec_key='STUDY DESIGN DESCRIPTORS',
@@ -1207,7 +1225,7 @@ def load2(fp):
                                'Study Design Type Term Source REF'}
             check_labels('STUDY DESIGN DESCRIPTORS', labels_expected,
                          df_dict['STUDY DESIGN DESCRIPTORS'][len(df_dict['STUDY DESIGN DESCRIPTORS']) - 1])
-
+            logger.info("Loading STUDY PUBLICATIONS section")
             df_dict['STUDY PUBLICATIONS'].append(_build_section_df(_read_tab_section(
                 f=fp,
                 sec_key='STUDY PUBLICATIONS',
@@ -1220,7 +1238,7 @@ def load2(fp):
                                'Study Publication Status Term Source REF'}
             check_labels('STUDY PUBLICATIONS', labels_expected,
                          df_dict['STUDY PUBLICATIONS'][len(df_dict['STUDY PUBLICATIONS']) - 1])
-
+            logger.info("Loading STUDY FACTORS section")
             df_dict['STUDY FACTORS'].append(_build_section_df(_read_tab_section(
                 f=fp,
                 sec_key='STUDY FACTORS',
@@ -1229,7 +1247,7 @@ def load2(fp):
             labels_expected = {'Study Factor Name', 'Study Factor Type', 'Study Factor Type Term Accession Number',
                                'Study Factor Type Term Source REF'}
             check_labels('STUDY FACTORS', labels_expected, df_dict['STUDY FACTORS'][len(df_dict['STUDY FACTORS']) - 1])
-
+            logger.info("Loading STUDY ASSAYS section")
             df_dict['STUDY ASSAYS'].append(_build_section_df(_read_tab_section(
                 f=fp,
                 sec_key='STUDY ASSAYS',
@@ -1241,7 +1259,7 @@ def load2(fp):
                                'Study Assay Technology Type Term Source REF', 'Study Assay Technology Platform',
                                'Study Assay File Name'}
             check_labels('STUDY ASSAYS', labels_expected, df_dict['STUDY ASSAYS'][len(df_dict['STUDY ASSAYS']) - 1])
-
+            logger.info("Loading STUDY PROTOCOLS section")
             df_dict['STUDY PROTOCOLS'].append(_build_section_df(_read_tab_section(
                 f=fp,
                 sec_key='STUDY PROTOCOLS',
@@ -1255,7 +1273,7 @@ def load2(fp):
                                'Study Protocol Components Type', 'Study Protocol Components Type Term Accession Number',
                                'Study Protocol Components Type Term Source REF'}
             check_labels('STUDY PROTOCOLS', labels_expected, df_dict['STUDY PROTOCOLS'][len(df_dict['STUDY PROTOCOLS']) - 1])
-
+            logger.info("Loading STUDY CONTACTS section")
             df_dict['STUDY CONTACTS'].append(_build_section_df(_read_tab_section(
                 f=fp,
                 sec_key='STUDY CONTACTS',

@@ -2,6 +2,10 @@ from isatools import isajson
 from isatools import isatab
 import os
 import shutil
+import logging
+
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def convert(json_fp, path):
@@ -19,6 +23,11 @@ def convert(json_fp, path):
         json2isatab.convert(json_file, tab_file)
 
     """
+    log_msgs = isajson.validate(json_fp)
+    if '(F)' in log_msgs.getvalue():
+        logger.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
+        return
+    json_fp.seek(0)  # reset file pointer after validation
     isa_obj = isajson.load(fp=json_fp)
     isatab.dump(isa_obj=isa_obj, output_path=path)
     #  copy data files across from source directory where JSON is located
