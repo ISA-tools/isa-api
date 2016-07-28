@@ -2,14 +2,10 @@ from unittest import TestCase
 import os
 import shutil
 from isatools.convert import json2sra
-import logging
 from lxml import etree
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
 
-
-class JsonToSraTest(TestCase):
+class TestJsonToSra(TestCase):
 
     def setUp(self):
         self._sra_data_dir = os.path.join(os.path.dirname(__file__), 'data', 'sra')

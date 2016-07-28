@@ -86,7 +86,7 @@ class TestUtils(unittest.TestCase):
         self.assertFalse(utils.assert_json_equal(self.j1, self.j3))
 
     def test_assert_xml_equal(self):
-        self.fail()
+        self.fail("Unfinished test code")
 
     def test_assert_tab_content_equal(self):
-        self.fail()
+        self.fail("Unfinished test code")

@@ -1,10 +1,10 @@
-from unittest import TestCase
+import unittest
 import os
 from isatools.validate.validate_json import validateJsonAgainstSchemas
 from jsonschema.exceptions import ValidationError
 
 
-class ValidateJsonTest(TestCase):
+class TestIsaJsonSampleData(unittest.TestCase):
 
     def setUp(self):
         self._dir = os.path.dirname(__file__)
