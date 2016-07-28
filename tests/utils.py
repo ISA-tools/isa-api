@@ -148,25 +148,25 @@ def immutablesort(json):
     return json
 
 
-def walk_sort_lists(json, newjson):
-    if isinstance(json, dict):
-        for k in json.keys():
-            walk_sort_lists(json[k], newjson)
-    elif isinstance(json, list):
-        json = sorted(json, key=lambda i: str(i.values()))
-        for j in json:
-            walk_sort_lists(j, newjson)
+def sortlists(J):
+    if isinstance(J, dict):
+        for k in J.keys():
+            sortlists(J[k])
+    elif isinstance(J, list):
+        for o in J:
+            if isinstance(o, dict) or isinstance(o, list):
+                sortlists(o)
+        if len(J) > 1:
+            J.sort(key=lambda i: str(i.values()))
 
 
 def assert_json_equal(jx, jy):
-    pass
-
-
-def assert_xml_equal(x1, x2):
-    pass
-
-def assert_json_equal(jx, jy):
-    pass
+    sortlists(jx)
+    sortlists(jy)
+    return jx == jy
+    #     return True
+    # else:
+    #     return False
 
 
 def assert_xml_equal(x1, x2):
