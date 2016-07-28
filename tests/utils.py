@@ -125,6 +125,46 @@ def assert_tab_content_equal(fp_x, fp_y):
             return False
 
 
+def immutablesort(json):
+
+    def _sortlist(L):
+        keys = list()
+        if isinstance(L[0], dict):
+            keys = L[0].keys()
+            ok = True
+            for i in L:
+                if isinstance(i, dict):
+                    if i.keys() not in keys:
+                        ok = False
+                        continue
+            if ok:  # if all keys the same, shuffle on values
+                return sorted(L, key=lambda i: i['@id'])
+            else:
+                return L
+    # sorted(L1, key=lambda i: str(i.values())) == sorted(L2, key=lambda i: str(i.values()))
+    for k, v in json.items():
+        if isinstance(v, list):
+            json[k] = _sortlist(v)
+    return json
+
+
+def walk_sort_lists(json, newjson):
+    if isinstance(json, dict):
+        for k in json.keys():
+            walk_sort_lists(json[k], newjson)
+    elif isinstance(json, list):
+        json = sorted(json, key=lambda i: str(i.values()))
+        for j in json:
+            walk_sort_lists(j, newjson)
+
+
+def assert_json_equal(jx, jy):
+    pass
+
+
+def assert_xml_equal(x1, x2):
+    pass
+
 def assert_json_equal(jx, jy):
     pass
 
