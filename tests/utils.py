@@ -163,10 +163,12 @@ def sortlists(J):
 def assert_json_equal(jx, jy):
     sortlists(jx)
     sortlists(jy)
-    return jx == jy
-    #     return True
-    # else:
-    #     return False
+    if jx == jy:
+        return True
+    else:
+        from deepdiff import DeepDiff
+        print('DeepDiff={}'.format(DeepDiff(jx, jy)))
+        return False
 
 
 def assert_xml_equal(x1, x2):
