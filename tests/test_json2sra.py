@@ -7,13 +7,14 @@ from lxml import etree
 
 class TestJsonToSra(TestCase):
 
-    def setUp(self):
-        self._sra_data_dir = os.path.join(os.path.dirname(__file__), 'data', 'sra')
-        self._sra_configs_dir = os.path.join(os.path.dirname(__file__), 'data', 'configs', 'xml', 'i'
-                                                                                                  'saconfig-default_v2015-07-02')
-        self._json_data_dir = os.path.join(os.path.dirname(__file__), 'data', 'json')
-        self._tmp_dir = os.path.join(os.path.join(os.path.dirname(__file__), './tmp/'))
+    # TODO: Need to write XML comparisons, not just count the tags
 
+    def setUp(self):
+        data_dir = os.path.join(os.path.dirname(__file__), 'data')
+        self._json_data_dir = os.path.join(data_dir, 'json')
+        self._sra_data_dir = os.path.join(data_dir, 'sra')
+        self._sra_configs_dir = os.path.join(data_dir, 'configs', 'xml', 'isaconfig-default_v2015-07-02')
+        self._tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
         if not os.path.exists(self._tmp_dir):
             os.mkdir(self._tmp_dir)
 
@@ -44,8 +45,7 @@ class TestJsonToSra(TestCase):
         }
 
     def tearDown(self):
-        shutil.rmtree(self._tmp_dir, ignore_errors=True)
-        # pass
+        shutil.rmtree(self._tmp_dir)
 
     def test_sra_dump_dir_exists(self):
         json2sra.convert(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir,

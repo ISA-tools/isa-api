@@ -4,6 +4,8 @@ from isatools.model.v1 import *
 
 class TestAbstractModelClasses(TestCase):
 
+    # TODO: Update test when model gets updated
+
     def test_object_comment(self):
         comment = Comment(
             name='',

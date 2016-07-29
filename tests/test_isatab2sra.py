@@ -9,14 +9,17 @@ from lxml import etree
 
 class TestIsaTab2Sra(unittest.TestCase):
 
+    # TODO: Need to write XML comparisons, not just count the tags
+
     def setUp(self):
-        """set up directories etc"""
-        self._tab_data_dir = os.path.join(os.path.dirname(__file__), 'data', 'tab')
-        self._sra_data_dir = os.path.join(os.path.dirname(__file__), 'data', 'sra')
-        self._sra_config_dir = os.path.join(os.path.dirname(__file__), 'data', 'configs', 'json_sra')
-        self._tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
+        data_dir = os.path.join(os.path.dirname(__file__), 'data')
+        self._tab_data_dir = os.path.join(data_dir, 'tab')
+        self._sra_data_dir = os.path.join(data_dir, 'sra')
+        self._sra_config_dir = os.path.join(data_dir, 'configs', 'xml', 'isaconfig-default_v2015-07-02')
         self._biis3_dir = os.path.join(self._tab_data_dir, 'BII-S-3')
         self._biis7_dir = os.path.join(self._tab_data_dir, 'BII-S-7')
+
+        self._tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
         if not os.path.exists(self._tmp_dir):
             os.mkdir(self._tmp_dir)
 

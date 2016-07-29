@@ -2,22 +2,32 @@ from unittest import TestCase
 from isatools import isajson, sra
 from lxml import etree
 import os
+import shutil
 
 
 class TestNewSraExport(TestCase):
 
+    # TODO: Need to write XML comparisons, not just count the tags
+
     def setUp(self):
-        self._dir = os.path.join(os.path.dirname(__file__), 'data', 'BII-S-7')
-        self._inv_obj = isajson.load(open(os.path.join(self._dir, 'BII-S-7.json')))
-        self._expected_submission_xml_obj = etree.fromstring(open(os.path.join(self._dir,
-                                                                                'sra', 'submission.xml'), 'rb').read())
-        self._expected_study_xml_obj = etree.fromstring(open(os.path.join(self._dir, 'sra', 'study.xml'),
+        data_dir = os.path.join(os.path.dirname(__file__), 'data')
+        self._json_data_dir = os.path.join(data_dir, 'json')
+        self._sra_data_dir = os.path.join(data_dir, 'sra')
+        self._sra_configs_dir = os.path.join(data_dir, 'configs', 'xml', 'isaconfig-default_v2015-07-02')
+        self._tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
+        if not os.path.exists(self._tmp_dir):
+            os.mkdir(self._tmp_dir)
+        study_id = 'BII-S-7'
+        self._inv_obj = isajson.load(open(os.path.join(self._json_data_dir, study_id, study_id + '.json')))
+        self._study_sra_data_dir = os.path.join(self._sra_data_dir, study_id)
+        self._expected_submission_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'submission.xml'), 'rb').read())
+        self._expected_study_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'study.xml'),
                                                                  'rb').read())
-        self._expected_sample_set_xml_obj = etree.fromstring(open(os.path.join(self._dir, 'sra', 'sample_set.xml'),
+        self._expected_sample_set_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'sample_set.xml'),
                                                                  'rb').read())
-        self._expected_exp_set_xml_obj = etree.fromstring(open(os.path.join(self._dir, 'sra', 'experiment_set.xml'),
+        self._expected_exp_set_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'experiment_set.xml'),
                                                                   'rb').read())
-        self._expected_run_set_xml_obj = etree.fromstring(open(os.path.join(self._dir, 'sra', 'run_set.xml'),
+        self._expected_run_set_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'run_set.xml'),
                                                                'rb').read())
 
         self._sra_default_config = {
@@ -33,6 +43,9 @@ class TestNewSraExport(TestCase):
             "inform_on_error_name:": "Philippe Rocca-Serra",
             "inform_on_error_email": "proccaserra@gmail.com"
         }
+
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
 
     def test_sra_dump_submission_xml(self):
         submission_xml = sra._write_submission_xml(self._inv_obj, self._sra_default_config)

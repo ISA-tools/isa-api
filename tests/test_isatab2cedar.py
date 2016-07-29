@@ -12,7 +12,7 @@ class TestIsaTab2Cedar(unittest.TestCase):
         self._tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
         if not os.path.exists(self._tmp_dir):
             os.mkdir(self._tmp_dir)
-        self._data_dir = os.path.join(os.path.dirname(__file__), 'data')
+        self._data_dir = os.path.join(os.path.dirname(__file__), 'data', 'tab')
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
@@ -57,7 +57,7 @@ class TestIsaTab2Cedar(unittest.TestCase):
         self.fail("Unfinished test code")
         test_case = 'MTBLS1'
         isa2cedar = ISATab2CEDAR("http://www.isa-tools.org/")
-        isa2cedar.createCEDARjson(os.path.join(self._data_dir, 'metabolights', test_case), self._tmp_dir, True)
+        isa2cedar.createCEDARjson(os.path.join(self._data_dir, test_case), self._tmp_dir, True)
         expected_json = json.load(open('path_to_reference_json'))  # TODO: Create reference output JSON
         actual_json = json.load(open(os.path.join(self._tmp_dir, test_case)))
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
@@ -66,7 +66,7 @@ class TestIsaTab2Cedar(unittest.TestCase):
         self.fail("Unfinished test code")
         test_case = 'MTBLS2'
         isa2cedar = ISATab2CEDAR("http://www.isa-tools.org/")
-        isa2cedar.createCEDARjson(os.path.join(self._data_dir, 'metabolights', test_case), self._tmp_dir, True)
+        isa2cedar.createCEDARjson(os.path.join(self._data_dir, test_case), self._tmp_dir, True)
         expected_json = json.load(open('path_to_reference_json'))  # TODO: Create reference output JSON
         actual_json = json.load(open(os.path.join(self._tmp_dir, test_case)))
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
@@ -75,7 +75,7 @@ class TestIsaTab2Cedar(unittest.TestCase):
         self.fail("Unfinished test code")
         test_case = 'MTBLS3'
         isa2cedar = ISATab2CEDAR("http://www.isa-tools.org/")
-        isa2cedar.createCEDARjson(os.path.join(self._data_dir, 'metabolights', test_case), self._tmp_dir, True)
+        isa2cedar.createCEDARjson(os.path.join(self._data_dir, test_case), self._tmp_dir, True)
         expected_json = json.load(open('path_to_reference_json'))  # TODO: Create reference output JSON
         actual_json = json.load(open(os.path.join(self._tmp_dir, test_case)))
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
