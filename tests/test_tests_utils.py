@@ -74,12 +74,45 @@ class TestUtils(unittest.TestCase):
         "k5": "v1"
     }
 
-    def test_sortlist(self):
+    x1 = """<root>
+        <e1>cdata1</e1>
+        <e2>cdata2</e2>
+        <e3>
+            <e1 id="id1">cdata1</e1>
+            <e1 id="id2">cdata2</e1>
+        </e3>
+        <e4>
+            <e1 id="id2">cdata2</e1>
+            <e1 id="id1">cdata1</e1>
+        </e4>
+    </root>"""
+
+    x2 = """<root>
+        <e3>
+            <e1 id="id1">cdata1</e1>
+            <e1 id="id2">cdata2</e1>
+        </e3>
+        <e4>
+            <e1 id="id2">cdata2</e1>
+            <e1 id="id1">cdata1</e1>
+        </e4>
+        <e2>cdata2</e2>
+        <e1>cdata1</e1>
+    </root>"""
+
+    def test_sortlistsj(self):
         j1 = self.j1
         j2 = self.j2
-        utils.sortlists(j1)
-        utils.sortlists(j2)
+        utils.sortlistsj(j1)
+        utils.sortlistsj(j2)
         self.assertEqual(j1, j2)
+
+    def test_sortlistsx(self):
+        x1 = self.x1
+        x2 = self.x2
+        utils.sortlistsx(x1)
+        utils.sortlistsx(x2)
+        self.assertEqual(x1, x2)
 
     def test_assert_json_equal(self):
         self.assertTrue(utils.assert_json_equal(self.j1, self.j2))

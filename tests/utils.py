@@ -148,21 +148,25 @@ def immutablesort(json):
     return json
 
 
-def sortlists(J):
+def sortlistsj(J):
     if isinstance(J, dict):
         for k in J.keys():
-            sortlists(J[k])
+            sortlistsj(J[k])
     elif isinstance(J, list):
         for o in J:
             if isinstance(o, dict) or isinstance(o, list):
-                sortlists(o)
+                sortlistsj(o)
         if len(J) > 1:
             J.sort(key=lambda i: str(i.values()))
 
 
+def sortlistsx(X):
+    return X
+
+
 def assert_json_equal(jx, jy):
-    sortlists(jx)
-    sortlists(jy)
+    sortlistsj(jx)
+    sortlistsj(jy)
     if jx == jy:
         return True
     else:
