@@ -7,9 +7,10 @@ class TestValidateIsaJson(unittest.TestCase):
 
     def setUp(self):
         self._dir = os.path.dirname(__file__)
-        self._data_dir = os.path.join(self._dir, 'data')
-        self._unit_json_data_dir = os.path.join(self._data_dir, 'json', 'unit')
-        self._configs_json_data_dir = os.path.join(self._data_dir, 'json', 'configs')
+        data_dir = os.path.join(self._dir, 'data')
+        self.json_data_dir = os.path.join(data_dir, 'json')
+        self._unit_json_data_dir = os.path.join(self.json_data_dir, 'unit')
+        self._configs_json_data_dir = os.path.join(data_dir, 'configs', 'json_default')
 
     def tearDown(self):
         pass
