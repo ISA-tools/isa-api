@@ -3,21 +3,16 @@ import os
 import shutil
 from isatools.convert import json2isatab
 from tests.utils import assert_tab_content_equal
-import logging
-
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.WARN)
-logger = logging.getLogger(__name__)
+from tests import utils
+import tempfile
 
 
 class TestJson2IsaTab(unittest.TestCase):
 
     def setUp(self):
-        data_dir = os.path.join(os.path.dirname(__file__), 'data')
-        self._json_data_dir = os.path.join(data_dir, 'json')
-        self._tab_data_dir = os.path.join(data_dir, 'tab')
-        self._tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
-        if not os.path.exists(self._tmp_dir):
-            os.mkdir(self._tmp_dir)
+        self._json_data_dir = utils.JSON_DATA_DIR
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)

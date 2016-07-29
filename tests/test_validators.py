@@ -1,16 +1,14 @@
 import unittest
 from isatools import isajson, isatab
 import os
+from tests import utils
 
 
 class TestValidateIsaJson(unittest.TestCase):
 
     def setUp(self):
-        self._dir = os.path.dirname(__file__)
-        data_dir = os.path.join(self._dir, 'data')
-        self.json_data_dir = os.path.join(data_dir, 'json')
-        self._unit_json_data_dir = os.path.join(self.json_data_dir, 'unit')
-        self._configs_json_data_dir = os.path.join(data_dir, 'configs', 'json_default')
+        self._unit_json_data_dir = utils.UNIT_JSON_DATA_DIR
+        self._configs_json_data_dir = utils.JSON_DEFAULT_CONFIGS_DATA_DIR
 
     def tearDown(self):
         pass

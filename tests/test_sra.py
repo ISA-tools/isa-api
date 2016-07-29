@@ -3,6 +3,8 @@ from isatools import isajson, sra
 from lxml import etree
 import os
 import shutil
+from tests import utils
+import tempfile
 
 
 class TestNewSraExport(TestCase):
@@ -10,13 +12,14 @@ class TestNewSraExport(TestCase):
     # TODO: Need to write XML comparisons, not just count the tags
 
     def setUp(self):
-        data_dir = os.path.join(os.path.dirname(__file__), 'data')
-        self._json_data_dir = os.path.join(data_dir, 'json')
-        self._sra_data_dir = os.path.join(data_dir, 'sra')
-        self._sra_configs_dir = os.path.join(data_dir, 'configs', 'xml', 'isaconfig-default_v2015-07-02')
-        self._tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
-        if not os.path.exists(self._tmp_dir):
-            os.mkdir(self._tmp_dir)
+
+        self._json_data_dir = utils.JSON_DATA_DIR
+        self._unit_json_data_dir = utils.UNIT_JSON_DATA_DIR
+        self._configs_json_data_dir = utils.JSON_DEFAULT_CONFIGS_DATA_DIR
+        self._sra_data_dir = utils.SRA_DATA_DIR
+        self._sra_configs_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
+
         study_id = 'BII-S-7'
         self._inv_obj = isajson.load(open(os.path.join(self._json_data_dir, study_id, study_id + '.json')))
         self._study_sra_data_dir = os.path.join(self._sra_data_dir, study_id)

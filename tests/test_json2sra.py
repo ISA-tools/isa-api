@@ -3,6 +3,8 @@ import os
 import shutil
 from isatools.convert import json2sra
 from lxml import etree
+from tests import utils
+import tempfile
 
 
 class TestJsonToSra(TestCase):
@@ -10,13 +12,12 @@ class TestJsonToSra(TestCase):
     # TODO: Need to write XML comparisons, not just count the tags
 
     def setUp(self):
-        data_dir = os.path.join(os.path.dirname(__file__), 'data')
-        self._json_data_dir = os.path.join(data_dir, 'json')
-        self._sra_data_dir = os.path.join(data_dir, 'sra')
-        self._sra_configs_dir = os.path.join(data_dir, 'configs', 'xml', 'isaconfig-default_v2015-07-02')
-        self._tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
-        if not os.path.exists(self._tmp_dir):
-            os.mkdir(self._tmp_dir)
+        self._json_data_dir = utils.JSON_DATA_DIR
+        self._unit_json_data_dir = utils.UNIT_JSON_DATA_DIR
+        self._configs_json_data_dir = utils.JSON_DEFAULT_CONFIGS_DATA_DIR
+        self._sra_data_dir = utils.SRA_DATA_DIR
+        self._sra_configs_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
 
         self._expected_submission_xml_biis3 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-3', 'submission.xml'), 'rb').read())
         self._expected_study_xml_biis3 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-3', 'study.xml'), 'rb').read())

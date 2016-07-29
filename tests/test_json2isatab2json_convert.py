@@ -4,16 +4,18 @@ from isatools.convert import isatab2json, json2isatab
 import shutil
 import json
 from tests import utils
+import tempfile
 
 
 class TestJsonIsaTabTwoWayConvert(unittest.TestCase):
 
     def setUp(self):
-        data_dir = os.path.join(os.path.dirname(__file__), 'data')
-        self._json_data_dir = os.path.join(data_dir, 'json')
-        self._tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
-        if not os.path.exists(self._tmp_dir):
-            os.mkdir(self._tmp_dir)
+        self._json_data_dir = utils.JSON_DATA_DIR
+        self._unit_json_data_dir = utils.UNIT_JSON_DATA_DIR
+        self._configs_json_data_dir = utils.JSON_DEFAULT_CONFIGS_DATA_DIR
+        self._sra_data_dir = utils.SRA_DATA_DIR
+        self._sra_configs_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)

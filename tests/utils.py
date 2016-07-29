@@ -1,6 +1,21 @@
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 from isatools.isatab import read_investigation_file
+import os
+
+_data_dir = os.path.join(os.path.dirname(__file__), 'data')
+
+JSON_DATA_DIR = os.path.join(_data_dir, 'json')
+UNIT_JSON_DATA_DIR = os.path.join(JSON_DATA_DIR, 'unit')
+
+SRA_DATA_DIR = os.path.join(_data_dir, 'sra')
+
+TAB_DATA_DIR = os.path.join(_data_dir, 'tab')
+
+CONFIGS_DATA_DIR = os.path.join(_data_dir, 'configs')
+XML_CONFIGS_DATA_DIR = os.path.join(CONFIGS_DATA_DIR, 'xml')
+DEFAULT2015_XML_CONFIGS_DATA_DIR = os.path.join(XML_CONFIGS_DATA_DIR, 'isaconfig-default_v2015-07-02')
+JSON_DEFAULT_CONFIGS_DATA_DIR = os.path.join(_data_dir, CONFIGS_DATA_DIR, 'json_default')
 
 
 def assert_tab_content_equal(fp_x, fp_y):

@@ -1,12 +1,12 @@
 import unittest
 import os
+from tests import utils
 
 
 class TestIsaTabConfigurator(unittest.TestCase):
 
     def setUp(self):
-        self._config_dir = os.path.join(os.path.dirname(__file__), 'data', 'configs', 'xml',
-                                        'isaconfig-default_v2015-07-02')
+        self._config_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
 
     def tearDown(self):
         pass

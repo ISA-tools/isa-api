@@ -5,6 +5,8 @@ import os
 import shutil
 from isatools.convert import isatab2sra
 from lxml import etree
+from tests import utils
+import tempfile
 
 
 class TestIsaTab2Sra(unittest.TestCase):
@@ -12,16 +14,13 @@ class TestIsaTab2Sra(unittest.TestCase):
     # TODO: Need to write XML comparisons, not just count the tags
 
     def setUp(self):
-        data_dir = os.path.join(os.path.dirname(__file__), 'data')
-        self._tab_data_dir = os.path.join(data_dir, 'tab')
-        self._sra_data_dir = os.path.join(data_dir, 'sra')
-        self._sra_config_dir = os.path.join(data_dir, 'configs', 'xml', 'isaconfig-default_v2015-07-02')
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._sra_data_dir = utils.SRA_DATA_DIR
+        self._sra_config_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
+
         self._biis3_dir = os.path.join(self._tab_data_dir, 'BII-S-3')
         self._biis7_dir = os.path.join(self._tab_data_dir, 'BII-S-7')
-
-        self._tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
-        if not os.path.exists(self._tmp_dir):
-            os.mkdir(self._tmp_dir)
 
         self._expected_submission_xml_biis3 = etree.fromstring(
             open(os.path.join(self._sra_data_dir, 'BII-S-3', 'submission.xml'), 'rb').read())

@@ -4,20 +4,17 @@ from isatools.convert import isatab2json
 import json
 import shutil
 from tests import utils
+import tempfile
 
 
 class TestIsaTab2JsonIdentifierName(unittest.TestCase):
 
     def setUp(self):
-        data_dir = os.path.join(os.path.dirname(__file__), 'data')
-        self._tab_data_dir = os.path.join(data_dir, 'tab')
-        self._json_data_dir = os.path.join(data_dir, 'json')
-        self._tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._json_data_dir = utils.JSON_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
 
         self.identifier_type = isatab2json.IdentifierType.name
-
-        if not os.path.exists(self._tmp_dir):
-            os.mkdir(self._tmp_dir)
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
@@ -89,15 +86,11 @@ class TestIsaTab2JsonIdentifierName(unittest.TestCase):
 class TestIsaTab2JsonIdentifierUuid(unittest.TestCase):
 
     def setUp(self):
-        data_dir = os.path.join(os.path.dirname(__file__), 'data')
-        self._tab_data_dir = os.path.join(data_dir, 'tab')
-        self._json_data_dir = os.path.join(data_dir, 'json')
-        self._tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._json_data_dir = utils.JSON_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
 
         self.identifier_type = isatab2json.IdentifierType.uuid
-
-        if not os.path.exists(self._tmp_dir):
-            os.mkdir(self._tmp_dir)
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
@@ -169,15 +162,11 @@ class TestIsaTab2JsonIdentifierUuid(unittest.TestCase):
 class TestIsaTab2JsonIdentifierCounter(unittest.TestCase):
 
     def setUp(self):
-        data_dir = os.path.join(os.path.dirname(__file__), 'data')
-        self._tab_data_dir = os.path.join(data_dir, 'tab')
-        self._json_data_dir = os.path.join(data_dir, 'json')
-        self._tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._json_data_dir = utils.JSON_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
 
         self.identifier_type = isatab2json.IdentifierType.counter
-
-        if not os.path.exists(self._tmp_dir):
-            os.mkdir(self._tmp_dir)
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)

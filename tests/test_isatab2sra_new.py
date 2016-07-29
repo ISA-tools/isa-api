@@ -1,20 +1,17 @@
 import unittest
-from io import BytesIO
-from zipfile import ZipFile
 import os
 import shutil
 from isatools.convert import isatab2sra
+from tests import utils
+import tempfile
 
 
 class TestIsaTab2Sra(unittest.TestCase):
 
     def setUp(self):
-        self._tab_data_dir = os.path.join(os.path.dirname(__file__), 'data', 'tab')
-        self._sra_config_dir = os.path.join(os.path.dirname(__file__), 'data', 'configs', 'xml',
-                                            'isaconfig-seq_v2016-08-30-SRA1.5-august2014mod')
-        self._tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
-        if not os.path.exists(self._tmp_dir):
-            os.mkdir(self._tmp_dir)
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._sra_config_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
