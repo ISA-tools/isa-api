@@ -1,0 +1,111 @@
+<isatab-config-file xmlns="http://www.ebi.ac.uk/bii/isatab_configuration#">
+    <isatab-configuration table-name="exome_seq" isatab-assay-type="generic_assay"
+        isatab-conversion-target="sra">
+        <measurement term-label="exome sequencing" term-accession="" source-abbreviation=""/>
+        <technology term-label="nucleotide sequencing"
+            term-accession="http://purl.obolibrary.org/obo/OBI_0000626" source-abbreviation="OBI"/>
+        <field header="Sample Name" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[sample name]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT]</generated-value-template>
+        </field>
+        <protocol-field protocol-type="nucleic acid extraction"/>
+        <field header="Extract Name" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[User-defined names for each portion of extracted material.]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <generated-value-template>[INSTITUTION].Group-[GROUP_NO].Subject-[SUBJECT_NO].[SAMPLE_EXTRACT].Extract-[EXTRACT_COUNT]</generated-value-template>
+        </field>
+        <protocol-field protocol-type="library construction"/>
+        <field header="Parameter Value[library source]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[The LIBRARY_SOURCE specifies the type of source material that is being sequenced. (SRA 1.2 documentation)]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <list-values>GENOMIC,SINGLE CELL GENOMIC,METAGENOMIC,OTHER</list-values>
+        </field>
+        <field header="Parameter Value[library strategy]" data-type="List" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Sequencing technique intended for this library (SRA 1.2 documentation)]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <list-values>WXS</list-values>
+        </field>
+        <field header="Parameter Value[library selection]" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Whether any method was used to select for or against, enrich, or screen the material being sequenced. (SRA 1.2 documentation)]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <list-values>PCR,Hybrid Selection,other,unspecified</list-values>
+        </field>
+        <field header="Parameter Value[library layout]" data-type="List" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[specifies whether to expect single, paired, or other configuration of reads.]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <list-values>SINGLE,PAIRED</list-values>
+        </field>
+        <protocol-field protocol-type="nucleic acid sequencing"/>
+        <field header="Parameter Value[sequencing instrument]" data-type="List"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[a parameter to report the sequencing instrument model and make]]></description>
+            <default-value><![CDATA[]]></default-value>
+            <list-values>454 GS,454 GS 20,454 GS FLX,454 GS FLX+,454 GS FLX Titanium,454 GS Junior,AB SOLiD System,AB SOLiD System 2.0,AB SOLiD System 3.0,AB SOLiD 3 Plus System,AB SOLiD 4 System,AB SOLiD 4hq System,AB SOLiD PI System,AB SOLiD 5500,AB SOLiD 5500xl,AB 5500 Genetic Analyzer,AB 5500xl Genetic analyzer,AB 5500xl-W Genetic Analysis System,Illumina Genome Analyzer,Illumina Genome Analyzer II,Illumina Genome Analyzer IIx,Illumina HiSeq 1000,Illumina HiSeq 1500,Illumina HiSeq 2000,Illumina HiSeq 2500,Illumina HiSeq 3000,Illumina HiSeq 4000,Illumina HiScanSQ,Illumina MiSeq,HiSeq X Five,HiSeq X Ten,NextSeq 500,NextSeq 550,Ion Torrent PGM,Ion Torrent Proton,MinION,GridION,PacBio RS,PacBio RS II,Helicos HeliScope,Complete Genomics,Sanger sequencing instrument,AB 3730xL Genetic Analyzer,AB 3730 Genetic Analyzer,AB 3500xL Genetic Analyzer,AB 3500 Genetic Analyzer,AB 3130xL Genetic Analyzer,AB 3130 Genetic Analyzer,AB 310 Genetic Analyzer,unspecified</list-values>
+        </field>
+        <field header="Parameter Value[quality scorer]" data-type="Ontology term"
+            is-file-field="false" is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[ENA term if applicable]]></description>
+            <default-value/>
+        </field>
+        <field header="Parameter Value[base caller]" data-type="Ontology term" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[ENA term if applicable]]></description>
+            <default-value/>
+        </field>
+        <field header="Assay Name" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="true" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[assayname]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Comment[Export]" data-type="List" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[Use this field to select/set which records should be exported for a submission to SRA/ENA]]></description>
+            <default-value><![CDATA[no]]></default-value>
+            <list-values>yes,no</list-values>
+        </field>
+        <field header="Raw Data File" data-type="String" is-file-field="true"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[raw data]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <protocol-field protocol-type="sequence assembly"/>
+        <field header="Normalization Name" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[User-defined name for each normalization applied]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Data Transformation Name" data-type="String" is-file-field="false"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[a data transformation]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <field header="Derived Data File" data-type="String" is-file-field="true"
+            is-multiple-value="false" is-required="false" is-hidden="false"
+            is-forced-ontology="false">
+            <description><![CDATA[derived data such as an assembly file]]></description>
+            <default-value><![CDATA[]]></default-value>
+        </field>
+        <structured-field name="factors"/>
+    </isatab-configuration>
+</isatab-config-file>
