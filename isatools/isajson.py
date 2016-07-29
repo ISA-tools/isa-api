@@ -9,17 +9,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=loggi
 logger = logging.getLogger(__name__)
 
 
-def loads(json_str):
-    isajson = json.loads(json_str)
-    loadj(isajson=isajson)
-
-
 def load(fp):
-    isajson = json.load(fp)
-    loadj(isajson=isajson)
-
-
-def loadj(isajson):
 
     def _build_assay_graph(process_sequence=list()):
         G = DiGraph()
@@ -38,6 +28,7 @@ def loadj(isajson):
                     G.add_edge(process.prev_process, process)
         return G
 
+    isajson = json.load(fp)
     investigation = Investigation(
         identifier=isajson['identifier'],
         title=isajson['title'],
