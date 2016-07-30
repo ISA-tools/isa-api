@@ -5,6 +5,8 @@ import os
 
 _data_dir = os.path.join(os.path.dirname(__file__), 'data')
 
+SAMPLE_DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'isatools', 'sampledata')
+
 JSON_DATA_DIR = os.path.join(_data_dir, 'json')
 UNIT_JSON_DATA_DIR = os.path.join(JSON_DATA_DIR, 'unit')
 
