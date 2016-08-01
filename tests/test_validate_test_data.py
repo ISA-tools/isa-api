@@ -176,3 +176,65 @@ class TestIsaTabTestData(unittest.TestCase):
                                           log_level=self._reporting_level)
         if '(E)' in log_msg_stream.getvalue():
             self.fail("Error found when validating ISA tab: {}".format(log_msg_stream.getvalue()))
+
+
+class TestIsaTabSraTestData(unittest.TestCase):
+
+    def setUp(self):
+        self._reporting_level = logging.ERROR
+
+    def test_validate_testdata_sra_chromatin_mod_seq_isatab(self):
+        test_case = 'TEST-ISA-SRA-chromatin-mod-seq'
+        log_msg_stream = isatab.validate2(fp=open(os.path.join(utils.TAB_DATA_DIR, test_case,
+                                                               'i_TEST_SRA_chromatinmod_seq.txt')),
+                                          log_level=self._reporting_level)
+        if '(E)' in log_msg_stream.getvalue():
+            self.fail("Error found when validating ISA tab: {}".format(log_msg_stream.getvalue()))
+
+    def test_validate_testdata_sra_env_gene_survey_isatab(self):
+        test_case = 'TEST-ISA-SRA-env-gene-survey-seq'
+        log_msg_stream = isatab.validate2(fp=open(os.path.join(utils.TAB_DATA_DIR, test_case,
+                                                               'i_matteo.txt')),
+                                          log_level=self._reporting_level)
+        if '(E)' in log_msg_stream.getvalue():
+            self.fail("Error found when validating ISA tab: {}".format(log_msg_stream.getvalue()))
+
+    def test_validate_testdata_sra_exome_seq_isatab(self):
+        test_case = 'TEST-ISA-SRA-exome-seq'
+        log_msg_stream = isatab.validate2(fp=open(os.path.join(utils.TAB_DATA_DIR, test_case,
+                                                               'i_TEST_SRA_exome_seq.txt')),
+                                          log_level=self._reporting_level)
+        if '(E)' in log_msg_stream.getvalue():
+            self.fail("Error found when validating ISA tab: {}".format(log_msg_stream.getvalue()))
+
+    def test_validate_testdata_sra_genome_seq_isatab(self):
+        test_case = 'TEST-ISA-SRA-genome-seq'
+        log_msg_stream = isatab.validate2(fp=open(os.path.join(utils.TAB_DATA_DIR, test_case,
+                                                               'i_TEST_SRA_wgs_seq.txt')),
+                                          log_level=self._reporting_level)
+        if '(E)' in log_msg_stream.getvalue():
+            self.fail("Error found when validating ISA tab: {}".format(log_msg_stream.getvalue()))
+
+    def test_validate_testdata_sra_protein_dna_interaction_seq_isatab(self):
+        test_case = 'TEST-ISA-SRA-protein-dna-interaction-seq'
+        log_msg_stream = isatab.validate2(fp=open(os.path.join(utils.TAB_DATA_DIR, test_case,
+                                                               'i_TEST_SRA_protein_dna_intact_seq.txt')),
+                                          log_level=self._reporting_level)
+        if '(E)' in log_msg_stream.getvalue():
+            self.fail("Error found when validating ISA tab: {}".format(log_msg_stream.getvalue()))
+
+    def test_validate_testdata_sra_protein_rna_interaction_seq_isatab(self):
+        test_case = 'TEST-ISA-SRA-protein-rna-interaction-seq'
+        log_msg_stream = isatab.validate2(fp=open(os.path.join(utils.TAB_DATA_DIR, test_case,
+                                                               'i_TEST_SRA_protein_rna_intact_seq.txt')),
+                                          log_level=self._reporting_level)
+        if '(E)' in log_msg_stream.getvalue():
+            self.fail("Error found when validating ISA tab: {}".format(log_msg_stream.getvalue()))
+
+    def test_validate_testdata_sra_transcriptome_seq_isatab(self):
+        test_case = 'TEST-ISA-SRA-transcriptome-seq'
+        log_msg_stream = isatab.validate2(fp=open(os.path.join(utils.TAB_DATA_DIR, test_case,
+                                                               'i_TEST_SRA_tx_seq.txt')),
+                                          log_level=self._reporting_level)
+        if '(E)' in log_msg_stream.getvalue():
+            self.fail("Error found when validating ISA tab: {}".format(log_msg_stream.getvalue()))
