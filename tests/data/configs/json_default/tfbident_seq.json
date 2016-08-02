@@ -1,5 +1,5 @@
 {
-  "measurementType": "metagenome sequencing",
+  "measurementType": "transcription factor binding site identification",
   "technologyType": "nucleotide sequencing",
   "protocols": [
     {
@@ -8,9 +8,12 @@
       "outputs": "#material"
     },
     {
-      "protocol": "library construction"
+      "inputs": "#material",
+      "protocol": "library construction",
+      "outputs": "#material"
     },
     {
+      "inputs": "#material",
       "protocol": "nucleic acid sequencing",
       "outputs": "#data"
     },
@@ -23,10 +26,9 @@
   "protocolSequence": [
     "nucleic acid extraction",
     "library construction",
-    "nucleic acid sequencing",
+    "sequence assembly",
     "sequence analysis data transformation"
   ],
   "description": [
-    "(Sample)->(nucleic acid extraction)->(Extract)->(library construction)->(nucleic acid sequencing)->(DataFile)->(sequence analysis data transformation)->(DataFile)"
-  ]
+    "(Sample)->(nucleic acid extraction)->(Material)->(library construction)->(Material)->(nucleic acid sequencing)->(DataFiles)->(sequence analysis data transformation)->(DataFiles)" ]
 }

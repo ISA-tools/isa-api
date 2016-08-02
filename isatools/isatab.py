@@ -1021,14 +1021,14 @@ def load2(fp):
             comment_regex = re.compile('Comment\[(.*?)\]')
             if not labels_expected.issubset(labels_found):
                 missing_labels = labels_expected - labels_found
-                logger.fatal("In {} section, expected labels {} not found in {}"
+                logger.fatal("(F) In {} section, expected labels {} not found in {}"
                              .format(section, missing_labels, labels_found))
             if len(labels_found - labels_expected) > 0:
                 # check extra labels, i.e. make sure they're all comments
                 extra_labels = labels_found - labels_expected
                 for label in extra_labels:
                     if comment_regex.match(label) is None:
-                        logger.fatal("In {} section, label {} is not allowed".format(section, label))
+                        logger.fatal("(F) In {} section, label {} is not allowed".format(section, label))
 
         # Read in investigation file into DataFrames first
         logger.info("Loading ONTOLOGY SOURCE REFERENCE section")
@@ -1723,7 +1723,7 @@ def check_measurement_technology_types(i_df, configs):
             for x, measurement_type in enumerate(measurement_types):
                 if (measurement_types[x], technology_types[x]) not in configs.keys():
                     logger.error(
-                        "(E) Could not load configuration for measurement type '{}' and technology type '{} for STUDY ASSAY.{}'".format(
+                        "(E) Could not load configuration for measurement type '{}' and technology type '{}' for STUDY ASSAY.{}'".format(
                             measurement_types[x], technology_types[x], i))
 
 
@@ -2260,13 +2260,13 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.ERROR):
                         logger.info("Finished checking study sample table against assay tables...")
                     logger.info("Finished validation...")
     except CParserError as cpe:
-        logger.fatal("There was an error when trying to parse the ISA tab")
+        logger.fatal("(F) There was an error when trying to parse the ISA tab")
         logger.fatal(cpe)
     except ValueError as ve:
-        logger.fatal("There was an error when trying to parse the ISA tab")
+        logger.fatal("(F) There was an error when trying to parse the ISA tab")
         logger.fatal(ve)
     except SystemError as se:
-        logger.fatal("Something went very very wrong! :(")
+        logger.fatal("(F) Something went very very wrong! :(")
         logger.fatal(se)
     finally:
         handler.flush()
