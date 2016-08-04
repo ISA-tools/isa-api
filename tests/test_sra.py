@@ -2,22 +2,35 @@ from unittest import TestCase
 from isatools import isajson, sra
 from lxml import etree
 import os
+import shutil
+from tests import utils
+import tempfile
 
 
-class SraExporterTests(TestCase):
+class TestNewSraExport(TestCase):
+
+    # TODO: Need to write XML comparisons, not just count the tags
 
     def setUp(self):
-        self._dir = os.path.join(os.path.dirname(__file__), 'data', 'BII-S-7')
-        self._inv_obj = isajson.load(open(os.path.join(self._dir, 'BII-S-7.json')))
-        self._expected_submission_xml_obj = etree.fromstring(open(os.path.join(self._dir,
-                                                                                'sra', 'submission.xml'), 'rb').read())
-        self._expected_study_xml_obj = etree.fromstring(open(os.path.join(self._dir, 'sra', 'study.xml'),
+
+        self._json_data_dir = utils.JSON_DATA_DIR
+        self._unit_json_data_dir = utils.UNIT_JSON_DATA_DIR
+        self._configs_json_data_dir = utils.JSON_DEFAULT_CONFIGS_DATA_DIR
+        self._sra_data_dir = utils.SRA_DATA_DIR
+        self._sra_configs_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
+
+        study_id = 'BII-S-7'
+        self._inv_obj = isajson.load(open(os.path.join(self._json_data_dir, study_id, study_id + '.json')))
+        self._study_sra_data_dir = os.path.join(self._sra_data_dir, study_id)
+        self._expected_submission_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'submission.xml'), 'rb').read())
+        self._expected_study_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'study.xml'),
                                                                  'rb').read())
-        self._expected_sample_set_xml_obj = etree.fromstring(open(os.path.join(self._dir, 'sra', 'sample_set.xml'),
+        self._expected_sample_set_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'sample_set.xml'),
                                                                  'rb').read())
-        self._expected_exp_set_xml_obj = etree.fromstring(open(os.path.join(self._dir, 'sra', 'experiment_set.xml'),
+        self._expected_exp_set_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'experiment_set.xml'),
                                                                   'rb').read())
-        self._expected_run_set_xml_obj = etree.fromstring(open(os.path.join(self._dir, 'sra', 'run_set.xml'),
+        self._expected_run_set_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'run_set.xml'),
                                                                'rb').read())
 
         self._sra_default_config = {
@@ -34,7 +47,10 @@ class SraExporterTests(TestCase):
             "inform_on_error_email": "proccaserra@gmail.com"
         }
 
-    def test_dump_submission_xml(self):
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
+
+    def test_sra_dump_submission_xml(self):
         submission_xml = sra._write_submission_xml(self._inv_obj, self._sra_default_config)
         actual_submission_xml_obj = etree.fromstring(submission_xml)
         # count tags
@@ -51,7 +67,7 @@ class SraExporterTests(TestCase):
         self.assertEqual(self._expected_submission_xml_obj.xpath('count(//ADD)'),
                          actual_submission_xml_obj.xpath('count(//ADD)'))
 
-    def test_dump_study_xml(self):
+    def test_sra_dump_study_xml(self):
         study_xml = sra._write_study_xml(self._inv_obj, self._sra_default_config)
         actual_study_xml_obj = etree.fromstring(study_xml)
         self.assertEqual(self._expected_study_xml_obj.xpath('count(//STUDY)'),
@@ -84,7 +100,7 @@ class SraExporterTests(TestCase):
         self.assertEqual(self._expected_study_xml_obj.xpath('count(//VALUE)'),
                          actual_study_xml_obj.xpath('count(//VALUE)'))
 
-    def test_dump_sample_set_xml(self):
+    def test_sra_dump_sample_set_xml(self):
         sample_set_xml = sra._write_sample_set_xml(self._inv_obj, self._sra_default_config)
         actual_sample_set_xml_obj = etree.fromstring(sample_set_xml)
         self.assertEqual(self._expected_sample_set_xml_obj.xpath('count(//SAMPLE_SET)'),
@@ -110,7 +126,7 @@ class SraExporterTests(TestCase):
         self.assertEqual(self._expected_sample_set_xml_obj.xpath('count(//UNITS)'),
                          actual_sample_set_xml_obj.xpath('count(//UNITS)'))
 
-    def test_dump_exp_set_xml(self):
+    def test_sra_dump_exp_set_xml(self):
         exp_set_xml = sra._write_experiment_set_xml(self._inv_obj, self._sra_default_config)
         actual_exp_set_xml_obj = etree.fromstring(exp_set_xml)
         self.assertEqual(self._expected_exp_set_xml_obj.xpath('count(//EXPERIMENT_SET)'),
@@ -178,7 +194,7 @@ class SraExporterTests(TestCase):
         self.assertEqual(self._expected_exp_set_xml_obj.xpath('count(//INSTRUMENT_MODEL)'),
                          actual_exp_set_xml_obj.xpath('count(//INSTRUMENT_MODEL)'))
 
-    def test_dump_run_set_xml(self):
+    def test_sra_dump_run_set_xml(self):
         run_set_xml = sra._write_run_set_xml(self._inv_obj, self._sra_default_config)
         actual_run_set_xml_obj = etree.fromstring(run_set_xml)
         self.assertEqual(self._expected_run_set_xml_obj.xpath('count(//RUN_SET)'),

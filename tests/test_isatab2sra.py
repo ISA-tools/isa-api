@@ -1,28 +1,26 @@
-from unittest import TestCase
+import unittest
 from io import BytesIO
 from zipfile import ZipFile
 import os
 import shutil
 from isatools.convert import isatab2sra
-import logging
 from lxml import etree
+from tests import utils
+import tempfile
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
 
+class TestIsaTab2Sra(unittest.TestCase):
 
-class ISATabTest(TestCase):
+    # TODO: Need to write XML comparisons, not just count the tags
 
     def setUp(self):
-        """set up directories etc"""
-        self._tab_data_dir = os.path.join(os.path.dirname(__file__), 'data', 'tab')
-        self._sra_data_dir = os.path.join(os.path.dirname(__file__), 'data', 'sra')
-        self._sra_config_dir = os.path.join(os.path.dirname(__file__), 'data', 'configs', 'json_sra')
-        self._tmp_dir = os.path.join(os.path.join(os.path.dirname(__file__), './tmp/'))
-        self._biis3_dir = os.path.join(self._tab_data_dir, "BII-S-3")
-        self._biis7_dir = os.path.join(self._tab_data_dir, "BII-S-7")
-        if not os.path.exists(self._tmp_dir):
-            os.mkdir(self._tmp_dir)
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._sra_data_dir = utils.SRA_DATA_DIR
+        self._sra_config_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
+
+        self._biis3_dir = os.path.join(self._tab_data_dir, 'BII-S-3')
+        self._biis7_dir = os.path.join(self._tab_data_dir, 'BII-S-7')
 
         self._expected_submission_xml_biis3 = etree.fromstring(
             open(os.path.join(self._sra_data_dir, 'BII-S-3', 'submission.xml'), 'rb').read())
@@ -47,21 +45,19 @@ class ISATabTest(TestCase):
             open(os.path.join(self._sra_data_dir, 'BII-S-7', 'run_set.xml'), 'rb').read())
 
     def tearDown(self):
-        shutil.rmtree(self._tmp_dir, ignore_errors=True)
-        # pass
+        shutil.rmtree(self._tmp_dir)
 
-    def test_sra_zip_return(self):
+    def test_isatab2sra_zip_return(self):
         b = isatab2sra.create_sra(self._biis3_dir, self._tmp_dir, self._sra_config_dir)
         self.assertIsInstance(b, BytesIO)
         with ZipFile(b) as zip_file:
             self.assertEquals(len(zip_file.namelist()), 5)
 
-    def test_sra_dump_dir_exists(self):
+    def test_isatab2sra_dump_dir_exists(self):
         isatab2sra.create_sra(self._biis3_dir, self._tmp_dir, self._sra_config_dir)
         self.assertTrue(os.path.exists(os.path.join(self._tmp_dir, 'sra')))
 
-    def test_sra_dump_file_set(self):
-
+    def test_isatab2sra_dump_file_set(self):
         expected_sra_path = os.path.join(self._tmp_dir, 'sra', 'BII-S-3')
         expected_file_set = {'experiment_set.xml', 'run_set.xml', 'sample_set.xml', 'study.xml', 'submission.xml'}
         if os.path.exists(expected_sra_path):
@@ -73,7 +69,7 @@ class ISATabTest(TestCase):
             if len(expected_files_missing) > 0:
                 self.fail("Unexpected file found in SRA output: " + str(expected_files_missing))
 
-    def test_sra_dump_submission_xml_biis3(self):
+    def test_isatab2sra_dump_submission_xml_biis3(self):
         isatab2sra.create_sra(self._biis3_dir, self._tmp_dir, self._sra_config_dir)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         submission_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-3', 'submission.xml'), 'rb').read()
@@ -92,7 +88,7 @@ class ISATabTest(TestCase):
         self.assertEqual(self._expected_submission_xml_biis3.xpath('count(//ADD)'),
                          actual_submission_xml_biis3.xpath('count(//ADD)'))
 
-    def test_sra_dump_study_xml_biis3(self):
+    def test_isatab2sra_dump_study_xml_biis3(self):
         isatab2sra.create_sra(self._biis3_dir, self._tmp_dir, self._sra_config_dir)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         study_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-3', 'study.xml'), 'rb').read()
@@ -127,7 +123,7 @@ class ISATabTest(TestCase):
         self.assertEqual(self._expected_study_xml_biis3.xpath('count(//VALUE)'),
                          actual_study_xml_biis3.xpath('count(//VALUE)'))
 
-    def test_sra_dump_sample_set_xml_biis3(self):
+    def test_isatab2sra_dump_sample_set_xml_biis3(self):
         isatab2sra.create_sra(self._biis3_dir, self._tmp_dir, self._sra_config_dir)
         sample_set_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-3', 'sample_set.xml'), 'rb').read()
         actual_sample_set_xml_biis3 = etree.fromstring(sample_set_xml)
@@ -154,7 +150,7 @@ class ISATabTest(TestCase):
         self.assertEqual(self._expected_sample_set_xml_biis3.xpath('count(//UNITS)'),
                          actual_sample_set_xml_biis3.xpath('count(//UNITS)'))
 
-    def test_sra_dump_experiment_set_xml_biis3(self):
+    def test_iatab2sra_dump_experiment_set_xml_biis3(self):
         isatab2sra.create_sra(self._biis3_dir, self._tmp_dir, self._sra_config_dir)
         experiment_set_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-3', 'experiment_set.xml'), 'rb').read()
         actual_experiment_set_xml_biis3 = etree.fromstring(experiment_set_xml)
@@ -223,7 +219,7 @@ class ISATabTest(TestCase):
         self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//INSTRUMENT_MODEL)'),
                          actual_experiment_set_xml_biis3.xpath('count(//INSTRUMENT_MODEL)'))
 
-    def test_sra_dump_run_set_xml_biis3(self):
+    def test_isatab2sra_dump_run_set_xml_biis3(self):
         isatab2sra.create_sra(self._biis3_dir, self._tmp_dir, self._sra_config_dir)
         run_set_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-3', 'run_set.xml'), 'rb').read()
         actual_run_set_xml_biis3 = etree.fromstring(run_set_xml)
@@ -240,7 +236,7 @@ class ISATabTest(TestCase):
         self.assertEqual(self._expected_run_set_xml_biis3.xpath('count(//FILE)'),
                          actual_run_set_xml_biis3.xpath('count(//FILE)'))
 
-    def test_sra_dump_submission_xml_biis7(self):
+    def test_isatab2sra_dump_submission_xml_biis7(self):
         isatab2sra.create_sra(self._biis7_dir, self._tmp_dir, self._sra_config_dir)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         submission_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-7', 'submission.xml'), 'rb').read()
@@ -259,7 +255,7 @@ class ISATabTest(TestCase):
         self.assertEqual(self._expected_submission_xml_biis7.xpath('count(//ADD)'),
                          actual_submission_xml_biis7.xpath('count(//ADD)'))
 
-    def test_sra_dump_study_xml_biis7(self):
+    def test_isatab2sra_dump_study_xml_biis7(self):
         isatab2sra.create_sra(self._biis7_dir, self._tmp_dir, self._sra_config_dir)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         study_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-7', 'study.xml'), 'rb').read()
@@ -297,7 +293,7 @@ class ISATabTest(TestCase):
         self.assertEqual(self._expected_study_xml_biis7.xpath('count(//VALUE)'),
                          actual_study_xml_biis7.xpath('count(//VALUE)'))
 
-    def test_sra_dump_sample_set_xml_biis7(self):
+    def test_isatab2sra_dump_sample_set_xml_biis7(self):
         isatab2sra.create_sra(self._biis7_dir, self._tmp_dir, self._sra_config_dir)
         sample_set_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-7', 'sample_set.xml'), 'rb').read()
         actual_sample_set_xml_biis7 = etree.fromstring(sample_set_xml)
@@ -324,7 +320,7 @@ class ISATabTest(TestCase):
         self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//UNITS)'),
                          actual_sample_set_xml_biis7.xpath('count(//UNITS)'))
 
-    def test_sra_dump_experiment_set_xml_biis7(self):
+    def test_isatab2sra_dump_experiment_set_xml_biis7(self):
         isatab2sra.create_sra(self._biis7_dir, self._tmp_dir, self._sra_config_dir)
         experiment_set_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-7', 'experiment_set.xml'), 'rb').read()
         actual_experiment_set_xml_biis7 = etree.fromstring(experiment_set_xml)
@@ -393,7 +389,7 @@ class ISATabTest(TestCase):
         self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//INSTRUMENT_MODEL)'),
                          actual_experiment_set_xml_biis7.xpath('count(//INSTRUMENT_MODEL)'))
 
-    def test_sra_dump_run_set_xml_biis7(self):
+    def test_isatab2sra_dump_run_set_xml_biis7(self):
         isatab2sra.create_sra(self._biis7_dir, self._tmp_dir, self._sra_config_dir)
         run_set_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-7', 'run_set.xml'), 'rb').read()
         actual_run_set_xml_biis7 = etree.fromstring(run_set_xml)

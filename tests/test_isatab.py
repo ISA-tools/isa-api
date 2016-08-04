@@ -1,11 +1,11 @@
-from unittest import TestCase
+import unittest
 from isatools.model.v1 import *
 from isatools import isatab
 
 #  Manually testing object model to write to isatab, study file-out only to check if model and writer function correctly
 
 
-class IsatabSplittingTest(TestCase):
+class TestIsaTabSplit(unittest.TestCase):
 
     def setUp(self):
         self.i = Investigation()
@@ -77,11 +77,11 @@ class IsatabSplittingTest(TestCase):
         # return s.graph
 
     def test_isatab_writer(self):
+        self.fail("Unfinished test code")
         # isatab.dump(self.i, './data/tmp/')
-        pass
 
 
-class IsatabPoolingTest(TestCase):
+class TestIsaTabPool(unittest.TestCase):
 
     def setUp(self):
         #  manually create and populate some minimal ISA objects
@@ -223,11 +223,11 @@ class IsatabPoolingTest(TestCase):
         self.i.studies.append(s)
 
     def test_isatab_writer(self):
+        self.fail("Unfinished test code")
         # isatab.dump(self.i, './data/tmp/')
-        pass
 
 
-class IsatabRepeatedMeasureTest(TestCase):
+class TestIsaTabRepeatedMeasure(unittest.TestCase):
 
     def setUp(self):
         #  manually create and populate some minimal ISA objects
@@ -375,6 +375,6 @@ class IsatabRepeatedMeasureTest(TestCase):
         # return s.graph
 
     def test_isatab_writer(self):
+        self.fail("Unfinished test code")
         # isatab.dump(self.i, './data/tmp/')
-        pass
 

@@ -2,24 +2,22 @@ from unittest import TestCase
 import os
 import shutil
 from isatools.convert import json2sra
-import logging
 from lxml import etree
+from tests import utils
+import tempfile
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
 
+class TestJsonToSra(TestCase):
 
-class JsonToSraTest(TestCase):
+    # TODO: Need to write XML comparisons, not just count the tags
 
     def setUp(self):
-        self._sra_data_dir = os.path.join(os.path.dirname(__file__), 'data', 'sra')
-        self._sra_configs_dir = os.path.join(os.path.dirname(__file__), 'data', 'configs', 'xml', 'i'
-                                                                                                  'saconfig-default_v2015-07-02')
-        self._json_data_dir = os.path.join(os.path.dirname(__file__), 'data', 'json')
-        self._tmp_dir = os.path.join(os.path.join(os.path.dirname(__file__), './tmp/'))
-
-        if not os.path.exists(self._tmp_dir):
-            os.mkdir(self._tmp_dir)
+        self._json_data_dir = utils.JSON_DATA_DIR
+        self._unit_json_data_dir = utils.UNIT_JSON_DATA_DIR
+        self._configs_json_data_dir = utils.JSON_DEFAULT_CONFIGS_DATA_DIR
+        self._sra_data_dir = utils.SRA_DATA_DIR
+        self._sra_configs_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
 
         self._expected_submission_xml_biis3 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-3', 'submission.xml'), 'rb').read())
         self._expected_study_xml_biis3 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-3', 'study.xml'), 'rb').read())
@@ -48,17 +46,16 @@ class JsonToSraTest(TestCase):
         }
 
     def tearDown(self):
-        shutil.rmtree(self._tmp_dir, ignore_errors=True)
-        # pass
+        shutil.rmtree(self._tmp_dir)
 
     def test_sra_dump_dir_exists(self):
         json2sra.convert(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir,
-                         self._sra_configs_dir)
+                         self._configs_json_data_dir)
         self.assertTrue(os.path.exists(os.path.join(self._tmp_dir, 'sra')))
 
     def test_sra_dump_file_set(self):
         json2sra.convert(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir,
-                         self._sra_configs_dir)
+                         self._configs_json_data_dir)
         # SRA should always produce experiment_set.xml, run_set.xml, sample_set.xml study.xml and submission.xml
         expected_sra_path = os.path.join(self._tmp_dir, 'sra', 'BII-S-3')
         expected_file_set = {'experiment_set.xml', 'run_set.xml', 'sample_set.xml', 'study.xml', 'submission.xml'}
@@ -72,7 +69,8 @@ class JsonToSraTest(TestCase):
                 self.fail("Unexpected file found in SRA output: " + str(expected_files_missing))
         
     def test_sra_dump_submission_xml_biis3(self):
-        json2sra.convert(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir, self._sra_configs_dir)
+        json2sra.convert(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir,
+                         self._configs_json_data_dir)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         submission_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-3', 'submission.xml'), 'rb').read()
         actual_submission_xml_biis3 = etree.fromstring(submission_xml)
@@ -86,7 +84,7 @@ class JsonToSraTest(TestCase):
         
     def test_sra_dump_study_xml_biis3(self):
         json2sra.convert(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir,
-                         self._sra_configs_dir)
+                         self._configs_json_data_dir)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         study_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-3', 'study.xml'), 'rb').read()
         actual_study_xml_biis3 = etree.fromstring(study_xml)
@@ -122,7 +120,7 @@ class JsonToSraTest(TestCase):
 
     def test_sra_dump_sample_set_xml_biis3(self):
         json2sra.convert(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir,
-                         self._sra_configs_dir)
+                         self._configs_json_data_dir)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         sample_set_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-3', 'sample_set.xml'), 'rb').read()
         actual_sample_set_xml_biis3 = etree.fromstring(sample_set_xml)
@@ -151,7 +149,7 @@ class JsonToSraTest(TestCase):
 
     def test_sra_dump_experiment_set_xml_biis3(self):
         json2sra.convert(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir,
-                         self._sra_configs_dir)
+                         self._configs_json_data_dir)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         experiment_set_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-3', 'experiment_set.xml'), 'rb').read()
         actual_experiment_set_xml_biis3 = etree.fromstring(experiment_set_xml)
@@ -222,7 +220,7 @@ class JsonToSraTest(TestCase):
 
     def test_sra_dump_run_set_xml_biis3(self):
         json2sra.convert(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir,
-                         self._sra_configs_dir)
+                         self._configs_json_data_dir)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         run_set_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-3', 'run_set.xml'), 'rb').read()
         actual_run_set_xml_biis3 = etree.fromstring(run_set_xml)
@@ -241,7 +239,7 @@ class JsonToSraTest(TestCase):
 
     def test_sra_dump_submission_xml_biis7(self):
         json2sra.convert(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir,
-                         self._sra_configs_dir)
+                         self._configs_json_data_dir)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         submission_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-7', 'submission.xml'), 'rb').read()
         actual_submission_xml_biis7 = etree.fromstring(submission_xml)
@@ -261,7 +259,7 @@ class JsonToSraTest(TestCase):
 
     def test_sra_dump_study_xml_biis7(self):
         json2sra.convert(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir,
-                         self._sra_configs_dir)
+                         self._configs_json_data_dir)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         study_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-7', 'study.xml'), 'rb').read()
         actual_study_xml_biis7 = etree.fromstring(study_xml)
@@ -300,7 +298,7 @@ class JsonToSraTest(TestCase):
 
     def test_sra_dump_sample_set_xml_biis7(self):
         json2sra.convert(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir,
-                         self._sra_configs_dir)
+                         self._configs_json_data_dir)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         sample_set_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-7', 'sample_set.xml'), 'rb').read()
         actual_sample_set_xml_biis7 = etree.fromstring(sample_set_xml)
@@ -329,7 +327,7 @@ class JsonToSraTest(TestCase):
 
     def test_sra_dump_experiment_set_xml_biis7(self):
         json2sra.convert(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir,
-                         self._sra_configs_dir)
+                         self._configs_json_data_dir)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         experiment_set_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-7', 'experiment_set.xml'), 'rb').read()
         actual_experiment_set_xml_biis7 = etree.fromstring(experiment_set_xml)
@@ -400,7 +398,7 @@ class JsonToSraTest(TestCase):
 
     def test_sra_dump_run_set_xml_biis7(self):
         json2sra.convert(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir,
-                         self._sra_configs_dir)
+                         self._configs_json_data_dir)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         run_set_xml = open(os.path.join(self._tmp_dir, 'sra', 'BII-S-7', 'run_set.xml'), 'rb').read()
         actual_run_set_xml_biis7 = etree.fromstring(run_set_xml)

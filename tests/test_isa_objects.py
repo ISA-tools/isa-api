@@ -2,7 +2,9 @@ from unittest import TestCase
 from isatools.model.v1 import *
 
 
-class ModelTests(TestCase):
+class TestAbstractModelClasses(TestCase):
+
+    # TODO: Update test when model gets updated
 
     def test_object_comment(self):
         comment = Comment(
@@ -736,6 +738,3 @@ class ModelTests(TestCase):
         s.assays.append(assay_1)
         s.build_graph()
         i.studies.append(s)
-
-        # from isatools import isatab
-        # isatab.dump(i, '/Users/dj/PycharmProjects/isa-api/tests/tmp')

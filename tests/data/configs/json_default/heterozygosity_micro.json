@@ -1,0 +1,47 @@
+{
+  "measurementType": "loss of heterozygosity profiling",
+  "technologyType": "DNA microarray",
+  "protocols": [
+    {
+      "inputs": "#sample",
+      "protocol": "DNA extraction",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "labeling",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "nucleic acid hybridization",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "data collection",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "normalization data transformation",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "data transformation",
+      "outputs": "#data"
+    }
+  ],
+  "protocolSequence": [
+    "DNA extraction",
+    "labeling",
+    "nucleic acid hybridization",
+    "data collection",
+    "normalization data transformation",
+    "data transformation"
+  ],
+  "description": [
+    "(Sample)->(DNA extraction)->(Material)->(labeling)->(Material)->(nucleic acid hybridization)->(Material)->(data collection)->(DataFiles)->(normalization data transformation)->(DerivedDataFile)->(data transformation)->(DataMatrixFile)"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "measurementType": "hematology",
+  "technologyType": "",
+  "protocols": [
+    {
+      "inputs": "#sample",
+      "protocol": "hematology",
+      "outputs": "#data"
+    }
+  ],
+  "protocolSequence": [
+    "hematology"],
+  "description": [
+    "(Sample)->(hematology)->(DataFiles)"
+  ]
+}

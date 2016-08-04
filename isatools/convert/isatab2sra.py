@@ -1,10 +1,9 @@
-import sys
 import os
-import pdb
 import subprocess
 from io import BytesIO
 from zipfile import ZipFile
-from shutil import rmtree
+import logging
+from isatools import isatab
 
 
 def zipdir(path, zip_file):
@@ -15,8 +14,11 @@ def zipdir(path, zip_file):
             zip_file.write(os.path.join(root, file),
                            arcname=os.path.join(os.path.basename(root), file))
 
+BASE_DIR = os.path.dirname(__file__)
+default_config_dir = os.path.join(BASE_DIR, '..', 'config', 'xml')
 
-def create_sra(source_path, dest_path, config_path):
+
+def create_sra(source_path, dest_path, config_path=default_config_dir):
     """ This function converts a set of ISA-Tab files into SRA XML format.
 
         The SRA conversion uses the Java compiled validator and converter, packaged
@@ -50,6 +52,14 @@ def create_sra(source_path, dest_path, config_path):
     print("Using source ISA Tab folder: " + source_path)
     print("Writing to destination SRA folder: " + dest_path)
     print("ISA configuration XML folder: " + config_path)
+    i_files = [f for f in os.listdir(source_path) if f.startswith('i_') and f.endswith('.txt')]
+    if len(i_files) != 1:
+        logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
+        return
+    log_msgs = isatab.validate2(fp=open(os.path.join(source_path, i_files[0])), log_level=logging.ERROR)
+    if '(F)' in log_msgs.getvalue():
+        logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
+        return
     convert_command = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    "isa_line_commands/bin/convert.sh -t sra " +
                                    source_path + " " +

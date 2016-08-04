@@ -1,17 +1,17 @@
-from unittest import TestCase
+import unittest
 import os
+from tests import utils
 
 
-class ISATabConfiguratorTest(TestCase):
+class TestIsaTabConfigurator(unittest.TestCase):
 
     def setUp(self):
-        self._config_dir = os.path.join(os.path.dirname(__file__), 'data', 'configs', 'xml',
-                                        'isaconfig-default_v2015-07-02')
+        self._config_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
 
     def tearDown(self):
         pass
 
-    def test_parse(self):
+    def test_parse_configuration_genome_seq_xml(self):
         from isatools.io import isatab_configurator as configurator
         config_obj = configurator.parse(os.path.join(self._config_dir, 'genome_seq.xml'), True)  # Silent output
         self.assertEqual(len(config_obj.isatab_configuration), 1)
@@ -37,7 +37,7 @@ class ISATabConfiguratorTest(TestCase):
         self.assertEqual(config_obj.isatab_configuration[0].protocol_field[0].protocol_type,
                          'nucleic acid extraction')
 
-    def test_load_configs(self):
+    def test_load_config_metagenome_seq(self):
         from isatools.io import isatab_configurator as configurator
         config_dict = configurator.load(self._config_dir)
         self.assertEqual(len(config_dict), 30)

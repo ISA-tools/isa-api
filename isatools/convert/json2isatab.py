@@ -8,10 +8,11 @@ logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=loggi
 logger = logging.getLogger(__name__)
 
 
-def convert(json_fp, path):
+def convert(json_fp, path, config_dir=isajson.default_config_dir):
     """ Converter for ISA JSON to ISA Tab. Currently only converts investigation file contents
     :param json_fp: File pointer to ISA JSON input
-    :param tab_fp: File pointer to ISA tab output
+    :param path: Directory to ISA tab output
+    :param config_dir: Directory to config directory
 
     Example usage:
         Read from a JSON and write to an investigation file, make sure to create/open relevant
@@ -23,7 +24,8 @@ def convert(json_fp, path):
         json2isatab.convert(json_file, tab_file)
 
     """
-    log_msgs = isajson.validate(json_fp)
+    logger.info("Validating input JSON before conversion")
+    log_msgs = isajson.validate(fp=json_fp, config_dir=config_dir, log_level=logging.ERROR)
     if '(F)' in log_msgs.getvalue():
         logger.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
         return
