@@ -3,37 +3,10 @@ import logging
 import pyxb
 import pyxb.binding.datatypes as xs
 import iso8601
+from isatools.model.v1 import Sample
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
-
-def build_exported_assay_sample(assay):
-    pass
-
-
-def build_exported_assay(assay, xrun_set, xexperiment_set, xsample_set):
-
-    def get_comment(assay, name):
-        hits = [c for c in assay.comment if c.name.lower() == name.lower()]
-        if len(hits) > 1:
-            raise AttributeError("Multiple comments of label '{}' found".format(name))
-        elif len(hits) < 1:
-            return None
-        else:
-            return hits[0]
-
-    assay_acc = assay.identifier
-    do_export = True
-    if get_comment(assay, 'export') is not None:
-        logger.info("HAS EXPORT COMMENT IN ASSAY");
-        export = get_comment(assay, 'export')
-        logger.info("export is " + export)
-        do_export = export.lower() != 'no'
-    else:
-        logger.info("NO EXPORT COMMENT FOUND")
-    logger.info("Perform export? " + str(do_export))
-
 
 supported_sra_assays = [
     ('genome sequencing', 'nucleotide sequencing'),
@@ -59,7 +32,7 @@ def export(investigation, export_path):
             logger.info("No SRA assay found, skipping processing")
             continue
         study_acc = istudy.identifier
-        logger.info("sra exporter, working on " + study_acc)
+        logger.debug("sra exporter, working on " + study_acc)
         # Prepare the sumbission
         xsubmission = submission.SUBMISSION()
         xsubmission.center_name = sra_center_name
@@ -71,22 +44,28 @@ def export(investigation, export_path):
         build_exported_submission_contacts(xsubmission, istudy)
         build_study_actions(xsubmission, istudy)
 
-        run_set = run.RUN_SET()
-        exp_set = experiment.EXPERIMENT_SET()
-        sample_set = sample.SAMPLE_SET()
+        xrun_set = run.RUN_SET()
+        xexp_set = experiment.EXPERIMENT_SET()
+        xsample_set = sample.SAMPLE_SET()
 
         xstudy_doc = None
         is_assay_ok = True
-        for assay in istudy.assays:
-            if (assay.measurement_type.name, assay.technology_type.name) in supported_sra_assays:
+        for iassay in istudy.assays:
+            if (iassay.measurement_type.name, iassay.technology_type.name) in supported_sra_assays:
+                assay_processes = [a for a in iassay.process_sequence if a.executes_protocol.protocol_type.name ==
+                         'nucleic acid sequencing']
                 xstudy_doc = build_exported_study(istudy)
-                logger.info("SraExporter, Working on assay " + assay.filename)
-                print(xstudy_doc.toxml())
-                # if !build_exported_assay(assay, run_set, exp_set, sample_set):
-                #     is_assay_ok = False
-                #     # Skip all the assay file if only a single assay is wrong, a partial export is too dangerous
-                #     break
+                for assay_process in assay_processes:
+                    logger.debug("SraExporter, Working on assay " + assay_process.name)
+                    if not build_exported_assay(study_acc, assay_process, xrun_set, xexp_set, xsample_set):
+                        is_assay_ok = False
+                        # Skip all the assay file if only a single assay is wrong, a partial export is too dangerous
+                        break
 
+        if is_assay_ok and xstudy_doc is not None:
+            logger.debug("SRA exporter: writing SRA XML files for study " + study_acc)
+            print(xstudy_doc.toxml())
+            print(xexp_set.toxml())
 
 
 def build_exported_submission_contacts(xsub, study):
@@ -282,3 +261,120 @@ def build_exported_publication(ipub, xattrs, xlinks, is_investigation):
         xlinks[-1].URL_LINK.URL = pyxb.BIND("http://dx.doi.org/" + doi)
 
     xattrs.append(pyxb.BIND(prefix_label + "Publication", pub_str))
+
+
+def build_exported_assay(study_acc, assay_process, xrun_set, xexperiment_set, xsample_set):
+
+    def get_comment(assay, name):
+        hits = [c for c in assay.comments if c.name.lower() == name.lower()]
+        if len(hits) > 1:
+            raise AttributeError("Multiple comments of label '{}' found".format(name))
+        elif len(hits) < 1:
+            return None
+        else:
+            return hits[0]
+
+    def get_sample(process):
+        materials = process.inputs
+        sample = None
+        for material in materials:
+            if isinstance(material, Sample):
+                sample = material
+                break
+        return sample
+
+    assay_acc = assay_process.name
+    do_export = True
+    if get_comment(assay_process, 'export') is not None:
+        logger.debug("HAS EXPORT COMMENT IN ASSAY")
+        export = get_comment(assay_process, 'export').value
+        logger.debug("export is " + export)
+        do_export = export.lower() != 'no'
+    else:
+        logger.debug("NO EXPORT COMMENT FOUND")
+    logger.debug("Perform export? " + str(do_export))
+
+    if do_export:
+        sample = None
+        curr_process = assay_process
+        while sample is None:
+            sample = get_sample(curr_process)
+            curr_process = curr_process.prev_process
+        logger.debug("FOUND SAMPLE " + sample.name)
+        xexperiment_set.EXPERIMENT.append(pyxb.BIND())
+        xexperiment_set.EXPERIMENT[-1].alias = sample.name
+        xexperiment_set.EXPERIMENT[-1].TITLE = pyxb.BIND("Sequencing library derived from sample " + sample.name)
+
+        xexperiment_set.EXPERIMENT[-1].center_name = sra_center_name
+        xexperiment_set.EXPERIMENT[-1].broker_name = sra_broker_name
+
+        xplatform = build_exported_platform(study_acc, assay_process)
+        if xplatform is None:
+            return False
+
+        xexperiment_set.EXPERIMENT[-1].PLATFORM = pyxb.BIND(xplatform)
+
+        xexperiment_set.STUDY_REF = pyxb.BIND(study_acc)
+        xrun_set.EXPERIMENT_REF = pyxb.BIND(sample.name)
+
+        xexperiment_set.DESIGN = pyxb.BIND()
+        xexperiment_set.DESIGN.DESIGN_DESCRIPTION = pyxb.BIND("See study and sample descriptions for details")
+
+
+        return True
+    else:
+        return False
+
+
+def build_exported_platform(study_acc, assay_process):
+    proto = assay_process.executes_protocol
+    sequencinginst = [pv.value for pv in assay_process.parameter_values if pv.category.parameter_name.name ==
+                      'sequencing instrument'][-1]
+
+    xplatform = pyxb.BIND()
+
+    if '454' in sequencinginst:
+        if sequencinginst in ['454 GS', '454 GS FLX', '454 GS FLX+', '454 GS 20', '454 GS FLX Titanium',
+                              '454 GS Junior']:
+            xplatform.LS454 = pyxb.BIND(sequencinginst)
+        else:
+            xplatform.LS454 = pyxb.BIND('unspecified')
+
+    elif 'illumina' in sequencinginst.lower() or 'hiseq' in sequencinginst.lower() or 'nextseq' in sequencinginst.lower():
+        if sequencinginst in ['Illumina Genome Analyzer', 'Illumina Genome Analyzer II',
+                              'Illumina Genome Analyzer IIx', 'Illumina HiScanSQ', 'Illumina HiSeq 4000',
+                              'Illumina HiSeq 3000', 'Illumina HiSeq 2500', 'Illumina HiSeq 2000',
+                              'Illumina HiSeq 1500', 'Illumina HiSeq 1000', 'Illumina HiScanSQ', 'Illumina MiSeq',
+                              'HiSeq X Five', 'HiSeq X Ten', 'NextSeq 500', 'NextSeq 550']:
+            xplatform.ILLUMINA = pyxb.BIND(sequencinginst)
+        else:
+            xplatform.ILLUMINA = pyxb.BIND('unspecified')
+
+    elif 'helicos' in sequencinginst.lower():
+        if sequencinginst in ['Helicos HeliScope']:
+            xplatform.HELICOS = pyxb.BIND(sequencinginst)
+        else:
+            xplatform.HELICOS = pyxb.BIND('unspecified')
+
+    elif 'ion torrent' in sequencinginst.lower():
+        if sequencinginst in ['Ion Torrent PGM', 'Ion Torrent Proton']:
+            xplatform.ION_TORRENT = pyxb.BIND(sequencinginst)
+        else:
+            xplatform.ION_TORRENT = pyxb.BIND('unspecified')
+
+    elif 'minion' in sequencinginst.lower() or 'gridion' in sequencinginst.lower():
+        xplatform.PLATFORM.OXFORD_NANOPORE = pyxb.BIND(sequencinginst)
+
+    elif 'ab ' in sequencinginst.lower():
+        if sequencinginst in ['AB SOLiD System', 'AB SOLiD System 2.0', 'AB SOLiD System 3.0', 'AB SOLiD 3 System Plus',
+                              'AB SOLiD 4 System', 'AB SOLiD 4hq System', 'AB SOLiD PI System', 'AB SOLiD 5500',
+                              'AB SOLiD 5500xl', 'AB 5500 Genetic Analyzer', 'AB 5500xl Genetic Analyzer',
+                              'AB 5500xl-W Genetic Analysis System']:
+            xplatform.ABI_SOLID = pyxb.BIND(sequencinginst)
+        else:
+            xplatform.ABI_SOLID = pyxb.BIND('unspecified')
+    else:
+        raise ValueError("The SRA platform ''{0}'' is invalid in the study {1}".format(sequencinginst, study_acc))
+        # raise ValueError("The SRA platform ''{0}'' for the assay ''{1}''/''{2}'' in the study ''{3}'' is invalid. Please supply the Platform information for the Assay in the Investigation file".format(sequencinginst),)
+
+    return xplatform
