@@ -1,8 +1,5 @@
+from ena.sra import submission, run, experiment, sample, study
 import logging
-from lxml import etree
-from xml.sax.saxutils import escape
-import isatools.model.v1 as model
-from ena.sra import submission, study, sample, experiment
 import pyxb
 import pyxb.binding.datatypes as xs
 import iso8601
@@ -10,398 +7,278 @@ import iso8601
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-sra_default_config = {
-    "broker_name": "ISAcreator",
-    "center_name": "OXFORD",
-    "center_project_name": "OXFORD",
-    "lab_name": "Oxford e-Research Centre",
-    "submission_action": "ADD",
-    "funding_agency": "None",
-    "grant_number": "None",
-    "inform_on_status_name": "None",
-    "inform_on_status_email": "None",
-    "inform_on_error_name:": "None",
-    "inform_on_error_email": "None"
-}
+
+def build_exported_assay_sample(assay):
+    pass
 
 
-def _get_comment(comments, name):
-    matches = [i for i in comments if i.name == name]
-    if len(matches) == 1:
-        return matches[0].value
-    else:
-        if len(matches) == 0:
+def build_exported_assay(assay, xrun_set, xexperiment_set, xsample_set):
+
+    def get_comment(assay, name):
+        hits = [c for c in assay.comment if c.name.lower() == name.lower()]
+        if len(hits) > 1:
+            raise AttributeError("Multiple comments of label '{}' found".format(name))
+        elif len(hits) < 1:
             return None
         else:
-            raise AttributeError("Could not resolve comment with name '{}'".format(name))
+            return hits[0]
 
-
-def _get_sra_contact(contacts):
-    matches = [c for c in contacts if 'SRA Inform On Status' in [r.name for r in c.roles]
-               or 'SRA Inform On Error' in [r.name for r in c.roles]]
-    if len(matches) == 1:
-        return matches[0]
+    assay_acc = assay.identifier
+    do_export = True
+    if get_comment(assay, 'export') is not None:
+        logger.info("HAS EXPORT COMMENT IN ASSAY");
+        export = get_comment(assay, 'export')
+        logger.info("export is " + export)
+        do_export = export.lower() != 'no'
     else:
-        if len(matches) == 0:
-            return None
-        else:
-            raise AttributeError("Could not resolve SRA contact")
+        logger.info("NO EXPORT COMMENT FOUND")
+    logger.info("Perform export? " + str(do_export))
 
 
-def _get_study_type(assays):
-    measurement_types = [a.measurement_type.name for a in assays]
-    logger.info(measurement_types)
-    if 'transcription profiling' in measurement_types:
-        return 'Transcriptome Analysis'
-    elif 'environmental gene survey' in measurement_types:
-        return 'Metagenomics'
-    elif 'DNA-protein binding site identification' in measurement_types \
-            or 'transcription factor binding site identification' in measurement_types:
-        return 'Gene Regulation Study'
-    elif 'DNA methylation profiling' in measurement_types:
-        return 'Epigenetics'
-    elif 'genome sequencing' in measurement_types:
-        return 'Whole Genome Sequencing'
-    elif 'chromosome rearrangement' in measurement_types:
-        return 'Population Genomics'
+supported_sra_assays = [
+    ('genome sequencing', 'nucleotide sequencing'),
+    ('environmental gene survey', 'nucleotide sequencing')
+]
+
+sra_center_name = 'OXFORD'
+sra_broker_name = 'ISAcreator'
+sra_lab_name = sra_center_name
+sra_submission_action = 'ADD'
+sra_center_prj_name = None
+
+
+def export(investigation, export_path):
+    logger.info("isatools.sra.export()")
+    for istudy in investigation.studies:
+        is_sra = False
+        for assay in istudy.assays:
+            if (assay.measurement_type.name, assay.technology_type.name) in supported_sra_assays:
+                is_sra = True
+                break
+        if not is_sra:
+            logger.info("No SRA assay found, skipping processing")
+            continue
+        study_acc = istudy.identifier
+        logger.info("sra exporter, working on " + study_acc)
+        # Prepare the sumbission
+        xsubmission = submission.SUBMISSION()
+        xsubmission.center_name = sra_center_name
+        xsubmission.accession = ''
+        xsubmission.alias = study_acc
+        xsubmission.broker_name = sra_broker_name
+        xsubmission.lab_name = sra_lab_name
+        xsubmission.submission_date = xs.date(iso8601.parse_date(istudy.submission_date, iso8601.UTC))
+        build_exported_submission_contacts(xsubmission, istudy)
+        build_study_actions(xsubmission, istudy)
+
+        run_set = run.RUN_SET()
+        exp_set = experiment.EXPERIMENT_SET()
+        sample_set = sample.SAMPLE_SET()
+
+        xstudy_doc = None
+        is_assay_ok = True
+        for assay in istudy.assays:
+            if (assay.measurement_type.name, assay.technology_type.name) in supported_sra_assays:
+                xstudy_doc = build_exported_study(istudy)
+                logger.info("SraExporter, Working on assay " + assay.filename)
+                print(xstudy_doc.toxml())
+                # if !build_exported_assay(assay, run_set, exp_set, sample_set):
+                #     is_assay_ok = False
+                #     # Skip all the assay file if only a single assay is wrong, a partial export is too dangerous
+                #     break
+
+
+
+def build_exported_submission_contacts(xsub, study):
+    xsub.CONTACTS = pyxb.BIND()
+    for contact in study.contacts:
+        full_name = "{} {}".format(contact.first_name, contact.last_name)
+        is_sra_contact = False
+        if "sra inform on status" in [r.name.lower() for r in contact.roles]:
+            inform_on_status = contact.email
+            is_sra_contact = True
+        if "sra inform on status" in [r.name.lower() for r in contact.roles]:
+            inform_on_error = contact.email
+            is_sra_contact = True
+        if is_sra_contact:
+            xsub.CONTACTS.CONTACT.append(pyxb.BIND())
+            xsub.CONTACTS.CONTACT[-1].name = full_name
+            xsub.CONTACTS.CONTACT[-1].inform_on_status = inform_on_status
+            xsub.CONTACTS.CONTACT[-1].inform_on_error = inform_on_error
+    if len(xsub.CONTACTS.CONTACT) == 0:
+        raise ValueError("The study ''{0}'' has either no SRA contact or no email specified for the contact. Please "
+                         "ensure you have one contact with a 'Role' as 'SRA Inform On Status', otherwise we cannot "
+                         "export to SRA.".format(study.identifier))
+
+
+def build_study_actions(xsub, study):
+    xsub.ACTIONS = pyxb.BIND()
+    schemas = ['study', 'sample', 'experiment', 'run']
+    sources = ['study', 'sample_set', 'experiment_set', 'run_set']
+    if 'add' == sra_submission_action.lower():
+        for i, schemas in enumerate(schemas):
+            xsub.ACTIONS.ACTION.append(pyxb.BIND())
+            xsub.ACTIONS.ACTION[i].ADD = pyxb.BIND()
+            xsub.ACTIONS.ACTION[i].ADD.schema = schemas
+            xsub.ACTIONS.ACTION[i].ADD.source = sources[i] + '.xml'
+
+    if 'modify' == sra_submission_action.lower():
+        for i, schemas in enumerate(schemas):
+            xsub.ACTIONS.ACTION.append(pyxb.BIND())
+            xsub.ACTIONS.ACTION[i].MODIFY = pyxb.BIND()
+            xsub.ACTIONS.ACTION[i].MODIFY.schema = schemas
+            xsub.ACTIONS.ACTION[i].MODIFY.source = sources[i] + '.xml'
+
+    if 'validate' == sra_submission_action.lower():
+        for i, schemas in enumerate(schemas):
+            xsub.ACTIONS.ACTION.append(pyxb.BIND())
+            xsub.ACTIONS.ACTION[i].VALIDATE = pyxb.BIND()
+            xsub.ACTIONS.ACTION[i].VALIDATE.schema = schemas
+            xsub.ACTIONS.ACTION[i].VALIDATE.source = sources[i] + '.xml'
+
+    if 'suppress' == sra_submission_action.lower():
+        xsub.ACTIONS.ACTION.append(pyxb.BIND())
+        xsub.ACTIONS.ACTION[i].SUPPRESS = pyxb.BIND()
+        xsub.ACTIONS.ACTION[i].SUPPRESS.target = study.identifier
+
+    if len(xsub.ACTIONS.ACTION) == 0:
+        raise ValueError("The study ''{0}'' has no SRA Submission Action, cannot export to SRA"
+                         .format(study.identifier))
+
+
+def build_exported_study(istudy):
+
+    study_acc = istudy.identifier
+
+    xstudy = study.STUDY_SET()
+    xstudy.STUDY.append(pyxb.BIND())
+    xstudy.STUDY[0].accession = study_acc
+    xstudy.STUDY[0].DESCRIPTOR = pyxb.BIND()
+    xstudy.STUDY[0].DESCRIPTOR.center_name = sra_center_name
+    xstudy.STUDY[0].center_name = sra_center_name
+
+    if sra_broker_name != '':
+        xstudy.STUDY[0].broker_name = sra_broker_name
+
+    if sra_center_prj_name is not None:
+        xstudy.STUDY[0].DESCRIPTOR.CENTER_PROJECT_NAME = pyxb.BIND(sra_center_prj_name)
+
+    if istudy.title is not None:
+        xstudy.STUDY[0].DESCRIPTOR.STUDY_TITLE = pyxb.BIND(istudy.title)
     else:
-        return 'Other'
+        raise ValueError("The study ''{0}'' has no 'Study Title', cannot export to SRA format"
+                         .format(istudy.identifier))
+
+    if istudy.description is not None:
+        xstudy.STUDY[0].DESCRIPTOR.STUDY_ABSTRACT = pyxb.BIND(istudy.description)
+
+    xstudy.STUDY[0].STUDY_ATTRIBUTES = pyxb.BIND()
+    xstudy.STUDY[0].STUDY_LINKS = pyxb.BIND()
+
+    sub_date = istudy.submission_date
+    if sub_date is not None:
+        xstudy.STUDY[0].STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(pyxb.BIND("Submission Date", istudy.submission_date))
+
+    rel_date = istudy.public_release_date
+    if rel_date is not None:
+        xstudy.STUDY[0].STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(pyxb.BIND("Release Date", rel_date))
+
+    if rel_date is not None:
+        xstudy.STUDY[0].STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(pyxb.BIND("Release Date", rel_date))
+
+    if istudy.identifier is not None:
+        xstudy.STUDY[0].STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(pyxb.BIND("Local Study Accession", istudy.identifier))
+
+    if istudy.description is not None:
+        xstudy.STUDY[0].DESCRIPTOR.STUDY_DESCRIPTION = pyxb.BIND(istudy.description)
+
+    # Study type should be ignored. This field is contained in the legacy ERP study. SUB#921766
+    xstudy.STUDY[0].DESCRIPTOR.STUDY_TYPE = pyxb.BIND(existing_study_type="Other")
+
+    for contact in istudy.contacts:
+        build_exported_contact(contact, xstudy.STUDY[0].STUDY_ATTRIBUTES.STUDY_ATTRIBUTE, False)
+
+    for publication in istudy.publications:
+        build_exported_publication(publication, xstudy.STUDY[0].STUDY_ATTRIBUTES.STUDY_ATTRIBUTE,
+                                   xstudy.STUDY[0].STUDY_LINKS.STUDY_LINK, False)
+
+    return xstudy
 
 
-def _write_submission_xml(i, sc):
-    if len(i.studies) > 1:
-        raise AttributeError("Detected more than one study in investigation. For an SRA submission, only one study per "
-                             "ISA submission can be handled.")
-    s = i.studies[0]
-    submission_binding = submission.SUBMISSION()
-    submission_binding.alias = s.identifier
-    submission_binding.broker_name = sc['broker_name']
-    submission_binding.center_name = sc['center_name']
-    submission_binding.submission_date = xs.date(iso8601.parse_date(s.submission_date, iso8601.UTC))
-
-    submission_binding.CONTACTS = pyxb.BIND(pyxb.BIND(name=sc['inform_on_status_name'],
-                                                      inform_on_status=sc['inform_on_status_email'],
-                                                      inform_on_error=sc['inform_on_error_email']))
-    submission_binding.ACTIONS = pyxb.BIND(pyxb.BIND(ADD=pyxb.BIND(schema='study', source='study.xml')),
-                                           pyxb.BIND(ADD=pyxb.BIND(schema='sample', source='sample.xml')),
-                                           pyxb.BIND(ADD=pyxb.BIND(schema='experiment', source='experiment_set.xml')),
-                                           pyxb.BIND(ADD=pyxb.BIND(schema='run', source='run_set.xml')))
-    submission_xml = submission_binding.toxml()
-    return submission_xml
-
-
-def _write_study_xml(i, sc):
-    if len(i.studies) > 1:
-        raise AttributeError("Detected more than one study in investigation. For an SRA submission, only one study per "
-                             "ISA submission can be handled.")
-    s = i.studies[0]
-    study_binding = study.STUDY()
-    study_binding.alias = s.identifier
-    study_binding.center_name = sc['center_name']
-    study_binding.DESCRIPTOR = pyxb.BIND()
-    study_binding.DESCRIPTOR.CENTER_NAME = sc['center_name']
-    study_binding.DESCRIPTOR.CENTER_PROJECT_NAME = sc['center_project_name']
-    study_binding.DESCRIPTOR.STUDY_TITLE = s.title
-    study_binding.DESCRIPTOR.STUDY_ABSTRACT = escape(s.description)
-    study_binding.DESCRIPTOR.STUDY_DESCRIPTION = study_binding.DESCRIPTOR.STUDY_ABSTRACT
-    study_binding.DESCRIPTOR.STUDY_TYPE = pyxb.BIND(existing_study_type=_get_study_type(s.assays))
-    study_binding.STUDY_LINKS = pyxb.BIND()
-    for publication in s.publications:
-        if publication.pubmed_id is not None and publication.pubmed_id != '':
-            study_binding.STUDY_LINKS.STUDY_LINK.append(
-                pyxb.BIND(ENTREZ_LINK=pyxb.BIND(DB='pubmed', ID=int(publication.pubmed_id))))
-        if publication.doi is not None and publication.doi != '':
-            study_binding.STUDY_LINKS.STUDY_LINK.append(
-                pyxb.BIND(URL_LINK=pyxb.BIND(LABEL='Study Publication DOI', URL=int(publication.doi))))
-        study_binding.STUDY_ATTRIBUTES = pyxb.BIND()
-        study_binding.STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(pyxb.BIND(TAG='Submission Date', VALUE=s.submission_date))
-        if s.public_release_date is not None and s.public_release_date != '':
-            study_binding.STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(
-                pyxb.BIND(TAG='Release Date', VALUE=s.public_release_date))
-        if s.identifier is not None and s.identifier != '':
-            study_binding.STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(
-                pyxb.BIND(TAG='BII Study Accession', VALUE=s.identifier))
-        if i.identifier is not None and i.identifier != '':
-            study_binding.STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(
-                pyxb.BIND(TAG='BII Investigation Accession', VALUE=i.identifier))
-        for contact in s.contacts:
-            contact_txt = """"""
-            if contact.first_name is not None and contact.first_name != '' and contact.last_name is not None \
-                    and contact.last_name != '':
-                contact_txt += "Name: {first} {last}\n".format(first=contact.first_name, last=contact.last_name)
-            if contact.email is not None and contact.email != '':
-                contact_txt += "e-mail: {email}\n".format(email=contact.email)
-            if contact.affiliation is not None and contact.affiliation != '':
-                contact_txt += "Affiliation: {affiliation}\n".format(affiliation=contact.affiliation)
-            if contact.address is not None and contact.address != '':
-                contact_txt += "Address: {address}\n".format(address=contact.address)
-            for role in contact.roles:
-                contact_txt += "Role: {role}\n".format(role=role.name)
-            study_binding.STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(
-                pyxb.BIND(TAG='Study Contact', VALUE=contact_txt[:-1]))
-        for publication in s.publications:
-            pub_txt = """"""
-            if publication.title is not None and publication.title != '':
-                pub_txt += "Title: {title}\n".format(title=publication.title.strip())
-            if publication.author_list is not None and publication.author_list != '':
-                pub_txt += "Authors: {author_list}\n".format(author_list=publication.author_list.strip())
-            if publication.status is not None and publication.status != '':
-                pub_txt += "Status: {status}\n".format(status=publication.status.name.strip())
-            if publication.pubmed_id is not None and publication.pubmed_id != '':
-                pub_txt += "PUBMED ID: {pubmed_id}\n".format(pubmed_id=publication.pubmed_id.strip())
-            if publication.doi is not None and publication.doi != '':
-                pub_txt += "DOI: {doi}\n".format(doi=publication.doi.strip())
-            study_binding.STUDY_ATTRIBUTES.STUDY_ATTRIBUTE.append(
-                pyxb.BIND(TAG='Study Publication', VALUE=pub_txt[:-1]))
-    return study_binding.toxml()
-
-
-def _get_characteristic(m, cname):
-    matches = [c for c in m.characteristics if c.category.name == cname]
-    if len(matches) == 1:
-        return matches[0]
+def build_exported_contact(icontact, xattrs, is_investigation):
+    if is_investigation:
+        prefix_label = 'Investigation '
     else:
-        raise AttributeError("Could not resolve characteristic with name '{}'".format(cname))
+        prefix_label = 'Study '
+
+    contact_value_str = ""
+
+    # get full name
+    name = icontact.first_name
+    if icontact.mid_initials is not None and icontact.mid_initials != '':
+        name += ' '
+        name += icontact.mid_initials
+    name += ' '
+    name += icontact.last_name
+    if name is not None:
+        contact_value_str += "Name: " + name + '\n'
+
+    email = icontact.email
+    if email is not None:
+        contact_value_str += "e-mail: " + email + '\n'
+
+    affiliation = icontact.affiliation
+    if affiliation is not None:
+        contact_value_str += "Affiliation: " + affiliation + '\n'
+
+    addr = icontact.address
+    if addr is not None:
+        contact_value_str += "Address: " + addr + '\n'
+
+    for role in icontact.roles:
+        contact_value_str += "Role: " + role.name + '\n'
+
+    xattrs.append(pyxb.BIND(prefix_label + "Contact", contact_value_str))
 
 
-def _write_sample_set_xml(i, sc):
-    sample_set_binding = sample.SAMPLE_SET()
-    for s in i.studies:
-        for src in s.materials['sources']:
-            characteristic_organism = _get_characteristic(src, 'organism')
-            sample_binding = sample.SAMPLE()
-            sample_binding.alias = s.identifier + ':source:' + src.name
-            sample_binding.broker_name = sc['broker_name']
-            sample_binding.center_name = sc['center_name']
-            sample_binding.TITLE = sample_binding.alias
-            sample_binding.SAMPLE_NAME = pyxb.BIND(SCIENTIFIC_NAME=characteristic_organism.value.name,
-                                                   TAXON_ID=characteristic_organism.value.term_accession[
-                                                            len("http://purl.obolibrary.org/obo/NCBITaxon_"):])
-            if len(src.characteristics) > 1:
-                sample_binding.SAMPLE_ATTRIBUTES = pyxb.BIND()
-                for characteristic in src.characteristics:
-                    if characteristic.category.name == 'organism':
-                        pass
-                    else:
-                        if isinstance(characteristic.value, model.OntologyAnnotation):
-                            if isinstance(characteristic.value.name, str):
-                                cvalue = characteristic.value.name.strip()
-                            else:
-                                cvalue = characteristic.value.name
-                        elif isinstance(characteristic.value, str):
-                            cvalue = characteristic.value.strip()
-                        else:
-                            cvalue = characteristic.value
-                        if characteristic.unit is not None:
-                            sample_binding.SAMPLE_ATTRIBUTES.SAMPLE_ATTRIBUTE.append(pyxb.BIND(
-                                TAG=characteristic.category.name,
-                                VALUE=str(cvalue),
-                                UNITS=characteristic.unit.name))
-                        else:
-                            sample_binding.SAMPLE_ATTRIBUTES.SAMPLE_ATTRIBUTE.append(pyxb.BIND(
-                                TAG=characteristic.category.name,
-                                VALUE=str(cvalue)))
-            sample_set_binding.SAMPLE.append(sample_binding)
-    return sample_set_binding.toxml()
-
-
-def _get_parameter_value(p, pvname):
-    matches = [pv for pv in p.parameter_values if pv.category.parameter_name.name == pvname]
-    if len(matches) == 1:
-        if isinstance(matches[0].value, model.OntologyAnnotation):
-            return matches[0].value.name
-        else:
-            return matches[0].value
+def build_exported_publication(ipub, xattrs, xlinks, is_investigation):
+    if is_investigation:
+        prefix_label = 'Investigation '
     else:
-        raise AttributeError("Could not resolve parameter value with name '{}'".format(pvname))
+        prefix_label = 'Study '
 
+    pub_str = ""
 
-def _write_experiment_set_xml(i, sc):
-    experiment_set_binding = experiment.EXPERIMENT_SET()
-    for s in i.studies:
-        for a in s.assays:
-            seq_processes = [p for p in a.process_sequence if p.executes_protocol.protocol_type.name == 'nucleic acid sequencing']
-            for seq_process in seq_processes:
-                assay_name = seq_process.additional_properties['Assay Name']
-                filename_no_ext = a.filename[:-4]
-                study_id = s.identifier
-                technology_platform = a.technology_platform
-                lib_construction_process = seq_process.prev_process
-                lib_strategy = _get_parameter_value(lib_construction_process, 'library strategy')
-                lib_source = _get_parameter_value(lib_construction_process, 'library source')
-                lib_selection = _get_parameter_value(lib_construction_process, 'library selection')
-                lib_layout = _get_parameter_value(lib_construction_process, 'library layout').upper()
-                target_gene = _get_parameter_value(lib_construction_process, 'target_gene')
-                protocol_description = lib_construction_process.executes_protocol.description
-                target_taxon = _get_parameter_value(lib_construction_process, 'target_taxon')
-                target_subfragment = _get_parameter_value(lib_construction_process, 'target_subfragment')
-                pcr_primers = _get_parameter_value(lib_construction_process, 'pcr_primers')
-                pcr_cond = _get_parameter_value(lib_construction_process, 'pcr_cond')
-                mid = _get_parameter_value(lib_construction_process, 'mid')
-                source_name = seq_process.prev_process.prev_process.prev_process.inputs[0].name  # assume one input sample to the process sequence
-                experiment_binding = experiment.EXPERIMENT()
-                experiment_binding.EXPERIMENT = pyxb.BIND(
-                    alias='%s:generic_assay:%s.%s'.format(s.identifier, filename_no_ext, assay_name),
-                    center_name=sc['center_name'],
-                    broker_name=sc['broker_name']
-                )
-                experiment_binding.TITLE = "Sequencing library derived from sample %s".format(assay_name)
-                experiment_binding.STUDY_REF = pyxb.BIND(refname=study_id)
-                experiment_binding.DESIGN = pyxb.BIND(
-                    DESIGN_DESCRIPTION="See study and sample descriptions for details",
-                    SAMPLE_DESCRIPTOR=pyxb.BIND(refname='%s:source:%s'.format(study_id, source_name))
-                )
-                experiment_binding.DESIGN.LIBRARY_DESCRIPTOR = pyxb.BIND(
-                        LIBRARY_NAME='%s:assay:%s.%s'.format(study_id, assay_name, target_taxon),
-                        LIBRARY_STRATEGY=lib_strategy,
-                        LIBRARY_SOURCE=lib_source,
-                        LIBRARY_SELECTION=lib_selection,
-                        LIBRARY_LAYOUT=lib_layout,
-                        TARGETED_LOCI=pyxb.BIND(LOCUS=pyxb.BIND(locus_name=target_gene),
-                        POOLING_STRATEGY=pyxb.BIND(),
-                        LIBRARY_CONSTRUCTION_PROTOCOL="""protocol_description: {protocol_description}
-target_taxon: {target_taxon}
-target_gene: {target_gene}
-target_subfragment: {target_subfragment}
-pcr_primers: {pcr_primers}
-pcr_cond: {pcr_cond}
-mid: {mid}"""
-                    )
-                )
-                experiment_binding.DESIGN.SPOT_DESCRIPTOR = pyxb.BIND(pyxb.BIND(READ_INDEX=0,
-                                                                                READ_CLASS='Technical Read',
-                                                                                READ_TYPE='Adapter',
-                                                                                BASE_COORD=1),
-                                                                      pyxb.BIND(READ_INDEX=1,
-                                                                                READ_CLASS='Application Read',
-                                                                                READ_TYPE='Forward',
-                                                                                BASE_COORD=5))
-                experiment_binding.PLATFORM = pyxb.BIND(LS454=pyxb.BIND(INSTRUMENT_MODEL='unspecified'))
-                print(experiment_binding.toxml())
-                experiment_set_binding.EXPERIMENT.append(experiment_binding)
-    return experiment_set_binding.toxml()
+    # get full name
+    title = ipub.title
+    if title is not None:
+        pub_str += "Title: " + title + '\n'
 
- #                        <LIBRARY_LAYOUT>
- #                          <{lib_layout}/>
- #                        </LIBRARY_LAYOUT>
- #                        <TARGETED_LOCI>
- #                          <LOCUS locus_name="{target_gene}"/>
- #                        </TARGETED_LOCI>
- #                        <POOLING_STRATEGY/>
- #                        <LIBRARY_CONSTRUCTION_PROTOCOL>protocol_description: {protocol_description}
- # target_taxon: {target_taxon}
- # target_gene: {target_gene}
- # target_subfragment: {target_subfragment}
- # pcr_primers: {pcr_primers}
- # pcr_cond: {pcr_cond}
- # mid: {mid}</LIBRARY_CONSTRUCTION_PROTOCOL>
- #                      </LIBRARY_DESCRIPTOR>
- #                      <SPOT_DESCRIPTOR>
- #                        <SPOT_DECODE_SPEC>
- #                          <READ_SPEC>
- #                            <READ_INDEX>0</READ_INDEX>
- #                            <READ_CLASS>Technical Read</READ_CLASS>
- #                            <READ_TYPE>Adapter</READ_TYPE>
- #                            <BASE_COORD>1</BASE_COORD>
- #                          </READ_SPEC>
- #                          <READ_SPEC>
- #                            <READ_INDEX>1</READ_INDEX>
- #                            <READ_CLASS>Technical Read</READ_CLASS>
- #                            <READ_TYPE>BarCode</READ_TYPE>
- #                            <EXPECTED_BASECALL_TABLE>
- #                              <BASECALL min_match="9" max_mismatch="0" match_edge="full" read_group_tag="{mid}">{mid}</BASECALL>
- #                            </EXPECTED_BASECALL_TABLE>
- #                          </READ_SPEC>
- #                          <READ_SPEC>
- #                            <READ_INDEX>2</READ_INDEX>
- #                            <READ_CLASS>Application Read</READ_CLASS>
- #                            <READ_TYPE>Forward</READ_TYPE>
- #                            <RELATIVE_ORDER follows_read_index="1"/>
- #                          </READ_SPEC>
- #                        </SPOT_DECODE_SPEC>
- #                      </SPOT_DESCRIPTOR>
- #                    </DESIGN>
- #                    <PLATFORM>
- #                      <LS454>
- #                        <INSTRUMENT_MODEL>{technology_platform}</INSTRUMENT_MODEL>
- #                      </LS454>
- #                    </PLATFORM>
- #                  </EXPERIMENT>
- #                """.format(assay_name=assay_name,
- #                           filename_no_ext=filename_no_ext,
- #                           study_identifier=study_id,
- #                           technology_platform=technology_platform,
- #                           lib_strategy=lib_strategy,
- #                           lib_source=lib_source,
- #                           lib_selection=lib_selection,
- #                           lib_layout=lib_layout,
- #                           target_gene=target_gene,
- #                           protocol_description=protocol_description,
- #                           target_taxon=target_taxon,
- #                           target_subfragment=target_subfragment,
- #                           pcr_primers=pcr_primers,
- #                           pcr_cond=pcr_cond,
- #                           mid=mid,
- #                           center_name=sc['center_name'],
- #                           broker_name=sc['broker_name'],
- #                           source_name=source_name
- #                           )
- #    exp_set_xml += """</EXPERIMENT_SET>"""
-    return experiment_binding.toxml()
+    authors = ipub.author_list
+    if authors is not None:
+        pub_str += "Authors: " + authors + '\n'
 
+    status = ipub.status
+    if status is not None:
+        pub_str += "Status: " + status.name + '\n'
 
-def _get_output_filename(process):
-    output_files = process.outputs
-    if len(output_files) == 1:
-        return output_files[0].filename
-    else:
-        raise AttributeError("Could not resolve output file - zero or > 1 files found")
+    pmid = ipub.pubmed_id
+    if pmid is not None:
+        pub_str += "PUBMED ID: " + pmid + '\n'
+        xlinks.append(pyxb.BIND())
+        xlinks[-1].ENTREZ_LINK = pyxb.BIND()
+        xlinks[-1].ENTREZ_LINK.DB = pyxb.BIND('pubmed')
+        try:
+            xlinks[-1].ENTREZ_LINK.ID = pyxb.BIND(int(pmid))
+        except ValueError:
+            logger.warn("The PUBMED ID '" + pmid + "' for '" + title + "' is not valid, not exporting this publication")
 
+    doi = ipub.doi
+    if doi is not None:
+        pub_str += "DOI: " + doi + '\n'
+        xlinks.append(pyxb.BIND())
+        xlinks[-1].URL_LINK = pyxb.BIND()
+        xlinks[-1].URL_LINK.LABEL = pyxb.BIND(prefix_label + "Publication DOI")
+        xlinks[-1].URL_LINK.URL = pyxb.BIND("http://dx.doi.org/" + doi)
 
-def _write_run_set_xml(i, sc):
-    run_set_xml = """
-    <RUN_SET xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.run.xsd">
-    """
-    for s in i.studies:
-        for a in s.assays:
-            seq_processes = [p for p in a.process_sequence if p.executes_protocol.protocol_type.name == 'nucleic acid sequencing']
-            for seq_process in seq_processes:
-                assay_name = seq_process.additional_properties['Assay Name']
-                filename_no_ext = a.filename[:-4]
-                study_id = s.identifier
-                output_filename = _get_output_filename(seq_process)
-                run_set_xml += """
-                <RUN alias="{study_id}:assay:{assay_name}" center_name="{center_name}" broker_name="{broker_name}">
-                    <EXPERIMENT_REF refname="{study_id}:generic_assay:{filename_no_ext}.{assay_name}"/>
-                        <DATA_BLOCK>
-                            <FILES>
-                                <FILE filetype="{output_file_ext}" filename="{output_filename}" checksum_method="MD5" checksum="0000000000000000000000000"/>
-                            </FILES>
-                        </DATA_BLOCK>
-                </RUN>
-                """.format(study_id=study_id,
-                           assay_name=assay_name,
-                           filename_no_ext=filename_no_ext,
-                           center_name=sc['center_name'],
-                           broker_name=sc['broker_name'],
-                           output_filename=output_filename,
-                           output_file_ext=output_filename[-4:]
-                           )
-    run_set_xml += """</RUN_SET>"""
-    return run_set_xml
-
-
-def dump(isa_obj, sra_config=sra_default_config, output_path=None):
-    """
-        >>> from isatools import sra_bind, isajson
-        >>> i = isajson.load(open('.../BII-S-7.json'))
-        >>> sra_bind.dump(i, None)
-    """
-    logger.info("Using config: {}".format(sra_config))
-    submission_xml = _write_submission_xml(isa_obj, sra_config)
-    logger.info(submission_xml)
-    etree.fromstring(submission_xml)
-
-    study_xml = _write_study_xml(isa_obj, sra_config)
-    logger.info(study_xml)
-    etree.fromstring(study_xml)  # checks if validates against XSD
+    xattrs.append(pyxb.BIND(prefix_label + "Publication", pub_str))
