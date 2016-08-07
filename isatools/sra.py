@@ -320,6 +320,14 @@ def build_exported_assay(study_acc, assay_process, xrun_set, xexperiment_set, xs
         xexperiment_set.DESIGN = pyxb.BIND()
         xexperiment_set.DESIGN.DESIGN_DESCRIPTION = pyxb.BIND("See study and sample descriptions for details")
 
+        xsampleref = build_exported_assay_sample(study_acc, assay_process, xsample_set)
+        if xsampleref is None:
+            return False
+        xexperiment_set.DESIGN.SAMPLE_DESCRIPTOR = pyxb.BIND(xsampleref)
+
+        xlib = build_exported_library_descriptor(assay_process)
+
+        xexperiment_set.DESIGN.LIBRARY_DESCRIPTOR = pyxb.BIND(xlib)
 
         return True
     else:
@@ -378,3 +386,76 @@ def build_exported_platform(study_acc, assay_process):
         # raise ValueError("The SRA platform ''{0}'' for the assay ''{1}''/''{2}'' in the study ''{3}'' is invalid. Please supply the Platform information for the Assay in the Investigation file".format(sequencinginst),)
 
     return xplatform
+
+
+def build_exported_assay_sample(study_acc, assay_process, xsample_set):
+
+    def get_sample(process):
+        materials = process.inputs
+        sample = None
+        for material in materials:
+            if isinstance(material, Sample):
+                sample = material
+                break
+        return sample
+
+    sample = None
+    curr_process = assay_process
+    while sample is None:
+        sample = get_sample(curr_process)
+        curr_process = curr_process.prev_process
+    xsample_descriptor = pyxb.BIND(refname=sample.name)
+
+    return xsample_descriptor
+
+
+def build_exported_library_descriptor(assay_process, measurement, technology):
+
+    def get_pv(process, name):
+        hits = [pv for pv in process.parameter_values if p.parameter_values.category.parameter_name.name.lower() == name.lower()]
+        if len(hits) > 1:
+            raise AttributeError("Multiple parameter values of category '{}' found".format(name))
+        elif len(hits) < 1:
+            return None
+        else:
+            return hits[0]
+
+    papp = [p for p in assay_process.executes_protocol if p.protocol_type.name.lower() == 'library construction']
+    if len(papp) == 0:
+        return None
+    papp = papp[-1]
+    xlib = pyxb.BIND()
+    lname = get_pv(papp, 'library name')
+    if lname is not None:
+        xlib.LIBRARY_NAME = pyxb.BIND(lname)
+    else:
+        xlib.LIBRARY_NAME = pyxb.BIND(assay_process.name)
+
+    protocol = str()
+    pdescription = papp.executes_protocol.description
+    if pdescription is not None:
+        protocol += "\n protocol_description: " + pdescription
+
+    if technology.lower() == 'nucleotide sequencing':
+        if measurement.lower() in ['genome sequencing', 'whole genome sequencing']:
+            source = get_pv(papp, 'library source')
+            strategy = get_pv(papp, 'library strategy')
+            selection = get_pv(papp, 'library selection')
+
+            if source.upper() in ['GENOMIC', 'GENOMIC SINGLE CELL', 'METAGENOMIC', 'OTHER']:
+                xlib.LIBRARY_SOURCE = pyxb.BIND(source.upper())
+            else:
+                xlib.LIBRARY_SOURCE = pyxb.BIND('OTHER')
+                logger.warn("ERROR:value supplied is not compatible with SRA1.5 schema" + source)
+
+            if strategy.upper() in ['WGS', 'OTHER']:
+                xlib.LIBRARY_STRATEGY = pyxb.BIND(strategy.upper())
+            else:
+                xlib.LIBRARY_STRATEGY = pyxb.BIND('OTHER')
+                logger.warn("ERROR:value supplied is not compatible with SRA1.5 schema" + strategy)
+
+            if selection.upper() in ['RANDOM', 'UNSPECIFIED']:
+                xlib.LIBRARY_STRATEGY = pyxb.BIND(selection.upper())
+            else:
+                xlib.LIBRARY_STRATEGY = pyxb.BIND('UNSPECIFIED')
+                logger.warn("ERROR:value supplied is not compatible with SRA1.5 schema" + selection)
