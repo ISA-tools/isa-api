@@ -1,6 +1,10 @@
 import logging
+import os
 import iso8601
 import jinja2
+import html
+from lxml import etree
+import xml.dom.minidom
 from isatools.model.v1 import Sample, OntologyAnnotation, DataFile
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
@@ -82,7 +86,8 @@ def export(investigation, export_path):
                 "export to SRA.".format(istudy.identifier))
 
         submission_date = iso8601.parse_date(istudy.submission_date, iso8601.UTC)
-        import os
+        istudy.description = html.escape(istudy.description)  # ideally make it a requirement in the model or JSON to have html escaped content
+
         env = jinja2.Environment()
         env.loader = jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'resources', 'sra_templates'))
         xsub_template = env.get_template('submission_add.xml')
@@ -246,9 +251,43 @@ def export(investigation, export_path):
                                             sra_center_name=sra_center_name, sra_broker_name=sra_broker_name)
         logger.debug("SRA exporter: writing SRA XML files for study " + study_acc)
         # TODO Check outputs against xsds
-        # TODO Write outputs to files
-        print(xsub)
-        print(xproj)
-        print(xexp_set)
-        print(xrun_set)
-        print(xsample_set)
+
+        # blitz out whitespaces with etree and format nicely with minidom
+        def prettify(xmlstr):
+            p = etree.XMLParser(remove_blank_text=True)
+            exsub = etree.XML(xmlstr, parser=p)
+            x = xml.dom.minidom.parseString(etree.tostring(exsub))
+            return x.toprettyxml()
+
+        def validate(docpath, schemaname):
+            with open(os.path.join(os.path.dirname(__file__), 'resources', 'sra_schemas', schemaname)) as xsd:
+                doc = etree.parse(xsd)
+                try:
+                    schema = etree.XMLSchema(doc)
+                    with open(docpath, 'r') as xsub_file:
+                        doc = etree.parse(xsub_file)
+                        try:
+                            schema.assertValid(doc)
+                        except etree.DocumentInvalid as e:
+                            logger.error("Schema validation failed on " + docpath + ':\n' + str(e))
+                except etree.XMLSchemaParseError as e:
+                    logger.error(e)
+
+        if os.path.exists(export_path):
+            with open(os.path.join(export_path, 'submission.xml'), 'w') as xsub_file:
+                print(prettify(xsub), file=xsub_file)
+            validate(os.path.join(export_path, 'submission.xml'), 'SRA.submission.xsd')
+            with open(os.path.join(export_path, 'project_set.xml'), 'w') as xproj_set_file:
+                print(prettify(xproj), file=xproj_set_file)
+            validate(os.path.join(export_path, 'project_set.xml'), 'ENA.project.xsd')
+            with open(os.path.join(export_path, 'experiment_set.xml'), 'w') as xexp_set_file:
+                print(prettify(xexp_set), file=xexp_set_file)
+            validate(os.path.join(export_path, 'experiment_set.xml'), 'SRA.experiment.xsd')
+            with open(os.path.join(export_path, 'run_set.xml'), 'w') as xrun_set_file:
+                print(prettify(xrun_set), file=xrun_set_file)
+            validate(os.path.join(export_path, 'run_set.xml'), 'SRA.run.xsd')
+            with open(os.path.join(export_path, 'sample_set.xml'), 'w') as xsample_set_file:
+                print(prettify(xsample_set), file=xsample_set_file)
+            validate(os.path.join(export_path, 'sample_set.xml'), 'SRA.sample.xsd')
+        else:
+            raise NotADirectoryError("export path '{}' is not a directory".format(export_path))
