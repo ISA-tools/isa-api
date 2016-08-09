@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- INSDC Sequence Read Archive resource Run (SRR/ERR/DRR) object XML specification -->
+<!-- $Id: ENA.project.xsd,v 1.1 2013/01/22 14:49:55 rasko Exp $ -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:com="SRA.common">
+    <xs:import schemaLocation="SRA.common.xsd" namespace="SRA.common"/>
+    <xs:complexType name="OrganismType">
+        <xs:all>
+            <xs:element maxOccurs="1" minOccurs="1" name="TAXON_ID" nillable="false" type="xs:int">
+                <xs:annotation>
+                    <xs:documentation/>
+                </xs:annotation>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="1" name="SCIENTIFIC_NAME" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation/>
+                </xs:annotation>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="COMMON_NAME" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation/>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="STRAIN" type="xs:string"/>
+            <xs:element minOccurs="0" name="BREED" type="xs:string"/>
+            <xs:element minOccurs="0" name="CULTIVAR" type="xs:string"/>
+            <xs:element minOccurs="0" name="ISOLATE" type="xs:string"/>
+        </xs:all>
+    </xs:complexType>
+    <xs:complexType name="PublicationType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="UNSTRUCTURED_CITATION" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation/>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="STRUCTURED_CITATION">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="TITLE" type="xs:string"> </xs:element>
+                        <xs:element name="JOURNAL" type="xs:string">
+                            <xs:annotation>
+                                <xs:documentation/>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element minOccurs="0" name="YEAR" type="xs:string"/>
+                        <xs:element minOccurs="0" name="VOLUME" type="xs:string"/>
+                        <xs:element minOccurs="0" name="ISSUE" type="xs:string"/>
+                        <xs:element minOccurs="0" name="FIRST_PAGE" type="xs:string"/>
+                        <xs:element minOccurs="0" name="LAST_PAGE" type="xs:string"/>
+                        <xs:element minOccurs="0" name="AUTHORS">
+                            <xs:complexType>
+                                <xs:sequence maxOccurs="1">
+                                    <xs:element maxOccurs="unbounded" minOccurs="0" name="AUTHOR"
+                                        type="xs:string"> </xs:element>
+                                    <xs:element maxOccurs="unbounded" minOccurs="0"
+                                        name="CONSORTIUM" type="xs:string"> </xs:element>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="PUBLICATION_LINKS">
+                <xs:annotation>
+                    <xs:documentation/>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded" minOccurs="1">
+                        <xs:element name="PUBLICATION_LINK">
+                            <xs:complexType>
+                                <xs:choice>
+                                    <xs:element name="XREF_LINK" type="com:XRefType"/>
+                                </xs:choice>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="ProjectType">
+        <xs:annotation>
+            <xs:documentation/>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="IDENTIFIERS" type="com:IdentifierType"> </xs:element>
+            <xs:element minOccurs="0" name="NAME" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation> A short name of the project. </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="1" name="TITLE" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation> A short descriptive title for the project.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="DESCRIPTION" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation> A long description of the scope of the project.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element minOccurs="0" name="PUBLICATIONS">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" name="PUBLICATION" type="PublicationType"
+                        />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element minOccurs="0" name="COLLABORATORS">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" name="COLLABORATOR" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:choice>
+                <xs:element name="SUBMISSION_PROJECT">
+                    <xs:annotation>
+                        <xs:documentation> A project for grouping submitted data together.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:choice>
+                                <xs:element name="SEQUENCING_PROJECT">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element maxOccurs="unbounded" minOccurs="0"
+                                                name="LOCUS_TAG_PREFIX" type="xs:token"/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:choice>
+                            <xs:element name="ORGANISM" minOccurs="0" type="OrganismType">
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="UMBRELLA_PROJECT">
+                    <xs:annotation>
+                        <xs:documentation> A project for grouping other projects together.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="ORGANISM" minOccurs="0" type="OrganismType">
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+            <xs:element name="RELATED_PROJECTS" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation> Other projects related to this project. </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded">
+                        <xs:element name="RELATED_PROJECT">
+                            <xs:complexType>
+                                <xs:choice>
+                                    <xs:element name="PARENT_PROJECT">
+                                        <xs:complexType>
+                                            <xs:attribute name="accession" type="xs:string"
+                                                use="required">
+                                                <xs:annotation>
+                                                  <xs:documentation> Identifies the project using
+                                                 an accession number. </xs:documentation>
+                                                </xs:annotation>
+                                            </xs:attribute>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="CHILD_PROJECT">
+                                        <xs:complexType>
+                                            <xs:attribute name="accession" type="xs:string"
+                                                use="required">
+                                                <xs:annotation>
+                                                  <xs:documentation> Identifies the project using
+                                                 an accession number. </xs:documentation>
+                                                </xs:annotation>
+                                            </xs:attribute>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="PEER_PROJECT">
+                                        <xs:complexType>
+                                            <xs:attribute name="accession" type="xs:string"
+                                                use="required">
+                                                <xs:annotation>
+                                                  <xs:documentation> Identifies the project using
+                                                 an accession number. </xs:documentation>
+                                                </xs:annotation>
+                                            </xs:attribute>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:choice>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="PROJECT_LINKS">
+                <xs:annotation>
+                    <xs:documentation/>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded" minOccurs="1">
+                        <xs:element name="PROJECT_LINK">
+                            <xs:complexType>
+                                <xs:choice>
+                                    <xs:element name="XREF_LINK" type="com:XRefType"/>
+                                    <xs:element name="URL_LINK" type="com:URLType"> </xs:element>
+                                </xs:choice>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="PROJECT_ATTRIBUTES">
+                <xs:annotation>
+                    <xs:documentation/>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded" minOccurs="1">
+                        <xs:element name="PROJECT_ATTRIBUTE" type="com:AttributeType"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attributeGroup ref="com:NameGroup"/>
+        <xs:attribute name="first_public" type="xs:date">
+            <xs:annotation>
+                <xs:documentation/>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="ProjectSetType">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="PROJECT" type="ProjectType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="PROJECT_SET" type="ProjectSetType">
+        <xs:annotation>
+            <xs:documentation/>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="PROJECT" type="ProjectType"/>
+</xs:schema>

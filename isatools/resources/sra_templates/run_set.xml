@@ -1,0 +1,12 @@
+<RUN_SET xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.run.xsd">
+  {% for assay in assays_to_export %}
+  <RUN alias="{{assay.run_alias}}" center_name="{{sra_center_name}}" broker_name="{{sra_broker_name}}">
+    <EXPERIMENT_REF refname="{{assay.exp_alias}}"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="{{assay.data_file.filetype}}" filename="{{assay.data_file.filename}}" checksum_method="{{assay.data_file.checksum_method}}" checksum="{{assay.data_file.checksum}}"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  {% endfor %}
+</RUN_SET>
