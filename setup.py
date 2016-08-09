@@ -18,7 +18,9 @@ setup(
                                'convert/resources/sra/*.xsl',
                                'config/json/*.json',
                                'config/json/schemas/*.json',
-                               'config/xml/*.xml'],
+                               'config/xml/*.xml',
+                               'resources/sra_schemas/*.xsd',
+                               'resources/sra_templates/*.xml'],
                   '': ['LICENSE.txt', 'README.md']},
     description='ISA-API',
     author='ISA Infrastructure Team',
@@ -43,7 +45,8 @@ setup(
         'lxml',
         'requests',
         'chardet',
-        'iso8601'
+        'iso8601',
+        'jinja2'
     ],
     test_suite='tests'
 )

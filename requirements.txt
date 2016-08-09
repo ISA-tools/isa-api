@@ -10,3 +10,4 @@ requests
 coveralls
 iso8601
 chardet
+jinja2
