@@ -85,7 +85,7 @@ def export(investigation, export_path):
                 "ensure you have one contact with a 'Role' as 'SRA Inform On Status', otherwise we cannot "
                 "export to SRA.".format(istudy.identifier))
 
-        submission_date = iso8601.parse_date(istudy.submission_date, iso8601.UTC)
+        submission_date = iso8601.parse_date(istudy.submission_date, iso8601.UTC).isoformat()
         istudy.description = html.escape(istudy.description)  # ideally make it a requirement in the model or JSON to have html escaped content
 
         env = jinja2.Environment()
@@ -250,7 +250,6 @@ def export(investigation, export_path):
         xsample_set = xsample_set_template.render(assays_to_export=assays_to_export, study=istudy,
                                             sra_center_name=sra_center_name, sra_broker_name=sra_broker_name)
         logger.debug("SRA exporter: writing SRA XML files for study " + study_acc)
-        # TODO Check outputs against xsds
 
         # blitz out whitespaces with etree and format nicely with minidom
         def prettify(xmlstr):
@@ -259,6 +258,7 @@ def export(investigation, export_path):
             x = xml.dom.minidom.parseString(etree.tostring(exsub))
             return x.toprettyxml()
 
+        # validate a doc against one of our SRA schemas
         def validate(docpath, schemaname):
             with open(os.path.join(os.path.dirname(__file__), 'resources', 'sra_schemas', schemaname)) as xsd:
                 doc = etree.parse(xsd)

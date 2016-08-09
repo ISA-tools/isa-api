@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <PROJECT_SET xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/ENA.project.xsd">
     <PROJECT alias="{{study.identifier}}" center_name="{{sra_center_name}}">
@@ -28,13 +27,13 @@
                     Role: {% for role in contact.roles %}{{role.name}}{% endfor %}
                 </VALUE>
             </PROJECT_ATTRIBUTE>{% endfor %}
-            {% for publication in study.publications %}<STUDY_ATTRIBUTE>
+            {% for publication in study.publications %}<PROJECT_ATTRIBUTE>
               <TAG>Study Publication</TAG>
               <VALUE>Title: {{publication.title}}
                      Authors: {{publication.author_list}}
                      Status: {{publication.status.name}}
                      PUBMED ID: {{publication.pubmed_id}}</VALUE>
-            </STUDY_ATTRIBUTE>{% endfor %}
+            </PROJECT_ATTRIBUTE>{% endfor %}
         </PROJECT_ATTRIBUTES>
     </PROJECT>
 </PROJECT_SET>
