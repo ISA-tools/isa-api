@@ -1,5 +1,4 @@
 import logging
-import pyxb.binding.datatypes as xs
 import iso8601
 import jinja2
 from isatools.model.v1 import Sample, OntologyAnnotation, DataFile
@@ -82,7 +81,7 @@ def export(investigation, export_path):
                 "ensure you have one contact with a 'Role' as 'SRA Inform On Status', otherwise we cannot "
                 "export to SRA.".format(istudy.identifier))
 
-        submission_date = xs.date(iso8601.parse_date(istudy.submission_date, iso8601.UTC))
+        submission_date = iso8601.parse_date(istudy.submission_date, iso8601.UTC)
         import os
         env = jinja2.Environment()
         env.loader = jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'resources', 'sra_templates'))
@@ -113,6 +112,9 @@ def export(investigation, export_path):
                         while sample is None:
                             sample = get_sample(curr_process)
                             curr_process = curr_process.prev_process
+                        for charac in sample.characteristics:
+                            if isinstance(charac.value, OntologyAnnotation):
+                                charac.value = charac.value.name
                         assay_to_export = \
                             {
                                 "sample": sample,
@@ -129,12 +131,14 @@ def export(investigation, export_path):
                         matching_sources = [p.inputs for p in istudy.process_sequence if sample in p.outputs]
                         if len(matching_sources[0]) == 1:
                             source = matching_sources[0][0]
-                        # TODO Fix characteristics output (normalize .value)
                         assay_to_export['source'] = {
                             "characteristics": source.characteristics,
                         }
                         organism_taxon_id = [c.value.term_accession for c in source.characteristics if c.category.name == 'organism']
-                        orgnism_name = [c.value.name for c in source.characteristics if c.category.name == 'organism']
+                        for charac in source.characteristics:
+                            if isinstance(charac.value, OntologyAnnotation):
+                                charac.value = charac.value.name
+                        orgnism_name = [c.value for c in source.characteristics if c.category.name == 'organism']
                         assay_to_export['source']['taxon_id'] = organism_taxon_id[-1][-6:]
                         assay_to_export['source']['scientific_name'] = orgnism_name[-1]
                         curr_process = assay_seq_process
