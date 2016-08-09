@@ -5,7 +5,7 @@
     <DESIGN>
         <DESIGN_DESCRIPTION>See study and sample descriptions for details</DESIGN_DESCRIPTION>
         <SAMPLE_DESCRIPTOR refname="assay.sample_alias"/>
-    {% include 'experiment_library_descriptor.xml' %}
+        {% include 'experiment_library_descriptor.xml' %}
     </DESIGN>
     <PLATFORM>
         {% if '454 GS' in assay.platform %}
