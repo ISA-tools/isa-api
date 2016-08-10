@@ -3,6 +3,7 @@ import os
 import iso8601
 import jinja2
 import html
+import datetime
 from lxml import etree
 import xml.dom.minidom
 from isatools.model.v1 import Sample, OntologyAnnotation, DataFile
@@ -12,7 +13,8 @@ logger = logging.getLogger(__name__)
 
 supported_sra_assays = [
     ('genome sequencing', 'nucleotide sequencing'),
-    ('environmental gene survey', 'nucleotide sequencing')
+    ('environmental gene survey', 'nucleotide sequencing'),
+    ('metagenome sequencing', 'nucleotide sequencing')
 ]
 
 sra_center_name = 'OXFORD'
@@ -85,7 +87,10 @@ def export(investigation, export_path):
                 "ensure you have one contact with a 'Role' as 'SRA Inform On Status', otherwise we cannot "
                 "export to SRA.".format(istudy.identifier))
 
-        submission_date = iso8601.parse_date(istudy.submission_date, iso8601.UTC).isoformat()
+        if istudy.submission_date is None or istudy.submission_date == '':
+            istudy.submission_date = iso8601.parse_date(datetime.date.today().isoformat(), iso8601.UTC).isoformat()
+        else:
+            submission_date = iso8601.parse_date(istudy.submission_date, iso8601.UTC).isoformat()
         istudy.description = html.escape(istudy.description)  # ideally make it a requirement in the model or JSON to have html escaped content
 
         env = jinja2.Environment()
@@ -117,9 +122,6 @@ def export(investigation, export_path):
                         while sample is None:
                             sample = get_sample(curr_process)
                             curr_process = curr_process.prev_process
-                        for charac in sample.characteristics:
-                            if isinstance(charac.value, OntologyAnnotation):
-                                charac.value = charac.value.name
                         assay_to_export = \
                             {
                                 "sample": sample,
@@ -128,9 +130,11 @@ def export(investigation, export_path):
                                 "exp_alias": study_acc + ':generic_assay:' + iassay.filename[:-4] + ':' + assay_seq_process.name
                             }
                         datafiles = [d for d in assay_seq_process.outputs if isinstance(d, DataFile)]
+                        # TODO Inject MD5 hash on datafiles
                         assay_to_export['data_file'] = {
                             "filename": datafiles[0].filename,
-                            "filetype": datafiles[0].filename[-3:]
+                            "filetype": datafiles[0].filename[datafiles[0].filename.index('.')+1:],
+                            "checksum": '00000000000000000'
                         }
                         source = None
                         matching_sources = [p.inputs for p in istudy.process_sequence if sample in p.outputs]
@@ -139,13 +143,9 @@ def export(investigation, export_path):
                         assay_to_export['source'] = {
                             "characteristics": source.characteristics,
                         }
-                        organism_taxon_id = [c.value.term_accession for c in source.characteristics if c.category.name == 'organism']
-                        for charac in source.characteristics:
-                            if isinstance(charac.value, OntologyAnnotation):
-                                charac.value = charac.value.name
-                        orgnism_name = [c.value for c in source.characteristics if c.category.name == 'organism']
-                        assay_to_export['source']['taxon_id'] = organism_taxon_id[-1][-6:]
-                        assay_to_export['source']['scientific_name'] = orgnism_name[-1]
+                        organism_charac = [c for c in source.characteristics if c.category.name == 'organism'][-1]
+                        assay_to_export['source']['taxon_id'] = organism_charac.value.term_accession[organism_charac.value.term_accession.index('_')+1:]
+                        assay_to_export['source']['scientific_name'] = organism_charac.value.name
                         curr_process = assay_seq_process
                         while curr_process.prev_process is not None:
                             assay_to_export[curr_process.executes_protocol.protocol_type.name] = curr_process
@@ -165,16 +165,16 @@ def export(investigation, export_path):
                                 library_source = 'OTHER'
 
                             library_strategy = get_pv(assay_to_export['library construction'],
-                                                      'library strategy').value.name
+                                                      'library strategy')
                             if library_strategy.upper() not in ['WGS', 'OTHER']:
                                 logger.warn("ERROR:value supplied is not compatible with SRA1.5 schema " + library_strategy)
                                 library_strategy = 'OTHER'
 
                             library_selection = get_pv(assay_to_export['library construction'],
-                                                       'library selection').value.name
+                                                       'library selection')
                             if library_selection not in ['RANDOM', 'UNSPECIFIED']:
                                 logger.warn("ERROR:value supplied is not compatible with SRA1.5 schema " + library_selection)
-                                library_selection = 'UNSPECIFIED'
+                                library_selection = 'unspecified'
 
                             protocol = "\n protocol_description: " \
                                        + assay_to_export['library construction'].executes_protocol.description
@@ -189,8 +189,6 @@ def export(investigation, export_path):
 
                             library_layout = get_pv(assay_to_export['library construction'], 'library layout').value
                             assay_to_export['library_layout'] = library_layout
-
-                            assays_to_export.append(assay_to_export)
                         # END genome seq library selection
                         # BEGIN environmental gene survey library selection
                         elif iassay.measurement_type.name in ['environmental gene survey']:
@@ -231,12 +229,42 @@ def export(investigation, export_path):
                             if target_gene is not None:
                                 assay_to_export['targeted_loci'] = True
                                 assay_to_export['locus_name'] = target_gene
+                        # END environmental gene survey library selection
+                        # BEGIN environmental gene survey library selection
+                        elif iassay.measurement_type.name in ['metagenome sequencing']:
+                            library_source = 'METAGENOMIC'
+                            library_strategy = get_pv(assay_to_export['library construction'],
+                                                      'library strategy')
+                            if library_strategy.upper() not in ['WGS', 'OTHER']:
+                                logger.warn(
+                                    "ERROR:value supplied is not compatible with SRA1.5 schema " + library_strategy)
+                                library_strategy = 'OTHER'
 
-                            assay_to_export['platform'] = iassay.technology_platform
+                            library_selection = get_pv(assay_to_export['library construction'],
+                                                       'library selection')
+                            if library_selection not in ['RANDOM', 'UNSPECIFIED']:
+                                logger.warn(
+                                    "ERROR:value supplied is not compatible with SRA1.5 schema " + library_selection)
+                                library_selection = 'unspecified'
 
+                            protocol = "\n protocol_description: " \
+                                       + assay_to_export['library construction'].executes_protocol.description
+                            mid_pv = get_pv(assay_to_export['library construction'], 'mid')
+                            if mid_pv is not None:
+                                protocol += "\n mid: " + mid_pv.value
+
+                            assay_to_export['library_source'] = library_source
+                            assay_to_export['library_strategy'] = library_strategy
+                            assay_to_export['library_selection'] = library_selection
+                            assay_to_export['library_construction_protocol'] = protocol
+
+                            library_layout = get_pv(assay_to_export['library construction'], 'library layout')
+                            assay_to_export['library_layout'] = library_layout
                         # END environmental gene survey library selection
                         else:
                             logger.error("ERROR:Unsupported measurement type: " + iassay.measurement_type.name)
+                        assay_to_export['platform'] = get_pv(assay_to_export['nucleic acid sequencing'],
+                                                             'sequencing instrument')
                         assays_to_export.append(assay_to_export)
 
         xexp_set_template = env.get_template('experiment_set.xml')
