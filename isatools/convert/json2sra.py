@@ -2,6 +2,7 @@ from isatools.convert import json2isatab, isatab2sra
 from isatools import isajson, sra
 from glob import glob
 import os
+import logging
 
 
 def convert(json_fp, path, config_dir=None):
@@ -22,7 +23,7 @@ def convert2(json_fp, path, config_dir=None):
     :param path: Directory for output to be written
     :param config_dir: path to JSON configuration
     """
-    log_msg_stream = isajson.validate(fp=json_fp, config_dir=config_dir)
+    log_msg_stream = isajson.validate(fp=json_fp, config_dir=config_dir, log_level=logging.WARNING)
     if '(E)' not in log_msg_stream.getvalue():
         i = isajson.load(fp=json_fp)
         sra.export(i, path)
