@@ -8,13 +8,13 @@
         {% for characteristic in assay.source.characteristics %}
         <SAMPLE_ATTRIBUTE>
             <TAG>{{characteristic.category.name}}</TAG>
-            <VALUE>{{characteristic.value}}</VALUE>
+            <VALUE>{{characteristic.value.name}}</VALUE>
         </SAMPLE_ATTRIBUTE>
         {% endfor %}
         {% for characteristic in assay.sample.characteristics %}
         <SAMPLE_ATTRIBUTE>
             <TAG>{{characteristic.category.name}}</TAG>
-            <VALUE>{{characteristic.value}}</VALUE>
+            <VALUE>{{characteristic.value.name}}</VALUE>
         </SAMPLE_ATTRIBUTE>
         {% endfor %}
     </SAMPLE_ATTRIBUTES>
