@@ -562,7 +562,7 @@ def load(fp):
                     process.outputs.append(output)
                 for parameter_value_json in assay_process_json['parameterValues']:
                     if parameter_value_json['category']['@id'] == '#parameter/Array_Design_REF':  # Special case
-                        process.name = parameter_value_json['value']
+                        process.array_design_ref = parameter_value_json['value']
                     elif isinstance(parameter_value_json['value'], int) or \
                             isinstance(parameter_value_json['value'], float):
                         parameter_value = ParameterValue(

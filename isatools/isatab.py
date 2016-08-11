@@ -606,9 +606,22 @@ def write_assay_table_files(inv_obj, output_dir):
                             else:
                                 cols.append('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']',)
                                 col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = 'Parameter Value[' + pv.category.parameter_name.name + ']'
+                        # TODO Check how model objects are used, do all additional_prop now go into .name?
                         for prop in reversed(sorted(node.additional_properties.keys())):
                             cols.append('protocol[' + str(protrefcount) + ']_prop[' + prop + ']')
                             col_map['protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = prop
+                        if node.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
+                            cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']')
+                            col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']'] = 'Assay Name'
+                        elif node.executes_protocol.protocol_type.name == 'nucleic acid hybridization':
+                            cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Hybridization Assay Name' + ']')
+                            col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Hybridization Assay Name' + ']'] = 'Hybridization Assay Name'
+                            cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Array Design REF' + ']')
+                            col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Array Design REF' + ']'] = 'Array Design REF'
+                        elif node.executes_protocol.protocol_type.name == 'data collection':
+                            cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']')
+                            col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']'] = 'Scan Name'
+
                         for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                             cols.append('data[' + output.label + ']')
                             col_map['data[' + output.label + ']'] = output.label
@@ -674,9 +687,21 @@ def write_assay_table_files(inv_obj, output_dir):
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termaccession'] = pv.value.term_accession
                                 else:
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
+                            # TODO Check how model objects are used, do all additional_prop now go into .name?
                             for prop in reversed(sorted(node.additional_properties.keys())):
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = node.additional_properties[prop]
                                 compound_key += str(protrefcount) + '/' + prop + '/' + node.additional_properties[prop]
+                            if node.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
+                                df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']'] = node.name
+                                compound_key += str(protrefcount) + '/' + 'Assay Name' + '/' + node.name
+                            elif node.executes_protocol.protocol_type.name == 'nucleic acid hybridization':
+                                df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Hybridization Assay Name' + ']'] = node.name
+                                compound_key += str(protrefcount) + '/' + 'Hybridization Assay Name' + '/' + node.name
+                                df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Array Design REF' + ']'] = node.array_design_ref
+                                compound_key += str(protrefcount) + '/' + 'Array Design REF' + '/' + node.array_design_ref
+                            elif node.executes_protocol.protocol_type.name == 'data collection':
+                                df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']'] = node.name
+                                compound_key += str(protrefcount) + '/' + 'Scan Name' + '/' + node.name
                             for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                                 df.loc[i, 'data[' + output.label + ']'] = output.filename
                                 for comment in output.comments:
@@ -719,6 +744,8 @@ def write_assay_table_files(inv_obj, output_dir):
                     cols[i] = col_map[col]
                     if col_map[col] == 'Characteristics[Material Type]':
                         cols[i] = 'Material Type'
+                    if col_map[col] == 'Parameter Value[Array Design REF]':
+                        cols[i] = 'Array Design REF'
                     if data_regex.match(col) is not None:
                         if data_regex.findall(col)[0] == 'Raw Data File':
                             if assay_obj.technology_type.name == 'DNA microarray':
