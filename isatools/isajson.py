@@ -511,15 +511,15 @@ def load(fp):
                     pass
                 # additional properties, currently hard-coded special cases
                 if process.executes_protocol.protocol_type.name == 'data collection' and assay.technology_type.name == 'DNA microarray':
-                    process.additional_properties['Scan Name'] = assay_process_json['name']
+                    process.name = assay_process_json['name']
                 elif process.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
-                    process.additional_properties['Assay Name'] = assay_process_json['name']
+                    process.name = assay_process_json['name']
                 elif process.executes_protocol.protocol_type.name == 'nucleic acid hybridization':
-                    process.additional_properties['Hybridization Assay Name'] = assay_process_json['name']
+                    process.name = assay_process_json['name']
                 elif process.executes_protocol.protocol_type.name == 'data transformation':
-                    process.additional_properties['Data Transformation Name'] = assay_process_json['name']
+                    process.name = assay_process_json['name']
                 elif process.executes_protocol.protocol_type.name == 'data normalization':
-                    process.additional_properties['Normalization Name'] = assay_process_json['name']
+                    process.name = assay_process_json['name']
                 for input_json in assay_process_json['inputs']:
                     input_ = None
                     try:
@@ -562,7 +562,7 @@ def load(fp):
                     process.outputs.append(output)
                 for parameter_value_json in assay_process_json['parameterValues']:
                     if parameter_value_json['category']['@id'] == '#parameter/Array_Design_REF':  # Special case
-                        process.additional_properties['Array Design REF'] = parameter_value_json['value']
+                        process.name = parameter_value_json['value']
                     elif isinstance(parameter_value_json['value'], int) or \
                             isinstance(parameter_value_json['value'], float):
                         parameter_value = ParameterValue(
@@ -1192,6 +1192,8 @@ default_config_dir = os.path.join(BASE_DIR, 'config', 'json', 'default')
 
 
 def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
+    if config_dir is None:
+        config_dir = default_config_dir
     logger.setLevel(log_level)
     logger.info("ISA JSON Validator from ISA tools API v0.2")
     from io import StringIO

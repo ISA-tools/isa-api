@@ -1,0 +1,9 @@
+<RUN alias="{{assay.run_alias}}" center_name="{{sra_center_name}}" broker_name="{{sra_broker_name}}">
+    <EXPERIMENT_REF refname="{{assay.exp_alias}}"/>
+    <DATA_BLOCK>
+        <FILES>
+            <FILE filetype="{{assay.data_file.filetype}}" filename="{{assay.data_file.filename}}"
+                  checksum_method="MD5" checksum="{{assay.data_file.checksum}}"/>
+        </FILES>
+    </DATA_BLOCK>
+</RUN>
