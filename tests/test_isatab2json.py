@@ -83,6 +83,13 @@ class TestIsaTab2JsonIdentifierName(unittest.TestCase):
         actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
+"""
+
+    The below tests are commented out as IdentifierType using uuid or counter is not stable.
+    The issues with these modes are mainly to do with the typing information being embedded into
+    the identifiers when using IdentifierType.name that cannot be picked up in other ID modes.
+    Another issue will be on how to test effectively on uuid and counter IdentifierTypes as these
+    may not provide canonical output.
 
 class TestIsaTab2JsonIdentifierUuid(unittest.TestCase):
 
@@ -234,4 +241,4 @@ class TestIsaTab2JsonIdentifierCounter(unittest.TestCase):
         expected_json = json.load(open(os.path.join(self._json_data_dir, test_case, test_case + '.json')))
         actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
-
+"""
