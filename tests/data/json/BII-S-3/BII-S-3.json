@@ -4315,7 +4315,7 @@
                         }
                     ],
                     "protocolType": {
-                        "annotationValue": "environmental material collection",
+                        "annotationValue": "sample collection",
                         "termAccession": "",
                         "termSource": ""
                     },
