@@ -4,6 +4,8 @@ import iso8601
 import jinja2
 import html
 import datetime
+import hashlib
+from functools import partial
 from lxml import etree
 import xml.dom.minidom
 from isatools.model.v1 import Sample, OntologyAnnotation, DataFile
@@ -24,7 +26,7 @@ sra_submission_action = 'ADD'
 sra_center_prj_name = None
 
 
-def export(investigation, export_path):
+def export(investigation, export_path, sra_settings=None, datafilehashes=None):
 
     def get_comment(assay, name):
         hits = [c for c in assay.comments if c.name.lower() == name.lower()]
@@ -57,6 +59,13 @@ def export(investigation, export_path):
             else:
                 value = hits[0].value
             return value.replace('_', ' ')
+
+    if sra_settings is not None:
+        sra_center_name = sra_settings['sra_center_name']
+        sra_broker_name = sra_settings['sra_broker_name']
+        sra_lab_name = sra_settings['sra_lab_name']
+        sra_submission_action = sra_settings['sra_submission_action']
+        sra_center_prj_name = sra_settings['sra_center_prj_name']
 
     logger.info("isatools.sra.export()")
     for istudy in investigation.studies:
@@ -130,11 +139,13 @@ def export(investigation, export_path):
                                 "exp_alias": study_acc + ':generic_assay:' + iassay.filename[:-4] + ':' + assay_seq_process.name
                             }
                         datafiles = [d for d in assay_seq_process.outputs if isinstance(d, DataFile)]
-                        # TODO Inject MD5 hash on datafiles
+                        checksum = '00000000000000000000000000000000'
+                        if datafilehashes is not None:
+                            checksum = datafilehashes[datafiles[0].filename]  # raises AttributeError if file not found
                         assay_to_export['data_file'] = {
                             "filename": datafiles[0].filename,
                             "filetype": datafiles[0].filename[datafiles[0].filename.index('.')+1:],
-                            "checksum": '00000000000000000'
+                            "checksum": checksum
                         }
                         source = None
                         matching_sources = [p.inputs for p in istudy.process_sequence if sample in p.outputs]
@@ -319,3 +330,30 @@ def export(investigation, export_path):
             validate(os.path.join(export_path, 'sample_set.xml'), 'SRA.sample.xsd')
         else:
             raise NotADirectoryError("export path '{}' is not a directory".format(export_path))
+
+
+def create_datafile_hashes(datadir, ext=None):
+    """
+        Create md5 file dict for files in a directory with a particular extension
+    :param datadir: Directory containing data files to hash
+    :param ext: Extension of files to hash
+    :return: dict containing keys=file names and values=md5 hexdigests
+    """
+
+    def md5sum(filename):
+        with open(filename, mode='rb') as f:
+            d = hashlib.md5()
+            for buf in iter(partial(f.read, 128), b''):
+                d.update(buf)
+        return d.hexdigest()
+
+    from os import listdir
+    from os.path import isfile, join
+    if ext is not None:
+        files = [f for f in listdir(datadir) if isfile(join(datadir, f)) and f.endswith(ext)]
+    else:
+        files = [f for f in listdir(datadir) if isfile(join(datadir, f))]
+    datafilehashes = dict()
+    for file in files:
+        datafilehashes[file] = md5sum(filename=join(datadir, file))
+    return datafilehashes
