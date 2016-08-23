@@ -182,16 +182,11 @@ def sortlistsx(X):
     return X
 
 
-def assert_json_equal(jx, jy):
-    sortlistsj(jx)
-    sortlistsj(jy)
-    if jx == jy:
-        return True
-    else:
-        from deepdiff import DeepDiff
-        print('DeepDiff={}'.format(DeepDiff(jx, jy)))
-        return False
 
+def assert_json_equal(jx, jy):
+    sorted_jx = sorted(jx)
+    sorted_jy = sorted(jy)
+    return sorted_jx == sorted_jy
 
 def assert_xml_equal(x1, x2):
     pass
