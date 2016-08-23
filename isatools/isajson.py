@@ -1,7 +1,7 @@
 from isatools.model.v1 import *
 import json
 import logging
-from networkx import DiGraph
+import networkx as nx
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 def load(fp):
 
     def _build_assay_graph(process_sequence=list()):
-        G = DiGraph()
+        G = nx.DiGraph()
         for process in process_sequence:
             if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
                 if len(process.outputs) > 0:
@@ -27,6 +27,12 @@ def load(fp):
                 else:
                     G.add_edge(process.prev_process, process)
         return G
+
+    def get_jvalue(dict, key):
+        if key in dict.keys():
+            return dict[key]
+        else:
+            return None
 
     isajson = json.load(fp)
     investigation = Investigation(

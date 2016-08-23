@@ -58,7 +58,7 @@ def load(mtbls_study_id):
     tmp_dir = None
     try:
         tmp_dir = get_study(mtbls_study_id)
-        isatab2json.convert(tmp_dir, tmp_dir)
+        isatab2json.convert(tmp_dir, tmp_dir, validate_first=False)
         for file in os.listdir(tmp_dir):
             if file.endswith('.json'):
                 return json.load(open(os.path.join(tmp_dir, file)))
