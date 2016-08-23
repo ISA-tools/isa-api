@@ -4303,7 +4303,7 @@
                     "@id": "#protocol/sample_collection_-_standard_procedure_1",
                     "components": [],
                     "description": "Waters samples were prefiltered through a 1.6 um GF/A glass fibre filter to reduce Eukaryotic contamination. Filtrate was then collected on a 0.2 um Sterivex (millipore) filter which was frozen in liquid nitrogen until nucelic acid extraction. CO2 bubbled through 11000 L mesocosm to simulate ocean acidification predicted conditions. Then phosphate and nitrate were added to induce a phytoplankton bloom.",
-                    "name": "sample collection - standard procedure 1",
+                    "name": "environmental material collection - standard procedure 1",
                     "parameters": [
                         {
                             "@id": "#parameter/filter_pore_size",
