@@ -5,6 +5,10 @@
         <SCIENTIFIC_NAME>{{assay.source.scientific_name}}</SCIENTIFIC_NAME>
     </SAMPLE_NAME>
     <SAMPLE_ATTRIBUTES>
+        <SAMPLE_ATTRIBUTE>
+            <TAG>Source Name</TAG>
+            <VALUE>{{assay.source.name}}</VALUE>
+        </SAMPLE_ATTRIBUTE>
         {% for characteristic in assay.source.characteristics %}{% if characteristic.category.name != 'organism' %}
         <SAMPLE_ATTRIBUTE>
             <TAG>{{characteristic.category.name}}</TAG>

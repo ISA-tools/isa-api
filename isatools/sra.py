@@ -60,12 +60,14 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                 value = hits[0].value
             return value.replace('_', ' ')
 
+    global sra_center_name
+    global sra_broker_name
     if sra_settings is not None:
-        sra_center_name = sra_settings['sra_center_name']
-        sra_broker_name = sra_settings['sra_broker_name']
-        sra_lab_name = sra_settings['sra_lab_name']
-        sra_submission_action = sra_settings['sra_submission_action']
-        sra_center_prj_name = sra_settings['sra_center_prj_name']
+        sra_center_name = sra_settings['sra_center']
+        sra_broker_name = sra_settings['sra_broker']
+        # sra_lab_name = sra_settings['sra_lab_name']
+        # sra_submission_action = sra_settings['sra_submission_action']
+        # sra_center_prj_name = sra_settings['sra_center_prj_name']
 
     logger.info("isatools.sra.export()")
     for istudy in investigation.studies:
@@ -99,13 +101,13 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
         if istudy.submission_date is None or istudy.submission_date == '':
             istudy.submission_date = iso8601.parse_date(datetime.date.today().isoformat(), iso8601.UTC).isoformat()
         else:
-            submission_date = iso8601.parse_date(istudy.submission_date, iso8601.UTC).isoformat()
+            istudy.submission_date = iso8601.parse_date(istudy.submission_date, iso8601.UTC).isoformat()
         istudy.description = html.escape(istudy.description)  # ideally make it a requirement in the model or JSON to have html escaped content
 
         env = jinja2.Environment()
         env.loader = jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'resources', 'sra_templates'))
         xsub_template = env.get_template('submission_add.xml')
-        xsub = xsub_template.render(accession=study_acc, contacts=istudy.contacts, submission_date=submission_date,
+        xsub = xsub_template.render(accession=study_acc, contacts=istudy.contacts, submission_date=istudy.submission_date,
                                     sra_center_name=sra_center_name, sra_broker_name=sra_broker_name)
         xproj_template = env.get_template('project_set.xml')
         xproj = xproj_template.render(study=istudy, sra_center_name=sra_center_name)
@@ -142,9 +144,12 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                         checksum = '00000000000000000000000000000000'
                         if datafilehashes is not None:
                             checksum = datafilehashes[datafiles[0].filename]  # raises AttributeError if file not found
+                        filetype = datafiles[0].filename[datafiles[0].filename.index('.') + 1:]
+                        if filetype.endswith('.gz'):
+                            filetype = filetype[:filetype.index('.')]
                         assay_to_export['data_file'] = {
                             "filename": datafiles[0].filename,
-                            "filetype": datafiles[0].filename[datafiles[0].filename.index('.')+1:],
+                            "filetype": filetype,
                             "checksum": checksum
                         }
                         source = None
@@ -152,6 +157,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                         if len(matching_sources[0]) == 1:
                             source = matching_sources[0][0]
                         assay_to_export['source'] = {
+                            "name": source.name,
                             "characteristics": source.characteristics,
                         }
                         organism_charac = [c for c in source.characteristics if c.category.name == 'organism'][-1]
@@ -332,14 +338,19 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
             raise NotADirectoryError("export path '{}' is not a directory".format(export_path))
 
 
-def create_datafile_hashes(datadir, ext=None):
+def create_datafile_hashes(fileroot, filenames):
     """
-        Create md5 file dict for files in a directory with a particular extension
-    :param datadir: Directory containing data files to hash
-    :param ext: Extension of files to hash
-    :return: dict containing keys=file names and values=md5 hexdigests
-    """
+    Create md5 file dict for files in a directory with a particular extension
 
+    :param fileroot: Root to directory containing files (assumes all in same dir)
+    :param filenames: List of filenames of files to md5, assumed in fileroot
+    :return: dict containing filenames and md5s
+
+    Usage:
+    >>> filenames = [f for f in listdir('/path/to/my/files') if f.endswith('.fastq.gz')]
+    >>> create_datafile_hashes(fileroot='/path/to/my/files', filenames=filesnames)
+    { 'myfile1.gz': 'd41d8cd98f00b204e9800998ecf8427e', 'myfile2.gz': 'd41d8cd98f00b204e9800998ecf8427e' }
+    """
     def md5sum(filename):
         with open(filename, mode='rb') as f:
             d = hashlib.md5()
@@ -347,13 +358,11 @@ def create_datafile_hashes(datadir, ext=None):
                 d.update(buf)
         return d.hexdigest()
 
-    from os import listdir
     from os.path import isfile, join
-    if ext is not None:
-        files = [f for f in listdir(datadir) if isfile(join(datadir, f)) and f.endswith(ext)]
-    else:
-        files = [f for f in listdir(datadir) if isfile(join(datadir, f))]
     datafilehashes = dict()
-    for file in files:
-        datafilehashes[file] = md5sum(filename=join(datadir, file))
+    for file in filenames:
+        if isfile(join(fileroot, file)):
+            datafilehashes[file] = md5sum(filename=join(fileroot, file))
+        else:
+            raise FileNotFoundError("{} is not a file".format(fileroot + file))
     return datafilehashes
