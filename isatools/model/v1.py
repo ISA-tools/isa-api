@@ -1,24 +1,3 @@
-from networkx import DiGraph
-
-
-def _build_assay_graph(process_sequence=list()):
-    G = DiGraph()
-    for process in process_sequence:
-        if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
-            if len(process.outputs) > 0:
-                for output in [n for n in process.outputs if not isinstance(n, DataFile)]:
-                    G.add_edge(process, output)
-            else:  # otherwise just connect the process to the next one
-                G.add_edge(process, process.next_process)
-        if process.prev_process is not None or len(process.inputs) > 0:
-            if len(process.inputs) > 0:
-                for input_ in process.inputs:
-                    G.add_edge(input_, process)
-            else:
-                G.add_edge(process.prev_process, process)
-    return G
-
-
 class Comment(object):
     """A comment allows arbitrary annotation of all ISA classes
 
@@ -26,12 +5,39 @@ class Comment(object):
         name: The name of the comment (as mapped to Comment[SomeName]) to give context to the comment field
         value: A value for the corresponding comment, as a string encoded in some way
     """
-    def __init__(self, name='', value=''):
+    def __init__(self, name, value=None):
         self.name = name
         self.value = value
 
+    @property
+    def name(self):
+        return self.__name
 
-class IsaObject(object):
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise AttributeError("Comment.name must be a str")
+        elif name.strip() == '':
+            raise AttributeError("Comment.name must not be empty")
+        else:
+            self.__name = name
+
+    @property
+    def value(self):
+        if self.__value is '':
+            return None
+        else:
+            return self.__value
+
+    @value.setter
+    def value(self, value):
+        if value is not None and not isinstance(value, (str, int, float)):  # allow instance of str, int, float or None
+            raise AttributeError("Comment.value must be an instance of str, int, float, or None")
+        else:
+            self.__value = value
+
+
+class Commentable(object):
     """ An ISA Object is an abstract class to enable containment of Comments
 
     Attributes:
@@ -44,33 +50,7 @@ class IsaObject(object):
             self.comments = comments
 
 
-class StudyConfigurableObject(object):
-
-    def __init__(self):
-        self._study_node_sequence = None
-
-    def _validate_process_sequence(self, process_sequence):
-        #  Take all of our process objects and try to create an end-to-end graph
-        import networkx as nx
-        graph = nx.DiGraph()
-        prev_process_node = None
-        for process in process_sequence:
-            if len(process.inputs) == 0:  # If current process has no inputs, assume connect to prev process
-                graph.add_edge(prev_process_node, process)
-            for input_ in process.inputs:
-                graph.add_edge(input_, process)
-            for output in process.outputs:
-                graph.add_edge(process, output)
-            prev_process_node = process
-        #  Next, check if graph nodes match _study_node_sequence
-        i = 0
-        for node in graph.nodes():
-            class_type = self._study_node_sequence[i]
-            if not isinstance(node, class_type):
-                raise TypeError("Unexpected node in sequence")
-
-
-class Investigation(IsaObject):
+class Investigation(Commentable):
     """An investigation maintains metadata about the project context and links to one or more studies. There can only
     be 1 Investigation in an ISA package. Investigations has the following properties:
 
@@ -118,7 +98,7 @@ class Investigation(IsaObject):
             self.comments = list()
 
 
-class OntologySourceReference(IsaObject):
+class OntologySourceReference(Commentable):
     """This annotation section is identical to that in the MAGE-TAB format.
 
     Attributes:
@@ -136,7 +116,7 @@ class OntologySourceReference(IsaObject):
         self.description = description
 
 
-class OntologyAnnotation(IsaObject):
+class OntologyAnnotation(Commentable):
     """An ontology term annotation reference
 
     Attributes:
@@ -156,7 +136,7 @@ class OntologyAnnotation(IsaObject):
         self.term_accession = term_accession
 
 
-class Publication(IsaObject):
+class Publication(Commentable):
     """A publication associated with an investigation or study.
 
     Attributes:
@@ -179,7 +159,7 @@ class Publication(IsaObject):
             self.status = status
 
 
-class Person(IsaObject):
+class Person(Commentable):
     """A person/contact that can be attributed to an Investigation or Study.
 
     Attributes:
@@ -214,7 +194,7 @@ class Person(IsaObject):
             self.roles = roles
 
 
-class Study(IsaObject, StudyConfigurableObject, object):
+class Study(Commentable, object):
     """Study is the central unit, containing information on the subject under study, its characteristics
     and any treatments applied.
 
@@ -306,11 +286,9 @@ class Study(IsaObject, StudyConfigurableObject, object):
         else:
             self.characteristic_categories = characteristic_categories
         self.graph = None
-    def build_graph(self):
-        self.graph = _build_assay_graph(self.process_sequence)
 
 
-class StudyFactor(IsaObject):
+class StudyFactor(Commentable):
     """A Study Factor corresponds to an independent variable manipulated by the experimentalist with the intention to
     affect biological systems in a way that can be measured by an assay.
 
@@ -329,7 +307,7 @@ class StudyFactor(IsaObject):
             self.factor_type = factor_type
 
 
-class Assay(IsaObject):
+class Assay(Commentable):
     """A Study Assay declares and describes each of the Assay files associated with the current Study.
 
     Attributes:
@@ -384,11 +362,8 @@ class Assay(IsaObject):
             self.characteristic_categories = characteristic_categories
         self.graph = None
 
-    def build_graph(self):
-        self.graph = _build_assay_graph(self.process_sequence)
 
-
-class Protocol(IsaObject):
+class Protocol(Commentable):
     """A Protocol.
 
     Attributes:
@@ -421,7 +396,7 @@ class Protocol(IsaObject):
             self.components = components
 
 
-class ProtocolParameter(IsaObject):
+class ProtocolParameter(Commentable):
     """A Protocol Parameter.
 
     Attributes:
@@ -441,7 +416,7 @@ class ProtocolParameter(IsaObject):
         #     self.unit = unit
 
 
-class ProtocolComponent(IsaObject):
+class ProtocolComponent(Commentable):
     def __init__(self, id_='', name='', component_type=None, comments=None):
         super().__init__(comments)
         self.id = id_
@@ -452,7 +427,7 @@ class ProtocolComponent(IsaObject):
             self.component_type = component_type
 
 
-class Source(IsaObject):
+class Source(Commentable):
     """A Source.
 
     Attributes:
@@ -469,7 +444,7 @@ class Source(IsaObject):
             self.characteristics = characteristics
 
 
-class Characteristic(IsaObject):
+class Characteristic(Commentable):
     def __init__(self, category=None, value=None, unit=None, comments=None):
         super().__init__(comments)
         if category is None:
@@ -483,7 +458,7 @@ class Characteristic(IsaObject):
         self.unit = unit
 
 
-class Sample(IsaObject):
+class Sample(Commentable):
     """A Sample.
 
     Attributes:
@@ -506,7 +481,7 @@ class Sample(IsaObject):
         self.derives_from = derives_from
 
 
-class Material(IsaObject):
+class Material(Commentable):
     """A Material.
 
     Attributes:
@@ -537,7 +512,7 @@ class LabeledExtract(Extract):
         self.label = label
 
 
-class FactorValue(IsaObject):
+class FactorValue(Commentable):
     def __init__(self, factor_name=None, value=None, unit=None, comments=None):
         super().__init__(comments)
         self.factor_name = factor_name
@@ -545,7 +520,7 @@ class FactorValue(IsaObject):
         self.unit = unit
 
 
-class Process(IsaObject):
+class Process(Commentable):
     """A Process.
 
     Attributes:
@@ -583,7 +558,7 @@ class Process(IsaObject):
         self.next_process = None
 
 
-class DataFile(IsaObject):
+class DataFile(Commentable):
     def __init__(self, id_='', filename='', label='', comments=None):
         super().__init__(comments)
         self.id = id_
