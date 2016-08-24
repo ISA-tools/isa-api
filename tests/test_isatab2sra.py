@@ -48,6 +48,9 @@ class TestIsaTab2Sra(unittest.TestCase):
         shutil.rmtree(self._tmp_dir)
 
     def test_isatab2sra_zip_return(self):
+        #  FIXME: Error on running with BII-S-3: ERROR: problem while running the ISATAB converter:
+        #  The assay file of type transcription profiling / nucleotide sequencing for study BII-S-3 has no
+        #  'library source' parameter in the SRA Sequencing Protocol
         b = isatab2sra.create_sra(self._biis3_dir, self._tmp_dir, self._sra_config_dir)
         self.assertIsInstance(b, BytesIO)
         with ZipFile(b) as zip_file:
@@ -311,6 +314,7 @@ class TestIsaTab2Sra(unittest.TestCase):
                          actual_sample_set_xml_biis7.xpath('count(//SCIENTIFIC_NAME)'))
         self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//SAMPLE_ATTRIBUTES)'),
                          actual_sample_set_xml_biis7.xpath('count(//SAMPLE_ATTRIBUTES)'))
+        #  FIXME: actual_sample_set_xml_biis7.xpath('count(//SAMPLE_ATTRIBUTE)')) AssertionError: 435.0 != 406.0
         self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//SAMPLE_ATTRIBUTE)'),
                          actual_sample_set_xml_biis7.xpath('count(//SAMPLE_ATTRIBUTE)'))
         self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//TAG)'),
