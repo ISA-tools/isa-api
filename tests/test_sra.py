@@ -10,6 +10,7 @@ import tempfile
 class TestNewSraExport(TestCase):
 
     # TODO: Need to write XML comparisons, not just count the tags
+    # TODO: Update for new SRA package functionality (pull in changes from feat/sra-export)
 
     def setUp(self):
 
