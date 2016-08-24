@@ -16,7 +16,7 @@ class TestIsaTab2Sra(unittest.TestCase):
     def setUp(self):
         self._tab_data_dir = utils.TAB_DATA_DIR
         self._sra_data_dir = utils.SRA_DATA_DIR
-        self._sra_config_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
+        self._sra_config_dir = utils.SRA2016_XML_CONFIGS_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
         self._biis3_dir = os.path.join(self._tab_data_dir, 'BII-S-3')
