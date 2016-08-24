@@ -31,9 +31,12 @@ def convert(json_fp, path, config_dir=isajson.default_config_dir, validate_first
             logger.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
             return
         json_fp.seek(0)  # reset file pointer after validation
+    logger.info("Loading source ISA JSON...")
     isa_obj = isajson.load(fp=json_fp)
+    logger.info("Dumping target ISA-Tab...")
     isatab.dump(isa_obj=isa_obj, output_path=path)
     #  copy data files across from source directory where JSON is located
+    logger.info("Copying data files from source to target...")
     for file in [f for f in os.listdir(os.path.dirname(json_fp.name))
                  if not (f.endswith('.txt') and (f.startswith('i_') or f.startswith('s_') or f.startswith('a_'))) and
                  not (f.endswith('.json'))]:
