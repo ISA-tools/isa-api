@@ -1357,9 +1357,10 @@ def check_protocol_usage(i_df, dir_context):
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
                 for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
                     protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
+                protocol_refs_used = set([r for r in protocol_refs_used if pd.notnull(r)])
                 if not protocol_refs_used.issubset(protocols_declared):
                     logger.error(
-                        "(E) Some protocols used in an study file {} are not declared in the investigation file: {}".format(
+                        "(E) Some protocols used in a study file {} are not declared in the investigation file: {}".format(
                             study_filename, list(protocol_refs_used - protocols_declared)))
             except FileNotFoundError:
                 pass
@@ -1370,6 +1371,7 @@ def check_protocol_usage(i_df, dir_context):
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
                     for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
                         protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
+                    protocol_refs_used = set([r for r in protocol_refs_used if pd.notnull(r)])
                     if not protocol_refs_used.issubset(protocols_declared):
                         logger.error(
                             "(E) Some protocols used in an assay file {} are not declared in the investigation file: {}".format(
@@ -2169,7 +2171,7 @@ BASE_DIR = os.path.dirname(__file__)
 default_config_dir = os.path.join(BASE_DIR, 'config', 'xml')
 
 
-def validate2(fp, config_dir=default_config_dir, log_level=logging.ERROR):
+def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
     logger.setLevel(log_level)
     logger.info("ISA tab Validator from ISA tools API v0.2")
     from io import StringIO

@@ -25,10 +25,10 @@ class TestValidateIsaJson(unittest.TestCase):
     def test_validate_isajson_isajson_schemas(self):
         """Tests against 0002"""
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'minimal_syntax.json')))
-        if "The JSON does not validate against the ISA-JSON schemas!" in log_msg_stream.getvalue():
+        if "The JSON does not validate against the provided ISA-JSON schemas!" in log_msg_stream.getvalue():
             self.fail("Error raised when trying to parse valid ISA-JSON, when it should have been fine!")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'invalid_isajson.json')))
-        if "The JSON does not validate against the ISA-JSON schemas!" not in log_msg_stream.getvalue():
+        if "The JSON does not validate against the provided ISA-JSON schemas!" not in log_msg_stream.getvalue():
             self.fail("NO error raised when validating against some non-ISA-JSON conforming JSON!")
 
     def test_validate_isajson_utf8_encoding_check(self):
@@ -264,27 +264,13 @@ class TestValidateIsaJson(unittest.TestCase):
     def test_validate_isajson_assay_config_validation(self):
         """Tests against 4004"""
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'assay_config.json')))
-        if "protocol sequence ['nucleic acid extraction', 'library construction', 'nucleic acid sequencing', 'sequence analysis data transformation'] does not match study graph" in log_msg_stream.getvalue():
+        if "protocol sequence ['nucleic acid extraction', 'library construction', 'nucleic acid sequencing', " \
+           "'sequence analysis data transformation'] does not match study graph" in log_msg_stream.getvalue():
             self.fail("Validation failed against transcription_seq.json configuration, when it should have passed")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'assay_config_fail.json')))
-        if "protocol sequence ['nucleic acid extraction', 'library construction', 'nucleic acid sequencing', 'sequence analysis data transformation'] does not match study graph" not in log_msg_stream.getvalue():
+        if "protocol sequence ['nucleic acid extraction', 'library construction', 'nucleic acid sequencing', " \
+           "'sequence analysis data transformation'] does not match study graph" not in log_msg_stream.getvalue():
             self.fail("Validation passed against transcription_seq.json configuration, when it should have failed")
-
-
-class ValidateIsaSraTest(unittest.TestCase):
-
-    def setUp(self):
-        self._json_data_dir = os.path.join(os.path.dirname(__file__), 'data', 'json')
-        self._sra_config_dir = os.path.join(os.path.dirname(__file__), 'data', 'configs', 'json_sra')
-
-    def tearDown(self):
-        pass
-
-    def test_validate_assay_config(self):
-        """Tests against 4004"""
-        self.fail("Unfinished test code")
-        log_msg_stream = isajson.validate(open(os.path.join(self._json_data_dir, 'copo.json')),
-                                          self._sra_config_dir)
 
 
 class TestValidateIsaTab(unittest.TestCase):
