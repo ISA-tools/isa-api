@@ -195,3 +195,15 @@ def assert_json_equal(jx, jy):
 
 def assert_xml_equal(x1, x2):
     pass
+
+
+def strip_ids(J):
+    for k, v in J.items():
+        if isinstance(v, dict):
+            strip_ids(v)
+        elif isinstance(v, list):
+            for i in v:
+                strip_ids(i)
+        else:
+            if k == '@id':
+                J[k] = ''

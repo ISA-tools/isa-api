@@ -23,7 +23,8 @@ class TestIsaTab2Cedar(unittest.TestCase):
         isa2cedar.createCEDARjson(os.path.join(self._tab_data_dir, test_case), self._tmp_dir, True)
         expected_json = json.load(open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')))
         actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
-        # FIXME: Assertion will fail because UUIDs are generated on the fly
+        utils.strip_ids(expected_json)
+        utils.strip_ids(actual_json)
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2cedar_convert_bii_s_3(self):
@@ -32,7 +33,8 @@ class TestIsaTab2Cedar(unittest.TestCase):
         isa2cedar.createCEDARjson(os.path.join(self._tab_data_dir, test_case), self._tmp_dir, True)
         expected_json = json.load(open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')))
         actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
-        # FIXME: Assertion will fail because UUIDs are generated on the fly
+        utils.strip_ids(expected_json)
+        utils.strip_ids(actual_json)
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2cedar_convert_bii_s_7(self):
@@ -41,7 +43,8 @@ class TestIsaTab2Cedar(unittest.TestCase):
         isa2cedar.createCEDARjson(os.path.join(self._tab_data_dir, test_case), self._tmp_dir, True)
         expected_json = json.load(open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')))
         actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
-        # FIXME: Assertion will fail because UUIDs are generated on the fly
+        utils.strip_ids(expected_json)
+        utils.strip_ids(actual_json)
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2cedar_convert_charac_param_factor(self):
@@ -50,7 +53,8 @@ class TestIsaTab2Cedar(unittest.TestCase):
         isa2cedar.createCEDARjson(os.path.join(self._tab_data_dir, test_case), self._tmp_dir, True)
         expected_json = json.load(open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')))
         actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
-        # FIXME: Assertion will fail because UUIDs are generated on the fly
+        utils.strip_ids(expected_json)
+        utils.strip_ids(actual_json)
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2cedar_convert_mtbls1(self):
@@ -58,8 +62,9 @@ class TestIsaTab2Cedar(unittest.TestCase):
         isa2cedar = ISATab2CEDAR("http://www.isa-tools.org/")
         isa2cedar.createCEDARjson(os.path.join(self._tab_data_dir, test_case), self._tmp_dir, True)
         expected_json = json.load(open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')))
-        actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
-        # FIXME: Assertion will fail because UUIDs are generated on the fly
+        actual_json = json.load(open(os.path.join(self._tmp_dir, '1425901783014' + '.json')))
+        utils.strip_ids(expected_json)
+        utils.strip_ids(actual_json)
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2cedar_convert_mtbls2(self):
@@ -68,7 +73,8 @@ class TestIsaTab2Cedar(unittest.TestCase):
         isa2cedar.createCEDARjson(os.path.join(self._tab_data_dir, test_case), self._tmp_dir, True)
         expected_json = json.load(open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')))
         actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
-        # FIXME: Assertion will fail because UUIDs are generated on the fly
+        utils.strip_ids(expected_json)
+        utils.strip_ids(actual_json)
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2cedar_convert_mtbls3(self):
@@ -77,7 +83,8 @@ class TestIsaTab2Cedar(unittest.TestCase):
         isa2cedar.createCEDARjson(os.path.join(self._tab_data_dir, test_case), self._tmp_dir, True)
         expected_json = json.load(open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')))
         actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
-        # FIXME: Assertion will fail because UUIDs are generated on the fly
+        utils.strip_ids(expected_json)
+        utils.strip_ids(actual_json)
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
         # def test_isatab2cedar_convert_scidata(self):
