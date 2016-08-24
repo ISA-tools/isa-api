@@ -4,6 +4,9 @@ from glob import glob
 import os
 import logging
 
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 def convert(json_fp, path, config_dir=None):
     """ Converter for ISA JSON to SRA.
