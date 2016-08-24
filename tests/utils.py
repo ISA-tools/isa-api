@@ -182,14 +182,22 @@ def sortlistsx(X):
     return X
 
 
-
 def assert_json_equal(jx, jy):
-    sorted_jx = sorted(jx)
-    sorted_jy = sorted(jy)
-    return sorted_jx == sorted_jy
+    import json
+    jx = json.loads(json.dumps(jx, sort_keys=True))
+    jy = json.loads(json.dumps(jy, sort_keys=True))
+    sortlistsj(jx)
+    sortlistsj(jy)
+    if jx == jy:
+        return True
+    else:
+        from deepdiff import DeepDiff
+        print('DeepDiff={}'.format(DeepDiff(jx, jy)))
+        return False
+
 
 def assert_xml_equal(x1, x2):
-    pass
+    return False
 
 
 def strip_ids(J):
