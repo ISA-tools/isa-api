@@ -34,6 +34,7 @@ def convert(work_dir, json_dir, identifier_type=IdentifierType.name, validate_fi
             logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
             return
     converter = ISATab2ISAjson_v1(identifier_type)
+    logger.info("Converting ISA-Tab to ISA JSON...")
     converter.convert(work_dir, json_dir)
 
 
