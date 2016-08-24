@@ -14,9 +14,9 @@ class TestMtblsIO(unittest.TestCase):
 
     """Mock-only test on MTBLS1"""
     @patch('ftplib.FTP', autospec=True)
-    def test_get_study(self, mock_ftp_constructor, mock_open):
+    def test_get_study(self, mock_ftp_constructor, mock_open):  # FIXME: mock_open was working, but now doesn't (with no change to code...)
         mock_ftp = mock_ftp_constructor.return_value
-        mock_ftp.login.return_value = '230' # means login OK
+        mock_ftp.login.return_value = '230'  # means login OK
         fp = mock_open()
         tmp_dir = MTBLS.get_study('MTBLS1')  # only retrieves ISA files from MTBLS
         self.assertTrue(mock_ftp.login.called)
@@ -33,8 +33,3 @@ class TestMtblsIO(unittest.TestCase):
         self.assertIsInstance(isa_json, dict)
         self.assertEqual(isa_json['identifier'], 'MTBLS1')
         self.assertEqual(isa_json['studies'][0]['people'][0]['email'], 'rms72@cam.ac.uk')
-
-
-    """Test getting data urls for files from a study, given a filter of factor selection"""
-    def test_get_data_urls(self):
-        data_files_urls = MTBLS.get_data_files_urls('MTBLS1', factor_selection={"gender": "male"})

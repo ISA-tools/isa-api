@@ -11,3 +11,4 @@ coveralls
 iso8601
 chardet
 jinja2
+deepdiff

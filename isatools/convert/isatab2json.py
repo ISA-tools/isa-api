@@ -22,18 +22,20 @@ class IdentifierType(Enum):
     name = 3
 
 
-def convert(work_dir, json_dir, identifier_type=IdentifierType.name):
-    logger.info("Validating input ISA tab before conversion")
-    i_files = [f for f in os.listdir(work_dir) if f.startswith('i_') and f.endswith('.txt')]
-    if len(i_files) != 1:
-        logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
-        return
-    log_msgs = isatab.validate2(fp=open(os.path.join(work_dir, i_files[0])), log_level=logging.ERROR)
-    if '(F)' in log_msgs.getvalue():
-        logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
-        return
+def convert(work_dir, identifier_type=IdentifierType.name, validate_first=True):
+    if validate_first:
+        logger.info("Validating input ISA tab before conversion")
+        i_files = [f for f in os.listdir(work_dir) if f.startswith('i_') and f.endswith('.txt')]
+        if len(i_files) != 1:
+            logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
+            return
+        log_msgs = isatab.validate2(fp=open(os.path.join(work_dir, i_files[0])), log_level=logging.ERROR)
+        if '(F)' in log_msgs.getvalue():
+            logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
+            return
     converter = ISATab2ISAjson_v1(identifier_type)
-    converter.convert(work_dir, json_dir)
+    logger.info("Converting ISA-Tab to ISA JSON...")
+    return converter.convert(work_dir)
 
 
 class ISATab2ISAjson_v1:
@@ -66,6 +68,8 @@ class ISATab2ISAjson_v1:
         except KeyError:
             self.counters[type] = 1
 
+        identifier = ""
+
         if self.identifier_type==IdentifierType.counter:
             identifier = "http://data.isa-tools.org/"+type+"/"+str(self.counters[type])
         elif self.identifier_type == IdentifierType.uuid:
@@ -79,19 +83,19 @@ class ISATab2ISAjson_v1:
     #def generateIdentifier(self):
     #    return "http://data.isa-tools.org/UUID/"+str(uuid4())
 
-    def convert(self, work_dir, json_dir):
+    def convert(self, work_dir):
         """Convert an ISA-Tab dataset (version 1) to JSON provided the ISA model v1.0 JSON Schemas
             :param work_dir: directory containing the ISA-tab dataset
             :param json_dir: output directory where the resulting json file will be saved
         """
-        print("Converting ISAtab to ISAjson for ", work_dir)
+        logger.info("Converting ISAtab to ISAjson for {}".format(work_dir))
 
 
         isa_tab = parse(work_dir)
         #print(isa_tab)
 
         if isa_tab is None:
-            print("No ISAtab dataset found")
+            logger.fatal("No ISAtab dataset found")
         else:
                 if isa_tab.metadata != {}:
                     #print("isa_tab.metadata->",isa_tab.metadata)
@@ -108,22 +112,13 @@ class ISATab2ISAjson_v1:
                         ("comments", self.createComments(isa_tab.metadata))
                     ])
 
-                if (isa_tab.metadata['Investigation Identifier']):
-                    file_name = os.path.join(json_dir,isa_tab.metadata['Investigation Identifier']+".json")
-                else:
-                    file_name = os.path.join(json_dir,isa_tab.studies[0].metadata['Study Identifier']+".json")
-
                 #validate json
                 schema = json.load(open(join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)))
                 resolver = RefResolver('file://'+join(SCHEMAS_PATH, INVESTIGATION_SCHEMA), schema)
                 validator = Draft4Validator(schema, resolver=resolver)
                 validator.validate(isa_json, schema)
 
-                #TODO refactor saving the file into a separate method
-                with open(file_name, "w") as outfile:
-                    json.dump(isa_json, outfile, indent=4, sort_keys=True)
-                    outfile.close()
-                print("... conversion finished.")
+                logger.info("... conversion finished.")
                 return isa_json
 
     def createComments(self, isadict):
@@ -164,7 +159,6 @@ class ISATab2ISAjson_v1:
             people_json.append(person_json)
         return people_json
 
-
     def createPublications(self, publications, inv_or_study):
         publications_json = []
         for pub in publications:
@@ -178,7 +172,6 @@ class ISATab2ISAjson_v1:
             )
             publications_json.append(publication_json)
         return publications_json
-
 
     def createProtocols(self, protocols, assays):
         protocols_json = []
@@ -217,9 +210,7 @@ class ISATab2ISAjson_v1:
                 ])
             protocols_json.append(protocol_json)
 
-
         return protocols_json
-
 
 
     def createProtocolParameterList(self, protocol):
@@ -236,7 +227,6 @@ class ISATab2ISAjson_v1:
             i += 1
         return json_list
 
-
     def createOntologyAnnotationForInvOrStudy(self, object, inv_or_study, type):
         onto_ann = dict([
                 ("annotationValue", object[inv_or_study+type]),
@@ -245,7 +235,6 @@ class ISATab2ISAjson_v1:
         ])
         return onto_ann
 
-
     def createOntologyAnnotation(self, name, termSource, termAccesssion):
         onto_ann = dict([
             ("annotationValue", name),
@@ -253,7 +242,6 @@ class ISATab2ISAjson_v1:
             ("termAccession", termAccesssion)
         ])
         return onto_ann
-
 
     def createOntologyAnnotationsFromStringList(self, object, inv_or_study, type):
         name_array = object[inv_or_study+type].split(";")
@@ -269,7 +257,6 @@ class ISATab2ISAjson_v1:
              onto_annotations.append(onto_ann)
         return onto_annotations
 
-
     def createOntologyAnnotationListForInvOrStudy(self, array, inv_or_study, type):
         onto_annotations = []
         for object in array:
@@ -278,7 +265,6 @@ class ISATab2ISAjson_v1:
                                                      object[inv_or_study+type+" Term Accession Number"])
             onto_annotations.append(onto_ann)
         return onto_annotations
-
 
     def createOntologySourceReferences(self, ontology_refs):
         ontologies = []
@@ -291,7 +277,6 @@ class ISATab2ISAjson_v1:
             ])
             ontologies.append(ontology)
         return ontologies
-
 
     def createStudies(self, studies):
         study_array = []
@@ -335,7 +320,6 @@ class ISATab2ISAjson_v1:
             study_array.append(studyJson)
         return study_array
 
-
     def createProtocolComponentList(self, protocol):
         json_list = []
         components_name = protocol['Study Protocol Components Name'].split(";")
@@ -351,7 +335,6 @@ class ISATab2ISAjson_v1:
             index += 1
         return json_list
 
-
     def createStudyFactorsList(self, factors):
         json_list = []
         for factor in factors:
@@ -363,7 +346,6 @@ class ISATab2ISAjson_v1:
             ])
              json_list.append(json_item)
         return json_list
-
 
     def createProcessSequence(self, process_nodes, source_dict, sample_dict, material_dict, data_dict):
         json_list = []
@@ -423,7 +405,6 @@ class ISATab2ISAjson_v1:
             json_list.append(json_item)
         return json_list
 
-
     def createInputList(self, inputs, source_dict, sample_dict, material_dict, data_dict):
         json_list = []
         for argument in inputs:
@@ -453,7 +434,6 @@ class ISATab2ISAjson_v1:
             except KeyError:
                 pass
         return json_list
-
 
     def createOutputList(self, arguments, sample_dict, material_dict, data_dict):
         json_list = []
@@ -485,7 +465,6 @@ class ISATab2ISAjson_v1:
                    ("@id", self.getIdentifier("protocol", process_node.protocol))
                 ])
         return json_item
-
 
     def createStudyAssaysList(self, assays, sample_dict):
         json_list = []
@@ -542,7 +521,6 @@ class ISATab2ISAjson_v1:
                 json_dict.update({node_index: json_item})
         return json_dict
 
-
     def createSampleDictionary(self, nodes):
         json_dict = dict([])
         for node_index in nodes:
@@ -566,12 +544,11 @@ class ISATab2ISAjson_v1:
 
                      json_item["derivesFrom"] = json_list
                 except KeyError:
-                     print("There is no source declared for sample ", node_index)
+                     logger.error("There is no source declared for sample {}".format(node_index))
 
                 json_dict.update({node_index: json_item})
 
         return json_dict
-
 
     def createSampleReferenceDict(self, nodes, sample_dict):
         json_dict = []
@@ -582,19 +559,17 @@ class ISATab2ISAjson_v1:
                 if sample_identifier:
                     json_dict.append(dict([("@id", sample_identifier)]))
                 else:
-                    print("Warning: sample identifier has not been defined before", node_index)
-
-                #adding sample attributes that may have been defined at the assay level
+                    logger.warning("Warning: sample identifier has not been defined before  {}".format(node_index))
+                #  adding sample attributes that may have been defined at the assay level
                 try:
                     sample_json = sample_dict[node_index]
                     new_characteristics = self.createValueList(self.CHARACTERISTICS,node_index, node)
                     sample_json["characteristics"] = sample_json["characteristics"] + new_characteristics
                     sample_dict[node_index] = sample_json
                 except KeyError:
-                    print("Warning: the sample ", node_index, " has not been defined at the study level.")
+                    logger.warning("Warning: the sample {} has not been defined at the study level.".format(node_index))
 
         return json_dict
-
 
     def createSourcesDictionary(self, nodes):
         json_dict = dict([])
@@ -622,7 +597,6 @@ class ISATab2ISAjson_v1:
                 ])
                 json_dict.update({node_index: json_item})
         return json_dict
-
 
     def createCharacteristicsCategories(self, nodes):
         json_list = []
@@ -656,7 +630,6 @@ class ISATab2ISAjson_v1:
                  json_list.append(json_item)
         return json_list
 
-
     def createUnitsCategories(self, nodes):
         json_list = []
         for node_index in nodes:
@@ -682,7 +655,6 @@ class ISATab2ISAjson_v1:
                  json_list.append(json_item)
         return json_list
 
-
     def convert_num(self, s):
         try:
             return int(s)
@@ -691,8 +663,6 @@ class ISATab2ISAjson_v1:
                return float(s)
             except ValueError:
                 return s
-
-
 
     def createValueList(self, column_name, node_name, node):
         """Method for the creation of factor, characteristics and parameter values"""

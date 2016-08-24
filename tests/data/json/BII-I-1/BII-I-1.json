@@ -6402,7 +6402,16 @@
                 },
                 {
                     "@id": "#assay/a_transcriptome.txt",
-                    "characteristicCategories": [],
+                    "characteristicCategories": [
+                        {
+                            "@id": "#characteristic_category/Label",
+                            "characteristicType": {
+                                "annotationValue": "Label",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
                     "dataFiles": [
                         {
                             "@id": "#data/rawdatafile-E-MEXP-115-raw-data-331223321.txt",
@@ -11908,6 +11917,14 @@
             ],
             "characteristicCategories": [
                 {
+                        "@id": "#characteristic_category/Material_Type",
+                        "characteristicType": {
+                            "annotationValue": "Material Type",
+                            "termAccession": "",
+                            "termSource": ""
+                        }
+                },
+                {
                     "@id": "#characteristic_category/strain",
                     "characteristicType": {
                         "annotationValue": "strain",
@@ -12150,7 +12167,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -12212,7 +12229,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -12243,7 +12260,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -12358,7 +12375,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -13099,7 +13116,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -13276,7 +13293,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -13318,7 +13335,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -13778,7 +13795,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -14247,7 +14264,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -14508,7 +14525,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -14581,7 +14598,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -14657,7 +14674,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -14761,7 +14778,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -14834,7 +14851,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -15053,7 +15070,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -15084,7 +15101,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -15606,7 +15623,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -15679,7 +15696,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -15721,7 +15738,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -15825,7 +15842,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -15898,7 +15915,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -16086,7 +16103,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -16305,7 +16322,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -16650,7 +16667,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -16827,7 +16844,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -16911,7 +16928,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -16953,7 +16970,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -16984,7 +17001,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -17141,7 +17158,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -17360,7 +17377,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -17694,7 +17711,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -17767,7 +17784,7 @@
                                     "@id": "#factor/limiting_nutrient"
                                 },
                                 "value": {
-                                    "annotationValue": "sulfur",
+                                    "annotationValue": "sulphur",
                                     "termAccession": "",
                                     "termSource": ""
                                 }
@@ -19713,7 +19730,16 @@
             "assays": [
                 {
                     "@id": "#assay/a_microarray.txt",
-                    "characteristicCategories": [],
+                    "characteristicCategories": [
+                        {
+                            "@id": "#characteristic_category/Label",
+                            "characteristicType": {
+                                "annotationValue": "Label",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
                     "dataFiles": [
                         {
                             "@id": "#data/rawdatafile-E-MAXD-4-raw-data-426648621.txt",
@@ -21460,6 +21486,30 @@
                     "@id": "#characteristic_category/mating_type",
                     "characteristicType": {
                         "annotationValue": "mating type",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/strain",
+                    "characteristicType": {
+                        "annotationValue": "strain",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/genotype",
+                    "characteristicType": {
+                        "annotationValue": "genotype",
+                        "termAccession": "",
+                        "termSource": ""
+                    }
+                },
+                {
+                    "@id": "#characteristic_category/organism",
+                    "characteristicType": {
+                        "annotationValue": "organism",
                         "termAccession": "",
                         "termSource": ""
                     }

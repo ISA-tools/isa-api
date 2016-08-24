@@ -183,6 +183,9 @@ def sortlistsx(X):
 
 
 def assert_json_equal(jx, jy):
+    import json
+    jx = json.loads(json.dumps(jx, sort_keys=True))
+    jy = json.loads(json.dumps(jy, sort_keys=True))
     sortlistsj(jx)
     sortlistsj(jy)
     if jx == jy:
@@ -194,4 +197,16 @@ def assert_json_equal(jx, jy):
 
 
 def assert_xml_equal(x1, x2):
-    pass
+    return False
+
+
+def strip_ids(J):
+    for k, v in J.items():
+        if isinstance(v, dict):
+            strip_ids(v)
+        elif isinstance(v, list):
+            for i in v:
+                strip_ids(i)
+        else:
+            if k == '@id':
+                J[k] = ''

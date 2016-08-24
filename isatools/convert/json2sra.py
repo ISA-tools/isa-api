@@ -4,6 +4,9 @@ from glob import glob
 import os
 import logging
 
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 def convert(json_fp, path, config_dir=None):
     """ Converter for ISA JSON to SRA.
@@ -17,7 +20,7 @@ def convert(json_fp, path, config_dir=None):
         os.remove(f)
 
 
-def convert2(json_fp, path, config_dir=None, sra_settings=None, datafilehashes=None):
+def  convert2(json_fp, path, config_dir=None, sra_settings=None, datafilehashes=None, validate_first=True):
     """ (New) Converter for ISA JSON to SRA.
     :param json_fp: File pointer to ISA JSON input
     :param path: Directory for output to be written
@@ -25,12 +28,16 @@ def convert2(json_fp, path, config_dir=None, sra_settings=None, datafilehashes=N
     :param sra_settings: SRA settings dict
     :param datafilehashes: Data files with hashes, in a dict
     """
-    log_msg_stream = isajson.validate(fp=json_fp, config_dir=config_dir, log_level=logging.WARNING)
-    if '(E)' not in log_msg_stream.getvalue():
-        i = isajson.load(fp=json_fp)
-        sra.export(i, path, sra_settings=sra_settings, datafilehashes=datafilehashes)
-    else:
-        raise ValueError("There was a problem when validating the input ISA JSON")
+    if validate_first:
+        log_msg_stream = isajson.validate(fp=json_fp, config_dir=config_dir, log_level=logging.WARNING)
+        if '(E)' not in log_msg_stream.getvalue():
+            i = isajson.load(fp=json_fp)
+            sra.export(i, path, sra_settings=sra_settings, datafilehashes=datafilehashes)
+        else:
+            logger.fatal("Could not proceed with conversion as there are some validation errors. Check log.")
+            return
+    i = isajson.load(fp=json_fp)
+    sra.export(i, path, sra_settings=sra_settings, datafilehashes=datafilehashes)
 
 """
 sra_settings = {
