@@ -16,7 +16,7 @@ class TestIsaTab2Sra(unittest.TestCase):
     def setUp(self):
         self._tab_data_dir = utils.TAB_DATA_DIR
         self._sra_data_dir = utils.SRA_DATA_DIR
-        self._sra_config_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
+        self._sra_config_dir = utils.SRA2016_XML_CONFIGS_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
         self._biis3_dir = os.path.join(self._tab_data_dir, 'BII-S-3')
@@ -46,6 +46,10 @@ class TestIsaTab2Sra(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
+
+    #  FIXME: Error on running with ALL BII-S-3 tests: ERROR: problem while running the ISATAB converter:
+    #  The assay file of type transcription profiling / nucleotide sequencing for study BII-S-3 has no
+    #  'library source' parameter in the SRA Sequencing Protocol
 
     def test_isatab2sra_zip_return(self):
         b = isatab2sra.create_sra(self._biis3_dir, self._tmp_dir, self._sra_config_dir)
@@ -311,6 +315,7 @@ class TestIsaTab2Sra(unittest.TestCase):
                          actual_sample_set_xml_biis7.xpath('count(//SCIENTIFIC_NAME)'))
         self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//SAMPLE_ATTRIBUTES)'),
                          actual_sample_set_xml_biis7.xpath('count(//SAMPLE_ATTRIBUTES)'))
+        #  FIXME: actual_sample_set_xml_biis7.xpath('count(//SAMPLE_ATTRIBUTE)')) AssertionError: 435.0 != 406.0
         self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//SAMPLE_ATTRIBUTE)'),
                          actual_sample_set_xml_biis7.xpath('count(//SAMPLE_ATTRIBUTE)'))
         self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//TAG)'),
@@ -405,3 +410,62 @@ class TestIsaTab2Sra(unittest.TestCase):
                          actual_run_set_xml_biis7.xpath('count(//FILES)'))
         self.assertEqual(self._expected_run_set_xml_biis7.xpath('count(//FILE)'),
                          actual_run_set_xml_biis7.xpath('count(//FILE)'))
+
+
+class TestIsaTab2SraOnNewData(unittest.TestCase):
+
+    def setUp(self):
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._sra_config_dir = utils.SRA2016_XML_CONFIGS_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
+
+    def test_isatab2sra_dump_dir_exists_chromatin_mod_seq(self):
+        #  FIXME: ERROR: problem while running the ISATAB converter: I/O problem while trying to compute the MD5 for
+        #  'output-file-4.sff.gz;output-file-5.sff.gz':
+        #  isa-api/tests/data/tab/TEST-ISA-SRA-chromatin-mod-seq/output-file-4.sff.gz;output-file-5.sff.gz
+        #  (No such file or directory)
+        isatab2sra.create_sra(os.path.join(self._tab_data_dir, 'TEST-ISA-SRA-chromatin-mod-seq'), self._tmp_dir,
+                              self._sra_config_dir)
+        self.assertTrue(os.path.exists(os.path.join(self._tmp_dir, 'sra')))
+
+    def test_isatab2sra_dump_dir_exists_env_gene_survey(self):
+        isatab2sra.create_sra(os.path.join(self._tab_data_dir, 'TEST-ISA-SRA-env-gene-survey-seq'), self._tmp_dir,
+                              self._sra_config_dir)
+        self.assertTrue(os.path.exists(os.path.join(self._tmp_dir, 'sra')))
+
+    def test_isatab2sra_dump_dir_exists_exome_seq(self):
+        #  FIXME: ERROR: problem while running the ISATAB converter: null
+        # at org.isatools.isatab.export.sra.templateutil.SRATemplateLoader.getSRAProcessingTemplate(SRATemplateLoader.java:61)
+        # at org.isatools.isatab.export.sra.SraExportPipelineComponent.buildExportedSpotDescriptor(SraExportPipelineComponent.java:1043)
+        #
+        # Probably that relevant template not present in Java build of import_latyer.jar, need to check.
+        isatab2sra.create_sra(os.path.join(self._tab_data_dir, 'TEST-ISA-SRA-exome-seq'), self._tmp_dir,
+                              self._sra_config_dir)
+        self.assertTrue(os.path.exists(os.path.join(self._tmp_dir, 'sra')))
+
+    def test_isatab2sra_dump_dir_exists_genome_seq(self):
+        #  FIXME: Same as null pointer exception above
+        isatab2sra.create_sra(os.path.join(self._tab_data_dir, 'TEST-ISA-SRA-genome-seq'), self._tmp_dir,
+                              self._sra_config_dir)
+        self.assertTrue(os.path.exists(os.path.join(self._tmp_dir, 'sra')))
+
+    def test_isatab2sra_dump_dir_exists_protein_dna_interaction_seq(self):
+        #  FIXME: Same as I/O problem above
+        isatab2sra.create_sra(os.path.join(self._tab_data_dir, 'TEST-ISA-SRA-protein-dna-interaction-seq'),
+                              self._tmp_dir, self._sra_config_dir)
+        self.assertTrue(os.path.exists(os.path.join(self._tmp_dir, 'sra')))
+
+    def test_isatab2sra_dump_dir_exists_protein_rna_interaction_seq(self):
+        #  FIXME: Same as null pointer exception above
+        isatab2sra.create_sra(os.path.join(self._tab_data_dir, 'TEST-ISA-SRA-protein-rna-interaction-seq'),
+                              self._tmp_dir, self._sra_config_dir)
+        self.assertTrue(os.path.exists(os.path.join(self._tmp_dir, 'sra')))
+
+    def test_isatab2sra_dump_dir_exists_transcriptome_seq(self):
+        #  FIXME: Same as null pointer exception above
+        isatab2sra.create_sra(os.path.join(self._tab_data_dir, 'TEST-ISA-SRA-transcriptome-seq'), self._tmp_dir,
+                              self._sra_config_dir)
+        self.assertTrue(os.path.exists(os.path.join(self._tmp_dir, 'sra')))
