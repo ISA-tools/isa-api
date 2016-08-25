@@ -32,16 +32,11 @@ class TestNewSraExport(TestCase):
                                                                'rb').read())
 
         self._sra_default_config = {
-            "broker_name": "",
-            "center_name": "OXFORD",
-            "center_project_name": "OXFORD",
-            "lab_name": "Oxford e-Research Centre",
-            "submission_action": "ADD",
-            "funding_agency": "None",
-            "grant_number": "None",
-            "inform_on_status_name": "Philippe Rocca-Serra",
+            "sra_broker": "",
+            "sra_center": "OXFORD",
+            "sra_project": "OXFORD",
+            "sra_lab": "Oxford e-Research Centre",
             "inform_on_status_email": "proccaserra@gmail.com",
-            "inform_on_error_name:": "Philippe Rocca-Serra",
             "inform_on_error_email": "proccaserra@gmail.com"
         }
 
@@ -49,7 +44,7 @@ class TestNewSraExport(TestCase):
         shutil.rmtree(self._tmp_dir)
 
     def test_sra_export(self):
-        sra.export(self._inv_obj, self._tmp_dir)
+        sra.export(self._inv_obj, self._tmp_dir, sra_settings=self._sra_default_config)
         actual_submission_xml_obj = etree.fromstring(open(os.path.join(self._tmp_dir, 'submission.xml'), 'rb').read())
         # count tags
         self.assertEqual(self._expected_submission_xml_obj.xpath('count(//SUBMISSION)'),
