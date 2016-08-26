@@ -121,7 +121,6 @@ class TestNewSraExport(TestCase):
                          actual_exp_set_xml_obj.xpath('count(//POOLING_STRATEGY)'))
         self.assertEqual(self._expected_exp_set_xml_obj.xpath('count(//LIBRARY_CONSTRUCTION_PROTOCOL)'),
                          actual_exp_set_xml_obj.xpath('count(//LIBRARY_CONSTRUCTION_PROTOCOL)'))
-        #  FIXME: actual_exp_set_xml_obj.xpath('count(//SPOT_DESCRIPTOR)')) AssertionError: 29.0 != 0.0
         self.assertEqual(self._expected_exp_set_xml_obj.xpath('count(//SPOT_DESCRIPTOR)'),
                          actual_exp_set_xml_obj.xpath('count(//SPOT_DESCRIPTOR)'))
         self.assertEqual(self._expected_exp_set_xml_obj.xpath('count(//SPOT_DECODE_SPEC)'),
