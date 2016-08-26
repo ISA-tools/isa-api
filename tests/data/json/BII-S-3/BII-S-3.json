@@ -764,7 +764,7 @@
                             "performer": ""
                         }
                     ],
-                    "technologyPlatform": "454 Genome Sequencer FLX",
+                    "technologyPlatform": "454 GS FLX",
                     "technologyType": {
                         "annotationValue": "nucleotide sequencing",
                         "termAccession": "",
@@ -2032,7 +2032,7 @@
                             }
                         }
                     ],
-                    "technologyPlatform": "454 Genome Sequencer FLX",
+                    "technologyPlatform": "454 GS FLX",
                     "technologyType": {
                         "annotationValue": "nucleotide sequencing",
                         "termAccession": "",
@@ -4343,7 +4343,7 @@
                     "name": "mRNA extraction - standard procedure 3",
                     "parameters": [],
                     "protocolType": {
-                        "annotationValue": "RNA extraction",
+                        "annotationValue": "nucleic acid extraction",
                         "termAccession": "",
                         "termSource": ""
                     },
@@ -4357,7 +4357,7 @@
                     "name": "genomic DNA extraction - standard procedure 4",
                     "parameters": [],
                     "protocolType": {
-                        "annotationValue": "DNA extraction",
+                        "annotationValue": "nucleic acid extraction",
                         "termAccession": "",
                         "termSource": ""
                     },
