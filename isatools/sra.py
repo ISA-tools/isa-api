@@ -214,13 +214,17 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             assay_to_export['library_selection'] = 'PCR'
                             library_layout = get_pv(assay_to_export['library construction'], 'library layout')
                             assay_to_export['library_layout'] = library_layout
-
                             nucl_acid_amp = get_pv(assay_to_export['library construction'], 'nucleic acid amplification')
                             if nucl_acid_amp is None:
                                 nucl_acid_amp = get_pv(assay_to_export['library construction'], 'nucl_acid_amp')
 
                             protocol = "\n protocol_description: " \
                                        + assay_to_export['library construction'].executes_protocol.description
+                            mid_pv = get_pv(assay_to_export['library construction'], 'mid')
+                            if mid_pv is not None:
+                                protocol += "\n mid: " + mid_pv
+                                assay_to_export['barcode'] = mid_pv
+                                assay_to_export['min_match'] = len(mid_pv)
                             if nucl_acid_amp is not None:
                                 protocol += "\n nucl_acid_amp: " + nucl_acid_amp.value
                             url = get_pv(assay_to_export['library construction'], 'url')
@@ -247,7 +251,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 assay_to_export['targeted_loci'] = True
                                 assay_to_export['locus_name'] = target_gene
                         # END environmental gene survey library selection
-                        # BEGIN environmental gene survey library selection
+                        # BEGIN metagenome seq library selection
                         elif iassay.measurement_type.name in ['metagenome sequencing']:
                             library_source = 'METAGENOMIC'
                             library_strategy = get_pv(assay_to_export['library construction'],

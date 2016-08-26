@@ -1,0 +1,24 @@
+<SPOT_DESCRIPTOR>
+    <SPOT_DECODE_SPEC>
+        <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Technical Read</READ_CLASS>
+            <READ_TYPE>Adapter</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+        </READ_SPEC>
+        <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Technical Read</READ_CLASS>
+            <READ_TYPE>BarCode</READ_TYPE>
+            <EXPECTED_BASECALL_TABLE>
+                <BASECALL min_match="{{assay.min_match}}" max_mismatch="0" match_edge="full" read_group_tag="{{assay.barcode}}">{{assay.barcode}}</BASECALL>
+            </EXPECTED_BASECALL_TABLE>
+        </READ_SPEC>
+        <READ_SPEC>
+            <READ_INDEX>2</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <RELATIVE_ORDER follows_read_index="1" />
+        </READ_SPEC>
+    </SPOT_DECODE_SPEC>
+</SPOT_DESCRIPTOR>

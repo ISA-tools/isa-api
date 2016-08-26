@@ -1,0 +1,10 @@
+<SPOT_DESCRIPTOR>
+    <SPOT_DECODE_SPEC>
+        <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+        </READ_SPEC>
+    </SPOT_DECODE_SPEC>
+</SPOT_DESCRIPTOR>
