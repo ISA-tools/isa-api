@@ -281,12 +281,19 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
 
                             library_layout = get_pv(assay_to_export['library construction'], 'library layout')
                             assay_to_export['library_layout'] = library_layout
-                        # END environmental gene survey library selection
+                        # END metagenome seq library selection
+                        # BEGIN transciption profiling library selection
+                        elif iassay.measurement_type.name in ['transcription profiling']:
+                            # TODO: Implement this section to get BII-S-3 working
+                            pass
+                        # END transciption profiling library selection
                         else:
                             logger.error("ERROR:Unsupported measurement type: " + iassay.measurement_type.name)
                         assay_to_export['platform'] = get_pv(assay_to_export['nucleic acid sequencing'],
                                                              'sequencing instrument')
                         assays_to_export.append(assay_to_export)
+            else:
+                logger.error("ERROR:Unsupported measurement/technology type {0}/{1}, skipping assays".format(iassay.measurement_type.name, iassay.technology_type.name))
 
         xexp_set_template = env.get_template('experiment_set.xml')
         xexp_set = xexp_set_template.render(assays_to_export=assays_to_export, study=istudy,
