@@ -204,7 +204,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             assay_to_export['library_selection'] = library_selection
                             assay_to_export['library_construction_protocol'] = protocol
 
-                            library_layout = get_pv(assay_to_export['library construction'], 'library layout').value
+                            library_layout = get_pv(assay_to_export['library construction'], 'library layout')
                             assay_to_export['library_layout'] = library_layout
                         # END genome seq library selection
                         # BEGIN environmental gene survey library selection
