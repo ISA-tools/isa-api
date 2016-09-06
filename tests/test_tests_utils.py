@@ -1,5 +1,7 @@
 import unittest
 from tests import utils
+import os
+from lxml import etree
 
 
 class TestUtils(unittest.TestCase):
@@ -100,6 +102,12 @@ class TestUtils(unittest.TestCase):
         <e1>cdata1</e1>
     </root>"""
 
+    def setUp(self):
+        self.i_tab1 = open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 'i_investigation.txt'))
+        self.i_tab2 = open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 'i_investigation.txt'))
+        self.s_tab1 = open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 's_BII-S-1.txt'))
+        self.s_tab2 = open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 's_BII-S-1.txt'))
+
     def test_sortlistsj(self):
         j1 = self.j1
         j2 = self.j2
@@ -107,19 +115,15 @@ class TestUtils(unittest.TestCase):
         utils.sortlistsj(j2)
         self.assertEqual(j1, j2)
 
-    def test_sortlistsx(self):
-        x1 = self.x1
-        x2 = self.x2
-        utils.sortlistsx(x1)
-        utils.sortlistsx(x2)
-        self.assertEqual(x1, x2)
-
     def test_assert_json_equal(self):
         self.assertTrue(utils.assert_json_equal(self.j1, self.j2))
         self.assertFalse(utils.assert_json_equal(self.j1, self.j3))
 
-    def test_assert_xml_equal(self):
-        self.fail("Unfinished test code")
+    def test_assert_tab_content_equal_investigation(self):
+        self.assertTrue(utils.assert_tab_content_equal(self.i_tab1, self.i_tab2))
 
-    def test_assert_tab_content_equal(self):
-        self.fail("Unfinished test code")
+    def test_assert_tab_content_equal_assay_table(self):
+        self.assertTrue(utils.assert_tab_content_equal(self.s_tab1, self.s_tab2))
+
+    def test_assert_xml_equal(self):
+        self.assertTrue(utils.assert_xml_equal(etree.fromstring(self.x1), etree.fromstring(self.x2)))
