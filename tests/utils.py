@@ -144,29 +144,6 @@ def assert_tab_content_equal(fp_x, fp_y):
             return False
 
 
-def immutablesort(json):
-
-    def _sortlist(L):
-        keys = list()
-        if isinstance(L[0], dict):
-            keys = L[0].keys()
-            ok = True
-            for i in L:
-                if isinstance(i, dict):
-                    if i.keys() not in keys:
-                        ok = False
-                        continue
-            if ok:  # if all keys the same, shuffle on values
-                return sorted(L, key=lambda i: i['@id'])
-            else:
-                return L
-    # sorted(L1, key=lambda i: str(i.values())) == sorted(L2, key=lambda i: str(i.values()))
-    for k, v in json.items():
-        if isinstance(v, list):
-            json[k] = _sortlist(v)
-    return json
-
-
 def sortlistsj(J):
     if isinstance(J, dict):
         for k in J.keys():
@@ -198,7 +175,27 @@ def assert_json_equal(jx, jy):
 
 
 def assert_xml_equal(x1, x2):
-    return False
+    # Only counts tags of x1 and x2 to check if the right number appear in each
+
+    def collect_tags(X):
+        foundtags = set()
+        for node in X.iter():
+            foundtags.add(node.tag)
+        return foundtags
+
+    x1tags = collect_tags(x1)
+    x2tags = collect_tags(x2)
+    if len(x1tags - x2tags) > 0 or len(x2tags - x1tags) > 0:
+        print("Collected tags don't match: ", x1tags, x2tags)
+        return False
+    else:
+        for tag in x1tags:
+            tagcount1 = x1.xpath('count(//{})'.format(tag))
+            tagcount2 = x2.xpath('count(//{})'.format(tag))
+            if tagcount1 != tagcount2:
+                print("Counts of {0} tag do not match {1}:{2}".format(tag, int(tagcount1), int(tagcount2)))
+                return False
+        return True
 
 
 def strip_ids(J):
