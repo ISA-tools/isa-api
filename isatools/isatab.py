@@ -868,7 +868,7 @@ def write_study_table_files(inv_obj, output_dir):
         df = df.drop_duplicates()
         df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0 (Sample name)
         for i, col in enumerate(df.columns):
-            if col_map[col] == 'Characteristics[Material Type]':
+            if col_map[col] in ['Characteristics[Material Type]', 'Characteristics[material type]']:
                 cols[i] = 'Material Type'
             else:
                 cols[i] = col_map[col]
