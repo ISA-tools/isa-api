@@ -115,286 +115,53 @@ class TestJsonToSra(TestCase):
         # Now try load the SRA output in test and compare against the expected output in test data directory
         sample_set_xml = open(os.path.join(self._tmp_dir, 'sample_set.xml'), 'rb').read()
         actual_sample_set_xml_biis3 = etree.fromstring(sample_set_xml)
-        self.assertEqual(self._expected_sample_set_xml_biis3.xpath('count(//SAMPLE_SET)'),
-                         actual_sample_set_xml_biis3.xpath('count(//SAMPLE_SET)'))
-        self.assertEqual(self._expected_sample_set_xml_biis3.xpath('count(//SAMPLE)'),
-                         actual_sample_set_xml_biis3.xpath('count(//SAMPLE)'))
-        self.assertEqual(self._expected_sample_set_xml_biis3.xpath('count(//TITLE)'),
-                         actual_sample_set_xml_biis3.xpath('count(//TITLE)'))
-        self.assertEqual(self._expected_sample_set_xml_biis3.xpath('count(//SAMPLE_NAME)'),
-                         actual_sample_set_xml_biis3.xpath('count(//SAMPLE_NAME)'))
-        self.assertEqual(self._expected_sample_set_xml_biis3.xpath('count(//TAXON_ID)'),
-                         actual_sample_set_xml_biis3.xpath('count(//TAXON_ID)'))
-        self.assertEqual(self._expected_sample_set_xml_biis3.xpath('count(//SCIENTIFIC_NAME)'),
-                         actual_sample_set_xml_biis3.xpath('count(//SCIENTIFIC_NAME)'))
-        self.assertEqual(self._expected_sample_set_xml_biis3.xpath('count(//SAMPLE_ATTRIBUTES)'),
-                         actual_sample_set_xml_biis3.xpath('count(//SAMPLE_ATTRIBUTES)'))
-        self.assertEqual(self._expected_sample_set_xml_biis3.xpath('count(//SAMPLE_ATTRIBUTE)'),
-                         actual_sample_set_xml_biis3.xpath('count(//SAMPLE_ATTRIBUTE)'))
-        self.assertEqual(self._expected_sample_set_xml_biis3.xpath('count(//TAG)'),
-                         actual_sample_set_xml_biis3.xpath('count(//TAG)'))
-        self.assertEqual(self._expected_sample_set_xml_biis3.xpath('count(//VALUE)'),
-                         actual_sample_set_xml_biis3.xpath('count(//VALUE)'))
-        self.assertEqual(self._expected_sample_set_xml_biis3.xpath('count(//UNITS)'),
-                         actual_sample_set_xml_biis3.xpath('count(//UNITS)'))
+        self.assertTrue(utils.assert_xml_equal(self._expected_sample_set_xml_biis3, actual_sample_set_xml_biis3))
 
     def test_sra_dump_experiment_set_xml_biis3(self):
         json2sra.convert2(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir, validate_first=False)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         experiment_set_xml = open(os.path.join(self._tmp_dir, 'experiment_set.xml'), 'rb').read()
         actual_experiment_set_xml_biis3 = etree.fromstring(experiment_set_xml)
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//EXPERIMENT_SET)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//EXPERIMENT_SET)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//EXPERIMENT)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//EXPERIMENT)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//TITLE)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//TITLE)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//STUDY_REF)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//STUDY_REF)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//DESIGN)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//DESIGN)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//DESIGN_DESCRIPTION)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//DESIGN_DESCRIPTION)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//SAMPLE_DESCRIPTOR)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//SAMPLE_DESCRIPTOR)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//LIBRARY_DESCRIPTOR)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//LIBRARY_DESCRIPTOR)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//LIBRARY_NAME)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//LIBRARY_NAME)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//LIBRARY_STRATEGY)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//LIBRARY_STRATEGY)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//LIBRARY_SOURCE)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//LIBRARY_SOURCE)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//LIBRARY_SELECTION)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//LIBRARY_SELECTION)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//LIBRARY_LAYOUT)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//LIBRARY_LAYOUT)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//SINGLE)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//SINGLE)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//TARGETED_LOCI)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//TARGETED_LOCI)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//LOCUS)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//LOCUS)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//POOLING_STRATEGY)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//POOLING_STRATEGY)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//LIBRARY_CONSTRUCTION_PROTOCOL)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//LIBRARY_CONSTRUCTION_PROTOCOL)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//SPOT_DESCRIPTOR)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//SPOT_DESCRIPTOR)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//SPOT_DECODE_SPEC)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//SPOT_DECODE_SPEC)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//READ_SPEC)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//READ_SPEC)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//READ_INDEX)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//READ_INDEX)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//READ_CLASS)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//READ_CLASS)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//READ_TYPE)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//READ_TYPE)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//BASE_COORD)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//BASE_COORD)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//READ_INDEX)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//READ_INDEX)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//EXPECTED_BASECALL_TABLE)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//EXPECTED_BASECALL_TABLE)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//BASECALL)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//BASECALL)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//RELATIVE_ORDER)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//RELATIVE_ORDER)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//PLATFORM)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//PLATFORM)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//LS454)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//LS454)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis3.xpath('count(//INSTRUMENT_MODEL)'),
-                         actual_experiment_set_xml_biis3.xpath('count(//INSTRUMENT_MODEL)'))
+        self.assertTrue(utils.assert_xml_equal(self._expected_experiment_set_xml_biis3, actual_experiment_set_xml_biis3))
 
     def test_sra_dump_run_set_xml_biis3(self):
         json2sra.convert2(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir, validate_first=False)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         run_set_xml = open(os.path.join(self._tmp_dir, 'run_set.xml'), 'rb').read()
         actual_run_set_xml_biis3 = etree.fromstring(run_set_xml)
-        self.assertEqual(self._expected_run_set_xml_biis3.xpath('count(//RUN_SET)'),
-                         actual_run_set_xml_biis3.xpath('count(//RUN_SET)'))
-        self.assertEqual(self._expected_run_set_xml_biis3.xpath('count(//RUN)'),
-                         actual_run_set_xml_biis3.xpath('count(//RUN)'))
-        self.assertEqual(self._expected_run_set_xml_biis3.xpath('count(//EXPERIMENT_REF)'),
-                         actual_run_set_xml_biis3.xpath('count(//EXPERIMENT_REF)'))
-        self.assertEqual(self._expected_run_set_xml_biis3.xpath('count(//DATA_BLOCK)'),
-                         actual_run_set_xml_biis3.xpath('count(//DATA_BLOCK)'))
-        self.assertEqual(self._expected_run_set_xml_biis3.xpath('count(//FILES)'),
-                         actual_run_set_xml_biis3.xpath('count(//FILES)'))
-        self.assertEqual(self._expected_run_set_xml_biis3.xpath('count(//FILE)'),
-                         actual_run_set_xml_biis3.xpath('count(//FILE)'))
+        self.assertTrue(utils.assert_xml_equal(self._expected_run_set_xml_biis3, actual_run_set_xml_biis3))
 
     def test_sra_dump_submission_xml_biis7(self):
         json2sra.convert2(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir, validate_first=False)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         submission_xml = open(os.path.join(self._tmp_dir, 'submission.xml'), 'rb').read()
         actual_submission_xml_biis7 = etree.fromstring(submission_xml)
-        # count tags
-        self.assertEqual(self._expected_submission_xml_biis7.xpath('count(//SUBMISSION)'),
-                         actual_submission_xml_biis7.xpath('count(//SUBMISSION)'))
-        self.assertEqual(self._expected_submission_xml_biis7.xpath('count(//CONTACTS)'),
-                         actual_submission_xml_biis7.xpath('count(//CONTACTS)'))
-        self.assertEqual(self._expected_submission_xml_biis7.xpath('count(//CONTACT)'),
-                         actual_submission_xml_biis7.xpath('count(//CONTACT)'))
-        self.assertEqual(self._expected_submission_xml_biis7.xpath('count(//ACTIONS)'),
-                         actual_submission_xml_biis7.xpath('count(//ACTIONS)'))
-        self.assertEqual(self._expected_submission_xml_biis7.xpath('count(//ACTION)'),
-                         actual_submission_xml_biis7.xpath('count(//ACTION)'))
-        self.assertEqual(self._expected_submission_xml_biis7.xpath('count(//ADD)'),
-                         actual_submission_xml_biis7.xpath('count(//ADD)'))
+        self.assertTrue(utils.assert_xml_equal(self._expected_submission_xml_biis7, actual_submission_xml_biis7))
 
     def test_sra_dump_project_set_xml_biis7(self):
         json2sra.convert2(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir, validate_first=False)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         study_xml = open(os.path.join(self._tmp_dir, 'project_set.xml'), 'rb').read()
-        actual_study_xml_biis7 = etree.fromstring(study_xml)
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//STUDY)'),
-                         actual_study_xml_biis7.xpath('count(//STUDY)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//DESCRIPTOR)'),
-                         actual_study_xml_biis7.xpath('count(//DESCRIPTOR)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//CENTER_NAME)'),
-                         actual_study_xml_biis7.xpath('count(//CENTER_NAME)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//CENTER_PROJECT_NAME)'),
-                         actual_study_xml_biis7.xpath('count(//CENTER_PROJECT_NAME)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//STUDY_TITLE)'),
-                         actual_study_xml_biis7.xpath('count(//STUDY_TITLE)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//STUDY_DESCRIPTION)'),
-                         actual_study_xml_biis7.xpath('count(//STUDY_DESCRIPTION)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//STUDY_TYPE)'),
-                         actual_study_xml_biis7.xpath('count(//STUDY_TYPE)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//STUDY_LINKS)'),
-                         actual_study_xml_biis7.xpath('count(//STUDY_LINKS)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//STUDY_LINK)'),
-                         actual_study_xml_biis7.xpath('count(//STUDY_LINK)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//ENTREZ_LINK)'),
-                         actual_study_xml_biis7.xpath('count(//ENTREZ_LINK)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//DB)'),
-                         actual_study_xml_biis7.xpath('count(//DB)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//ID)'),
-                         actual_study_xml_biis7.xpath('count(//ID)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//STUDY_ATTRIBUTES)'),
-                         actual_study_xml_biis7.xpath('count(//STUDY_ATTRIBUTES)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//STUDY_ATTRIBUTE)'),
-                         actual_study_xml_biis7.xpath('count(//STUDY_ATTRIBUTE)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//TAG)'),
-                         actual_study_xml_biis7.xpath('count(//TAG)'))
-        self.assertEqual(self._expected_project_set_xml_biis7.xpath('count(//VALUE)'),
-                         actual_study_xml_biis7.xpath('count(//VALUE)'))
+        actual_project_set_xml_biis7 = etree.fromstring(study_xml)
+        self.assertTrue(utils.assert_xml_equal(self._expected_project_set_xml_biis7, actual_project_set_xml_biis7))
 
     def test_sra_dump_sample_set_xml_biis7(self):
         json2sra.convert2(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir, validate_first=False)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         sample_set_xml = open(os.path.join(self._tmp_dir, 'sample_set.xml'), 'rb').read()
         actual_sample_set_xml_biis7 = etree.fromstring(sample_set_xml)
-        self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//SAMPLE_SET)'),
-                         actual_sample_set_xml_biis7.xpath('count(//SAMPLE_SET)'))
-        self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//SAMPLE)'),
-                         actual_sample_set_xml_biis7.xpath('count(//SAMPLE)'))
-        self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//TITLE)'),
-                         actual_sample_set_xml_biis7.xpath('count(//TITLE)'))
-        self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//SAMPLE_NAME)'),
-                         actual_sample_set_xml_biis7.xpath('count(//SAMPLE_NAME)'))
-        self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//TAXON_ID)'),
-                         actual_sample_set_xml_biis7.xpath('count(//TAXON_ID)'))
-        self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//SCIENTIFIC_NAME)'),
-                         actual_sample_set_xml_biis7.xpath('count(//SCIENTIFIC_NAME)'))
-        self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//SAMPLE_ATTRIBUTES)'),
-                         actual_sample_set_xml_biis7.xpath('count(//SAMPLE_ATTRIBUTES)'))
-        self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//SAMPLE_ATTRIBUTE)'),
-                         actual_sample_set_xml_biis7.xpath('count(//SAMPLE_ATTRIBUTE)'))
-        self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//TAG)'),
-                         actual_sample_set_xml_biis7.xpath('count(//TAG)'))
-        self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//VALUE)'),
-                         actual_sample_set_xml_biis7.xpath('count(//VALUE)'))
-        self.assertEqual(self._expected_sample_set_xml_biis7.xpath('count(//UNITS)'),
-                         actual_sample_set_xml_biis7.xpath('count(//UNITS)'))
+        self.assertTrue(utils.assert_xml_equal(self._expected_sample_set_xml_biis7, actual_sample_set_xml_biis7))
 
     def test_sra_dump_experiment_set_xml_biis7(self):
         json2sra.convert2(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir, validate_first=False)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         experiment_set_xml = open(os.path.join(self._tmp_dir, 'experiment_set.xml'), 'rb').read()
         actual_experiment_set_xml_biis7 = etree.fromstring(experiment_set_xml)
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//EXPERIMENT_SET)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//EXPERIMENT_SET)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//EXPERIMENT)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//EXPERIMENT)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//TITLE)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//TITLE)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//STUDY_REF)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//STUDY_REF)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//DESIGN)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//DESIGN)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//DESIGN_DESCRIPTION)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//DESIGN_DESCRIPTION)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//SAMPLE_DESCRIPTOR)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//SAMPLE_DESCRIPTOR)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//LIBRARY_DESCRIPTOR)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//LIBRARY_DESCRIPTOR)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//LIBRARY_NAME)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//LIBRARY_NAME)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//LIBRARY_STRATEGY)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//LIBRARY_STRATEGY)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//LIBRARY_SOURCE)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//LIBRARY_SOURCE)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//LIBRARY_SELECTION)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//LIBRARY_SELECTION)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//LIBRARY_LAYOUT)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//LIBRARY_LAYOUT)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//SINGLE)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//SINGLE)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//TARGETED_LOCI)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//TARGETED_LOCI)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//LOCUS)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//LOCUS)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//POOLING_STRATEGY)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//POOLING_STRATEGY)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//LIBRARY_CONSTRUCTION_PROTOCOL)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//LIBRARY_CONSTRUCTION_PROTOCOL)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//SPOT_DESCRIPTOR)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//SPOT_DESCRIPTOR)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//SPOT_DECODE_SPEC)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//SPOT_DECODE_SPEC)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//READ_SPEC)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//READ_SPEC)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//READ_INDEX)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//READ_INDEX)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//READ_CLASS)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//READ_CLASS)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//READ_TYPE)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//READ_TYPE)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//BASE_COORD)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//BASE_COORD)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//READ_INDEX)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//READ_INDEX)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//EXPECTED_BASECALL_TABLE)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//EXPECTED_BASECALL_TABLE)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//BASECALL)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//BASECALL)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//RELATIVE_ORDER)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//RELATIVE_ORDER)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//PLATFORM)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//PLATFORM)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//LS454)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//LS454)'))
-        self.assertEqual(self._expected_experiment_set_xml_biis7.xpath('count(//INSTRUMENT_MODEL)'),
-                         actual_experiment_set_xml_biis7.xpath('count(//INSTRUMENT_MODEL)'))
+        self.assertTrue(utils.assert_xml_equal(self._expected_experiment_set_xml_biis7, actual_experiment_set_xml_biis7))
 
     def test_sra_dump_run_set_xml_biis7(self):
         json2sra.convert2(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir, validate_first=False)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         run_set_xml = open(os.path.join(self._tmp_dir, 'run_set.xml'), 'rb').read()
         actual_run_set_xml_biis7 = etree.fromstring(run_set_xml)
-        self.assertEqual(self._expected_run_set_xml_biis7.xpath('count(//RUN_SET)'),
-                         actual_run_set_xml_biis7.xpath('count(//RUN_SET)'))
-        self.assertEqual(self._expected_run_set_xml_biis7.xpath('count(//RUN)'),
-                         actual_run_set_xml_biis7.xpath('count(//RUN)'))
-        self.assertEqual(self._expected_run_set_xml_biis7.xpath('count(//EXPERIMENT_REF)'),
-                         actual_run_set_xml_biis7.xpath('count(//EXPERIMENT_REF)'))
-        self.assertEqual(self._expected_run_set_xml_biis7.xpath('count(//DATA_BLOCK)'),
-                         actual_run_set_xml_biis7.xpath('count(//DATA_BLOCK)'))
-        self.assertEqual(self._expected_run_set_xml_biis7.xpath('count(//FILES)'),
-                         actual_run_set_xml_biis7.xpath('count(//FILES)'))
-        self.assertEqual(self._expected_run_set_xml_biis7.xpath('count(//FILE)'),
-                         actual_run_set_xml_biis7.xpath('count(//FILE)'))
+        self.assertTrue( utils.assert_xml_equal(self._expected_run_set_xml_biis7, actual_run_set_xml_biis7))
