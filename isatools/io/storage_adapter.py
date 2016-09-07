@@ -31,6 +31,7 @@ def validate_xml_against_schema(xml_str, xml_schema_file):
     :param xml_str str
     :param xml_schema_file str - valid file path to the XSD file
     """
+    print(xml_str)
     with open(xml_schema_file, 'rb') as schema_file:
         schema_root = etree.XML(schema_file.read())
     xml_parser = etree.XMLParser(schema=etree.XMLSchema(schema_root))
