@@ -338,22 +338,17 @@ def step_impl(context):
         context.xml_text = xml_file.read()
         httpretty.register_uri(httpretty.GET, download_url, body=context.xml_text, content_type='text/plain')
         context.xml = etree.parse(StringIO(context.xml_text))
-    print('3')
+
     branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
-    import traceback
-    try:
-        context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
+    context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
                                                owner=context.owner_name, repository=context.repo_name, ref=branch)
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
-        traceback.print_stack()
-        traceback.print_exception()
+
     expect(httpretty.has_request()).to.be.true
     expect(httpretty.last_request().method).to.equal('GET')
     branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
     path = encoded_file_url.replace(GITHUB_API_URL, '') + '?ref=' + branch
     expect(httpretty.last_request().path).to.equal(path)
+
 
 @then("it should download it as an XML file")
 def step_impl(context):
