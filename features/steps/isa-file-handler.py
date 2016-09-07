@@ -345,7 +345,10 @@ def step_impl(context):
         context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
                                                owner=context.owner_name, repository=context.repo_name, ref=branch)
     except Exception as e:
+        print(e)
         traceback.print_exc()
+        traceback.print_stack()
+        traceback.print_exception()
     print('4')
     expect(httpretty.has_request()).to.be.true
     expect(httpretty.last_request().method).to.equal('GET')
