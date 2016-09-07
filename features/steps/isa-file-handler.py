@@ -253,41 +253,39 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    try:
-        # build up the path to the file with the encoded dataset
-        fixture_file_name = '_'.join([context.owner_name, context.repo_name, context.source_path]).replace('/', '_')
-        fixture_file_name_encoded = fixture_file_name.replace('.json', '_encoded.json')
-        fixture_file_name_raw = fixture_file_name.replace('.json', '_raw.json')
-        fixture_file_path_encoded = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures',
-                                                                 fixture_file_name_encoded))
-        fixture_file_path_raw = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures',
-                                                             fixture_file_name_raw))
 
-        # create the url to GET the encoded dataset
-        encoded_file_url = '/'.join([GITHUB_API_URL, REPOS, context.owner_name, context.repo_name,
-                                 CONTENTS, context.source_path])
-        with open(fixture_file_path_encoded) as json_file:
-            context.json_isa_dataset_encoded = json.load(json_file)
-            httpretty.register_uri(httpretty.GET, encoded_file_url, body=json.dumps(context.json_isa_dataset_encoded))
+    # build up the path to the file with the encoded dataset
+    fixture_file_name = '_'.join([context.owner_name, context.repo_name, context.source_path]).replace('/', '_')
+    fixture_file_name_encoded = fixture_file_name.replace('.json', '_encoded.json')
+    fixture_file_name_raw = fixture_file_name.replace('.json', '_raw.json')
+    fixture_file_path_encoded = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures',
+                                                             fixture_file_name_encoded))
+    fixture_file_path_raw = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures',
+                                                         fixture_file_name_raw))
+    print("1")
+    # create the url to GET the encoded dataset
+    encoded_file_url = '/'.join([GITHUB_API_URL, REPOS, context.owner_name, context.repo_name,
+                             CONTENTS, context.source_path])
+    with open(fixture_file_path_encoded) as json_file:
+        context.json_isa_dataset_encoded = json.load(json_file)
+        httpretty.register_uri(httpretty.GET, encoded_file_url, body=json.dumps(context.json_isa_dataset_encoded))
+    print("2")
+    # retrieve the url to GET the raw dataset
+    download_url = context.json_isa_dataset_encoded['download_url']
+    with open(fixture_file_path_raw) as json_file:
+        context.json_isa_dataset_raw = json.load(json_file)
+        httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.json_isa_dataset_raw))
 
-        # retrieve the url to GET the raw dataset
-        download_url = context.json_isa_dataset_encoded['download_url']
-        with open(fixture_file_path_raw) as json_file:
-            context.json_isa_dataset_raw = json.load(json_file)
-            httpretty.register_uri(httpretty.GET, download_url, body=json.dumps(context.json_isa_dataset_raw))
-
-        branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
-        context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
-                                                   owner=context.owner_name, repository=context.repo_name, ref=branch)
-
-        expect(httpretty.has_request()).to.be.true
-        expect(httpretty.last_request().method).to.equal('GET')
-        branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
-        path = encoded_file_url.replace(GITHUB_API_URL, '') + '?ref=' + branch
-        expect(httpretty.last_request().path).to.equal(path)
-    except Exception as e:
-        print("Something went wrong: ", e)
-
+    branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
+    context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
+                                               owner=context.owner_name, repository=context.repo_name, ref=branch)
+    print("3")
+    expect(httpretty.has_request()).to.be.true
+    expect(httpretty.last_request().method).to.equal('GET')
+    branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
+    path = encoded_file_url.replace(GITHUB_API_URL, '') + '?ref=' + branch
+    expect(httpretty.last_request().path).to.equal(path)
+    print("4")
 
 @then("it should download it as a JSON file")
 def step_impl(context):
