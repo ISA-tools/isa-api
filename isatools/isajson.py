@@ -768,31 +768,27 @@ def get_characteristic_category_ids_in_assay_materials(assay_json):
               assay_json['materials']['samples'] + assay_json['materials']['otherMaterials']] for elem in iterabl]
 
 
-def check_characteristic_category_ids_usage(study_json):
+def check_characteristic_category_ids_usage(studies_json):
     """Used for rule 1013"""
-    characteristic_categories_declared = get_characteristic_category_ids(study_json)
-    characteristic_categories_used = get_characteristic_category_ids_in_study_materials(study_json)
+    characteristic_categories_declared = list()
+    characteristic_categories_used = list()
+    for study_json in studies_json:
+        characteristic_categories_declared += get_characteristic_category_ids(study_json)
+        for assay in study_json['assays']:
+            characteristic_categories_declared_in_assay = get_characteristic_category_ids(assay)
+            characteristic_categories_declared += characteristic_categories_declared_in_assay
+        characteristic_categories_used += get_characteristic_category_ids_in_study_materials(study_json)
+        for assay in study_json['assays']:
+            characteristic_categories_used_in_assay = get_characteristic_category_ids_in_assay_materials(assay)
+            characteristic_categories_used += characteristic_categories_used_in_assay
     if len(set(characteristic_categories_used) - set(characteristic_categories_declared)) > 0:
         diff = set(characteristic_categories_used) - set(characteristic_categories_declared)
-        logger.error("(E) There are study characteristic categories {} used in a source or sample characteristic that have not been not declared"
+        logger.error("(E) There are characteristic categories {} used in a source or sample characteristic that have not been not declared"
               .format(list(diff)))
     elif len(set(characteristic_categories_declared) - set(characteristic_categories_used)) > 0:
         diff = set(characteristic_categories_declared) - set(characteristic_categories_used)
-        logger.warning("(W) There are some study characteristic categories declared {} that have not been used in any source or sample characteristic"
+        logger.warning("(W) There are characteristic categories declared {} that have not been used in any source or sample characteristic"
               .format(list(diff)))
-    for assay in study_json['assays']:
-        characteristic_categories_declared = get_characteristic_category_ids(assay)
-        characteristic_categories_used = get_characteristic_category_ids_in_assay_materials(assay)
-        if len(set(characteristic_categories_used) - set(characteristic_categories_declared)) > 0:
-            diff = set(characteristic_categories_used) - set(characteristic_categories_declared)
-            logger.error(
-                "(E) There are assay characteristic categories {} used in a material characteristic that have not been not declared"
-                .format(list(diff)))
-        elif len(set(characteristic_categories_declared) - set(characteristic_categories_used)) > 0:
-            diff = set(characteristic_categories_declared) - set(characteristic_categories_used)
-            logger.warning(
-                "(W) There are some assay characteristic categories declared {} that have not been used in any material characteristic"
-                .format(list(diff)))
 
 
 def get_study_factor_ids(study_json):
@@ -1224,8 +1220,7 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
             check_material_ids_declared_used(study_json, get_material_ids)  # Rule 1017
             check_material_ids_declared_used(study_json, get_data_file_ids)  # Rule 1018
         logger.info("Checking characteristic categories usage...")
-        for study_json in isa_json['studies']:
-            check_characteristic_category_ids_usage(study_json)  # Rules 1013 and 1022
+        check_characteristic_category_ids_usage(isa_json['studies'])  # Rules 1013 and 1022
         logger.info("Checking study factor usage...")
         for study_json in isa_json['studies']:
             check_study_factor_usage(study_json)  # Rules 1008 and 1021
