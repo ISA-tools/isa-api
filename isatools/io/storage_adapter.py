@@ -43,7 +43,8 @@ def validate_xml_against_schema(xml_str, xml_schema_file):
     except Exception as e:
         print(xml_str)
         schema_file.seek(0)
-        print(schema_file.read())
+        print(xml_schema_file)
+        print(open(xml_schema_file, 'r'))
         print(e)
     return result
 
