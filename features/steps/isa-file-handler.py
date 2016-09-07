@@ -334,8 +334,10 @@ def step_impl(context):
     download_url = context.xml_encoded['download_url']
 
     # get the raw zipped file
+    print(fixture_file_path_raw)
     with open(fixture_file_path_raw) as xml_file:
         context.xml_text = xml_file.read()
+        print(context.xml_text)
         httpretty.register_uri(httpretty.GET, download_url, body=context.xml_text, content_type='text/plain')
         context.xml = etree.parse(StringIO(context.xml_text))
     print('3')
