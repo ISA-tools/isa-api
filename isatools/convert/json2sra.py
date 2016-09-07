@@ -1,4 +1,3 @@
-from isatools.convert import json2isatab, isatab2sra
 from isatools import isajson, sra
 from glob import glob
 import os
