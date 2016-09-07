@@ -97,7 +97,6 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    print("HELLO!")
     httpretty.register_uri(httpretty.GET, auth_url, body=json.dumps([]), content_type='application/json')
     httpretty.register_uri(httpretty.POST, auth_url,
                            body=json.dumps(auth_res_body),
@@ -341,11 +340,12 @@ def step_impl(context):
         context.xml = etree.parse(StringIO(context.xml_text))
     print('3')
     branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
+    import traceback
     try:
         context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
                                                owner=context.owner_name, repository=context.repo_name, ref=branch)
     except Exception as e:
-        print(e)
+        traceback.print_exc()
     print('4')
     expect(httpretty.has_request()).to.be.true
     expect(httpretty.last_request().method).to.equal('GET')
