@@ -55,7 +55,6 @@ class TestIsaTab2JsonIdentifierName(unittest.TestCase):
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2json_convert_bii_s_3(self):
-        # FIXME: Fails because of #126
         test_case = 'BII-S-3'
         actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), self.identifier_type)
         expected_json = json.load(open(os.path.join(self._json_data_dir, test_case, test_case + '.json')))
@@ -68,8 +67,13 @@ class TestIsaTab2JsonIdentifierName(unittest.TestCase):
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2json_convert_bii_i_1(self):
-        # FIXME: Fails because of #126
         test_case = 'BII-I-1'
+        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), self.identifier_type)
+        expected_json = json.load(open(os.path.join(self._json_data_dir, test_case, test_case + '.json')))
+        self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
+
+    def test_isatab2json_convert_mtbls1(self):
+        test_case = 'MTBLS1'
         actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), self.identifier_type)
         expected_json = json.load(open(os.path.join(self._json_data_dir, test_case, test_case + '.json')))
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
