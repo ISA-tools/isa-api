@@ -286,7 +286,7 @@ class TestValidateIsaTab(unittest.TestCase):
         log = log_msg_stream.getvalue()
         if "Finished validation..." not in log:
             self.fail("Validation did not complete successfully when it should have!")
-        if '(W)' not in log or '(E)' not in log:
+        if '(W)' not in log:
             self.fail("Validation error and warnings are missing when should report some with BII-I-1")
 
     def test_validate_isatab_bii_s_3(self):
