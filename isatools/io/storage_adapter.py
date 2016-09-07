@@ -42,7 +42,6 @@ def validate_xml_against_schema(xml_str, xml_schema_file):
         result = etree.parse(StringIO(xml_str), xml_parser)
     except Exception as e:
         print(xml_str)
-        schema_file.seek(0)
         print(xml_schema_file)
         print(open(xml_schema_file, 'r'))
         print(e)
