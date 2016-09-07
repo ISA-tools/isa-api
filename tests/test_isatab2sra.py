@@ -11,8 +11,6 @@ import tempfile
 
 class TestIsaTab2Sra(unittest.TestCase):
 
-    # TODO: Need to write XML comparisons, not just count the tags
-
     def setUp(self):
         self._tab_data_dir = utils.TAB_DATA_DIR
         self._sra_data_dir = utils.SRA_DATA_DIR
