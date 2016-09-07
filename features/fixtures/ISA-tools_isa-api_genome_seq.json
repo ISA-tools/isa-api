@@ -1,6 +1,6 @@
 {
   "name": "genome_seq.xml",
-  "path": "tests/data/Configurations/isaconfig-default_v2015-07-02/genome_seq.xml",
+  "path": "tests/data/configs/xml/isaconfig-default_v2015-07-02/genome_seq.xml",
   "sha": "e560bb5bc6c693d8733e1e7b68db744d08303234",
   "size": 6328,
   "url": "https://api.github.com/repos/ISA-tools/isa-api/contents/tests/data/Configurations/isaconfig-default_v2015-07-02/genome_seq.xml?ref=master",
