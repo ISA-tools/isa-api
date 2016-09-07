@@ -340,11 +340,12 @@ def step_impl(context):
         httpretty.register_uri(httpretty.GET, download_url, body=context.xml_text, content_type='text/plain')
         context.xml = etree.parse(StringIO(context.xml_text))
     print('3')
-    print(context.source_path, context.destination_path)
     branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
-    print(branch)
-    context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
+    try:
+        context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
                                                owner=context.owner_name, repository=context.repo_name, ref=branch)
+    except Exception as e:
+        print(e)
     print('4')
     expect(httpretty.has_request()).to.be.true
     expect(httpretty.last_request().method).to.equal('GET')
