@@ -9,8 +9,6 @@ import tempfile
 
 class TestJsonToSra(TestCase):
 
-    # TODO: Need to write XML comparisons, not just count the tags
-
     def setUp(self):
         self._json_data_dir = utils.JSON_DATA_DIR
         self._unit_json_data_dir = utils.UNIT_JSON_DATA_DIR

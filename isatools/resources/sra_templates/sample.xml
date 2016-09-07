@@ -12,13 +12,15 @@
         {% for characteristic in assay.source.characteristics %}{% if characteristic.category.name != 'organism' %}
         <SAMPLE_ATTRIBUTE>
             <TAG>{{characteristic.category.name}}</TAG>
-            <VALUE>{{characteristic.value.name}}</VALUE>
+            {% if characteristic.unit.name %}<VALUE>{{characteristic.value}}</VALUE>
+            <UNITS>{{characteristic.unit.name}}</UNITS>{% else %}<VALUE>{{characteristic.value.name}}</VALUE>{% endif %}
         </SAMPLE_ATTRIBUTE>
         {% endif %}{% endfor %}
         {% for characteristic in assay.sample.characteristics %}{% if characteristic.category.name != 'organism' %}
         <SAMPLE_ATTRIBUTE>
             <TAG>{{characteristic.category.name}}</TAG>
-            <VALUE>{{characteristic.value.name}}</VALUE>
+            {% if characteristic.unit.name %}<VALUE>{{characteristic.value}}</VALUE>
+            <UNITS>{{characteristic.unit.name}}</UNITS>{% else %}<VALUE>{{characteristic.value.name}}</VALUE>{% endif %}
         </SAMPLE_ATTRIBUTE>
         {% endif %}{% endfor %}
     </SAMPLE_ATTRIBUTES>

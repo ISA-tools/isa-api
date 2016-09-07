@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <SAMPLE_SET xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.sample.xsd">
-	<SAMPLE alias="BII-S-7:sample:2BF" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:2BF" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:2BF</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -41,7 +41,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>5</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -73,7 +74,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:17BF" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:17BF" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:17BF</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -114,7 +115,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>5</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -146,7 +148,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:12EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:12EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:12EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -187,7 +189,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>6</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -219,7 +222,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:19EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:19EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:19EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -260,7 +263,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>4</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -292,7 +296,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:15BF" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:15BF" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:15BF</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -333,7 +337,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>6</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -365,7 +370,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:11BF" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:11BF" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:11BF</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -406,7 +411,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>5</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -438,7 +444,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:7BF" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:7BF" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:7BF</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -479,7 +485,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>6</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -511,7 +518,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:6BF" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:6BF" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:6BF</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -552,7 +559,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>6</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -584,7 +592,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:6EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:6EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:6EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -625,7 +633,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>6</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -657,7 +666,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:2EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:2EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:2EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -698,7 +707,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>1</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -730,7 +740,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:17EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:17EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:17EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -771,7 +781,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>5</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -803,7 +814,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:13BF" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:13BF" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:13BF</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -844,7 +855,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>6</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -876,7 +888,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:10EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:10EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:10EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -917,7 +929,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>5</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -949,7 +962,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:4BF" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:4BF" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:4BF</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -990,7 +1003,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>2</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -1022,7 +1036,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:5EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:5EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:5EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -1063,7 +1077,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>5</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -1095,7 +1110,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:8EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:8EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:8EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -1136,7 +1151,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>5</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -1168,7 +1184,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:18EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:18EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:18EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -1209,7 +1225,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>3</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -1241,7 +1258,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:1EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:1EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:1EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -1282,7 +1299,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>2</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -1314,7 +1332,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:20EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:20EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:20EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -1355,7 +1373,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>5</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -1387,7 +1406,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:8BF" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:8BF" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:8BF</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -1428,7 +1447,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>6</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -1460,7 +1480,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:13EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:13EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:13EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -1501,7 +1521,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>5</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -1533,7 +1554,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:16BF" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:16BF" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:16BF</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -1574,7 +1595,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>1</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -1606,7 +1628,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:10BF" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:10BF" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:10BF</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -1647,7 +1669,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>6</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -1679,7 +1702,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:9BF" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:9BF" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:9BF</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -1720,7 +1743,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>6</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -1752,7 +1776,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:3EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:3EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:3EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -1793,7 +1817,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>1</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -1825,7 +1850,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:12BF" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:12BF" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:12BF</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -1866,7 +1891,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>6</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -1898,7 +1924,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:3BF" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:3BF" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:3BF</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -1939,7 +1965,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>2</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -1971,7 +1998,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:21EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:21EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:21EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -2012,7 +2039,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>3</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>
@@ -2044,7 +2072,7 @@
 			</SAMPLE_ATTRIBUTE>
 		</SAMPLE_ATTRIBUTES>
 	</SAMPLE>
-	<SAMPLE alias="BII-S-7:sample:11EU" broker_name="" center_name="OXFORD">
+	<SAMPLE alias="BII-S-7:sample:11EU" broker_name="ISAcreator" center_name="OXFORD">
 		<TITLE>BII-S-7:sample:11EU</TITLE>
 		<SAMPLE_NAME>
 			<TAXON_ID>408170</TAXON_ID>
@@ -2085,7 +2113,8 @@
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>age</TAG>
-				<VALUE/>
+				<VALUE>5</VALUE>
+				<UNITS>year</UNITS>
 			</SAMPLE_ATTRIBUTE>
 			<SAMPLE_ATTRIBUTE>
 				<TAG>IHMC ethnicity</TAG>

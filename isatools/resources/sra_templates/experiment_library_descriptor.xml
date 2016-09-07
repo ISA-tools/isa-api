@@ -11,6 +11,8 @@
         <LOCUS locus_name="{{assay.locus_name}}"/>
     </TARGETED_LOCI>
     {% endif %}
-    <POOLING_STRATEGY/>
+    {% if assay.poolingstrategy %}
+    <POOLING_STRATEGY>{{assay.poolingstrategy}}</POOLING_STRATEGY>
+    {% endif %}
     <LIBRARY_CONSTRUCTION_PROTOCOL>{{assay.library_construction_protocol}}</LIBRARY_CONSTRUCTION_PROTOCOL>
 </LIBRARY_DESCRIPTOR>

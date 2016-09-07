@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 supported_sra_assays = [
     ('genome sequencing', 'nucleotide sequencing'),
     ('environmental gene survey', 'nucleotide sequencing'),
-    ('metagenome sequencing', 'nucleotide sequencing')
+    ('metagenome sequencing', 'nucleotide sequencing'),
+    ('transcription profiling', 'nucleotide sequencing')
 ]
 
 sra_center_name = 'OXFORD'
@@ -173,6 +174,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                         target_taxon = get_pv(assay_to_export['library construction'], 'target_taxon')
                         assay_to_export['target_taxon'] = target_taxon
                         assay_to_export['targeted_loci'] = False
+                        assay_to_export['min_match'] = 0
                         # BEGIN genome seq library selection
                         if iassay.measurement_type.name in ['genome sequencing', 'whole genome sequencing']:
                             library_source = get_pv(assay_to_export['library construction'],
@@ -205,7 +207,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             assay_to_export['library_construction_protocol'] = protocol
 
                             library_layout = get_pv(assay_to_export['library construction'], 'library layout')
-                            assay_to_export['library_layout'] = library_layout
+                            assay_to_export['library_layout'] = library_layout.lower()
                         # END genome seq library selection
                         # BEGIN environmental gene survey library selection
                         elif iassay.measurement_type.name in ['environmental gene survey']:
@@ -213,7 +215,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             assay_to_export['library_strategy'] = 'AMPLICON'
                             assay_to_export['library_selection'] = 'PCR'
                             library_layout = get_pv(assay_to_export['library construction'], 'library layout')
-                            assay_to_export['library_layout'] = library_layout
+                            assay_to_export['library_layout'] = library_layout.lower()
                             nucl_acid_amp = get_pv(assay_to_export['library construction'], 'nucleic acid amplification')
                             if nucl_acid_amp is None:
                                 nucl_acid_amp = get_pv(assay_to_export['library construction'], 'nucl_acid_amp')
@@ -280,15 +282,52 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             assay_to_export['library_construction_protocol'] = protocol
 
                             library_layout = get_pv(assay_to_export['library construction'], 'library layout')
-                            assay_to_export['library_layout'] = library_layout
+                            assay_to_export['library_layout'] = library_layout.lower()
                         # END metagenome seq library selection
                         # BEGIN transciption profiling library selection
                         elif iassay.measurement_type.name in ['transcription profiling']:
-                            # TODO: Implement this section to get BII-S-3 working
-                            pass
+                            library_source = get_pv(assay_to_export['library construction'],
+                                                    'library source')
+                            if library_source is None:  # if not specified, select TRANSCRIPTOMIC by default
+                                library_source = 'TRANSCRIPTOMIC'
+
+                            if library_source.upper() not in ['TRANSCRIPTOMIC', 'TRANSCRIPTOMIC SINGLE CELL',
+                                                              'METATRANSCRIPTOMIC', 'OTHER']:
+                                logger.warn(
+                                    "ERROR:value supplied is not compatible with SRA1.5 schema " + library_source)
+                                library_source = 'OTHER'
+
+                            library_strategy = get_pv(assay_to_export['library construction'],
+                                                      'library strategy')
+                            if library_strategy not in ['RNA-Seq', 'ssRNA-Seq', 'miRNA-Seq', 'ncRNA-Seq', 'FL-cDNA',
+                                                        'EST', 'OTHER']:
+                                logger.warn(
+                                    "ERROR:value supplied is not compatible with SRA1.5 schema " + library_strategy)
+                                library_strategy = 'OTHER'
+
+                            library_selection = get_pv(assay_to_export['library construction'],
+                                                       'library selection')
+                            if library_selection not in ['RT-PCR', 'cDNA', "cDNA_randomPriming", "cDNA_oligo_dT",
+                                                         "PolyA", "Oligo-dT", "Inverse rRNA", "Inverse rRNA selection",
+                                                         "CAGE", "RACE", "other"]:
+                                logger.warn(
+                                    "ERROR:value supplied is not compatible with SRA1.5 schema " + library_selection)
+                                library_selection = 'other'
+
+                            protocol = "\n protocol_description: " \
+                                       + assay_to_export['library construction'].executes_protocol.description
+                            assay_to_export['library_source'] = library_source
+                            assay_to_export['library_strategy'] = library_strategy
+                            assay_to_export['library_selection'] = library_selection
+                            assay_to_export['library_construction_protocol'] = protocol
+
+                            library_layout = get_pv(assay_to_export['library construction'], 'library layout')
+                            assay_to_export['library_layout'] = library_layout.lower()
                         # END transciption profiling library selection
                         else:
                             logger.error("ERROR:Unsupported measurement type: " + iassay.measurement_type.name)
+                        mid_pv = get_pv(assay_to_export['library construction'], 'mid')
+                        assay_to_export['poolingstrategy'] = mid_pv
                         assay_to_export['platform'] = get_pv(assay_to_export['nucleic acid sequencing'],
                                                              'sequencing instrument')
                         assays_to_export.append(assay_to_export)
