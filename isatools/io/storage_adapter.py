@@ -37,15 +37,7 @@ def validate_xml_against_schema(xml_str, xml_schema_file):
 
     # parse XML to validate against schema
     # return etree.fromstring(xml_str, xml_parser)
-    result = False
-    try:
-        result = etree.parse(StringIO(xml_str), xml_parser)
-    except Exception as e:
-        print(xml_str)
-        print(xml_schema_file)
-        print(open(xml_schema_file, 'r'))
-        print(e)
-    return result
+    return etree.parse(StringIO(xml_str), xml_parser)
 
 
 def validate_json_against_schema(json_dict, schema_src):
