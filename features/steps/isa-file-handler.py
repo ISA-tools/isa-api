@@ -97,6 +97,7 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
+    print("HELLO!")
     httpretty.register_uri(httpretty.GET, auth_url, body=json.dumps([]), content_type='application/json')
     httpretty.register_uri(httpretty.POST, auth_url,
                            body=json.dumps(auth_res_body),
@@ -262,14 +263,14 @@ def step_impl(context):
                                                              fixture_file_name_encoded))
     fixture_file_path_raw = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures',
                                                          fixture_file_name_raw))
-    print("1")
+
     # create the url to GET the encoded dataset
     encoded_file_url = '/'.join([GITHUB_API_URL, REPOS, context.owner_name, context.repo_name,
                              CONTENTS, context.source_path])
     with open(fixture_file_path_encoded) as json_file:
         context.json_isa_dataset_encoded = json.load(json_file)
         httpretty.register_uri(httpretty.GET, encoded_file_url, body=json.dumps(context.json_isa_dataset_encoded))
-    print("2")
+
     # retrieve the url to GET the raw dataset
     download_url = context.json_isa_dataset_encoded['download_url']
     with open(fixture_file_path_raw) as json_file:
@@ -279,13 +280,13 @@ def step_impl(context):
     branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
     context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
                                                owner=context.owner_name, repository=context.repo_name, ref=branch)
-    print("3")
+
     expect(httpretty.has_request()).to.be.true
     expect(httpretty.last_request().method).to.equal('GET')
     branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
     path = encoded_file_url.replace(GITHUB_API_URL, '') + '?ref=' + branch
     expect(httpretty.last_request().path).to.equal(path)
-    print("4")
+
 
 @then("it should download it as a JSON file")
 def step_impl(context):
