@@ -322,13 +322,13 @@ def step_impl(context):
 
     encoded_file_url = '/'.join([GITHUB_API_URL, 'repos', context.owner_name, context.repo_name,
                              'contents', context.source_path])
-
+    print('1')
     fixture_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures', fixture_file_name))
     # open the json file containg the encoded xml
     with open(fixture_file_path) as json_file:
         context.xml_encoded = json.load(json_file)
         httpretty.register_uri(httpretty.GET, encoded_file_url, body=json.dumps(context.xml_encoded))
-
+    print('2')
     # build up the path to the fixtures RAW XML file
     fixture_file_frags = context.source_path.split('/')
     fixture_file_path_raw = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', *fixture_file_frags))
@@ -339,17 +339,17 @@ def step_impl(context):
         context.xml_text = xml_file.read()
         httpretty.register_uri(httpretty.GET, download_url, body=context.xml_text, content_type='text/plain')
         context.xml = etree.parse(StringIO(context.xml_text))
-
+    print('3')
     branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
     context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
                                                owner=context.owner_name, repository=context.repo_name, ref=branch)
-
+    print('4')
     expect(httpretty.has_request()).to.be.true
     expect(httpretty.last_request().method).to.equal('GET')
     branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
     path = encoded_file_url.replace(GITHUB_API_URL, '') + '?ref=' + branch
     expect(httpretty.last_request().path).to.equal(path)
-
+    print('5')
 
 @then("it should download it as an XML file")
 def step_impl(context):
