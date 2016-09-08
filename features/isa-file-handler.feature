@@ -17,7 +17,6 @@ Feature: ISA file management
     And a destination directory "destination_dir_0" in your home folder
     When the file object is a directory
     Then it should download the files contained within the directory
-    And it should return a binary stream with the zipped content of the directory
 
   Scenario: resource retrieval with ZIP archive download
     Given an authenticated storage adapter
@@ -37,7 +36,7 @@ Feature: ISA file management
 
   Scenario: resource retrieval with XML configuration file download
     Given an authenticated storage adapter
-    And a file object named "tests/data/configs/xml/isaconfig-default_v2015-07-02/genome_seq.xml" in the remote repository "isa-api" owned by "ISA-tools"
+    And a file object named "tests/data/Configurations/isaconfig-default_v2015-07-02/genome_seq.xml" in the remote repository "isa-api" owned by "ISA-tools"
     And a destination directory "destination_dir_3" in your home folder
     When the source file points to an ISA-TAB XML configuration file
     Then it should download it as an XML file
