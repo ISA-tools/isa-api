@@ -16,6 +16,7 @@ setup(
                                'convert/isa_line_commands/bin/convert.sh',
                                'convert/isa_line_commands/bin/validate.sh', 
                                'convert/isa_line_commands/import_layer_deps.jar',
+                               'convert/isa_line_commands/bin/batch_sra2isatab.sh',
                                'convert/resources/biocrates/*'
                                'convert/resources/sra/*.xsl',
                                'config/json/default/*.json',
