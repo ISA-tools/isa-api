@@ -34,10 +34,15 @@ def validate_xml_against_schema(xml_str, xml_schema_file):
     with open(xml_schema_file, 'rb') as schema_file:
         schema_root = etree.XML(schema_file.read())
     xml_parser = etree.XMLParser(schema=etree.XMLSchema(schema_root))
-
+    print(type(xml_str))
+    print(xml_str)
+    print(StringIO(xml_str).read())
+    result = etree.parse(StringIO(xml_str), xml_parser)
+    print(type(result))
+    print(result)
     # parse XML to validate against schema
     # return etree.fromstring(xml_str, xml_parser)
-    return etree.parse(StringIO(xml_str), xml_parser)
+    return result
 
 
 def validate_json_against_schema(json_dict, schema_src):
