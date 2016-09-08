@@ -40,7 +40,7 @@ def validate_xml_against_schema(xml_str, xml_schema_file):
     schema = etree.XMLSchema(schema_root)
     print(schema)
     print("Asserting if valid")
-    schema.assertValid(etree.fromstring(xml_str))
+    print(schema.validate(etree.fromstring(xml_str)))
     print("Creating parser")
     xml_parser = etree.XMLParser(schema=schema)
     print(xml_parser)
