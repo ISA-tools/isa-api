@@ -23,7 +23,7 @@ The *ISA API*  aims to provide you, the developer, with a set of tools to help y
 
 *Repository*:   [https://github.com/ISA-tools/isa-api](https://github.com/ISA-tools/isa-api)
 
-*ISA team email*: [https://groups.google.com/forum/#!forum/isatools](https://groups.google.com/forum/#!forum/isatools)
+*ISA team email*: [isatools@googlegroups.com](mailto:isatools@googlegroups.com)
 
 *ISA discussion group*: [https://groups.google.com/forum/#!forum/isaforum](https://groups.google.com/forum/#!forum/isaforum)
 
@@ -36,4 +36,4 @@ To install and start using the ISA-API, check out the project documentation at [
 
 Contributing
 ------------
-The ISA-API is still in development. We would be very happy to receive any help and contributions (testing, feature requests, pull requests). Please feel free to contact our development team, ask a question, report a bug or file a feature request in the Github issue tracker, or fork our repository.
+The ISA-API is still in development. We would be very happy to receive any help and contributions (testing, feature requests, pull requests). Please feel free to contact our development team at [isatools@googlegroups.com](mailto:isatools@googlegroups.com), or ask a question, report a bug or file a feature request in the Github issue tracker at [https://github.com/ISA-tools/isa-api/issues](https://github.com/ISA-tools/isa-api/issues).
