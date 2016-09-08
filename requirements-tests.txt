@@ -2,9 +2,14 @@ biopy-isatab
 jsonschema
 pandas
 networkx
+behave
+httpretty
+sure
 lxml
 requests
+coveralls
 iso8601
 chardet
 jinja2
+deepdiff
 bs4
