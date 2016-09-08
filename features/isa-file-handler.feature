@@ -36,7 +36,7 @@ Feature: ISA file management
 
   Scenario: resource retrieval with XML configuration file download
     Given an authenticated storage adapter
-    And a file object named "tests/data/Configurations/isaconfig-default_v2015-07-02/genome_seq.xml" in the remote repository "isa-api" owned by "ISA-tools"
+    And a file object named "tests/data/configs/xml/isaconfig-default_v2015-07-02/genome_seq.xml" in the remote repository "isa-api" owned by "ISA-tools"
     And a destination directory "destination_dir_3" in your home folder
     When the source file points to an ISA-TAB XML configuration file
     Then it should download it as an XML file
