@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='isatools',
-    version='0.3.0',
+    version='0.3.1c',
     packages=['isatools', 'isatools.convert', 'isatools.io', 'isatools.model', 'isatools.sampledata'],
     package_data={'isatools': ['schemas/cedar/*.json',
                                'schemas/isa_model_version_1_0_schemas/core/*.json',
@@ -19,6 +19,7 @@ setup(
                                'convert/isa_line_commands/bin/batch_sra2isatab.sh',
                                'convert/resources/biocrates/*',
                                'convert/resources/sra/*.xsl',
+                               'convert/resources/sra/*.xml',
                                'config/json/default/*.json',
                                'config/json/default/schemas/*.json',
                                'config/json/sra/*.json',
