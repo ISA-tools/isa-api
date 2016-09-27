@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema targetNamespace="http://www.biocrates.com/metstat/result/xml_1.0"
+	elementFormDefault="qualified" xmlns:bc="http://www.biocrates.com/metstat/result/xml_1.0"
+	xmlns="http://www.w3.org/2001/XMLSchema">
+	<complexType name="SampleExport">
+		<sequence>
+			<element name="sampleInfoExport" type="bc:sampleInfoExport"
+				maxOccurs="unbounded" minOccurs="0">
+			</element>
+		</sequence>
+		<attribute name="sampleType" type="bc:sampleTypeExport" use="required" />
+		<attribute name="barcode" type="string" use="required" />
+		<attribute name="collectionDate" type="dateTime" use="optional">
+		</attribute>
+		<attribute name="orgInfo" type="string" use="optional"></attribute>
+		<attribute name="SampleIdentifier" type="string"></attribute>
+		<attribute name="Species" type="string" use="required"></attribute>
+		<attribute name="Material" type="string" use="required"></attribute>
+		<attribute name="sampleContact" type="IDREF" use="optional" />
+		<attribute name="identifier" type="ID"></attribute>
+	</complexType>
+	<complexType name="MetaboliteExport">
+		<sequence>
+			<element name="BioID" type="bc:BioIDExport" minOccurs="0"
+				maxOccurs="unbounded" />
+			<element name="metabolitePlateInfo"
+				type="bc:MetabolitePlateInfoExport" maxOccurs="unbounded" />
+		</sequence>
+        <attribute name="identifier" type="ID"></attribute>
+        <attribute name="metaboliteName" type="string" use="required" />
+		<attribute name="OP" type="string" use="required" />
+		<attribute name="metaboliteClass" type="string" use="required" />
+		<attribute name="Q1" type="double" use="optional"></attribute>
+		<attribute name="Q3" type="double"></attribute>
+		<attribute name="internalStd" type="string"></attribute>
+		<attribute name="protocol" type="string"></attribute>
+		<attribute name="signal" type="string"></attribute>
+		<attribute name="MoleculeWeight" type="double"></attribute>
+		<attribute name="MoleculeFormular" type="string"></attribute>
+		<attribute name="scanType" type="bc:ScanTypeExport" use="optional"></attribute>
+	</complexType>
+	<complexType name="BioIDExport">
+		<attribute name="KEGG" type="string"></attribute>
+		<attribute name="molecule" type="string"></attribute>
+		<attribute name="CAS" type="string"></attribute>
+		<attribute name="INCHI_key" type="string"></attribute>
+		<attribute name="CID" type="int"></attribute>
+		<attribute name="HMDB" type="string"></attribute>
+		<attribute name="CHEBI" type="string"></attribute>
+		<attribute name="IUPAC" type="string"></attribute>
+		<attribute name="SMILES" type="string"></attribute>
+		<attribute name="INCHI" type="string"></attribute>
+		<attribute name="MESH" type="string"></attribute>
+		<attribute name="LMID" type="string"></attribute>
+	</complexType>
+	<complexType name="MeasureExport">
+		<attribute name="metabolite" type="IDREF" use="required" />
+		<attribute name="measurementTime" type="dateTime" use="optional">
+		</attribute>
+		<attribute name="isotopeCorrected" type="boolean" use="optional">
+		</attribute>
+		<attribute name="usedForCalibration" type="boolean" use="optional">
+		</attribute>
+		<attribute name="status" type="bc:statusExport"></attribute>
+		<attribute name="concentration" type="double"></attribute>
+		<attribute name="intensity" type="double"></attribute>
+		<attribute name="concentrationIstd" type="double"></attribute>
+		<attribute name="intensityIstd" type="double"></attribute>
+		<attribute name="accuracy" type="double"></attribute>
+		<attribute name="analytePeakArea" type="double"></attribute>
+		<attribute name="analyteRetentionTime" type="double"></attribute>
+		<attribute name="analyteS2N" type="double"></attribute>
+		<attribute name="relRetentionTime" type="double"></attribute>
+		<attribute name="internalStdRetentionTime" type="double"></attribute>
+		<attribute name="ISTDArea" type="double"></attribute>
+		<attribute name="AreaRatio" type="double"></attribute>
+		<attribute name="comment" type="string"></attribute>
+	</complexType>
+	<simpleType name="CurveTypeExport">
+		<restriction base="string">
+			<enumeration value="NO_CURVE" />
+			<enumeration value="LINEAR" />
+			<enumeration value="LINEAR_ZERO" />
+			<enumeration value="LINEAR_WEIGHTED" />
+			<enumeration value="QUADRATIC" />
+		</restriction>
+	</simpleType>
+	<simpleType name="ScanTypeExport">
+		<restriction base="string">
+			<enumeration value="MRM" />
+			<enumeration value="NL" />
+			<enumeration value="PS" />
+		</restriction>
+	</simpleType>
+	<simpleType name="PolarityTypeExport">
+		<restriction base="string">
+			<enumeration value="POSITIVE" />
+			<enumeration value="NEGATIVE" />
+		</restriction>
+	</simpleType>
+	<simpleType name="OPValidationStatusExport">
+		<restriction base="string">
+			<enumeration value="QUANTITATIVE" />
+			<enumeration value="SEMI_QUANTITATIVE" />
+			<enumeration value="INVALID" />
+			<enumeration value="NOT_VALIDATED" />
+		</restriction>
+	</simpleType>
+	<simpleType name="sampleTypeExport">
+		<restriction base="string">
+			<enumeration value="NO_SAMPLE"></enumeration>
+			<enumeration value="SAMPLE"></enumeration>
+			<enumeration value="BLANK"></enumeration>
+			<enumeration value="STANDARD_L1"></enumeration>
+			<enumeration value="STANDARD_L2"></enumeration>
+			<enumeration value="STANDARD_L3"></enumeration>
+			<enumeration value="STANDARD_L4"></enumeration>
+			<enumeration value="STANDARD_L5"></enumeration>
+			<enumeration value="STANDARD_L6"></enumeration>
+			<enumeration value="STANDARD_L7"></enumeration>
+			<enumeration value="STANDARD_L8"></enumeration>
+			<enumeration value="STANDARD_L9"></enumeration>
+			<enumeration value="STANDARD_L10"></enumeration>
+			<enumeration value="QC_1"></enumeration>
+			<enumeration value="QC_2"></enumeration>
+			<enumeration value="QC_3"></enumeration>
+			<enumeration value="QC_4"></enumeration>
+			<enumeration value="QC_5"></enumeration>
+			<enumeration value="QC_6"></enumeration>
+			<enumeration value="QC_7"></enumeration>
+			<enumeration value="ZERO_SAMPLE"></enumeration>
+			<enumeration value="INTERNAL_STANDARD"></enumeration>
+			<enumeration value="STOCK_SOLUTION"></enumeration>
+		</restriction>
+	</simpleType>
+	<complexType name="WellExport">
+		<sequence>
+			<element name="injection" type="bc:InjectionExport" maxOccurs="unbounded"
+				minOccurs="1">
+			</element>
+		</sequence>
+		<attribute name="sample" type="IDREF" use="required" />
+		<attribute name="wellPosition" type="int" use="required" />
+		<attribute name="hamiltonStatus" type="bc:HamiltonStatusExport"
+			use="optional">
+			<annotation>
+				<documentation>only for inhouse version</documentation>
+			</annotation>
+		</attribute>
+
+	</complexType>
+	<complexType name="DataExport">
+		<sequence>
+			<element name="metabolite" type="bc:MetaboliteExport"
+				maxOccurs="unbounded" />
+			<element name="plate" type="bc:PlateExport" maxOccurs="unbounded" />
+			<element name="project" type="bc:ProjectExport" maxOccurs="unbounded" />
+			<element name="sample" type="bc:SampleExport" maxOccurs="unbounded"	/>
+			<element name="contact" type="bc:ContactExport" maxOccurs="unbounded" />
+		</sequence>
+		<attribute name="user" type="string"></attribute>
+		<attribute name="dateExport" type="dateTime"></attribute>
+	    <attribute name="concentrationUnit" type="string"></attribute>
+		<attribute name="swVersion" type="string"></attribute>
+	</complexType>
+
+	<simpleType name="PipettingModeExport">
+		<restriction base="string">
+			<enumeration value="HORIZONTAL"></enumeration>
+			<enumeration value="VERTICAL"></enumeration>
+			<enumeration value="MACHINE_MADE"></enumeration>
+		</restriction>
+	</simpleType>
+	<simpleType name="HamiltonStatusExport">
+		<restriction base="string">
+			<enumeration value="MANUALLY_PIPPETED"></enumeration>
+			<enumeration value="BARCODE_READ"></enumeration>
+			<enumeration value="PIPETTING_OK"></enumeration>
+			<enumeration value="SAMPLE_PREP_OK"></enumeration>
+			<enumeration value="SIMULATION_MODE"></enumeration>
+		</restriction>
+	</simpleType>
+
+	<complexType name="PlateExport">
+		<sequence>
+			<element name="well" type="bc:WellExport" maxOccurs="unbounded"
+				minOccurs="1">
+			</element>
+			<element name="project" type="bc:ReferenceExport" minOccurs="1" maxOccurs="unbounded">
+			</element>
+		</sequence>
+		<attribute name="plateBarcode" type="ID" use="required" />
+		<attribute name="pipettingMode" type="bc:PipettingModeExport"></attribute>
+		<attribute name="plateProdNr" type="string"></attribute>	
+		<attribute name="usedOP" type="string" use="required"></attribute>
+		<attribute name="OPType" type="string" use="required"></attribute>	
+		<attribute name="runNumber" type="int" use="required"></attribute>
+	</complexType>
+
+	<element name="data" type="bc:DataExport"></element>
+
+	<complexType name="InjectionExport">
+		<sequence>
+			<element name="measure" type="bc:MeasureExport" maxOccurs="unbounded"
+				minOccurs="0">
+			</element>
+		</sequence>		
+		<attribute name="injectionNumber" type="int" use="required"></attribute>
+		<attribute name="injectionTime" type="dateTime" use="required">
+		</attribute>
+		<attribute name="comment" type="string"></attribute>
+		<attribute name="polarity" type="bc:PolarityTypeExport" use="optional"></attribute>
+		<attribute name="acquisitionMethod" type="string" use="optional"></attribute>
+	</complexType>
+
+	<complexType name="MetabolitePlateInfoExport">
+		<attribute name="plateBarcode" type="IDREF" use="required"></attribute>
+		<attribute name="runNumber" type="int" use="required"></attribute>
+		<attribute name="lodCalculated" type="boolean" use="required"></attribute>
+		<attribute name="calibrator" type="string" use="optional">
+			<annotation>
+				<documentation>only inhouse visible</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="lod" type="double"></attribute>
+		<attribute name="curveType" type="bc:CurveTypeExport"></attribute>
+		<attribute name="rrf" type="double"></attribute>
+        <attribute name="lloq" type="double"></attribute>
+        <attribute name="uloq" type="double"></attribute>
+        <attribute name="opValidationStatus"
+			type="bc:OPValidationStatusExport">
+		</attribute>
+	</complexType>
+
+	<simpleType name="statusExport">
+		<restriction base="string">
+			<enumeration value="MISSING_MEASUREMENT"></enumeration>
+			<enumeration value="INCOMPLETE"></enumeration>
+			<enumeration value="INVALID"></enumeration>
+			<enumeration value="BLANK_OUT_OF_RANGE"></enumeration>
+			<enumeration value="LESS_THAN_LIMIT"></enumeration>
+			<enumeration value="GREATER_THAN_LIMIT"></enumeration>
+			<enumeration value="ISTD_OUT_OF_RANGE"></enumeration>
+			<enumeration value="SMALLER_LOD"></enumeration>
+			<enumeration value="SEMI_QUANT"></enumeration>
+			<enumeration value="RATIOEXCEEDED"></enumeration>
+			<enumeration value="SMALLER_LLOQ"></enumeration>
+			<enumeration value="GREATER_THAN_ULOQ"></enumeration>
+			<enumeration value="VALID"></enumeration>
+			<enumeration value="NO_PEAK"></enumeration>
+			<enumeration value="NO_INTERCEPT"></enumeration>
+			<enumeration value="SMALLER_ZERO"></enumeration>
+			<enumeration value="SIGNAL2NOISE"></enumeration>
+			<enumeration value="STD_OUT_OF_RANGE"></enumeration>
+			<enumeration value="QC_OUT_OF_RANGE"></enumeration>
+			<enumeration value="OUT_OF_QUANT"></enumeration>
+		</restriction>
+	</simpleType>
+
+
+	<complexType name="sampleInfoExport">
+		<attribute name="feature" type="string" use="required"></attribute>
+		<attribute name="value" type="string" use="required"></attribute>
+	</complexType>
+
+	<complexType name="ContactExport">
+		<attribute name="CompanyName" type="string" use="required"></attribute>
+		<attribute name="ContactPerson" type="string"  use="required"></attribute>
+		<attribute name="Street" type="string" use="optional"></attribute>
+		<attribute name="City" type="string" use="optional"></attribute>
+		<attribute name="ZipCode" type="string" use="optional"></attribute>
+		<attribute name="Country" type="string" use="optional"></attribute>
+		<attribute name="Email" type="string" use="optional"></attribute>
+		<attribute name="Phone" type="string" use="optional"></attribute>
+		<attribute name="identifier" type="ID"></attribute>
+	</complexType>
+	
+	<complexType name="ReferenceExport">
+		<attribute name="identifier" type="ID" use="required"></attribute>
+	</complexType>	
+	
+	<complexType name="ProjectExport">
+		<sequence>
+			<element name="contact" type="bc:ReferenceExport" maxOccurs="unbounded"
+				minOccurs="0">
+			</element>
+		</sequence>
+		<attribute name="identifier" type="ID"></attribute>
+		<attribute name="ProjectName" type="string" use="required"></attribute>
+		<attribute name="ProjectCode" type="string" use="optional"></attribute>
+		<attribute name="SubmissionName" type="string" use="optional"></attribute>
+	</complexType>
+		
+</schema>

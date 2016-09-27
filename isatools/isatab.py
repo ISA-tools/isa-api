@@ -1,4 +1,3 @@
-from pandas.util.testing import assert_frame_equal
 from .model.v1 import *
 from isatools.io import isatab_parser
 import os
@@ -607,9 +606,22 @@ def write_assay_table_files(inv_obj, output_dir):
                             else:
                                 cols.append('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']',)
                                 col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = 'Parameter Value[' + pv.category.parameter_name.name + ']'
+                        # TODO Check how model objects are used, do all additional_prop now go into .name?
                         for prop in reversed(sorted(node.additional_properties.keys())):
                             cols.append('protocol[' + str(protrefcount) + ']_prop[' + prop + ']')
                             col_map['protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = prop
+                        if node.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
+                            cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']')
+                            col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']'] = 'Assay Name'
+                        elif node.executes_protocol.protocol_type.name == 'nucleic acid hybridization':
+                            cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Hybridization Assay Name' + ']')
+                            col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Hybridization Assay Name' + ']'] = 'Hybridization Assay Name'
+                            cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Array Design REF' + ']')
+                            col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Array Design REF' + ']'] = 'Array Design REF'
+                        elif node.executes_protocol.protocol_type.name == 'data collection':
+                            cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']')
+                            col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']'] = 'Scan Name'
+
                         for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                             cols.append('data[' + output.label + ']')
                             col_map['data[' + output.label + ']'] = output.label
@@ -675,9 +687,21 @@ def write_assay_table_files(inv_obj, output_dir):
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termaccession'] = pv.value.term_accession
                                 else:
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
+                            # TODO Check how model objects are used, do all additional_prop now go into .name?
                             for prop in reversed(sorted(node.additional_properties.keys())):
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = node.additional_properties[prop]
                                 compound_key += str(protrefcount) + '/' + prop + '/' + node.additional_properties[prop]
+                            if node.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
+                                df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']'] = node.name
+                                compound_key += str(protrefcount) + '/' + 'Assay Name' + '/' + node.name
+                            elif node.executes_protocol.protocol_type.name == 'nucleic acid hybridization':
+                                df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Hybridization Assay Name' + ']'] = node.name
+                                compound_key += str(protrefcount) + '/' + 'Hybridization Assay Name' + '/' + node.name
+                                df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Array Design REF' + ']'] = node.array_design_ref
+                                compound_key += str(protrefcount) + '/' + 'Array Design REF' + '/' + node.array_design_ref
+                            elif node.executes_protocol.protocol_type.name == 'data collection':
+                                df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']'] = node.name
+                                compound_key += str(protrefcount) + '/' + 'Scan Name' + '/' + node.name
                             for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                                 df.loc[i, 'data[' + output.label + ']'] = output.filename
                                 for comment in output.comments:
@@ -720,6 +744,8 @@ def write_assay_table_files(inv_obj, output_dir):
                     cols[i] = col_map[col]
                     if col_map[col] == 'Characteristics[Material Type]':
                         cols[i] = 'Material Type'
+                    if col_map[col] == 'Parameter Value[Array Design REF]':
+                        cols[i] = 'Array Design REF'
                     if data_regex.match(col) is not None:
                         if data_regex.findall(col)[0] == 'Raw Data File':
                             if assay_obj.technology_type.name == 'DNA microarray':
@@ -842,7 +868,7 @@ def write_study_table_files(inv_obj, output_dir):
         df = df.drop_duplicates()
         df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0 (Sample name)
         for i, col in enumerate(df.columns):
-            if col_map[col] == 'Characteristics[Material Type]':
+            if col_map[col] in ['Characteristics[Material Type]', 'Characteristics[material type]']:
                 cols[i] = 'Material Type'
             else:
                 cols[i] = col_map[col]
@@ -852,128 +878,6 @@ def write_study_table_files(inv_obj, output_dir):
         df = df.dropna(axis=1, how='all')
         df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0
         df.to_csv(path_or_buf=open(os.path.join(output_dir, study_obj.filename), 'w'), index=False, sep='\t', encoding='utf-8',)
-
-
-def assert_tab_content_equal(fp_x, fp_y):
-    """
-    Test for equality of tab files, only down to level of content - should not be taken as canonical equality, but
-    rather that all the expected content matches to both input files, but not the order in which they appear.
-
-    For more precise equality, you will need to apply a configuration
-        - use assert_tab_equal_by_config(fp_x, fp_y, config)
-    :param fp_x: File descriptor of a ISAtab file
-    :param fp_y: File descriptor of another  ISAtab file
-    :return: True or False plus any AssertionErrors
-    """
-
-    def _assert_df_equal(x, y):  # need to sort values to loosen up how equality is calculated
-        try:
-            assert_frame_equal(x.sort_values(by=x.columns[0]), y.sort_values(by=y.columns[0]))
-            return True
-        except AssertionError as e:
-            print(e)
-            return False
-
-    from os.path import basename
-    if basename(fp_x.name).startswith('i_'):
-        df_dict_x = read_investigation_file(fp_x)
-        df_dict_y = read_investigation_file(fp_y)
-        eq = True
-        for k in df_dict_x.keys():
-            dfx = df_dict_x[k]
-            dfy = df_dict_y[k]
-            if not isinstance(dfx, list):
-                if not _assert_df_equal(dfx, dfy):
-                    eq = False
-                    break
-            else:
-                try:
-                    for x, y in zip(sorted(dfx), sorted(dfy)):
-                        if not _assert_df_equal(x, y):
-                            eq = False
-                            break
-                except ValueError as e:
-                    print(e)
-        return eq
-    else:
-
-        def diff(a, b):
-            b = set(b)
-            return [aa for aa in a if aa not in b]
-
-        import numpy as np
-        df_x = pd.read_csv(fp_x, sep='\t', encoding='utf-8')
-        df_y = pd.read_csv(fp_y, sep='\t', encoding='utf-8')
-        try:
-            # drop empty columns
-            df_x = df_x.replace('', np.nan)
-            df_x = df_x.dropna(axis=1, how='all')
-            df_x = df_x.replace(np.nan, '')
-            df_y = df_y.replace('', np.nan)
-            df_y = df_y.dropna(axis=1, how='all')
-            df_y = df_y.replace(np.nan, '')
-
-            is_cols_equal = set([x.split('.', 1)[0] for x in df_x.columns]) == set([x.split('.', 1)[0] for x in df_y.columns])
-            if not is_cols_equal:
-                print('x: ' + str(df_x.columns))
-                print('y: ' + str(df_y.columns))
-                print(diff(df_x.columns, df_y.columns))
-                raise AssertionError("Columns in x do not match those in y")
-
-            # reindex to add contexts for duplicate named columns (i.e. Term Accession Number, Unit, etc.)
-            import re
-            char_regex = re.compile('Characteristics\[(.*?)\]')
-            pv_regex = re.compile('Parameter Value\[(.*?)\]')
-            fv_regex = re.compile('Factor Value\[(.*?)\]')
-            newcolsx = list()
-            for col in df_x.columns:
-                newcolsx.append(col)
-            for i, col in enumerate(df_x.columns):
-                if char_regex.match(col) or pv_regex.match(col) or fv_regex.match(col):
-                    try:
-                        if 'Unit' in df_x.columns[i+1]:
-                            newcolsx[i+1] = col + '/Unit'
-                            if 'Term Source REF' in df_x.columns[i+2]:
-                                newcolsx[i+2] = col + '/Unit/Term Source REF'
-                            if 'Term Accession Number' in df_x.columns[i+3]:
-                                newcolsx[i+3] = col + '/Unit/Term Accession Number'
-                        elif 'Term Source REF' in df_x.columns[i+1]:
-                            newcolsx[i+1] = col + '/Term Source REF'
-                            if 'Term Accession Number' in df_x.columns[i+2]:
-                                newcolsx[i+2] = col + '/Term Accession Number'
-                    except IndexError:
-                        pass
-            df_x.columns = newcolsx
-            newcolsy = list()
-            for col in df_y.columns:
-                newcolsy.append(col)
-            for i, col in enumerate(df_y.columns):
-                if char_regex.match(col) or pv_regex.match(col) or fv_regex.match(col):
-                    try:
-                        if 'Unit' in df_y.columns[i+1]:
-                            newcolsy[i+1] = col + '/Unit'
-                            if 'Term Source REF' in df_y.columns[i+2]:
-                                newcolsy[i+2] = col + '/Unit/Term Source REF'
-                            if 'Term Accession Number' in df_y.columns[i+3]:
-                                newcolsy[i+3] = col + '/Unit/Term Accession Number'
-                        elif 'Term Source REF' in df_y.columns[i+1]:
-                            newcolsy[i+1] = col + '/Term Source REF'
-                            if 'Term Accession Number' in df_y.columns[i+2]:
-                                newcolsy[i+2] = col + '/Term Accession Number'
-                    except IndexError:
-                        pass
-            df_y.columns = newcolsy
-            for colx in df_x.columns:
-                for eachx, eachy in zip(df_x.sort_values(by=colx)[colx], df_y.sort_values(by=colx)[colx]):
-                    if eachx != eachy:
-                        print(df_x[colx])
-                        print(df_y[colx])
-                        raise AssertionError("Value: " + str(eachx) + ", does not match: " + str(eachy))
-            # print("Well, you got here so the files must be same-ish... well done, you!")
-            return True
-        except AssertionError as e:
-            print(str(e))
-            return False
 
 
 def read_investigation_file(fp):
@@ -1144,14 +1048,14 @@ def load2(fp):
             comment_regex = re.compile('Comment\[(.*?)\]')
             if not labels_expected.issubset(labels_found):
                 missing_labels = labels_expected - labels_found
-                logger.fatal("In {} section, expected labels {} not found in {}"
+                logger.fatal("(F) In {} section, expected labels {} not found in {}"
                              .format(section, missing_labels, labels_found))
             if len(labels_found - labels_expected) > 0:
                 # check extra labels, i.e. make sure they're all comments
                 extra_labels = labels_found - labels_expected
                 for label in extra_labels:
                     if comment_regex.match(label) is None:
-                        logger.fatal("In {} section, label {} is not allowed".format(section, label))
+                        logger.fatal("(F) In {} section, label {} is not allowed".format(section, label))
 
         # Read in investigation file into DataFrames first
         logger.info("Loading ONTOLOGY SOURCE REFERENCE section")
@@ -1453,9 +1357,10 @@ def check_protocol_usage(i_df, dir_context):
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
                 for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
                     protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
+                protocol_refs_used = set([r for r in protocol_refs_used if pd.notnull(r)])
                 if not protocol_refs_used.issubset(protocols_declared):
                     logger.error(
-                        "(E) Some protocols used in an study file {} are not declared in the investigation file: {}".format(
+                        "(E) Some protocols used in a study file {} are not declared in the investigation file: {}".format(
                             study_filename, list(protocol_refs_used - protocols_declared)))
             except FileNotFoundError:
                 pass
@@ -1466,6 +1371,7 @@ def check_protocol_usage(i_df, dir_context):
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
                     for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
                         protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
+                    protocol_refs_used = set([r for r in protocol_refs_used if pd.notnull(r)])
                     if not protocol_refs_used.issubset(protocols_declared):
                         logger.error(
                             "(E) Some protocols used in an assay file {} are not declared in the investigation file: {}".format(
@@ -1846,7 +1752,7 @@ def check_measurement_technology_types(i_df, configs):
             for x, measurement_type in enumerate(measurement_types):
                 if (measurement_types[x], technology_types[x]) not in configs.keys():
                     logger.error(
-                        "(E) Could not load configuration for measurement type '{}' and technology type '{} for STUDY ASSAY.{}'".format(
+                        "(E) Could not load configuration for measurement type '{}' and technology type '{}' for STUDY ASSAY.{}'".format(
                             measurement_types[x], technology_types[x], i))
 
 
@@ -2383,13 +2289,13 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
                         logger.info("Finished checking study sample table against assay tables...")
                     logger.info("Finished validation...")
     except CParserError as cpe:
-        logger.fatal("There was an error when trying to parse the ISA tab")
+        logger.fatal("(F) There was an error when trying to parse the ISA tab")
         logger.fatal(cpe)
     except ValueError as ve:
-        logger.fatal("There was an error when trying to parse the ISA tab")
+        logger.fatal("(F) There was an error when trying to parse the ISA tab")
         logger.fatal(ve)
     except SystemError as se:
-        logger.fatal("Something went very very wrong! :(")
+        logger.fatal("(F) Something went very very wrong! :(")
         logger.fatal(se)
     finally:
         handler.flush()

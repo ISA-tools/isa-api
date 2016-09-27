@@ -1,7 +1,7 @@
 from isatools.model.v1 import *
 import json
 import logging
-from networkx import DiGraph
+import networkx as nx
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
 
@@ -9,20 +9,10 @@ logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=loggi
 logger = logging.getLogger(__name__)
 
 
-def loads(json_str):
-    isajson = json.loads(json_str)
-    loadj(isajson=isajson)
-
-
 def load(fp):
-    isajson = json.load(fp)
-    loadj(isajson=isajson)
-
-
-def loadj(isajson):
 
     def _build_assay_graph(process_sequence=list()):
-        G = DiGraph()
+        G = nx.DiGraph()
         for process in process_sequence:
             if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
                 if len(process.outputs) > 0:
@@ -38,6 +28,13 @@ def loadj(isajson):
                     G.add_edge(process.prev_process, process)
         return G
 
+    def get_jvalue(dict, key):
+        if key in dict.keys():
+            return dict[key]
+        else:
+            return None
+
+    isajson = json.load(fp)
     investigation = Investigation(
         identifier=isajson['identifier'],
         title=isajson['title'],
@@ -520,15 +517,15 @@ def loadj(isajson):
                     pass
                 # additional properties, currently hard-coded special cases
                 if process.executes_protocol.protocol_type.name == 'data collection' and assay.technology_type.name == 'DNA microarray':
-                    process.additional_properties['Scan Name'] = assay_process_json['name']
+                    process.name = assay_process_json['name']
                 elif process.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
-                    process.additional_properties['Assay Name'] = assay_process_json['name']
+                    process.name = assay_process_json['name']
                 elif process.executes_protocol.protocol_type.name == 'nucleic acid hybridization':
-                    process.additional_properties['Hybridization Assay Name'] = assay_process_json['name']
+                    process.name = assay_process_json['name']
                 elif process.executes_protocol.protocol_type.name == 'data transformation':
-                    process.additional_properties['Data Transformation Name'] = assay_process_json['name']
+                    process.name = assay_process_json['name']
                 elif process.executes_protocol.protocol_type.name == 'data normalization':
-                    process.additional_properties['Normalization Name'] = assay_process_json['name']
+                    process.name = assay_process_json['name']
                 for input_json in assay_process_json['inputs']:
                     input_ = None
                     try:
@@ -571,7 +568,7 @@ def loadj(isajson):
                     process.outputs.append(output)
                 for parameter_value_json in assay_process_json['parameterValues']:
                     if parameter_value_json['category']['@id'] == '#parameter/Array_Design_REF':  # Special case
-                        process.additional_properties['Array Design REF'] = parameter_value_json['value']
+                        process.array_design_ref = parameter_value_json['value']
                     elif isinstance(parameter_value_json['value'], int) or \
                             isinstance(parameter_value_json['value'], float):
                         parameter_value = ParameterValue(
@@ -771,31 +768,27 @@ def get_characteristic_category_ids_in_assay_materials(assay_json):
               assay_json['materials']['samples'] + assay_json['materials']['otherMaterials']] for elem in iterabl]
 
 
-def check_characteristic_category_ids_usage(study_json):
+def check_characteristic_category_ids_usage(studies_json):
     """Used for rule 1013"""
-    characteristic_categories_declared = get_characteristic_category_ids(study_json)
-    characteristic_categories_used = get_characteristic_category_ids_in_study_materials(study_json)
+    characteristic_categories_declared = list()
+    characteristic_categories_used = list()
+    for study_json in studies_json:
+        characteristic_categories_declared += get_characteristic_category_ids(study_json)
+        for assay in study_json['assays']:
+            characteristic_categories_declared_in_assay = get_characteristic_category_ids(assay)
+            characteristic_categories_declared += characteristic_categories_declared_in_assay
+        characteristic_categories_used += get_characteristic_category_ids_in_study_materials(study_json)
+        for assay in study_json['assays']:
+            characteristic_categories_used_in_assay = get_characteristic_category_ids_in_assay_materials(assay)
+            characteristic_categories_used += characteristic_categories_used_in_assay
     if len(set(characteristic_categories_used) - set(characteristic_categories_declared)) > 0:
         diff = set(characteristic_categories_used) - set(characteristic_categories_declared)
-        logger.error("(E) There are study characteristic categories {} used in a source or sample characteristic that have not been not declared"
+        logger.error("(E) There are characteristic categories {} used in a source or sample characteristic that have not been not declared"
               .format(list(diff)))
     elif len(set(characteristic_categories_declared) - set(characteristic_categories_used)) > 0:
         diff = set(characteristic_categories_declared) - set(characteristic_categories_used)
-        logger.warning("(W) There are some study characteristic categories declared {} that have not been used in any source or sample characteristic"
+        logger.warning("(W) There are characteristic categories declared {} that have not been used in any source or sample characteristic"
               .format(list(diff)))
-    for assay in study_json['assays']:
-        characteristic_categories_declared = get_characteristic_category_ids(assay)
-        characteristic_categories_used = get_characteristic_category_ids_in_assay_materials(assay)
-        if len(set(characteristic_categories_used) - set(characteristic_categories_declared)) > 0:
-            diff = set(characteristic_categories_used) - set(characteristic_categories_declared)
-            logger.error(
-                "(E) There are assay characteristic categories {} used in a material characteristic that have not been not declared"
-                .format(list(diff)))
-        elif len(set(characteristic_categories_declared) - set(characteristic_categories_used)) > 0:
-            diff = set(characteristic_categories_declared) - set(characteristic_categories_used)
-            logger.warning(
-                "(W) There are some assay characteristic categories declared {} that have not been used in any material characteristic"
-                .format(list(diff)))
 
 
 def get_study_factor_ids(study_json):
@@ -1197,10 +1190,12 @@ def check_study_and_assay_graphs(study_json, configs):
 
 
 BASE_DIR = os.path.dirname(__file__)
-default_config_dir = os.path.join(BASE_DIR, 'config', 'json')
+default_config_dir = os.path.join(BASE_DIR, 'config', 'json', 'default')
 
 
 def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
+    if config_dir is None:
+        config_dir = default_config_dir
     logger.setLevel(log_level)
     logger.info("ISA JSON Validator from ISA tools API v0.2")
     from io import StringIO
@@ -1225,8 +1220,7 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
             check_material_ids_declared_used(study_json, get_material_ids)  # Rule 1017
             check_material_ids_declared_used(study_json, get_data_file_ids)  # Rule 1018
         logger.info("Checking characteristic categories usage...")
-        for study_json in isa_json['studies']:
-            check_characteristic_category_ids_usage(study_json)  # Rules 1013 and 1022
+        check_characteristic_category_ids_usage(isa_json['studies'])  # Rules 1013 and 1022
         logger.info("Checking study factor usage...")
         for study_json in isa_json['studies']:
             check_study_factor_usage(study_json)  # Rules 1008 and 1021
@@ -1281,12 +1275,6 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
         logger.info("Checking study and assay graphs...")
         for study_json in isa_json['studies']:
             check_study_and_assay_graphs(study_json, configs)  # Rule 4004
-        # i = load(fp=fp)
-        # for study in i.studies:
-        #     check_study_or_assay_graph(study_or_assay=study, configs=configs)  # Rule 4004
-        # for study in i.studies:
-        #     for assay in study.assays:
-        #         check_study_or_assay_graph(study_or_assay=assay, configs=configs)  # Rule 4004
         logger.info("Finished validation...")
     except KeyError as k:
         logger.fatal("(F) There was an error when trying to read the JSON")

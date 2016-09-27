@@ -1,0 +1,6 @@
+<RUN_SET xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.run.xsd">
+    {% for assay in assays_to_export %}
+    {% include 'run.xml' %}
+    {% endfor %}
+</RUN_SET>

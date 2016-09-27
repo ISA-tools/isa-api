@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RUN_SET xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.run.xsd">
+  <RUN alias="BII-S-3:assay:assay6.1.13" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay6.1"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVNG8PH02.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay6.2.14" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay6.2"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVUSNDQ02.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay7.4.22" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay7.4"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN109.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay2.2" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Gx.assay2"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EWOEPZA02.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay5.1.7" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay5.1"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN102.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay4.2.6" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Gx.assay4.2"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EX398L101.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay6.3.15" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay6.3"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN108.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay7.3.21" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay7.3"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN110.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay5.2.8" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay5.2"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN101.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay1.1" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Gx.assay1"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EWOEPZA01.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay8.3.27" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay8.3"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN114.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay8.4.28" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay8.4"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN113.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay7.6.24" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay7.6"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN112.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay5.3.9" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay5.3"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN104.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay8.5.29" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay8.5"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN116.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay7.1.19" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay7.1"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVNG8PH03.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay7.5.23" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay7.5"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN111.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay8.1.25" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay8.1"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVNG8PH04.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay5.5.11" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay5.5"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVNG8PH01.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay5.4.10" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay5.4"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN103.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay3.1.3" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Gx.assay3.1"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EXHS9OF01.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay8.2.26" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay8.2"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVUSNDQ04.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay6.4.16" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay6.4"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN107.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay3.2.4" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Gx.assay3.2"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EX398L102.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay4.1.5" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Gx.assay4.1"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EXHS9OF02.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay8.6.30" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay8.6"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN115.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay7.2.20" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay7.2"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVUSNDQ03.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay6.5.17" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay6.5"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN106.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay6.6.18" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay6.6"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVHINN105.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias="BII-S-3:assay:assay5.6.12" center_name="OXFORD" broker_name="">
+    <EXPERIMENT_REF refname="BII-S-3:generic_assay:a_gilbert-assay-Tx.assay5.6"/>
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filetype="sff" filename="EVUSNDQ01.sff" checksum_method="MD5" checksum="d41d8cd98f00b204e9800998ecf8427e"/>
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+</RUN_SET>

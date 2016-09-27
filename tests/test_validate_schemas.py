@@ -1,9 +1,9 @@
-from unittest import TestCase
+import unittest
 from isatools.validate.validate_schemas import validateSchemasInFolder
 import os
 
 
-class ValidateSchemasTest(TestCase):
+class TestIsaJsonSchemas(unittest.TestCase):
 
     def setUp(self):
         self._schemas_dir = os.path.join(os.path.dirname(__file__), '..', 'isatools', 'schemas')

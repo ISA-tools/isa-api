@@ -20,12 +20,12 @@ For example, to create an empty ISA structure consisting of an investigation wit
     investigation = Investigation()
     investigation.studies.append(Study())  # add a new Study object to the Investigation
 
-The constructor of each of these objects creates empty content for each of these. If you try and serialize these out to ISA tab format, we should see some output into an ``i_investigation.txt`` file. We can do this using the ``isatab`` package.
+The constructor of each of these objects creates empty content for each of these. If you try and serialize these out to ISA-Tab format, we should see some output into an ``i_investigation.txt`` file. We can do this using the ``isatab`` package.
 
 .. code-block:: python
 
     from isatools import isatab
-    isatab.dump(investigation, 'tmp/')  # dumps out ISA tab format of the investigation we made earlier
+    isatab.dump(investigation, 'tmp/')  # dumps out ISA-Tab format of the investigation we made earlier
 
 If all went as expected, you should find an ``i_investigation.txt`` file with the following content in the directory you specified in the ``isatab.dump()`` function::
 
