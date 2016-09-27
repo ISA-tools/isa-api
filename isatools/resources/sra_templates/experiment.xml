@@ -1,0 +1,52 @@
+<EXPERIMENT alias="{{assay.exp_alias}}" center_name="{{sra_center_name}}"
+            broker_name="{{sra_broker_name}}">
+    <TITLE>Sequencing library derived from sample {{assay.sample.name}}</TITLE>
+    <STUDY_REF refname="{{study.identifier}}"/>
+    <DESIGN>
+        <DESIGN_DESCRIPTION>See study and sample descriptions for details</DESIGN_DESCRIPTION>
+        <SAMPLE_DESCRIPTOR refname="{{assay.sample_alias}}"/>
+        {% include 'experiment_library_descriptor.xml' %}
+        {% if '454 GS' in assay.platform and assay.library_layout == 'single' and assay.min_match > 0 %}
+        {% include 'experiment_spot_descriptor_454_single_barcode.xml' %}
+        {% elif '454 GS' in assay.platform and assay.library_layout == 'single' %}
+        {% include 'experiment_spot_descriptor_454_single.xml' %}
+        {% elif '454 GS' in assay.platform and assay.library_layout == 'paired' %}
+        {% include 'experiment_spot_descriptor_454_paired.xml' %}
+        {% elif 'illumina' in assay.platform and assay.library_layout == 'single' %}
+        {% include 'experiment_spot_descriptor_illumina_single.xml' %}
+        {% elif 'illumina' in assay.platform and assay.library_layout == 'paired' %}
+        {% include 'experiment_spot_descriptor_illumina_paired.xml' %}
+        {% elif 'solid' in assay.platform and assay.library_layout == 'single' %}
+        {% include 'experiment_spot_descriptor_solid_single.xml' %}
+        {% elif 'solid' in assay.platform and assay.library_layout == 'paired' %}
+        {% include 'experiment_spot_descriptor_solid_paired.xml' %}
+        {% endif %}
+    </DESIGN>
+    <PLATFORM>
+        {% if '454 GS' in assay.platform %}
+        <LS454>
+            <INSTRUMENT_MODEL>{{assay.platform}}</INSTRUMENT_MODEL>
+        </LS454>
+        {% elif 'Illumina' in assay.platform or 'HiSeq' in assay.platform or 'NextSeq' in assay.platform %}
+        <ILLUMINA>
+            <INSTRUMENT_MODEL>{{assay.platform}}</INSTRUMENT_MODEL>
+        </ILLUMINA>
+        {% elif 'Helicos' in assay.platform %}
+        <HELICOS>
+            <INSTRUMENT_MODEL>{{assay.platform}}</INSTRUMENT_MODEL>
+        </HELICOS>
+        {% elif 'Ion Torrent' in assay.platform %}
+        <IONTORRENT>
+            <INSTRUMENT_MODEL>{{assay.platform}}</INSTRUMENT_MODEL>
+        </IONTORRENT>
+        {% elif 'MinION' in assay.platform or 'GridION' in assay.platform %}
+        <OXFORDNANOPORE>
+            <INSTRUMENT_MODEL>{{assay.platform}}</INSTRUMENT_MODEL>
+        </OXFORDNANOPORE>
+        {% elif 'AB ' in assay.platform %}
+        <ABISOLID>
+            <INSTRUMENT_MODEL>{{assay.platform}}</INSTRUMENT_MODEL>
+        </ABISOLID>
+        {% endif %}
+    </PLATFORM>
+</EXPERIMENT>

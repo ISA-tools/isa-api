@@ -1,0 +1,18 @@
+<LIBRARY_DESCRIPTOR>
+    <LIBRARY_NAME>{{study.identifier}}:assay:{{assay.sample.name}}.{{assay.target_taxon}}</LIBRARY_NAME>
+    <LIBRARY_STRATEGY>{{assay.library_strategy}}</LIBRARY_STRATEGY>
+    <LIBRARY_SOURCE>{{assay.library_source}}</LIBRARY_SOURCE>
+    <LIBRARY_SELECTION>{{assay.library_selection}}</LIBRARY_SELECTION>
+    <LIBRARY_LAYOUT>
+        {% if assay.library_layout == 'single' %}<SINGLE/>{% else %}<PAIRED/>{% endif %}
+    </LIBRARY_LAYOUT>
+    {% if assay.targeted_loci %}
+    <TARGETED_LOCI>
+        <LOCUS locus_name="{{assay.locus_name}}"/>
+    </TARGETED_LOCI>
+    {% endif %}
+    {% if assay.poolingstrategy %}
+    <POOLING_STRATEGY>{{assay.poolingstrategy}}</POOLING_STRATEGY>
+    {% endif %}
+    <LIBRARY_CONSTRUCTION_PROTOCOL>{{assay.library_construction_protocol}}</LIBRARY_CONSTRUCTION_PROTOCOL>
+</LIBRARY_DESCRIPTOR>

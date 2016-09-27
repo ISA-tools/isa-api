@@ -55,16 +55,12 @@ def get_study(mtbls_study_id):
 
 
 def load(mtbls_study_id):
-    tmp_dir = None
-    try:
-        tmp_dir = get_study(mtbls_study_id)
-        isatab2json.convert(tmp_dir, tmp_dir)
-        for file in os.listdir(tmp_dir):
-            if file.endswith('.json'):
-                return json.load(open(os.path.join(tmp_dir, file)))
-    finally:
-        if tmp_dir is not None:
-            shutil.rmtree(tmp_dir)
+    tmp_dir = get_study(mtbls_study_id)
+    if tmp_dir is None:
+        raise IOError("There was a problem retrieving the study ", mtbls_study_id)
+    isa_json = isatab2json.convert(tmp_dir, identifier_type=isatab2json.IdentifierType.name, validate_first=False)
+    return isa_json
+
 
 
 def get_data_files_urls(mtbls_study_id, factor_selection=None):

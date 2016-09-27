@@ -13,7 +13,8 @@
             "enum": [
                 "Raw Data File",
                 "Derived Data File",
-                "Image File"
+                "Image File",
+                "Acquisition Parameter Data File"
             ]
         },
         "comments" : {
