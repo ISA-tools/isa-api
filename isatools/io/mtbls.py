@@ -3,8 +3,9 @@ import logging
 import os
 import tempfile
 import shutil
-import json
+from isatools import isajson
 from isatools.convert import isatab2json
+from isatools.model.v1 import OntologyAnnotation, Sample
 
 MTBLS_FTP_SERVER = 'ftp.ebi.ac.uk'
 MTBLS_BASE_DIR = '/pub/databases/metabolights/studies/public'
@@ -64,7 +65,7 @@ def get_study(mtbls_study_id, target_dir=None):
         raise ConnectionError("There was a problem connecting to MetaboLights: " + response)
 
 
-def loadj(mtbls_study_id):
+def load(mtbls_study_id):
     """
     This function downloads the specified MetaboLights study and returns an ISA JSON representation of it
 
@@ -80,13 +81,13 @@ def loadj(mtbls_study_id):
         isatab2json.convert(tmp_dir, tmp_dir)
         for file in os.listdir(tmp_dir):
             if file.endswith('.json'):
-                return json.load(open(os.path.join(tmp_dir, file)))
+                return isajson.load(open(os.path.join(tmp_dir, file)))
     finally:
         if tmp_dir is not None:
             shutil.rmtree(tmp_dir)
 
 
-def get_data_files_urls(mtbls_isa_json, factor_selection=None):
+def get_data_files_urls(inv, factor_selection=None):
     """
     This function gets the list of samples and related data file URLs for a given MetaboLights study, optionally
     filtered by factor values (can filter on multiple factors)
@@ -97,22 +98,60 @@ def get_data_files_urls(mtbls_isa_json, factor_selection=None):
 
     Example usage:
         mtbls1 = MTBLS.loadj('MTBLS1')
-        datafiles = mtbls.get_data_files_urls(mtbls1, {'gender': 'male'})
+        samples_and_data = mtbls.get_data_files_urls(mtbls1, {'gender': 'male'})
+
+    Example selection filters:
+        {"gender": "male"} selects samples matching "male" factor value
+        {"gender": ["male", "female"]} selects samples matching "male" or "female" factor value
+        {"age": {"equals": 60}} selects samples matching age 60
+        {"age": {"less_than": 60}} selects samples matching age less than 60
+        {"age": {"more_than": 60}} selects samples matching age more than 60
+
+        To select samples matching "male" and age less than 60:
+        {
+            "gender": "male",
+            "age": {
+                "less_than": 60
+            }
+        }
     """
-    def match(fvs_json, selection):
+    def match(fvs, selection):
         if selection is None:
             return True
+        matches = False
         for select_name, select_value in selection.items():
-            print(select_name, select_value)
+            for fv in fvs:
+                if fv.factor_name.name == select_name:
+                    if isinstance(fv.value, OntologyAnnotation):
+                        if fv.value.name == select_value:
+                            matches = True
+                    else:
+                        if fv.value == select_value:
+                            matches = True
+        return matches
 
-    datafiles = list()
-    for study_json in mtbls_isa_json['studies']:
-        for sample_json in study_json['materials']['samples']:
-            if match(sample_json['factorValues'], factor_selection):
-                hit = { "sample": sample_json['name'] }
+    def collect_datafiles(sample, study):
+        datafiles = list()
+        sample_processes = list()
+        all_processes = [x for x in [a.process_sequence for a in study.assays] for x in x]
+        for process in all_processes:
+            for input in process.inputs:
+                if isinstance(input, Sample) and process not in sample_processes:
+                    sample_processes.append(process)
+        for process in sample_processes:
+            pass  # traverse process sequence for each sample process to find the data files
+        return datafiles
+
+    samples_and_data = list()
+    for study in inv.studies:
+        for sample in study.materials['samples']:
+            if match(sample.factor_values, factor_selection):
+                datafiles = collect_datafiles(sample, study)
+                samples_and_data.append({"sample": sample.name, "data": datafiles})
+    return samples_and_data
 
 
-def get_factor_names(mtbls_isa_json):
+def get_factor_names(inv):
     """
     This function gets the factor names in a ISA JSON
 
@@ -124,7 +163,7 @@ def get_factor_names(mtbls_isa_json):
         factor_names = get_factor_names(mtbls1)
     """
     factors = list()
-    for study_json in mtbls_isa_json['studies']:
-        for factor_json in study_json['factors']:
-            factors.append(factor_json['factorName'])
+    for study in inv.studies:
+        for factor in study.factors:
+            factors.append(factor.name)
     return factors
