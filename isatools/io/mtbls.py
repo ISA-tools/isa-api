@@ -5,7 +5,7 @@ import tempfile
 import shutil
 from isatools import isajson
 from isatools.convert import isatab2json
-from isatools.model.v1 import OntologyAnnotation, Sample
+from isatools.model.v1 import OntologyAnnotation, Sample, DataFile
 
 MTBLS_FTP_SERVER = 'ftp.ebi.ac.uk'
 MTBLS_BASE_DIR = '/pub/databases/metabolights/studies/public'
@@ -73,7 +73,7 @@ def load(mtbls_study_id):
     :return: ISA JSON representation of the MetaboLights study
 
     Example usage:
-        isa_json = MTBLS.loadj('MTBLS1')
+        isa_json = MTBLS.load('MTBLS1')
     """
     tmp_dir = get_study(mtbls_study_id)
     if tmp_dir is None:
@@ -82,26 +82,24 @@ def load(mtbls_study_id):
     return isa_json
 
 
-
-def get_data_files_urls(inv, factor_selection=None):
+def get_data_files_urls(mtbls_study_id, factor_selection=None):
     """
     This function gets the list of samples and related data file URLs for a given MetaboLights study, optionally
     filtered by factor values (can filter on multiple factors)
 
-    :param mtbls_isa_json: ISA JSON representation of the MetaboLights study
+    :param mtbls_study_id: Study identifier for MetaboLights study to get, as a str (e.g. MTBLS1)
     :param factor_selection: Selected factor values to filter on samples
-    :return: A list of samples with associated data file URLs
+    :return: A list of dicts {sample, datafiles}, sample names with associated data filenames
 
     Example usage:
-        mtbls1 = MTBLS.loadj('MTBLS1')
-        samples_and_data = mtbls.get_data_files_urls(mtbls1, {'gender': 'male'})
+        samples_and_data = mtbls.get_data_files_urls('MTBLS1', {'gender': 'male'})
 
     Example selection filters:
         {"gender": "male"} selects samples matching "male" factor value
-        {"gender": ["male", "female"]} selects samples matching "male" or "female" factor value
-        {"age": {"equals": 60}} selects samples matching age 60
-        {"age": {"less_than": 60}} selects samples matching age less than 60
-        {"age": {"more_than": 60}} selects samples matching age more than 60
+        TODO: {"gender": ["male", "female"]} selects samples matching "male" or "female" factor value
+        TODO: {"age": {"equals": 60}} selects samples matching age 60
+        TODO: {"age": {"less_than": 60}} selects samples matching age less than 60
+        TODO: {"age": {"more_than": 60}} selects samples matching age more than 60
 
         To select samples matching "male" and age less than 60:
         {
@@ -128,16 +126,22 @@ def get_data_files_urls(inv, factor_selection=None):
 
     def collect_datafiles(sample, study):
         datafiles = list()
-        sample_processes = list()
         all_processes = [x for x in [a.process_sequence for a in study.assays] for x in x]
         for process in all_processes:
             for input in process.inputs:
-                if isinstance(input, Sample) and process not in sample_processes:
-                    sample_processes.append(process)
-        for process in sample_processes:
-            pass  # traverse process sequence for each sample process to find the data files
+                if isinstance(input, Sample):
+                    if input.name == sample.name:
+                        while process.next_process is not None:
+                            if len(process.outputs) > 0:
+                                for output in [o for o in process.outputs if isinstance(o, DataFile)]:
+                                    datafiles.append(output.filename)
+                            process = process.next_process
         return datafiles
 
+    from io import StringIO
+    import json
+    j = load(mtbls_study_id)
+    inv = isajson.load(StringIO(json.dumps(j)))
     samples_and_data = list()
     for study in inv.studies:
         for sample in study.materials['samples']:
@@ -147,7 +151,7 @@ def get_data_files_urls(inv, factor_selection=None):
     return samples_and_data
 
 
-def get_factor_names(inv):
+def get_factor_names(mtbls_study_id):
     """
     This function gets the factor names in a ISA JSON
 
@@ -155,9 +159,12 @@ def get_factor_names(inv):
     :return: A list of factor names associated data the studies
 
     Example usage:
-        mtbls1 = MTBLS.loadj('MTBLS1')
-        factor_names = get_factor_names(mtbls1)
+        factor_names = get_factor_names('MTBLS1')
     """
+    from io import StringIO
+    import json
+    j = load(mtbls_study_id)
+    inv = isajson.load(StringIO(json.dumps(j)))
     factors = list()
     for study in inv.studies:
         for factor in study.factors:
