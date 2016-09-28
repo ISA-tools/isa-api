@@ -89,17 +89,18 @@ def get_data_files_urls(mtbls_study_id, factor_selection=None):
 
     :param mtbls_study_id: Study identifier for MetaboLights study to get, as a str (e.g. MTBLS1)
     :param factor_selection: Selected factor values to filter on samples
-    :return: A list of dicts {sample, datafiles}, sample names with associated data filenames
+    :return: A list of dicts {sample_name, list of datafiles}, sample names with associated data filenames
 
     Example usage:
         samples_and_data = mtbls.get_data_files_urls('MTBLS1', {'gender': 'male'})
 
+    TODO: Currently only works with exact matches (e.g. case 1 below). Need to work on more complex filter
     Example selection filters:
         {"gender": "male"} selects samples matching "male" factor value
-        TODO: {"gender": ["male", "female"]} selects samples matching "male" or "female" factor value
-        TODO: {"age": {"equals": 60}} selects samples matching age 60
-        TODO: {"age": {"less_than": 60}} selects samples matching age less than 60
-        TODO: {"age": {"more_than": 60}} selects samples matching age more than 60
+        {"gender": ["male", "female"]} selects samples matching "male" or "female" factor value
+        {"age": {"equals": 60}} selects samples matching age 60
+        {"age": {"less_than": 60}} selects samples matching age less than 60
+        {"age": {"more_than": 60}} selects samples matching age more than 60
 
         To select samples matching "male" and age less than 60:
         {
@@ -124,20 +125,6 @@ def get_data_files_urls(mtbls_study_id, factor_selection=None):
                             matches = True
         return matches
 
-    def collect_datafiles(sample, study):
-        datafiles = list()
-        all_processes = [x for x in [a.process_sequence for a in study.assays] for x in x]
-        for process in all_processes:
-            for input in process.inputs:
-                if isinstance(input, Sample):
-                    if input.name == sample.name:
-                        while process.next_process is not None:
-                            if len(process.outputs) > 0:
-                                for output in [o for o in process.outputs if isinstance(o, DataFile)]:
-                                    datafiles.append(output.filename)
-                            process = process.next_process
-        return datafiles
-
     from io import StringIO
     import json
     j = load(mtbls_study_id)
@@ -149,6 +136,22 @@ def get_data_files_urls(mtbls_study_id, factor_selection=None):
                 datafiles = collect_datafiles(sample, study)
                 samples_and_data.append({"sample": sample.name, "data": datafiles})
     return samples_and_data
+
+
+def collect_datafiles(sample, study):
+    datafiles = list()
+    all_processes = [x for x in [a.process_sequence for a in study.assays] for x in x]
+    for process in all_processes:
+        for input in process.inputs:
+            if isinstance(input, Sample):
+                if input.name == sample.name:
+                    while process.next_process is not None:
+                        if len(process.outputs) > 0:
+                            for output in [o for o in process.outputs if isinstance(o, DataFile)]:
+                                datafiles.append(output.filename)
+                        process = process.next_process
+                    break
+    return datafiles
 
 
 def get_factor_names(mtbls_study_id):
