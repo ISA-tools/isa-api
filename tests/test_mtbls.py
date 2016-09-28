@@ -23,9 +23,24 @@ class TestMtblsIO(unittest.TestCase):
         mock_ftp.cwd.assert_called_with('/pub/databases/metabolights/studies/public/MTBLS1')
         shutil.rmtree(tmp_dir)
 
-    """Tries to do actual call on MetaboLights"""
+    """Tries to do actual call on MetaboLights; uses MTBLS2 as not so big"""
     def test_load_study(self):
-        isa_json = MTBLS.load('MTBLS1')  # loads MTBLS study into ISA JSON
+        isa_json = MTBLS.load('MTBLS2')  # loads MTBLS study into ISA JSON
         self.assertIsInstance(isa_json, dict)
-        self.assertEqual(isa_json['identifier'], 'MTBLS1')
-        self.assertEqual(isa_json['studies'][0]['people'][0]['email'], 'rms72@cam.ac.uk')
+        self.assertEqual(isa_json['identifier'], 'MTBLS2')
+        self.assertEqual(isa_json['studies'][0]['people'][0]['email'], 'boettch@ipb-halle.de')
+
+    def test_get_factor_names(self):
+        factors = MTBLS.get_factor_names('MTBLS2')
+        self.assertIsInstance(factors, list)
+        self.assertEqual(len(factors), 2)
+        self.assertListEqual(factors, ['genotype', 'replicate'])
+
+    def test_get_datafiles(self):
+        datafiles = MTBLS.get_data_files_urls('MTBLS2')
+        self.assertIsInstance(datafiles, list)
+        self.assertEqual(len(datafiles), 16)
+        factor_selection = {"genotype": "Col-0"}
+        datafiles = MTBLS.get_data_files_urls('MTBLS2', factor_selection)
+        self.assertEqual(len(datafiles), 8)
+        self.assertEqual(len(datafiles[0]['data']), 3)
