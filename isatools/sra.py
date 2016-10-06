@@ -371,19 +371,19 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
 
         if os.path.exists(export_path):
             with open(os.path.join(export_path, 'submission.xml'), 'w') as xsub_file:
-                print(prettify(xsub), file=xsub_file)
+                xsub_file.write(prettify(xsub))
             validate(os.path.join(export_path, 'submission.xml'), 'SRA.submission.xsd')
             with open(os.path.join(export_path, 'project_set.xml'), 'w') as xproj_set_file:
-                print(prettify(xproj), file=xproj_set_file)
+                xproj_set_file.write(prettify(xproj))
             validate(os.path.join(export_path, 'project_set.xml'), 'ENA.project.xsd')
             with open(os.path.join(export_path, 'experiment_set.xml'), 'w') as xexp_set_file:
-                print(prettify(xexp_set), file=xexp_set_file)
+                xexp_set_file.write(prettify(xexp_set))
             validate(os.path.join(export_path, 'experiment_set.xml'), 'SRA.experiment.xsd')
             with open(os.path.join(export_path, 'run_set.xml'), 'w') as xrun_set_file:
-                print(prettify(xrun_set), file=xrun_set_file)
+                xrun_set_file.write(prettify(xrun_set))
             validate(os.path.join(export_path, 'run_set.xml'), 'SRA.run.xsd')
             with open(os.path.join(export_path, 'sample_set.xml'), 'w') as xsample_set_file:
-                print(prettify(xsample_set), file=xsample_set_file)
+                xsample_set_file.write(prettify(xsample_set))
             validate(os.path.join(export_path, 'sample_set.xml'), 'SRA.sample.xsd')
         else:
             raise NotADirectoryError("export path '{}' is not a directory".format(export_path))
