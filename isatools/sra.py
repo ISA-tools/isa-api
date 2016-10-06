@@ -1,4 +1,6 @@
 # coding: utf-8
+from __future__ import absolute_import
+
 import logging
 import os
 import iso8601
@@ -9,7 +11,8 @@ import hashlib
 from functools import partial
 from lxml import etree
 import xml.dom.minidom
-from isatools.model.v1 import Sample, OntologyAnnotation, DataFile
+
+from .model.v1 import Sample, OntologyAnnotation, DataFile
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
 logger = logging.getLogger(__name__)

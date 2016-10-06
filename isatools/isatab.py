@@ -1,6 +1,6 @@
 # coding: utf-8
-from .model.v1 import *
-from isatools.io import isatab_parser
+from __future__ import absolute_import
+
 import os
 import sys
 import pandas as pd
@@ -12,6 +12,9 @@ import logging
 import re
 import math
 import iso8601
+
+from .model.v1 import *
+from .io import isatab_parser
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)

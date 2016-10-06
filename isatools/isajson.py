@@ -1,10 +1,13 @@
 # coding: utf-8
-from isatools.model.v1 import *
+from __future__ import absolute_import
+
 import json
 import logging
 import networkx as nx
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
+
+from .model.v1 import *
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
