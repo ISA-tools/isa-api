@@ -93,7 +93,7 @@ class Investigation(Commentable):
     def __init__(self, id_='', filename='', identifier="", title="", description="", submission_date='',
                  public_release_date='', ontology_source_references=None, publications=None,
                  contacts=None, studies=None, comments=None):
-        super().__init__(comments)
+        super(Investigation, self).__init__(comments)
         self.id = id_
         self.filename = filename
         self.identifier = identifier
@@ -132,7 +132,7 @@ class OntologySourceReference(Commentable):
     """
 
     def __init__(self, name="", file="", version="", description="", comments=None):
-        super().__init__(comments)
+        super(OntologySourceReference, self).__init__(comments)
         self.name = name
         self.file = file
         self.version = version
@@ -149,7 +149,7 @@ class OntologyAnnotation(Commentable):
     """
 
     def __init__(self, id_='', name="", term_source=None, term_accession="", comments=None):
-        super().__init__(comments)
+        super(OntologyAnnotation, self).__init__(comments)
         self.id = id_
         self.name = name
         if term_source is None:
@@ -171,7 +171,7 @@ class Publication(Commentable):
     """
 
     def __init__(self, pubmed_id="", doi="", author_list="", title="", status=None, comments=None):
-        super().__init__(comments)
+        super(Publication, self).__init__(comments)
         self.pubmed_id = pubmed_id
         self.doi = doi
         self.author_list = author_list
@@ -201,7 +201,7 @@ class Person(Commentable):
 
     def __init__(self, id_='', first_name="", last_name="", mid_initials="", email="", phone="", fax="", address="",
                  affiliation="", roles=None, comments=None):
-        super().__init__(comments)
+        super(Person, self).__init__(comments)
         self.id = id_
         self.last_name = last_name
         self.first_name = first_name
@@ -243,7 +243,7 @@ class Study(Commentable, object):
                  public_release_date='', contacts=None, design_descriptors=None, publications=None,
                  factors=None, protocols=None, assays=None, sources=None, samples=None,
                  process_sequence=None, other_material=None, characteristic_categories=None, comments=None, units=None):
-        super().__init__(comments)
+        super(Study, self).__init__(comments)
         self.id = id_
         self.filename = filename
         self.identifier = identifier
@@ -335,7 +335,7 @@ class StudyFactor(Commentable):
     """
 
     def __init__(self, id_='', name="", factor_type=None, comments=None):
-        super().__init__(comments)
+        super(StudyFactor, self).__init__(comments)
         self.id = id_
         self.name = name
         if factor_type is None:
@@ -358,7 +358,7 @@ class Assay(Commentable):
     def __init__(self, measurement_type=None, technology_type=None, technology_platform="", filename="",
                  process_sequence=None, data_files=None, samples=None, other_material=None,
                  characteristic_categories=None, comments=None):
-        super().__init__(comments)
+        super(Assay, self).__init__(comments)
         if measurement_type is None:
             self.measurement_type = OntologyAnnotation()
         else:
@@ -426,7 +426,7 @@ class Protocol(Commentable):
     """
     def __init__(self, id_='', name="", protocol_type=None, uri="", description="", version="", parameters=None,
                  components=None, comments=None):
-        super().__init__(comments)
+        super(Protocol, self).__init__(comments)
         self.id = id_
         self.name = name
         if protocol_type is None:
@@ -454,7 +454,7 @@ class ProtocolParameter(Commentable):
         unit:
     """
     def __init__(self, id_='', parameter_name=None, unit=None, comments=None):
-        super().__init__(comments)
+        super(ProtocolParameter, self).__init__(comments)
         self.id = id_
         if parameter_name is None:
             self.parameter_name = OntologyAnnotation()
@@ -468,7 +468,7 @@ class ProtocolParameter(Commentable):
 
 class ProtocolComponent(Commentable):
     def __init__(self, id_='', name='', component_type=None, comments=None):
-        super().__init__(comments)
+        super(ProtocolComponent, self).__init__(comments)
         self.id = id_
         self.name = name
         if component_type is None:
@@ -485,7 +485,7 @@ class Source(Commentable):
         characteristics:
     """
     def __init__(self, id_='', name="", characteristics=None, comments=None):
-        super().__init__(comments)
+        super(Source, self).__init__(comments)
         self.id = id_
         self.name = name
         if characteristics is None:
@@ -496,7 +496,7 @@ class Source(Commentable):
 
 class Characteristic(Commentable):
     def __init__(self, category=None, value=None, unit=None, comments=None):
-        super().__init__(comments)
+        super(Characteristic, self).__init__(comments)
         if category is None:
             self.category = OntologyAnnotation()
         else:
@@ -517,7 +517,7 @@ class Sample(Commentable):
         factors:
     """
     def __init__(self, id_='', name="", factor_values=None, characteristics=None, derives_from=None, comments=None):
-        super().__init__(comments)
+        super(Sample, self).__init__(comments)
         self.id = id_
         self.name = name
         if factor_values is None:
@@ -539,7 +539,7 @@ class Material(Commentable):
         characteristics:
     """
     def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None):
-        super().__init__(comments)
+        super(Material, self).__init__(comments)
         self.id = id_
         self.name = name
         self.type = type_
@@ -552,19 +552,19 @@ class Material(Commentable):
 
 class Extract(Material):
     def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None):
-        super().__init__(id_, name, type_, characteristics, derives_from, comments)
+        super(Extract, self).__init__(id_, name, type_, characteristics, derives_from, comments)
         self.type = 'Extract Name'
 
 
 class LabeledExtract(Extract):
     def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None, label=None):
-        super().__init__(id_, name, type_, characteristics, derives_from, comments)
+        super(LabeledExtract, self).__init__(id_, name, type_, characteristics, derives_from, comments)
         self.label = label
 
 
 class FactorValue(Commentable):
     def __init__(self, factor_name=None, value=None, unit=None, comments=None):
-        super().__init__(comments)
+        super(FactorValue, self).__init__(comments)
         self.factor_name = factor_name
         self.value = value
         self.unit = unit
@@ -582,7 +582,7 @@ class Process(Commentable):
     """
     def __init__(self, id_='', name="", executes_protocol=None, date_=None, performer=None,
                  parameter_values=None, inputs=None, outputs=None, comments=None):
-        super().__init__(comments)
+        super(Process, self).__init__(comments)
         self.id = id_
         self.name = name
         if executes_protocol is None:
@@ -610,7 +610,7 @@ class Process(Commentable):
 
 class DataFile(Commentable):
     def __init__(self, id_='', filename='', label='', comments=None):
-        super().__init__(comments)
+        super(DataFile, self).__init__(comments)
         self.id = id_
         self.filename = filename
         self.label = label
