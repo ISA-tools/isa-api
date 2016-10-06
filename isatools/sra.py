@@ -3,7 +3,7 @@ import logging
 import os
 import iso8601
 import jinja2
-import html
+import cgi
 import datetime
 import hashlib
 from functools import partial
@@ -104,7 +104,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
             istudy.submission_date = iso8601.parse_date(datetime.date.today().isoformat(), iso8601.UTC).isoformat()
         else:
             istudy.submission_date = iso8601.parse_date(istudy.submission_date, iso8601.UTC).isoformat()
-        istudy.description = html.escape(istudy.description)  # ideally make it a requirement in the model or JSON to have html escaped content
+        istudy.description = cgi.escape(istudy.description)  # ideally make it a requirement in the model or JSON to have html escaped content
 
         env = jinja2.Environment()
         env.loader = jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'resources', 'sra_templates'))
