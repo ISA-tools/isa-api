@@ -890,11 +890,17 @@ def read_investigation_file(fp):
         position = f.tell()
         l = f.readline()
         f.seek(position)
+
+        try: l = l.decode("utf-8")
+        except AttributeError: pass
         return l
 
     def _read_tab_section(f, sec_key, next_sec_key=None):
 
         line = f.readline()
+        try: line = line.decode("utf-8")
+        except AttributeError: pass
+
         normed_line = line.rstrip()
         if normed_line[0] == '"':
             normed_line = normed_line[1:]
@@ -904,7 +910,11 @@ def read_investigation_file(fp):
             raise IOError("Expected: " + sec_key + " section, but got: " + normed_line)
         memf = io.StringIO()
         while not _peek(f=f).rstrip() == next_sec_key:
+
             line = f.readline()
+            try: line = line.decode("utf-8")
+            except AttributeError: pass
+
             if not line:
                 break
             memf.write(line.rstrip() + '\n')
@@ -1013,6 +1023,10 @@ def load2(fp):
                 l = None
             finally:
                 f.seek(position)
+
+            try: l = l.decode('utf-8')
+            except AttributeError: pass
+
             return l
 
         def _strip_label(s):
@@ -1025,11 +1039,19 @@ def load2(fp):
 
         def _read_tab_section(f, sec_key, next_sec_key=None):
             line = _strip_label(f.readline())
+
+            try: line = line.decode('utf-8')
+            except AttributeError: pass
+
             if not line == sec_key:
                 raise IOError("Expected: " + sec_key + " section, but got: " + line)
             memf = io.StringIO()
             while not _peek(f=f) == next_sec_key:
                 line = f.readline()
+
+                try: line = line.decode('utf-8')
+                except AttributeError: pass
+
                 if not line:
                     break
                 memf.write(line.rstrip() + '\n')
