@@ -2,6 +2,12 @@
 
 from setuptools import setup
 
+with open("requirements.txt") as r:
+    install_requires = r.read().splitlines()
+
+with open("requirements-tests.txt") as r:
+    tests_require = r.read().splitlines()
+
 setup(
     name='isatools',
     version='0.3.1',
@@ -14,7 +20,7 @@ setup(
                                'convert/isa_line_commands/bin/config.sh',
                                'convert/isa_line_commands/config/*',
                                'convert/isa_line_commands/bin/convert.sh',
-                               'convert/isa_line_commands/bin/validate.sh', 
+                               'convert/isa_line_commands/bin/validate.sh',
                                'convert/isa_line_commands/import_layer_deps.jar',
                                'convert/isa_line_commands/bin/batch_sra2isatab.sh',
                                'convert/resources/biocrates/*',
@@ -30,7 +36,7 @@ setup(
                                'sampledata/BII-I-1.json',
                                'sampledata/BII-S-3.json',
                                'sampledata/BII-S-7.json'],
-                  '': ['LICENSE.txt', 'README.md']},
+                  '': ['LICENSE.txt', 'README.md', 'requirements.txt', 'requirements-tests.txt']},
     description='ISA-API',
     author='ISA Infrastructure Team',
     author_email='isatools@googlegroups.com',
@@ -42,18 +48,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         ],
-    install_requires=[
-        'numpy',
-        'biopy-isatab',
-        'jsonschema',
-        'pandas',
-        'networkx',
-        'lxml',
-        'requests',
-        'chardet',
-        'iso8601',
-        'jinja2',
-        'bs4'
-    ],
+    install_requires=install_requires,
+    tests_require=tests_require,
     test_suite='tests'
 )
