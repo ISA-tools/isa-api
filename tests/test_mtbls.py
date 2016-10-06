@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, mock_open
+from mock import patch, mock_open
 from isatools.io import mtbls as MTBLS
 import shutil
 
