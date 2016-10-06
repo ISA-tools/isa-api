@@ -1,3 +1,4 @@
+# coding: utf-8
 from isatools import isajson, sra
 from glob import glob
 import os

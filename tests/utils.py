@@ -1,3 +1,4 @@
+# coding: utf-8
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 from isatools.isatab import read_investigation_file

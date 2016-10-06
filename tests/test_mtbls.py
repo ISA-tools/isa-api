@@ -1,3 +1,4 @@
+# coding: utf-8
 import unittest
 from mock import patch, mock_open
 from isatools.io import mtbls as MTBLS

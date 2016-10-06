@@ -1,3 +1,4 @@
+# coding: utf-8
 from unittest import TestCase
 from isatools import isajson, sra
 from lxml import etree

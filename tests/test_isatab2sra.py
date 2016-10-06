@@ -1,3 +1,4 @@
+# coding: utf-8
 import unittest
 from io import BytesIO
 from zipfile import ZipFile

@@ -1,3 +1,4 @@
+# coding: utf-8
 from .model.v1 import *
 from isatools.io import isatab_parser
 import os

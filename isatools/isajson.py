@@ -1,3 +1,4 @@
+# coding: utf-8
 from isatools.model.v1 import *
 import json
 import logging

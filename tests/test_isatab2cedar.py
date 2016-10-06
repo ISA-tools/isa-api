@@ -1,3 +1,4 @@
+# coding: utf-8
 import os
 from isatools.convert.isatab2cedar import ISATab2CEDAR
 import unittest

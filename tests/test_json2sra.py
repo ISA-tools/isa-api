@@ -1,3 +1,4 @@
+# coding: utf-8
 from unittest import TestCase
 import os
 import shutil
@@ -59,7 +60,7 @@ class TestJsonToSra(TestCase):
             expected_files_missing = expected_file_set - actual_file_set
             if len(expected_files_missing) > 0:
                 self.fail("Unexpected file found in SRA output: " + str(expected_files_missing))
-        
+
     def test_sra_dump_submission_xml_biis3(self):
         json2sra.convert2(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir, validate_first=False)
         # Now try load the SRA output in test and compare against the expected output in test data directory

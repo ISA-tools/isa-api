@@ -1,3 +1,4 @@
+# coding: utf-8
 import networkx as nx
 
 
@@ -643,7 +644,7 @@ def batch_create_materials(material=None, n=1):
     return material_list
 
 
-def batch_create_assays(*args, n=1):
+def batch_create_assays(*args, **kwargs):
     """Creates a batch of assay process sequences (Material->Process->Material) from a prototype sequence
     (currently works only as flat end-to-end processes of Material->Process->Material->...)
 
@@ -674,6 +675,7 @@ def batch_create_assays(*args, n=1):
         batch = batch_create_assays([sample1, sample2], process, [material1, material2], n=3)
 
     """
+    n = kwargs['n'] if 'n' in kwargs else 1
     process_sequence = list()
     materialA = None
     process = None

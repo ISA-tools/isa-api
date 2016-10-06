@@ -1,3 +1,4 @@
+# coding: utf-8
 from isatools import isajson
 from isatools import isatab
 import os

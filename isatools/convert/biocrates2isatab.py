@@ -1,3 +1,4 @@
+# coding: utf-8
 from bs4 import BeautifulSoup
 from collections import defaultdict
 import subprocess
