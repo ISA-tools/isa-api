@@ -103,7 +103,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                 "ensure you have one contact with a 'Role' as 'SRA Inform On Status', otherwise we cannot "
                 "export to SRA.".format(istudy.identifier))
 
-        if istudy.submission_date is None or istudy.submission_date == '':
+        if istudy.submission_date is None or not istudy.submission_date:
             istudy.submission_date = iso8601.parse_date(datetime.date.today().isoformat(), iso8601.UTC).isoformat()
         else:
             istudy.submission_date = iso8601.parse_date(istudy.submission_date, iso8601.UTC).isoformat()

@@ -1,6 +1,6 @@
 # coding: utf-8
 import networkx as nx
-
+import six
 
 def _build_assay_graph(process_sequence=list()):
     G = nx.DiGraph()
@@ -38,23 +38,23 @@ class Comment(object):
 
     @name.setter
     def name(self, name):
-        if not isinstance(name, str):
+        if not isinstance(name, six.text_type):
             raise AttributeError("Comment.name must be a str")
-        elif name.strip() == '':
+        elif not name.strip():
             raise AttributeError("Comment.name must not be empty")
         else:
             self.__name = name
 
     @property
     def value(self):
-        if self.__value is '':
+        if not self.__value:
             return None
         else:
             return self.__value
 
     @value.setter
     def value(self, value):
-        if value is not None and not isinstance(value, (str, int, float)):  # allow instance of str, int, float or None
+        if value is not None and not isinstance(value, (six.text_type, int, float)):  # allow instance of str, int, float or None
             raise AttributeError("Comment.value must be an instance of str, int, float, or None")
         else:
             self.__value = value
@@ -755,7 +755,7 @@ class ParameterValue(object):
     """A Parameter Value
     """
     def __init__(self, category=None, value=None, unit=None):
-        super().__init__()
+        super(ParameterValue, self).__init__()
         # if category is None:
         #     raise TypeError("You must specify a category")
         self.category = category

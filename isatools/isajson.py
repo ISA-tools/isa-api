@@ -1,11 +1,12 @@
 # coding: utf-8
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import json
 import logging
 import networkx as nx
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
+import six
 
 from .model.v1 import *
 
@@ -290,7 +291,7 @@ def load(fp):
                         unit = units_dict[characteristic_json['unit']['@id']]
                     except KeyError:
                         raise IOError("Can't create unit annotation")
-                elif not isinstance(value, str):
+                elif not isinstance(value, six.text_type):
                     raise IOError("Unexpected type in characteristic value")
                 characteristic.value = value
                 characteristic.unit = unit
@@ -321,7 +322,7 @@ def load(fp):
                         unit = units_dict[characteristic_json['unit']['@id']]
                     except KeyError:
                         raise IOError("Can't create unit annotation")
-                elif not isinstance(value, str):
+                elif not isinstance(value, six.text_type):
                     raise IOError("Unexpected type in characteristic value")
                 characteristic.value = value
                 characteristic.unit = unit
@@ -887,7 +888,8 @@ def check_utf8(fp):
     """Used for rule 0010"""
     import chardet
     charset = chardet.detect(open(fp.name, 'rb').read())
-    if charset['encoding'] is not 'UTF-8' and charset['encoding'] is not 'ascii':
+    if charset['encoding'] not in {'UTF-8', 'ascii'}:
+        print(type(charset['encoding']), type('ascii'))
         logger.warning("(W) File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
                     .format(charset['encoding'], charset['confidence']))
         raise SystemError
@@ -909,7 +911,7 @@ def check_isa_schemas(isa_json, investigation_schema_path):
 def check_date_formats(isa_json):
     """Used for rule 3001"""
     def check_iso8601_date(date_str):
-        if date_str is not '':
+        if date_str:
             try:
                 iso8601.parse_date(date_str)
             except iso8601.ParseError:
@@ -927,7 +929,7 @@ def check_date_formats(isa_json):
 def check_dois(isa_json):
     """Used for rule 3002"""
     def check_doi(doi_str):
-        if doi_str is not '':
+        if doi_str:
             regexDOI = re.compile('(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
             if not regexDOI.match(doi_str):
                 logger.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
@@ -942,17 +944,17 @@ def check_dois(isa_json):
 def check_filenames_present(isa_json):
     """Used for rule 3005"""
     for study in isa_json['studies']:
-        if study['filename'] is '':
+        if not study['filename']:
             logger.warning("(W) A study filename is missing")
         for assay in study['assays']:
-            if assay['filename'] is '':
+            if not assay['filename']:
                 logger.warning("(W) An assay filename is missing")
 
 
 def check_pubmed_ids_format(isa_json):
     """Used for rule 3003"""
     def check_pubmed_id(pubmed_id_str):
-        if pubmed_id_str is not '':
+        if pubmed_id_str:
             pmid_regex = re.compile('[0-9]{8}')
             pmcid_regex = re.compile('PMC[0-9]{8}')
             if (pmid_regex.match(pubmed_id_str) is None) and (pmcid_regex.match(pubmed_id_str) is None):
@@ -969,7 +971,7 @@ def check_protocol_names(isa_json):
     """Used for rule 1010"""
     for study in isa_json['studies']:
         for protocol in study['protocols']:
-            if protocol['name'] is '':
+            if not protocol['name']:
                 logger.warning("(W) A Protocol {} is missing Protocol Name, so can't be referenced in ISA-tab"
                                .format(protocol['@id']))
 
@@ -979,7 +981,7 @@ def check_protocol_parameter_names(isa_json):
     for study in isa_json['studies']:
         for protocol in study['protocols']:
             for parameter in protocol['parameters']:
-                if parameter['parameterName'] is '':
+                if not parameter['parameterName']:
                     logger.warning("(W) A Protocol Parameter {} is missing name, so can't be referenced in ISA-tab"
                                    .format(parameter['@id']))
 
@@ -988,7 +990,7 @@ def check_study_factor_names(isa_json):
     """Used for rule 1012"""
     for study in isa_json['studies']:
         for factor in study['factors']:
-            if factor['factorName'] is '':
+            if not factor['factorName']:
                 logger.warning("(W) A Study Factor is missing name, so can't be referenced in ISA-tab"
                                .format(factor['@id']))
 
@@ -996,7 +998,7 @@ def check_study_factor_names(isa_json):
 def check_ontology_sources(isa_json):
     """Used for rule 3008"""
     for ontology_source in isa_json['ontologySourceReferences']:
-        if ontology_source['name'] is '':
+        if not ontology_source['name']:
             logger.warning("(W) An Ontology Source Reference is missing Term Source Name, so can't be referenced")
 
 
@@ -1030,7 +1032,7 @@ def check_term_source_refs(isa_json):
     term_sources_declared = get_ontology_source_refs(isa_json)
     collector = list()
     walk_and_get_annotations(isa_json, collector)
-    term_sources_used = [annotation['termSource'] for annotation in collector if annotation['termSource'] is not '']
+    term_sources_used = [annotation['termSource'] for annotation in collector if annotation['termSource']]
     if len(set(term_sources_used) - set(term_sources_declared)) > 0:
         diff = set(term_sources_used) - set(term_sources_declared)
         logger.error("(E) There are ontology sources {} referenced in an annotation that have not been not declared"
@@ -1046,7 +1048,7 @@ def check_term_accession_used_no_source_ref(isa_json):
     collector = list()
     walk_and_get_annotations(isa_json, collector)
     terms_using_accession_no_source_ref = [annotation for annotation in collector if annotation['termAccession']
-                                           is not '' and annotation['termSource'] is '']
+                                           and not annotation['termSource']]
     if len(terms_using_accession_no_source_ref) > 0:
         logger.warning("(W) There are ontology annotations with termAccession set but no termSource referenced: {}"
                        .format(terms_using_accession_no_source_ref))
@@ -1057,6 +1059,7 @@ def print_graph(study_or_assay):
     G = study_or_assay.graph
     from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
     start_nodes, end_nodes = _get_start_end_nodes(G)
+    # TODO: switch from += str to "->".join(list)
     for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
         type_seq_str = ""
         for node in path:

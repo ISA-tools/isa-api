@@ -1005,7 +1005,7 @@ def check_utf8(fp):
     """Used for rule 0010"""
     import chardet
     charset = chardet.detect(open(fp.name, 'rb').read())
-    if charset['encoding'] is not 'UTF-8' and charset['encoding'] is not 'ascii':
+    if charset['encoding'] not in {'UTF-8', 'ascii'}:
         logger.warning("File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
                     .format(charset['encoding'], charset['confidence']))
         raise SystemError
@@ -1228,17 +1228,17 @@ def load2(fp):
 def check_filenames_present(i_df):
     """Used for rule 3005"""
     for i, study_df in enumerate(i_df['STUDY']):
-        if study_df.iloc[0]['Study File Name'] is '':
+        if not study_df.iloc[0]['Study File Name']:
             logger.warning("(W) A study filename is missing for STUDY.{}".format(i))
         for j, filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
-            if filename is '':
+            if not filename:
                 logger.warning("(W) An assay filename is missing for STUDY ASSAY.{}".format(j))
 
 
 def check_date_formats(i_df):
     """Used for rule 3001"""
     def check_iso8601_date(date_str):
-        if date_str is not '':
+        if date_str:
             try:
                 iso8601.parse_date(date_str)
             except iso8601.ParseError:
@@ -1256,7 +1256,7 @@ def check_date_formats(i_df):
 def check_dois(i_df):
     """Used for rule 3002"""
     def check_doi(doi_str):
-        if doi_str is not '':
+        if doi_str:
             regexDOI = re.compile('(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
             if not regexDOI.match(doi_str):
                 logger.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
@@ -1271,7 +1271,7 @@ def check_dois(i_df):
 def check_pubmed_ids_format(i_df):
     """Used for rule 3003"""
     def check_pubmed_id(pubmed_id_str):
-        if pubmed_id_str is not '':
+        if pubmed_id_str:
             pmid_regex = re.compile('[0-9]{8}')
             pmcid_regex = re.compile('PMC[0-9]{8}')
             if (pmid_regex.match(pubmed_id_str) is None) and (pmcid_regex.match(pubmed_id_str) is None):
@@ -1288,7 +1288,7 @@ def check_protocol_names(i_df):
     """Used for rule 1010"""
     for study_protocols_df in i_df['STUDY PROTOCOLS']:
         for i, protocol_name in enumerate(study_protocols_df['Study Protocol Name'].tolist()):
-            if protocol_name is '' or 'Unnamed: ' in protocol_name:  #  DataFrames labels empty cells as 'Unnamed: n'
+            if not protocol_name or 'Unnamed: ' in protocol_name:  #  DataFrames labels empty cells as 'Unnamed: n'
                 logger.warning("(W) A Protocol at position {} is missing Protocol Name, so can't be referenced in ISA-tab".format(i))
 
 
@@ -1298,7 +1298,7 @@ def check_protocol_parameter_names(i_df):
         for i, protocol_parameters_names in enumerate(study_protocols_df['Study Protocol Parameters Name'].tolist()):
             if len(protocol_parameters_names.split(sep=';')) > 1:  # There's an empty cell if no protocols
                 for protocol_parameter_name in protocol_parameters_names.split(sep=';'):
-                    if protocol_parameter_name is '' or 'Unnamed: ' in protocol_parameter_name:  # DataFrames labels empty cells as 'Unnamed: n'
+                    if not protocol_parameter_name or 'Unnamed: ' in protocol_parameter_name:  # DataFrames labels empty cells as 'Unnamed: n'
                         logger.warning(
                             "(W) A Protocol Parameter used in Protocol position {} is missing a Name, so can't be referenced in ISA-tab".format(i))
 
@@ -1307,14 +1307,14 @@ def check_study_factor_names(i_df):
     """Used for rule 1012"""
     for study_protocols_df in i_df['STUDY FACTORS']:
         for i, protocol_name in enumerate(study_protocols_df['Study Factor Name'].tolist()):
-            if protocol_name is '' or 'Unnamed: ' in protocol_name:  #  DataFrames labels empty cells as 'Unnamed: n'
+            if not protocol_name or 'Unnamed: ' in protocol_name:  #  DataFrames labels empty cells as 'Unnamed: n'
                 logger.warning("(W) A Study Factor at position {} is missing a name, so can't be referenced in ISA-tab".format(i))
 
 
 def check_ontology_sources(i_df):
     """Used for rule 3008"""
     for ontology_source_name in i_df['ONTOLOGY SOURCE REFERENCE']['Term Source Name'].tolist():
-        if ontology_source_name is '' or 'Unnamed: ' in ontology_source_name:
+        if not ontology_source_name or 'Unnamed: ' in ontology_source_name:
             logger.warning("(W) An Ontology Source Reference is missing Term Source Name, so can't be referenced")
 
 
@@ -1322,13 +1322,13 @@ def check_table_files_read(i_df, dir_context):
     """Used for rules 0006 and 0008"""
     for i, study_df in enumerate(i_df['STUDY']):
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename is not '':
+        if study_filename:
             try:
                 open(os.path.join(dir_context, study_filename))
             except FileNotFoundError:
                 logger.error("(E) Study File {} does not appear to exist".format(study_filename))
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename:
                 try:
                     open(os.path.join(dir_context, assay_filename))
                 except FileNotFoundError:
@@ -1339,13 +1339,13 @@ def check_table_files_load(i_df, dir_context):
     """Used for rules 0007 and 0009"""
     for i, study_df in enumerate(i_df['STUDY']):
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename is not '':
+        if study_filename:
             try:
                 load_table_checks(open(os.path.join(dir_context, study_filename)))
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename:
                 try:
                     load_table_checks(open(os.path.join(dir_context, assay_filename)))
                 except FileNotFoundError:
@@ -1355,14 +1355,14 @@ def check_table_files_load(i_df, dir_context):
 def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
     for i, study_df in enumerate(i_df['STUDY']):
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename is not '':
+        if study_filename:
             try:
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
                 study_samples = set(study_df['Sample Name'])
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename:
                 try:
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
                     assay_samples = set(assay_df['Sample Name'])
@@ -1377,7 +1377,7 @@ def check_protocol_usage(i_df, dir_context):
     for i, study_df in enumerate(i_df['STUDY']):
         protocols_declared = set(i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist())
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename is not '':
+        if study_filename:
             try:
                 protocol_refs_used = set()
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
@@ -1391,7 +1391,7 @@ def check_protocol_usage(i_df, dir_context):
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename:
                 try:
                     protocol_refs_used = set()
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
@@ -1406,7 +1406,7 @@ def check_protocol_usage(i_df, dir_context):
                     pass
         # now collect all protocols in all assays to compare to declared protocols
         protocol_refs_used = set()
-        if study_filename is not '':
+        if study_filename:
             try:
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
                 for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
@@ -1414,7 +1414,7 @@ def check_protocol_usage(i_df, dir_context):
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename:
                 try:
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
                     for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
@@ -1522,7 +1522,7 @@ def check_study_factor_usage(i_df, dir_context):
     for i, study_df in enumerate(i_df['STUDY']):
         study_factors_declared = set(i_df['STUDY FACTORS'][i]['Study Factor Name'].tolist())
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename is not '':
+        if study_filename:
             try:
                 study_factors_used = set()
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
@@ -1537,7 +1537,7 @@ def check_study_factor_usage(i_df, dir_context):
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename:
                 try:
                     study_factors_used = set()
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
@@ -1552,7 +1552,7 @@ def check_study_factor_usage(i_df, dir_context):
                 except FileNotFoundError:
                     pass
         study_factors_used = set()
-        if study_filename is not '':
+        if study_filename:
             try:
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
                 study_factor_ref_cols = [i for i in study_df.columns if factor_value_regex.match(i)]
@@ -1562,7 +1562,7 @@ def check_study_factor_usage(i_df, dir_context):
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename:
                 try:
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
                     study_factor_ref_cols = set([i for i in assay_df.columns if factor_value_regex.match(i)])
@@ -1588,7 +1588,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
             protocol_parameters_declared = protocol_parameters_declared.union(set(parameters_list))
         protocol_parameters_declared = protocol_parameters_declared - {''}  # empty string is not a valid protocol parameter
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename is not '':
+        if study_filename:
             try:
                 protocol_parameters_used = set()
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
@@ -1603,7 +1603,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename:
                 try:
                     protocol_parameters_used = set()
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
@@ -1619,7 +1619,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                     pass
         # now collect all protocol parameters in all assays to compare to declared protocol parameters
         protocol_parameters_used = set()
-        if study_filename is not '':
+        if study_filename:
             try:
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
                 parameter_value_cols = [i for i in study_df.columns if parameter_value_regex.match(i)]
@@ -1629,7 +1629,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
-            if assay_filename is not '':
+            if assay_filename:
                 try:
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
                     parameter_value_cols = [i for i in assay_df.columns if parameter_value_regex.match(i)]
@@ -1694,7 +1694,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
     ontology_sources_list = set(get_ontology_source_refs(i_df))
     for i, study_df in enumerate(i_df['STUDY']):
         study_filename = study_df.iloc[0]['Study File Name']
-        if study_filename is not '':
+        if study_filename:
             try:
                 df = load_table(open(os.path.join(dir_context, study_filename)))
                 columns = df.columns
@@ -1718,7 +1718,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
             except FileNotFoundError:
                 pass
             for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
-                if assay_filename is not '':
+                if assay_filename:
                     try:
                         df = load_table(open(os.path.join(dir_context, assay_filename)))
                         columns = df.columns
@@ -1938,7 +1938,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
         protocol_names = i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist()
         protocol_types = i_df['STUDY PROTOCOLS'][i]['Study Protocol Type'].tolist()
         protocol_names_and_types = dict(zip(protocol_names, protocol_types))
-        if study_filename is not '':
+        if study_filename:
             try:
                 df = load_table(open(os.path.join(dir_context, study_filename)))
                 config = configs[('[Sample]', '')]
@@ -1950,7 +1950,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
             assay_filename = assay_df['Study Assay File Name'].tolist()[0]
             measurement_type = assay_df['Study Assay Measurement Type'].tolist()[0]
             technology_type = assay_df['Study Assay Technology Type'].tolist()[0]
-            if assay_filename is not '':
+            if assay_filename:
                 try:
                     df = load_table(open(os.path.join(dir_context, assay_filename)))
                     config = configs[(measurement_type, technology_type)]
@@ -2234,7 +2234,7 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
         logger.info("Finished checking investigation file")
         for i, study_df in enumerate(i_df['STUDY']):
             study_filename = study_df.iloc[0]['Study File Name']
-            if study_filename is not '':
+            if study_filename:
                 study_sample_table = None
                 assay_tables = list()
                 protocol_names = i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist()
@@ -2274,7 +2274,7 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
                 for x, assay_filename in enumerate(assay_df['Study Assay File Name'].tolist()):
                     measurement_type = assay_df['Study Assay Measurement Type'].tolist()[x]
                     technology_type = assay_df['Study Assay Technology Type'].tolist()[x]
-                    if assay_filename is not '':
+                    if assay_filename:
                         try:
                             logger.info("Loading... {}".format(assay_filename))
                             assay_table = load_table(open(os.path.join(os.path.dirname(fp.name), assay_filename)))
