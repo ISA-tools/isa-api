@@ -1,5 +1,5 @@
 # coding: utf-8
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import os
 import sys
@@ -122,7 +122,7 @@ def dump(isa_obj, output_path):
         return publications_df.set_index(prefix +' PubMed ID').T
 
     if os.path.exists(output_path):
-        fp = open(os.path.join(output_path, 'i_investigation.txt'), 'w')
+        fp = open(os.path.join(output_path, 'i_investigation.txt'), 'wb')
     else:
         raise FileNotFoundError("Can't find " + output_path)
     if not isinstance(isa_obj, Investigation):
@@ -147,7 +147,7 @@ def dump(isa_obj, output_path):
         ]
     ontology_source_references_df = ontology_source_references_df.set_index('Term Source Name').T
     fp.write('ONTOLOGY SOURCE REFERENCE\n')
-    ontology_source_references_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+    ontology_source_references_df.to_csv(path_or_buf=fp, mode='ab', sep=b'\t', encoding='utf-8', line_terminator=b'\n',
                                          index_label='Term Source Name')  # Need to set index_label as top left cell
     #
     #  Write INVESTIGATION section
@@ -171,19 +171,19 @@ def dump(isa_obj, output_path):
     investigation_df.loc[0] = inv_df_rows
     investigation_df = investigation_df.set_index('Investigation Identifier').T
     fp.write('INVESTIGATION\n')
-    investigation_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+    investigation_df.to_csv(path_or_buf=fp, mode='a', sep=str('\t'), encoding='utf-8',
                             index_label='Investigation Identifier')  # Need to set index_label as top left cell
 
     # Write INVESTIGATION PUBLICATIONS section
     investigation_publications_df = _build_publications_section_df(publications=investigation.publications)
     fp.write('INVESTIGATION PUBLICATIONS\n')
-    investigation_publications_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+    investigation_publications_df.to_csv(path_or_buf=fp, mode='a', sep=str('\t'), encoding='utf-8',
                                          index_label='Investigation PubMed ID')
 
     # Write INVESTIGATION CONTACTS section
     investigation_contacts_df = _build_contacts_section_df(contacts=investigation.contacts)
     fp.write('INVESTIGATION CONTACTS\n')
-    investigation_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+    investigation_contacts_df.to_csv(path_or_buf=fp, mode='a', sep=str('\t'), encoding='utf-8',
                                      index_label='Investigation Person Last Name')
 
     # Write STUDY sections
@@ -210,7 +210,8 @@ def dump(isa_obj, output_path):
         study_df.loc[0] = study_df_row
         study_df = study_df.set_index('Study Identifier').T
         fp.write('STUDY\n')
-        study_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8', index_label='Study Identifier')
+        study_df.to_csv(path_or_buf=fp, mode='a', sep=str('\t'), encoding='utf-8',
+                        index_label='Study Identifier')
 
         # Write STUDY DESIGN DESCRIPTORS section
         study_design_descriptors_df = pd.DataFrame(columns=('Study Design Type',
@@ -226,13 +227,14 @@ def dump(isa_obj, output_path):
             ]
             study_design_descriptors_df = study_design_descriptors_df.set_index('Study Design Type').T
             fp.write('STUDY DESIGN DESCRIPTORS\n')
-            study_design_descriptors_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                               index_label='Study Design Type')
+            study_design_descriptors_df.to_csv(path_or_buf=fp, mode='a', sep=str('\t'),
+                                               encoding='utf-8', index_label='Study Design Type')
 
         # Write STUDY PUBLICATIONS section
         study_publications_df = _build_publications_section_df(prefix='Study', publications=study.publications)
         fp.write('STUDY PUBLICATIONS\n')
-        study_publications_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8', index_label='Study PubMed ID')
+        study_publications_df.to_csv(path_or_buf=fp, mode='a', sep=str('\t'),
+                                     encoding='utf-8', index_label='Study PubMed ID')
 
         # Write STUDY FACTORS section
         study_factors_df = pd.DataFrame(columns=('Study Factor Name',
@@ -250,8 +252,8 @@ def dump(isa_obj, output_path):
             ]
         study_factors_df = study_factors_df.set_index('Study Factor Name').T
         fp.write('STUDY FACTORS\n')
-        study_factors_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                index_label='Study Factor Name')
+        study_factors_df.to_csv(path_or_buf=fp, mode='a', sep=str('\t'),
+                                encoding='utf-8', index_label='Study Factor Name')
 
         # Write STUDY ASSAYS section
         study_assays_df = pd.DataFrame(columns=(
@@ -278,8 +280,8 @@ def dump(isa_obj, output_path):
             ]
         study_assays_df = study_assays_df.set_index('Study Assay File Name').T
         fp.write('STUDY ASSAYS\n')
-        study_assays_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                               index_label='Study Assay File Name')
+        study_assays_df.to_csv(path_or_buf=fp, mode='a', sep=str('\t'),
+                               encoding='utf-8',index_label='Study Assay File Name')
 
         # Write STUDY PROTOCOLS section
         study_protocols_df = pd.DataFrame(columns=('Study Protocol Name',
@@ -342,14 +344,14 @@ def dump(isa_obj, output_path):
             ]
         study_protocols_df = study_protocols_df.set_index('Study Protocol Name').T
         fp.write('STUDY PROTOCOLS\n')
-        study_protocols_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                  index_label='Study Protocol Name')
+        study_protocols_df.to_csv(path_or_buf=fp, mode='a', sep=str('\t'),
+                                  encoding='utf-8', index_label='Study Protocol Name')
 
         # Write STUDY CONTACTS section
         study_contacts_df = _build_contacts_section_df(prefix='Study', contacts=study.contacts)
         fp.write('STUDY CONTACTS\n')
-        study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                 index_label='Study Person Last Name')
+        study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep=str('\t'),
+                                 encoding='utf-8', index_label='Study Person Last Name')
     write_study_table_files(investigation, output_path)
     write_assay_table_files(investigation, output_path)
 
@@ -760,7 +762,8 @@ def write_assay_table_files(inv_obj, output_dir):
                 df = df.replace('', np.nan)
                 df = df.dropna(axis=1, how='all')
                 assay_obj.df = df
-                df.to_csv(path_or_buf=open(os.path.join(output_dir, assay_obj.filename), 'w'), index=False, sep='\t', encoding='utf-8',)
+                df.to_csv(path_or_buf=open(os.path.join(output_dir, assay_obj.filename), 'w'), index=False,
+                          sep=str('\t'), encoding='utf-8',)
 
 
 def write_study_table_files(inv_obj, output_dir):
@@ -881,7 +884,8 @@ def write_study_table_files(inv_obj, output_dir):
         df = df.replace('', np.nan)
         df = df.dropna(axis=1, how='all')
         df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0
-        df.to_csv(path_or_buf=open(os.path.join(output_dir, study_obj.filename), 'w'), index=False, sep='\t', encoding='utf-8',)
+        df.to_csv(path_or_buf=open(os.path.join(output_dir, study_obj.filename), 'w'),
+                  index=False, sep=str('\t'), encoding='utf-8',)
 
 
 def read_investigation_file(fp):
@@ -904,8 +908,9 @@ def read_investigation_file(fp):
         normed_line = line.rstrip()
         if normed_line[0] == '"':
             normed_line = normed_line[1:]
-        if normed_line[len(normed_line)-1] == '"':
-            normed_line = normed_line[:len(normed_line)-1]
+        if normed_line[-1] == '"':
+            normed_line = normed_line[:-1]
+
         if not normed_line == sec_key:
             raise IOError("Expected: " + sec_key + " section, but got: " + normed_line)
         memf = six.StringIO()
@@ -1038,6 +1043,7 @@ def load2(fp):
             return stripped_s
 
         def _read_tab_section(f, sec_key, next_sec_key=None):
+
             line = _strip_label(f.readline())
 
             try: line = line.decode('utf-8')
@@ -1055,6 +1061,7 @@ def load2(fp):
                 if not line:
                     break
                 memf.write(line.rstrip() + '\n')
+
             memf.seek(0)
             return memf
 
