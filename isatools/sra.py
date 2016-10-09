@@ -418,5 +418,5 @@ def create_datafile_hashes(fileroot, filenames):
         if isfile(join(fileroot, file)):
             datafilehashes[file] = md5sum(filename=join(fileroot, file))
         else:
-            raise FileNotFoundError("{} is not a file".format(fileroot + file))
+            raise IOError("{} is not a file".format(fileroot + file))
     return datafilehashes

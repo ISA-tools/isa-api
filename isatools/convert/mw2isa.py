@@ -62,7 +62,7 @@ def get_archived_file(mw_study_id):
 
         except ConnectionRefusedError:
             print("connection refused \n")
-        except FileNotFoundError:
+        except IOError:
             print("file not found on server \n")
         else:
             success = False

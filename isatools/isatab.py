@@ -124,7 +124,7 @@ def dump(isa_obj, output_path):
     if os.path.exists(output_path):
         fp = open(os.path.join(output_path, 'i_investigation.txt'), 'wb')
     else:
-        raise FileNotFoundError("Can't find " + output_path)
+        raise IOError("Can't find " + output_path)
     if not isinstance(isa_obj, Investigation):
         raise NotImplementedError("Can only dump an Investigation object")
 
@@ -1332,13 +1332,13 @@ def check_table_files_read(i_df, dir_context):
         if study_filename:
             try:
                 open(os.path.join(dir_context, study_filename))
-            except FileNotFoundError:
+            except IOError:
                 logger.error("(E) Study File {} does not appear to exist".format(study_filename))
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
             if assay_filename:
                 try:
                     open(os.path.join(dir_context, assay_filename))
-                except FileNotFoundError:
+                except IOError:
                     logger.error("(E) Assay File {} does not appear to exist".format(assay_filename))
 
 
@@ -1349,13 +1349,13 @@ def check_table_files_load(i_df, dir_context):
         if study_filename:
             try:
                 load_table_checks(open(os.path.join(dir_context, study_filename)))
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
             if assay_filename:
                 try:
                     load_table_checks(open(os.path.join(dir_context, assay_filename)))
-                except FileNotFoundError:
+                except IOError:
                     pass
 
 
@@ -1366,7 +1366,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
             try:
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
                 study_samples = set(study_df['Sample Name'])
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
             if assay_filename:
@@ -1375,7 +1375,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
                     assay_samples = set(assay_df['Sample Name'])
                     if not assay_samples.issubset(study_samples):
                         logger.error("(E) Some samples in an assay file {} are not declared in the study file {}: {}".format(assay_filename, study_filename, list(assay_samples - study_samples)))
-                except FileNotFoundError:
+                except IOError:
                     pass
 
 
@@ -1395,7 +1395,7 @@ def check_protocol_usage(i_df, dir_context):
                     logger.error(
                         "(E) Some protocols used in a study file {} are not declared in the investigation file: {}".format(
                             study_filename, list(protocol_refs_used - protocols_declared)))
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
             if assay_filename:
@@ -1409,7 +1409,7 @@ def check_protocol_usage(i_df, dir_context):
                         logger.error(
                             "(E) Some protocols used in an assay file {} are not declared in the investigation file: {}".format(
                                 assay_filename, list(protocol_refs_used - protocols_declared)))
-                except FileNotFoundError:
+                except IOError:
                     pass
         # now collect all protocols in all assays to compare to declared protocols
         protocol_refs_used = set()
@@ -1418,7 +1418,7 @@ def check_protocol_usage(i_df, dir_context):
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
                 for protocol_ref_col in [k for k in study_df.columns if k.startswith('Protocol REF')]:
                     protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
             if assay_filename:
@@ -1426,7 +1426,7 @@ def check_protocol_usage(i_df, dir_context):
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
                     for protocol_ref_col in [k for k in assay_df.columns if k.startswith('Protocol REF')]:
                         protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
-                except FileNotFoundError:
+                except IOError:
                     pass
         if len(protocols_declared - protocol_refs_used) > 0:
             logger.warn(
@@ -1541,7 +1541,7 @@ def check_study_factor_usage(i_df, dir_context):
                     logger.error(
                         "(E) Some factors used in an study file {} are not declared in the investigation file: {}".format(
                             study_filename, list(study_factors_used - study_factors_declared)))
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
             if assay_filename:
@@ -1556,7 +1556,7 @@ def check_study_factor_usage(i_df, dir_context):
                         logger.error(
                             "(E) Some factors used in an assay file {} are not declared in the investigation file: {}".format(
                                 assay_filename, list(study_factors_used - study_factors_declared)))
-                except FileNotFoundError:
+                except IOError:
                     pass
         study_factors_used = set()
         if study_filename:
@@ -1566,7 +1566,7 @@ def check_study_factor_usage(i_df, dir_context):
                 for col in study_factor_ref_cols:
                     fv = factor_value_regex.findall(col)
                     study_factors_used = study_factors_used.union(set(fv))
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
             if assay_filename:
@@ -1576,7 +1576,7 @@ def check_study_factor_usage(i_df, dir_context):
                     for col in study_factor_ref_cols:
                         fv = factor_value_regex.findall(col)
                         study_factors_used = study_factors_used.union(set(fv))
-                except FileNotFoundError:
+                except IOError:
                     pass
         if len(study_factors_declared - study_factors_used) > 0:
             logger.warn(
@@ -1607,7 +1607,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                     logger.error(
                         "(E) Some protocol parameters referenced in an study file {} are not declared in the investigation file: {}".format(
                             study_filename, list(protocol_parameters_used - protocol_parameters_declared)))
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
             if assay_filename:
@@ -1622,7 +1622,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                         logger.error(
                             "(E) Some protocol parameters referenced in an assay file {} are not declared in the investigation file: {}".format(
                                 assay_filename, list(protocol_parameters_used - protocol_parameters_declared)))
-                except FileNotFoundError:
+                except IOError:
                     pass
         # now collect all protocol parameters in all assays to compare to declared protocol parameters
         protocol_parameters_used = set()
@@ -1633,7 +1633,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                 for col in parameter_value_cols:
                     pv = parameter_value_regex.findall(col)
                     protocol_parameters_used = protocol_parameters_used.union(set(pv))
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
             if assay_filename:
@@ -1643,7 +1643,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                     for col in parameter_value_cols:
                         pv = parameter_value_regex.findall(col)
                         protocol_parameters_used = protocol_parameters_used.union(set(pv))
-                except FileNotFoundError:
+                except IOError:
                     pass
         if len(protocol_parameters_declared - protocol_parameters_used) > 0:
             logger.warn(
@@ -1722,7 +1722,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                     logger.warn("(W) Term Source REF {} at column position {} and row {} in {} not declared in ontology sources {}".format(row+1, object_index[x], y+1, study_filename, list(ontology_sources_list)))
                             else:
                                 logger.warn("(W) Term Source REF {} at column position {} and row {} in {} not in declared ontology sources {}".format(row+1, object_index[x], y+1, study_filename, list(ontology_sources_list)))
-            except FileNotFoundError:
+            except IOError:
                 pass
             for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
                 if assay_filename:
@@ -1751,7 +1751,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                         logger.warn(
                                             "(W) Term Source REF {} at column position {} and row {} in {} not in declared ontology sources {}".format(
                                                 row+1, object_index[x], y+1, study_filename, list(ontology_sources_list)))
-                    except FileNotFoundError:
+                    except IOError:
                         pass
 
 
@@ -1766,8 +1766,8 @@ def load_config(config_dir):
     configs = None
     try:
         configs = isatab_configurator.load(config_dir)
-    except FileNotFoundError:
-        logger.error("(E) FileNotFoundError on trying to load from {}".format(config_dir))
+    except IOError:
+        logger.error("(E) IOError on trying to load from {}".format(config_dir))
     if configs is None:
         logger.error("(E) Could not load configurations from {}".format(config_dir))
     else:
@@ -1951,7 +1951,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                 config = configs[('[Sample]', '')]
                 logger.info("Checking study file {} against default study table configuration...".format(study_filename))
                 check_assay_table_with_config(df, config, study_filename, protocol_names_and_types)
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_df in enumerate(i_df['STUDY ASSAYS']):
             assay_filename = assay_df['Study Assay File Name'].tolist()[0]
@@ -1965,7 +1965,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                         "Checking assay file {} against default table configuration ({}, {})...".format(assay_filename, measurement_type, technology_type))
                     check_assay_table_with_config(df, config, assay_filename, protocol_names_and_types)
                     # check_assay_table_with_config(df, protocols, config, assay_filename)
-                except FileNotFoundError:
+                except IOError:
                     pass
         # TODO: Check protocol usage - Rule 4009
 
@@ -2276,7 +2276,7 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
                     logger.warn("(W) There are some ontology annotation inconsistencies in {} against {} "
                                 "configuration".format(study_sample_table.filename, 'Study Sample'))
                 logger.info("Finished validation on {}".format(study_filename))
-            except FileNotFoundError:
+            except IOError:
                 pass
             assay_df = i_df['STUDY ASSAYS'][i]
             for x, assay_filename in enumerate(assay_df['Study Assay File Name'].tolist()):
@@ -2315,7 +2315,7 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
                             logger.warn("(W) There are some ontology annotation inconsistencies in {} against {} "
                                         "configuration".format(assay_table.filename, (measurement_type, technology_type)))
                         logger.info("Finished validation on {}".format(assay_filename))
-                    except FileNotFoundError:
+                    except IOError:
                         pass
                 if study_sample_table is not None:
                     logger.info("Checking consistencies between study sample table and assay tables...")
