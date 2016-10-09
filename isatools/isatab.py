@@ -1388,7 +1388,7 @@ def check_protocol_usage(i_df, dir_context):
             try:
                 protocol_refs_used = set()
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
-                for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
+                for protocol_ref_col in [k for k in study_df.columns if k.startswith('Protocol REF')]:
                     protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
                 protocol_refs_used = set([r for r in protocol_refs_used if pd.notnull(r)])
                 if not protocol_refs_used.issubset(protocols_declared):
@@ -1402,7 +1402,7 @@ def check_protocol_usage(i_df, dir_context):
                 try:
                     protocol_refs_used = set()
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
-                    for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
+                    for protocol_ref_col in [k for k in assay_df.columns if k.startswith('Protocol REF')]:
                         protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
                     protocol_refs_used = set([r for r in protocol_refs_used if pd.notnull(r)])
                     if not protocol_refs_used.issubset(protocols_declared):
@@ -1416,7 +1416,7 @@ def check_protocol_usage(i_df, dir_context):
         if study_filename:
             try:
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
-                for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
+                for protocol_ref_col in [k for k in study_df.columns if k.startswith('Protocol REF')]:
                     protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
             except FileNotFoundError:
                 pass
@@ -1424,7 +1424,7 @@ def check_protocol_usage(i_df, dir_context):
             if assay_filename:
                 try:
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
-                    for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
+                    for protocol_ref_col in [k for k in assay_df.columns if k.startswith('Protocol REF')]:
                         protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
                 except FileNotFoundError:
                     pass
@@ -1464,7 +1464,7 @@ def load_table_checks(fp):
             norm_columns.append(column[:column.rfind('.')])
         else:
             norm_columns.append(column)
-    object_index = [i for i, x in enumerate(norm_columns) if x in ['Source Name', 'Sample Name', 'Protocol REF',
+    object_index = [k for k, x in enumerate(norm_columns) if x in ['Source Name', 'Sample Name', 'Protocol REF',
                                                               'Extract Name', 'Labeled Extract Name', 'Raw Data File',
                                                               'Raw Spectral Data File', 'Array Data File',
                                                               'Protein Assignment File', 'Peptide Assignment File',
@@ -1533,7 +1533,7 @@ def check_study_factor_usage(i_df, dir_context):
             try:
                 study_factors_used = set()
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
-                study_factor_ref_cols = [i for i in study_df.columns if factor_value_regex.match(i)]
+                study_factor_ref_cols = [k for k in study_df.columns if factor_value_regex.match(k)]
                 for col in study_factor_ref_cols:
                     fv = factor_value_regex.findall(col)
                     study_factors_used = study_factors_used.union(set(fv))
@@ -1548,7 +1548,7 @@ def check_study_factor_usage(i_df, dir_context):
                 try:
                     study_factors_used = set()
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
-                    study_factor_ref_cols = set([i for i in assay_df.columns if factor_value_regex.match(i)])
+                    study_factor_ref_cols = set([k for k in assay_df.columns if factor_value_regex.match(k)])
                     for col in study_factor_ref_cols:
                         fv = factor_value_regex.findall(col)
                         study_factors_used = study_factors_used.union(set(fv))
@@ -1562,7 +1562,7 @@ def check_study_factor_usage(i_df, dir_context):
         if study_filename:
             try:
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
-                study_factor_ref_cols = [i for i in study_df.columns if factor_value_regex.match(i)]
+                study_factor_ref_cols = [k for k in study_df.columns if factor_value_regex.match(k)]
                 for col in study_factor_ref_cols:
                     fv = factor_value_regex.findall(col)
                     study_factors_used = study_factors_used.union(set(fv))
@@ -1572,7 +1572,7 @@ def check_study_factor_usage(i_df, dir_context):
             if assay_filename:
                 try:
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
-                    study_factor_ref_cols = set([i for i in assay_df.columns if factor_value_regex.match(i)])
+                    study_factor_ref_cols = set([k for k in assay_df.columns if factor_value_regex.match(k)])
                     for col in study_factor_ref_cols:
                         fv = factor_value_regex.findall(col)
                         study_factors_used = study_factors_used.union(set(fv))
@@ -1599,7 +1599,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
             try:
                 protocol_parameters_used = set()
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
-                parameter_value_cols = [i for i in study_df.columns if parameter_value_regex.match(i)]
+                parameter_value_cols = [k for k in study_df.columns if parameter_value_regex.match(k)]
                 for col in parameter_value_cols:
                     pv = parameter_value_regex.findall(col)
                     protocol_parameters_used = protocol_parameters_used.union(set(pv))
@@ -1614,7 +1614,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                 try:
                     protocol_parameters_used = set()
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
-                    parameter_value_cols = [i for i in assay_df.columns if parameter_value_regex.match(i)]
+                    parameter_value_cols = [k for k in assay_df.columns if parameter_value_regex.match(k)]
                     for col in parameter_value_cols:
                         pv = parameter_value_regex.findall(col)
                         protocol_parameters_used = protocol_parameters_used.union(set(pv))
@@ -1629,7 +1629,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
         if study_filename:
             try:
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
-                parameter_value_cols = [i for i in study_df.columns if parameter_value_regex.match(i)]
+                parameter_value_cols = [k for k in study_df.columns if parameter_value_regex.match(k)]
                 for col in parameter_value_cols:
                     pv = parameter_value_regex.findall(col)
                     protocol_parameters_used = protocol_parameters_used.union(set(pv))
@@ -1639,7 +1639,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
             if assay_filename:
                 try:
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
-                    parameter_value_cols = [i for i in assay_df.columns if parameter_value_regex.match(i)]
+                    parameter_value_cols = [k for k in assay_df.columns if parameter_value_regex.match(k)]
                     for col in parameter_value_cols:
                         pv = parameter_value_regex.findall(col)
                         protocol_parameters_used = protocol_parameters_used.union(set(pv))
@@ -1660,12 +1660,12 @@ def check_term_source_refs_in_investigation(i_df):
     ontology_sources_list = set(get_ontology_source_refs(i_df))
 
     def check_study_term_sources_in_secton_field(section_label, pos, column_label):
-        section_term_source_refs = [i for i in i_df[section_label][pos][column_label].tolist() if i != '']
+        section_term_source_refs = [k for k in i_df[section_label][pos][column_label].tolist() if k]
         # this for loop deals with semicolon separated lists of term source refs
         section_term_source_refs_to_remove = list()
         for section_term_source_ref in section_term_source_refs:
             if ';' in section_term_source_ref:
-                term_sources = [i for i in section_term_source_ref.split(';') if i != '']
+                term_sources = [k for k in section_term_source_ref.split(';') if k]
                 section_term_source_refs_to_remove.append(section_term_source_ref)
                 section_term_source_refs.extend(term_sources)
         for section_term_source_ref_to_remove in section_term_source_refs_to_remove:
@@ -1675,10 +1675,10 @@ def check_term_source_refs_in_investigation(i_df):
                                                                                                 section_term_source_refs,
                                                                                                 section_label, pos))
 
-    i_publication_status_term_source_ref = [i for i in i_df['INVESTIGATION PUBLICATIONS']['Investigation Publication Status Term Source REF'].tolist() if i != '']
+    i_publication_status_term_source_ref = [k for k in i_df['INVESTIGATION PUBLICATIONS']['Investigation Publication Status Term Source REF'].tolist() if k]
     if not set(i_publication_status_term_source_ref).issubset(ontology_sources_list):
         logger.warn("(W) Investigation Publication Status Term Source REF {} has not been declared in ONTOLOGY SOURCE REFERENCE section".format(i_publication_status_term_source_ref))
-    i_person_roles_term_source_ref = [i for i in i_df['INVESTIGATION CONTACTS']['Investigation Person Roles Term Source REF'].tolist() if i != '']
+    i_person_roles_term_source_ref = [k for k in i_df['INVESTIGATION CONTACTS']['Investigation Person Roles Term Source REF'].tolist() if k]
     if not set(i_person_roles_term_source_ref).issubset(ontology_sources_list):
         logger.warn(
             "(W) Investigation Person Roles Term Source REF {} has not been declared in ONTOLOGY SOURCE REFERENCE section".format(
@@ -1705,7 +1705,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
             try:
                 df = load_table(open(os.path.join(dir_context, study_filename)))
                 columns = df.columns
-                object_index = [i for i, x in enumerate(columns) if x.startswith('Term Source REF')]
+                object_index = [k for k, x in enumerate(columns) if x.startswith('Term Source REF')]
                 prev_i = object_index[0]
                 object_columns_list = [columns[prev_i]]
                 for curr_i in object_index:  # collect each object's columns
@@ -1729,7 +1729,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                     try:
                         df = load_table(open(os.path.join(dir_context, assay_filename)))
                         columns = df.columns
-                        object_index = [i for i, x in enumerate(columns) if x.startswith('Term Source REF')]
+                        object_index = [k for k, x in enumerate(columns) if x.startswith('Term Source REF')]
                         prev_i = object_index[0]
                         object_columns_list = [columns[prev_i]]
                         for curr_i in object_index:  # collect each object's columns
@@ -1793,7 +1793,7 @@ def check_investigation_against_config(i_df, configs):
     import math
 
     def check_section_against_required_fields_one_value(section, required, i=0):
-        fields_required = [i for i in section.columns if i in required]
+        fields_required = [k for k in section.columns if k in required]
         for col in fields_required:
             required_values = section[col]
             if len(required_values) > 0:
@@ -1840,27 +1840,27 @@ def check_study_table_against_config(s_df, protocols_declared, config):
 
     # First check column order is correct against the configuration
     columns = s_df.columns
-    object_index = [(x, i) for x, i in enumerate(columns) if i in ['Source Name', 'Sample Name',
+    object_index = [(k, x) for k, x in enumerate(columns) if x in ['Source Name', 'Sample Name',
                                                               'Extract Name', 'Labeled Extract Name', 'Raw Data File',
                                                               'Raw Spectral Data File', 'Array Data File',
                                                               'Protein Assignment File', 'Peptide Assignment File',
                                                               'Post Translational Modification Assignment File',
                                                               'Derived Spectral Data File',
-                                                              'Derived Array Data File'] or 'Protocol REF' in i or
-                    'Characteristics[' in i or 'Factor Value[' in i or 'Parameter Value[ in i']
-    fields = [i.header for i in config.get_isatab_configuration()[0].get_field()]
+                                                              'Derived Array Data File'] or 'Protocol REF' in x or
+                    'Characteristics[' in x or 'Factor Value[' in x or 'Parameter Value[' in x]
+    fields = [k.header for k in config.get_isatab_configuration()[0].get_field()]
     protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
     for protocol in protocols:
         fields.insert(protocol[0], 'Protocol REF')
     # strip out non-config columns
-    object_index = [i for i in object_index if i[1] in fields]
+    object_index = [k for k in object_index if k[1] in fields]
     for x, object in enumerate(object_index):
         if fields[x] != object[1]:
             logger.warn("(W) Unexpected heading found. Expected {} but found {} at column number {}".format(fields[x], object[1], object[0]))
 
     # Second, check if Protocol REFs are of valid types
     for row in s_df['Protocol REF']:
-        print(row, protocols_declared[row] in [i[1] for i in protocols], [i[1] for i in protocols])
+        print(row, protocols_declared[row] in [k[1] for k in protocols], [k[1] for k in protocols])
     # Third, check if required values are present
 
 
@@ -1877,20 +1877,20 @@ def check_assay_table_against_config(s_df, config):
         else:
             norm_columns.append(column)
     norm_columns = [k for k, g in itertools.groupby(norm_columns)]  # remove adjacent dups - i.e. chained Protocol REFs
-    object_index = [(x, i) for x, i in enumerate(norm_columns) if i in ['Source Name', 'Sample Name',
+    object_index = [(k, x) for k, x in enumerate(norm_columns) if x in ['Source Name', 'Sample Name',
                                                               'Extract Name', 'Labeled Extract Name', 'Raw Data File',
                                                               'Raw Spectral Data File', 'Array Data File',
                                                               'Protein Assignment File', 'Peptide Assignment File',
                                                               'Post Translational Modification Assignment File',
                                                               'Derived Spectral Data File',
-                                                              'Derived Array Data File', 'Assay Name'] or 'Protocol REF' in i or
-                    'Characteristics[' in i or 'Factor Value[' in i or 'Parameter Value[ in i' or 'Comment[' in i]
-    fields = [i.header for i in config.get_isatab_configuration()[0].get_field()]
-    protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
+                                                              'Derived Array Data File', 'Assay Name'] or 'Protocol REF' in x or
+                    'Characteristics[' in x or 'Factor Value[' in x or 'Parameter Value[' in x or 'Comment[' in x]
+    fields = [k.header for k in config.get_isatab_configuration()[0].get_field()]
+    protocols = [(k.pos, k.protocol_type) for k in config.get_isatab_configuration()[0].get_protocol_field()]
     for protocol in protocols:
         fields.insert(protocol[0], 'Protocol REF')
     # strip out non-config columns
-    object_index = [i for i in object_index if i[1] in fields]
+    object_index = [k for k in object_index if k[1] in fields]
     for x, object in enumerate(object_index):
         if fields[x] != object[1]:
             logger.warn("(W) Unexpected heading found. Expected {} but found {} at column number {}".format(fields[x], object[1], object[0]))
@@ -1915,7 +1915,7 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
     indexed_col_regex = re.compile('(.*?)\.\d+')
     columns = list(df.columns)
     # Get required headers from config and check if they are present in the table; Rule 4010
-    required_fields = [i.header for i in config.get_isatab_configuration()[0].get_field() if i.is_required]
+    required_fields = [k.header for k in config.get_isatab_configuration()[0].get_field() if k.is_required]
     for required_field in required_fields:
         if required_field not in columns:
             logger.warn("(W) In {} the required column {} missing from column headings".format(filename, required_field))
@@ -1926,7 +1926,7 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
                     logger.warn("(W) Cell at row {} in column '{}' has no value, but it is required by the configuration".format(y, required_field))
 
     # Check if protocol ref column values are consistently structured
-    protocol_ref_index = [i for i in columns if 'protocol ref' in i.lower()]
+    protocol_ref_index = [k for k in columns if 'protocol ref' in k.lower()]
     prots_ok = True
     for each in protocol_ref_index:
         prots_found = set()
@@ -1971,7 +1971,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
 
 
 def check_factor_value_presence(table):
-    factor_fields = [i for i in table.columns if i.lower().startswith('factor value')]
+    factor_fields = [k for k in table.columns if k.lower().startswith('factor value')]
     for factor_field in factor_fields:
         for x, cell_value in enumerate(table.fillna('')[factor_field]):
             if cell_value == '':
@@ -1979,8 +1979,8 @@ def check_factor_value_presence(table):
 
 
 def check_required_fields(table, cfg):
-    for fheader in [i.header for i in cfg.get_isatab_configuration()[0].get_field() if i.is_required]:
-        found_field = [i for i in table.columns if i.lower() == fheader.lower()]
+    for fheader in [k.header for k in cfg.get_isatab_configuration()[0].get_field() if k.is_required]:
+        found_field = [k for k in table.columns if k.lower() == fheader.lower()]
         if len(found_field) == 0:
             logger.warn("(W) Required field '" + fheader + "' not found in the file '" + table.filename + "'")
         elif len(found_field) > 1:
@@ -2056,7 +2056,8 @@ def check_field_values(table, cfg):
     for irow in range(len(table.index)):
         ncols = len(table.columns)
         for icol in range(0, ncols):
-            cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == table.columns[icol]]
+            # TODO: switch to next() + generator
+            cfields = [k for k in cfg.get_isatab_configuration()[0].get_field() if k.header == table.columns[icol]]
             if len(cfields) == 1:
                 cfield = cfields[0]
                 result = result and check_single_field(table.iloc[irow][cfield.header], cfield)
@@ -2072,11 +2073,12 @@ def check_unit_field(table, cfg):
 
     result = True
     for icol, header in enumerate(table.columns):
-        cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
+        # TODO: switch to next() + generator
+        cfields = [k for k in cfg.get_isatab_configuration()[0].get_field() if k.header == header]
         if len(cfields) != 1:
             continue
         cfield = cfields[0]
-        ucfields = [i for i in cfg.get_isatab_configuration()[0].get_unit_field() if i.pos == cfield.pos + 1]
+        ucfields = [k for k in cfg.get_isatab_configuration()[0].get_unit_field() if k.pos == cfield.pos + 1]
         if len(ucfields) != 1:
             continue
         ucfield = ucfields[0]
@@ -2104,7 +2106,7 @@ def check_protocol_fields(table, cfg, proto_map):
         next(b, None)
         return zip(a, b)
 
-    proto_ref_index = [i for i in table.columns if 'protocol ref' in i.lower()]
+    proto_ref_index = [k for k in table.columns if 'protocol ref' in k.lower()]
     result = True
     for each in proto_ref_index:
         prots_found = set()
@@ -2115,10 +2117,10 @@ def check_protocol_fields(table, cfg, proto_map):
             logger.warn("(W) Only one protocol reference should be used in a Protocol REF column.")
             result = False
     if result:
-        field_headers = [i for i in table.columns if
-                         i.lower().endswith(' name') or i.lower().endswith(' data file') or i.lower().endswith(
+        field_headers = [k for k in table.columns if
+                         k.lower().endswith(' name') or k.lower().endswith(' data file') or k.lower().endswith(
                              ' data matrix file')]
-        protos = [i for i in table.columns if i.lower() == 'protocol ref']
+        protos = [k for k in table.columns if k.lower() == 'protocol ref']
         last_proto_indx = table.columns.get_loc(protos[len(protos) - 1])
         last_mat_or_dat_indx = table.columns.get_loc(field_headers[len(field_headers) - 1])
         if last_proto_indx > last_mat_or_dat_indx:
@@ -2126,20 +2128,20 @@ def check_protocol_fields(table, cfg, proto_map):
         for left, right in pairwise(field_headers):
             cleft = None
             cright = None
-            clefts = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header.lower() == left.lower()]
+            clefts = [k for k in cfg.get_isatab_configuration()[0].get_field() if k.header.lower() == left.lower()]
             if len(clefts) == 1:
                 cleft = clefts[0]
-            crights = [i for i in cfg.get_isatab_configuration()[0].get_field() if
-                       i.header.lower() == right.lower()]
+            crights = [k for k in cfg.get_isatab_configuration()[0].get_field() if
+                       k.header.lower() == right.lower()]
             if len(crights) == 1:
                 cright = crights[0]
             if cleft is not None and cright is not None:
                 cprotos = [i.protocol_type for i in cfg.get_isatab_configuration()[0].get_protocol_field() if
                            cleft.pos < i.pos and cright.pos > i.pos]
-                fprotos_headers = [i for i in table.columns[
+                fprotos_headers = [k for k in table.columns[
                                               table.columns.get_loc(cleft.header):table.columns.get_loc(
                                                   cright.header)] if
-                                   'protocol ref' in i.lower()]
+                                   'protocol ref' in k.lower()]
                 fprotos = list()
                 for header in fprotos_headers:
                     proto_name = table.iloc[0][header]
@@ -2173,7 +2175,7 @@ def check_ontology_fields(table, cfg):
     result = True
     nfields = len(table.columns)
     for icol, header in enumerate(table.columns):
-        cfields = [i for i in cfg.get_isatab_configuration()[0].get_field() if i.header == header]
+        cfields = [k for k in cfg.get_isatab_configuration()[0].get_field() if k.header == header]
         if len(cfields) != 1:
             continue
         cfield = cfields[0]
@@ -2210,128 +2212,128 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
     stream = six.StringIO()
     handler = logging.StreamHandler(stream)
     logger.addHandler(handler)
-    try:
-        logger.info("Loading... {}".format(fp.name))
-        i_df = load2(fp=fp)
-        logger.info("Running prechecks...")
-        check_filenames_present(i_df)  # Rule 3005
-        check_table_files_read(i_df, os.path.dirname(fp.name))  # Rules 0006 and 0008
-        # check_table_files_load(i_df, os.path.dirname(fp.name))  # Rules 0007 and 0009, covered by later validation?
-        check_samples_not_declared_in_study_used_in_assay(i_df, os.path.dirname(fp.name))  # Rule 1003
-        check_study_factor_usage(i_df, os.path.dirname(fp.name))  # Rules 1008 and 1021
-        check_protocol_usage(i_df, os.path.dirname(fp.name))  # Rules 1007 and 1019
-        check_protocol_parameter_usage(i_df, os.path.dirname(fp.name))  # Rules 1009 and 1020
-        check_date_formats(i_df)  # Rule 3001
-        check_dois(i_df)  # Rule 3002
-        check_pubmed_ids_format(i_df)  # Rule 3003
-        check_protocol_names(i_df)  # Rule 1010
-        check_protocol_parameter_names(i_df)  # Rule 1011
-        check_study_factor_names(i_df)  # Rule 1012
-        check_ontology_sources(i_df)  # Rule 3008
-        logger.info("Finished prechecks...")
-        logger.info("Loading configurations found in {}".format(config_dir))
-        configs = load_config(config_dir)  # Rule 4001
-        if configs is None:
-            raise SystemError("No configuration to load so cannot proceed with validation!")
-        logger.info("Using configurations found in {}".format(config_dir))
-        check_measurement_technology_types(i_df, configs)  # Rule 4002
-        logger.info("Checking investigation file against configuration...")
-        check_investigation_against_config(i_df, configs)  # Rule 4003 for investigation file only
-        logger.info("Finished checking investigation file")
-        for i, study_df in enumerate(i_df['STUDY']):
-            study_filename = study_df.iloc[0]['Study File Name']
-            if study_filename:
-                study_sample_table = None
-                assay_tables = list()
-                protocol_names = i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist()
-                protocol_types = i_df['STUDY PROTOCOLS'][i]['Study Protocol Type'].tolist()
-                protocol_names_and_types = dict(zip(protocol_names, protocol_types))
-                try:
-                    logger.info("Loading... {}".format(study_filename))
-                    study_sample_table = load_table(open(os.path.join(os.path.dirname(fp.name), study_filename)))
-                    study_sample_table.filename = study_filename
-                    config = configs[('[Sample]', '')]
-                    logger.info(
-                        "Validating {} against default study table configuration".format(study_filename))
-                    logger.info("Checking Factor Value presence...")
-                    check_factor_value_presence(study_sample_table)  # Rule 4007
-                    logger.info("Checking required fields...")
-                    check_required_fields(study_sample_table, config)  # Rule 4003-8, 4010
-                    logger.info("Checking generic fields...")
-                    if not check_field_values(study_sample_table, config):  # Rule 4011
-                        logger.warn("(W) There are some field value inconsistencies in {} against {} "
-                                    "configuration".format(study_sample_table.filename, 'Study Sample'))
-                    logger.info("Checking unit fields...")
-                    if not check_unit_field(study_sample_table, config):
-                        logger.warn("(W) There are some unit value inconsistencies in {} against {} "
-                                    "configuration".format(study_sample_table.filename, 'Study Sample'))
-                    logger.info("Checking protocol fields...")
-                    if not check_protocol_fields(study_sample_table, config, protocol_names_and_types):  # Rule 4009
-                        logger.warn("(W) There are some protocol inconsistencies in {} against {} "
-                                    "configuration".format(study_sample_table.filename, 'Study Sample'))
-                    logger.info("Checking ontology fields...")
-                    if not check_ontology_fields(study_sample_table, config):  # Rule 3010
-                        logger.warn("(W) There are some ontology annotation inconsistencies in {} against {} "
-                                    "configuration".format(study_sample_table.filename, 'Study Sample'))
-                    logger.info("Finished validation on {}".format(study_filename))
-                except FileNotFoundError:
-                    pass
-                assay_df = i_df['STUDY ASSAYS'][i]
-                for x, assay_filename in enumerate(assay_df['Study Assay File Name'].tolist()):
-                    measurement_type = assay_df['Study Assay Measurement Type'].tolist()[x]
-                    technology_type = assay_df['Study Assay Technology Type'].tolist()[x]
-                    if assay_filename:
-                        try:
-                            logger.info("Loading... {}".format(assay_filename))
-                            assay_table = load_table(open(os.path.join(os.path.dirname(fp.name), assay_filename)))
-                            assay_table.filename = assay_filename
-                            assay_tables.append(assay_table)
-                            config = configs[(measurement_type, technology_type)]
-                            logger.info(
-                                "Validating {} against assay table configuration ({}, {})...".format(
-                                    assay_filename, measurement_type, technology_type))
-                            logger.info("Checking Factor Value presence...")
-                            check_factor_value_presence(assay_table)  # Rule 4007
-                            logger.info("Checking required fields...")
-                            check_required_fields(assay_table, config)  # Rule 4003-8, 4010
-                            logger.info("Checking generic fields...")
-                            if not check_field_values(assay_table, config):  # Rule 4011
-                                logger.warn(
-                                    "(W) There are some field value inconsistencies in {} against {} configuration".format(
-                                        assay_table.filename, (measurement_type, technology_type)))
-                            logger.info("Checking unit fields...")
-                            if not check_unit_field(assay_table, config):
-                                logger.warn(
-                                    "(W) There are some unit value inconsistencies in {} against {} configuration".format(
-                                        assay_table.filename, (measurement_type, technology_type)))
-                            logger.info("Checking protocol fields...")
-                            if not check_protocol_fields(assay_table, config, protocol_names_and_types):  # Rule 4009
-                                logger.warn("(W) There are some protocol inconsistencies in {} against {} "
-                                            "configuration".format(assay_table.filename, (measurement_type, technology_type)))
-                            logger.info("Checking ontology fields...")
-                            if not check_ontology_fields(assay_table, config):  # Rule 3010
-                                logger.warn("(W) There are some ontology annotation inconsistencies in {} against {} "
-                                            "configuration".format(assay_table.filename, (measurement_type, technology_type)))
-                            logger.info("Finished validation on {}".format(assay_filename))
-                        except FileNotFoundError:
-                            pass
-                    if study_sample_table is not None:
-                        logger.info("Checking consistencies between study sample table and assay tables...")
-                        check_sample_names(study_sample_table, assay_tables)
-                        logger.info("Finished checking study sample table against assay tables...")
-                    logger.info("Finished validation...")
-    except CParserError as cpe:
-        logger.fatal("(F) There was an error when trying to parse the ISA tab")
-        logger.fatal(cpe)
-    except ValueError as ve:
-        logger.fatal("(F) There was an error when trying to parse the ISA tab")
-        logger.fatal(ve)
-    except SystemError as se:
-        logger.fatal("(F) Something went very very wrong! :(")
-        logger.fatal(se)
-    finally:
-        handler.flush()
-        return stream
+    #try:
+    logger.info("Loading... {}".format(fp.name))
+    i_df = load2(fp=fp)
+    logger.info("Running prechecks...")
+    check_filenames_present(i_df)  # Rule 3005
+    check_table_files_read(i_df, os.path.dirname(fp.name))  # Rules 0006 and 0008
+    # check_table_files_load(i_df, os.path.dirname(fp.name))  # Rules 0007 and 0009, covered by later validation?
+    check_samples_not_declared_in_study_used_in_assay(i_df, os.path.dirname(fp.name))  # Rule 1003
+    check_study_factor_usage(i_df, os.path.dirname(fp.name))  # Rules 1008 and 1021
+    check_protocol_usage(i_df, os.path.dirname(fp.name))  # Rules 1007 and 1019
+    check_protocol_parameter_usage(i_df, os.path.dirname(fp.name))  # Rules 1009 and 1020
+    check_date_formats(i_df)  # Rule 3001
+    check_dois(i_df)  # Rule 3002
+    check_pubmed_ids_format(i_df)  # Rule 3003
+    check_protocol_names(i_df)  # Rule 1010
+    check_protocol_parameter_names(i_df)  # Rule 1011
+    check_study_factor_names(i_df)  # Rule 1012
+    check_ontology_sources(i_df)  # Rule 3008
+    logger.info("Finished prechecks...")
+    logger.info("Loading configurations found in {}".format(config_dir))
+    configs = load_config(config_dir)  # Rule 4001
+    if configs is None:
+        raise SystemError("No configuration to load so cannot proceed with validation!")
+    logger.info("Using configurations found in {}".format(config_dir))
+    check_measurement_technology_types(i_df, configs)  # Rule 4002
+    logger.info("Checking investigation file against configuration...")
+    check_investigation_against_config(i_df, configs)  # Rule 4003 for investigation file only
+    logger.info("Finished checking investigation file")
+    for i, study_df in enumerate(i_df['STUDY']):
+        study_filename = study_df.iloc[0]['Study File Name']
+        if study_filename:
+            study_sample_table = None
+            assay_tables = list()
+            protocol_names = i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist()
+            protocol_types = i_df['STUDY PROTOCOLS'][i]['Study Protocol Type'].tolist()
+            protocol_names_and_types = dict(zip(protocol_names, protocol_types))
+            try:
+                logger.info("Loading... {}".format(study_filename))
+                study_sample_table = load_table(open(os.path.join(os.path.dirname(fp.name), study_filename)))
+                study_sample_table.filename = study_filename
+                config = configs[('[Sample]', '')]
+                logger.info(
+                    "Validating {} against default study table configuration".format(study_filename))
+                logger.info("Checking Factor Value presence...")
+                check_factor_value_presence(study_sample_table)  # Rule 4007
+                logger.info("Checking required fields...")
+                check_required_fields(study_sample_table, config)  # Rule 4003-8, 4010
+                logger.info("Checking generic fields...")
+                if not check_field_values(study_sample_table, config):  # Rule 4011
+                    logger.warn("(W) There are some field value inconsistencies in {} against {} "
+                                "configuration".format(study_sample_table.filename, 'Study Sample'))
+                logger.info("Checking unit fields...")
+                if not check_unit_field(study_sample_table, config):
+                    logger.warn("(W) There are some unit value inconsistencies in {} against {} "
+                                "configuration".format(study_sample_table.filename, 'Study Sample'))
+                logger.info("Checking protocol fields...")
+                if not check_protocol_fields(study_sample_table, config, protocol_names_and_types):  # Rule 4009
+                    logger.warn("(W) There are some protocol inconsistencies in {} against {} "
+                                "configuration".format(study_sample_table.filename, 'Study Sample'))
+                logger.info("Checking ontology fields...")
+                if not check_ontology_fields(study_sample_table, config):  # Rule 3010
+                    logger.warn("(W) There are some ontology annotation inconsistencies in {} against {} "
+                                "configuration".format(study_sample_table.filename, 'Study Sample'))
+                logger.info("Finished validation on {}".format(study_filename))
+            except FileNotFoundError:
+                pass
+            assay_df = i_df['STUDY ASSAYS'][i]
+            for x, assay_filename in enumerate(assay_df['Study Assay File Name'].tolist()):
+                measurement_type = assay_df['Study Assay Measurement Type'].tolist()[x]
+                technology_type = assay_df['Study Assay Technology Type'].tolist()[x]
+                if assay_filename:
+                    try:
+                        logger.info("Loading... {}".format(assay_filename))
+                        assay_table = load_table(open(os.path.join(os.path.dirname(fp.name), assay_filename)))
+                        assay_table.filename = assay_filename
+                        assay_tables.append(assay_table)
+                        config = configs[(measurement_type, technology_type)]
+                        logger.info(
+                            "Validating {} against assay table configuration ({}, {})...".format(
+                                assay_filename, measurement_type, technology_type))
+                        logger.info("Checking Factor Value presence...")
+                        check_factor_value_presence(assay_table)  # Rule 4007
+                        logger.info("Checking required fields...")
+                        check_required_fields(assay_table, config)  # Rule 4003-8, 4010
+                        logger.info("Checking generic fields...")
+                        if not check_field_values(assay_table, config):  # Rule 4011
+                            logger.warn(
+                                "(W) There are some field value inconsistencies in {} against {} configuration".format(
+                                    assay_table.filename, (measurement_type, technology_type)))
+                        logger.info("Checking unit fields...")
+                        if not check_unit_field(assay_table, config):
+                            logger.warn(
+                                "(W) There are some unit value inconsistencies in {} against {} configuration".format(
+                                    assay_table.filename, (measurement_type, technology_type)))
+                        logger.info("Checking protocol fields...")
+                        if not check_protocol_fields(assay_table, config, protocol_names_and_types):  # Rule 4009
+                            logger.warn("(W) There are some protocol inconsistencies in {} against {} "
+                                        "configuration".format(assay_table.filename, (measurement_type, technology_type)))
+                        logger.info("Checking ontology fields...")
+                        if not check_ontology_fields(assay_table, config):  # Rule 3010
+                            logger.warn("(W) There are some ontology annotation inconsistencies in {} against {} "
+                                        "configuration".format(assay_table.filename, (measurement_type, technology_type)))
+                        logger.info("Finished validation on {}".format(assay_filename))
+                    except FileNotFoundError:
+                        pass
+                if study_sample_table is not None:
+                    logger.info("Checking consistencies between study sample table and assay tables...")
+                    check_sample_names(study_sample_table, assay_tables)
+                    logger.info("Finished checking study sample table against assay tables...")
+                logger.info("Finished validation...")
+    # except CParserError as cpe:
+    #    logger.fatal("(F) There was an error when trying to parse the ISA tab")
+    #    logger.fatal(cpe)
+    # except ValueError as ve:
+    #     logger.fatal("(F) There was an error when trying to parse the ISA tab")
+    #     logger.fatal(ve)
+    # except SystemError as se:
+    #     logger.fatal("(F) Something went very very wrong! :(")
+    #     logger.fatal(se)
+    # finally:
+    handler.flush()
+    return stream
 
 
 """ Everything below this line is work in progress. You're best off ignoring it! """
