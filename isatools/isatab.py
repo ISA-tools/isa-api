@@ -5,13 +5,13 @@ import os
 import sys
 import pandas as pd
 from pandas.parser import CParserError
-import io
 import networkx as nx
 import itertools
 import logging
 import re
 import math
 import iso8601
+import six
 
 from .model.v1 import *
 from .io import isatab_parser
@@ -908,7 +908,7 @@ def read_investigation_file(fp):
             normed_line = normed_line[:len(normed_line)-1]
         if not normed_line == sec_key:
             raise IOError("Expected: " + sec_key + " section, but got: " + normed_line)
-        memf = io.StringIO()
+        memf = six.StringIO()
         while not _peek(f=f).rstrip() == next_sec_key:
 
             line = f.readline()
@@ -1045,7 +1045,7 @@ def load2(fp):
 
             if not line == sec_key:
                 raise IOError("Expected: " + sec_key + " section, but got: " + line)
-            memf = io.StringIO()
+            memf = six.StringIO()
             while not _peek(f=f) == next_sec_key:
                 line = f.readline()
 
@@ -2200,8 +2200,7 @@ default_config_dir = os.path.join(BASE_DIR, 'config', 'xml')
 def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
     logger.setLevel(log_level)
     logger.info("ISA tab Validator from ISA tools API v0.2")
-    from io import StringIO
-    stream = StringIO()
+    stream = six.StringIO()
     handler = logging.StreamHandler(stream)
     logger.addHandler(handler)
     try:

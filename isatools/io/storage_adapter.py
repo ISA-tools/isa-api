@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from urllib.parse import urljoin
 from lxml import etree
 from jsonschema import RefResolver, Draft4Validator
-from io import BytesIO, StringIO
+from io import BytesIO
 from zipfile import ZipFile
 import requests
 import json
@@ -10,6 +10,7 @@ import os
 import pathlib
 import base64
 import pdb
+import six
 
 __author__ = 'massi'
 
@@ -38,7 +39,7 @@ def validate_xml_against_schema(xml_str, xml_schema_file):
     if not schema.validate(xml):
         raise etree.DocumentInvalid("Retrieved file does not validate against ISA configuration xsd")
     else:
-        return etree.parse(StringIO(xml_str))
+        return etree.parse(six.StringIO(xml_str))
 
 
 def validate_json_against_schema(json_dict, schema_src):

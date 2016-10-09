@@ -14,6 +14,7 @@ import datetime as datetime_
 import warnings as warnings_
 from lxml import etree as etree_
 import os
+import six
 
 config_dict = dict()
 
@@ -1955,9 +1956,8 @@ def parseEtree(inFileName, silence=False):
 
 
 def parseString(inString, silence=False):
-    from io import StringIO
     parser = None
-    doc = parsexml_(StringIO(inString), parser)
+    doc = parsexml_(six.StringIO(inString), parser)
     rootNode = doc.getroot()
     rootTag, rootClass = get_root_tag(rootNode)
     if rootClass is None:

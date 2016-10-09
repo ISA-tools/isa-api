@@ -1205,8 +1205,7 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
         config_dir = default_config_dir
     logger.setLevel(log_level)
     logger.info("ISA JSON Validator from ISA tools API v0.2")
-    from io import StringIO
-    stream = StringIO()
+    stream = six.StringIO()
     handler = logging.StreamHandler(stream)
     logger.addHandler(handler)
     try:

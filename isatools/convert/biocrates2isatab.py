@@ -4,7 +4,7 @@ from collections import defaultdict
 import subprocess
 import os
 import re
-from io import BytesIO, StringIO
+from io import BytesIO
 from zipfile import ZipFile
 from shutil import rmtree
 import logging
