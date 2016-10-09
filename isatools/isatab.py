@@ -1303,8 +1303,8 @@ def check_protocol_parameter_names(i_df):
     """Used for rule 1011"""
     for study_protocols_df in i_df['STUDY PROTOCOLS']:
         for i, protocol_parameters_names in enumerate(study_protocols_df['Study Protocol Parameters Name'].tolist()):
-            if len(protocol_parameters_names.split(sep=';')) > 1:  # There's an empty cell if no protocols
-                for protocol_parameter_name in protocol_parameters_names.split(sep=';'):
+            if len(protocol_parameters_names.split(';')) > 1:  # There's an empty cell if no protocols
+                for protocol_parameter_name in protocol_parameters_names.split(';'):
                     if not protocol_parameter_name or 'Unnamed: ' in protocol_parameter_name:  # DataFrames labels empty cells as 'Unnamed: n'
                         logger.warning(
                             "(W) A Protocol Parameter used in Protocol position {} is missing a Name, so can't be referenced in ISA-tab".format(i))
