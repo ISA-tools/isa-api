@@ -283,7 +283,7 @@ class TestValidateIsaTab(unittest.TestCase):
         pass
 
     def test_validate_isatab_bii_i_1(self):
-        log_msg_stream = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-I-1', 'i_investigation.txt')))
+        log_msg_stream = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-I-1', 'i_investigation.txt'), 'rU'))
         log = log_msg_stream.getvalue()
         if "Finished validation..." not in log:
             self.fail("Validation did not complete successfully when it should have!")
@@ -291,7 +291,7 @@ class TestValidateIsaTab(unittest.TestCase):
             self.fail("Validation error and warnings are missing when should report some with BII-I-1")
 
     def test_validate_isatab_bii_s_3(self):
-        log_msg_stream = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt')))
+        log_msg_stream = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt'), 'rU'))
         log = log_msg_stream.getvalue()
         if "Finished validation..." not in log:
             self.fail("Validation did not complete successfully when it should have!")
@@ -299,7 +299,7 @@ class TestValidateIsaTab(unittest.TestCase):
             self.fail("Validation error and warnings are missing when should report some with BII-S-3")
 
     def test_validate_isatab_bii_s_7(self):
-        log_msg_stream = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt')))
+        log_msg_stream = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt'), 'rU'))
         log = log_msg_stream.getvalue()
         if "Finished validation..." not in log:
             self.fail("Validation did not complete successfully when it should have!")

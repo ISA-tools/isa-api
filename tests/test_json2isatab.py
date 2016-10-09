@@ -69,7 +69,7 @@ class TestJson2IsaTab(unittest.TestCase):
     def test_json2isatab_convert_bii_s_7_investigation(self):
         json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir)
         self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'i_investigation.txt')),
-                                                 open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt'))))
+                                                 open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt'), 'rU')))
 
     def test_json2isatab_convert_bii_s_7_study_table(self):
         json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir)
