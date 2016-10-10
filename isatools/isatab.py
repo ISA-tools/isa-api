@@ -122,7 +122,7 @@ def dump(isa_obj, output_path):
         return publications_df.set_index(prefix +' PubMed ID').T
 
     if os.path.exists(output_path):
-        fp = open(os.path.join(output_path, 'i_investigation.txt'), 'wb')
+        fp = open(os.path.join(output_path, 'i_investigation.txt'), 'w')
     else:
         raise IOError("Can't find " + output_path)
     if not isinstance(isa_obj, Investigation):
@@ -147,7 +147,7 @@ def dump(isa_obj, output_path):
         ]
     ontology_source_references_df = ontology_source_references_df.set_index('Term Source Name').T
     fp.write('ONTOLOGY SOURCE REFERENCE\n')
-    ontology_source_references_df.to_csv(path_or_buf=fp, mode='ab', sep=b'\t', encoding='utf-8', line_terminator=b'\n',
+    ontology_source_references_df.to_csv(path_or_buf=fp, mode='ab', sep=str('\t'), encoding='utf-8',
                                          index_label='Term Source Name')  # Need to set index_label as top left cell
     #
     #  Write INVESTIGATION section
@@ -905,11 +905,7 @@ def read_investigation_file(fp):
         try: line = line.decode("utf-8")
         except AttributeError: pass
 
-        normed_line = line.rstrip()
-        if normed_line[0] == '"':
-            normed_line = normed_line[1:]
-        if normed_line[-1] == '"':
-            normed_line = normed_line[:-1]
+        normed_line = line.rstrip().strip('"')
 
         if not normed_line == sec_key:
             raise IOError("Expected: " + sec_key + " section, but got: " + normed_line)
@@ -1029,25 +1025,27 @@ def load2(fp):
             finally:
                 f.seek(position)
 
-            try: l = l.decode('utf-8')
-            except AttributeError: pass
-
-            return l
+            try:
+                return l.decode('utf-8')
+            except AttributeError:
+                return l
+            except UnicodeEncodeError:
+                return l.encode("utf-8").decode("utf-8")
 
         def _strip_label(s):
-            stripped_s = s.rstrip()
-            if stripped_s[0] == '"':
-                stripped_s = stripped_s[1:]
-            if stripped_s[len(stripped_s) - 1] == '"':
-                stripped_s = stripped_s[:len(stripped_s) - 1]
-            return stripped_s
+            try:
+                return s.decode('utf-8').rstrip().strip('"')
+            except AttributeError:
+                return s.rstrip().strip('"')
 
         def _read_tab_section(f, sec_key, next_sec_key=None):
 
             line = _strip_label(f.readline())
 
-            try: line = line.decode('utf-8')
-            except AttributeError: pass
+            try:
+                line = line.decode('utf-8')
+            except AttributeError:
+                pass
 
             if not line == sec_key:
                 raise IOError("Expected: " + sec_key + " section, but got: " + line)
@@ -1250,12 +1248,20 @@ def check_date_formats(i_df):
                 iso8601.parse_date(date_str)
             except iso8601.ParseError:
                 logger.warning("(W) Date {} does not conform to ISO8601 format".format(date_str))
-    import iso8601
-    check_iso8601_date(i_df['INVESTIGATION']['Investigation Public Release Date'].tolist()[0])
-    check_iso8601_date(i_df['INVESTIGATION']['Investigation Submission Date'].tolist()[0])
+
+    try: check_iso8601_date(i_df['INVESTIGATION']['Investigation Public Release Date'].tolist()[0])
+    except IndexError: pass
+
+    try: check_iso8601_date(i_df['INVESTIGATION']['Investigation Submission Date'].tolist()[0])
+    except IndexError: pass
+
     for i, study_df in enumerate(i_df['STUDY']):
-        check_iso8601_date(study_df['Study Public Release Date'].tolist()[0])
-        check_iso8601_date(study_df['Study Submission Date'].tolist()[0])
+        try: check_iso8601_date(study_df['Study Public Release Date'].tolist()[0])
+        except IndexError: pass
+
+        try: check_iso8601_date(study_df['Study Submission Date'].tolist()[0])
+        except IndexError: pass
+
         # for process in study['processSequence']:
         #     check_iso8601_date(process['date'])
 
@@ -1798,7 +1804,6 @@ def check_investigation_against_config(i_df, configs):
             required_values = section[col]
             if len(required_values) > 0:
                 for x, required_value in enumerate(required_values):
-                    print(type(required_value))
                     required_value = required_values.iloc[x]
                     if isinstance(required_value, float):
                         if math.isnan(required_value):
@@ -1811,6 +1816,9 @@ def check_investigation_against_config(i_df, configs):
                                     "(W) A property value in {} of investigation file at column {} is required".format(
                                         col, x + 1))
                     else:
+                        try: required_value = required_value.decode("utf-8")
+                        except AttributeError: pass
+
                         if not required_value or 'Unnamed: ' in required_value:
                             if i > 0:
                                 logger.warn(
@@ -2122,8 +2130,13 @@ def check_protocol_fields(table, cfg, proto_map):
                          k.lower().endswith(' name') or k.lower().endswith(' data file') or k.lower().endswith(
                              ' data matrix file')]
         protos = [k for k in table.columns if k.lower() == 'protocol ref']
-        last_proto_indx = table.columns.get_loc(protos[len(protos) - 1])
-        last_mat_or_dat_indx = table.columns.get_loc(field_headers[len(field_headers) - 1])
+
+        try: last_proto_indx = table.columns.get_loc(protos[-1])
+        except IndexError: last_proto_indx = -1
+
+        try: last_mat_or_dat_indx = table.columns.get_loc(field_headers[-1])
+        except IndexError: last_mat_or_dat_indx = -1
+
         if last_proto_indx > last_mat_or_dat_indx:
             logger.warn("(W) Protocol REF column without output in file '" + table.filename + "'")
         for left, right in pairwise(field_headers):

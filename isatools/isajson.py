@@ -906,6 +906,8 @@ def check_isa_schemas(isa_json, investigation_schema_path):
         logger.fatal("(F) The JSON does not validate against the provided ISA-JSON schemas!")
         logger.fatal("Fatal error: " + str(ve))
         raise SystemError("(F) The JSON does not validate against the provided ISA-JSON schemas!")
+    except BaseException as be:
+        print(be)
 
 
 def check_date_formats(isa_json):
