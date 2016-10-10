@@ -40,7 +40,7 @@ def get_study(mtbls_study_id):
                 ftp.retrbinary('RETR ' + s_filename, out_file.write)
             a_filenames_lines = [l.split('\t') for l in lines if 'Study Assay File Name' in l]
             for a_filename_line in a_filenames_lines:
-                for a_filename in [f[1:-1] for f in a_filename_line[1:]]:
+                for a_filename in (f[1:-1] for f in a_filename_line[1:]):
                     out_file = open(os.path.join(tmp_dir, a_filename), 'wb')
                     logging.info("Retrieving file '{}'".format(
                         MTBLS_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + a_filename))
