@@ -1,7 +1,9 @@
 # coding: utf-8
 import unittest
-from isatools import isajson, isatab
 import os
+import re
+
+from isatools import isajson, isatab
 from tests import utils
 
 
@@ -44,54 +46,59 @@ class TestValidateIsaJson(unittest.TestCase):
 
     def test_validate_isajson_source_link(self):
         """Tests against 1002"""
+        err = re.compile("\[u?'#source/1'\] not found")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'source_link.json')))
-        if "['#source/1'] not found" in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is not None:#"['#source/1'] not found" in log_msg_stream.getvalue():
             self.fail("Validation error present when should pass without error - source link reports broken when "
                       "present in data")
 
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'source_link_fail.json')))
-        if "['#source/1'] not found" not in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is None:#"['#source/1'] not found" not in log_msg_stream.getvalue():
             self.fail("Validation error missing when should report error - data has broken source link but not "
                       "reported in validation report")
 
     def test_validate_isajson_sample_link(self):
         """Tests against 1003"""
+        err = re.compile("\[u?'#sample/1'\] not found")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'sample_link.json')))
-        if "['#sample/1'] not found" in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is not None: #"['#sample/1'] not found" in log_msg_stream.getvalue():
             self.fail(
                 "Validation error present when should pass without error - sample link reports broken when present in "
                 "data")
 
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'sample_link_fail.json')))
-        if "['#sample/1'] not found" not in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is None: #"['#sample/1'] not found" not in log_msg_stream.getvalue():
             self.fail(
                 "Validation error missing when should report error - data has broken sample link but not reported in "
                 "validation report")
 
     def test_validate_isajson_data_file_link(self):
         """Tests against 1004"""
+        err = re.compile("\[u?'#data/a_file.dat'\] not found")
+
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'datafile_link.json')))
-        if "['#data/a_file.dat'] not found" in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is not None:#"[u'#data/a_file.dat'] not found" in log_msg_stream.getvalue():
             self.fail(
                 "Validation error present when should pass without error - data file link reports broken when present "
                 "in data")
 
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'datafile_link_fail.json')))
-        if "['#data/a_file.dat'] not found" not in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is None:#"[u'#data/a_file.dat'] not found" not in log_msg_stream.getvalue():
             self.fail(
                 "Validation error missing when should report error - data has broken data file link but not reported "
                 "in validation report")
 
     def test_validate_isajson_material_link(self):
         """Tests against 1005"""
+        err = re.compile("\[u'#material/1'\] not found")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'material_link.json')))
-        if "['#material/1'] not found" in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is not None:#"['#material/1'] not found" in log_msg_stream.getvalue():
             self.fail(
                 "Validation error present when should pass without error -materiallink link reports broken when "
                 "present in data")
 
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'material_link_fail.json')))
-        if "['#material/1'] not found" not in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is None:#"['#material/1'] not found" not in log_msg_stream.getvalue():
             self.fail(
         "Validation error missing when should report error - data has broken material link but not reported in "
         "validation report")
@@ -112,13 +119,14 @@ class TestValidateIsaJson(unittest.TestCase):
 
     def test_validate_isajson_protocol_ref_link(self):
         """Tests against 1007"""
+        err = re.compile("\[u?'#protocol/1'\] used in a study or assay process sequence not declared")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'protocol_ref_link.json')))
-        if "['#protocol/1'] used in a study or assay process sequence not declared" in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is not None:#"['#protocol/1'] used in a study or assay process sequence not declared" in log_msg_stream.getvalue():
             self.fail(
                 "Validation error present when should pass without error - executesProtocol link reports broken when "
                 "present in data")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'protocol_ref_link_fail.json')))
-        if "['#protocol/1'] used in a study or assay process sequence not declared" not in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is None:#"['#protocol/1'] used in a study or assay process sequence not declared" not in log_msg_stream.getvalue():
             self.fail(
                 "Validation error missing when should report error - data has broken executesProtocol link but not "
                 "reported in validation report")
@@ -196,41 +204,44 @@ class TestValidateIsaJson(unittest.TestCase):
 
     def test_validate_isajson_protocol_used(self):
         """Tests against 3005"""
+        err = re.compile("\[u?'#protocol/1'\] not used")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'protocol_used.json')))
-        if "['#protocol/1'] not used" in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is not None:#"['#protocol/1'] not used" in log_msg_stream.getvalue():
             self.fail(
                 "Validation error present when should pass without error - incorrectly reports #protocol/1 not used "
                 "when it has been used in #process/1")
 
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'protocol_used_fail.json')))
-        if "['#protocol/1'] not used" not in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is None:#"['#protocol/1'] not used" not in log_msg_stream.getvalue():
             self.fail(
                 "Validation error missing when should report error - data has incorrectly reported everything is OK "
                 "but not reported #protocol/1 as being unused")
 
     def test_validate_isajson_factor_used(self):
         """Tests against 3006"""
+        err = re.compile("factors declared \[u?'#factor/1'\] that have not been used")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'factor_used.json')))
-        if "factors declared ['#factor/1'] that have not been used" in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is not None:#"factors declared ['#factor/1'] that have not been used" in log_msg_stream.getvalue():
             self.fail(
                 "Validation error present when should pass without error - incorrectly reports #factor/1 not used when "
                 "it has been used in #sample/1")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'factor_used_fail.json')))
-        if "factors declared ['#factor/1'] that have not been used" not in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is None:#"factors declared ['#factor/1'] that have not been used" not in log_msg_stream.getvalue():
             self.fail(
                 "Validation error missing when should report error - data has incorrectly reported everything is OK "
                 "but not reported #factor/1 as being unused")
 
     def test_validate_isajson_term_source_used(self):
         """Tests against 3007"""
+        err = re.compile("ontology sources declared [\[a-zA-Z\' ,\]]* that have not been used")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'term_source_used.json')))
-        if "ontology sources declared ['PATO'] that have not been used" in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is not None:
             self.fail(
                 "Validation error present when should pass without error - incorrectly reports PATO not used when it "
                 "has been used in #factor/1")
 
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'term_source_used_fail.json')))
-        if "ontology sources declared ['PATO'] that have not been used" not in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is None:
             self.fail(
                 "Validation error missing when should report error - data has incorrectly reported everything is OK "
                 "but not reported PATO as being unused")
@@ -238,7 +249,7 @@ class TestValidateIsaJson(unittest.TestCase):
     def test_validate_isajson_load_config(self):
         """Tests against 4001"""
         try:
-            isajson.load_config(os.path.join(self._configs_json_data_dir))
+            isajson.load_config(self._configs_json_data_dir)#os.path.join(self._configs_json_data_dir))
         except IOError as e:
             self.fail("Could not load config because... " + str(e))
 
@@ -255,22 +266,22 @@ class TestValidateIsaJson(unittest.TestCase):
 
     def test_validate_isajson_study_config_validation(self):
         """Tests against 4004"""
+        err = re.compile("Configuration protocol sequence [\[a-zA-Z' ,\]]* does not match study graph found in [\[a-zA-Z' ,\]]*")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'study_config.json')))
-        if "protocol sequence ['sample collection'] does not match study graph" in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is not None:
             self.fail("Validation failed against default study configuration, when it should have passed")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'study_config_fail.json')))
-        if "protocol sequence ['sample collection'] does not match study graph" not in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is None:
             self.fail("Validation passed against default study configuration, when it should have failed")
 
     def test_validate_isajson_assay_config_validation(self):
         """Tests against 4004"""
+        err = re.compile("Configuration protocol sequence [\[a-zA-Z' ,\]]* does not match study graph found in [\[a-zA-Z' ,\]]*")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'assay_config.json')))
-        if "protocol sequence ['nucleic acid extraction', 'library construction', 'nucleic acid sequencing', " \
-           "'sequence analysis data transformation'] does not match study graph" in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is not None:
             self.fail("Validation failed against transcription_seq.json configuration, when it should have passed")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'assay_config_fail.json')))
-        if "protocol sequence ['nucleic acid extraction', 'library construction', 'nucleic acid sequencing', " \
-           "'sequence analysis data transformation'] does not match study graph" not in log_msg_stream.getvalue():
+        if err.search(log_msg_stream.getvalue()) is None:
             self.fail("Validation passed against transcription_seq.json configuration, when it should have failed")
 
 
