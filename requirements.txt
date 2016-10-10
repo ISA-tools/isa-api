@@ -10,3 +10,4 @@ jinja2
 bs4
 enum34
 six
+pathlib2
