@@ -9,3 +9,4 @@ chardet
 jinja2
 bs4
 enum
+six
