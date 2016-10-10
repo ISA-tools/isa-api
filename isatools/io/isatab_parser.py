@@ -34,6 +34,7 @@ import glob
 import collections
 import pprint
 import bisect
+import six
 
 
 def find_lt(a, x):
@@ -410,7 +411,7 @@ class StudyAssayParser:
                     else:
                         line_number += 1
                 #study.process_nodes = process_nodes
-        return dict([(k, self._finalize_metadata(v)) for k, v in process_nodes.items()])
+        return dict([(k, self._finalize_metadata(v)) for k, v in six.iteritems(process_nodes)])
 
 
     def _parse_study(self, fname, node_types):
@@ -486,13 +487,13 @@ class StudyAssayParser:
                     if not (previous_node_index == -1):
                         node.derivesFrom.append(line[previous_node_index])
 
-        return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
+        return dict([(k, self._finalize_metadata(v)) for k, v in six.iteritems(nodes)])
 
     def _finalize_metadata(self, node):
         """Convert node metadata back into a standard dictionary and list.
         """
         final = {}
-        for key, val in iter(node.metadata.items()):
+        for key, val in six.iteritems(node.metadata):
             #val = list(val)
             #if isinstance(val[0], tuple):
             #    val = [dict(v) for v in val]
@@ -557,7 +558,7 @@ class StudyAssayParser:
         out = []
         for h in (header[g[0]] for g in hgroups):
             this_ctype = None
-            for ctype, names in self._col_types.items():
+            for ctype, names in six.iteritems(self._col_types):
                 if (h in names) or ( h.startswith(names) and h.endswith("]")):
                     this_ctype = ctype
                     break

@@ -693,7 +693,7 @@ def write_assay_table_files(inv_obj, output_dir):
                         elif isinstance(node, Process):
                             def find(n):
                                 v = 0
-                                for k, v in protnames.items():
+                                for k, v in six.iteritems(protnames):
                                     if k == n.executes_protocol.name:
                                         return v
                                 return v
@@ -873,7 +873,7 @@ def write_study_table_files(inv_obj, output_dir):
                 elif isinstance(node, Process):
                     def find(n):
                         v = 0
-                        for k, v in protnames.items():
+                        for k, v in six.iteritems(protnames):
                             if k == n.executes_protocol.name:
                                 return v
                         return v

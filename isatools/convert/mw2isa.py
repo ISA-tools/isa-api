@@ -8,6 +8,7 @@ from collections import defaultdict
 import urllib
 import json
 import ftplib
+import six
 
 __author__ = 'prs'
 
@@ -90,14 +91,24 @@ def generate_maf_file(mw_study_id):
 
         for d in (metabolites, data):
             # you can list as many input dicts as you want here
-            for key, value in d.items():
+            for key, value in six.iteritems(d):
                 dd[key].append(value)
 
         # merging the 2 json feeds and removing duplicated key, since values are always the same
-        for k, v in dd.items():
+        for k, v in six.iteritems(dd):
             # print({k: {i: j for x in v for i, j in x.items()}})
-            dd[k] = {i: j for x in v for i, j in x.items()}
+            dd[k] = {i: j for x in v for i, j in six.iteritems(x)}
 
+
+        # ML: not sure what's happening here, this will always be evaluated as False
+        #    >>> d = {'a':1, 'b':2}
+        #    >>> 'a' in d.items()
+        #    False
+        #    >>> 1 in d.items()
+        #    False
+        #
+        # So I think you should use either dd.keys() or dd.values() here...
+        #
         if "other_id" in dd.items():
             data_rec_header = "metabolite number" + "\t" + "metabolite name" \
                               + "\t" + "metabolite identifier" \
