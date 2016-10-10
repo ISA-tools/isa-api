@@ -45,18 +45,24 @@ def validate(isatab_dir, config_dir):
 def dump(isa_obj, output_path):
 
     def _build_roles_str(roles=list()):
-        roles_names = ''
-        roles_accession_numbers = ''
-        roles_source_refs = ''
+        roles_names, roles_accession_numbers, roles_source_refs = [], [], []
         for role in roles:
-            roles_names += role.name + ';'
-            roles_accession_numbers += role.term_accession + ';'
-            roles_source_refs += role.term_source.name + ';'
-        if len(roles) > 0:
-            roles_names = roles_names[:-1]
-            roles_accession_numbers = roles_accession_numbers[:-1]
-            roles_source_refs = roles_source_refs[:-1]
-        return roles_names, roles_accession_numbers, roles_source_refs
+            roles_names.append(role.name)
+            roles_accession_numbers.append(role.term_accession)
+            roles_source_refs.append(role.term_source.name)
+        return ";".join(roles_names), ";".join(roles_accession_numbers), ";".join(roles_source_refs)
+        # roles_names = ''
+        # roles_accession_numbers = ''
+        # roles_source_refs = ''
+        # for role in roles:
+        #     roles_names += role.name + ';'
+        #     roles_accession_numbers += role.term_accession + ';'
+        #     roles_source_refs += role.term_source.name + ';'
+        # if len(roles) > 0:
+        #     roles_names = roles_names[:-1]
+        #     roles_accession_numbers = roles_accession_numbers[:-1]
+        #     roles_source_refs = roles_source_refs[:-1]
+        # return roles_names, roles_accession_numbers, roles_source_refs
 
     def _build_contacts_section_df(prefix='Investigation', contacts=list()):
         contacts_df_cols = [prefix + ' Person Last Name',
@@ -301,31 +307,43 @@ def dump(isa_obj, output_path):
                                                    )
                                           )
         for i, protocol in enumerate(study.protocols):
-            parameters_names = ''
-            parameters_accession_numbers = ''
-            parameters_source_refs = ''
+            parameters_names, parameters_accession_numbers, parameters_source_refs = [], [], []
             for parameter in protocol.parameters:
-                parameters_names += parameter.parameter_name.name + ';'
-                parameters_accession_numbers += parameter.parameter_name.term_accession + ';'
-                parameters_source_refs += parameter.parameter_name.term_source.name + ';'
-            if len(protocol.parameters) > 0:
-                parameters_names = parameters_names[:-1]
-                parameters_accession_numbers = parameters_accession_numbers[:-1]
-                parameters_source_refs = parameters_source_refs[:-1]
-            component_names = ''
-            component_types = ''
-            component_types_accession_numbers = ''
-            component_types_source_refs = ''
+                parameters_names.append(parameter.parameter_name.name)
+                parameters_accession_numbers.append(parameter.parameter_name.term_accession)
+                parameters_source_refs.append(parameter.parameter_name.term_source.name)
+            component_names, component_types,  = [], []
+            component_types_accession_numbers, component_types_source_refs = [], []
             for component in protocol.components:
-                component_names += component.name + ';'
-                component_types += component.component_type.name + ';'
-                component_types_accession_numbers += component.component_type.term_accession + ';'
-                component_types_source_refs += component.component_type.term_source.name + ';'
-            if len(protocol.components) > 0:
-                component_names = component_names[:-1]
-                component_types = component_types[:-1]
-                component_types_accession_numbers = component_types_accession_numbers[:-1]
-                component_types_source_refs = component_types_source_refs[:-1]
+                component_names.append(component.name)
+                component_types.append(component.component_type.name)
+                component_types_accession_numbers.append(component.component_type.term_accession)
+                component_types_source_refs.append(component.component_type.term_source.name)
+            # parameters_names = ''
+            # parameters_accession_numbers = ''
+            # parameters_source_refs = ''
+            # for parameter in protocol.parameters:
+            #     parameters_names += parameter.parameter_name.name + ';'
+            #     parameters_accession_numbers += parameter.parameter_name.term_accession + ';'
+            #     parameters_source_refs += parameter.parameter_name.term_source.name + ';'
+            # if len(protocol.parameters) > 0:
+            #     parameters_names = parameters_names[:-1]
+            #     parameters_accession_numbers = parameters_accession_numbers[:-1]
+            #     parameters_source_refs = parameters_source_refs[:-1]
+            # component_names = ''
+            # component_types = ''
+            # component_types_accession_numbers = ''
+            # component_types_source_refs = ''
+            # for component in protocol.components:
+            #     component_names += component.name + ';'
+            #     component_types += component.component_type.name + ';'
+            #     component_types_accession_numbers += component.component_type.term_accession + ';'
+            #     component_types_source_refs += component.component_type.term_source.name + ';'
+            # if len(protocol.components) > 0:
+            #     component_names = component_names[:-1]
+            #     component_types = component_types[:-1]
+            #     component_types_accession_numbers = component_types_accession_numbers[:-1]
+            #     component_types_source_refs = component_types_source_refs[:-1]
             study_protocols_df.loc[i] = [
                 protocol.name,
                 protocol.protocol_type.name,
@@ -334,13 +352,13 @@ def dump(isa_obj, output_path):
                 protocol.description,
                 protocol.uri,
                 protocol.version,
-                parameters_names,
-                parameters_accession_numbers,
-                parameters_source_refs,
-                component_names,
-                component_types,
-                component_types_accession_numbers,
-                component_types_source_refs
+                ';'.join(parameters_names),
+                ';'.join(parameters_accession_numbers),
+                ';'.join(parameters_source_refs),
+                ';'.join(component_names),
+                ';'.join(component_types),
+                ';'.join(component_types_accession_numbers),
+                ';'.join(component_types_source_refs)
             ]
         study_protocols_df = study_protocols_df.set_index('Study Protocol Name').T
         fp.write('STUDY PROTOCOLS\n')
@@ -403,7 +421,7 @@ prev = ''  # used in rolling_group(val) in write_assay_table_files(inv_obj, outp
 def _all_end_to_end_paths(G, start_nodes, end_nodes):
     paths = list()
     for start, end in itertools.product(start_nodes, end_nodes):
-        paths += list(nx.algorithms.all_simple_paths(G, start, end))
+        paths.extend(list(nx.algorithms.all_simple_paths(G, start, end)))
     return paths
 
 KEY_POSTFIX_UNIT = '_unit'
@@ -646,25 +664,30 @@ def write_assay_table_files(inv_obj, output_dir):
                 start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
                 for path in _all_end_to_end_paths(assay_obj.graph, start_nodes, end_nodes):
                     mcount = 0
-                    compound_key = str()
+                    #compound_key = str()
+                    compound_key = []
                     for node in path:
                         if isinstance(node, Sample):
                             df.loc[i, 'sample'] = node.name
-                            compound_key += node.name + '/'
+                            #compound_key += node.name + '/'
+                            compound_key.append(node.name)
                         elif isinstance(node, Material):
                             if node.type == 'Labeled Extract Name':
                                 df.loc[i, 'lextract'] = node.name
-                                compound_key += node.name + '/'
+                                #compound_key += node.name + '/'
+                                compound_key.append(node.name)
                                 df.loc[i, 'lextract_label'] = node.characteristics[0].value.name
                                 df.loc[i, 'lextract_label_termsource'] = node.characteristics[0].value.term_source.name
                                 df.loc[i, 'lextract_label_termaccession'] = node.characteristics[0].value.term_accession
                             elif node.type == 'Extract Name':
                                 df.loc[i, 'extract'] = node.name
-                                compound_key += node.name + '/'
+                                #compound_key += node.name + '/'
+                                compound_key.append(node.name)
                                 _set_charac_vals('extract', node.characteristics, df, i)
                             else:
                                 df.loc[i, 'material[' + str(mcount) + ']'] = node.name
-                                compound_key += node.name + '/'
+                                #compound_key += node.name + '/'
+                                compound_key.append(node.name)
                                 _set_charac_vals('material', node.characteristics, df, i)
                                 mcount += 1
                         elif isinstance(node, Process):
@@ -676,7 +699,8 @@ def write_assay_table_files(inv_obj, output_dir):
                                 return v
                             protrefcount = find(node)
                             df.loc[i, 'protocol[' + str(protrefcount) + ']'] = node.executes_protocol.name
-                            compound_key += str(protrefcount) + '/' + node.name + '/'
+                            #compound_key += str(protrefcount) + '/' + node.name + '/'
+                            compound_key.extend([str(protrefcount), node.name])
                             if node.date is not None:
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_date'] = node.date
                             if node.performer is not None:
@@ -696,23 +720,28 @@ def write_assay_table_files(inv_obj, output_dir):
                             # TODO Check how model objects are used, do all additional_prop now go into .name?
                             for prop in reversed(sorted(node.additional_properties.keys())):
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = node.additional_properties[prop]
-                                compound_key += str(protrefcount) + '/' + prop + '/' + node.additional_properties[prop]
+                                #compound_key += str(protrefcount) + '/' + prop + '/' + node.additional_properties[prop]
+                                compound_key.extend([str(protrefcount), prop, node.additional_properties[prop]])
                             if node.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']'] = node.name
-                                compound_key += str(protrefcount) + '/' + 'Assay Name' + '/' + node.name
+                                #compound_key += str(protrefcount) + '/' + 'Assay Name' + '/' + node.name
+                                compound_key.extend([str(protrefcount), 'Assay Name', node.name])
                             elif node.executes_protocol.protocol_type.name == 'nucleic acid hybridization':
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Hybridization Assay Name' + ']'] = node.name
-                                compound_key += str(protrefcount) + '/' + 'Hybridization Assay Name' + '/' + node.name
+                                #compound_key += str(protrefcount) + '/' + 'Hybridization Assay Name' + '/' + node.name
+                                compound_key.extend([str(protrefcount), 'Hybridization Assay Name', node.name])
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Array Design REF' + ']'] = node.array_design_ref
-                                compound_key += str(protrefcount) + '/' + 'Array Design REF' + '/' + node.array_design_ref
+                                #compound_key += str(protrefcount) + '/' + 'Array Design REF' + '/' + node.array_design_ref
+                                compound_key.extend([str(protrefcount), 'Array Design REF', node.array_design_ref])
                             elif node.executes_protocol.protocol_type.name == 'data collection':
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']'] = node.name
-                                compound_key += str(protrefcount) + '/' + 'Scan Name' + '/' + node.name
+                                #compound_key += str(protrefcount) + '/' + 'Scan Name' + '/' + node.name
+                                compound_key.extend([str(protrefcount), 'Scan Name', node.name])
                             for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                                 df.loc[i, 'data[' + output.label + ']'] = output.filename
                                 for comment in output.comments:
                                     df.loc[i, 'data[' + output.label + ']_comment[' + comment.name + ']'] = comment.value
-                    df.loc[i, 'compound_key'] = compound_key
+                    df.loc[i, 'compound_key'] = '/'.join(compound_key)
                     i += 1
 
                 # reduce rows of data on separate lines
@@ -2065,7 +2094,6 @@ def check_field_values(table, cfg):
     for irow in six.moves.range(len(table.index)):
         ncols = len(table.columns)
         for icol in six.moves.range(ncols):
-            # TODO: switch to next() + generator
             cfields = [k for k in cfg.get_isatab_configuration()[0].get_field() if k.header == table.columns[icol]]
             if len(cfields) == 1:
                 cfield = cfields[0]
@@ -2082,7 +2110,6 @@ def check_unit_field(table, cfg):
 
     result = True
     for icol, header in enumerate(table.columns):
-        # TODO: switch to next() + generator
         cfields = [k for k in cfg.get_isatab_configuration()[0].get_field() if k.header == header]
         if len(cfields) != 1:
             continue

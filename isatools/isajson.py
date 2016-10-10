@@ -1061,29 +1061,38 @@ def print_graph(study_or_assay):
     G = study_or_assay.graph
     from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
     start_nodes, end_nodes = _get_start_end_nodes(G)
-    # TODO: switch from += str to "->".join(list)
     for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
-        type_seq_str = ""
+        #type_seq_str = ""
+        type_seq = []
         for node in path:
             if isinstance(node, Source):
-                type_seq_str += '(' + node.name + ":Source)->"
+                #type_seq_str += '(' + node.name + ":Source)->"
+                type_seq.append('({}:Source'.format(node.name))
             elif isinstance(node, Sample):
-                type_seq_str += '(' + node.name + ":Sample)->"
+                #type_seq_str += '(' + node.name + ":Sample)->"
+                type_seq.append('({}:Sample'.format(node.name))
             elif isinstance(node, Material):
                 if '#material/extract' in node.id:
-                    type_seq_str += '(' + node.name + ":Extract)->"
+                    #type_seq_str += '(' + node.name + ":Extract)->"
+                    type_seq.append('({}:Extract'.format(node.name))
                 else:
-                    type_seq_str += '(' + node.name + ":Material)->"
+                    #type_seq_str += '(' + node.name + ":Material)->"
+                    type_seq.append('({}:Material'.format(node.name))
             elif isinstance(node, Process):
                 protocol_type = node.executes_protocol.protocol_type.name
-                type_seq_str += "({})->".format(protocol_type)
-                for data in [node for node in node.outputs if isinstance(node, DataFile)]:
-                    type_seq_str += '(' + data.filename + ":DataFile)->"
+                #type_seq_str += "({})->".format(protocol_type)
+                type_seq.append("({})".format(protocol_type))
+                type_seq.extend([ "({})".format(node.filename) for node in node.outputs if isinstance(node, DataFile) ])
+                #for data in [node for node in node.outputs if isinstance(node, DataFile)]:
+                #    #type_seq_str += '(' + data.filename + ":DataFile)->"
+
             else:
-                type_seq_str += "({})->".format(type(node))
-        if type_seq_str.endswith('->'):
-            type_seq_str = type_seq_str[:len(type_seq_str) - 2]
-        print(type_seq_str)
+                #type_seq_str += "({})->".format(type(node))
+                type_seq.append("({})".format(type(node)))
+        #if type_seq_str.endswith('->'):
+        #    type_seq_str = type_seq_str[:len(type_seq_str) - 2]
+        #print(type_seq_str)
+        print("->".join(type_seq))
 
 
 def load_config(config_dir):
