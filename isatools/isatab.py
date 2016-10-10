@@ -1798,6 +1798,7 @@ def check_investigation_against_config(i_df, configs):
             required_values = section[col]
             if len(required_values) > 0:
                 for x, required_value in enumerate(required_values):
+                    print(type(required_value))
                     required_value = required_values.iloc[x]
                     if isinstance(required_value, float):
                         if math.isnan(required_value):
@@ -1810,7 +1811,7 @@ def check_investigation_against_config(i_df, configs):
                                     "(W) A property value in {} of investigation file at column {} is required".format(
                                         col, x + 1))
                     else:
-                        if required_value == '' or 'Unnamed: ' in required_value:
+                        if not required_value or 'Unnamed: ' in required_value:
                             if i > 0:
                                 logger.warn(
                                     "(W) A property value in {}.{} of investigation file at column {} is required".format(
@@ -1820,7 +1821,7 @@ def check_investigation_against_config(i_df, configs):
                                     "(W) A property value in {} of investigation file at column {} is required".format(
                                         col, x + 1))
 
-    required_fields = [i.header for i in configs[('[investigation]', '')].get_isatab_configuration()[0].get_field() if i.is_required]
+    required_fields = [k.header for k in configs[('[investigation]', '')].get_isatab_configuration()[0].get_field() if k.is_required]
     check_section_against_required_fields_one_value(i_df['INVESTIGATION'], required_fields)
     check_section_against_required_fields_one_value(i_df['INVESTIGATION PUBLICATIONS'], required_fields)
     check_section_against_required_fields_one_value(i_df['INVESTIGATION CONTACTS'], required_fields)
@@ -1903,7 +1904,7 @@ def cell_has_value(cell):
         else:
             return False
     else:
-        if cell.strip() == '':
+        if not cell.strip():
             return False
         elif 'Unnamed: ' in cell:
             return False
@@ -1974,7 +1975,7 @@ def check_factor_value_presence(table):
     factor_fields = [k for k in table.columns if k.lower().startswith('factor value')]
     for factor_field in factor_fields:
         for x, cell_value in enumerate(table.fillna('')[factor_field]):
-            if cell_value == '':
+            if not cell_value:
                 logger.warn("(W) Missing value for '" + factor_field + "' at row " + str(x) + " in " + table.filename)
 
 
@@ -2009,14 +2010,14 @@ def check_field_values(table, cfg):
                 return True
         elif isinstance(cell_value, str):
             value = cell_value.strip()
-            if value == '':
+            if not value:
                 if cfg_field.is_required:
                     logger.warn("(W) Missing value for the required field '" + cfg_field.header + "' in the file '" +
                                 table.filename + "'")
                 return True
         is_valid_value = True
         data_type = cfg_field.data_type.lower().strip()
-        if data_type in ['', 'string']:
+        if not data_type or data_type == 'string':
             return True
         if 'boolean' == data_type:
             is_valid_value = 'true' == cell_value.strip() or 'false' == cell_value.strip()
@@ -2036,7 +2037,7 @@ def check_field_values(table, cfg):
             except ValueError:
                 is_valid_value = False
         elif data_type == 'list':
-            list_values = [i.lower() for i in cfg_field.list_values.split(',')]
+            list_values = [k.lower() for k in cfg_field.list_values.split(',')]
             if cell_value.lower() not in list_values:
                 is_valid_value = False
         elif data_type in ['ontology-term', 'ontology term']:
@@ -2136,8 +2137,8 @@ def check_protocol_fields(table, cfg, proto_map):
             if len(crights) == 1:
                 cright = crights[0]
             if cleft is not None and cright is not None:
-                cprotos = [i.protocol_type for i in cfg.get_isatab_configuration()[0].get_protocol_field() if
-                           cleft.pos < i.pos and cright.pos > i.pos]
+                cprotos = [k.protocol_type for k in cfg.get_isatab_configuration()[0].get_protocol_field() if
+                           cleft.pos < k.pos and cright.pos > k.pos]
                 fprotos_headers = [k for k in table.columns[
                                               table.columns.get_loc(cleft.header):table.columns.get_loc(
                                                   cright.header)] if
@@ -2749,7 +2750,7 @@ def read_study_file(fp):
                 except IndexError:
                     pass
                 finally:
-                    if sample_.name == '':
+                    if not sample_.name:
                         source_.characteristics.append(characteristic)
                     else:
                         sample_.characteristics.append(characteristic)
