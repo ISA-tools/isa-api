@@ -1149,7 +1149,7 @@ def load2(fp):
             labels_expected = {'Study Identifier', 'Study Title', 'Study Description',
                                'Study Submission Date', 'Study Public Release Date',
                                'Study File Name'}
-            check_labels('STUDY', labels_expected, df_dict['STUDY'][len(df_dict['STUDY']) - 1])
+            check_labels('STUDY', labels_expected, df_dict['STUDY'][-1])
             logger.info("Loading STUDY DESIGN DESCRIPTORS section")
             df_dict['STUDY DESIGN DESCRIPTORS'] .append(_build_section_df(_read_tab_section(
                 f=fp,
@@ -1159,7 +1159,7 @@ def load2(fp):
             labels_expected = {'Study Design Type', 'Study Design Type Term Accession Number',
                                'Study Design Type Term Source REF'}
             check_labels('STUDY DESIGN DESCRIPTORS', labels_expected,
-                         df_dict['STUDY DESIGN DESCRIPTORS'][len(df_dict['STUDY DESIGN DESCRIPTORS']) - 1])
+                         df_dict['STUDY DESIGN DESCRIPTORS'][-1])
             logger.info("Loading STUDY PUBLICATIONS section")
             df_dict['STUDY PUBLICATIONS'].append(_build_section_df(_read_tab_section(
                 f=fp,
@@ -1172,7 +1172,7 @@ def load2(fp):
                                'Study Publication Status Term Accession Number',
                                'Study Publication Status Term Source REF'}
             check_labels('STUDY PUBLICATIONS', labels_expected,
-                         df_dict['STUDY PUBLICATIONS'][len(df_dict['STUDY PUBLICATIONS']) - 1])
+                         df_dict['STUDY PUBLICATIONS'][-1])
             logger.info("Loading STUDY FACTORS section")
             df_dict['STUDY FACTORS'].append(_build_section_df(_read_tab_section(
                 f=fp,
@@ -1181,7 +1181,7 @@ def load2(fp):
             )))
             labels_expected = {'Study Factor Name', 'Study Factor Type', 'Study Factor Type Term Accession Number',
                                'Study Factor Type Term Source REF'}
-            check_labels('STUDY FACTORS', labels_expected, df_dict['STUDY FACTORS'][len(df_dict['STUDY FACTORS']) - 1])
+            check_labels('STUDY FACTORS', labels_expected, df_dict['STUDY FACTORS'][-1])
             logger.info("Loading STUDY ASSAYS section")
             df_dict['STUDY ASSAYS'].append(_build_section_df(_read_tab_section(
                 f=fp,
@@ -1193,7 +1193,7 @@ def load2(fp):
                                'Study Assay Technology Type Term Accession Number',
                                'Study Assay Technology Type Term Source REF', 'Study Assay Technology Platform',
                                'Study Assay File Name'}
-            check_labels('STUDY ASSAYS', labels_expected, df_dict['STUDY ASSAYS'][len(df_dict['STUDY ASSAYS']) - 1])
+            check_labels('STUDY ASSAYS', labels_expected, df_dict['STUDY ASSAYS'][-1])
             logger.info("Loading STUDY PROTOCOLS section")
             df_dict['STUDY PROTOCOLS'].append(_build_section_df(_read_tab_section(
                 f=fp,
@@ -1207,7 +1207,7 @@ def load2(fp):
                                'Study Protocol Parameters Name Term Source REF', 'Study Protocol Components Name',
                                'Study Protocol Components Type', 'Study Protocol Components Type Term Accession Number',
                                'Study Protocol Components Type Term Source REF'}
-            check_labels('STUDY PROTOCOLS', labels_expected, df_dict['STUDY PROTOCOLS'][len(df_dict['STUDY PROTOCOLS']) - 1])
+            check_labels('STUDY PROTOCOLS', labels_expected, df_dict['STUDY PROTOCOLS'][-1])
             logger.info("Loading STUDY CONTACTS section")
             df_dict['STUDY CONTACTS'].append(_build_section_df(_read_tab_section(
                 f=fp,
@@ -1222,7 +1222,7 @@ def load2(fp):
                                'Study Person Roles Term Accession Number',
                                'Study Person Roles Term Source REF'}
             check_labels('STUDY CONTACTS', labels_expected,
-                         df_dict['STUDY CONTACTS'][len(df_dict['STUDY CONTACTS']) - 1])
+                         df_dict['STUDY CONTACTS'][-1])
 
         return df_dict
 
