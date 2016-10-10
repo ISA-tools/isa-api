@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from urllib.parse import urljoin
+from six.moves.urllib.parse import urljoin
 from lxml import etree
 from jsonschema import RefResolver, Draft4Validator
 from io import BytesIO
@@ -7,10 +7,16 @@ from zipfile import ZipFile
 import requests
 import json
 import os
-import pathlib
 import base64
 import pdb
 import six
+
+try:
+    import pathlib
+except ImportError:
+    import pathlib2 as pathlib
+
+
 
 __author__ = 'massi'
 
@@ -55,7 +61,9 @@ def validate_json_against_schema(json_dict, schema_src):
     return validator.validate(json_dict, schema)
 
 
-class IsaStorageAdapter(metaclass=ABCMeta):
+class IsaStorageAdapter(object):#metaclass=ABCMeta):
+
+    __metaclass__ = ABCMeta
 
     @abstractmethod
     def download(self, source, destination=None, owner=None, repository=None):

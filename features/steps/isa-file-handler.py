@@ -1,4 +1,9 @@
-from datetime import datetime, timezone
+try:
+    from datetime import datetime, timezone
+except:
+    from datetime import datetime
+    from pytz import timezone, utc
+    timezone.utc = utc
 
 import hashlib
 import httpretty
@@ -8,7 +13,7 @@ from zipfile import ZipFile
 from behave import *
 from sure import expect
 from zipfile import is_zipfile
-from urllib.parse import urljoin
+from six.moves.urllib.parse import urljoin
 from isatools.io.storage_adapter import IsaGitHubStorageAdapter, REPOS, CONTENTS
 from lxml import etree
 from io import BytesIO, StringIO
