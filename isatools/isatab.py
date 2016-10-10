@@ -380,9 +380,9 @@ def dump(isa_obj, output_path):
 def _get_start_end_nodes(G):
     start_nodes = list()
     end_nodes = list()
-    for process in [n for n in G.nodes() if isinstance(n, Process)]:
+    for process in (n for n in G.nodes() if isinstance(n, Process)):
         if process.prev_process is None:
-            for material in [m for m in process.inputs if not isinstance(m, DataFile)]:
+            for material in (m for m in process.inputs if not isinstance(m, DataFile)):
                 start_nodes.append(material)
         outputs_no_data = [m for m in process.outputs if not isinstance(m, DataFile)]
         if process.next_process is None:
@@ -547,7 +547,7 @@ def _set_protocol_cols(protrefcount, prottypes, process, cols, col_map):
     for prop in reversed(sorted(process.additional_properties.keys())):
         cols.append(obj_process_key + '_prop[' + prop + ']')
         col_map[obj_process_key + '_prop[' + prop + ']'] = prop
-    for output in [x for x in process.outputs if isinstance(x, DataFile)]:
+    for output in (x for x in process.outputs if isinstance(x, DataFile)):
         cols.append('data[' + output.label + ']')
         col_map['data[' + output.label + ']'] = output.label
         for comment in output.comments:
@@ -646,7 +646,7 @@ def write_assay_table_files(inv_obj, output_dir):
                             cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']')
                             col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']'] = 'Scan Name'
 
-                        for output in [x for x in node.outputs if isinstance(x, DataFile)]:
+                        for output in (x for x in node.outputs if isinstance(x, DataFile)):
                             cols.append('data[' + output.label + ']')
                             col_map['data[' + output.label + ']'] = output.label
                             for comment in output.comments:
@@ -737,7 +737,7 @@ def write_assay_table_files(inv_obj, output_dir):
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']'] = node.name
                                 #compound_key += str(protrefcount) + '/' + 'Scan Name' + '/' + node.name
                                 compound_key.extend([str(protrefcount), 'Scan Name', node.name])
-                            for output in [x for x in node.outputs if isinstance(x, DataFile)]:
+                            for output in (x for x in node.outputs if isinstance(x, DataFile)):
                                 df.loc[i, 'data[' + output.label + ']'] = output.filename
                                 for comment in output.comments:
                                     df.loc[i, 'data[' + output.label + ']_comment[' + comment.name + ']'] = comment.value
@@ -1423,7 +1423,7 @@ def check_protocol_usage(i_df, dir_context):
             try:
                 protocol_refs_used = set()
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
-                for protocol_ref_col in [k for k in study_df.columns if k.startswith('Protocol REF')]:
+                for protocol_ref_col in (k for k in study_df.columns if k.startswith('Protocol REF')):
                     protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
                 protocol_refs_used = set([r for r in protocol_refs_used if pd.notnull(r)])
                 if not protocol_refs_used.issubset(protocols_declared):
@@ -1437,7 +1437,7 @@ def check_protocol_usage(i_df, dir_context):
                 try:
                     protocol_refs_used = set()
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
-                    for protocol_ref_col in [k for k in assay_df.columns if k.startswith('Protocol REF')]:
+                    for protocol_ref_col in (k for k in assay_df.columns if k.startswith('Protocol REF')):
                         protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
                     protocol_refs_used = set([r for r in protocol_refs_used if pd.notnull(r)])
                     if not protocol_refs_used.issubset(protocols_declared):
@@ -1451,7 +1451,7 @@ def check_protocol_usage(i_df, dir_context):
         if study_filename:
             try:
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
-                for protocol_ref_col in [k for k in study_df.columns if k.startswith('Protocol REF')]:
+                for protocol_ref_col in (k for k in study_df.columns if k.startswith('Protocol REF')):
                     protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
             except IOError:
                 pass
@@ -1459,7 +1459,7 @@ def check_protocol_usage(i_df, dir_context):
             if assay_filename:
                 try:
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
-                    for protocol_ref_col in [k for k in assay_df.columns if k.startswith('Protocol REF')]:
+                    for protocol_ref_col in (k for k in assay_df.columns if k.startswith('Protocol REF')):
                         protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
                 except IOError:
                     pass
@@ -2017,7 +2017,7 @@ def check_factor_value_presence(table):
 
 
 def check_required_fields(table, cfg):
-    for fheader in [k.header for k in cfg.get_isatab_configuration()[0].get_field() if k.is_required]:
+    for fheader in (k.header for k in cfg.get_isatab_configuration()[0].get_field() if k.is_required):
         found_field = [k for k in table.columns if k.lower() == fheader.lower()]
         if len(found_field) == 0:
             logger.warn("(W) Required field '" + fheader + "' not found in the file '" + table.filename + "'")

@@ -14,8 +14,8 @@ def zipdir(path, zip_file):
     """utility function to zip only SRA xmls from a whole directory"""
     # zip_file is zipfile handle
     for root, dirs, files in os.walk(path):
-        for file in [f for f in files if f in ['submission.xml', 'project_set.xml', 'run_set.xml',
-                                               'experiment_set.xml', 'sample_set.xml']]:
+        for file in (f for f in files if f in ['submission.xml', 'project_set.xml', 'run_set.xml',
+                                               'experiment_set.xml', 'sample_set.xml']):
             zip_file.write(os.path.join(root, file),
                            arcname=os.path.join(os.path.basename(root), file))
 

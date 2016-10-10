@@ -555,7 +555,7 @@ class StudyAssayParser:
         """Characterize header groups into different data types.
         """
         out = []
-        for h in [header[g[0]] for g in hgroups]:
+        for h in (header[g[0]] for g in hgroups):
             this_ctype = None
             for ctype, names in self._col_types.items():
                 if (h in names) or ( h.startswith(names) and h.endswith("]")):
