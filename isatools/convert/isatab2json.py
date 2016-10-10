@@ -11,6 +11,7 @@ from enum import Enum
 import re
 from isatools import isatab
 import logging
+import six
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -251,7 +252,7 @@ class ISATab2ISAjson_v1:
         term_source_array = object[inv_or_study+type+" Term Source REF"].split(";")
         term_accession_array = object[inv_or_study+type+" Term Accession Number"].split(";")
         onto_annotations = []
-        for i in range(0,len(name_array)):
+        for i in six.moves.range(len(name_array)):
              if (not name_array[i]):
                  continue
              onto_ann = self.createOntologyAnnotation(name_array[i],

@@ -2062,9 +2062,9 @@ def check_field_values(table, cfg):
         return is_valid_value
 
     result = True
-    for irow in range(len(table.index)):
+    for irow in six.moves.range(len(table.index)):
         ncols = len(table.columns)
-        for icol in range(0, ncols):
+        for icol in six.moves.range(ncols):
             # TODO: switch to next() + generator
             cfields = [k for k in cfg.get_isatab_configuration()[0].get_field() if k.header == table.columns[icol]]
             if len(cfields) == 1:
@@ -2101,7 +2101,7 @@ def check_unit_field(table, cfg):
                             "' misses a required 'Unit' column")
                 result = False
             else:
-                for irow in range(len(table.index)):
+                for irow in six.moves.range(len(table.index)):
                     result = result and check_unit_value(table.iloc[irow][icol], table.iloc[irow][rindx],
                                                          cfield, table.filename)
     return result
@@ -2209,7 +2209,7 @@ def check_ontology_fields(table, cfg):
             result = False
             continue
 
-        for irow in range(len(table.index)):
+        for irow in six.moves.range(len(table.index)):
             result = result and check_single_field(table.iloc[irow][icol], table.iloc[irow][rindx],
                                                    table.iloc[irow][rrindx], cfield, table.filename)
 
@@ -2463,7 +2463,7 @@ def load(isatab_dir):
         term_source_array = object_[inv_or_study+type_+" Term Source REF"].split(";")
         term_accession_array = object_[inv_or_study+type_+" Term Accession Number"].split(";")
         onto_annotations = []
-        for i in range(0, len(name_array)):
+        for i in six.moves.range(len(name_array)):
              onto_ann = OntologyAnnotation(
                  name=name_array[i],
                  term_source=term_source_array[i],

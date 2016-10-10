@@ -405,7 +405,7 @@ CDATA_pattern_ = re_.compile(r"<!\[CDATA\[.*?\]\]>", re_.DOTALL)
 
 def showIndent(outfile, level, pretty_print=True):
     if pretty_print:
-        for idx in range(level):
+        for idx in six.moves.range(level):
             outfile.write('    ')
 
 
