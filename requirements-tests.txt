@@ -14,5 +14,5 @@ jinja2
 deepdiff
 bs4
 mock
-enum
+enum34
 six
