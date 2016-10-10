@@ -7,7 +7,10 @@ TARGET_DIR = 'test_outputs'
 
 
 def before_all(context):
-    os.makedirs(TARGET_DIR, exist_ok=True)
+    try:
+        os.makedirs(os.path.join('features', TARGET_DIR))#, exist_ok=True)
+    except OSError:
+        pass
 
 
 def after_all(context):
