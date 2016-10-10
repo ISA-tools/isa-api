@@ -33,10 +33,10 @@ def load(fp):
                     G.add_edge(process.prev_process, process)
         return G
 
-    def get_jvalue(dict, key):
-        if key in dict.keys():
-            return dict[key]
-        else:
+    def get_jvalue(d, key):
+        try:
+            return d[key]
+        except KeyError:
             return None
 
     isajson = json.load(fp)
@@ -768,7 +768,7 @@ def get_characteristic_category_ids_in_study_materials(study_json):
 def get_characteristic_category_ids_in_assay_materials(assay_json):
     """Used for rule 1013"""
     return [elem for iterabl in [[characteristic['category']['@id']  for characteristic in material['characteristics']]
-                                 if 'characteristics' in material.keys() else [] for material in
+                                 if 'characteristics' in material else [] for material in
               assay_json['materials']['samples'] + assay_json['materials']['otherMaterials']] for elem in iterabl]
 
 
@@ -828,17 +828,17 @@ def get_unit_category_ids(study_or_assay_json):
 def get_study_unit_category_ids_in_materials_and_processes(study_json):
     """Used for rule 1014"""
     study_characteristics_units_used = [elem for iterabl in
-                                        [[characteristic['unit']['@id'] if 'unit' in characteristic.keys() else None for
+                                        [[characteristic['unit']['@id'] if 'unit' in characteristic else None for
                                           characteristic in material['characteristics']] for material in
                                          study_json['materials']['sources'] + study_json['materials']['samples']] for
                                         elem in iterabl]
     study_factor_value_units_used = [elem for iterabl in
-                                     [[factor_value['unit']['@id'] if 'unit' in factor_value.keys() else None for
+                                     [[factor_value['unit']['@id'] if 'unit' in factor_value else None for
                                        factor_value in material['factorValues']] for material in
                                       study_json['materials']['samples']] for
                                      elem in iterabl]
     parameter_value_units_used = [elem for iterabl in[[parameter_value['unit']['@id']
-                                                       if 'unit' in parameter_value.keys() else None for
+                                                       if 'unit' in parameter_value else None for
                                    parameter_value in process['parameterValues']] for process in
                                   study_json['processSequence']] for
                                   elem in iterabl]
@@ -849,12 +849,12 @@ def get_study_unit_category_ids_in_materials_and_processes(study_json):
 def get_assay_unit_category_ids_in_materials_and_processes(assay_json):
     """Used for rule 1014"""
     assay_characteristics_units_used = [elem for iterabl in [[characteristic['unit']['@id'] if 'unit' in
-                                        characteristic.keys() else None
+                                        characteristic else None
                                                               for characteristic in material['characteristics']]
-                                                             if 'characteristics' in material.keys() else None for
+                                                             if 'characteristics' in material else None for
                                      material in assay_json['materials']['otherMaterials']] for elem in iterabl]
     parameter_value_units_used = [elem for iterabl in[[parameter_value['unit']['@id']
-                                                       if 'unit' in parameter_value.keys() else None
+                                                       if 'unit' in parameter_value else None
                                                        for parameter_value in process['parameterValues']] for process in
                                                       assay_json['processSequence']] for
                                   elem in iterabl]
@@ -1021,7 +1021,7 @@ def walk_and_get_annotations(isa_json, collector):
         if set(isa_json.keys()) == {'annotationValue', 'termAccession', 'termSource'} or \
                         set(isa_json.keys()) == {'@id', 'annotationValue', 'termAccession', 'termSource'}:
             collector.append(isa_json)
-        for i in isa_json.keys():
+        for i in six.iterkeys(isa_json):
             walk_and_get_annotations(isa_json[i], collector)
     elif isinstance(isa_json, list):
         for j in isa_json:
@@ -1125,13 +1125,13 @@ def check_measurement_technology_types(assay_json, configs):
 
 
 def list_process_sequences(process_sequence_json):
-    list_of_last_processes_in_sequence = [i for i in process_sequence_json if 'nextProcess' not in i.keys()]
+    list_of_last_processes_in_sequence = [i for i in process_sequence_json if 'nextProcess' not in i]
     for process in list_of_last_processes_in_sequence:  # build graphs backwards
         assay_graph = list()
         try:
             while True:
                 process_graph = list()
-                if 'outputs' in process.keys():
+                if 'outputs' in process:
                     outputs = process['outputs']
                     if len(outputs) > 0:
                         for output in outputs:
@@ -1139,7 +1139,7 @@ def list_process_sequences(process_sequence_json):
                             process_graph.append(output_id)
                 protocol_id = process['executesProtocol']['@id']
                 process_graph.append(protocol_id)
-                if 'inputs' in process.keys():
+                if 'inputs' in process:
                     inputs = process['inputs']
                     if len(inputs) > 0:
                         for input_ in inputs:
@@ -1157,7 +1157,7 @@ def list_process_sequences(process_sequence_json):
 def check_study_and_assay_graphs(study_json, configs):
 
     def check_assay_graph(process_sequence_json, config):
-        list_of_last_processes_in_sequence = [i for i in process_sequence_json if 'nextProcess' not in i.keys()]
+        list_of_last_processes_in_sequence = [i for i in process_sequence_json if 'nextProcess' not in i]
         logger.info("Checking against assay protocol sequence configuration {}".format(config['description']))
         config_protocol_sequence = [i['protocol'] for i in config['protocols']]
         for process in list_of_last_processes_in_sequence:  # build graphs backwards
@@ -1165,7 +1165,7 @@ def check_study_and_assay_graphs(study_json, configs):
             try:
                 while True:
                     process_graph = list()
-                    if 'outputs' in process.keys():
+                    if 'outputs' in process:
                         outputs = process['outputs']
                         if len(outputs) > 0:
                             for output in outputs:
@@ -1173,7 +1173,7 @@ def check_study_and_assay_graphs(study_json, configs):
                                 process_graph.append(output_id)
                     protocol_id = protocols_and_types[process['executesProtocol']['@id']]
                     process_graph.append(protocol_id)
-                    if 'inputs' in process.keys():
+                    if 'inputs' in process:
                         inputs = process['inputs']
                         if len(inputs) > 0:
                             for input_ in inputs:

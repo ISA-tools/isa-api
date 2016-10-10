@@ -3,6 +3,7 @@ import pandas as pd
 from pandas.util.testing import assert_frame_equal
 from isatools.isatab import read_investigation_file
 import os
+import six
 
 _data_dir = os.path.join(os.path.dirname(__file__), 'data')
 
@@ -48,7 +49,7 @@ def assert_tab_content_equal(fp_x, fp_y):
         df_dict_x = read_investigation_file(fp_x)
         df_dict_y = read_investigation_file(fp_y)
         eq = True
-        for k in df_dict_x.keys():
+        for k in six.iterkeys(df_dict_x):
             dfx = df_dict_x[k]
             dfy = df_dict_y[k]
             if not isinstance(dfx, list):
@@ -147,7 +148,7 @@ def assert_tab_content_equal(fp_x, fp_y):
 
 def sortlistsj(J):
     if isinstance(J, dict):
-        for k in J.keys():
+        for k in six.iterkeys(J):
             sortlistsj(J[k])
     elif isinstance(J, list):
         for o in J:
