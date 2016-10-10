@@ -90,7 +90,7 @@ class TestValidateIsaJson(unittest.TestCase):
 
     def test_validate_isajson_material_link(self):
         """Tests against 1005"""
-        err = re.compile("\[u'#material/1'\] not found")
+        err = re.compile("\[u?'#material/1'\] not found")
         log_msg_stream = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'material_link.json')))
         if err.search(log_msg_stream.getvalue()) is not None:#"['#material/1'] not found" in log_msg_stream.getvalue():
             self.fail(
