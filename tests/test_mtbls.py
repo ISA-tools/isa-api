@@ -1,8 +1,13 @@
 # coding: utf-8
 import unittest
-from mock import patch, mock_open
-from isatools.io import mtbls as MTBLS
 import shutil
+
+try:
+    from unittest.mock import patch, mock_open
+except ImportError:
+    from mock import patch, mock_open
+
+from isatools.io import mtbls as MTBLS
 
 
 class TestMtblsIO(unittest.TestCase):
