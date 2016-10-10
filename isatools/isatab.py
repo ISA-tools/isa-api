@@ -444,7 +444,7 @@ def _set_charac_cols(prefix, characteristics, cols, col_map):
         obj_charac_key = prefix + '_char[' + c.category.name + ']'
         cols.append(obj_charac_key)
         col_map[obj_charac_key] = _charac_label(c.category.name)
-        if isinstance(c.value, int) or isinstance(c.value, float):
+        if isinstance(c.value, (int, float)):
             cols.extend((obj_charac_key + KEY_POSTFIX_UNIT,
                          obj_charac_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE,
                          obj_charac_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMACCESSION))
@@ -462,7 +462,7 @@ def _set_charac_vals(prefix, characteristics, df, i):
     for c in sorted(characteristics, key=lambda x: id(x.category)):
         obj_charac_key = prefix + '_char[' + c.category.name + ']'
         df.loc[i, obj_charac_key] = c.value
-        if isinstance(c.value, int) or isinstance(c.value, float):
+        if isinstance(c.value, (int, float)):
             df.loc[i, obj_charac_key + KEY_POSTFIX_UNIT] = c.unit.name
             df.loc[i, obj_charac_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE] = c.unit.term_source.name
             df.loc[i, obj_charac_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMACCESSION] = c.unit.term_accession
@@ -477,7 +477,7 @@ def _set_factor_value_cols(prefix, factor_values, cols, col_map):
         obj_fv_key = prefix + '_fv[' + fv.factor_name.name + ']'
         cols.append(obj_fv_key)
         col_map[obj_fv_key] = _fv_label(fv.factor_name.name)
-        if isinstance(fv.value, int) or isinstance(fv.value, float):
+        if isinstance(fv.value, (int, float)):
             cols.extend((obj_fv_key + KEY_POSTFIX_UNIT,
                          obj_fv_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE,
                          obj_fv_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMACCESSION))
@@ -495,7 +495,7 @@ def _set_factor_value_vals(prefix, factor_values, df, i):
     for fv in sorted(factor_values, key=lambda x: id(x.factor_name)):
         obj_fv_key = prefix + '_fv[' + fv.factor_name.name + ']'
         df.loc[i, obj_fv_key] = fv.value
-        if isinstance(fv.value, int) or isinstance(fv.value, float):
+        if isinstance(fv.value, (int, float)):
             df.loc[i, obj_fv_key + KEY_POSTFIX_UNIT] = fv.unit.name
             df.loc[i, obj_fv_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE] = fv.unit.term_source.name
             df.loc[i, obj_fv_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMACCESSION] = fv.unit.term_accession
@@ -525,7 +525,7 @@ def _set_protocol_cols(protrefcount, prottypes, process, cols, col_map):
         col_map[obj_process_key + KEY_POSTFIX_PERFORMER] = LABEL_PERFORMER
     for pv in reversed(sorted(process.parameter_values, key=lambda x: x.category.parameter_name.name)):
         obj_process_pv_key = '_pv[' + pv.category.parameter_name.name + ']'
-        if isinstance(pv.value, int) or isinstance(pv.value, float):
+        if isinstance(pv.value, (int, float)):
             cols.extend((obj_process_key + obj_process_pv_key,
                          obj_process_key + obj_process_pv_key + KEY_POSTFIX_UNIT,
                          obj_process_key + obj_process_pv_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE,
@@ -611,7 +611,7 @@ def write_assay_table_files(inv_obj, output_dir):
                             cols.append('protocol[' + str(protrefcount) + ']_performer')
                             col_map['protocol[' + str(protrefcount) + ']_performer'] = 'Performer'
                         for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.name)):
-                            if isinstance(pv.value, int) or isinstance(pv.value, float):
+                            if isinstance(pv.value, (int, float)):
                                 cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']',
                                              'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit',
                                              'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource',
@@ -706,7 +706,7 @@ def write_assay_table_files(inv_obj, output_dir):
                             if node.performer is not None:
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_performer'] = node.performer
                             for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.name)):
-                                if isinstance(pv.value, int) or isinstance(pv.value, float):
+                                if isinstance(pv.value, (int, float)):
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit'] = pv.unit.name
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource'] = pv.unit.term_source.name
@@ -833,7 +833,7 @@ def write_study_table_files(inv_obj, output_dir):
                     cols.append('protocol[' + str(protrefcount) + ']_performer')
                     col_map['protocol[' + str(protrefcount) + ']_performer'] = 'Performer'
                 for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.name)):
-                    if isinstance(pv.value, int) or isinstance(pv.value, float):
+                    if isinstance(pv.value, (int, float)):
                         cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']',
                                      'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit',
                                      'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource',
@@ -884,7 +884,7 @@ def write_study_table_files(inv_obj, output_dir):
                     if node.performer is not None:
                         df.loc[i, 'protocol[' + str(protrefcount) + ']_performer'] = node.performer
                     for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.name)):
-                        if isinstance(pv.value, int) or isinstance(pv.value, float):
+                        if isinstance(pv.value, (int, float)):
                             df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
                             df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit'] = pv.unit.name
                             df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource'] = pv.unit.term_source.name

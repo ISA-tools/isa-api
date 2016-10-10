@@ -635,7 +635,7 @@ def batch_create_materials(material=None, n=1):
 
     """
     material_list = list()
-    if isinstance(material, Source) or isinstance(material, Sample) or isinstance(material, Material):
+    if isinstance(material, (Source, Sample, Material)):
         from copy import deepcopy
         for x in six.moves.range(n):
             new_obj = deepcopy(material)
@@ -684,7 +684,7 @@ def batch_create_assays(*args, **kwargs):
     for x in six.moves.range(n):
         for arg in args:
             if isinstance(arg, list) and len(arg) > 0:
-                if isinstance(arg[0], Sample) or isinstance(arg[0], Material):
+                if isinstance(arg[0], (Sample, Material)):
                     if materialA is None:
                         materialA = deepcopy(arg)
                         y = 0
@@ -703,7 +703,7 @@ def batch_create_assays(*args, **kwargs):
                     for p in process:
                         p.name = p.name + '-' + str(x) + '-' + str(y)
                         y += 1
-            if isinstance(arg, Sample) or isinstance(arg, Material):
+            if isinstance(arg, (Sample, Material)):
                 if materialA is None:
                     materialA = deepcopy(arg)
                     materialA.name = materialA.name + '-' + str(x)

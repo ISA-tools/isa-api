@@ -286,7 +286,7 @@ def load(fp):
                             term_accession=characteristic_json['value']['termAccession'])
                     except KeyError:
                         raise IOError("Can't create value as annotation")
-                elif isinstance(value, int) or isinstance(value, float):
+                elif isinstance(value, (int, float)):
                     try:
                         unit = units_dict[characteristic_json['unit']['@id']]
                     except KeyError:
@@ -317,7 +317,7 @@ def load(fp):
                             term_accession=characteristic_json['value']['termAccession'])
                     except KeyError:
                         raise IOError("Can't create value as annotation")
-                elif isinstance(value, int) or isinstance(value, float):
+                elif isinstance(value, (int, float)):
                     try:
                         unit = units_dict[characteristic_json['unit']['@id']]
                     except KeyError:
@@ -370,7 +370,7 @@ def load(fp):
             except KeyError:
                 pass
             for parameter_value_json in study_process_json['parameterValues']:
-                if isinstance(parameter_value_json['value'], int) or isinstance(parameter_value_json['value'], float):
+                if isinstance(parameter_value_json['value'], (int, float)):
                     parameter_value = ParameterValue(
                         category=parameters_dict[parameter_value_json['category']['@id']],
                         value=parameter_value_json['value'],
@@ -574,8 +574,7 @@ def load(fp):
                 for parameter_value_json in assay_process_json['parameterValues']:
                     if parameter_value_json['category']['@id'] == '#parameter/Array_Design_REF':  # Special case
                         process.array_design_ref = parameter_value_json['value']
-                    elif isinstance(parameter_value_json['value'], int) or \
-                            isinstance(parameter_value_json['value'], float):
+                    elif isinstance(parameter_value_json['value'], (int, float)):
                         parameter_value = ParameterValue(
                             category=parameters_dict[parameter_value_json['category']['@id']],
                             value=parameter_value_json['value'],
