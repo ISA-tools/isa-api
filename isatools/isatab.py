@@ -2154,8 +2154,7 @@ def check_protocol_fields(table, cfg, proto_map):
             result = False
     if result:
         field_headers = [k for k in table.columns if
-                         k.lower().endswith(' name') or k.lower().endswith(' data file') or k.lower().endswith(
-                             ' data matrix file')]
+                         k.lower().endswith((' name', ' data file', ' data matrix file'))]
         protos = [k for k in table.columns if k.lower() == 'protocol ref']
 
         try: last_proto_indx = table.columns.get_loc(protos[-1])

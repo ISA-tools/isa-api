@@ -128,11 +128,11 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
     for acc_number in formatted_sra_acc_numbers:
         try:
 
-            if acc_number.startswith('SRA') or acc_number.startswith('ERA'):
+            if acc_number.startswith(('SRA', 'ERA')):
                 res = subprocess.call(['java', '-jar', saxon_jar_path, INPUT_FILE, STUDY_XSL_FILE,
                                        'acc-number='+acc_number, 'outputdir='+destination_dir])
 
-            elif acc_number.startswith('SRP') or acc_number.startswith('ERP'):
+            elif acc_number.startswith(('SRP', 'ERP')):
                 res = subprocess.call(['java', '-jar', saxon_jar_path, INPUT_FILE, SUBMISSION_XSL_FILE,
                                  'acc-number='+acc_number, 'outputdir='+destination_dir])
 
