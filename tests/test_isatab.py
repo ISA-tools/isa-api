@@ -1,12 +1,16 @@
 # coding: utf-8
 import unittest
 import os
+import sys
 import shutil
 from tests.utils import assert_tab_content_equal
 from isatools.model.v1 import *
 from tests import utils
 import tempfile
 from isatools import isatab
+
+from functools import partial
+open = partial(open, mode='rU') if sys.version_info[0]==2 else partial(open, mode='r')
 
 #  Manually testing object model to write to isatab, study file-out only to check if model and writer function correctly
 #  Currently only tests source-split and sample pooling, at study level
@@ -171,3 +175,40 @@ class TestIsaTab(unittest.TestCase):
         self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_pool.txt')),
                                                  open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',
                                                                    's_TEST-Template3-Splitting.txt'))))
+
+    def test_isatab_load_utf8_unix_investigation(self):
+        """Load investigation encoded in utf-8 with Unix endlines"""
+        test_case = "TEST-ISA-utf8-unix"
+        with open(os.path.join(self._tab_data_dir, test_case, "i_investigation.txt")) as i:
+            try:
+                isatab.load2(i)
+            except BaseException as e:
+                self.fail("Error found when loading ISA TAB: {}".format(e))
+
+    def test_isatab_load_utf8_mac_investigation(self):
+        """Load investigation encoded in utf-8 with Mac endlines"""
+        test_case = "TEST-ISA-utf8-mac"
+        with open(os.path.join(self._tab_data_dir, test_case, "i_investigation.txt")) as i:
+            try:
+                isatab.load2(i)
+            except BaseException as e:
+                self.fail("Error found when loading ISA TAB: {}".format(e))
+
+    def test_isatab_load_utf8_dos_investigation(self):
+        """Load investigation encoded in utf-8 with DOS/Windows endlines"""
+        test_case = "TEST-ISA-utf8-dos"
+        with open(os.path.join(self._tab_data_dir, test_case, "i_investigation.txt")) as i:
+            try:
+                isatab.load2(i)
+            except BaseException as e:
+                self.fail("Error found when loading ISA TAB: {}".format(e))
+
+    def test_isatab_unexisting_directory(self):
+        #try:
+        with self.assertRaises(IOError):
+            isatab.validate("/unexisting/directory", "/fake/config/dir")
+
+        with self.assertRaises(SystemError):
+            with open(os.path.join(self._tab_data_dir, "MTBLS1", "i_investigation.txt")) as i:
+                isatab.validate2(i, "/dir/without/config")
+
