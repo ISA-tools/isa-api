@@ -112,6 +112,8 @@ def step_impl(context):
     expect(context.isa_adapter.token).to.equal(AUTH_TOKEN)
 
 
+
+
 @step('a file object named "{remote_source}" in the remote repository "{repo_name}" owned by "{owner_name}"')
 def step_impl(context, remote_source, repo_name, owner_name):
     """
@@ -143,7 +145,7 @@ def step_impl(context, destination_dir):
     # set as a destination path a subfolder of 'features' where all the output will be collected
     destination_path = os.path.join(os.path.dirname(__file__), '..', 'test_outputs', destination_dir)
     context.destination_path = os.path.abspath(destination_path)
-    print(context.destination_path)
+    #print(context.destination_path)
 
 
 @when("the file object is a directory")
@@ -183,6 +185,7 @@ def step_impl(context):
     expect(os.path.isdir(out_dir)).to.be.true
     # expect each item in the directory to have been saved as a file
     [expect(os.path.isfile(os.path.join(out_dir, item['name']))).to.be.true for item in context.items_in_dir]
+
 
 
 @step("it should return a binary stream with the zipped content of the directory")
@@ -236,6 +239,7 @@ def step_impl(context):
 
     expect(context.res).to.be.true
     expect(httpretty.has_request()).to.be.true
+
 
 
 @then("it should download it as it is")
@@ -341,13 +345,18 @@ def step_impl(context):
     # get the raw zipped file
     with open(fixture_file_path_raw) as xml_file:
         context.xml_text = xml_file.read()
+
+        try: context.xml_text = context.xml_text.decode("utf-8")
+        except AttributeError: pass
+
         httpretty.register_uri(httpretty.GET, download_url, body=context.xml_text, content_type='text/plain')
         context.xml = etree.parse(StringIO(context.xml_text))
+
+
 
     branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
     context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
                                                owner=context.owner_name, repository=context.repo_name, ref=branch)
-
     expect(httpretty.has_request()).to.be.true
     expect(httpretty.last_request().method).to.equal('GET')
     branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
@@ -360,18 +369,25 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
+
     out_file_path = os.path.join(context.destination_path, context.source_path.split('/')[-1])
     # written_xml_config_content = etree.parse(out_file)
     # expect(set(written_xml_config_content.getroot().itertext()))\
     #    .to.equal(set(context.config_xml_content.getroot().itertext()))
     with open(out_file_path) as xml_file:
         written_xml_text = xml_file.read()
+
+    try: written_xml_text = written_xml_text.decode('utf-8')
+    except AttributeError: pass
+
     # test equality of input and output
     expect(written_xml_text).to.equal(context.xml_text)
     # test that the stored output is valid XML
     # expect(etree.parse(StringIO(written_xml_text))).to_not.throw(etree.XMLSyntaxError)
     xml = etree.parse(StringIO(written_xml_text))
     expect(etree.iselement(xml.getroot())).to.be.true
+
+
 
 
 @step("it should return it as an XML object")
@@ -396,7 +412,7 @@ def step_impl(context):
                                  context.source_path])
     fixture_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures', fixture_file_name))
 
-    print('Encoded file URL: ', encoded_file_url)
+    #print('Encoded file URL: ', encoded_file_url)
 
     with open(fixture_file_path) as json_file:
         context.text_encoded = json.load(json_file)
