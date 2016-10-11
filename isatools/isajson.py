@@ -1048,35 +1048,6 @@ def check_term_accession_used_no_source_ref(isa_json):
                        .format(terms_using_accession_no_source_ref))
 
 
-def print_graph(study_or_assay):
-    print(study_or_assay.filename)
-    G = study_or_assay.graph
-    from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
-    start_nodes, end_nodes = _get_start_end_nodes(G)
-    for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
-        type_seq_str = ""
-        for node in path:
-            if isinstance(node, Source):
-                type_seq_str += '(' + node.name + ":Source)->"
-            elif isinstance(node, Sample):
-                type_seq_str += '(' + node.name + ":Sample)->"
-            elif isinstance(node, Material):
-                if '#material/extract' in node.id:
-                    type_seq_str += '(' + node.name + ":Extract)->"
-                else:
-                    type_seq_str += '(' + node.name + ":Material)->"
-            elif isinstance(node, Process):
-                protocol_type = node.executes_protocol.protocol_type.name
-                type_seq_str += "({})->".format(protocol_type)
-                for data in [node for node in node.outputs if isinstance(node, DataFile)]:
-                    type_seq_str += '(' + data.filename + ":DataFile)->"
-            else:
-                type_seq_str += "({})->".format(type(node))
-        if type_seq_str.endswith('->'):
-            type_seq_str = type_seq_str[:len(type_seq_str) - 2]
-        print(type_seq_str)
-
-
 def load_config(config_dir):
     import json
     configs = dict()
@@ -1105,36 +1076,6 @@ def check_measurement_technology_types(assay_json, configs):
     except KeyError:
         logger.error("(E) Could not load configuration for measurement type '{}' and technology type '{}'"
                      .format(measurement_type, technology_type))
-
-
-def list_process_sequences(process_sequence_json):
-    list_of_last_processes_in_sequence = [i for i in process_sequence_json if 'nextProcess' not in i.keys()]
-    for process in list_of_last_processes_in_sequence:  # build graphs backwards
-        assay_graph = list()
-        try:
-            while True:
-                process_graph = list()
-                if 'outputs' in process.keys():
-                    outputs = process['outputs']
-                    if len(outputs) > 0:
-                        for output in outputs:
-                            output_id = output['@id']
-                            process_graph.append(output_id)
-                protocol_id = process['executesProtocol']['@id']
-                process_graph.append(protocol_id)
-                if 'inputs' in process.keys():
-                    inputs = process['inputs']
-                    if len(inputs) > 0:
-                        for input_ in inputs:
-                            input_id = input_['@id']
-                            process_graph.append(input_id)
-                process_graph.reverse()
-                assay_graph.append(process_graph)
-                process = [i for i in process_sequence_json if i['@id'] == process['previousProcess']['@id']][0]
-        except KeyError:
-            pass
-        assay_graph.reverse()
-        yield assay_graph
 
 
 def check_study_and_assay_graphs(study_json, configs):
