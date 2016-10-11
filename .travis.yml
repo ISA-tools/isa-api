@@ -3,7 +3,7 @@ python:
 - '3.4'
 - '3.5'
 install:
-- pip install --upgrade pip && pip install -r requirements.txt
+- pip install --upgrade pip && pip install -r requirements-tests.txt
 script:
 - coverage run --source=isatools setup.py test
 - behave --no-capture --no-capture-stderr --format=progress features/isa-file-handler.feature
