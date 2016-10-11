@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from abc import ABCMeta, abstractmethod
 from six.moves.urllib.parse import urljoin
 from lxml import etree
@@ -10,6 +12,8 @@ import os
 import base64
 import pdb
 import six
+
+from .utils import makedirs
 
 try:
     import pathlib
@@ -216,7 +220,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                         validate_json_against_schema(res_payload, INVESTIGATION_SCHEMA_FILE)
 
                     # save it to disk
-                    os.makedirs(destination, exist_ok=True)
+                    makedirs(destination, exist_ok=True)
                     with open(os.path.join(destination, source.split('/')[-1]), 'w+') as out_file:
                         json.dump(res_payload, out_file)
                     return True
@@ -231,7 +235,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                     etree.fromstring(res.text, xml_parser)
 
                     # if it is a valid XML save it to disk
-                    os.makedirs(destination, exist_ok=True)
+                    makedirs(destination, exist_ok=True)
                     with open(os.path.join(destination, source.split('/')[-1]), 'w+') as out_file:
                         out_file.write(res.text)
                     return True
@@ -267,16 +271,14 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         Raises:
             :raise requests.exceptions.HTTPException when the request to GitHub fails
         """
+
         get_content_frag = '/'.join([REPOS, owner, repository, CONTENTS, source])
-
         headers = {'Authorization': 'token %s' % self.token} if self.token else {}
-
         req_payload = {
             'ref': ref
         }
 
         r = requests.get(urljoin(GITHUB_API_BASE_URL, get_content_frag), headers=headers, params=req_payload)
-
         if r.status_code == requests.codes.ok:
             res_payload = json.loads(r.text)
 
@@ -295,7 +297,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             if write_to_file and ('content' in processed_payload or 'text' in processed_payload):
                 (out_data, modality) = (processed_payload['text'], 'w+') if 'text' in processed_payload \
                     else (processed_payload['content'], 'wb+')
-                os.makedirs(destination, exist_ok=True)
+                makedirs(destination, exist_ok=True)
                 with open(os.path.join(destination, source.split('/')[-1]), modality) as out_file:
                     out_file.write(out_data)
 
@@ -338,14 +340,17 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                 if res.status_code == requests.codes.ok and res.headers['Content-Type'].split(";")[0] == 'text/plain':
 
                     # zip the text payload
-                    zip_file.writestr(os.path.join(directory, file["name"]), res.text)
+                    try: zip_file.writestr(os.path.join(directory, file["name"]), res.text)
+                    except TypeError: zip_file.writestr(os.path.join(directory, file["name"]), res.text.encode('utf-8'))
+
 
                     # write to a target dir
                     if write_to_directory:
                         dir_path = os.path.join(destination, directory)
-                        os.makedirs(dir_path, exist_ok=True)
+                        makedirs(dir_path, exist_ok=True)
                         with open(os.path.join(dir_path, file_name), 'w+') as out_file:
                             out_file.write(res.text)
+
 
         buf.seek(0)
         return buf
