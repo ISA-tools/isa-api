@@ -60,19 +60,23 @@
                 <xsl:sort select="current-grouping-key()"/>
                 <xsl:variable name="lib-strategy" select="current-grouping-key()"/>
                 <xsl:for-each-group select="current-group()" group-by="@library-source">
-                    <xsl:sort select="current-grouping-key()"/>
-                    <experiment library-strategy="{ $lib-strategy }" library-source="{ current-grouping-key() }" acc-number="{ @acc-number }">
-                        <xsl:variable name="exp" select="document(concat('http://www.ebi.ac.uk/ena/data/view/', @acc-number, '&amp;display=xml'))"/>
-                        <xsl:for-each select="current-group()">
-                            <exp>
-                                <xsl:attribute name="accession">
-                                    <xsl:value-of select="$exp/ROOT/EXPERIMENT[@accession = current()/@accession]/@accession"/>
-                                </xsl:attribute>
-                            </exp>
-                        </xsl:for-each>
-                    </experiment>                        
+                    <xsl:variable name="lib-source" select="current-grouping-key()"/>
+                    <xsl:for-each-group select="current-group()" group-by="@acc-number">
+                        <xsl:sort select="current-grouping-key()"/>
+                        <experiment library-strategy="{ $lib-strategy }" library-source="{ $lib-source }" acc-number="{ @acc-number }">
+                            <xsl:variable name="exp" select="document(concat('http://www.ebi.ac.uk/ena/data/view/', @acc-number, '&amp;display=xml'))"/>
+                            <xsl:for-each select="current-group()">
+                                <exp>
+                                    <xsl:attribute name="accession">
+                                        <xsl:value-of select="$exp/ROOT/EXPERIMENT[@accession = current()/@accession]/@accession"/>
+                                    </xsl:attribute>
+                                </exp>                                                    
+                            </xsl:for-each>
+                        </experiment>
+                    </xsl:for-each-group>>
                 </xsl:for-each-group>
             </xsl:for-each-group>
+            <xsl:value-of select="count(experiment)"/>
         </experiments>
     </xsl:template>
     

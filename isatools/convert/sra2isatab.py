@@ -1,7 +1,7 @@
 import subprocess
 import os
 import re
-from io import BytesIO, StringIO
+from io import BytesIO
 from zipfile import ZipFile
 from shutil import rmtree
 import logging
@@ -137,16 +137,31 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
 
             logger.info('Subprocess Saxon exited with code: %d', res)
 
+            # post-process concatenation of a_ files written out
+            output_folder = os.path.join(dir_name, acc_number)
+            a_files = [f for f in os.listdir(output_folder) if f.startswith('a_')]
+            if len(a_files) > 1:
+                import pandas as pd
+                df_list = list()
+                for a_file in a_files:
+                    df = pd.DataFrame()
+                    a_path = os.path.join(output_folder, a_file)
+                    df_list.append(df.from_csv(a_path, sep='\t'))
+                    os.remove(a_path)
+                merged_a_file = pd.concat(df_list)
+                merged_a_file.to_csv(os.path.join(dir_name, acc_number, 'a_{}.txt'.format(acc_number)), sep='\t')
+
+            with ZipFile(buffer, 'w') as zip_file:
+                # use relative dir_name to avoid absolute path on file names
+                zipdir(dir_name, zip_file)
+                print(zip_file.namelist())
+
         except subprocess.CalledProcessError as err:
             logger.error("isatools.convert.sra2isatab: CalledProcessError caught ", err.returncode)
 
-    with ZipFile(buffer, 'w') as zip_file:
-        # use relative dir_name to avoid absolute path on file names
-        zipdir(dir_name, zip_file)
-        print(zip_file.namelist())
 
     # clean up the target directory after the ZIP file has been closed
-    rmtree(destination_dir)
+    # rmtree(destination_dir)
 
     buffer.seek(0)
     return buffer
