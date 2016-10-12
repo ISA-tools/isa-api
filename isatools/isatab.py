@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 def validate(isatab_dir, config_dir):
     """ Validate an ISA-Tab archive using the Java validator that is embedded in the Python ISA-API
     :param isatab_dir: Path to ISA-Tab files
-    :param config_dir: Path to configuration XML files
+    :param config_dir: Path to configuration XML fileshttps://download.sublimetext.com/Sublime%20Text%202.0.2%20x64.tar.bz
     """
     if not os.path.exists(isatab_dir):
         raise IOError("isatab_dir " + isatab_dir + " does not exist")
@@ -1801,7 +1801,7 @@ def load_config(config_dir):
     configs = None
     try:
         configs = isatab_configurator.load(config_dir)
-    except IOError:
+    except (IOError, OSError):
         logger.error("(E) IOError on trying to load from {}".format(config_dir))
     if configs is None:
         logger.error("(E) Could not load configurations from {}".format(config_dir))
