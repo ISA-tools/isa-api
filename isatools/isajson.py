@@ -11,6 +11,17 @@ logger = logging.getLogger(__name__)
 
 def load(fp):
 
+    def get_comments(j):
+        comments = None
+        if 'comments' in j.keys():
+            comments = list()
+            for comment_json in j['comments']:
+                name = comment_json['name']
+                value = comment_json['value']
+                comment = Comment(name, value)
+                comments.append(comment)
+        return comments
+
     def _build_assay_graph(process_sequence=list()):
         G = nx.DiGraph()
         for process in process_sequence:
@@ -34,22 +45,17 @@ def load(fp):
         else:
             return None
 
-    isajson = json.load(fp)
+    investigation_json = json.load(fp)
     investigation = Investigation(
-        identifier=isajson['identifier'],
-        title=isajson['title'],
-        description=isajson['description'],
-        submission_date=isajson['submissionDate'],
-        public_release_date=isajson['publicReleaseDate']
+        identifier=investigation_json['identifier'],
+        title=investigation_json['title'],
+        description=investigation_json['description'],
+        submission_date=investigation_json['submissionDate'],
+        public_release_date=investigation_json['publicReleaseDate']
     )
-    for comment_json in isajson['comments']:
-        comment = Comment(
-            name=comment_json['name'],
-            value=comment_json['value'],
-        )
-        investigation.comments.append(comment)
+    investigation.comments = get_comments(investigation_json)
     term_source_dict = {'': None}
-    for ontologySourceReference_json in isajson['ontologySourceReferences']:
+    for ontologySourceReference_json in investigation_json['ontologySourceReferences']:
         ontology_source_reference = OntologySourceReference(
             name=ontologySourceReference_json['name'],
             file=ontologySourceReference_json['file'],
@@ -58,7 +64,7 @@ def load(fp):
         )
         term_source_dict[ontology_source_reference.name] = ontology_source_reference
         investigation.ontology_source_references.append(ontology_source_reference)
-    for publication_json in isajson['publications']:
+    for publication_json in investigation_json['publications']:
         publication = Publication(
             pubmed_id=publication_json['pubMedID'],
             doi=publication_json['doi'],
@@ -71,16 +77,11 @@ def load(fp):
             )
         )
         try:
-            for comment_json in publication_json['comments']:
-                comment = Comment(
-                    name=comment_json['name'],
-                    value=comment_json['value']
-                )
-                publication.comments.append(comment)
+            publication.comments = get_comments(publication_json)
         except KeyError:
             pass
         investigation.publications.append(publication)
-    for person_json in isajson['people']:
+    for person_json in investigation_json['people']:
         person = Person(
             last_name=person_json['lastName'],
             first_name=person_json['firstName'],
@@ -98,12 +99,7 @@ def load(fp):
                 term_source=term_source_dict[role_json['termSource']]
             )
             person.roles.append(role)
-        for comment_json in person_json['comments']:
-            comment = Comment(
-                name=comment_json['name'],
-                value=comment_json['value'],
-            )
-            person.comments.append(comment)
+        person.comments = get_comments(person_json)
         investigation.contacts.append(person)
     samples_dict = dict()
     sources_dict = dict()
@@ -115,7 +111,7 @@ def load(fp):
     process_dict = dict()
 
     # populate assay characteristicCategories first
-    for study_json in isajson['studies']:
+    for study_json in investigation_json['studies']:
         for assay_json in study_json['assays']:
             for assay_characteristics_category_json in assay_json['characteristicCategories']:
                 characteristic_category = OntologyAnnotation(
@@ -126,7 +122,7 @@ def load(fp):
                 )
                 # study.characteristic_categories.append(characteristic_category)
                 categories_dict[characteristic_category.id] = characteristic_category
-    for study_json in isajson['studies']:
+    for study_json in investigation_json['studies']:
         study = Study(
             identifier=study_json['identifier'],
             title=study_json['title'],
@@ -136,12 +132,7 @@ def load(fp):
             filename=study_json['filename']
         )
         try:
-            for comment_json in study_json['comments']:
-                comment = Comment(
-                    name=comment_json['name'],
-                    value=comment_json['value'],
-                )
-                study.comments.append(comment)
+            study.comments = get_comments(study_json)
         except KeyError:
             pass
         for study_characteristics_category_json in study_json['characteristicCategories']:
@@ -172,12 +163,7 @@ def load(fp):
                 )
             )
             try:
-                for comment_json in study_publication_json['comments']:
-                    comment = Comment(
-                        name=comment_json['name'],
-                        value=comment_json['value']
-                    )
-                    study_publication.comments.append(comment)
+                study_publication.comments = get_comments(study_publication_json)
             except KeyError:
                 pass
             study.publications.append(study_publication)
@@ -200,12 +186,7 @@ def load(fp):
                 )
                 study_person.roles.append(role)
             try:
-                for comment_json in study_person_json['comments']:
-                    comment = Comment(
-                        name=comment_json['name'],
-                        value=comment_json['value'],
-                    )
-                    study_person.comments.append(comment)
+                study_person.comments = get_comments(study_person_json)
             except KeyError:
                 pass
             study.contacts.append(study_person)
@@ -348,12 +329,7 @@ def load(fp):
                 executes_protocol=protocols_dict[study_process_json['executesProtocol']['@id']],
             )
             try:
-                for comment_json in study_process_json['comments']:
-                    comment = Comment(
-                        name=comment_json['name'],
-                        value=comment_json['value'],
-                    )
-                    process.comments.append(comment)
+                process.comments = get_comments(study_process_json)
             except KeyError:
                 pass
             try:
@@ -455,12 +431,7 @@ def load(fp):
                     label=data_json['type'],
                 )
                 try:
-                    for comment_json in data_json['comments']:
-                        comment = Comment(
-                            name=comment_json['name'],
-                            value=comment_json['value'],
-                        )
-                        data_file.comments.append(comment)
+                    data_file.comments = get_comments(data_json)
                 except KeyError:
                     pass
                 data_dict[data_file.id] = data_file
@@ -507,12 +478,7 @@ def load(fp):
                     executes_protocol=protocols_dict[assay_process_json['executesProtocol']['@id']]
                 )
                 try:
-                    for comment_json in assay_process_json['comments']:
-                        comment = Comment(
-                            name=comment_json['name'],
-                            value=comment_json['value'],
-                        )
-                        process.comments.append(comment)
+                    process.comments = get_comments(assay_process_json)
                 except KeyError:
                     pass
                 # additional properties, currently hard-coded special cases

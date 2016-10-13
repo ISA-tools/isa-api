@@ -1,3 +1,19 @@
+# -*- coding: utf-8 -*-
+"""ISA Model 1.0 implementation in Python.
+
+This module implements the ISA Abstract Model 1.0 as Python classes, as
+specified in the `ISA Model and Serialization Specifications 1.0`_, and
+additional classes to support compatibility between ISA-Tab and ISA-JSON.
+
+Todo:
+    * Check consistency with published ISA Model
+    * Finish docstringing rest of the module
+    * Add constraints on attributes throughout, and test
+
+.. _ISA Model and Serialization Specifications 1.0: http://isa-specs.readthedocs.io/
+
+"""
+
 import networkx as nx
 
 
@@ -23,9 +39,11 @@ def _build_assay_graph(process_sequence=list()):
 class Comment(object):
     """A comment allows arbitrary annotation of all ISA classes
 
+    Comments are implemented in ISA-Tab and ISA-JSON formats.
+
     Attributes:
-        name: The name of the comment (as mapped to Comment[SomeName]) to give context to the comment field
-        value: A value for the corresponding comment, as a string encoded in some way
+        name: The name of the comment (as mapped to Comment[SomeName] in ISA-Tab) to give context to the comment field
+        value: A value for the corresponding comment, as a string or number
     """
     def __init__(self, name, value=None):
         self.name = name
@@ -66,10 +84,18 @@ class Commentable(object):
         comments: Comments associated with the implementing ISA class (all ISA classes)
     """
     def __init__(self, comments=None):
-        if comments is None:
-            self.comments = list()
+        self.comments = comments
+
+    @property
+    def comments(self):
+        return self.__comments
+
+    @comments.setter
+    def comments(self, comments):
+        if comments is not None and not isinstance(comments, list):
+            raise AttributeError("comments must be an instance of list or None")
         else:
-            self.comments = comments
+            self.__comments = comments
 
 
 class Investigation(Commentable):

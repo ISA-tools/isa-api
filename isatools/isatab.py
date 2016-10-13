@@ -99,8 +99,11 @@ def dump(isa_obj, output_path):
                                 prefix + ' Publication Status Term Accession Number',
                                 prefix + ' Publication Status Term Source REF']
         if len(publications) > 0:
-            for comment in publications[0].comments:
-                publications_df_cols.append('Comment[' + comment.name + ']')
+            try:
+                for comment in publications[0].comments:
+                    publications_df_cols.append('Comment[' + comment.name + ']')
+            except TypeError:
+                pass
         publications_df = pd.DataFrame(columns=tuple(publications_df_cols))
         for i, publication in enumerate(publications):
             publications_df_row = [
@@ -112,8 +115,11 @@ def dump(isa_obj, output_path):
                 publication.status.term_accession,
                 publication.status.term_source.name,
             ]
-            for comment in publication.comments:
-                publications_df_row.append(comment.value)
+            try:
+                for comment in publication.comments:
+                    publications_df_row.append(comment.value)
+            except TypeError:
+                pass
             publications_df.loc[i] = publications_df_row
         return publications_df.set_index(prefix +' PubMed ID').T
 
@@ -190,8 +196,9 @@ def dump(isa_obj, output_path):
                          'Study Submission Date',
                          'Study Public Release Date',
                          'Study File Name']
-        for comment in sorted(study.comments, key=lambda x: x.name):
-            study_df_cols.append('Comment[' + comment.name + ']')
+        if study.comments is not None:
+            for comment in sorted(study.comments, key=lambda x: x.name):
+                study_df_cols.append('Comment[' + comment.name + ']')
         study_df = pd.DataFrame(columns=tuple(study_df_cols))
         study_df_row = [
             study.identifier,
@@ -201,8 +208,9 @@ def dump(isa_obj, output_path):
             study.public_release_date,
             study.filename
         ]
-        for comment in sorted(study.comments, key=lambda x: x.name):
-            study_df_row.append(comment.value)
+        if study.comments is not None:
+            for comment in sorted(study.comments, key=lambda x: x.name):
+                study_df_row.append(comment.value)
         study_df.loc[0] = study_df_row
         study_df = study_df.set_index('Study Identifier').T
         fp.write('STUDY\n')
@@ -386,7 +394,8 @@ def _longest_path_and_attrs(G):
                     length += (len(n.characteristics))
                 elif isinstance(n, Process):
                     length += (len(n.additional_properties) + len([o for o in n.outputs if isinstance(o, DataFile)]))
-                length += len(n.comments)
+                if n.comments is not None:
+                    length += len(n.comments)
             if length > longest[0]:
                 longest = (length, path)
     return longest[1]
