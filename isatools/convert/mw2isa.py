@@ -1585,9 +1585,9 @@ try:
         print(element)
         if element["techtype"] == "mass spectrometry":
             print("itemA:", element["techtype"])
-            orefTT = OntologySourceReference(name="OBI", description="Ontology for Biomedical Investigation")
+            orefTT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
             oaTT = OntologyAnnotation(name="metabolite profiling", term_accession="", term_source=orefTT)
-            orefMT = OntologySourceReference(name="OBI", description="Ontology for Biomedical Investigation")
+            orefMT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
             oaMT = OntologyAnnotation(name="mass spectrometry", term_accession="", term_source=orefMT)
 
             this_assay_file = "a_" + str(studyid) + "_" + str(element["analysis_id"]) + ".txt"
@@ -1609,9 +1609,9 @@ try:
 
         elif element["techtype"] == "nmr spectroscopy":
             print("itemB:", element["techtype"])
-            orefTT = OntologySourceReference(name="OBI", description="Ontology for Biomedical Investigation")
+            orefTT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
             oaTT = OntologyAnnotation(name="metabolite profiling", term_accession="", term_source=orefTT)
-            orefMT = OntologySourceReference(name="OBI", description="Ontology for Biomedical Investigation")
+            orefMT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
             oaMT = OntologyAnnotation(name="nmr spectroscopy", term_accession="", term_source=orefMT)
             this_assay_file = "a_" + str(studyid) + "_" + str(element["analysis_id"]) + ".txt"
             print("this assay_file:", this_assay_file)
@@ -1756,7 +1756,7 @@ try:
     # Building Investigation Study Factor Section:
     factor_keys = study_factors.keys()
     for key in study_factors.keys():
-        oref = OntologySourceReference(name="OBI", description="Ontology for Biomedical Investigation")
+        oref = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
         oa = OntologyAnnotation(name=key, term_accession="", term_source=oref)
         study1.factors.append(StudyFactor(name=key, factor_type=oa))
 

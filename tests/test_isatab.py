@@ -22,14 +22,14 @@ class TestIsaTab(unittest.TestCase):
 
     def test_isatab_dump_source_sample_split(self):
         i = Investigation()
-        uberon = OntologySourceReference(name='UBERON',
-                                         description="Uber Anatomy Ontology",
-                                         version='216',
-                                         file='http://data.bioontology.org/ontologies/UBERON')
-        ncbitaxon = OntologySourceReference(name='NCBITAXON',
-                                            description="National Center for Biotechnology Information (NCBI) Organismal Classification",
-                                            version='2',
-                                            file='http://data.bioontology.org/ontologies/NCBITAXON')
+        uberon = OntologySource(name='UBERON',
+                                description="Uber Anatomy Ontology",
+                                version='216',
+                                file='http://data.bioontology.org/ontologies/UBERON')
+        ncbitaxon = OntologySource(name='NCBITAXON',
+                                   description="National Center for Biotechnology Information (NCBI) Organismal Classification",
+                                   version='2',
+                                   file='http://data.bioontology.org/ontologies/NCBITAXON')
         i.ontology_source_references.append(uberon)
         i.ontology_source_references.append(ncbitaxon)
 
@@ -98,8 +98,8 @@ class TestIsaTab(unittest.TestCase):
 
     def test_isatab_dump_source_sample_pool(self):
         i = Investigation()
-        uberon = OntologySourceReference(name='UBERON')
-        ncbitaxon = OntologySourceReference(name='NCBITAXON')
+        uberon = OntologySource(name='UBERON')
+        ncbitaxon = OntologySource(name='NCBITAXON')
         i.ontology_source_references.append(uberon)
         i.ontology_source_references.append(ncbitaxon)
 

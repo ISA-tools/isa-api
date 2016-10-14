@@ -56,7 +56,7 @@ def load(fp):
     investigation.comments = get_comments(investigation_json)
     term_source_dict = {'': None}
     for ontologySourceReference_json in investigation_json['ontologySourceReferences']:
-        ontology_source_reference = OntologySourceReference(
+        ontology_source_reference = OntologySource(
             name=ontologySourceReference_json['name'],
             file=ontologySourceReference_json['file'],
             version=ontologySourceReference_json['version'],

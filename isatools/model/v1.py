@@ -42,8 +42,8 @@ class Comment(object):
     Comments are implemented in ISA-Tab and ISA-JSON formats.
 
     Attributes:
-        name: The name of the comment (as mapped to Comment[SomeName] in ISA-Tab) to give context to the comment field
-        value: A value for the corresponding comment, as a string or number
+        name (str): The name of the comment (as mapped to Comment[SomeName] in ISA-Tab) to give context to the comment field
+        value (str, int, float, NoneType): A value for the corresponding comment, as a string or number
     """
     def __init__(self, name, value=None):
         self.name = name
@@ -81,7 +81,7 @@ class Commentable(object):
     """ An ISA Object is an abstract class to enable containment of Comments
 
     Attributes:
-        comments: Comments associated with the implementing ISA class (all ISA classes)
+        comments (list, NoneType): Comments associated with the implementing ISA class (all ISA classes)
     """
     def __init__(self, comments=None):
         self.comments = comments
@@ -146,22 +146,77 @@ class Investigation(Commentable):
             self.comments = list()
 
 
-class OntologySourceReference(Commentable):
-    """This annotation section is identical to that in the MAGE-TAB format.
+class OntologySource(Commentable):
+    """An OntologySource describes the resource from which the value of an OntologyAnnotation is derived from.
 
     Attributes:
-        name: The name of the source of a term; i.e. the source controlled vocabulary or ontology.
-        file: A file name or a URI of an official resource.
-        version: The version number of the Term Source to support terms tracking.
-        description: Use for disambiguating resources when homologous prefixes have been used.
+        name (str): The name of the source of a term; i.e. the source controlled vocabulary or ontology.
+        file (str, NoneType): A file name or a URI of an official resource.
+        version (str, NoneType): The version number of the Term Source to support terms tracking.
+        description (str, NoneType): A free text description of the resource.
     """
 
-    def __init__(self, name="", file="", version="", description="", comments=None):
+    def __init__(self, name, file=None, version=None, description=None, comments=None):
         super().__init__(comments)
         self.name = name
         self.file = file
         self.version = version
         self.description = description
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise AttributeError("OntologySource.name must be a str")
+        elif name.strip() == '':
+            raise AttributeError("OntologySource.name must not be empty")
+        else:
+            self.__name = name
+
+    @property
+    def file(self):
+        if self.__file is '':
+            return None
+        else:
+            return self.__file
+
+    @file.setter
+    def file(self, file):
+        if file is not None and not isinstance(file, str):
+            raise AttributeError("OntologySource.file must be a str or None")
+        else:
+            self.__file = file
+
+    @property
+    def version(self):
+        if self.__version is '':
+            return None
+        else:
+            return self.__version
+
+    @version.setter
+    def version(self, version):
+        if version is not None and not isinstance(version, str):
+            raise AttributeError("OntologySource.version must be a str or None")
+        else:
+            self.__version = version
+
+    @property
+    def description(self):
+        if self.__description is '':
+            return None
+        else:
+            return self.__description
+
+    @description.setter
+    def description(self, description):
+        if description is not None and not isinstance(description, str):
+            raise AttributeError("OntologySource.description must be a str or None")
+        else:
+            self.__description = description
 
 
 class OntologyAnnotation(Commentable):
@@ -177,10 +232,7 @@ class OntologyAnnotation(Commentable):
         super().__init__(comments)
         self.id = id_
         self.name = name
-        if term_source is None:
-            self.term_source = OntologySourceReference()
-        else:
-            self.term_source = term_source
+        self.term_source = term_source
         self.term_accession = term_accession
 
 
