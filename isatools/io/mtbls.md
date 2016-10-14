@@ -24,4 +24,4 @@ if 'gender' in factor_names:
 The slicer needs to produce:
 
 - A reduced ISA file after the slicing.
-- A Zip/TAR for the data files produced by the slicing.
+- The list of URLs for Raw data files/study files to be downloaded by another tool.
