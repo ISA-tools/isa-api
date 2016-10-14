@@ -1053,73 +1053,73 @@ try:
 
         if row[0].find('CH:INSTRUMENT_NAME') != -1:
             # chromatography_protocol = chromatography_protocol + " " + row[1]
-            chromatography_param_oa = OntologyAnnotation(name="chromatography instrument")
+            chromatography_param_oa = OntologyAnnotation(term="chromatography instrument")
             chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
             chromatography_protocol_params.append(chromatography_param)
 
         if row[0].find('CH:CHROMATOGRAPHY_TYPE') != -1:
             # protocol_parameters["chromatography"].append("chromatography type: "  + row[1])
-            chromatography_param_oa = OntologyAnnotation(name="chromatography type")
+            chromatography_param_oa = OntologyAnnotation(term="chromatography type")
             chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
             chromatography_protocol_params.append(chromatography_param)
 
         if row[0].find('CH:COLUMN_NAME') != -1:
             # protocol_parameters["chromatography"].append("chromatography column name: "  + row[1])
-            chromatography_param_oa = OntologyAnnotation(name="chromatography column")
+            chromatography_param_oa = OntologyAnnotation(term="chromatography column")
             chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
             chromatography_protocol_params.append(chromatography_param)
 
         if row[0].find('CH:COLUMN_TEMPERATURE') != -1:
             # protocol_parameters["chromatography"].append("chromatography temperature: "  + row[1])
-            chromatography_param_oa = OntologyAnnotation(name="chromatography column temperature")
+            chromatography_param_oa = OntologyAnnotation(term="chromatography column temperature")
             chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
             chromatography_protocol_params.append(chromatography_param)
 
         if row[0].find('CH:TRANSFERLINE_TEMPERATURE') != -1:
             # protocol_parameters["chromatography"].append("transferline temperature: "  + row[1])
-            chromatography_param_oa = OntologyAnnotation(name="transferline temperature")
+            chromatography_param_oa = OntologyAnnotation(term="transferline temperature")
             chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
             chromatography_protocol_params.append(chromatography_param)
 
         if row[0].find('CH:WASHING_BUFFER') != -1:
             # protocol_parameters["chromatography"].append("washing buffer: "  + row[1])
-            chromatography_param_oa = OntologyAnnotation(name="washing buffer")
+            chromatography_param_oa = OntologyAnnotation(term="washing buffer")
             chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
             chromatography_protocol_params.append(chromatography_param)
 
         if row[0].find('CH:SAMPLE_LOOP_SIZE') != -1:
             # protocol_parameters["chromatography"].append("sample loop size: "  + row[1])
-            chromatography_param_oa = OntologyAnnotation(name="sample loop size buffer")
+            chromatography_param_oa = OntologyAnnotation(term="sample loop size buffer")
             chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
             chromatography_protocol_params.append(chromatography_param)
 
         if row[0].find('CH:OVEN_TEMPERATURE') != -1:
             # protocol_parameters["chromatography"].append("oven temperature: "  + row[1])
-            chromatography_param_oa = OntologyAnnotation(name="oven temperature")
+            chromatography_param_oa = OntologyAnnotation(term="oven temperature")
             chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
             chromatography_protocol_params.append(chromatography_param)
 
         if row[0].find('CH:FLOW_RATE') != -1:
             # protocol_parameters["chromatography"].append("flow rate: "  + row[1])
-            chromatography_param_oa = OntologyAnnotation(name="flow rate")
+            chromatography_param_oa = OntologyAnnotation(term="flow rate")
             chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
             chromatography_protocol_params.append(chromatography_param)
 
         if row[0].find('CH:SOLVENT_A') != -1:
             # protocol_parameters["chromatography"].append("flow rate: "  + row[1])
-            chromatography_param_oa = OntologyAnnotation(name="solvent a")
+            chromatography_param_oa = OntologyAnnotation(term="solvent a")
             chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
             chromatography_protocol_params.append(chromatography_param)
 
         if row[0].find('CH:SOLVENT_B') != -1:
             # protocol_parameters["chromatography"].append("flow rate: "  + row[1])
-            chromatography_param_oa = OntologyAnnotation(name="solvent b")
+            chromatography_param_oa = OntologyAnnotation(term="solvent b")
             chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
             chromatography_protocol_params.append(chromatography_param)
 
         if row[0].find('CH:INJECTION_TEMPERATURE') != -1:
             # protocol_parameters["chromatography"].append("oven temperature: "  + row[1])
-            chromatography_param_oa = OntologyAnnotation(name="injection temperature")
+            chromatography_param_oa = OntologyAnnotation(term="injection temperature")
             chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
             chromatography_protocol_params.append(chromatography_param)
 
@@ -1129,247 +1129,247 @@ try:
 
         if row[0].find('MS:INSTRUMENT_NAME') != -1:
             # protocol_parameters["mass spectrometry"].append("mass spectrometry instrument: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="mass spectrometry instrument")
+            ms_param_oa = OntologyAnnotation(term="mass spectrometry instrument")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param)
 
         if row[0].find('MS:INSTRUMENT_TYPE') != -1:
             # protocol_parameters["mass spectrometry"].append("mass spectrometry type: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="mass spectrometry instrument type")
+            ms_param_oa = OntologyAnnotation(term="mass spectrometry instrument type")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param)
 
         if row[0].find('MS:MS_TYPE') != -1:
             # protocol_parameters["mass spectrometry"].append("inlet type: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="mass spectrometry type")
+            ms_param_oa = OntologyAnnotation(term="mass spectrometry type")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param)
 
         if row[0].find('MS:ION_SOURCE_TEMPERATURE') != -1:
             # protocol_parameters["mass spectrometry"].append("ion source temperature: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="ion source temperature")
+            ms_param_oa = OntologyAnnotation(term="ion source temperature")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param)
 
         if row[0].find('MS:ION_ENERGY') != -1:
             # protocol_parameters["mass spectrometry"].append("ion energy: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="ion energy")
+            ms_param_oa = OntologyAnnotation(term="ion energy")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param)
 
         if row[0].find('MS:ION_SPRAY_VOLTAGE') != -1:
             # protocol_parameters["mass spectrometry"].append("ion spray voltage: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="ion spray voltage")
+            ms_param_oa = OntologyAnnotation(term="ion spray voltage")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param)
 
         if row[0].find('MS:MASS_ACCURACY') != -1:
             # protocol_parameters["mass spectrometry"].append("mass accuracy: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="mass accuracy")
+            ms_param_oa = OntologyAnnotation(term="mass accuracy")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param)
 
         if row[0].find('MS:SOURCE_TEMPERATURE') != -1:
             # protocol_parameters["mass spectrometry"].append("source temperature: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="source temperature")
+            ms_param_oa = OntologyAnnotation(term="source temperature")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param)
 
         if row[0].find('MS:SCAN_RANGE_MOVERZ') != -1:
             # protocol_parameters["mass spectrometry"].append("scan range (m/z): "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="scan range (m/z)")
+            ms_param_oa = OntologyAnnotation(term="scan range (m/z)")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param)
 
         if row[0].find('MS:SCANNING_CYCLE') != -1:
             # protocol_parameters["mass spectrometry"].append("scanning cycle: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="scan range (m/z)")
+            ms_param_oa = OntologyAnnotation(term="scan range (m/z)")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param)
 
         if row[0].find('MS:SCANNING') != -1:
             # protocol_parameters["mass spectrometry"].append("scanning: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="scanning")
+            ms_param_oa = OntologyAnnotation(term="scanning")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:SCANNING_RANGE') != -1:
             # protocol_parameters["mass spectrometry"].append("scanning range: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="canning range")
+            ms_param_oa = OntologyAnnotation(term="canning range")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:CAPILLARY_TEMPERATURE') != -1:
             # protocol_parameters["mass spectrometry"].append("capillary temperature: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="capillary temperature")
+            ms_param_oa = OntologyAnnotation(term="capillary temperature")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:SKIMMER_VOLTAGE') != -1:
             # protocol_parameters["mass spectrometry"].append("skimmer voltage: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="skimmer voltage")
+            ms_param_oa = OntologyAnnotation(term="skimmer voltage")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:TUBE_LENS_VOLTAGE') != -1:
             # protocol_parameters["mass spectrometry"].append("tube lens voltage: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="tube lens voltage")
+            ms_param_oa = OntologyAnnotation(term="tube lens voltage")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:CAPILLARY_VOLTAGE') != -1:
             protocol_parameters["mass spectrometry"].append("capillary voltage: " + row[1])
-            ms_param_oa = OntologyAnnotation(name="capillary voltage")
+            ms_param_oa = OntologyAnnotation(term="capillary voltage")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:COLLISION_ENERGY') != -1:
             protocol_parameters["mass spectrometry"].append("collision energy: " + row[1])
-            ms_param_oa = OntologyAnnotation(name="collision energy")
+            ms_param_oa = OntologyAnnotation(term="collision energy")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:COLLISION_GAS') != -1:
             # protocol_parameters["mass spectrometry"].append("collision gas: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="collision gas")
+            ms_param_oa = OntologyAnnotation(term="collision gas")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:DRY_GAS_FLOW') != -1:
             # protocol_parameters["mass spectrometry"].append("dry gas flow: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="dry flow gas")
+            ms_param_oa = OntologyAnnotation(term="dry flow gas")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:DRY_GAS_TEMPERATURE') != -1:
             # protocol_parameters["mass spectrometry"].append("dry gas: " + row[1])
-            ms_param_oa = OntologyAnnotation(name="dry gas")
+            ms_param_oa = OntologyAnnotation(term="dry gas")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:FRAGMENT_VOLTAGE') != -1:
             # protocol_parameters["mass spectrometry"].append("fragment voltage: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="fragment voltage")
+            ms_param_oa = OntologyAnnotation(term="fragment voltage")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:FRAGMENTATION_METHOD') != -1:
             # protocol_parameters["mass spectrometry"].append("fragmentation method: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="fragmentation method")
+            ms_param_oa = OntologyAnnotation(term="fragmentation method")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:GAS_PRESSURE') != -1:
             # protocol_parameters["mass spectrometry"].append("gas pressure: " + row[1])
-            ms_param_oa = OntologyAnnotation(name="gas pressure")
+            ms_param_oa = OntologyAnnotation(term="gas pressure")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:HELIUM_FLOW') != -1:
             # protocol_parameters["mass spectrometry"].append("helium flow: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="helium flow")
+            ms_param_oa = OntologyAnnotation(term="helium flow")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:DESOLVATION_GAS_FLOW') != -1:
             # protocol_parameters["mass spectrometry"].append("desolvation gas flow: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="desolvation gas flow")
+            ms_param_oa = OntologyAnnotation(term="desolvation gas flow")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:DESOLVATION_TEMPERATURE') != -1:
             # protocol_parameters["mass spectrometry"].append("desolvation temperature: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="desolvation temperature")
+            ms_param_oa = OntologyAnnotation(term="desolvation temperature")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:ACTIVATION_PARAMETER') != -1:
             # protocol_parameters["mass spectrometry"].append("activation parameter: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="activation parameter")
+            ms_param_oa = OntologyAnnotation(term="activation parameter")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:ACTIVATION_TIME') != -1:
             # protocol_parameters["mass spectrometry"].append("activation time: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="activation time")
+            ms_param_oa = OntologyAnnotation(term="activation time")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:ATOM_GUN_CURRENT') != -1:
             # protocol_parameters["mass spectrometry"].append("atom gun current: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="atom gum current")
+            ms_param_oa = OntologyAnnotation(term="atom gum current")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:AUTOMATIC_GAIN_CONTROL') != -1:
             # protocol_parameters["mass spectrometry"].append("automatic gain control: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="automatic gain control")
+            ms_param_oa = OntologyAnnotation(term="automatic gain control")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:BOMBARDMENT') != -1:
             # protocol_parameters["mass spectrometry"].append("bombardment: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="bombardment")
+            ms_param_oa = OntologyAnnotation(term="bombardment")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:LASER') != -1:
             # protocol_parameters["mass spectrometry"].append("laser: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="laser")
+            ms_param_oa = OntologyAnnotation(term="laser")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:MATRIX') != -1:
             # protocol_parameters["mass spectrometry"].append("matrix: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="amtrix")
+            ms_param_oa = OntologyAnnotation(term="amtrix")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:NEBULIZER') != -1:
             # protocol_parameters["mass spectrometry"].append("nebulizer: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="nebulizer")
+            ms_param_oa = OntologyAnnotation(term="nebulizer")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:OCTPOLE_VOLTAGE') != -1:
             # protocol_parameters["mass spectrometry"].append("octpole voltage: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="octpole voltage")
+            ms_param_oa = OntologyAnnotation(term="octpole voltage")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:IT_SIDE_OCTPOLES_BIAS_VOLTAGE') != -1:
             # protocol_parameters["mass spectrometry"].append("IT side octpole bias voltage: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="IT side octpole bias voltage")
+            ms_param_oa = OntologyAnnotation(term="IT side octpole bias voltage")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:CDL_SIDE_OCTPOLES_BIAS_VOLTAGE') != -1:
             # protocol_parameters["mass spectrometry"].append("CDL side octpole bias voltage: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="CDL side octpole bias voltage")
+            ms_param_oa = OntologyAnnotation(term="CDL side octpole bias voltage")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:CDL_TEMPERATURE') != -1:
             # protocol_parameters["mass spectrometry"].append("CDL temperature: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="CDL temperature")
+            ms_param_oa = OntologyAnnotation(term="CDL temperature")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:PROBE_TIP') != -1:
             # protocol_parameters["mass spectrometry"].append("probe tip: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="probe tip")
+            ms_param_oa = OntologyAnnotation(term="probe tip")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:RESOLUTION_SETTING') != -1:
             # protocol_parameters["mass spectrometry"].append("resolution setting: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="resolution setting")
+            ms_param_oa = OntologyAnnotation(term="resolution setting")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
         if row[0].find('MS:SAMPLE_DRIPPING') != -1:
             # protocol_parameters["mass spectrometry"].append("sample dripping: "  + row[1])
-            ms_param_oa = OntologyAnnotation(name="sample dripping")
+            ms_param_oa = OntologyAnnotation(term="sample dripping")
             ms_param = ProtocolParameter(parameter_name=ms_param_oa)
             ms_protocol_params.append(ms_param_oa)
 
@@ -1379,157 +1379,157 @@ try:
 
         if row[0].find('NMR:INSTRUMENT_NAME') != -1:
             # protocol_parameters["nmr spectroscopy"].append("nmr instrument: "  + row[1])
-            nmr_param_oa = OntologyAnnotation(name="nmr instrument")
+            nmr_param_oa = OntologyAnnotation(term="nmr instrument")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:EXPERIMENT_TYPE') != -1:
             # protocol_parameters["nmr spectroscopy"].append("nmr experiment type: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="nmr experiment type")
+            nmr_param_oa = OntologyAnnotation(term="nmr experiment type")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:RANDOMIZATION_ORDER') != -1:
             # protocol_parameters["nmr spectroscopy"].append("randomization order: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="randomization order")
+            nmr_param_oa = OntologyAnnotation(term="randomization order")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:FIELD_FREQUENCY_LOCK') != -1:
             # protocol_parameters["nmr spectroscopy"].append("field frequency lock: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="field frequency lock")
+            nmr_param_oa = OntologyAnnotation(term="field frequency lock")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:STANDARD_CONCENTRATION') != -1:
             # protocol_parameters["nmr spectroscopy"].append("standard concentration: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="standard concentration")
+            nmr_param_oa = OntologyAnnotation(term="standard concentration")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:SPECTROMETER FREQUENCY') != -1:
             # protocol_parameters["nmr spectroscopy"].append("spectrometer frequency: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="spectrometer frequency")
+            nmr_param_oa = OntologyAnnotation(term="spectrometer frequency")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:NMR_PROBE') != -1:
             # protocol_parameters["nmr spectroscopy"].append("nmr probe: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="nmr probe")
+            nmr_param_oa = OntologyAnnotation(term="nmr probe")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:NMR_SOLVENT') != -1:
             # protocol_parameters["nmr spectroscopy"].append("nmr solvent: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="nmr solvent")
+            nmr_param_oa = OntologyAnnotation(term="nmr solvent")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:NMR_TUBE_SIZE') != -1:
             # protocol_parameters["nmr spectroscopy"].append("nmr tube size: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="nmr tube size")
+            nmr_param_oa = OntologyAnnotation(term="nmr tube size")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:SHIMMING_METHOD') != -1:
             # protocol_parameters["nmr spectroscopy"].append("shimming method: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="shimming method")
+            nmr_param_oa = OntologyAnnotation(term="shimming method")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:NMR_PULSE_SEQUENCE') != -1:
             # protocol_parameters["nmr spectroscopy"].append("nmr pulse sequence: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="nmr pulse sequence")
+            nmr_param_oa = OntologyAnnotation(term="nmr pulse sequence")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:WATER_SUPPRESSION') != -1:
             # protocol_parameters["nmr spectroscopy"].append("water suppression: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="water suppression")
+            nmr_param_oa = OntologyAnnotation(term="water suppression")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:PULSE_WIDTH') != -1:
             # protocol_parameters["nmr spectroscopy"].append("nmr pulse width: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="nmr pulse width")
+            nmr_param_oa = OntologyAnnotation(term="nmr pulse width")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:POWER_LEVEL') != -1:
             # protocol_parameters["nmr spectroscopy"].append("nmr power level: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="nmr power level")
+            nmr_param_oa = OntologyAnnotation(term="nmr power level")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:RECEIVER_GAIN') != -1:
             # protocol_parameters["nmr spectroscopy"].append("nmr receiver gain: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="nmr receiver gain")
+            nmr_param_oa = OntologyAnnotation(term="nmr receiver gain")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:PRESATURATION_POWER_LEVEL') != -1:
             # protocol_parameters["nmr spectroscopy"].append("nmr presaturation power level: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="nmr presaturation power level")
+            nmr_param_oa = OntologyAnnotation(term="nmr presaturation power level")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:CHEMICAL_SHIFT REFERENCE COMPOUND') != -1:
             # protocol_parameters["nmr spectroscopy"].append("chemical shift reference compound: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="chemical shift reference compound")
+            nmr_param_oa = OntologyAnnotation(term="chemical shift reference compound")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:NUMBER_OF_SCANS') != -1:
             # protocol_parameters["nmr spectroscopy"].append("number of scans: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="number of scans")
+            nmr_param_oa = OntologyAnnotation(term="number of scans")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:DUMMY_SCANS') != -1:
             # protocol_parameters["nmr spectroscopy"].append("dummy scans: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="dummy scans")
+            nmr_param_oa = OntologyAnnotation(term="dummy scans")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:ACQUISITION_TIME') != -1:
             # protocol_parameters["nmr spectroscopy"].append("acquisition time: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="acquisition time")
+            nmr_param_oa = OntologyAnnotation(term="acquisition time")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:RELAXATION_DELAY') != -1:
             # protocol_parameters["nmr spectroscopy"].append("relaxation delay: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="relaxation delay")
+            nmr_param_oa = OntologyAnnotation(term="relaxation delay")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:SPECTRAL_WIDTH') != -1:
             # protocol_parameters["nmr spectroscopy"].append("spectral width: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="spectral width")
+            nmr_param_oa = OntologyAnnotation(term="spectral width")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:LINE_BROADENING') != -1:
             # protocol_parameters["nmr spectroscopy"].append("line broadening: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="line broadering")
+            nmr_param_oa = OntologyAnnotation(term="line broadering")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:ZERO_FILLING') != -1:
             # protocol_parameters["nmr spectroscopy"].append("zero filling: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="zero filling")
+            nmr_param_oa = OntologyAnnotation(term="zero filling")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:APODIZATION') != -1:
             # protocol_parameters["nmr spectroscopy"].append("apodization: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="apodization")
+            nmr_param_oa = OntologyAnnotation(term="apodization")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
         if row[0].find('NMR:BASELINE_CORRECTION_METHOD') != -1:
             # protocol_parameters["nmr spectroscopy"].append("baseline correction method: " + row[1])
-            nmr_param_oa = OntologyAnnotation(name="baseline correction method")
+            nmr_param_oa = OntologyAnnotation(term="baseline correction method")
             nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
             nmr_protocol_params.append(nmr_param_oa)
 
@@ -1569,7 +1569,7 @@ try:
         if row[0].find('SP:SAMPLEPREP_PROTOCOL_FILENAME') != -1:
             protocol_files[2] = row[1]
 
-    oa_st_design = OntologyAnnotation(name=study_design)
+    oa_st_design = OntologyAnnotation(term=study_design)
     # print(oa_st_design.name)
 
     study_filename = "s_" + studyid + ".txt"
@@ -1586,9 +1586,9 @@ try:
         if element["techtype"] == "mass spectrometry":
             print("itemA:", element["techtype"])
             orefTT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
-            oaTT = OntologyAnnotation(name="metabolite profiling", term_accession="", term_source=orefTT)
+            oaTT = OntologyAnnotation(term="metabolite profiling", term_accession="", term_source=orefTT)
             orefMT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
-            oaMT = OntologyAnnotation(name="mass spectrometry", term_accession="", term_source=orefMT)
+            oaMT = OntologyAnnotation(term="mass spectrometry", term_accession="", term_source=orefMT)
 
             this_assay_file = "a_" + str(studyid) + "_" + str(element["analysis_id"]) + ".txt"
             print("this assay_file:", this_assay_file)
@@ -1610,9 +1610,9 @@ try:
         elif element["techtype"] == "nmr spectroscopy":
             print("itemB:", element["techtype"])
             orefTT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
-            oaTT = OntologyAnnotation(name="metabolite profiling", term_accession="", term_source=orefTT)
+            oaTT = OntologyAnnotation(term="metabolite profiling", term_accession="", term_source=orefTT)
             orefMT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
-            oaMT = OntologyAnnotation(name="nmr spectroscopy", term_accession="", term_source=orefMT)
+            oaMT = OntologyAnnotation(term="nmr spectroscopy", term_accession="", term_source=orefMT)
             this_assay_file = "a_" + str(studyid) + "_" + str(element["analysis_id"]) + ".txt"
             print("this assay_file:", this_assay_file)
             this_assay = Assay(measurement_type=oaTT, technology_type=oaMT, filename=this_assay_file)
@@ -1631,116 +1631,116 @@ try:
 
             write_assay(element["techtype"], element["analysis_id"], assay_records, assay_header)
 
-    chromatography_param_oa = OntologyAnnotation(name="injection temperature")
+    chromatography_param_oa = OntologyAnnotation(term="injection temperature")
     chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
     chromatography_protocol_params.append(chromatography_param)
-    chromatography_param_oa = OntologyAnnotation(name="flow rate")
+    chromatography_param_oa = OntologyAnnotation(term="flow rate")
     chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
     chromatography_protocol_params.append(chromatography_param)
-    chromatography_param_oa = OntologyAnnotation(name="solvent a")
+    chromatography_param_oa = OntologyAnnotation(term="solvent a")
     chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
     chromatography_protocol_params.append(chromatography_param)
-    chromatography_param_oa = OntologyAnnotation(name="solvent b")
+    chromatography_param_oa = OntologyAnnotation(term="solvent b")
     chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
     chromatography_protocol_params.append(chromatography_param)
-    chromatography_param_oa = OntologyAnnotation(name="chromatography setting file")
+    chromatography_param_oa = OntologyAnnotation(term="chromatography setting file")
     chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
     chromatography_protocol_params.append(chromatography_param)
 
-    ms_param_oa = OntologyAnnotation(name="ionization mode")
+    ms_param_oa = OntologyAnnotation(term="ionization mode")
     ms_param = ProtocolParameter(parameter_name=ms_param_oa)
     ms_protocol_params.append(ms_param)
-    ms_param_oa = OntologyAnnotation(name="injection mode")
+    ms_param_oa = OntologyAnnotation(term="injection mode")
     ms_param = ProtocolParameter(parameter_name=ms_param_oa)
     ms_protocol_params.append(ms_param)
-    ms_param_oa = OntologyAnnotation(name="acquisition file")
+    ms_param_oa = OntologyAnnotation(term="acquisition file")
     ms_param = ProtocolParameter(parameter_name=ms_param_oa)
     ms_protocol_params.append(ms_param)
 
-    nmr_param_oa = OntologyAnnotation(name="nmr tube size")
+    nmr_param_oa = OntologyAnnotation(term="nmr tube size")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
-    nmr_param_oa = OntologyAnnotation(name="chemical shift reference compound")
+    nmr_param_oa = OntologyAnnotation(term="chemical shift reference compound")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
-    nmr_param_oa = OntologyAnnotation(name="nmr solvent")
+    nmr_param_oa = OntologyAnnotation(term="nmr solvent")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
-    nmr_param_oa = OntologyAnnotation(name="zero filling")
+    nmr_param_oa = OntologyAnnotation(term="zero filling")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
-    nmr_param_oa = OntologyAnnotation(name="spectrometer frequency")
+    nmr_param_oa = OntologyAnnotation(term="spectrometer frequency")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
-    nmr_param_oa = OntologyAnnotation(name="relaxation delay")
+    nmr_param_oa = OntologyAnnotation(term="relaxation delay")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
-    nmr_param_oa = OntologyAnnotation(name="apodization")
+    nmr_param_oa = OntologyAnnotation(term="apodization")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
-    nmr_param_oa = OntologyAnnotation(name="number of scans")
+    nmr_param_oa = OntologyAnnotation(term="number of scans")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
-    nmr_param_oa = OntologyAnnotation(name="baseline correction method")
+    nmr_param_oa = OntologyAnnotation(term="baseline correction method")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
-    nmr_param_oa = OntologyAnnotation(name="nmr solvent")
+    nmr_param_oa = OntologyAnnotation(term="nmr solvent")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
-    nmr_param_oa = OntologyAnnotation(name="nmr probe")
+    nmr_param_oa = OntologyAnnotation(term="nmr probe")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
-    nmr_param_oa = OntologyAnnotation(name="nmr type")
+    nmr_param_oa = OntologyAnnotation(term="nmr type")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
-    nmr_param_oa = OntologyAnnotation(name="shimming method")
+    nmr_param_oa = OntologyAnnotation(term="shimming method")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
-    nmr_param_oa = OntologyAnnotation(name="nmr instrument")
+    nmr_param_oa = OntologyAnnotation(term="nmr instrument")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
-    nmr_param_oa = OntologyAnnotation(name="pulse program")
+    nmr_param_oa = OntologyAnnotation(term="pulse program")
     nmr_param = ProtocolParameter(parameter_name=nmr_param_oa)
     nmr_protocol_params.append(nmr_param)
 
-    ident_param_oa = OntologyAnnotation(name="analysis file")
+    ident_param_oa = OntologyAnnotation(term="analysis file")
     ident_param = ProtocolParameter(parameter_name=ident_param_oa)
     ident_protocol_params.append(ident_param)
-    ident_param_oa = OntologyAnnotation(name="software")
+    ident_param_oa = OntologyAnnotation(term="software")
     ident_param = ProtocolParameter(parameter_name=ident_param_oa)
     ident_protocol_params.append(ident_param)
 
-    oa_coll_prot = OntologyAnnotation(name="material collection")
+    oa_coll_prot = OntologyAnnotation(term="material collection")
     collection_protocol = Protocol(name="sample collection protocol", description=collect_protocol,
                                    uri=protocol_files[3], protocol_type=oa_coll_prot)
     study1.protocols.append(collection_protocol)
 
-    oa_sample_prot = OntologyAnnotation(name="material preparation")
+    oa_sample_prot = OntologyAnnotation(term="material preparation")
     sample_protocol = Protocol(name="metabolite extraction protocol", description=sampleprep_protocol,
                                uri=protocol_files[2], protocol_type=oa_sample_prot)
     study1.protocols.append(sample_protocol)
 
-    oa_treat = OntologyAnnotation(name="material processing")
+    oa_treat = OntologyAnnotation(term="material processing")
     treatment_protocol = Protocol(name="treatment protocol", description=treat_protocol, uri=protocol_files[1],
                                   protocol_type=oa_treat)
     study1.protocols.append(treatment_protocol)
 
-    oa_chromato_prot = OntologyAnnotation(name="chromatography")
+    oa_chromato_prot = OntologyAnnotation(term="chromatography")
     chromato_protocol = Protocol(name="chromatography protocol", description=chromatography_protocol,
                                  parameters=chromatography_protocol_params, uri="", protocol_type=oa_chromato_prot)
     study1.protocols.append(chromato_protocol)
 
-    oa_ms_prot = OntologyAnnotation(name="mass spectrometry")
+    oa_ms_prot = OntologyAnnotation(term="mass spectrometry")
     ms_protocol = Protocol(name="mass spectrometry protocol", description=mass_spec_protocol,
                            parameters=ms_protocol_params, uri="", protocol_type=oa_ms_prot)
     study1.protocols.append(ms_protocol)
 
-    oa_nmr_prot = OntologyAnnotation(name="nmr spectroscopy")
+    oa_nmr_prot = OntologyAnnotation(term="nmr spectroscopy")
     nmr_protocol = Protocol(name="nuclear magnetic resonance spectroscopy protocol", description=nmrspc_protocol,
                             parameters=nmr_protocol_params, protocol_type=oa_nmr_prot)
     study1.protocols.append(nmr_protocol)
 
-    oa_ident_prot = OntologyAnnotation(name="identification")
+    oa_ident_prot = OntologyAnnotation(term="identification")
     ident_protocol = Protocol(name="identification protocol", description="ridiculous", protocol_type=oa_ident_prot,
                               parameters=ident_protocol_params)
     study1.protocols.append(ident_protocol)
@@ -1757,7 +1757,7 @@ try:
     factor_keys = study_factors.keys()
     for key in study_factors.keys():
         oref = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
-        oa = OntologyAnnotation(name=key, term_accession="", term_source=oref)
+        oa = OntologyAnnotation(term=key, term_accession="", term_source=oref)
         study1.factors.append(StudyFactor(name=key, factor_type=oa))
 
     protocol_descriptions[0] = collect_protocol

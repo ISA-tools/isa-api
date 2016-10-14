@@ -228,12 +228,13 @@ class OntologyAnnotation(Commentable):
         term_accession: URI
     """
 
-    def __init__(self, id_='', name="", term_source=None, term_accession="", comments=None):
+    def __init__(self, term="", term_source=None, term_accession="", comments=None, id_=''):
         super().__init__(comments)
-        self.id = id_
-        self.name = name
+
+        self.term = term
         self.term_source = term_source
         self.term_accession = term_accession
+        self.id = id_
 
 
 class Publication(Commentable):

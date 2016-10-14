@@ -37,48 +37,48 @@ class TestIsaTab(unittest.TestCase):
 
         sample_collection_protocol = Protocol(
             name='sample collection',
-            protocol_type=OntologyAnnotation(name='sample collection')
+            protocol_type=OntologyAnnotation(term='sample collection')
         )
         s.protocols.append(sample_collection_protocol)
 
-        reference_descriptor_category = OntologyAnnotation(name='reference descriptor')
-        material_type_category = OntologyAnnotation(name='material type')
-        organism_category = OntologyAnnotation(name='organism')
+        reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
+        material_type_category = OntologyAnnotation(term='material type')
+        organism_category = OntologyAnnotation(term='organism')
 
         source1 = Source(name='source1')
         source1.characteristics = [
             Characteristic(category=reference_descriptor_category, value='not applicable'),
             Characteristic(category=material_type_category, value='specimen'),
             Characteristic(category=organism_category,
-                           value=OntologyAnnotation(name='Human', term_source=ncbitaxon,
+                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
                                                     term_accession='http://purl.bioontology.org/ontology/STY/T016')),
         ]
 
         sample1 = Sample(name='sample1')
-        organism_part = OntologyAnnotation(name='organism part')
+        organism_part = OntologyAnnotation(term='organism part')
         sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
-            name='liver',
+            term='liver',
             term_source=uberon,
             term_accession='http://purl.obolibrary.org/obo/UBERON_0002107',
         )))
 
         sample2 = Sample(name='sample2')
         sample2.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
-            name='heart',
+            term='heart',
             term_source=uberon,
             term_accession='http://purl.obolibrary.org/obo/UBERON_0000948',
         )))
 
         sample3 = Sample(name='sample3')
         sample3.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
-            name='blood',
+            term='blood',
             term_source=uberon,
             term_accession='http://purl.obolibrary.org/obo/UBERON_0000178',
         )))
 
         sample4 = Sample(name='sample4')
         sample4.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
-            name='blood',
+            term='blood',
             term_source=uberon,
             term_accession='http://purl.obolibrary.org/obo/UBERON_0000178',
         )))
@@ -106,20 +106,20 @@ class TestIsaTab(unittest.TestCase):
         s = Study(filename='s_pool.txt')
         sample_collection_protocol = Protocol(
             name='sample collection',
-            protocol_type=OntologyAnnotation(name='sample collection')
+            protocol_type=OntologyAnnotation(term='sample collection')
         )
         s.protocols.append(sample_collection_protocol)
 
-        reference_descriptor_category = OntologyAnnotation(name='reference descriptor')
-        material_type_category = OntologyAnnotation(name='material type')
-        organism_category = OntologyAnnotation(name='organism')
+        reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
+        material_type_category = OntologyAnnotation(term='material type')
+        organism_category = OntologyAnnotation(term='organism')
 
         source1 = Source(name='source1')
         source1.characteristics = [
             Characteristic(category=reference_descriptor_category, value='not applicable'),
             Characteristic(category=material_type_category, value='specimen'),
             Characteristic(category=organism_category,
-                           value=OntologyAnnotation(name='Human', term_source=ncbitaxon,
+                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
                                                     term_accession='http://purl.bioontology.org/ontology/STY/T016')),
         ]
 
@@ -128,7 +128,7 @@ class TestIsaTab(unittest.TestCase):
             Characteristic(category=reference_descriptor_category, value='not applicable'),
             Characteristic(category=material_type_category, value='specimen'),
             Characteristic(category=organism_category,
-                           value=OntologyAnnotation(name='Human', term_source=ncbitaxon,
+                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
                                                     term_accession='http://purl.bioontology.org/ontology/STY/T016')),
         ]
 
@@ -137,7 +137,7 @@ class TestIsaTab(unittest.TestCase):
             Characteristic(category=reference_descriptor_category, value='not applicable'),
             Characteristic(category=material_type_category, value='specimen'),
             Characteristic(category=organism_category,
-                           value=OntologyAnnotation(name='Human', term_source=ncbitaxon,
+                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
                                                     term_accession='http://purl.bioontology.org/ontology/STY/T016')),
         ]
 
@@ -146,14 +146,14 @@ class TestIsaTab(unittest.TestCase):
             Characteristic(category=reference_descriptor_category, value='not applicable'),
             Characteristic(category=material_type_category, value='specimen'),
             Characteristic(category=organism_category,
-                           value=OntologyAnnotation(name='Human', term_source=ncbitaxon,
+                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
                                                     term_accession='http://purl.bioontology.org/ontology/STY/T016')),
         ]
 
         sample1 = Sample(name='sample1')
-        organism_part = OntologyAnnotation(name='organism part')
+        organism_part = OntologyAnnotation(term='organism part')
         sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
-            name='liver',
+            term='liver',
             term_source=uberon,
             term_accession='http://purl.obolibrary.org/obo/UBERON_0002107',
         )))

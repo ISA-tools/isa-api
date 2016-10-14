@@ -71,7 +71,7 @@ def load(fp):
             author_list=publication_json['authorList'],
             title=publication_json['title'],
             status=OntologyAnnotation(
-                name=publication_json['status']['annotationValue'],
+                term=publication_json['status']['annotationValue'],
                 term_accession=publication_json['status']['termAccession'],
                 term_source=term_source_dict[publication_json['status']['termSource']]
             )
@@ -94,7 +94,7 @@ def load(fp):
         )
         for role_json in person_json['roles']:
             role = OntologyAnnotation(
-                name=role_json['annotationValue'],
+                term=role_json['annotationValue'],
                 term_accession=role_json['termAccession'],
                 term_source=term_source_dict[role_json['termSource']]
             )
@@ -116,7 +116,7 @@ def load(fp):
             for assay_characteristics_category_json in assay_json['characteristicCategories']:
                 characteristic_category = OntologyAnnotation(
                     id_=assay_characteristics_category_json['@id'],
-                    name=assay_characteristics_category_json['characteristicType']['annotationValue'],
+                    term=assay_characteristics_category_json['characteristicType']['annotationValue'],
                     term_source=term_source_dict[assay_characteristics_category_json['characteristicType']['termSource']],
                     term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
                 )
@@ -138,7 +138,7 @@ def load(fp):
         for study_characteristics_category_json in study_json['characteristicCategories']:
             characteristic_category = OntologyAnnotation(
                 id_=study_characteristics_category_json['@id'],
-                name=study_characteristics_category_json['characteristicType']['annotationValue'],
+                term=study_characteristics_category_json['characteristicType']['annotationValue'],
                 term_source=term_source_dict[study_characteristics_category_json['characteristicType']['termSource']],
                 term_accession=study_characteristics_category_json['characteristicType']['termAccession'],
             )
@@ -146,7 +146,7 @@ def load(fp):
             categories_dict[characteristic_category.id] = characteristic_category
         for study_unit_json in study_json['unitCategories']:
             unit = OntologyAnnotation(id_=study_unit_json['@id'],
-                                      name=study_unit_json['annotationValue'],
+                                      term=study_unit_json['annotationValue'],
                                       term_source=term_source_dict[study_unit_json['termSource']],
                                       term_accession=study_unit_json['termAccession'])
             units_dict[unit.id] = unit
@@ -157,7 +157,7 @@ def load(fp):
                 author_list=study_publication_json['authorList'],
                 title=study_publication_json['title'],
                 status=OntologyAnnotation(
-                    name=study_publication_json['status']['annotationValue'],
+                    term=study_publication_json['status']['annotationValue'],
                     term_source=term_source_dict[study_publication_json['status']['termSource']],
                     term_accession=study_publication_json['status']['termAccession'],
                 )
@@ -180,7 +180,7 @@ def load(fp):
             )
             for role_json in study_person_json['roles']:
                 role = OntologyAnnotation(
-                    name=role_json['annotationValue'],
+                    term=role_json['annotationValue'],
                     term_accession=role_json['termAccession'],
                     term_source=term_source_dict[role_json['termSource']]
                 )
@@ -192,7 +192,7 @@ def load(fp):
             study.contacts.append(study_person)
         for design_descriptor_json in study_json['studyDesignDescriptors']:
             design_descriptor = OntologyAnnotation(
-                name=design_descriptor_json['annotationValue'],
+                term=design_descriptor_json['annotationValue'],
                 term_accession=design_descriptor_json['termAccession'],
                 term_source=term_source_dict[design_descriptor_json['termSource']]
             )
@@ -205,7 +205,7 @@ def load(fp):
                 description=protocol_json['description'],
                 version=protocol_json['version'],
                 protocol_type=OntologyAnnotation(
-                    name=protocol_json['protocolType']['annotationValue'],
+                    term=protocol_json['protocolType']['annotationValue'],
                     term_accession=protocol_json['protocolType']['termAccession'],
                     term_source=term_source_dict[protocol_json['protocolType']['termSource']]
                 )
@@ -214,7 +214,7 @@ def load(fp):
                 parameter = ProtocolParameter(
                     id_=parameter_json['@id'],
                     parameter_name=OntologyAnnotation(
-                        name=parameter_json['parameterName']['annotationValue'],
+                        term=parameter_json['parameterName']['annotationValue'],
                         term_source=term_source_dict[parameter_json['parameterName']['termSource']],
                         term_accession=parameter_json['parameterName']['termAccession']
                     )
@@ -225,7 +225,7 @@ def load(fp):
                 component = ProtocolComponent(
                     name=component_json['componentName'],
                     component_type=OntologyAnnotation(
-                        name=component_json['componentType']['annotationValue'],
+                        term=component_json['componentType']['annotationValue'],
                         term_source=term_source_dict[component_json['componentType']['termSource']],
                         term_accession=component_json['componentType']['termAccession']
                     )
@@ -238,7 +238,7 @@ def load(fp):
                 id_=factor_json['@id'],
                 name=factor_json['factorName'],
                 factor_type=OntologyAnnotation(
-                    name=factor_json['factorType']['annotationValue'],
+                    term=factor_json['factorType']['annotationValue'],
                     term_accession=factor_json['factorType']['termAccession'],
                     term_source=term_source_dict[factor_json['factorType']['termSource']]
                 )
@@ -257,7 +257,7 @@ def load(fp):
                 if isinstance(value, dict):
                     try:
                         value = OntologyAnnotation(
-                            name=characteristic_json['value']['annotationValue'],
+                            term=characteristic_json['value']['annotationValue'],
                             term_source=term_source_dict[characteristic_json['value']['termSource']],
                             term_accession=characteristic_json['value']['termAccession'])
                     except KeyError:
@@ -288,7 +288,7 @@ def load(fp):
                 if isinstance(value, dict):
                     try:
                         value = OntologyAnnotation(
-                            name=characteristic_json['value']['annotationValue'],
+                            term=characteristic_json['value']['annotationValue'],
                             term_source=term_source_dict[characteristic_json['value']['termSource']],
                             term_accession=characteristic_json['value']['termAccession'])
                     except KeyError:
@@ -308,7 +308,7 @@ def load(fp):
                     factor_value = FactorValue(
                         factor_name=factors_dict[factor_value_json['category']['@id']],
                         value=OntologyAnnotation(
-                            name=factor_value_json['value']['annotationValue'],
+                            term=factor_value_json['value']['annotationValue'],
                             term_accession=factor_value_json['value']['termAccession'],
                             term_source=term_source_dict[factor_value_json['value']['termSource']],
                         ),
@@ -354,7 +354,7 @@ def load(fp):
                         )
                     try:
                         parameter_value.value = OntologyAnnotation(
-                            name=parameter_value_json['value']['annotationValue'],
+                            term=parameter_value_json['value']['annotationValue'],
                             term_accession=parameter_value_json['value']['termAccession'],
                             term_source=term_source_dict[parameter_value_json['value']['termSource']],)
                     except TypeError:
@@ -405,12 +405,12 @@ def load(fp):
         for assay_json in study_json['assays']:
             assay = Assay(
                 measurement_type=OntologyAnnotation(
-                    name=assay_json['measurementType']['annotationValue'],
+                    term=assay_json['measurementType']['annotationValue'],
                     term_accession=assay_json['measurementType']['termAccession'],
                     term_source=term_source_dict[assay_json['measurementType']['termSource']]
                 ),
                 technology_type=OntologyAnnotation(
-                    name=assay_json['technologyType']['annotationValue'],
+                    term=assay_json['technologyType']['annotationValue'],
                     term_accession=assay_json['technologyType']['termAccession'],
                     term_source=term_source_dict[assay_json['technologyType']['termSource']]
                 ),
@@ -419,7 +419,7 @@ def load(fp):
             )
             for assay_unit_json in assay_json['unitCategories']:
                 unit = OntologyAnnotation(id_=assay_unit_json['@id'],
-                                          name=assay_unit_json['annotationValue'],
+                                          term=assay_unit_json['annotationValue'],
                                           term_source=term_source_dict[assay_unit_json['termSource']],
                                           term_accession=assay_unit_json['termAccession'])
                 units_dict[unit.id] = unit
@@ -442,7 +442,7 @@ def load(fp):
             for assay_characteristics_category_json in assay_json['characteristicCategories']:
                 characteristic_category =OntologyAnnotation(
                     id_=assay_characteristics_category_json['@id'],
-                    name=assay_characteristics_category_json['characteristicType']['annotationValue'],
+                    term=assay_characteristics_category_json['characteristicType']['annotationValue'],
                     term_source=term_source_dict[assay_characteristics_category_json['characteristicType']['termSource']],
                     term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
                 )
@@ -464,7 +464,7 @@ def load(fp):
                     characteristic = Characteristic(
                         category=categories_dict[characteristic_json['category']['@id']],
                         value=OntologyAnnotation(
-                            name=characteristic_json['value']['annotationValue'],
+                            term=characteristic_json['value']['annotationValue'],
                             term_source=term_source_dict[characteristic_json['value']['termSource']],
                             term_accession=characteristic_json['value']['termAccession'],
                         )
@@ -482,15 +482,15 @@ def load(fp):
                 except KeyError:
                     pass
                 # additional properties, currently hard-coded special cases
-                if process.executes_protocol.protocol_type.name == 'data collection' and assay.technology_type.name == 'DNA microarray':
+                if process.executes_protocol.protocol_type.term == 'data collection' and assay.technology_type.term == 'DNA microarray':
                     process.name = assay_process_json['name']
-                elif process.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
+                elif process.executes_protocol.protocol_type.term == 'nucleic acid sequencing':
                     process.name = assay_process_json['name']
-                elif process.executes_protocol.protocol_type.name == 'nucleic acid hybridization':
+                elif process.executes_protocol.protocol_type.term == 'nucleic acid hybridization':
                     process.name = assay_process_json['name']
-                elif process.executes_protocol.protocol_type.name == 'data transformation':
+                elif process.executes_protocol.protocol_type.term == 'data transformation':
                     process.name = assay_process_json['name']
-                elif process.executes_protocol.protocol_type.name == 'data normalization':
+                elif process.executes_protocol.protocol_type.term == 'data normalization':
                     process.name = assay_process_json['name']
                 for input_json in assay_process_json['inputs']:
                     input_ = None
@@ -549,7 +549,7 @@ def load(fp):
                             )
                         try:
                             parameter_value.value = OntologyAnnotation(
-                                name=parameter_value_json['value']['annotationValue'],
+                                term=parameter_value_json['value']['annotationValue'],
                                 term_accession=parameter_value_json['value']['termAccession'],
                                 term_source=term_source_dict[parameter_value_json['value']['termSource']],)
                         except TypeError:
