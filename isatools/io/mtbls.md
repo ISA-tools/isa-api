@@ -21,3 +21,7 @@ if 'gender' in factor_names:
         for file in files_in_sample:
             # do something with the file, should be an ftp URL.
 ```
+The slicer needs to produce:
+
+- A reduced ISA file after the slicing.
+- A Zip/TAR for the data files produced by the slicing.
