@@ -128,7 +128,7 @@ class ISATab2ISAjson_v1:
     def createComments(self, isadict):
         comments = []
         comments_regex = re.compile('Comment\[(.*?)\]')
-        for k in (k for k in isadict.keys() if comments_regex.match(k)):
+        for k in (k for k in six.iterkeys(isadict) if comments_regex.match(k)):
             comments.append(self.createComment(comments_regex.findall(k)[0], isadict[k]))
         return comments
 
@@ -506,7 +506,7 @@ class ISATab2ISAjson_v1:
     def createFromNodeComments(self, node):
         comments = []
         comments_regex = re.compile('Comment\[(.*?)\]')
-        for key in (key for key in node.metadata.keys() if comments_regex.match(key)):
+        for key in (key for key in six.iterkeys(node.metadata) if comments_regex.match(key)):
             comments.append(self.createComment(comments_regex.findall(key)[0], getattr(
                 node.metadata[key][0], comments_regex.findall(key)[0].replace(' ', '_'))))
         return comments

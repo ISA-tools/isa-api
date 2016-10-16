@@ -652,7 +652,7 @@ def write_assay_table_files(inv_obj, output_dir):
                             for comment in output.comments:
                                 cols.append('data[' + output.label + ']_comment[' + comment.name + ']')
                                 col_map['data[' + output.label + ']_comment[' + comment.name + ']'] = 'Comment[' + comment.name + ']'
-                        if node.executes_protocol.name not in protnames.keys():
+                        if node.executes_protocol.name not in protnames:
                             protnames[node.executes_protocol.name] = protrefcount
                             protrefcount += 1
                         # protrefcount = _set_protocol_cols(protrefcount, prottypes, node, cols, col_map)
@@ -852,7 +852,7 @@ def write_study_table_files(inv_obj, output_dir):
                     else:
                         cols.append('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']')
                         col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = 'Parameter Value[' + pv.category.parameter_name.name + ']'
-                if node.executes_protocol.name not in protnames.keys():
+                if node.executes_protocol.name not in protnames:
                     protnames[node.executes_protocol.name] = protrefcount
                     protrefcount += 1
             elif isinstance(node, Sample):
@@ -1806,7 +1806,7 @@ def load_config(config_dir):
     if configs is None:
         logger.error("(E) Could not load configurations from {}".format(config_dir))
     else:
-        for k in configs.keys():
+        for k in six.iterkeys(configs):
             logger.info("Loaded table configuration '" + str(configs[k].get_isatab_configuration()[0].table_name) + "' for measurement and technology " + str(k))
     return configs
 
@@ -1818,7 +1818,7 @@ def check_measurement_technology_types(i_df, configs):
         technology_types = assay_df['Study Assay Technology Type'].tolist()
         if len(measurement_types) == len(technology_types):
             for x, measurement_type in enumerate(measurement_types):
-                if (measurement_types[x], technology_types[x]) not in configs.keys():
+                if (measurement_types[x], technology_types[x]) not in configs:
                     logger.error(
                         "(E) Could not load configuration for measurement type '{}' and technology type '{}' for STUDY ASSAY.{}'".format(
                             measurement_types[x], technology_types[x], i))

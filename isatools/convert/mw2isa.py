@@ -734,7 +734,7 @@ def get_fv_records(lol):
                         factor = factor.strip()
                         newrecord.append(value.strip())
 
-                        if factor in factors.keys():
+                        if factor in factors:
                             factors[factor] += 1
                         else:
                             factors[factor] = 1
@@ -746,7 +746,7 @@ def get_fv_records(lol):
                     else:
                         value = elements[1]
 
-                    if factor in factors.keys():
+                    if factor in factors:
                         factors[factor] += 1
                     else:
                         factors[factor] = 1
@@ -755,7 +755,7 @@ def get_fv_records(lol):
 
                 records.append(newrecord)
 
-    for my_key in factors.keys():
+    for my_key in six.iterkeys(factors):
                 restofrecordheader.append("Factor Value[" + my_key + "]")
 
     return records, factors, restofrecordheader
@@ -1767,7 +1767,7 @@ try:
 
     # Building Investigation Study Factor Section:
     factor_keys = study_factors.keys()
-    for key in study_factors.keys():
+    for key in six.iterkeys(study_factors):
         oref = OntologySourceReference(name="OBI", description="Ontology for Biomedical Investigation")
         oa = OntologyAnnotation(name=key, term_accession="", term_source=oref)
         study1.factors.append(StudyFactor(name=key, factor_type=oa))
