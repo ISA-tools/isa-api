@@ -909,6 +909,7 @@ def get_study_unit_category_ids_in_materials_and_processes(study_json):
     return study_characteristics_units_used + study_factor_value_units_used + parameter_value_units_used
 
 
+
 def get_assay_unit_category_ids_in_materials_and_processes(assay_json):
     """Used for rule 1014"""
     # assay_characteristics_units_used = [elem for iterabl in [[characteristic['unit']['@id'] if 'unit' in
@@ -939,6 +940,7 @@ def get_assay_unit_category_ids_in_materials_and_processes(assay_json):
     ]
 
     return parameter_value_units_used + assay_characteristics_units_used
+
 
 
 def check_unit_category_ids_usage(study_json):
