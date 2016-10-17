@@ -253,7 +253,7 @@ class ISATab2ISAjson_v1:
         term_accession_array = object[inv_or_study+type+" Term Accession Number"].split(";")
         onto_annotations = []
         for i in six.moves.range(len(name_array)):
-             if (not name_array[i]):
+             if not name_array[i]:
                  continue
              onto_ann = self.createOntologyAnnotation(name_array[i],
                                                       term_source_array[i],

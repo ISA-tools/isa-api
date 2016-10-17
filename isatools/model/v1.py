@@ -5,15 +5,14 @@ import six
 def _build_assay_graph(process_sequence=list()):
     G = nx.DiGraph()
     for process in process_sequence:
-        if process.next_process is not None or len(
-                process.outputs) > 0:  # first check if there's some valid outputs to connect
-            if len(process.outputs) > 0:
+        if process.next_process is not None or process.outputs:  # first check if there's some valid outputs to connect
+            if process.outputs:
                 for output in (n for n in process.outputs if not isinstance(n, DataFile)):
                     G.add_edge(process, output)
             else:  # otherwise just connect the process to the next one
                 G.add_edge(process, process.next_process)
-        if process.prev_process is not None or len(process.inputs) > 0:
-            if len(process.inputs) > 0:
+        if process.prev_process is not None or process.inputs > 0:
+            if process.inputs:
                 for input_ in process.inputs:
                     G.add_edge(input_, process)
             else:
@@ -683,7 +682,7 @@ def batch_create_assays(*args, **kwargs):
     from copy import deepcopy
     for x in six.moves.range(n):
         for arg in args:
-            if isinstance(arg, list) and len(arg) > 0:
+            if isinstance(arg, list) and arg:
                 if isinstance(arg[0], (Sample, Material)):
                     if materialA is None:
                         materialA = deepcopy(arg)

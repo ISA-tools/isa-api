@@ -151,9 +151,9 @@ class ISATab2CEDAR():
          json_item = {
                     "@id": "https://repo.metadatacenter.org/UUID{}".format(uuid4()),
                     "@type": "http://purl.obolibrary.org/obo/STATO_0000193",
-                    "name": {"_value", "population name"},
-                    "type": {"_value", "http://bioportal.bioontology.org/ontologies/EFO/3232"},
-                    "selectionRule":  {"_value", "selection rule"},
+                    "name": {"_value": "population name"},
+                    "type": {"_value": "http://bioportal.bioontology.org/ontologies/EFO/3232"},
+                    "selectionRule":  {"_value": "selection rule"},
                     "studySubject": list(source_dict.values())
                 }
          json_list.append(json_item)
@@ -260,7 +260,7 @@ class ISATab2CEDAR():
         parameters = protocol['Study Protocol Parameters Name']
         parametersURIs = protocol['Study Protocol Parameters Name Term Accession Number']
         index = 0
-        if len(parameters) > 0:
+        if parameters:
             for parameter in parameters.split(';'):
                 json_item = {
                     "name": {"_value": parameter},
@@ -274,8 +274,8 @@ class ISATab2CEDAR():
     def createProtocolParameterFromNode(self, process_node):
         json_list = []
         json_item = {
-            "description": {"_value", process_node.protocol},
-            "name": {"_value", process_node.protocol},
+            "description": {"_value": process_node.protocol},
+            "name": {"_value"; process_node.protocol},
         }
         json_list.append(json_item)
         return json_list

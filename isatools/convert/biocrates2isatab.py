@@ -183,7 +183,7 @@ def generatePolarityAttrsDict(plate, polarity, myAttrs, myMetabolites, mydict):
     usedop = plate.get('usedop')
     platebarcode = plate.get('platebarcode')
     injection = plate.find_all('injection', {'polarity': polarity})
-    if len(injection) > 0:
+    if injection:
         for pi in injection:
             myAttrList = []
             myMetabolitesList = []
@@ -217,7 +217,7 @@ def generateAttrsDict(plate):
 
 def writeOutToFile(plate, polarity, usedop, platebarcode, output_dir, uniqueAttrs, uniqueMetaboliteIdentifiers, mydict):
     pos_injection = plate.find_all('injection', {'polarity': polarity})
-    if len(pos_injection) > 0:
+    if pos_injection:
         filename = usedop + '-' + platebarcode + '-' + polarity.lower() + '-maf.txt'
         print(filename)
         with open(os.path.join(output_dir, filename), 'w') as file_handler:

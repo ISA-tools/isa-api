@@ -76,7 +76,7 @@ def dump(isa_obj, output_path):
                             prefix + ' Person Roles',
                             prefix + ' Person Roles Term Accession Number',
                             prefix + ' Person Roles Term Source REF']
-        if len(contacts) > 0:
+        if contacts:
             for comment in contacts[0].comments:
                 contacts_df_cols.append('Comment[' + comment.name + ']')
         contacts_df = pd.DataFrame(columns=tuple(contacts_df_cols))
@@ -108,7 +108,7 @@ def dump(isa_obj, output_path):
                                 prefix + ' Publication Status',
                                 prefix + ' Publication Status Term Accession Number',
                                 prefix + ' Publication Status Term Source REF']
-        if len(publications) > 0:
+        if publications:
             for comment in publications[0].comments:
                 publications_df_cols.append('Comment[' + comment.name + ']')
         publications_df = pd.DataFrame(columns=tuple(publications_df_cols))
@@ -386,7 +386,7 @@ def _get_start_end_nodes(G):
                 start_nodes.append(material)
         outputs_no_data = [m for m in process.outputs if not isinstance(m, DataFile)]
         if process.next_process is None:
-            if len(outputs_no_data) == 0:
+            if not outputs_no_data:
                 end_nodes.append(process)
             else:
                 for material in outputs_no_data:
@@ -765,7 +765,7 @@ def write_assay_table_files(inv_obj, output_dir):
                 def reduce(group, column):
                     col = group[column]
                     s = [str(each) for each in col if pd.notnull(each)]
-                    if len(s) > 0:
+                    if s:
                         return s[0]
                     else:
                         return ''
@@ -1110,7 +1110,7 @@ def load2(fp):
                 missing_labels = labels_expected - labels_found
                 logger.fatal("(F) In {} section, expected labels {} not found in {}"
                              .format(section, missing_labels, labels_found))
-            if len(labels_found - labels_expected) > 0:
+            if labels_found - labels_expected:
                 # check extra labels, i.e. make sure they're all comments
                 extra_labels = labels_found - labels_expected
                 for label in extra_labels:
@@ -1463,7 +1463,7 @@ def check_protocol_usage(i_df, dir_context):
                         protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
                 except IOError:
                     pass
-        if len(protocols_declared - protocol_refs_used) > 0:
+        if protocols_declared - protocol_refs_used:
             logger.warn(
                 "(W) Some protocols declared in the investigation file {} are not used in any assay file: {}".format(
                     study_filename, list(protocols_declared - protocol_refs_used)))
@@ -1613,7 +1613,7 @@ def check_study_factor_usage(i_df, dir_context):
                         study_factors_used = study_factors_used.union(set(fv))
                 except IOError:
                     pass
-        if len(study_factors_declared - study_factors_used) > 0:
+        if study_factors_declared - study_factors_used:
             logger.warn(
                 "(W) Some study factors declared in the investigation file are not used in any assay file: {}".format(
                     list(study_factors_declared - study_factors_used)))
@@ -1680,7 +1680,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                         protocol_parameters_used = protocol_parameters_used.union(set(pv))
                 except IOError:
                     pass
-        if len(protocol_parameters_declared - protocol_parameters_used) > 0:
+        if protocol_parameters_declared - protocol_parameters_used:
             logger.warn(
                 "(W) Some protocol parameters declared in the investigation file are not used in any assay file: {}".format(
                     list(protocol_parameters_declared - protocol_parameters_used)))
@@ -1831,7 +1831,7 @@ def check_investigation_against_config(i_df, configs):
         fields_required = (k for k in section.columns if k in required)
         for col in fields_required:
             required_values = section[col]
-            if len(required_values) > 0:
+            if required_values:#len(required_values) > 0:
                 for x, required_value in enumerate(required_values):
                     required_value = required_values.iloc[x]
                     if isinstance(required_value, float):
@@ -2019,14 +2019,14 @@ def check_factor_value_presence(table):
 def check_required_fields(table, cfg):
     for fheader in (k.header for k in cfg.get_isatab_configuration()[0].get_field() if k.is_required):
         found_field = [k for k in table.columns if k.lower() == fheader.lower()]
-        if len(found_field) == 0:
+        if not found_field:
             logger.warn("(W) Required field '" + fheader + "' not found in the file '" + table.filename + "'")
         elif len(found_field) > 1:
             logger.warn("(W) Field '" + fheader + "' cannot have multiple values in the file '" + table.filename)
 
 
 def check_sample_names(study_sample_table, assay_tables=list()):
-    if len(assay_tables) > 0:
+    if assay_tables:
         study_samples = set(study_sample_table['Sample Name'])
         for assay_table in assay_tables:
             assay_samples = set(assay_table['Sample Name'])
@@ -2201,7 +2201,7 @@ def check_protocol_fields(table, cfg, proto_map):
                                 proto_name))
                         fprotos.add(proto_name)
                 invalid_protos = cprotos - fprotos
-                if len(invalid_protos) > 0:
+                if invalid_protos:
                     logger.warn("(W) Protocol(s) of type " + str(
                         list(invalid_protos)) + " defined in the ISA-configuration expected as a between '" +
                                 cleft.header + "' and '" + cright.header + "' but has not been found, in the file '" + table.filename + "'")

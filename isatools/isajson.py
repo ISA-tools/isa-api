@@ -20,14 +20,14 @@ def load(fp):
     def _build_assay_graph(process_sequence=list()):
         G = nx.DiGraph()
         for process in process_sequence:
-            if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
-                if len(process.outputs) > 0:
+            if process.next_process is not None or process.outputs:  # first check if there's some valid outputs to connect
+                if process.outputs:
                     for output in (n for n in process.outputs if not isinstance(n, DataFile)):
                         G.add_edge(process, output)
                 else:  # otherwise just connect the process to the next one
                     G.add_edge(process, process.next_process)
-            if process.prev_process is not None or len(process.inputs) > 0:
-                if len(process.inputs) > 0:
+            if process.prev_process is not None or process.inputs:
+                if process.inputs:
                     for input_ in process.inputs:
                         G.add_edge(input_, process)
                 else:
@@ -672,8 +672,10 @@ def check_material_ids_not_declared_used(study_json):
     node_ids = get_source_ids(study_json) + get_sample_ids(study_json) + get_material_ids(study_json) + \
                get_data_file_ids(study_json)
     io_ids_in_process_sequence = get_io_ids_in_process_sequence(study_json)
-    if len(set(io_ids_in_process_sequence)) - len(set(node_ids)) > 0:
-        diff = set(io_ids_in_process_sequence) - set(node_ids)
+
+    diff = set(io_ids_in_process_sequence) - set(node_ids)
+    if diff: #len(set(io_ids_in_process_sequence)) - len(set(node_ids)) > 0:
+        #diff = set(io_ids_in_process_sequence) - set(node_ids)
         logger.error("(E) There are some inputs/outputs IDs {} not found in sources, samples, materials or data files declared"
               .format(list(diff)))
 
@@ -718,11 +720,11 @@ def check_process_protocol_ids_usage(study_json):
                 protocol_ids_used.append(process['executesProtocol']['@id'])
             except KeyError:
                 pass
-    if len(set(protocol_ids_used) - set(protocol_ids_declared)) > 0:
+    if set(protocol_ids_used) - set(protocol_ids_declared) > 0:
         diff = set(protocol_ids_used) - set(protocol_ids_declared)
         logger.error("(E) There are protocol IDs {} used in a study or assay process sequence not declared"
               .format(list(diff)))
-    elif len(set(protocol_ids_declared) - set(protocol_ids_used)) > 0:
+    elif set(protocol_ids_declared) - set(protocol_ids_used) > 0:
         diff = set(protocol_ids_declared) - set(protocol_ids_used)
         logger.warning("(W) There are some protocol IDs declared {} not used in any study or assay process sequence"
               .format(list(diff)))
@@ -765,11 +767,11 @@ def get_parameter_value_parameter_ids(study_json):
 def check_protocol_parameter_ids_usage(study_json):
     protocols_declared = get_study_protocols_parameter_ids(study_json)
     protocols_used = get_parameter_value_parameter_ids(study_json)
-    if len(set(protocols_used) - set(protocols_declared)) > 0:
+    if set(protocols_used) - set(protocols_declared):
         diff = set(protocols_used) - set(protocols_declared)
         logger.error("(E) There are protocol parameters {} used in a study or assay process not declared in any protocol"
               .format(list(diff)))
-    elif len(set(protocols_declared) - set(protocols_used)) > 0:
+    elif set(protocols_declared) - set(protocols_used):
         diff = set(protocols_declared) - set(protocols_used)
         logger.warning("(W) There are some protocol parameters declared {} not used in any study or assay process"
               .format(list(diff)))
@@ -821,11 +823,11 @@ def check_characteristic_category_ids_usage(studies_json):
         for assay in study_json['assays']:
             characteristic_categories_used_in_assay = get_characteristic_category_ids_in_assay_materials(assay)
             characteristic_categories_used += characteristic_categories_used_in_assay
-    if len(set(characteristic_categories_used) - set(characteristic_categories_declared)) > 0:
+    if set(characteristic_categories_used) - set(characteristic_categories_declared):
         diff = set(characteristic_categories_used) - set(characteristic_categories_declared)
         logger.error("(E) There are characteristic categories {} used in a source or sample characteristic that have not been not declared"
               .format(list(diff)))
-    elif len(set(characteristic_categories_declared) - set(characteristic_categories_used)) > 0:
+    elif set(characteristic_categories_declared) - set(characteristic_categories_used):
         diff = set(characteristic_categories_declared) - set(characteristic_categories_used)
         logger.warning("(W) There are characteristic categories declared {} that have not been used in any source or sample characteristic"
               .format(list(diff)))
@@ -850,11 +852,11 @@ def check_study_factor_usage(study_json):
     """Used for rules 1008 and 1021"""
     factors_declared = get_study_factor_ids(study_json)
     factors_used = get_study_factor_ids_in_sample_factor_values(study_json)
-    if len(set(factors_used) - set(factors_declared)) > 0:
+    if set(factors_used) - set(factors_declared):
         diff = set(factors_used) - set(factors_declared)
         logger.error("(E) There are study factors {} used in a sample factor value that have not been not declared"
               .format(list(diff)))
-    elif len(set(factors_declared) - set(factors_used)) > 0:
+    elif set(factors_declared) - set(factors_used):
         diff = set(factors_declared) - set(factors_used)
         logger.warning("(W) There are some study factors declared {} that have not been used in any sample factor value"
               .format(list(diff)))
@@ -951,11 +953,11 @@ def check_unit_category_ids_usage(study_json):
     for assay in study_json['assays']:
         units_used.extend(get_assay_unit_category_ids_in_materials_and_processes(assay))
     logger.info("Comparing units declared vs units used...")
-    if len(set(units_used) - set(units_declared)) > 0:
+    if set(units_used) - set(units_declared) > 0:
         diff = set(units_used) - set(units_declared)
         logger.error("(E) There are units {} used in a material or parameter value that have not been not declared"
               .format(list(diff)))
-    elif len(set(units_declared) - set(units_used)) > 0:
+    elif set(units_declared) - set(units_used) > 0:
         diff = set(units_declared) - set(units_used)
         logger.warning("(W) There are some units declared {} that have not been used in any material or parameter value"
               .format(list(diff)))
@@ -1112,11 +1114,11 @@ def check_term_source_refs(isa_json):
     collector = list()
     walk_and_get_annotations(isa_json, collector)
     term_sources_used = [annotation['termSource'] for annotation in collector if annotation['termSource']]
-    if len(set(term_sources_used) - set(term_sources_declared)) > 0:
+    if set(term_sources_used) - set(term_sources_declared):
         diff = set(term_sources_used) - set(term_sources_declared)
         logger.error("(E) There are ontology sources {} referenced in an annotation that have not been not declared"
               .format(list(diff)))
-    elif len(set(term_sources_declared) - set(term_sources_used)) > 0:
+    elif set(term_sources_declared) - set(term_sources_used):
         diff = set(term_sources_declared) - set(term_sources_used)
         logger.warning("(W) There are some ontology sources declared {} that have not been used in any annotation"
               .format(list(diff)))
@@ -1128,7 +1130,7 @@ def check_term_accession_used_no_source_ref(isa_json):
     walk_and_get_annotations(isa_json, collector)
     terms_using_accession_no_source_ref = [annotation for annotation in collector if annotation['termAccession']
                                            and not annotation['termSource']]
-    if len(terms_using_accession_no_source_ref) > 0:
+    if terms_using_accession_no_source_ref:
         logger.warning("(W) There are ontology annotations with termAccession set but no termSource referenced: {}"
                        .format(terms_using_accession_no_source_ref))
 
@@ -1210,19 +1212,19 @@ def list_process_sequences(process_sequence_json):
             while True:
                 process_graph = list()
                 if 'outputs' in process:
-                    outputs = process['outputs']
-                    if len(outputs) > 0:
-                        for output in outputs:
-                            output_id = output['@id']
-                            process_graph.append(output_id)
+                    #outputs = process['outputs']
+                    #if len(outputs) > 0:
+                    for output in process['outputs']: #outputs:
+                        output_id = output['@id']
+                        process_graph.append(output_id)
                 protocol_id = process['executesProtocol']['@id']
                 process_graph.append(protocol_id)
                 if 'inputs' in process:
-                    inputs = process['inputs']
-                    if len(inputs) > 0:
-                        for input_ in inputs:
-                            input_id = input_['@id']
-                            process_graph.append(input_id)
+                    #inputs = process['inputs']
+                    #if len(inputs) > 0:
+                    for input_ in process['inputs']:
+                        input_id = input_['@id']
+                        process_graph.append(input_id)
                 process_graph.reverse()
                 assay_graph.append(process_graph)
                 process = [i for i in process_sequence_json if i['@id'] == process['previousProcess']['@id']][0]
@@ -1245,18 +1247,18 @@ def check_study_and_assay_graphs(study_json, configs):
                     process_graph = list()
                     if 'outputs' in process:
                         outputs = process['outputs']
-                        if len(outputs) > 0:
-                            for output in outputs:
-                                output_id = output['@id']
-                                process_graph.append(output_id)
+                        #if outputs:
+                        for output in outputs:
+                            output_id = output['@id']
+                            process_graph.append(output_id)
                     protocol_id = protocols_and_types[process['executesProtocol']['@id']]
                     process_graph.append(protocol_id)
                     if 'inputs' in process:
                         inputs = process['inputs']
-                        if len(inputs) > 0:
-                            for input_ in inputs:
-                                input_id = input_['@id']
-                                process_graph.append(input_id)
+                        #if len(inputs) > 0:
+                        for input_ in inputs:
+                            input_id = input_['@id']
+                            process_graph.append(input_id)
                     process_graph.reverse()
                     assay_graph.append(process_graph)
                     process = [i for i in process_sequence_json if i['@id'] == process['previousProcess']['@id']][0]
@@ -1272,7 +1274,7 @@ def check_study_and_assay_graphs(study_json, configs):
                 logger.warn("Configuration protocol sequence {} does not match study graph found in {}"
                             .format(config_protocol_sequence, assay_protocol_sequence))
 
-    protocols_and_types = dict([(i['@id'], i['protocolType']['annotationValue']) for i in study_json['protocols']])
+    protocols_and_types = {i['@id']: i['protocolType']['annotationValue'] for i in study_json['protocols']}
     # first check study graph
     logger.info("Loading configuration (study)")
     config = configs['study']
