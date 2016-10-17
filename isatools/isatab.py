@@ -2094,10 +2094,15 @@ def check_field_values(table, cfg):
     for irow in six.moves.range(len(table.index)):
         ncols = len(table.columns)
         for icol in six.moves.range(ncols):
-            cfields = [k for k in cfg.get_isatab_configuration()[0].get_field() if k.header == table.columns[icol]]
-            if len(cfields) == 1:
-                cfield = cfields[0]
+            # cfields = [k for k in cfg.get_isatab_configuration()[0].get_field() if k.header == table.columns[icol]]
+            # if len(cfields) == 1:
+            #     cfield = cfields[0]
+            #     result = result and check_single_field(table.iloc[irow][cfield.header], cfield)
+            try:
+                cfield = next(k for k in cfg.get_isatab_configuration()[0].get_field() if k.header==table.columns[icol])
                 result = result and check_single_field(table.iloc[irow][cfield.header], cfield)
+            except StopIteration:
+                pass
 
     return result
 
@@ -2115,7 +2120,7 @@ def check_unit_field(table, cfg):
         try: cfield = next(k for k in cfg.get_isatab_configuration()[0].get_field() if k.header==header)
         except StopIteration: continue
 
-        try: ucfields= next(k for k in cfg.get_isatab_configuration()[0].get_unit_field() if k.pos==cfield.pos+1)
+        try: ucfield= next(k for k in cfg.get_isatab_configuration()[0].get_unit_field() if k.pos==cfield.pos+1)
         except StopIteration: continue
 
         if ucfield.is_required:
@@ -2218,7 +2223,7 @@ def check_ontology_fields(table, cfg):
     nfields = len(table.columns)
     for icol, header in enumerate(table.columns):
 
-        try: cfields = next(k for k in cfg.get_isatab_configuration()[0].get_field() if k.header==header)
+        try: cfield = next(k for k in cfg.get_isatab_configuration()[0].get_field() if k.header==header)
         except StopIteration: continue
 
         if cfield.get_recommended_ontologies() is None:
@@ -2689,7 +2694,7 @@ def load(isatab_dir):
                         characteristics=_createValueList("Characteristics", node_index, nodes[node_index]),
                         derives_from=nodes[node_index].metadata["Source Name"][0],
                     )
-                    obj_dict.update[node_index] = obj_item
+                    obj_dict[node_index] = obj_item
                 except KeyError:
                     pass
         return obj_dict

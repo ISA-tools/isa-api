@@ -213,8 +213,8 @@ class ISATab2CEDAR():
                 sample_list.append(json_item)
             except KeyError:
                 pass
-        json_dict.update({"sample": sample_list})
-        json_dict.update({"studySubject": studySubject_list})
+        json_dict["sample"] = sample_list
+        json_dict["studySubject"] = studySubject_list
         return json_dict
 
 
@@ -227,7 +227,7 @@ class ISATab2CEDAR():
                 sample_list.append(json_item)
             except KeyError:
                 pass
-        json_dict.update({"sample": sample_list})
+        json_dict["sample"] = sample_list
         return json_dict
 
 
@@ -310,7 +310,7 @@ class ISATab2CEDAR():
                     "type": {"_value": "http://purl.obolibrary.org/obo/OBI_0000747"},
                     "description": {"_value": ""},
                 }
-                json_dict.update({node_index: json_item})
+                json_dict[node_index] = json_item
         return json_dict
 
     def createSamples(self, nodes):
@@ -328,7 +328,7 @@ class ISATab2CEDAR():
                     "studyTime": self.createStudyTimeCollection(),
                     "characteristic": self.createCharacteristicList(node_index, nodes[node_index]),
                 }
-                json_dict.update({node_index: json_item})
+                json_dict[node_index] = json_item
         return json_dict
 
     def createSources(self, nodes):
@@ -340,13 +340,13 @@ class ISATab2CEDAR():
                     "type": {"_value": "http://purl.obolibrary.org/obo/OBI_0000925"},
                     "characteristic": self.createCharacteristicList(node_index, nodes[node_index]),
                 }
-                json_dict.update({node_index: json_item})
+                json_dict[node_index] = json_item
         return json_dict
 
 
     def createStudyTimeCollection(self):
         json_item = {
-                    "@id": "https://repo.metadatacenter.org/UUID{}".format(uuid4())),
+                    "@id": "https://repo.metadatacenter.org/UUID{}".format(uuid4()),
                     "@type": "http://purl.obolibrary.org/obo/OBI_0001619",
                     "durationValue": {"_value": ""},
                     "isBeforeEvent": {"_value": ""},

@@ -403,9 +403,9 @@ class ISATab2ISAjson_v1:
             ])
 
             if previous_process_identifier:
-                json_item.update({  "previousProcess" : dict([("@id", previous_process_identifier)]) })
+                json_item["previousProcess"] = {"@id", previous_process_identifier}
             if next_process_identifier:
-                json_item.update({ "nextProcess" :  dict([("@id", next_process_identifier)]) })
+                json_item["nextProcess"] = {"@id", next_process_identifier}
             json_list.append(json_item)
         return json_list
 
@@ -522,7 +522,7 @@ class ISATab2ISAjson_v1:
                     ("type", nodes[node_index].ntype),
                     ("comments", self.createFromNodeComments(nodes[node_index]))
                 ])
-                json_dict.update({node_index: json_item})
+                json_dict[node_index] = json_item
         return json_dict
 
     def createSampleDictionary(self, nodes):
@@ -550,7 +550,7 @@ class ISATab2ISAjson_v1:
                 except KeyError:
                      logger.error("There is no source declared for sample {}".format(node_index))
 
-                json_dict.update({node_index: json_item})
+                json_dict[node_index] = json_item
 
         return json_dict
 
@@ -585,7 +585,7 @@ class ISATab2ISAjson_v1:
                     ("name", node_index),
                     ("characteristics", self.createValueList(self.CHARACTERISTICS, node_index, nodes[node_index])),
                 ])
-                json_dict.update({node_index: json_item})
+                json_dict[node_index] = json_item
         return json_dict
 
     def createMaterialDictionary(self, nodes):
@@ -599,7 +599,7 @@ class ISATab2ISAjson_v1:
                     ("type", nodes[node_index].ntype),
                     ("characteristics", self.createValueList(self.CHARACTERISTICS, node_index, nodes[node_index])),
                 ])
-                json_dict.update({node_index: json_item})
+                json_dict[node_index] = json_item
         return json_dict
 
     def createCharacteristicsCategories(self, nodes):

@@ -351,7 +351,7 @@ class StudyAssayParser:
                                         process_number = 0
 
                                     process_number +=1
-                                    process_counters.update({processing_name: process_number})
+                                    process_counters[processing_name] = process_number
                                     unique_process_name = processing_name+str(process_number)
 
                         try:
@@ -369,7 +369,7 @@ class StudyAssayParser:
 
                         if assay_name:
                             process_node.assay_name = assay_name
-                            assay_name_map.update({assay_name : process_node})
+                            assay_name_map[assay_name] = process_node
 
                         #Add qualifiers (performer and date)
                         for qualifier_index in qualifier_indices:
