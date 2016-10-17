@@ -639,7 +639,7 @@ def batch_create_materials(material=None, n=1):
         from copy import deepcopy
         for x in six.moves.range(n):
             new_obj = deepcopy(material)
-            new_obj.name = material.name + '-' + str(x)
+            new_obj.name = '-'.join([material.name, str(x)])
             material_list.append(new_obj)
     return material_list
 
@@ -689,30 +689,30 @@ def batch_create_assays(*args, **kwargs):
                         materialA = deepcopy(arg)
                         y = 0
                         for material in materialA:
-                            material.name = material.name + '-' + str(x) + '-' + str(y)
+                            material.name = '-'.join([material.name, str(x), str(y)])
                             y += 1
                     else:
                         materialB = deepcopy(arg)
                         y = 0
                         for material in materialB:
-                            material.name = material.name + '-' + str(x) + '-' + str(y)
+                            material.name = '-'.join([material.name, str(x), str(y)])
                             y += 1
                 elif isinstance(arg[0], Process):
                     process = deepcopy(arg)
                     y = 0
                     for p in process:
-                        p.name = p.name + '-' + str(x) + '-' + str(y)
+                        p.name = '-'.join([p.name, str(x), str(y)])
                         y += 1
             if isinstance(arg, (Sample, Material)):
                 if materialA is None:
                     materialA = deepcopy(arg)
-                    materialA.name = materialA.name + '-' + str(x)
+                    materialA.name = '-'.join([materialA.name, str(x)])
                 else:
                     materialB = deepcopy(arg)
-                    materialB.name = materialB.name + '-' + str(x)
+                    materialB.name = '-'.join([materialB.name, str(x)])
             elif isinstance(arg, Process):
                 process = deepcopy(arg)
-                process.name = process.name + '-' + str(x)
+                process.name = '-'.join([process.name, str(x)])
             if materialA is not None and materialB is not None and process is not None:
                 if isinstance(process, list):
                     for p in process:
