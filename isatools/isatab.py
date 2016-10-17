@@ -904,7 +904,7 @@ def write_study_table_files(inv_obj, output_dir):
         df = df.drop_duplicates()
         df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0 (Sample name)
         for i, col in enumerate(df.columns):
-            if col_map[col] in ['Characteristics[Material Type]', 'Characteristics[material type]']:
+            if col_map[col] in {'Characteristics[Material Type]', 'Characteristics[material type]'}:
                 cols[i] = 'Material Type'
             else:
                 cols[i] = col_map[col]
@@ -1485,13 +1485,13 @@ def load_table_checks(fp):
     for x, column in enumerate(columns):  # check if columns have valid labels
         if indexed_col_regex.match(column):
             column = column[:column.rfind('.')]
-        if (column not in ['Source Name', 'Sample Name', 'Term Source REF', 'Protocol REF', 'Term Accession Number',
+        if (column not in {'Source Name', 'Sample Name', 'Term Source REF', 'Protocol REF', 'Term Accession Number',
                            'Unit', 'Assay Name', 'Extract Name', 'Raw Data File', 'Material Type', 'MS Assay Name',
                            'Raw Spectral Data File', 'Labeled Extract Name', 'Label', 'Hybridization Assay Name',
                            'Array Design REF', 'Scan Name', 'Array Data File', 'Protein Assignment File',
                            'Peptide Assignment File', 'Post Translational Modification Assignment File',
                            'Data Transformation Name', 'Derived Spectral Data File', 'Normalization Name',
-                           'Derived Array Data File', 'Image File']) and not characteristics_regex.match(column) and not parameter_value_regex.match(column) and not factor_value_regex.match(column) and not comment_regex.match(column):
+                           'Derived Array Data File', 'Image File'}) and not characteristics_regex.match(column) and not parameter_value_regex.match(column) and not factor_value_regex.match(column) and not comment_regex.match(column):
             logger.error("Unrecognised column heading {} at column position {} in table file {}".format(column, x, os.path.basename(fp.name)))
     norm_columns = list()
     for x, column in enumerate(columns):
@@ -1517,14 +1517,14 @@ def load_table_checks(fp):
 
     for object_columns in object_columns_list:
         prop_name = object_columns[0]
-        if prop_name in ['Sample Name', 'Source Name']:
+        if prop_name in {'Sample Name', 'Source Name'}:
             for x, col in enumerate(object_columns[1:]):
-                if col not in ['Term Source REF', 'Term Accession Number', 'Unit'] and not characteristics_regex.match(col) and not factor_value_regex.match(col) and not comment_regex.match(col):
+                if col not in {'Term Source REF', 'Term Accession Number', 'Unit'} and not characteristics_regex.match(col) and not factor_value_regex.match(col) and not comment_regex.match(col):
                     logger.error("(E) Expected only Characteristics, Factor Values or Comments following {} columns but found {} at offset {}".format(prop_name, col, x+1))
         elif prop_name == 'Protocol REF':
             for x, col in enumerate(object_columns[1:]):
-                if col not in ['Term Source REF', 'Term Accession Number', 'Unit', 'Assay Name',
-                               'Hybridization Assay Name', 'Array Design REF', 'Scan Name'] and not parameter_value_regex.match(col) and not comment_regex.match(col):
+                if col not in {'Term Source REF', 'Term Accession Number', 'Unit', 'Assay Name',
+                               'Hybridization Assay Name', 'Array Design REF', 'Scan Name'} and not parameter_value_regex.match(col) and not comment_regex.match(col):
                     logger.error("(E) Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, col, x+1))
         elif prop_name == 'Extract Name':
             if len(object_columns) > 1:
@@ -1534,21 +1534,21 @@ def load_table_checks(fp):
             if len(object_columns) > 1:
                 if object_columns[1] == 'Label':
                     for x, col in enumerate(object_columns[2:]):
-                        if col not in ['Term Source REF', 'Term Accession Number']:
+                        if col not in {'Term Source REF', 'Term Accession Number'}:
                             logger.error("(E) Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, col, x+1))
                 else:
                     logger.error("(E) Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, object_columns[1:], 2))
             else:
                 logger.error("Expected Label column after Labeled Extract Name but none found")
-        elif prop_name in ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
+        elif prop_name in {'Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
                            'Raw Spectral Data File', 'Protein Assignment File', 'Peptide Assignment File',
-                           'Post Translational Modification Assignment File']:
+                           'Post Translational Modification Assignment File'}:
             for x, col in enumerate(object_columns[1:]):
                 if not comment_regex.match(col):
                     logger.error("(E) Expected only Comments following {} columns but found {} at offset {}".format(prop_name, col, x+1))
         elif factor_value_regex.match(prop_name):
             for x, col in enumerate(object_columns[2:]):
-                if col not in ['Term Source REF', 'Term Accession Number']:
+                if col not in {'Term Source REF', 'Term Accession Number'}:
                     logger.error(
                         "(E) Unexpected column heading following {} column. Found {} at offset {}".format(prop_name,
                                                                                                       col, x + 1))
@@ -1878,13 +1878,13 @@ def check_study_table_against_config(s_df, protocols_declared, config):
 
     # First check column order is correct against the configuration
     columns = s_df.columns
-    object_index = ((k, x) for k, x in enumerate(columns) if x in ['Source Name', 'Sample Name',
+    object_index = ((k, x) for k, x in enumerate(columns) if x in {'Source Name', 'Sample Name',
                                                               'Extract Name', 'Labeled Extract Name', 'Raw Data File',
                                                               'Raw Spectral Data File', 'Array Data File',
                                                               'Protein Assignment File', 'Peptide Assignment File',
                                                               'Post Translational Modification Assignment File',
                                                               'Derived Spectral Data File',
-                                                              'Derived Array Data File'] or 'Protocol REF' in x or
+                                                              'Derived Array Data File'} or 'Protocol REF' in x or
                     'Characteristics[' in x or 'Factor Value[' in x or 'Parameter Value[' in x)
     fields = [k.header for k in config.get_isatab_configuration()[0].get_field()]
     protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
@@ -1915,13 +1915,13 @@ def check_assay_table_against_config(s_df, config):
         else:
             norm_columns.append(column)
     norm_columns = (k for k, g in itertools.groupby(norm_columns))  # remove adjacent dups - i.e. chained Protocol REFs
-    object_index = ((k, x) for k, x in enumerate(norm_columns) if x in ['Source Name', 'Sample Name',
+    object_index = ((k, x) for k, x in enumerate(norm_columns) if x in {'Source Name', 'Sample Name',
                                                               'Extract Name', 'Labeled Extract Name', 'Raw Data File',
                                                               'Raw Spectral Data File', 'Array Data File',
                                                               'Protein Assignment File', 'Peptide Assignment File',
                                                               'Post Translational Modification Assignment File',
                                                               'Derived Spectral Data File',
-                                                              'Derived Array Data File', 'Assay Name'] or 'Protocol REF' in x or
+                                                              'Derived Array Data File', 'Assay Name'} or 'Protocol REF' in x or
                     'Characteristics[' in x or 'Factor Value[' in x or 'Parameter Value[' in x or 'Comment[' in x)
     fields = [k.header for k in config.get_isatab_configuration()[0].get_field()]
     protocols = [(k.pos, k.protocol_type) for k in config.get_isatab_configuration()[0].get_protocol_field()]

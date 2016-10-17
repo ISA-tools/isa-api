@@ -181,22 +181,22 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                         assay_to_export['targeted_loci'] = False
                         assay_to_export['min_match'] = 0
                         # BEGIN genome seq library selection
-                        if iassay.measurement_type.name in ['genome sequencing', 'whole genome sequencing']:
+                        if iassay.measurement_type.name in {'genome sequencing', 'whole genome sequencing'}:
                             library_source = get_pv(assay_to_export['library construction'],
                                                       'library source')
-                            if library_source.upper() not in ['GENOMIC', 'GENOMIC SINGLE CELL', 'METAGENOMIC', 'OTHER']:
+                            if library_source.upper() not in {'GENOMIC', 'GENOMIC SINGLE CELL', 'METAGENOMIC', 'OTHER'}:
                                 logger.warn("ERROR:value supplied is not compatible with SRA1.5 schema " + library_source)
                                 library_source = 'OTHER'
 
                             library_strategy = get_pv(assay_to_export['library construction'],
                                                       'library strategy')
-                            if library_strategy.upper() not in ['WGS', 'OTHER']:
+                            if library_strategy.upper() not in {'WGS', 'OTHER'}:
                                 logger.warn("ERROR:value supplied is not compatible with SRA1.5 schema " + library_strategy)
                                 library_strategy = 'OTHER'
 
                             library_selection = get_pv(assay_to_export['library construction'],
                                                        'library selection')
-                            if library_selection not in ['RANDOM', 'UNSPECIFIED']:
+                            if library_selection not in {'RANDOM', 'UNSPECIFIED'}:
                                 logger.warn("ERROR:value supplied is not compatible with SRA1.5 schema " + library_selection)
                                 library_selection = 'unspecified'
 
@@ -215,7 +215,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             assay_to_export['library_layout'] = library_layout.lower()
                         # END genome seq library selection
                         # BEGIN environmental gene survey library selection
-                        elif iassay.measurement_type.name in ['environmental gene survey']:
+                        elif iassay.measurement_type.name in {'environmental gene survey'}:
                             assay_to_export['library_source'] = 'METAGENOMIC'
                             assay_to_export['library_strategy'] = 'AMPLICON'
                             assay_to_export['library_selection'] = 'PCR'
@@ -259,18 +259,18 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 assay_to_export['locus_name'] = target_gene
                         # END environmental gene survey library selection
                         # BEGIN metagenome seq library selection
-                        elif iassay.measurement_type.name in ['metagenome sequencing']:
+                        elif iassay.measurement_type.name in {'metagenome sequencing'}:
                             library_source = 'METAGENOMIC'
                             library_strategy = get_pv(assay_to_export['library construction'],
                                                       'library strategy')
-                            if library_strategy.upper() not in ['WGS', 'OTHER']:
+                            if library_strategy.upper() not in {'WGS', 'OTHER'}:
                                 logger.warn(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_strategy)
                                 library_strategy = 'OTHER'
 
                             library_selection = get_pv(assay_to_export['library construction'],
                                                        'library selection')
-                            if library_selection not in ['RANDOM', 'UNSPECIFIED']:
+                            if library_selection not in {'RANDOM', 'UNSPECIFIED'}:
                                 logger.warn(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_selection)
                                 library_selection = 'unspecified'
@@ -290,31 +290,31 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             assay_to_export['library_layout'] = library_layout.lower()
                         # END metagenome seq library selection
                         # BEGIN transciption profiling library selection
-                        elif iassay.measurement_type.name in ['transcription profiling']:
+                        elif iassay.measurement_type.name in {'transcription profiling'}:
                             library_source = get_pv(assay_to_export['library construction'],
                                                     'library source')
                             if library_source is None:  # if not specified, select TRANSCRIPTOMIC by default
                                 library_source = 'TRANSCRIPTOMIC'
 
-                            if library_source.upper() not in ['TRANSCRIPTOMIC', 'TRANSCRIPTOMIC SINGLE CELL',
-                                                              'METATRANSCRIPTOMIC', 'OTHER']:
+                            if library_source.upper() not in {'TRANSCRIPTOMIC', 'TRANSCRIPTOMIC SINGLE CELL',
+                                                              'METATRANSCRIPTOMIC', 'OTHER'}:
                                 logger.warn(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_source)
                                 library_source = 'OTHER'
 
                             library_strategy = get_pv(assay_to_export['library construction'],
                                                       'library strategy')
-                            if library_strategy not in ['RNA-Seq', 'ssRNA-Seq', 'miRNA-Seq', 'ncRNA-Seq', 'FL-cDNA',
-                                                        'EST', 'OTHER']:
+                            if library_strategy not in {'RNA-Seq', 'ssRNA-Seq', 'miRNA-Seq', 'ncRNA-Seq', 'FL-cDNA',
+                                                        'EST', 'OTHER'}:
                                 logger.warn(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_strategy)
                                 library_strategy = 'OTHER'
 
                             library_selection = get_pv(assay_to_export['library construction'],
                                                        'library selection')
-                            if library_selection not in ['RT-PCR', 'cDNA', "cDNA_randomPriming", "cDNA_oligo_dT",
+                            if library_selection not in {'RT-PCR', 'cDNA', "cDNA_randomPriming", "cDNA_oligo_dT",
                                                          "PolyA", "Oligo-dT", "Inverse rRNA", "Inverse rRNA selection",
-                                                         "CAGE", "RACE", "other"]:
+                                                         "CAGE", "RACE", "other"}:
                                 logger.warn(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_selection)
                                 library_selection = 'other'

@@ -152,7 +152,7 @@ except ImportError as exp:
                 self, input_data, node=None, input_name=''):
             values = input_data.split()
             for value in values:
-                if value not in ('true', '1', 'false', '0', ):
+                if value not in {'true', '1', 'false', '0'}:
                     raise_parse_error(
                         node,
                         'Requires sequence of booleans '
