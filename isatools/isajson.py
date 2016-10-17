@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 import json
 import logging
+import itertools
 import networkx as nx
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
@@ -644,8 +645,15 @@ def get_io_ids_in_process_sequence(study_json):
     all_process_sequences = list(study_json['processSequence'])
     for assay_json in study_json['assays']:
         all_process_sequences.extend(assay_json['processSequence'])
-    return [elem for iterabl in [[i['@id'] for i in process['inputs']] + [o['@id'] for o in process['outputs']] for process in
-                                 all_process_sequences] for elem in iterabl]
+    # return [elem for iterabl in [[i['@id'] for i in process['inputs']] + [o['@id'] for o in process['outputs']] for process in
+    #                              all_process_sequences] for elem in iterabl]
+
+    return [
+            io['@id']
+                for process in all_process_sequences
+                    for io in itertools.chain(process['inputs'], process['outputs'])
+           ]
+
 
 
 def check_material_ids_declared_used(study_json, id_collector_func):
@@ -722,21 +730,35 @@ def check_process_protocol_ids_usage(study_json):
 
 def get_study_protocols_parameter_ids(study_json):
     """Used for rule 1009"""
-    return [elem for iterabl in [[param['@id'] for param in protocol['parameters']] for protocol in
-                                 study_json['protocols']] for elem in iterabl]
+    # return [elem for iterabl in [[param['@id'] for param in protocol['parameters']] for protocol in
+    #                              study_json['protocols']] for elem in iterabl]
+    return [ param['@id'] for protocol in study_json['protocols'] for param in protocol[parameters] ]
 
 
 def get_parameter_value_parameter_ids(study_json):
     """Used for rule 1009"""
-    study_pv_parameter_ids = [elem for iterabl in
-                              [[parameter_value['category']['@id'] for parameter_value in process['parameterValues']]
-                               for process in study_json['processSequence']] for elem in iterabl]
-    for assay in study_json['assays']:
-        study_pv_parameter_ids.extend([elem for iterabl in
-                                       [[parameter_value['category']['@id'] for parameter_value in
-                                         process['parameterValues']]
-                                        for process in assay['processSequence']] for elem in iterabl]
-                                      )
+    # study_pv_parameter_ids = [elem for iterabl in
+    #                           [[parameter_value['category']['@id'] for parameter_value in process['parameterValues']]
+    #                               for process in study_json['processSequence']] for elem in iterabl]
+    study_pv_parameter_ids = [
+        parameter_value['category']['@id']
+            for process in study_json['processSequence']
+                for parameter_value in process['parameterValues']
+
+    ]
+
+    # for assay in study_json['assays']:
+    #     # study_pv_parameter_ids.extend([elem for iterabl in
+    #     #                                [[parameter_value['category']['@id'] for parameter_value in
+    #     #                                  process['parameterValues']]
+    #     #                                 for process in assay['processSequence']] for elem in iterabl]
+    #     #                               )
+    study_pv_parameter_ids.extend([
+        parameter_value['category']['@id']
+            for assay in study_json['assays']
+                for process in assay['processSequence']
+                    for parameter_value in process['parameterValues']
+    ])
     return study_pv_parameter_ids
 
 
@@ -760,16 +782,30 @@ def get_characteristic_category_ids(study_or_assay_json):
 
 def get_characteristic_category_ids_in_study_materials(study_json):
     """Used for rule 1013"""
-    return [elem for iterabl in
-            [[characteristic['category']['@id'] for characteristic in material['characteristics']] for material in
-             study_json['materials']['sources'] + study_json['materials']['samples']] for elem in iterabl]
+
+    return [
+            characteristic['category']['@id']
+                for material in itertools.chain(study_json['materials']['sources'], study_json['materials']['samples'])
+                    for characteristic in material['characteristics']
+            ]
+
+    # return [elem for iterabl in
+    #         [[characteristic['category']['@id'] for characteristic in material['characteristics']] for material in
+    #          study_json['materials']['sources'] + study_json['materials']['samples']] for elem in iterabl]
 
 
 def get_characteristic_category_ids_in_assay_materials(assay_json):
     """Used for rule 1013"""
-    return [elem for iterabl in [[characteristic['category']['@id']  for characteristic in material['characteristics']]
-                                 if 'characteristics' in material else [] for material in
-              assay_json['materials']['samples'] + assay_json['materials']['otherMaterials']] for elem in iterabl]
+    # return [elem for iterabl in [[characteristic['category']['@id']  for characteristic in material['characteristics']]
+    #                              if 'characteristics' in material else [] for material in
+    #           assay_json['materials']['samples'] + assay_json['materials']['otherMaterials']] for elem in iterabl]
+    return [
+             characteristic['category']['@id']
+                for material in itertools.chain(assay_json['materials']['samples'], assay_json['materials']['otherMaterials'])
+                    if 'characteristics' in material
+                        for characteristic in material['characteristics']
+           ]
+
 
 
 def check_characteristic_category_ids_usage(studies_json):
@@ -802,8 +838,12 @@ def get_study_factor_ids(study_json):
 
 def get_study_factor_ids_in_sample_factor_values(study_json):
     """Used for rule 1008 and 1021"""
-    return [elem for iterabl in [[factor['category']['@id'] for factor in sample['factorValues']] for sample in
-                                 study_json['materials']['samples']] for elem in iterabl]
+    # return [elem for iterabl in [[factor['category']['@id'] for factor in sample['factorValues']] for sample in
+    #                              study_json['materials']['samples']] for elem in iterabl]
+    return [ factor['category']['@id']
+                for sample in study_json['materials']['samples']
+                    for factor in sample['factorValues']
+           ]
 
 
 def check_study_factor_usage(study_json):
@@ -827,38 +867,76 @@ def get_unit_category_ids(study_or_assay_json):
 
 def get_study_unit_category_ids_in_materials_and_processes(study_json):
     """Used for rule 1014"""
-    study_characteristics_units_used = [elem for iterabl in
-                                        [[characteristic['unit']['@id'] if 'unit' in characteristic else None for
-                                          characteristic in material['characteristics']] for material in
-                                         study_json['materials']['sources'] + study_json['materials']['samples']] for
-                                        elem in iterabl]
-    study_factor_value_units_used = [elem for iterabl in
-                                     [[factor_value['unit']['@id'] if 'unit' in factor_value else None for
-                                       factor_value in material['factorValues']] for material in
-                                      study_json['materials']['samples']] for
-                                     elem in iterabl]
-    parameter_value_units_used = [elem for iterabl in[[parameter_value['unit']['@id']
-                                                       if 'unit' in parameter_value else None for
-                                   parameter_value in process['parameterValues']] for process in
-                                  study_json['processSequence']] for
-                                  elem in iterabl]
-    return [x for x in study_characteristics_units_used + study_factor_value_units_used + parameter_value_units_used
-            if x is not None]
+    # study_characteristics_units_used = [elem for iterabl in
+    #                                     [[characteristic['unit']['@id'] if 'unit' in characteristic else None for
+    #                                       characteristic in material['characteristics']] for material in
+    #                                      study_json['materials']['sources'] + study_json['materials']['samples']] for
+    #                                     elem in iterabl]
+    study_characteristics_units_used = [characteristic['unit']['@id']
+                                            for material in itertools.chain(study_json['materials']['sources'],study_json['materials']['samples'])
+                                                for characteristic in material['characteristics']
+                                                    if 'unit' in characteristic
+                                        ]
+
+    # study_factor_value_units_used = [elem for iterabl in
+    #                                  [[factor_value['unit']['@id'] if 'unit' in factor_value else None for
+    #                                    factor_value in material['factorValues']] for material in
+    #                                   study_json['materials']['samples']] for
+    #                                  elem in iterabl]
+    study_factor_value_units_used = [factor_value['unit']['@id']
+                                        for material in study_json['materials']['samples']
+                                            for factor_value in material['factorValues']
+                                                if 'unit' in factor_value
+                                    ]
+
+
+
+    # parameter_value_units_used = [elem for iterabl in[[parameter_value['unit']['@id']
+    #                                                    if 'unit' in parameter_value else None for
+    #                                parameter_value in process['parameterValues']] for process in
+    #                               study_json['processSequence']] for
+    #                               elem in iterabl]
+    parameter_value_units_used = [parameter_value['unit']['@id']
+                                    for process in study_json['processSequence']
+                                        for parameter_value in process['parameterValues']
+                                            if 'unit' in parameter_value
+                                 ]
+
+    # return [x for x in study_characteristics_units_used + study_factor_value_units_used + parameter_value_units_used
+    #         if x is not None]
+    return study_characteristics_units_used + study_factor_value_units_used + parameter_value_units_used
 
 
 def get_assay_unit_category_ids_in_materials_and_processes(assay_json):
     """Used for rule 1014"""
-    assay_characteristics_units_used = [elem for iterabl in [[characteristic['unit']['@id'] if 'unit' in
-                                        characteristic else None
-                                                              for characteristic in material['characteristics']]
-                                                             if 'characteristics' in material else None for
-                                     material in assay_json['materials']['otherMaterials']] for elem in iterabl]
-    parameter_value_units_used = [elem for iterabl in[[parameter_value['unit']['@id']
-                                                       if 'unit' in parameter_value else None
-                                                       for parameter_value in process['parameterValues']] for process in
-                                                      assay_json['processSequence']] for
-                                  elem in iterabl]
-    return [x for x in assay_characteristics_units_used + parameter_value_units_used if x is not None]
+    # assay_characteristics_units_used = [elem for iterabl in [[characteristic['unit']['@id'] if 'unit' in
+    #                                     characteristic else None
+    #                                                           for characteristic in material['characteristics']]
+    #                                                          if 'characteristics' in material else None for
+    #                                  material in assay_json['materials']['otherMaterials']] for elem in iterabl]
+    assay_characteristics_units_used = [
+        characteristic['unit']['@id']
+            for material in assay_json['materials']['otherMaterials']
+                if 'characteristics' in material
+                    for characteristic in material
+                        if 'unit' in characteristic
+    ]
+
+
+    # parameter_value_units_used = [elem for iterabl in[[parameter_value['unit']['@id']
+    #                                                    if 'unit' in parameter_value else None
+    #                                                    for parameter_value in process['parameterValues']] for process in
+    #                                                   assay_json['processSequence']] for
+    #                               elem in iterabl]
+
+    parameter_value_units_used = [
+        parameter_value['unit']['@id']
+            for process in assay_json['processSequence']
+                for parameter_value in process['parameterValues']
+                    if 'unit' in parameter_value
+    ]
+
+    return parameter_value_units_used + assay_characteristics_units_used
 
 
 def check_unit_category_ids_usage(study_json):
