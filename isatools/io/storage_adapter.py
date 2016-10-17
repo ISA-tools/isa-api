@@ -132,13 +132,12 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             if res.status_code == requests.codes.ok:
                 auths = json.loads(res.text)
 
+
                 # filter the existing authorizations according to thw provided criteria (note and scopes)
-                auths = [auth for auth in auths
-                         if auth['note'] == payload['note'] and auth['scopes'] == payload['scopes']]
+                auth = next((auth for auth in auths if auth['note']==payload['note'] and auth['scopes']==payload['scopes']), None)
 
                 # if the required authorization already exists, delete it
-                if len(auths) > 0:
-                    requests.delete(auths[0]['url'], headers=headers, auth=(username, password))
+                if auth is not None: requests.delete(auth['url'], headers=headers, auth=(username, password))
 
                 # require a new authorization
                 res = requests.post(self.AUTH_ENDPOINT,  json=payload, headers=headers, auth=(username, password))
@@ -327,7 +326,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         """
         headers = {'Authorization': 'token %s' % self.token} if self.token else {}
         # filter the items to keep only files
-        files = [item for item in dir_items if item['type'] == 'file']
+        files = (item for item in dir_items if item['type'] == 'file')
         buf = BytesIO()
 
         with ZipFile(buf, 'w') as zip_file:

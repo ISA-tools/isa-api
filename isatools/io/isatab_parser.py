@@ -451,11 +451,11 @@ class StudyAssayParser:
 
                 in_handle.seek(0, 0)
                 for line in reader:
-                    if (line[0].startswith("#")):
+                    if line[0].startswith("#"):
                         continue
                     name = self._swap_synonyms([line[header_index]])[0]
                     #skip the header line and empty lines
-                    if (not name or name in headers):
+                    if not name or name in headers:
                         continue
                     #to deal with same name used for different node types (e.g. Source Name and Sample Name using the same string)
                     node_index_name = self._build_node_index(node_type,name)

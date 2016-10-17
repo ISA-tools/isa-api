@@ -1499,16 +1499,16 @@ def load_table_checks(fp):
             norm_columns.append(column[:column.rfind('.')])
         else:
             norm_columns.append(column)
-    object_index = [k for k, x in enumerate(norm_columns) if x in ['Source Name', 'Sample Name', 'Protocol REF',
+    object_index = (k for k, x in enumerate(norm_columns) if x in {'Source Name', 'Sample Name', 'Protocol REF',
                                                               'Extract Name', 'Labeled Extract Name', 'Raw Data File',
                                                               'Raw Spectral Data File', 'Array Data File',
                                                               'Protein Assignment File', 'Peptide Assignment File',
                                                               'Post Translational Modification Assignment File',
-                                                              'Derived Spectral Data File', 'Derived Array Data File']
-                    or factor_value_regex.match(x)]
+                                                              'Derived Spectral Data File', 'Derived Array Data File'}
+                    or factor_value_regex.match(x))
     # this bit strips out the postfix .n that DataFrames adds to multiples of column labels
     object_columns_list = list()
-    prev_i = object_index[0]
+    prev_i = next(object_index) # this will also automatically skip first one
     for curr_i in object_index:  # collect each object's columns
         if prev_i == curr_i: pass  # skip if there's no diff, i.e. first one
         else: object_columns_list.append(norm_columns[prev_i:curr_i])
@@ -1568,7 +1568,7 @@ def check_study_factor_usage(i_df, dir_context):
             try:
                 study_factors_used = set()
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
-                study_factor_ref_cols = [k for k in study_df.columns if factor_value_regex.match(k)]
+                study_factor_ref_cols = (k for k in study_df.columns if factor_value_regex.match(k))
                 for col in study_factor_ref_cols:
                     fv = factor_value_regex.findall(col)
                     study_factors_used = study_factors_used.union(set(fv))
@@ -1597,7 +1597,7 @@ def check_study_factor_usage(i_df, dir_context):
         if study_filename:
             try:
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
-                study_factor_ref_cols = [k for k in study_df.columns if factor_value_regex.match(k)]
+                study_factor_ref_cols = (k for k in study_df.columns if factor_value_regex.match(k))
                 for col in study_factor_ref_cols:
                     fv = factor_value_regex.findall(col)
                     study_factors_used = study_factors_used.union(set(fv))
@@ -1634,7 +1634,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
             try:
                 protocol_parameters_used = set()
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
-                parameter_value_cols = [k for k in study_df.columns if parameter_value_regex.match(k)]
+                parameter_value_cols = (k for k in study_df.columns if parameter_value_regex.match(k))
                 for col in parameter_value_cols:
                     pv = parameter_value_regex.findall(col)
                     protocol_parameters_used = protocol_parameters_used.union(set(pv))
@@ -1649,7 +1649,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                 try:
                     protocol_parameters_used = set()
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
-                    parameter_value_cols = [k for k in assay_df.columns if parameter_value_regex.match(k)]
+                    parameter_value_cols = (k for k in assay_df.columns if parameter_value_regex.match(k))
                     for col in parameter_value_cols:
                         pv = parameter_value_regex.findall(col)
                         protocol_parameters_used = protocol_parameters_used.union(set(pv))
@@ -1664,7 +1664,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
         if study_filename:
             try:
                 study_df = load_table(open(os.path.join(dir_context, study_filename)))
-                parameter_value_cols = [k for k in study_df.columns if parameter_value_regex.match(k)]
+                parameter_value_cols = (k for k in study_df.columns if parameter_value_regex.match(k))
                 for col in parameter_value_cols:
                     pv = parameter_value_regex.findall(col)
                     protocol_parameters_used = protocol_parameters_used.union(set(pv))
@@ -1674,7 +1674,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
             if assay_filename:
                 try:
                     assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
-                    parameter_value_cols = [k for k in assay_df.columns if parameter_value_regex.match(k)]
+                    parameter_value_cols = (k for k in assay_df.columns if parameter_value_regex.match(k))
                     for col in parameter_value_cols:
                         pv = parameter_value_regex.findall(col)
                         protocol_parameters_used = protocol_parameters_used.union(set(pv))
@@ -1695,7 +1695,7 @@ def check_term_source_refs_in_investigation(i_df):
     ontology_sources_list = set(get_ontology_source_refs(i_df))
 
     def check_study_term_sources_in_secton_field(section_label, pos, column_label):
-        section_term_source_refs = [k for k in i_df[section_label][pos][column_label].tolist() if k]
+        section_term_source_refs = (k for k in i_df[section_label][pos][column_label].tolist() if k)
         # this for loop deals with semicolon separated lists of term source refs
         section_term_source_refs_to_remove = list()
         for section_term_source_ref in section_term_source_refs:
@@ -1740,8 +1740,8 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
             try:
                 df = load_table(open(os.path.join(dir_context, study_filename)))
                 columns = df.columns
-                object_index = [k for k, x in enumerate(columns) if x.startswith('Term Source REF')]
-                prev_i = object_index[0]
+                object_index = (k for k, x in enumerate(columns) if x.startswith('Term Source REF'))
+                prev_i = next(object_index)
                 object_columns_list = [columns[prev_i]]
                 for curr_i in object_index:  # collect each object's columns
                     if prev_i == curr_i:
@@ -1764,8 +1764,8 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                     try:
                         df = load_table(open(os.path.join(dir_context, assay_filename)))
                         columns = df.columns
-                        object_index = [k for k, x in enumerate(columns) if x.startswith('Term Source REF')]
-                        prev_i = object_index[0]
+                        object_index = (k for k, x in enumerate(columns) if x.startswith('Term Source REF'))
+                        prev_i = next(object_index)
                         object_columns_list = [columns[prev_i]]
                         for curr_i in object_index:  # collect each object's columns
                             if prev_i == curr_i:
@@ -1828,7 +1828,7 @@ def check_investigation_against_config(i_df, configs):
     import math
 
     def check_section_against_required_fields_one_value(section, required, i=0):
-        fields_required = [k for k in section.columns if k in required]
+        fields_required = (k for k in section.columns if k in required)
         for col in fields_required:
             required_values = section[col]
             if len(required_values) > 0:
@@ -1878,20 +1878,20 @@ def check_study_table_against_config(s_df, protocols_declared, config):
 
     # First check column order is correct against the configuration
     columns = s_df.columns
-    object_index = [(k, x) for k, x in enumerate(columns) if x in ['Source Name', 'Sample Name',
+    object_index = ((k, x) for k, x in enumerate(columns) if x in ['Source Name', 'Sample Name',
                                                               'Extract Name', 'Labeled Extract Name', 'Raw Data File',
                                                               'Raw Spectral Data File', 'Array Data File',
                                                               'Protein Assignment File', 'Peptide Assignment File',
                                                               'Post Translational Modification Assignment File',
                                                               'Derived Spectral Data File',
                                                               'Derived Array Data File'] or 'Protocol REF' in x or
-                    'Characteristics[' in x or 'Factor Value[' in x or 'Parameter Value[' in x]
+                    'Characteristics[' in x or 'Factor Value[' in x or 'Parameter Value[' in x)
     fields = [k.header for k in config.get_isatab_configuration()[0].get_field()]
     protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
     for protocol in protocols:
         fields.insert(protocol[0], 'Protocol REF')
     # strip out non-config columns
-    object_index = [k for k in object_index if k[1] in fields]
+    object_index = (k for k in object_index if k[1] in fields)
     for x, object in enumerate(object_index):
         if fields[x] != object[1]:
             logger.warn("(W) Unexpected heading found. Expected {} but found {} at column number {}".format(fields[x], object[1], object[0]))
@@ -1914,21 +1914,21 @@ def check_assay_table_against_config(s_df, config):
             norm_columns.append(column[:column.rfind('.')])
         else:
             norm_columns.append(column)
-    norm_columns = [k for k, g in itertools.groupby(norm_columns)]  # remove adjacent dups - i.e. chained Protocol REFs
-    object_index = [(k, x) for k, x in enumerate(norm_columns) if x in ['Source Name', 'Sample Name',
+    norm_columns = (k for k, g in itertools.groupby(norm_columns))  # remove adjacent dups - i.e. chained Protocol REFs
+    object_index = ((k, x) for k, x in enumerate(norm_columns) if x in ['Source Name', 'Sample Name',
                                                               'Extract Name', 'Labeled Extract Name', 'Raw Data File',
                                                               'Raw Spectral Data File', 'Array Data File',
                                                               'Protein Assignment File', 'Peptide Assignment File',
                                                               'Post Translational Modification Assignment File',
                                                               'Derived Spectral Data File',
                                                               'Derived Array Data File', 'Assay Name'] or 'Protocol REF' in x or
-                    'Characteristics[' in x or 'Factor Value[' in x or 'Parameter Value[' in x or 'Comment[' in x]
+                    'Characteristics[' in x or 'Factor Value[' in x or 'Parameter Value[' in x or 'Comment[' in x)
     fields = [k.header for k in config.get_isatab_configuration()[0].get_field()]
     protocols = [(k.pos, k.protocol_type) for k in config.get_isatab_configuration()[0].get_protocol_field()]
     for protocol in protocols:
         fields.insert(protocol[0], 'Protocol REF')
     # strip out non-config columns
-    object_index = [k for k in object_index if k[1] in fields]
+    object_index = (k for k in object_index if k[1] in fields)
     for x, object in enumerate(object_index):
         if fields[x] != object[1]:
             logger.warn("(W) Unexpected heading found. Expected {} but found {} at column number {}".format(fields[x], object[1], object[0]))
@@ -1953,7 +1953,7 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
     indexed_col_regex = re.compile('(.*?)\.\d+')
     columns = list(df.columns)
     # Get required headers from config and check if they are present in the table; Rule 4010
-    required_fields = [k.header for k in config.get_isatab_configuration()[0].get_field() if k.is_required]
+    required_fields = (k.header for k in config.get_isatab_configuration()[0].get_field() if k.is_required)
     for required_field in required_fields:
         if required_field not in columns:
             logger.warn("(W) In {} the required column {} missing from column headings".format(filename, required_field))
@@ -1964,7 +1964,7 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
                     logger.warn("(W) Cell at row {} in column '{}' has no value, but it is required by the configuration".format(y, required_field))
 
     # Check if protocol ref column values are consistently structured
-    protocol_ref_index = [k for k in columns if 'protocol ref' in k.lower()]
+    protocol_ref_index = (k for k in columns if 'protocol ref' in k.lower())
     prots_ok = True
     for each in protocol_ref_index:
         prots_found = set()
@@ -2009,7 +2009,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
 
 
 def check_factor_value_presence(table):
-    factor_fields = [k for k in table.columns if k.lower().startswith('factor value')]
+    factor_fields = (k for k in table.columns if k.lower().startswith('factor value'))
     for factor_field in factor_fields:
         for x, cell_value in enumerate(table.fillna('')[factor_field]):
             if not cell_value:
@@ -2074,10 +2074,10 @@ def check_field_values(table, cfg):
             except ValueError:
                 is_valid_value = False
         elif data_type == 'list':
-            list_values = [k.lower() for k in cfg_field.list_values.split(',')]
+            list_values = {k.lower() for k in cfg_field.list_values.split(',')}
             if cell_value.lower() not in list_values:
                 is_valid_value = False
-        elif data_type in ['ontology-term', 'ontology term']:
+        elif data_type in {'ontology-term', 'ontology term'}:
             return True  # Structure and values checked in check_ontology_fields()
         else:
             logger.warn("(W) Unknown data type '" + data_type + "' for field '" + cfg_field.header +
@@ -2098,6 +2098,7 @@ def check_field_values(table, cfg):
             if len(cfields) == 1:
                 cfield = cfields[0]
                 result = result and check_single_field(table.iloc[irow][cfield.header], cfield)
+
     return result
 
 
@@ -2110,14 +2111,13 @@ def check_unit_field(table, cfg):
 
     result = True
     for icol, header in enumerate(table.columns):
-        cfields = [k for k in cfg.get_isatab_configuration()[0].get_field() if k.header == header]
-        if len(cfields) != 1:
-            continue
-        cfield = cfields[0]
-        ucfields = [k for k in cfg.get_isatab_configuration()[0].get_unit_field() if k.pos == cfield.pos + 1]
-        if len(ucfields) != 1:
-            continue
-        ucfield = ucfields[0]
+
+        try: cfield = next(k for k in cfg.get_isatab_configuration()[0].get_field() if k.header==header)
+        except StopIteration: continue
+
+        try: ucfields= next(k for k in cfg.get_isatab_configuration()[0].get_unit_field() if k.pos==cfield.pos+1)
+        except StopIteration: continue
+
         if ucfield.is_required:
             rheader = None
             rindx = icol + 1
@@ -2142,7 +2142,7 @@ def check_protocol_fields(table, cfg, proto_map):
         next(b, None)
         return zip(a, b)
 
-    proto_ref_index = [k for k in table.columns if 'protocol ref' in k.lower()]
+    proto_ref_index = (k for k in table.columns if 'protocol ref' in k.lower())
     result = True
     for each in proto_ref_index:
         prots_found = set()
@@ -2164,36 +2164,38 @@ def check_protocol_fields(table, cfg, proto_map):
         except IndexError: last_mat_or_dat_indx = -1
 
         if last_proto_indx > last_mat_or_dat_indx:
-            logger.warn("(W) Protocol REF column without output in file '" + table.filename + "'")
+            logger.warn("(W) Protocol REF column without output in file '{}'".format(table.filename))
         for left, right in pairwise(field_headers):
-            cleft = None
-            cright = None
-            clefts = [k for k in cfg.get_isatab_configuration()[0].get_field() if k.header.lower() == left.lower()]
-            if len(clefts) == 1:
-                cleft = clefts[0]
-            crights = [k for k in cfg.get_isatab_configuration()[0].get_field() if
-                       k.header.lower() == right.lower()]
-            if len(crights) == 1:
-                cright = crights[0]
+            # cleft = None
+            # cright = None
+            # clefts = [k for k in cfg.get_isatab_configuration()[0].get_field() if k.header.lower() == left.lower()]
+            # if len(clefts) == 1:
+            #     cleft = clefts[0]
+            # crights = [k for k in cfg.get_isatab_configuration()[0].get_field() if
+            #            k.header.lower() == right.lower()]
+            # if len(crights) == 1:
+            #     cright = crights[0]
+            cleft = next((k for k in cfg.get_isatab_configuration()[0].get_field() if k.header.lower()==left.lower()), None)
+            cright = next((k for k in cfg.get_isatab_configuration()[0].get_field() if k.header.lower()==right.lower()), None)
             if cleft is not None and cright is not None:
-                cprotos = [k.protocol_type for k in cfg.get_isatab_configuration()[0].get_protocol_field() if
-                           cleft.pos < k.pos and cright.pos > k.pos]
-                fprotos_headers = [k for k in table.columns[
+                cprotos = {k.protocol_type for k in cfg.get_isatab_configuration()[0].get_protocol_field() if
+                           cleft.pos < k.pos and cright.pos > k.pos}
+                fprotos_headers = (k for k in table.columns[
                                               table.columns.get_loc(cleft.header):table.columns.get_loc(
                                                   cright.header)] if
-                                   'protocol ref' in k.lower()]
-                fprotos = list()
+                                   'protocol ref' in k.lower())
+                fprotos = set()
                 for header in fprotos_headers:
                     proto_name = table.iloc[0][header]
                     try:
                         proto_type = proto_map[proto_name]
-                        fprotos.append(proto_type)
+                        fprotos.add(proto_type)
                     except KeyError:
                         logger.warn(
                             "(W) Could not find protocol type for protocol name '{}', trying to validate against name only".format(
                                 proto_name))
-                        fprotos.append(proto_name)
-                invalid_protos = set(cprotos) - set(fprotos)
+                        fprotos.add(proto_name)
+                invalid_protos = cprotos - fprotos
                 if len(invalid_protos) > 0:
                     logger.warn("(W) Protocol(s) of type " + str(
                         list(invalid_protos)) + " defined in the ISA-configuration expected as a between '" +
@@ -2215,12 +2217,13 @@ def check_ontology_fields(table, cfg):
     result = True
     nfields = len(table.columns)
     for icol, header in enumerate(table.columns):
-        cfields = [k for k in cfg.get_isatab_configuration()[0].get_field() if k.header == header]
-        if len(cfields) != 1:
-            continue
-        cfield = cfields[0]
+
+        try: cfields = next(k for k in cfg.get_isatab_configuration()[0].get_field() if k.header==header)
+        except StopIteration: continue
+
         if cfield.get_recommended_ontologies() is None:
             continue
+
         rindx = icol + 1
         rrindx = icol + 2
         rheader = ''

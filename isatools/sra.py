@@ -91,10 +91,11 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
         # Flag SRA contacts for template
         has_sra_contact = False
         for contact in istudy.contacts:
-            if "sra inform on status" in [r.name.lower() for r in contact.roles]:
+            contact_roles_names = {r.name.lower() for r in contact.roles}
+            if "sra inform on status" in contact_roles_names:
                 contact.inform_on_status = True
                 has_sra_contact = True
-            if "sra inform on error" in [r.name.lower() for r in contact.roles]:
+            if "sra inform on error" in contact_roles_names:
                 contact.inform_on_error = True
                 has_sra_contact = True
         if not has_sra_contact:
@@ -120,8 +121,8 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
         assays_to_export = list()
         for iassay in istudy.assays:
             if (iassay.measurement_type.name, iassay.technology_type.name) in supported_sra_assays:
-                assay_seq_processes = [a for a in iassay.process_sequence if a.executes_protocol.protocol_type.name ==
-                                       'nucleic acid sequencing']
+                assay_seq_processes = (a for a in iassay.process_sequence
+                                         if a.executes_protocol.protocol_type.name=='nucleic acid sequencing')
                 for assay_seq_process in assay_seq_processes:
                     do_export = True
                     if get_comment(assay_seq_process, 'export') is not None:

@@ -1203,7 +1203,7 @@ def check_measurement_technology_types(assay_json, configs):
 
 
 def list_process_sequences(process_sequence_json):
-    list_of_last_processes_in_sequence = [i for i in process_sequence_json if 'nextProcess' not in i]
+    list_of_last_processes_in_sequence = (i for i in process_sequence_json if 'nextProcess' not in i)
     for process in list_of_last_processes_in_sequence:  # build graphs backwards
         assay_graph = list()
         try:
@@ -1235,7 +1235,7 @@ def list_process_sequences(process_sequence_json):
 def check_study_and_assay_graphs(study_json, configs):
 
     def check_assay_graph(process_sequence_json, config):
-        list_of_last_processes_in_sequence = [i for i in process_sequence_json if 'nextProcess' not in i]
+        list_of_last_processes_in_sequence = (i for i in process_sequence_json if 'nextProcess' not in i)
         logger.info("Checking against assay protocol sequence configuration {}".format(config['description']))
         config_protocol_sequence = [i['protocol'] for i in config['protocols']]
         for process in list_of_last_processes_in_sequence:  # build graphs backwards
@@ -1263,8 +1263,9 @@ def check_study_and_assay_graphs(study_json, configs):
             except KeyError:  # this happens when we can't find a previousProcess
                 pass
             assay_graph.reverse()
-            assay_protocol_sequence = [[j for j in i if not j.startswith('#')] for i in assay_graph]
-            assay_protocol_sequence = [i for j in assay_protocol_sequence for i in j]  # flatten list
+            # assay_protocol_sequence = [[j for j in i if not j.startswith('#')] for i in assay_graph]
+            # assay_protocol_sequence = [i for j in assay_protocol_sequence for i in j]  # flatten list
+            assay_protocol_sequence = [j for i in assay_graph for j in i if not j.startswith('#')]
             assay_protocol_sequence_of_interest = [i for i in assay_protocol_sequence if i in config_protocol_sequence]
             #  filter out protocols in sequence that are not of interest (additional ones to required by config)
             if config_protocol_sequence != assay_protocol_sequence_of_interest:
