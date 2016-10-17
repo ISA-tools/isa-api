@@ -15,8 +15,9 @@ import warnings as warnings_
 from lxml import etree as etree_
 import os
 import six
+import itertools
 
-config_dict = dict()
+config_dict = {}
 
 
 def load(config_dir):
@@ -37,16 +38,27 @@ def get_config(measurement_type=None, technology_type=None):
     global config_dict
     try:
         config = config_dict[(measurement_type, technology_type)].isatab_configuration[0]
-        from collections import OrderedDict
-        fields = dict()
-        for field in config.field:
-            fields[field.pos] = field
-        for protocol_field in config.protocol_field:
-            fields[protocol_field.pos] = protocol_field
-        for structured_field in config.structured_field:
-            fields[structured_field.pos] = structured_field
-        sorted_fields = OrderedDict(sorted(fields.items(), key=lambda x: x[0]))
-        sorted_config = list(sorted_fields.values())
+        #from collections import OrderedDict
+
+
+        # althonos: directly build a list base on a sorted iterator
+        sorted_config = [
+            field
+                for field in sorted(
+                        itertools.chain(config.field, config.protocol_field, config.structured_field),
+                        key=lambda x: x.pos,
+                    )
+        ]
+
+        # fields = {}
+        # for field in config.field:
+        #     fields[field.pos] = field
+        # for protocol_field in config.protocol_field:
+        #     fields[protocol_field.pos] = protocol_field
+        # for structured_field in config.structured_field:
+        #     fields[structured_field.pos] = structured_field
+        # sorted_fields = OrderedDict(sorted(fields.items(), key=lambda x: x[0]))
+        # sorted_config = list(sorted_fields.values())
     except KeyError:
         sorted_config = None
     return sorted_config
@@ -370,7 +382,7 @@ except ImportError as exp:
             return None
         @classmethod
         def gds_reverse_node_mapping(cls, mapping):
-            return dict(((v, k) for k, v in six.iteritems(mapping)))
+            return {v:k for k,v in six.iteritems(mapping)}
 
 
 #

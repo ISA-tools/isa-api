@@ -576,8 +576,8 @@ def write_assay_table_files(inv_obj, output_dir):
                 cols = list()
                 mcount = 0
                 protrefcount = 0
-                protnames = dict()
-                col_map = dict()
+                protnames = {}
+                col_map = {}
                 for node in _longest_path_and_attrs(assay_obj.graph):
                     if isinstance(node, Sample):
                         cols.append('sample')
@@ -814,8 +814,8 @@ def write_study_table_files(inv_obj, output_dir):
         if study_obj.graph is None: break
         cols = list()
         protrefcount = 0
-        protnames = dict()
-        col_map = dict()
+        protnames = {}
+        col_map = {}
 
         for node in _longest_path_and_attrs(study_obj.graph):
             if isinstance(node, Source):
@@ -960,7 +960,7 @@ def read_investigation_file(fp):
         df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
         return df
 
-    df_dict = dict()
+    df_dict = {}
 
     # Read in investigation file into DataFrames first
     df_dict['ontology_sources'] = _build_section_df(_read_tab_section(
@@ -1101,7 +1101,7 @@ def load2(fp):
             df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
             return df
 
-        df_dict = dict()
+        df_dict = {}
 
         def check_labels(section, labels_expected, df):
             labels_found = set(df.columns)
@@ -2444,9 +2444,9 @@ def load(isatab_dir):
                 characteristic_obj = Characteristic(
                     value=OntologyAnnotation(name=characteristic)
                 )
-                obj_item = dict([
-                    ("characteristic", characteristic_obj)
-                ])
+                obj_item = {
+                    "characteristic": characteristic_obj,
+                }
                 obj_list.append(obj_item)
         return obj_list
 
@@ -2502,14 +2502,14 @@ def load(isatab_dir):
         return onto_annotations
 
     def _createDataFiles(nodes):
-        obj_dict = dict([])
+        obj_dict = {}
         for node_index in nodes:
             if nodes[node_index].ntype.endswith("Data File"):
                 obj_item = DataFile(
                     filename=nodes[node_index].name,
                     label=nodes[node_index].ntype
                 )
-                obj_dict.update({node_index: obj_item})
+                obj_dict[node_index] = obj_item
         return obj_dict
 
     def _createProcessSequence(process_nodes, source_dict, sample_dict, data_dict):
@@ -2539,13 +2539,13 @@ def load(isatab_dir):
         return obj_list
 
     def _createExecuteStudyProtocol(process_node_name, process_node):
-        json_item = dict([
-                   # ("name", dict([("value", process_node_name)])),
-                   # ("description", dict([("value", process_node_name)])),
-                   # ("version", dict([("value", process_node_name)])),
-                   # ("uri", dict([("value", process_node_name)])),
-                   # ("parameters", self.createProcessParameterList(process_node_name, process_node))
-                ])
+        json_item = {
+                   # "name": {"value": process_node_name},
+                   # "description": {"value": process_node_name},
+                   # "version": {"value": process_node_name},
+                   # "uri": {"value": process_node_name},
+                   # "parameters": self.createProcessParameterList(process_node_name, process_node),
+                }
         return json_item
 
     def _createInputList(inputs, source_dict, sample_dict):
@@ -2666,7 +2666,7 @@ def load(isatab_dir):
         return obj_list
 
     def _createSourceDictionary(nodes):
-        obj_dict = dict([])
+        obj_dict = {}
         for node_name in nodes:
             if nodes[node_name].ntype == "Source Name":
                 reformatted_node_name = node_name[7:]  # Strip out the source- bit
@@ -2674,11 +2674,11 @@ def load(isatab_dir):
                     name=reformatted_node_name,
                     characteristics=_createValueList("Characteristics", node_name, nodes[node_name]),
                 )
-                obj_dict.update({node_name: source_item})
+                obj_dict[node_name] = source_item
         return obj_dict
 
     def _createSampleDictionary(nodes):
-        obj_dict = dict([])
+        obj_dict = {}
         for node_index in nodes:
             if nodes[node_index].ntype == "Sample Name":
                 reformatted_node_name = node_index[7:]  # Strip out the sample- bit
@@ -2689,7 +2689,7 @@ def load(isatab_dir):
                         characteristics=_createValueList("Characteristics", node_index, nodes[node_index]),
                         derives_from=nodes[node_index].metadata["Source Name"][0],
                     )
-                    obj_dict.update({node_index: obj_item})
+                    obj_dict.update[node_index] = obj_item
                 except KeyError:
                     pass
         return obj_dict
@@ -2823,7 +2823,7 @@ def read_study_file(fp):
     import csv
     study_reader = csv.reader(fp, delimiter='\t')
     fieldnames = next(study_reader)
-    experimental_graph = dict()
+    experimental_graph = {}
     for row in study_reader:
         source, sample, processing_event = _read_study_record_line(column_names=fieldnames, row_=row)
         try:

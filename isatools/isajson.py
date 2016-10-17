@@ -111,14 +111,14 @@ def load(fp):
             )
             person.comments.append(comment)
         investigation.contacts.append(person)
-    samples_dict = dict()
-    sources_dict = dict()
-    categories_dict = dict()
-    protocols_dict = dict()
-    factors_dict = dict()
-    parameters_dict = dict()
-    units_dict = dict()
-    process_dict = dict()
+    samples_dict = {}
+    sources_dict = {}
+    categories_dict = {}
+    protocols_dict = {}
+    factors_dict = {}
+    parameters_dict = {}
+    units_dict = {}
+    process_dict = {}
 
     # populate assay characteristicCategories first
     for study_json in isajson['studies']:
@@ -453,7 +453,7 @@ def load(fp):
                                           term_source=term_source_dict[assay_unit_json['termSource']],
                                           term_accession=assay_unit_json['termAccession'])
                 units_dict[unit.id] = unit
-            data_dict = dict()
+            data_dict = {}
             for data_json in assay_json['dataFiles']:
                 data_file = DataFile(
                     id_=data_json['@id'],
@@ -483,7 +483,7 @@ def load(fp):
                 )
                 study.characteristic_categories.append(characteristic_category)
                 categories_dict[characteristic_category.id] = characteristic_category
-            other_materials_dict = dict()
+            other_materials_dict = {}
             for other_material_json in assay_json['materials']['otherMaterials']:
                 material_name = other_material_json['name']
                 if material_name.startswith('labeledextract-'):

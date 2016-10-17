@@ -414,7 +414,7 @@ def create_datafile_hashes(fileroot, filenames):
         return d.hexdigest()
 
     from os.path import isfile, join
-    datafilehashes = dict()
+    datafilehashes = {}
     for file in filenames:
         if isfile(join(fileroot, file)):
             datafilehashes[file] = md5sum(filename=join(fileroot, file))

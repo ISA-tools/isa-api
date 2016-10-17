@@ -411,7 +411,7 @@ class StudyAssayParser:
                     else:
                         line_number += 1
                 #study.process_nodes = process_nodes
-        return dict([(k, self._finalize_metadata(v)) for k, v in six.iteritems(process_nodes)])
+        return {k:self._finalize_metadata(v)for k,v in six.iteritems(process_nodes)}
 
 
     def _parse_study(self, fname, node_types):
@@ -487,7 +487,7 @@ class StudyAssayParser:
                     if not (previous_node_index == -1):
                         node.derivesFrom.append(line[previous_node_index])
 
-        return dict([(k, self._finalize_metadata(v)) for k, v in six.iteritems(nodes)])
+        return {k:self._finalize_metadata(v) for k,v in six.iteritems(nodes)}
 
     def _finalize_metadata(self, node):
         """Convert node metadata back into a standard dictionary and list.
