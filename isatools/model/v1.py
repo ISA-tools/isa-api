@@ -11,12 +11,12 @@ def _build_assay_graph(process_sequence=list()):
                     G.add_edge(process, output)
             else:  # otherwise just connect the process to the next one
                 G.add_edge(process, process.next_process)
-        if process.prev_process is not None or process.inputs > 0:
-            if process.inputs:
-                for input_ in process.inputs:
-                    G.add_edge(input_, process)
-            else:
-                G.add_edge(process.prev_process, process)
+        #if process.prev_process is not None or process.inputs > 0:
+        if process.inputs:
+            for input_ in process.inputs:
+                G.add_edge(input_, process)
+        elif  process.prev_process is not None:
+            G.add_edge(process.prev_process, process)
     return G
 
 

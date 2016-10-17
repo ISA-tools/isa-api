@@ -403,9 +403,9 @@ class ISATab2ISAjson_v1:
             ])
 
             if previous_process_identifier:
-                json_item["previousProcess"] = {"@id", previous_process_identifier}
+                json_item["previousProcess"] = {"@id": previous_process_identifier}
             if next_process_identifier:
-                json_item["nextProcess"] = {"@id", next_process_identifier}
+                json_item["nextProcess"] = {"@id": next_process_identifier}
             json_list.append(json_item)
         return json_list
 
@@ -414,26 +414,26 @@ class ISATab2ISAjson_v1:
         for argument in inputs:
             try:
                 json_item = source_dict[argument]
-                source_id = dict([("@id", json_item["@id"])])
+                source_id = {"@id": json_item["@id"]}
                 json_list.append(source_id)
             except KeyError:
                 pass
             try:
                 json_item = sample_dict[argument]
-                sample_id = dict([("@id", json_item["@id"])])
+                sample_id = {"@id": json_item["@id"]}
                 json_list.append(sample_id)
             except KeyError:
                 pass
             try:
                 json_item = material_dict[argument]
-                material_id = dict([("@id", json_item["@id"])])
+                material_id = {"@id": json_item["@id"]}
                 json_list.append(material_id)
             except KeyError:
                 pass
 
             try:
                 json_item = data_dict[argument]
-                data_id = dict([("@id", json_item["@id"])])
+                data_id = {"@id": json_item["@id"]}
                 json_list.append(data_id)
             except KeyError:
                 pass

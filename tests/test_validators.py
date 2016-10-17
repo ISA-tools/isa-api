@@ -2,6 +2,7 @@
 import unittest
 import os
 import re
+import logging
 
 from isatools import isajson, isatab
 from tests import utils

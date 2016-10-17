@@ -720,11 +720,11 @@ def check_process_protocol_ids_usage(study_json):
                 protocol_ids_used.append(process['executesProtocol']['@id'])
             except KeyError:
                 pass
-    if set(protocol_ids_used) - set(protocol_ids_declared) > 0:
+    if set(protocol_ids_used) - set(protocol_ids_declared):
         diff = set(protocol_ids_used) - set(protocol_ids_declared)
         logger.error("(E) There are protocol IDs {} used in a study or assay process sequence not declared"
               .format(list(diff)))
-    elif set(protocol_ids_declared) - set(protocol_ids_used) > 0:
+    elif set(protocol_ids_declared) - set(protocol_ids_used):
         diff = set(protocol_ids_declared) - set(protocol_ids_used)
         logger.warning("(W) There are some protocol IDs declared {} not used in any study or assay process sequence"
               .format(list(diff)))
@@ -955,11 +955,11 @@ def check_unit_category_ids_usage(study_json):
     for assay in study_json['assays']:
         units_used.extend(get_assay_unit_category_ids_in_materials_and_processes(assay))
     logger.info("Comparing units declared vs units used...")
-    if set(units_used) - set(units_declared) > 0:
+    if set(units_used) - set(units_declared):
         diff = set(units_used) - set(units_declared)
         logger.error("(E) There are units {} used in a material or parameter value that have not been not declared"
               .format(list(diff)))
-    elif set(units_declared) - set(units_used) > 0:
+    elif set(units_declared) - set(units_used):
         diff = set(units_declared) - set(units_used)
         logger.warning("(W) There are some units declared {} that have not been used in any material or parameter value"
               .format(list(diff)))
@@ -1263,13 +1263,13 @@ def check_study_and_assay_graphs(study_json, configs):
                             process_graph.append(input_id)
                     process_graph.reverse()
                     assay_graph.append(process_graph)
-                    process = [i for i in process_sequence_json if i['@id'] == process['previousProcess']['@id']][0]
+                    process = next(i for i in process_sequence_json if i['@id'] == process['previousProcess']['@id'])
             except KeyError:  # this happens when we can't find a previousProcess
                 pass
             assay_graph.reverse()
-            # assay_protocol_sequence = [[j for j in i if not j.startswith('#')] for i in assay_graph]
-            # assay_protocol_sequence = [i for j in assay_protocol_sequence for i in j]  # flatten list
-            assay_protocol_sequence = [j for i in assay_graph for j in i if not j.startswith('#')]
+            assay_protocol_sequence = [[j for j in i if not j.startswith('#')] for i in assay_graph]
+            assay_protocol_sequence = [i for j in assay_protocol_sequence for i in j]  # flatten list
+            # assay_protocol_sequence = [j for i in assay_graph for j in i if not j.startswith('#')]
             assay_protocol_sequence_of_interest = [i for i in assay_protocol_sequence if i in config_protocol_sequence]
             #  filter out protocols in sequence that are not of interest (additional ones to required by config)
             if config_protocol_sequence != assay_protocol_sequence_of_interest:
@@ -1383,6 +1383,9 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
         logger.fatal("Value: " + str(v))
     except SystemError as e:
         logger.fatal("(F) Something went very very wrong! :(")
+    except BaseException as b:
+        logger.fatal("(F) An {} was raised!".format(type(b).__name__))
+        logger.fatal("Value: {}".format(b))
     finally:
         handler.flush()
         return stream

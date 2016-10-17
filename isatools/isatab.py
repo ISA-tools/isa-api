@@ -1831,32 +1831,32 @@ def check_investigation_against_config(i_df, configs):
         fields_required = (k for k in section.columns if k in required)
         for col in fields_required:
             required_values = section[col]
-            if required_values:#len(required_values) > 0:
-                for x, required_value in enumerate(required_values):
-                    required_value = required_values.iloc[x]
-                    if isinstance(required_value, float):
-                        if math.isnan(required_value):
-                            if i > 0:
-                                logger.warn(
-                                    "(W) A property value in {}.{} of investigation file at column {} is required".format(
-                                        col, i+1, x + 1))
-                            else:
-                                logger.warn(
-                                    "(W) A property value in {} of investigation file at column {} is required".format(
-                                        col, x + 1))
-                    else:
-                        try: required_value = required_value.decode("utf-8")
-                        except AttributeError: pass
+            #if len(required_values) > 0:
+            for x, required_value in enumerate(required_values):
+                required_value = required_values.iloc[x]
+                if isinstance(required_value, float):
+                    if math.isnan(required_value):
+                        if i > 0:
+                            logger.warn(
+                                "(W) A property value in {}.{} of investigation file at column {} is required".format(
+                                    col, i+1, x + 1))
+                        else:
+                            logger.warn(
+                                "(W) A property value in {} of investigation file at column {} is required".format(
+                                    col, x + 1))
+                else:
+                    try: required_value = required_value.decode("utf-8")
+                    except AttributeError: pass
 
-                        if not required_value or 'Unnamed: ' in required_value:
-                            if i > 0:
-                                logger.warn(
-                                    "(W) A property value in {}.{} of investigation file at column {} is required".format(
-                                        col, i+1, x + 1))
-                            else:
-                                logger.warn(
-                                    "(W) A property value in {} of investigation file at column {} is required".format(
-                                        col, x + 1))
+                    if not required_value or 'Unnamed: ' in required_value:
+                        if i > 0:
+                            logger.warn(
+                                "(W) A property value in {}.{} of investigation file at column {} is required".format(
+                                    col, i+1, x + 1))
+                        else:
+                            logger.warn(
+                                "(W) A property value in {} of investigation file at column {} is required".format(
+                                    col, x + 1))
 
     required_fields = [k.header for k in configs[('[investigation]', '')].get_isatab_configuration()[0].get_field() if k.is_required]
     check_section_against_required_fields_one_value(i_df['INVESTIGATION'], required_fields)

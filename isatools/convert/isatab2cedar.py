@@ -29,7 +29,7 @@ class ISATab2CEDAR():
 
 
     def createCEDARjson(self, work_dir, json_dir, inv_identifier):
-        print("Converting ISA to CEDAR model for ", work_dir)
+        print("Converting ISA to CEDAR model for {}".format(work_dir))
         schema_file = "investigation_template.json"
         schema = json.load(open(join(CEDAR_SCHEMA_PATH,schema_file)))
         resolver = RefResolver('file://'+join(CEDAR_SCHEMA_PATH, schema_file), schema)
@@ -69,8 +69,8 @@ class ISATab2CEDAR():
                     investigationObject = {
                         "@id": "https://repo.metadatacenter.org/UUID{}".format(uuid4()),
                         "_templateId": "http://example.org",
-                        "@type", "https://repo.metadatacenter.org/model/Investigation",
-                        "@context", {
+                        "@type": "https://repo.metadatacenter.org/model/Investigation",
+                        "@context": {
                                 "description": "https://metadatacenter.org/schemas/description",
                                 "title": "https://metadatacenter.org/schemas/title",
                                 "study": "https://metadatacenter.org/schemas/study",
@@ -275,7 +275,7 @@ class ISATab2CEDAR():
         json_list = []
         json_item = {
             "description": {"_value": process_node.protocol},
-            "name": {"_value"; process_node.protocol},
+            "name": {"_value": process_node.protocol},
         }
         json_list.append(json_item)
         return json_list
@@ -514,9 +514,9 @@ class ISATab2CEDAR():
             json_item = {
                 "@id": "https://repo.metadatacenter.org/UUID{}".format(uuid4()),
                 "@type": "http://purl.obolibrary.org/obo/BFO_0000055",
-                "measurementType": {"_value": assay.metadata['Study Assay Measurement Type Term Accession Number']}
+                "measurementType": {"_value": assay.metadata['Study Assay Measurement Type Term Accession Number']},
                 "platform": {"_value": assay.metadata['Study Assay Technology Platform']},
-                "technology": {"_value": assay.metadata['Study Assay Technology Type']}
+                "technology": {"_value": assay.metadata['Study Assay Technology Type']},
                 }
             json_list.append(json_item)
         return json_list
@@ -528,12 +528,12 @@ class ISATab2CEDAR():
             json_item = {
                 "@id": "https://repo.metadatacenter.org/UUID{}".format(uuid4()),
                 "@type": "https://repo.metadatacenter.org/model/StudyProtocol",
-                "name": {"_value", protocol['Study Protocol Name']},
-                "description": {"_value", protocol['Study Protocol Description']},
-                "type": {("_value", protocol['Study Protocol Type']},
-                "version": {"_value", protocol['Study Protocol Version']},
-                "uRI": {"_value", protocol['Study Protocol URI']},
-                "protocolParameter"; self.createProtocolParametersList(protocol),
+                "name": {"_value": protocol['Study Protocol Name']},
+                "description": {"_value": protocol['Study Protocol Description']},
+                "type": {"_value": protocol['Study Protocol Type']},
+                "version": {"_value": protocol['Study Protocol Version']},
+                "uRI": {"_value": protocol['Study Protocol URI']},
+                "protocolParameter": self.createProtocolParametersList(protocol),
                 }
             json_list.append(json_item)
         return json_list
