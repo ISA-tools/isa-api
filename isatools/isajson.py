@@ -22,6 +22,18 @@ def load(fp):
                 comments.append(comment)
         return comments
 
+    def get_roles(j):
+        roles = None
+        if 'roles' in j.keys():
+            roles = list()
+            for role_json in j['roles']:
+                term = role_json['annotationValue']
+                term_accession = role_json['termAccession']
+                term_source = term_source_dict[role_json['termSource']]
+                role = OntologyAnnotation(term, term_source, term_accession)
+                roles.append(role)
+        return roles
+
     def _build_assay_graph(process_sequence=list()):
         G = nx.DiGraph()
         for process in process_sequence:
@@ -178,13 +190,7 @@ def load(fp):
                 address=study_person_json['address'],
                 affiliation=study_person_json['affiliation'],
             )
-            for role_json in study_person_json['roles']:
-                role = OntologyAnnotation(
-                    term=role_json['annotationValue'],
-                    term_accession=role_json['termAccession'],
-                    term_source=term_source_dict[role_json['termSource']]
-                )
-                study_person.roles.append(role)
+            study_person.roles = get_roles(study_person_json)
             try:
                 study_person.comments = get_comments(study_person_json)
             except KeyError:
