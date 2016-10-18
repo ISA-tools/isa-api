@@ -256,17 +256,20 @@ def load(fp):
                 characteristic = Characteristic(category=categories_dict[characteristic_json['category']['@id']],)
                 if isinstance(value, dict):
                     try:
+                        term = characteristic_json['value']['annotationValue']
+                        if isinstance(term, (int, float)):
+                            term = str(term)
                         value = OntologyAnnotation(
-                            term=characteristic_json['value']['annotationValue'],
+                            term=term,
                             term_source=term_source_dict[characteristic_json['value']['termSource']],
                             term_accession=characteristic_json['value']['termAccession'])
                     except KeyError:
                         raise IOError("Can't create value as annotation")
-                elif isinstance(value, int) or isinstance(value, float):
+                elif isinstance(value, (int, float)):
                     try:
                         unit = units_dict[characteristic_json['unit']['@id']]
                     except KeyError:
-                        raise IOError("Can't create unit annotation")
+                        unit = None
                 elif not isinstance(value, str):
                     raise IOError("Unexpected type in characteristic value")
                 characteristic.value = value

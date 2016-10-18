@@ -154,6 +154,7 @@ class OntologySource(Commentable):
         file (str, NoneType): A file name or a URI of an official resource.
         version (str, NoneType): The version number of the Term Source to support terms tracking.
         description (str, NoneType): A free text description of the resource.
+        comments (list, NoneType): Comments associated with instances of this class.
     """
 
     def __init__(self, name, file=None, version=None, description=None, comments=None):
@@ -220,21 +221,61 @@ class OntologySource(Commentable):
 
 
 class OntologyAnnotation(Commentable):
-    """An ontology term annotation reference
+    """An ontology annotation
 
     Attributes:
-        term_source: The abbreviated ontology name. It should correspond to one of the sources as specified in the
-        ontology_source_reference section of the Investigation.
-        term_accession: URI
+        term (str, NoneType): A term taken from an ontology or controlled vocabulary.
+        term_source (OntologySource): Reference to the resource from which the term is derived.
+        term_accession (str, NoneType): A URI or resource-specific identifier for the term.
+        comments (list, NoneType): Comments associated with instances of this class.
     """
 
-    def __init__(self, term="", term_source=None, term_accession="", comments=None, id_=''):
+    def __init__(self, term=None, term_source=None, term_accession=None, comments=None, id_=''):
         super().__init__(comments)
 
         self.term = term
         self.term_source = term_source
         self.term_accession = term_accession
         self.id = id_
+
+    @property
+    def term(self):
+        if self.__term is '':
+            return None
+        else:
+            return self.__term
+
+    @term.setter
+    def term(self, term):
+        if term is not None and not isinstance(term, str):
+            raise AttributeError("OntologyAnnotation.term must be a str or None; got {}:{}".format(term, type(term)))
+        else:
+            self.__term = term
+
+    @property
+    def term_source(self):
+        return self.__term_source
+
+    @term_source.setter
+    def term_source(self, term_source):
+        if term_source is not None and not isinstance(term_source, OntologySource):
+            raise AttributeError("OntologyAnnotation.term_source must be a OntologySource or None")
+        else:
+            self.__term_source = term_source
+
+    @property
+    def term_accession(self):
+        if self.__term is '':
+            return None
+        else:
+            return self.__term_accession
+
+    @term_accession.setter
+    def term_accession(self, term_accession):
+        if term_accession is not None and not isinstance(term_accession, str):
+            raise AttributeError("OntologyAnnotation.term_accession must be a str or None")
+        else:
+            self.__term_accession = term_accession
 
 
 class Publication(Commentable):
@@ -254,10 +295,21 @@ class Publication(Commentable):
         self.doi = doi
         self.author_list = author_list
         self.title = title
-        if status is None:
-            self.status = OntologyAnnotation()
-        else:
-            self.status = status
+        self.status = status
+
+        @property
+        def pubmed_id(self):
+            if self.__pubmed_id is '':
+                return None
+            else:
+                return self.__pubmed_id
+
+        @pubmed_id.setter
+        def pubmed_id(self, pubmed_id):
+            if pubmed_id is not None and not isinstance(pubmed_id, str):
+                raise AttributeError("Publication.Publication must be a str or None")
+            else:
+                self.__pubmed_id = pubmed_id
 
 
 class Person(Commentable):
