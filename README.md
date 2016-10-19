@@ -14,8 +14,6 @@ The *ISA API*  aims to provide you, the developer, with a set of tools to help y
 
 [![Build Status](https://travis-ci.org/ISA-tools/isa-api.svg?branch=master)](https://travis-ci.org/ISA-tools/isa-api/) [![Coverage Status](https://coveralls.io/repos/github/ISA-tools/isa-api/badge.svg?branch=master)](https://coveralls.io/github/ISA-tools/isa-api?branch=master) [![PyPI version](https://badge.fury.io/py/isatools.svg)](https://badge.fury.io/py/isatools) [![Documentation Status](https://readthedocs.org/projects/isatools/badge/?version=latest)](http://isatools.readthedocs.org/en/latest/?badge=latest)
 
-****Note that the current version is a very early stage release (v0.2)****
-
 ----
 *Authors*: [The ISA team](http://www.isa-tools.org/team/).
 
