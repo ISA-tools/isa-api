@@ -1,3 +1,19 @@
+# -*- coding: utf-8 -*-
+"""ISA Model 1.0 implementation in Python.
+
+This module implements the ISA Abstract Model 1.0 as Python classes, as
+specified in the `ISA Model and Serialization Specifications 1.0`_, and
+additional classes to support compatibility between ISA-Tab and ISA-JSON.
+
+Todo:
+    * Check consistency with published ISA Model
+    * Finish docstringing rest of the module
+    * Add constraints on attributes throughout, and test
+
+.. _ISA Model and Serialization Specifications 1.0: http://isa-specs.readthedocs.io/
+
+"""
+
 import networkx as nx
 
 
@@ -23,9 +39,11 @@ def _build_assay_graph(process_sequence=list()):
 class Comment(object):
     """A comment allows arbitrary annotation of all ISA classes
 
+    Comments are implemented in ISA-Tab and ISA-JSON formats.
+
     Attributes:
-        name: The name of the comment (as mapped to Comment[SomeName]) to give context to the comment field
-        value: A value for the corresponding comment, as a string encoded in some way
+        name (str): The name of the comment (as mapped to Comment[SomeName] in ISA-Tab) to give context to the comment field
+        value (str, int, float, NoneType): A value for the corresponding comment, as a string or number
     """
     def __init__(self, name, value=None):
         self.name = name
@@ -63,13 +81,21 @@ class Commentable(object):
     """ An ISA Object is an abstract class to enable containment of Comments
 
     Attributes:
-        comments: Comments associated with the implementing ISA class (all ISA classes)
+        comments (list, NoneType): Comments associated with the implementing ISA class (all ISA classes)
     """
     def __init__(self, comments=None):
-        if comments is None:
-            self.comments = list()
+        self.comments = comments
+
+    @property
+    def comments(self):
+        return self.__comments
+
+    @comments.setter
+    def comments(self, comments):
+        if comments is not None and not isinstance(comments, list):
+            raise AttributeError("comments must be an instance of list or None")
         else:
-            self.comments = comments
+            self.__comments = comments
 
 
 class Investigation(Commentable):
@@ -120,86 +146,236 @@ class Investigation(Commentable):
             self.comments = list()
 
 
-class OntologySourceReference(Commentable):
-    """This annotation section is identical to that in the MAGE-TAB format.
+class OntologySource(Commentable):
+    """An OntologySource describes the resource from which the value of an OntologyAnnotation is derived from.
 
     Attributes:
-        name: The name of the source of a term; i.e. the source controlled vocabulary or ontology.
-        file: A file name or a URI of an official resource.
-        version: The version number of the Term Source to support terms tracking.
-        description: Use for disambiguating resources when homologous prefixes have been used.
+        name (str): The name of the source of a term; i.e. the source controlled vocabulary or ontology.
+        file (str, NoneType): A file name or a URI of an official resource.
+        version (str, NoneType): The version number of the Term Source to support terms tracking.
+        description (str, NoneType): A free text description of the resource.
+        comments (list, NoneType): Comments associated with instances of this class.
     """
 
-    def __init__(self, name="", file="", version="", description="", comments=None):
+    def __init__(self, name, file=None, version=None, description=None, comments=None):
         super().__init__(comments)
         self.name = name
         self.file = file
         self.version = version
         self.description = description
 
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise AttributeError("OntologySource.name must be a str")
+        elif name.strip() == '':
+            raise AttributeError("OntologySource.name must not be empty")
+        else:
+            self.__name = name
+
+    @property
+    def file(self):
+        if self.__file is '':
+            return None
+        else:
+            return self.__file
+
+    @file.setter
+    def file(self, file):
+        if file is not None and not isinstance(file, str):
+            raise AttributeError("OntologySource.file must be a str or None")
+        else:
+            self.__file = file
+
+    @property
+    def version(self):
+        if self.__version is '':
+            return None
+        else:
+            return self.__version
+
+    @version.setter
+    def version(self, version):
+        if version is not None and not isinstance(version, str):
+            raise AttributeError("OntologySource.version must be a str or None")
+        else:
+            self.__version = version
+
+    @property
+    def description(self):
+        if self.__description is '':
+            return None
+        else:
+            return self.__description
+
+    @description.setter
+    def description(self, description):
+        if description is not None and not isinstance(description, str):
+            raise AttributeError("OntologySource.description must be a str or None")
+        else:
+            self.__description = description
+
 
 class OntologyAnnotation(Commentable):
-    """An ontology term annotation reference
+    """An ontology annotation
 
     Attributes:
-        term_source: The abbreviated ontology name. It should correspond to one of the sources as specified in the
-        ontology_source_reference section of the Investigation.
-        term_accession: URI
+        term (str, NoneType): A term taken from an ontology or controlled vocabulary.
+        term_source (OntologySource): Reference to the resource from which the term is derived.
+        term_accession (str, NoneType): A URI or resource-specific identifier for the term.
+        comments (list, NoneType): Comments associated with instances of this class.
     """
 
-    def __init__(self, id_='', name="", term_source=None, term_accession="", comments=None):
+    def __init__(self, term=None, term_source=None, term_accession=None, comments=None, id_=''):
         super().__init__(comments)
-        self.id = id_
-        self.name = name
-        if term_source is None:
-            self.term_source = OntologySourceReference()
-        else:
-            self.term_source = term_source
+
+        self.term = term
+        self.term_source = term_source
         self.term_accession = term_accession
+        self.id = id_
+
+    @property
+    def term(self):
+        if self.__term is '':
+            return None
+        else:
+            return self.__term
+
+    @term.setter
+    def term(self, term):
+        if term is not None and not isinstance(term, str):
+            raise AttributeError("OntologyAnnotation.term must be a str or None; got {}:{}".format(term, type(term)))
+        else:
+            self.__term = term
+
+    @property
+    def term_source(self):
+        return self.__term_source
+
+    @term_source.setter
+    def term_source(self, term_source):
+        if term_source is not None and not isinstance(term_source, OntologySource):
+            raise AttributeError("OntologyAnnotation.term_source must be a OntologySource or None; got {}:{}".format(term_source, type(term_source)))
+        else:
+            self.__term_source = term_source
+
+    @property
+    def term_accession(self):
+        if self.__term is '':
+            return None
+        else:
+            return self.__term_accession
+
+    @term_accession.setter
+    def term_accession(self, term_accession):
+        if term_accession is not None and not isinstance(term_accession, str):
+            raise AttributeError("OntologyAnnotation.term_accession must be a str or None")
+        else:
+            self.__term_accession = term_accession
 
 
 class Publication(Commentable):
     """A publication associated with an investigation or study.
 
     Attributes:
-        pubmed_id: The PubMed IDs of the described publication(s) associated with this investigation.
-        doi: A Digital Object Identifier (DOI) for that publication (where available).
-        author_list: The list of authors associated with that publication.
-        title: The title of publication associated with the investigation.
-        status: A term describing the status of that publication (i.e. submitted, in preparation, published).
+        pubmed_id (str, NoneType): The PubMed IDs of the described publication(s) associated with this investigation.
+        doi (str, NoneType): A Digital Object Identifier (DOI) for that publication (where available).
+        author_list (str, NoneType): The list of authors associated with that publication.
+        title (str, NoneType): The title of publication associated with the investigation.
+        status(str, OntologyAnnotation, NoneType): A term describing the status of that publication (i.e. submitted,
+            in preparation, published).
+        comments (list, NoneType): Comments associated with instances of this class.
     """
 
-    def __init__(self, pubmed_id="", doi="", author_list="", title="", status=None, comments=None):
+    def __init__(self, pubmed_id=None, doi=None, author_list=None, title=None, status=None, comments=None):
         super().__init__(comments)
         self.pubmed_id = pubmed_id
         self.doi = doi
         self.author_list = author_list
         self.title = title
-        if status is None:
-            self.status = OntologyAnnotation()
-        else:
-            self.status = status
+        self.status = status
+
+        @property
+        def pubmed_id(self):
+            if self.__pubmed_id is '':
+                return None
+            else:
+                return self.__pubmed_id
+
+        @pubmed_id.setter
+        def pubmed_id(self, pubmed_id):
+            if pubmed_id is not None and not isinstance(pubmed_id, str):
+                raise AttributeError("Publication.pubmed_id must be a str or None")
+            else:
+                self.__pubmed_id = pubmed_id
+
+        @property
+        def doi(self):
+            if self.__doi is '':
+                return None
+            else:
+                return self.__doi
+
+        @doi.setter
+        def doi(self, doi):
+            if doi is not None and not isinstance(doi, str):
+                raise AttributeError("Publication.doi must be a str or None")
+            else:
+                self.__doi = doi
+
+        @property
+        def author_list(self):
+            if self.__author_list is '':
+                return None
+            else:
+                return self.__author_list
+
+        @author_list.setter
+        def doi(self, author_list):
+            if author_list is not None and not isinstance(author_list, str):
+                raise AttributeError("Publication.author_list must be a str or None")
+            else:
+                self.__author_list = author_list
+
+        @property
+        def status(self):
+            if self.__status is '':
+                return None
+            else:
+                return self.__status
+
+        @status.setter
+        def status(self, status):
+            if status is not None and not isinstance(status, (OntologyAnnotation, str)):
+                raise AttributeError("Publication.status must be a str, OntologyAnnotation or None")
+            else:
+                self.__status = status
 
 
 class Person(Commentable):
     """A person/contact that can be attributed to an Investigation or Study.
 
     Attributes:
-        last_name: The last name of a person associated with the investigation.
-        first_name: The first name of a person associated with the investigation.
-        mid_initials: The middle initials of a person associated with the investigation.
-        email: The email address of a person associated with the investigation.
-        phone: The telephone number of a person associated with the investigation.
-        fax: The fax number of a person associated with the investigation.
-        address: The address of a person associated with the investigation.
-        affiliation: The organization affiliation for a person associated with the investigation.
-        roles: Term to classify the role(s) performed by this person in the context of the investigation,
-        which means that the roles reported here need not correspond to roles held withing their
+        last_name (str, NoneType): The last name of a person associated with the investigation.
+        first_name (str, NoneType): The first name of a person associated with the investigation.
+        mid_initials (str, NoneType): The middle initials of a person associated with the investigation.
+        email (str, NoneType): The email address of a person associated with the investigation.
+        phone (str, NoneType): The telephone number of a person associated with the investigation.
+        fax (str, NoneType): The fax number of a person associated with the investigation.
+        address (str, NoneType): The address of a person associated with the investigation.
+        affiliation (str, NoneType): The organization affiliation for a person associated with the investigation.
+        roles (list, NoneType): OntologyAnnotations to classify the role(s) performed by this person in the context of
+        the investigation, which means that the roles reported here need not correspond to roles held withing their
         affiliated organization.
+        comments (list, NoneType): Comments associated with instances of this class.
     """
 
-    def __init__(self, id_='', first_name="", last_name="", mid_initials="", email="", phone="", fax="", address="",
-                 affiliation="", roles=None, comments=None):
+    def __init__(self, first_name=None, last_name=None, mid_initials=None, email=None, phone=None, fax=None,
+                 address=None, affiliation=None, roles=None, comments=None, id_=''):
         super().__init__(comments)
         self.id = id_
         self.last_name = last_name
@@ -210,10 +386,7 @@ class Person(Commentable):
         self.fax = fax
         self.address = address
         self.affiliation = affiliation
-        if roles is None:
-            self.roles = list()
-        else:
-            self.roles = roles
+        self.roles = roles
 
 
 class Study(Commentable, object):

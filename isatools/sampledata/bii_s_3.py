@@ -4,9 +4,9 @@ from os.path import dirname, join
 # experiment"
 
 try:
-    import json
+    import json as j
 except ImportError as e:
     raise RuntimeError("phytoplankton data requires json to be installed")
 
 #  returns json representation of phytoplankton.json
-bii_s_3 = json.load(join(dirname(__file__), 'BII-S-3.json'))
+json = j.load(open(join(dirname(__file__), 'BII-S-3.json')))

@@ -49,14 +49,14 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
 
     def get_pv(process, name):
         hits = [pv for pv in process.parameter_values if
-                pv.category.parameter_name.name.lower().replace('_', ' ') == name.lower().replace('_', ' ')]
+                pv.category.parameter_name.term.lower().replace('_', ' ') == name.lower().replace('_', ' ')]
         if len(hits) > 1:
             raise AttributeError("Multiple parameter values of category '{}' found".format(name))
         elif len(hits) < 1:
             return None
         else:
             if isinstance(hits[0].value, OntologyAnnotation):
-                value = hits[0].value.name
+                value = hits[0].value.term
             else:
                 value = hits[0].value
             return value.replace('_', ' ')
@@ -74,7 +74,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
     for istudy in investigation.studies:
         is_sra = False
         for iassay in istudy.assays:
-            if (iassay.measurement_type.name, iassay.technology_type.name) in supported_sra_assays:
+            if (iassay.measurement_type.term, iassay.technology_type.term) in supported_sra_assays:
                 is_sra = True
                 break
         if not is_sra:
@@ -87,10 +87,10 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
         # Flag SRA contacts for template
         has_sra_contact = False
         for contact in istudy.contacts:
-            if "sra inform on status" in [r.name.lower() for r in contact.roles]:
+            if "sra inform on status" in [r.term.lower() for r in contact.roles]:
                 contact.inform_on_status = True
                 has_sra_contact = True
-            if "sra inform on error" in [r.name.lower() for r in contact.roles]:
+            if "sra inform on error" in [r.term.lower() for r in contact.roles]:
                 contact.inform_on_error = True
                 has_sra_contact = True
         if not has_sra_contact:
@@ -115,8 +115,8 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
 
         assays_to_export = list()
         for iassay in istudy.assays:
-            if (iassay.measurement_type.name, iassay.technology_type.name) in supported_sra_assays:
-                assay_seq_processes = [a for a in iassay.process_sequence if a.executes_protocol.protocol_type.name ==
+            if (iassay.measurement_type.term, iassay.technology_type.term) in supported_sra_assays:
+                assay_seq_processes = [a for a in iassay.process_sequence if a.executes_protocol.protocol_type.term ==
                                        'nucleic acid sequencing']
                 for assay_seq_process in assay_seq_processes:
                     do_export = True
@@ -161,12 +161,12 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             "name": source.name,
                             "characteristics": source.characteristics,
                         }
-                        organism_charac = [c for c in source.characteristics if c.category.name == 'organism'][-1]
+                        organism_charac = [c for c in source.characteristics if c.category.term == 'organism'][-1]
                         assay_to_export['source']['taxon_id'] = organism_charac.value.term_accession[organism_charac.value.term_accession.index('_')+1:]
-                        assay_to_export['source']['scientific_name'] = organism_charac.value.name
+                        assay_to_export['source']['scientific_name'] = organism_charac.value.term
                         curr_process = assay_seq_process
                         while curr_process.prev_process is not None:
-                            assay_to_export[curr_process.executes_protocol.protocol_type.name] = curr_process
+                            assay_to_export[curr_process.executes_protocol.protocol_type.term] = curr_process
                             try:
                                 curr_process = curr_process.prev_process
                             except AttributeError:
@@ -176,7 +176,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                         assay_to_export['targeted_loci'] = False
                         assay_to_export['min_match'] = 0
                         # BEGIN genome seq library selection
-                        if iassay.measurement_type.name in ['genome sequencing', 'whole genome sequencing']:
+                        if iassay.measurement_type.term in ['genome sequencing', 'whole genome sequencing']:
                             library_source = get_pv(assay_to_export['library construction'],
                                                       'library source')
                             if library_source.upper() not in ['GENOMIC', 'GENOMIC SINGLE CELL', 'METAGENOMIC', 'OTHER']:
@@ -210,7 +210,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             assay_to_export['library_layout'] = library_layout.lower()
                         # END genome seq library selection
                         # BEGIN environmental gene survey library selection
-                        elif iassay.measurement_type.name in ['environmental gene survey']:
+                        elif iassay.measurement_type.term in ['environmental gene survey']:
                             assay_to_export['library_source'] = 'METAGENOMIC'
                             assay_to_export['library_strategy'] = 'AMPLICON'
                             assay_to_export['library_selection'] = 'PCR'
@@ -254,7 +254,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 assay_to_export['locus_name'] = target_gene
                         # END environmental gene survey library selection
                         # BEGIN metagenome seq library selection
-                        elif iassay.measurement_type.name in ['metagenome sequencing']:
+                        elif iassay.measurement_type.term in ['metagenome sequencing']:
                             library_source = 'METAGENOMIC'
                             library_strategy = get_pv(assay_to_export['library construction'],
                                                       'library strategy')
@@ -285,7 +285,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             assay_to_export['library_layout'] = library_layout.lower()
                         # END metagenome seq library selection
                         # BEGIN transciption profiling library selection
-                        elif iassay.measurement_type.name in ['transcription profiling']:
+                        elif iassay.measurement_type.term in ['transcription profiling']:
                             library_source = get_pv(assay_to_export['library construction'],
                                                     'library source')
                             if library_source is None:  # if not specified, select TRANSCRIPTOMIC by default
@@ -325,14 +325,14 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             assay_to_export['library_layout'] = library_layout.lower()
                         # END transciption profiling library selection
                         else:
-                            logger.error("ERROR:Unsupported measurement type: " + iassay.measurement_type.name)
+                            logger.error("ERROR:Unsupported measurement type: " + iassay.measurement_type.term)
                         mid_pv = get_pv(assay_to_export['library construction'], 'mid')
                         assay_to_export['poolingstrategy'] = mid_pv
                         assay_to_export['platform'] = get_pv(assay_to_export['nucleic acid sequencing'],
                                                              'sequencing instrument')
                         assays_to_export.append(assay_to_export)
             else:
-                logger.error("ERROR:Unsupported measurement/technology type {0}/{1}, skipping assays".format(iassay.measurement_type.name, iassay.technology_type.name))
+                logger.error("ERROR:Unsupported measurement/technology type {0}/{1}, skipping assays".format(iassay.measurement_type.term, iassay.technology_type.term))
 
         xexp_set_template = env.get_template('experiment_set.xml')
         xexp_set = xexp_set_template.render(assays_to_export=assays_to_export, study=istudy,
@@ -414,5 +414,5 @@ def create_datafile_hashes(fileroot, filenames):
         if isfile(join(fileroot, file)):
             datafilehashes[file] = md5sum(filename=join(fileroot, file))
         else:
-            raise FileNotFoundError("{} is not a file".format(fileroot + file))
+            raise FileNotFoundError("{} is not a file".format(join(fileroot, file)))
     return datafilehashes

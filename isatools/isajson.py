@@ -11,6 +11,29 @@ logger = logging.getLogger(__name__)
 
 def load(fp):
 
+    def get_comments(j):
+        comments = None
+        if 'comments' in j.keys():
+            comments = list()
+            for comment_json in j['comments']:
+                name = comment_json['name']
+                value = comment_json['value']
+                comment = Comment(name, value)
+                comments.append(comment)
+        return comments
+
+    def get_roles(j):
+        roles = None
+        if 'roles' in j.keys():
+            roles = list()
+            for role_json in j['roles']:
+                term = role_json['annotationValue']
+                term_accession = role_json['termAccession']
+                term_source = term_source_dict[role_json['termSource']]
+                role = OntologyAnnotation(term, term_source, term_accession)
+                roles.append(role)
+        return roles
+
     def _build_assay_graph(process_sequence=list()):
         G = nx.DiGraph()
         for process in process_sequence:
@@ -34,23 +57,18 @@ def load(fp):
         else:
             return None
 
-    isajson = json.load(fp)
+    investigation_json = json.load(fp)
     investigation = Investigation(
-        identifier=isajson['identifier'],
-        title=isajson['title'],
-        description=isajson['description'],
-        submission_date=isajson['submissionDate'],
-        public_release_date=isajson['publicReleaseDate']
+        identifier=investigation_json['identifier'],
+        title=investigation_json['title'],
+        description=investigation_json['description'],
+        submission_date=investigation_json['submissionDate'],
+        public_release_date=investigation_json['publicReleaseDate']
     )
-    for comment_json in isajson['comments']:
-        comment = Comment(
-            name=comment_json['name'],
-            value=comment_json['value'],
-        )
-        investigation.comments.append(comment)
+    investigation.comments = get_comments(investigation_json)
     term_source_dict = {'': None}
-    for ontologySourceReference_json in isajson['ontologySourceReferences']:
-        ontology_source_reference = OntologySourceReference(
+    for ontologySourceReference_json in investigation_json['ontologySourceReferences']:
+        ontology_source_reference = OntologySource(
             name=ontologySourceReference_json['name'],
             file=ontologySourceReference_json['file'],
             version=ontologySourceReference_json['version'],
@@ -58,29 +76,24 @@ def load(fp):
         )
         term_source_dict[ontology_source_reference.name] = ontology_source_reference
         investigation.ontology_source_references.append(ontology_source_reference)
-    for publication_json in isajson['publications']:
+    for publication_json in investigation_json['publications']:
         publication = Publication(
             pubmed_id=publication_json['pubMedID'],
             doi=publication_json['doi'],
             author_list=publication_json['authorList'],
             title=publication_json['title'],
             status=OntologyAnnotation(
-                name=publication_json['status']['annotationValue'],
+                term=publication_json['status']['annotationValue'],
                 term_accession=publication_json['status']['termAccession'],
                 term_source=term_source_dict[publication_json['status']['termSource']]
             )
         )
         try:
-            for comment_json in publication_json['comments']:
-                comment = Comment(
-                    name=comment_json['name'],
-                    value=comment_json['value']
-                )
-                publication.comments.append(comment)
+            publication.comments = get_comments(publication_json)
         except KeyError:
             pass
         investigation.publications.append(publication)
-    for person_json in isajson['people']:
+    for person_json in investigation_json['people']:
         person = Person(
             last_name=person_json['lastName'],
             first_name=person_json['firstName'],
@@ -93,17 +106,12 @@ def load(fp):
         )
         for role_json in person_json['roles']:
             role = OntologyAnnotation(
-                name=role_json['annotationValue'],
+                term=role_json['annotationValue'],
                 term_accession=role_json['termAccession'],
                 term_source=term_source_dict[role_json['termSource']]
             )
             person.roles.append(role)
-        for comment_json in person_json['comments']:
-            comment = Comment(
-                name=comment_json['name'],
-                value=comment_json['value'],
-            )
-            person.comments.append(comment)
+        person.comments = get_comments(person_json)
         investigation.contacts.append(person)
     samples_dict = dict()
     sources_dict = dict()
@@ -115,18 +123,18 @@ def load(fp):
     process_dict = dict()
 
     # populate assay characteristicCategories first
-    for study_json in isajson['studies']:
+    for study_json in investigation_json['studies']:
         for assay_json in study_json['assays']:
             for assay_characteristics_category_json in assay_json['characteristicCategories']:
                 characteristic_category = OntologyAnnotation(
                     id_=assay_characteristics_category_json['@id'],
-                    name=assay_characteristics_category_json['characteristicType']['annotationValue'],
+                    term=assay_characteristics_category_json['characteristicType']['annotationValue'],
                     term_source=term_source_dict[assay_characteristics_category_json['characteristicType']['termSource']],
                     term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
                 )
                 # study.characteristic_categories.append(characteristic_category)
                 categories_dict[characteristic_category.id] = characteristic_category
-    for study_json in isajson['studies']:
+    for study_json in investigation_json['studies']:
         study = Study(
             identifier=study_json['identifier'],
             title=study_json['title'],
@@ -136,18 +144,13 @@ def load(fp):
             filename=study_json['filename']
         )
         try:
-            for comment_json in study_json['comments']:
-                comment = Comment(
-                    name=comment_json['name'],
-                    value=comment_json['value'],
-                )
-                study.comments.append(comment)
+            study.comments = get_comments(study_json)
         except KeyError:
             pass
         for study_characteristics_category_json in study_json['characteristicCategories']:
             characteristic_category = OntologyAnnotation(
                 id_=study_characteristics_category_json['@id'],
-                name=study_characteristics_category_json['characteristicType']['annotationValue'],
+                term=study_characteristics_category_json['characteristicType']['annotationValue'],
                 term_source=term_source_dict[study_characteristics_category_json['characteristicType']['termSource']],
                 term_accession=study_characteristics_category_json['characteristicType']['termAccession'],
             )
@@ -155,7 +158,7 @@ def load(fp):
             categories_dict[characteristic_category.id] = characteristic_category
         for study_unit_json in study_json['unitCategories']:
             unit = OntologyAnnotation(id_=study_unit_json['@id'],
-                                      name=study_unit_json['annotationValue'],
+                                      term=study_unit_json['annotationValue'],
                                       term_source=term_source_dict[study_unit_json['termSource']],
                                       term_accession=study_unit_json['termAccession'])
             units_dict[unit.id] = unit
@@ -166,18 +169,13 @@ def load(fp):
                 author_list=study_publication_json['authorList'],
                 title=study_publication_json['title'],
                 status=OntologyAnnotation(
-                    name=study_publication_json['status']['annotationValue'],
+                    term=study_publication_json['status']['annotationValue'],
                     term_source=term_source_dict[study_publication_json['status']['termSource']],
                     term_accession=study_publication_json['status']['termAccession'],
                 )
             )
             try:
-                for comment_json in study_publication_json['comments']:
-                    comment = Comment(
-                        name=comment_json['name'],
-                        value=comment_json['value']
-                    )
-                    study_publication.comments.append(comment)
+                study_publication.comments = get_comments(study_publication_json)
             except KeyError:
                 pass
             study.publications.append(study_publication)
@@ -192,26 +190,15 @@ def load(fp):
                 address=study_person_json['address'],
                 affiliation=study_person_json['affiliation'],
             )
-            for role_json in study_person_json['roles']:
-                role = OntologyAnnotation(
-                    name=role_json['annotationValue'],
-                    term_accession=role_json['termAccession'],
-                    term_source=term_source_dict[role_json['termSource']]
-                )
-                study_person.roles.append(role)
+            study_person.roles = get_roles(study_person_json)
             try:
-                for comment_json in study_person_json['comments']:
-                    comment = Comment(
-                        name=comment_json['name'],
-                        value=comment_json['value'],
-                    )
-                    study_person.comments.append(comment)
+                study_person.comments = get_comments(study_person_json)
             except KeyError:
                 pass
             study.contacts.append(study_person)
         for design_descriptor_json in study_json['studyDesignDescriptors']:
             design_descriptor = OntologyAnnotation(
-                name=design_descriptor_json['annotationValue'],
+                term=design_descriptor_json['annotationValue'],
                 term_accession=design_descriptor_json['termAccession'],
                 term_source=term_source_dict[design_descriptor_json['termSource']]
             )
@@ -224,7 +211,7 @@ def load(fp):
                 description=protocol_json['description'],
                 version=protocol_json['version'],
                 protocol_type=OntologyAnnotation(
-                    name=protocol_json['protocolType']['annotationValue'],
+                    term=protocol_json['protocolType']['annotationValue'],
                     term_accession=protocol_json['protocolType']['termAccession'],
                     term_source=term_source_dict[protocol_json['protocolType']['termSource']]
                 )
@@ -233,7 +220,7 @@ def load(fp):
                 parameter = ProtocolParameter(
                     id_=parameter_json['@id'],
                     parameter_name=OntologyAnnotation(
-                        name=parameter_json['parameterName']['annotationValue'],
+                        term=parameter_json['parameterName']['annotationValue'],
                         term_source=term_source_dict[parameter_json['parameterName']['termSource']],
                         term_accession=parameter_json['parameterName']['termAccession']
                     )
@@ -244,7 +231,7 @@ def load(fp):
                 component = ProtocolComponent(
                     name=component_json['componentName'],
                     component_type=OntologyAnnotation(
-                        name=component_json['componentType']['annotationValue'],
+                        term=component_json['componentType']['annotationValue'],
                         term_source=term_source_dict[component_json['componentType']['termSource']],
                         term_accession=component_json['componentType']['termAccession']
                     )
@@ -257,7 +244,7 @@ def load(fp):
                 id_=factor_json['@id'],
                 name=factor_json['factorName'],
                 factor_type=OntologyAnnotation(
-                    name=factor_json['factorType']['annotationValue'],
+                    term=factor_json['factorType']['annotationValue'],
                     term_accession=factor_json['factorType']['termAccession'],
                     term_source=term_source_dict[factor_json['factorType']['termSource']]
                 )
@@ -275,17 +262,20 @@ def load(fp):
                 characteristic = Characteristic(category=categories_dict[characteristic_json['category']['@id']],)
                 if isinstance(value, dict):
                     try:
+                        term = characteristic_json['value']['annotationValue']
+                        if isinstance(term, (int, float)):
+                            term = str(term)
                         value = OntologyAnnotation(
-                            name=characteristic_json['value']['annotationValue'],
+                            term=term,
                             term_source=term_source_dict[characteristic_json['value']['termSource']],
                             term_accession=characteristic_json['value']['termAccession'])
                     except KeyError:
                         raise IOError("Can't create value as annotation")
-                elif isinstance(value, int) or isinstance(value, float):
+                elif isinstance(value, (int, float)):
                     try:
                         unit = units_dict[characteristic_json['unit']['@id']]
                     except KeyError:
-                        raise IOError("Can't create unit annotation")
+                        unit = None
                 elif not isinstance(value, str):
                     raise IOError("Unexpected type in characteristic value")
                 characteristic.value = value
@@ -307,7 +297,7 @@ def load(fp):
                 if isinstance(value, dict):
                     try:
                         value = OntologyAnnotation(
-                            name=characteristic_json['value']['annotationValue'],
+                            term=characteristic_json['value']['annotationValue'],
                             term_source=term_source_dict[characteristic_json['value']['termSource']],
                             term_accession=characteristic_json['value']['termAccession'])
                     except KeyError:
@@ -327,7 +317,7 @@ def load(fp):
                     factor_value = FactorValue(
                         factor_name=factors_dict[factor_value_json['category']['@id']],
                         value=OntologyAnnotation(
-                            name=factor_value_json['value']['annotationValue'],
+                            term=factor_value_json['value']['annotationValue'],
                             term_accession=factor_value_json['value']['termAccession'],
                             term_source=term_source_dict[factor_value_json['value']['termSource']],
                         ),
@@ -348,12 +338,7 @@ def load(fp):
                 executes_protocol=protocols_dict[study_process_json['executesProtocol']['@id']],
             )
             try:
-                for comment_json in study_process_json['comments']:
-                    comment = Comment(
-                        name=comment_json['name'],
-                        value=comment_json['value'],
-                    )
-                    process.comments.append(comment)
+                process.comments = get_comments(study_process_json)
             except KeyError:
                 pass
             try:
@@ -378,7 +363,7 @@ def load(fp):
                         )
                     try:
                         parameter_value.value = OntologyAnnotation(
-                            name=parameter_value_json['value']['annotationValue'],
+                            term=parameter_value_json['value']['annotationValue'],
                             term_accession=parameter_value_json['value']['termAccession'],
                             term_source=term_source_dict[parameter_value_json['value']['termSource']],)
                     except TypeError:
@@ -429,12 +414,12 @@ def load(fp):
         for assay_json in study_json['assays']:
             assay = Assay(
                 measurement_type=OntologyAnnotation(
-                    name=assay_json['measurementType']['annotationValue'],
+                    term=assay_json['measurementType']['annotationValue'],
                     term_accession=assay_json['measurementType']['termAccession'],
                     term_source=term_source_dict[assay_json['measurementType']['termSource']]
                 ),
                 technology_type=OntologyAnnotation(
-                    name=assay_json['technologyType']['annotationValue'],
+                    term=assay_json['technologyType']['annotationValue'],
                     term_accession=assay_json['technologyType']['termAccession'],
                     term_source=term_source_dict[assay_json['technologyType']['termSource']]
                 ),
@@ -443,7 +428,7 @@ def load(fp):
             )
             for assay_unit_json in assay_json['unitCategories']:
                 unit = OntologyAnnotation(id_=assay_unit_json['@id'],
-                                          name=assay_unit_json['annotationValue'],
+                                          term=assay_unit_json['annotationValue'],
                                           term_source=term_source_dict[assay_unit_json['termSource']],
                                           term_accession=assay_unit_json['termAccession'])
                 units_dict[unit.id] = unit
@@ -455,12 +440,7 @@ def load(fp):
                     label=data_json['type'],
                 )
                 try:
-                    for comment_json in data_json['comments']:
-                        comment = Comment(
-                            name=comment_json['name'],
-                            value=comment_json['value'],
-                        )
-                        data_file.comments.append(comment)
+                    data_file.comments = get_comments(data_json)
                 except KeyError:
                     pass
                 data_dict[data_file.id] = data_file
@@ -471,7 +451,7 @@ def load(fp):
             for assay_characteristics_category_json in assay_json['characteristicCategories']:
                 characteristic_category =OntologyAnnotation(
                     id_=assay_characteristics_category_json['@id'],
-                    name=assay_characteristics_category_json['characteristicType']['annotationValue'],
+                    term=assay_characteristics_category_json['characteristicType']['annotationValue'],
                     term_source=term_source_dict[assay_characteristics_category_json['characteristicType']['termSource']],
                     term_accession=assay_characteristics_category_json['characteristicType']['termAccession'],
                 )
@@ -493,7 +473,7 @@ def load(fp):
                     characteristic = Characteristic(
                         category=categories_dict[characteristic_json['category']['@id']],
                         value=OntologyAnnotation(
-                            name=characteristic_json['value']['annotationValue'],
+                            term=characteristic_json['value']['annotationValue'],
                             term_source=term_source_dict[characteristic_json['value']['termSource']],
                             term_accession=characteristic_json['value']['termAccession'],
                         )
@@ -507,24 +487,19 @@ def load(fp):
                     executes_protocol=protocols_dict[assay_process_json['executesProtocol']['@id']]
                 )
                 try:
-                    for comment_json in assay_process_json['comments']:
-                        comment = Comment(
-                            name=comment_json['name'],
-                            value=comment_json['value'],
-                        )
-                        process.comments.append(comment)
+                    process.comments = get_comments(assay_process_json)
                 except KeyError:
                     pass
                 # additional properties, currently hard-coded special cases
-                if process.executes_protocol.protocol_type.name == 'data collection' and assay.technology_type.name == 'DNA microarray':
+                if process.executes_protocol.protocol_type.term == 'data collection' and assay.technology_type.term == 'DNA microarray':
                     process.name = assay_process_json['name']
-                elif process.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
+                elif process.executes_protocol.protocol_type.term == 'nucleic acid sequencing':
                     process.name = assay_process_json['name']
-                elif process.executes_protocol.protocol_type.name == 'nucleic acid hybridization':
+                elif process.executes_protocol.protocol_type.term == 'nucleic acid hybridization':
                     process.name = assay_process_json['name']
-                elif process.executes_protocol.protocol_type.name == 'data transformation':
+                elif process.executes_protocol.protocol_type.term == 'data transformation':
                     process.name = assay_process_json['name']
-                elif process.executes_protocol.protocol_type.name == 'data normalization':
+                elif process.executes_protocol.protocol_type.term == 'data normalization':
                     process.name = assay_process_json['name']
                 for input_json in assay_process_json['inputs']:
                     input_ = None
@@ -583,7 +558,7 @@ def load(fp):
                             )
                         try:
                             parameter_value.value = OntologyAnnotation(
-                                name=parameter_value_json['value']['annotationValue'],
+                                term=parameter_value_json['value']['annotationValue'],
                                 term_accession=parameter_value_json['value']['termAccession'],
                                 term_source=term_source_dict[parameter_value_json['value']['termSource']],)
                         except TypeError:
@@ -1048,35 +1023,6 @@ def check_term_accession_used_no_source_ref(isa_json):
                        .format(terms_using_accession_no_source_ref))
 
 
-def print_graph(study_or_assay):
-    print(study_or_assay.filename)
-    G = study_or_assay.graph
-    from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
-    start_nodes, end_nodes = _get_start_end_nodes(G)
-    for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
-        type_seq_str = ""
-        for node in path:
-            if isinstance(node, Source):
-                type_seq_str += '(' + node.name + ":Source)->"
-            elif isinstance(node, Sample):
-                type_seq_str += '(' + node.name + ":Sample)->"
-            elif isinstance(node, Material):
-                if '#material/extract' in node.id:
-                    type_seq_str += '(' + node.name + ":Extract)->"
-                else:
-                    type_seq_str += '(' + node.name + ":Material)->"
-            elif isinstance(node, Process):
-                protocol_type = node.executes_protocol.protocol_type.name
-                type_seq_str += "({})->".format(protocol_type)
-                for data in [node for node in node.outputs if isinstance(node, DataFile)]:
-                    type_seq_str += '(' + data.filename + ":DataFile)->"
-            else:
-                type_seq_str += "({})->".format(type(node))
-        if type_seq_str.endswith('->'):
-            type_seq_str = type_seq_str[:len(type_seq_str) - 2]
-        print(type_seq_str)
-
-
 def load_config(config_dir):
     import json
     configs = dict()
@@ -1105,36 +1051,6 @@ def check_measurement_technology_types(assay_json, configs):
     except KeyError:
         logger.error("(E) Could not load configuration for measurement type '{}' and technology type '{}'"
                      .format(measurement_type, technology_type))
-
-
-def list_process_sequences(process_sequence_json):
-    list_of_last_processes_in_sequence = [i for i in process_sequence_json if 'nextProcess' not in i.keys()]
-    for process in list_of_last_processes_in_sequence:  # build graphs backwards
-        assay_graph = list()
-        try:
-            while True:
-                process_graph = list()
-                if 'outputs' in process.keys():
-                    outputs = process['outputs']
-                    if len(outputs) > 0:
-                        for output in outputs:
-                            output_id = output['@id']
-                            process_graph.append(output_id)
-                protocol_id = process['executesProtocol']['@id']
-                process_graph.append(protocol_id)
-                if 'inputs' in process.keys():
-                    inputs = process['inputs']
-                    if len(inputs) > 0:
-                        for input_ in inputs:
-                            input_id = input_['@id']
-                            process_graph.append(input_id)
-                process_graph.reverse()
-                assay_graph.append(process_graph)
-                process = [i for i in process_sequence_json if i['@id'] == process['previousProcess']['@id']][0]
-        except KeyError:
-            pass
-        assay_graph.reverse()
-        yield assay_graph
 
 
 def check_study_and_assay_graphs(study_json, configs):
