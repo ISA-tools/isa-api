@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import json
 import os
-from os.path import join
+import functools
 from isatools.io.isatab_parser import parse
 from jsonschema import RefResolver, Draft4Validator
 from uuid import uuid4
@@ -13,10 +13,13 @@ from isatools import isatab
 import logging
 import six
 
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rU')
+
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
+SCHEMAS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
 
 
@@ -33,10 +36,11 @@ def convert(work_dir, identifier_type=IdentifierType.name, validate_first=True):
         if len(i_files) != 1:
             logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
             return
-        log_msgs = isatab.validate2(fp=open(os.path.join(work_dir, i_files[0]), 'rU'), log_level=logging.ERROR)
-        if '(F)' in log_msgs.getvalue():
-            logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
-            return
+        with open(os.path.join(work_dir, i_files[0])) as handler:
+            log_msgs = isatab.validate2(fp=handler, log_level=logging.ERROR)
+            if '(F)' in log_msgs.getvalue():
+                logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
+                return
     converter = ISATab2ISAjson_v1(identifier_type)
     logger.info("Converting ISA-Tab to ISA JSON...")
     return converter.convert(work_dir)
@@ -96,7 +100,6 @@ class ISATab2ISAjson_v1:
 
 
         isa_tab = parse(work_dir)
-        #print(isa_tab)
 
         if isa_tab is None:
             logger.fatal("No ISAtab dataset found")
@@ -117,8 +120,10 @@ class ISATab2ISAjson_v1:
                     ])
 
                 #validate json
-                schema = json.load(open(join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)))
-                resolver = RefResolver('file://'+join(SCHEMAS_PATH, INVESTIGATION_SCHEMA), schema)
+                with open(os.path.join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)) as investigation_schema:
+                    schema = json.load(investigation_schema)
+
+                resolver = RefResolver('file://'+os.path.join(SCHEMAS_PATH, INVESTIGATION_SCHEMA), schema)
                 validator = Draft4Validator(schema, resolver=resolver)
                 validator.validate(isa_json, schema)
 

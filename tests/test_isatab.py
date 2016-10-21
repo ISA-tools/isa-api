@@ -3,14 +3,16 @@ import unittest
 import os
 import sys
 import shutil
-from tests.utils import assert_tab_content_equal
+import tempfile
+import functools
+import six
+
+from isatools import isatab
 from isatools.model.v1 import *
 from tests import utils
-import tempfile
-from isatools import isatab
 
-from functools import partial
-open = partial(open, mode='rU') if sys.version_info[0]==2 else partial(open, mode='r')
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rU')
 
 #  Manually testing object model to write to isatab, study file-out only to check if model and writer function correctly
 #  Currently only tests source-split and sample pooling, at study level
@@ -97,9 +99,13 @@ class TestIsaTab(unittest.TestCase):
         s.graph = _build_assay_graph(s.process_sequence)
         i.studies = [s]
         isatab.dump(i, self._tmp_dir)
-        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_pool.txt')),
-                                                 open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split',
-                                                                   's_TEST-Template1-Splitting.txt'))))
+
+        with open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split','s_TEST-Template1-Splitting.txt')) as src_file:
+            with open(os.path.join(self._tmp_dir, 's_pool.txt')) as dumped_file:
+                self.assertTrue(utils.assert_tab_content_equal(src_file, dumped_file))
+        # self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_pool.txt')),
+        #                                          open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split',
+        #                                                            's_TEST-Template1-Splitting.txt'))))
 
     def test_isatab_dump_source_sample_pool(self):
         i = Investigation()
@@ -172,9 +178,12 @@ class TestIsaTab(unittest.TestCase):
         s.graph = _build_assay_graph(s.process_sequence)
         i.studies = [s]
         isatab.dump(i, self._tmp_dir)
-        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_pool.txt')),
-                                                 open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',
-                                                                   's_TEST-Template3-Splitting.txt'))))
+        with open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool', 's_TEST-Template3-Splitting.txt')) as src_file:
+            with open(os.path.join(self._tmp_dir, 's_pool.txt')) as dumped_file:
+                self.assertTrue(utils.assert_tab_content_equal(src_file, dumped_file))
+        # self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_pool.txt')),
+        #                                          open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',
+        #                                                            's_TEST-Template3-Splitting.txt'))))
 
     def test_isatab_load_utf8_unix_investigation(self):
         """Load investigation encoded in utf-8 with Unix endlines"""

@@ -1,7 +1,8 @@
 # coding: utf-8
 import unittest
-from isatools.validate.validate_schemas import validateSchemasInFolder
 import os
+
+from isatools.validate.validate_schemas import validateSchemasInFolder
 
 
 class TestIsaJsonSchemas(unittest.TestCase):

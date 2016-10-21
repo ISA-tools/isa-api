@@ -968,9 +968,10 @@ def check_unit_category_ids_usage(study_json):
 def check_utf8(fp):
     """Used for rule 0010"""
     import chardet
-    charset = chardet.detect(open(fp.name, 'rb').read())
+    with open(fp.name, 'rb') as binary_fp:
+        charset = chardet.detect(binary_fp.read())
     if charset['encoding'] not in {'UTF-8', 'ascii'}:
-        print(type(charset['encoding']), type('ascii'))
+        #print(type(charset['encoding']), type('ascii'))
         logger.warning("(W) File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
                     .format(charset['encoding'], charset['confidence']))
         raise SystemError
@@ -979,7 +980,9 @@ def check_utf8(fp):
 def check_isa_schemas(isa_json, investigation_schema_path):
     """Used for rule 0003 and 4003"""
     try:
-        investigation_schema = json.load(open(investigation_schema_path))
+        with open(investigation_schema_path) as schema_json:
+            investigation_schema = json.load(schema_json)
+        #investigation_schema_path = os.path.abspath(investigation_schema_path)
         resolver = RefResolver('file://' + investigation_schema_path, investigation_schema)
         validator = Draft4Validator(investigation_schema, resolver=resolver)
         validator.validate(isa_json)
@@ -988,7 +991,7 @@ def check_isa_schemas(isa_json, investigation_schema_path):
         logger.fatal("Fatal error: " + str(ve))
         raise SystemError("(F) The JSON does not validate against the provided ISA-JSON schemas!")
     except BaseException as be:
-        print(be)
+        logger.error("{}: {}".format(type(be).__name__, be))
 
 
 def check_date_formats(isa_json):
@@ -1182,7 +1185,8 @@ def load_config(config_dir):
     for file in os.listdir(config_dir):
         if file.endswith(".json"):  # ignore non json files
             try:
-                config_dict = json.load(open(os.path.join(config_dir, file)))
+                with open(os.path.join(config_dir, file)) as fp:
+                    config_dict = json.load(fp)
                 if os.path.basename(file) == 'protocol_definitions.json':
                     configs['protocol_definitions'] = config_dict
                 elif os.path.basename(file) == 'study_config.json':
@@ -1289,7 +1293,7 @@ def check_study_and_assay_graphs(study_json, configs):
         check_assay_graph(assay_json['processSequence'], config)
 
 
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 default_config_dir = os.path.join(BASE_DIR, 'config', 'json', 'default')
 
 

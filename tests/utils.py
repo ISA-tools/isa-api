@@ -4,6 +4,7 @@ from pandas.util.testing import assert_frame_equal
 from isatools.isatab import read_investigation_file
 import os
 import six
+import sys
 
 _data_dir = os.path.join(os.path.dirname(__file__), 'data')
 
@@ -22,7 +23,6 @@ DEFAULT2015_XML_CONFIGS_DATA_DIR = os.path.join(XML_CONFIGS_DATA_DIR, 'isaconfig
 SRA2016_XML_CONFIGS_DATA_DIR = os.path.join(XML_CONFIGS_DATA_DIR, 'isaconfig-seq_v2016-08-30-SRA1.5-august2014mod')
 JSON_DEFAULT_CONFIGS_DATA_DIR = os.path.join(CONFIGS_DATA_DIR, 'json_default')
 JSON_SRA_CONFIGS_DATA_DIR = os.path.join(CONFIGS_DATA_DIR, 'json_sra')
-
 
 def assert_tab_content_equal(fp_x, fp_y):
     """

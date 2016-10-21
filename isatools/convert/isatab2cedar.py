@@ -31,7 +31,8 @@ class ISATab2CEDAR():
     def createCEDARjson(self, work_dir, json_dir, inv_identifier):
         print("Converting ISA to CEDAR model for {}".format(work_dir))
         schema_file = "investigation_template.json"
-        schema = json.load(open(join(CEDAR_SCHEMA_PATH,schema_file)))
+        with open(join(CEDAR_SCHEMA_PATH,schema_file)) as schema_handler:
+            schema = json.load(schema_handler)
         resolver = RefResolver('file://'+join(CEDAR_SCHEMA_PATH, schema_file), schema)
         validator = Draft4Validator(schema, resolver=resolver)
 
@@ -106,7 +107,6 @@ class ISATab2CEDAR():
                     with open(error_file_name, "w") as errorfile:
                         errorfile.write(e.message)
                         errorfile.write(e.cause)
-                        errorfile.close()
 
                 #save output json
                 if (inv_identifier):
@@ -116,7 +116,6 @@ class ISATab2CEDAR():
                     file_name = os.path.join(json_dir,study_identifier+".json")
                 with open(file_name, "w") as outfile:
                     json.dump(cedar_json, outfile, indent=4, sort_keys=True)
-                    outfile.close()
 
                 print("... conversion finished.")
 

@@ -1,6 +1,8 @@
 # coding: utf-8
 import unittest
 import os
+
+from isatools.io import isatab_configurator as configurator
 from tests import utils
 
 
@@ -13,7 +15,6 @@ class TestIsaTabConfigurator(unittest.TestCase):
         pass
 
     def test_parse_configuration_genome_seq_xml(self):
-        from isatools.io import isatab_configurator as configurator
         config_obj = configurator.parse(os.path.join(self._config_dir, 'genome_seq.xml'), True)  # Silent output
         self.assertEqual(len(config_obj.isatab_configuration), 1)
         self.assertEqual(config_obj.isatab_configuration[0].table_name, 'genome_seq')
@@ -39,7 +40,6 @@ class TestIsaTabConfigurator(unittest.TestCase):
                          'nucleic acid extraction')
 
     def test_load_config_metagenome_seq(self):
-        from isatools.io import isatab_configurator as configurator
         config_dict = configurator.load(self._config_dir)
         self.assertEqual(len(config_dict), 30)
         self.assertEqual(config_dict[('metagenome sequencing', 'nucleotide sequencing')].isatab_configuration[0]

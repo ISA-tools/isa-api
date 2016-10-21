@@ -1,7 +1,7 @@
 # coding: utf-8
 import os
 import subprocess
-from io import BytesIO
+from six import BytesIO
 from zipfile import ZipFile
 import logging
 from isatools import isatab
@@ -61,7 +61,8 @@ def create_sra(source_path, dest_path, config_path=default_config_dir):
     if len(i_files) != 1:
         logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
         return
-    log_msgs = isatab.validate2(fp=open(os.path.join(source_path, i_files[0])), log_level=logging.ERROR)
+    with open(os.path.join(source_path, i_files[0])) as i_file:
+        log_msgs = isatab.validate2(fp=i_file, log_level=logging.ERROR)
     if '(F)' in log_msgs.getvalue():
         logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
         return

@@ -1,6 +1,6 @@
 
 import json
-import sys
+import six
 import os
 
 def saveJsonDoc(file_name, json_doc):
@@ -8,13 +8,15 @@ def saveJsonDoc(file_name, json_doc):
         json.dump(json_doc, outfile, indent=4, sort_keys=True)
     outfile.close()
 
-if sys.version_info[0] == 3:
+if six.PY3:
     makedirs = os.makedirs
 else:
     def makedirs(dirpath, exist_ok=False):
-        try:
-            os.makedirs(dirpath)
-        except OSError:
-            if not exist_ok: raise
-            else: pass
+        splitted_path = dirpath.split(os.path.sep)
+        for i in range(len(splitted_path)):
+            try:
+                os.makedirs(dirpath[:i])
+            except OSError:
+                if not exist_ok: raise
+                else: pass
 

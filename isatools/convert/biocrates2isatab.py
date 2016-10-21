@@ -73,7 +73,8 @@ def merge_biocrates_files(input_dir):
             # soup = BeautifulSoup(open('/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/input-Biocrates'
             #                           '-XML-files/all-biocrates-xml-files/'+i), "xml")
 
-            soup = BeautifulSoup(open(input_dir + i), "xml")
+            with open(os.path.join(input_dir,i)) as investigation_file:
+                soup = BeautifulSoup(investigation_file, "xml")
 
             contacts = contacts + soup.find_all('contact')
             samples = samples + soup.find_all('sample')
@@ -82,11 +83,11 @@ def merge_biocrates_files(input_dir):
             metabolites = metabolites + soup.find_all('metabolite')
 
     # fh = open("/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/biocrates-merged-output.xml",  'w+')
-    fh = open("biocrates-merged-output.xml",  'w+')
-    fh.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>")
-    fh.write("<data xmlns=\"http://www.biocrates.com/metstat/result/xml_1.0\" swVersion=\"MetIQ_5.4.8-DB100-Boron-2607"
-             "-DB100-2607\" "
-             "concentrationUnit=\"uM\" dateExport=\"2015-10-28T10:37:23.484+01:00\" user=\"labadmin\">")
+    with open("biocrates-merged-output.xml",  'w+') as fh:
+        fh.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>")
+        fh.write("<data xmlns=\"http://www.biocrates.com/metstat/result/xml_1.0\" swVersion=\"MetIQ_5.4.8-DB100-Boron-2607"
+                 "-DB100-2607\" "
+                 "concentrationUnit=\"uM\" dateExport=\"2015-10-28T10:37:23.484+01:00\" user=\"labadmin\">")
 
     # the order in which these objects are written reflect the Biocrates XML structure.
     # known issue: some elements (e.g. contacts may be duplicated but as the objects differ from one attribute value,
@@ -249,8 +250,9 @@ def parseSample(file):
 
     file = sys.argv[1]
     # open and read up the file
-    handler = open(file).read()
-    soup = BeautifulSoup(handler)
+    with open(file) as handler:
+        #handler = open(file).read()
+        soup = BeautifulSoup(handler.read())
 
     # get all the plates
     plates = soup.find_all('plate')

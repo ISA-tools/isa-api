@@ -1,8 +1,9 @@
 # coding: utf-8
 import unittest
-from tests import utils
 import os
 from lxml import etree
+
+from tests import utils
 
 
 class TestUtils(unittest.TestCase):
@@ -108,6 +109,12 @@ class TestUtils(unittest.TestCase):
         self.i_tab2 = open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 'i_investigation.txt'))
         self.s_tab1 = open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 's_BII-S-1.txt'))
         self.s_tab2 = open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 's_BII-S-1.txt'))
+
+    def tearDown(self):
+        self.i_tab1.close()
+        self.i_tab2.close()
+        self.s_tab1.close()
+        self.s_tab2.close()
 
     def test_sortlistsj(self):
         j1 = self.j1

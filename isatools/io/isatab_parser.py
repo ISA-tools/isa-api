@@ -35,6 +35,10 @@ import collections
 import pprint
 import bisect
 import six
+import functools
+
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rU')
 
 
 def find_lt(a, x):
@@ -109,7 +113,7 @@ def parse(isatab_ref):
         isatab_ref = fnames[0]
     assert os.path.exists(isatab_ref), "Did not find investigation file: %s" % isatab_ref
     i_parser = InvestigationParser()
-    with open(isatab_ref, "rU") as in_handle:
+    with open(isatab_ref) as in_handle:
         rec = i_parser.parse(in_handle)
     s_parser = StudyAssayParser(isatab_ref)
     rec = s_parser.parse(rec)
@@ -278,7 +282,7 @@ class StudyAssayParser:
             return {}
         process_nodes = {}
 
-        with open(os.path.join(self._dir, fname), "rU") as in_handle:
+        with open(os.path.join(self._dir, fname)) as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
             headers = self._swap_synonyms(next(reader))
             hgroups = self._collapse_header(headers)
@@ -420,7 +424,7 @@ class StudyAssayParser:
         if not os.path.exists(os.path.join(self._dir, fname)):
             return None
         nodes = {}
-        with open(os.path.join(self._dir, fname), "rU") as in_handle:
+        with open(os.path.join(self._dir, fname)) as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
             headers = self._swap_synonyms(next(reader))
             hgroups = self._collapse_header(headers)
