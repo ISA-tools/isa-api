@@ -20,6 +20,7 @@ sys.modules['BeautifulSoup'] = bs4
 __author__ = 'philippe.rocca-serra@oerc.ox.ac.uk'
 __author__ = 'massi@oerc.ox.ac.uk'
 __author__ = 'alfie'
+__author__ = 'althonos'
 
 DESTINATION_DIR = 'output'
 DEFAULT_SAXON_DIR = os.path.join(os.path.expanduser('~'), 'Applications', 'SaxonHE')
@@ -93,24 +94,24 @@ def merge_biocrates_files(input_dir):
     # known issue: some elements (e.g. contacts may be duplicated but as the objects differ from one attribute value,
     # it is not possible to remove them without further alignment heuristic
 
-    metabolites = list(set(metabolites))
-    for element in metabolites:
+    #metabolites = list(set(metabolites))
+    for element in set(metabolites):
         fh.write(str(element))
 
-    plate_set = list(set(plate_set))
-    for element in plate_set:
+    #plate_set = list(set(plate_set))
+    for element in set(plate_set):
         fh.write(str(element))
 
-    projects = list(set(projects))
-    for element in projects:
+    #projects = list(set(projects))
+    for element in set(projects):
         fh.write(str(element))
 
-    samples = list(set(samples))
-    for element in samples:
+    #samples = list(set(samples))
+    for element in set(samples):
         fh.write(str(element))
 
-    contacts = list(set(contacts))
-    for element in contacts:
+    #contacts = list(set(contacts))
+    for element in set(contacts):
         fh.write(str(element.encode('utf-8')))
 
     fh.write("</data>")
@@ -147,12 +148,12 @@ def biocrates_to_isatab_convert(biocrates_filename, saxon_jar_path=DEFAULT_SAXON
     buffer = BytesIO()
 
     destination_dir = os.path.abspath(dir_name)
-    print('Destination dir is: ' + destination_dir)
-    logger.info('Destination dir is: ' + destination_dir)
+    #print('Destination dir is: {}'.format(destination_dir))
+    logger.info('Destination dir is: {}'.format(destination_dir))
 
     if os.path.exists(destination_dir):
-        logger.debug('Removing dir' + destination_dir)
-        print('Removing dir' + destination_dir)
+        logger.debug('Removing dir {}'.format(destination_dir))
+        #print('Removing dir' + destination_dir)
         rmtree(destination_dir)
 
     try:
@@ -192,7 +193,7 @@ def generatePolarityAttrsDict(plate, polarity, myAttrs, myMetabolites, mydict):
                 myrdfname = p.find_parent('injection').get('rawdatafilename').split('.')[0]
                 for attr, value in p.attrs.iteritems():
                     if attr != 'metabolite':
-                        mydict[p.get('metabolite') + '-' + myrdfname + '-' + attr + '-' + polarity.lower() + '-' + usedop + '-' + platebarcode] = value
+                        mydict['-'.join([p.get('metabolite'), myrdfname, attr, polarity.lower(), usedop, platebarcode])] = value
                         if attr not in myAttrList:
                             myAttrList.append(attr)
                 myMblite = p.get('metabolite')
@@ -200,7 +201,7 @@ def generatePolarityAttrsDict(plate, polarity, myAttrs, myMetabolites, mydict):
                     myMetabolitesList.append(myMblite)
             # it is assume that the rawdatafilename is unique in each of the plate grouping and polarity
             myAttrs[pi.get('rawdatafilename').split('.')[0]] = myAttrList
-        myMetabolites[usedop + '-' + platebarcode + '-' + polarity.lower()] = myMetabolitesList
+        myMetabolites['-'.join([usedop, platebarcode, polarity.lower()])] = myMetabolitesList
     return myAttrs, mydict
 
 
@@ -219,22 +220,22 @@ def generateAttrsDict(plate):
 def writeOutToFile(plate, polarity, usedop, platebarcode, output_dir, uniqueAttrs, uniqueMetaboliteIdentifiers, mydict):
     pos_injection = plate.find_all('injection', {'polarity': polarity})
     if pos_injection:
-        filename = usedop + '-' + platebarcode + '-' + polarity.lower() + '-maf.txt'
+        filename = '-'.join([usedop, platebarcode, polarity.lower(), 'maf.txt'])
         print(filename)
         with open(os.path.join(output_dir, filename), 'w') as file_handler:
             # writing out the header
             file_handler.write('Sample ID')
             for ua in uniqueAttrs:
                 for myattr in uniqueAttrs[ua]:
-                    file_handler.write('\t' + ua + '[' + myattr + ']')
+                    file_handler.write('\t{}[{}]'.format(ua, myattr))
             # now the rest of the rows
-            for myMetabolite in uniqueMetaboliteIdentifiers[usedop + '-' + platebarcode + '-' + polarity.lower()]:
-                file_handler.write('\n' + myMetabolite)
+            for myMetabolite in uniqueMetaboliteIdentifiers['-'.join([usedop, platebarcode, polarity.lower()])]:
+                file_handler.write('\n{}'.format(myMetabolite))
                 for ua in uniqueAttrs:
                     for myattr in uniqueAttrs[ua]:
-                        mykey = myMetabolite + '-' + ua + '-' + myattr + '-' + polarity.lower() + '-' + usedop + '-' + platebarcode
+                        mykey = '-'.join([myMetabolite, ua, myattr, polarity.lower(), usedop, platebarcode])
                         if mykey in mydict:
-                            file_handler.write('\t' + mydict[mykey])
+                            file_handler.write('\t{}'.format(mydict[mykey]))
                         else:
                             file_handler.write('\t')
         file_handler.close()
