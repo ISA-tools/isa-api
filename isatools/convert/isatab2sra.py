@@ -5,7 +5,6 @@ from six import BytesIO
 from zipfile import ZipFile
 import logging
 from isatools import isatab
-from isatools.convert import isatab2json, json2sra
 import json
 import six
 
@@ -107,6 +106,7 @@ def create_sra(source_path, dest_path, config_path=default_config_dir):
 
 
 def convert(source_path, dest_path, validate_first=True):
+    from isatools.convert import isatab2json, json2sra
     isa_json = isatab2json.convert(source_path, validate_first=validate_first)
     isa_json_fp = six.StringIO(json.dumps(isa_json))
     isa_json_fp.name = "BII-S-3.json"

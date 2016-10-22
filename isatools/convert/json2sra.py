@@ -1,5 +1,6 @@
 # coding: utf-8
 from isatools import isajson, sra
+
 from glob import glob
 import os
 import logging
@@ -14,6 +15,7 @@ def convert(json_fp, path, config_dir=None):
     :param path: Directory for output to be written
     :param config_dir: path to JSON configuration
     """
+    from isatools.convert import json2isatab, isatab2sra
     json2isatab.convert(json_fp=json_fp, path=path, config_dir=config_dir)
     isatab2sra.create_sra(path, path)
     for f in glob(path + '/*.txt'):  # remove generated isatab files

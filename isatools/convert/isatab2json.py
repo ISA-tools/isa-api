@@ -94,7 +94,6 @@ class ISATab2ISAjson_v1:
     def convert(self, work_dir):
         """Convert an ISA-Tab dataset (version 1) to JSON provided the ISA model v1.0 JSON Schemas
             :param work_dir: directory containing the ISA-tab dataset
-            :param json_dir: output directory where the resulting json file will be saved
         """
         logger.info("Converting ISAtab to ISAjson for {}".format(work_dir))
 

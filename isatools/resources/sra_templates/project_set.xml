@@ -24,14 +24,14 @@
                 <VALUE>Name: {{contact.first_name}} {{contact.last_name}}
                     e-mail: {{contact.email}}
                     Affiliation: {{contact.affiliation}}
-                    Role: {% for role in contact.roles %}{{role.name}}{% endfor %}
+                    Role: {% for role in contact.roles %}{{role.term}}{% endfor %}
                 </VALUE>
             </PROJECT_ATTRIBUTE>{% endfor %}
             {% for publication in study.publications %}<PROJECT_ATTRIBUTE>
               <TAG>Study Publication</TAG>
               <VALUE>Title: {{publication.title}}
                      Authors: {{publication.author_list}}
-                     Status: {{publication.status.name}}
+                     Status: {{publication.status.term}}
                      PUBMED ID: {{publication.pubmed_id}}</VALUE>
             </PROJECT_ATTRIBUTE>{% endfor %}
         </PROJECT_ATTRIBUTES>
