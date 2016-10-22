@@ -157,7 +157,7 @@ class OntologySource(Commentable):
     """
 
     def __init__(self, name, file=None, version=None, description=None, comments=None):
-        super(OntologySourceReference, self).__init__(comments)
+        super(OntologySource, self).__init__(comments)
         self.name = name
         self.file = file
         self.version = version
