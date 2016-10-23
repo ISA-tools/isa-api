@@ -48,9 +48,9 @@ def dump(isa_obj, output_path):
     def _build_roles_str(roles=list()):
         roles_names, roles_accession_numbers, roles_source_refs = [], [], []
         for role in roles:
-            roles_names.append(role.name)
+            roles_names.append(role.term)
             roles_accession_numbers.append(role.term_accession)
-            roles_source_refs.append(role.term_source.name)
+            roles_source_refs.append(role.term_source.name if role.term_source else '')
         return ";".join(roles_names), ";".join(roles_accession_numbers), ";".join(roles_source_refs)
 
 
@@ -307,16 +307,16 @@ def dump(isa_obj, output_path):
         for i, protocol in enumerate(study.protocols):
             parameters_names, parameters_accession_numbers, parameters_source_refs = [], [], []
             for parameter in protocol.parameters:
-                parameters_names.append(parameter.parameter_name.name)
+                parameters_names.append(parameter.parameter_name.term)
                 parameters_accession_numbers.append(parameter.parameter_name.term_accession)
-                parameters_source_refs.append(parameter.parameter_name.term_source.name)
+                parameters_source_refs.append(parameter.parameter_name.term_source.name if parameter.parameter_name.term_source else '')
             component_names, component_types,  = [], []
             component_types_accession_numbers, component_types_source_refs = [], []
             for component in protocol.components:
                 component_names.append(component.name)
-                component_types.append(component.component_type.name)
+                component_types.append(component.component_type.term)
                 component_types_accession_numbers.append(component.component_type.term_accession)
-                component_types_source_refs.append(component.component_type.term_source.name)
+                component_types_source_refs.append(component.component_type.term_source.name if component.component_type.term_source else '')
             study_protocols_df.loc[i] = [
                 protocol.name,
                 protocol.protocol_type.term,

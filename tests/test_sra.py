@@ -2,11 +2,16 @@
 from unittest import TestCase
 from lxml import etree
 import os
+import six
 import shutil
 import tempfile
+import functools
 
 from isatools import isajson, sra
 from tests import utils
+
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rU')
 
 
 class TestNewSraExport(TestCase):
@@ -86,5 +91,5 @@ class TestNewSraExport(TestCase):
         self.assertEqual(datafilehashes['1EU.sff'], 'd41d8cd98f00b204e9800998ecf8427e')  # hash is for empty file
 
     def test_create_datafile_hashes_fail(self):
-        with self.assertRaises(FileNotFoundError):
+        with self.assertRaises(IOError):
             sra.create_datafile_hashes(os.path.join(utils.TAB_DATA_DIR, 'BII-S-7'), ['1EU'])
