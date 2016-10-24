@@ -9,6 +9,8 @@ import hashlib
 import httpretty
 import json
 import os
+import six
+import functools
 from zipfile import ZipFile
 from behave import *
 from sure import expect
@@ -18,6 +20,9 @@ from isatools.io.storage_adapter import IsaGitHubStorageAdapter, REPOS, CONTENTS
 from lxml import etree
 from io import BytesIO, StringIO
 from requests.exceptions import HTTPError
+
+open = functools.partial(open, mode='rU') if six.PY2 else functools.partial(open, mode='r')
+
 
 __author__ = 'massi'
 
@@ -229,7 +234,7 @@ def step_impl(context):
     download_url = context.zipped_dataset_encoded['download_url']
 
     # get the raw zipped file
-    with open(fixture_file_path_raw, 'rb') as zip_file:
+    with open(fixture_file_path_raw, mode='rb') as zip_file:
         context.zip_content = zip_file.read()
         httpretty.register_uri(httpretty.GET, download_url, body=context.zip_content, content_type='application/zip')
 
@@ -250,7 +255,7 @@ def step_impl(context):
     out_file = os.path.join(context.destination_path, context.source_path.split('/')[-1])
     # file should have been saved
     expect(os.path.isfile(out_file)).to.be.true
-    with open(out_file, 'rb') as zip_file:
+    with open(out_file, mode='rb') as zip_file:
         written_zip_content = zip_file.read()
 
     expect(written_zip_content).to.equal(context.zip_content)
