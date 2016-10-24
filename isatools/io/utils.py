@@ -15,7 +15,7 @@ else:
         splitted_path = dirpath.split(os.path.sep)
         for i in range(len(splitted_path)):
             try:
-                os.makedirs(dirpath[:i])
+                os.mkdir(os.path.sep.join(splitted_path[:i+1]))
             except OSError:
                 if not exist_ok: raise
                 else: pass
