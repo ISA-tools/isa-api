@@ -13,9 +13,12 @@ Todo:
 .. _ISA Model and Serialization Specifications 1.0: http://isa-specs.readthedocs.io/
 
 """
+from __future__ import absolute_import
 
 import networkx as nx
 import six
+
+from .utils import accepts
 
 def _build_assay_graph(process_sequence=list()):
     G = nx.DiGraph()
@@ -53,13 +56,9 @@ class Comment(object):
         return self.__name
 
     @name.setter
+    @accepts(six.text_type, None, allow_empty=False)
     def name(self, name):
-        if not isinstance(name, six.text_type):
-            raise AttributeError("Comment.name must be a str")
-        elif not name.strip():
-            raise AttributeError("Comment.name must not be empty")
-        else:
-            self.__name = name
+        self.__name = name
 
     @property
     def value(self):
@@ -69,11 +68,9 @@ class Comment(object):
             return self.__value
 
     @value.setter
+    @accepts(six.text_type, int, float, None)
     def value(self, value):
-        if value is not None and not isinstance(value, (six.text_type, int, float)):  # allow instance of str, int, float or None
-            raise AttributeError("Comment.value must be an instance of str, int, float, or None")
-        else:
-            self.__value = value
+        self.__value = value
 
 
 class Commentable(object):
@@ -90,11 +87,9 @@ class Commentable(object):
         return self.__comments
 
     @comments.setter
+    @accepts(list, None)
     def comments(self, comments):
-        if comments is not None and not isinstance(comments, list):
-            raise AttributeError("comments must be an instance of list or None")
-        else:
-            self.__comments = comments
+        self.__comments = comments
 
 
 class Investigation(Commentable):
@@ -168,13 +163,9 @@ class OntologySource(Commentable):
         return self.__name
 
     @name.setter
+    @accepts(six.text_type, None, allow_empty=False)
     def name(self, name):
-        if not isinstance(name, str):
-            raise AttributeError("OntologySource.name must be a str")
-        elif name.strip() == '':
-            raise AttributeError("OntologySource.name must not be empty")
-        else:
-            self.__name = name
+        self.__name = name
 
     @property
     def file(self):
@@ -184,11 +175,9 @@ class OntologySource(Commentable):
             return self.__file
 
     @file.setter
+    @accepts(six.text_type, None)
     def file(self, file):
-        if file is not None and not isinstance(file, str):
-            raise AttributeError("OntologySource.file must be a str or None")
-        else:
-            self.__file = file
+        self.__file = file
 
     @property
     def version(self):
@@ -198,11 +187,9 @@ class OntologySource(Commentable):
             return self.__version
 
     @version.setter
+    @accepts(six.text_type, None)
     def version(self, version):
-        if version is not None and not isinstance(version, str):
-            raise AttributeError("OntologySource.version must be a str or None")
-        else:
-            self.__version = version
+        self.__version = version
 
     @property
     def description(self):
@@ -212,11 +199,9 @@ class OntologySource(Commentable):
             return self.__description
 
     @description.setter
+    @accepts(six.text_type, None)
     def description(self, description):
-        if description is not None and not isinstance(description, str):
-            raise AttributeError("OntologySource.description must be a str or None")
-        else:
-            self.__description = description
+        self.__description = description
 
 
 class OntologyAnnotation(Commentable):
@@ -245,22 +230,18 @@ class OntologyAnnotation(Commentable):
             return self.__term
 
     @term.setter
+    @accepts(six.text_type, None)
     def term(self, term):
-        if term is not None and not isinstance(term, str):
-            raise AttributeError("OntologyAnnotation.term must be a str or None; got {}:{}".format(term, type(term)))
-        else:
-            self.__term = term
+        self.__term = term
 
     @property
     def term_source(self):
         return self.__term_source
 
     @term_source.setter
+    @accepts(OntologySource, None)
     def term_source(self, term_source):
-        if term_source is not None and not isinstance(term_source, OntologySource):
-            raise AttributeError("OntologyAnnotation.term_source must be a OntologySource or None; got {}:{}".format(term_source, type(term_source)))
-        else:
-            self.__term_source = term_source
+        self.__term_source = term_source
 
     @property
     def term_accession(self):
@@ -270,11 +251,9 @@ class OntologyAnnotation(Commentable):
             return self.__term_accession
 
     @term_accession.setter
+    @accepts(six.text_type, None)
     def term_accession(self, term_accession):
-        if term_accession is not None and not isinstance(term_accession, str):
-            raise AttributeError("OntologyAnnotation.term_accession must be a str or None")
-        else:
-            self.__term_accession = term_accession
+        self.__term_accession = term_accession
 
 
 class Publication(Commentable):
@@ -306,11 +285,9 @@ class Publication(Commentable):
                 return self.__pubmed_id
 
         @pubmed_id.setter
+        @accepts(six.text_type, None)
         def pubmed_id(self, pubmed_id):
-            if pubmed_id is not None and not isinstance(pubmed_id, str):
-                raise AttributeError("Publication.pubmed_id must be a str or None")
-            else:
-                self.__pubmed_id = pubmed_id
+            self.__pubmed_id = pubmed_id
 
         @property
         def doi(self):
@@ -320,11 +297,9 @@ class Publication(Commentable):
                 return self.__doi
 
         @doi.setter
+        @accepts(six.text_type, None)
         def doi(self, doi):
-            if doi is not None and not isinstance(doi, str):
-                raise AttributeError("Publication.doi must be a str or None")
-            else:
-                self.__doi = doi
+            self.__doi = doi
 
         @property
         def author_list(self):
@@ -334,11 +309,9 @@ class Publication(Commentable):
                 return self.__author_list
 
         @author_list.setter
+        @accepts(six.text_type, None)
         def doi(self, author_list):
-            if author_list is not None and not isinstance(author_list, str):
-                raise AttributeError("Publication.author_list must be a str or None")
-            else:
-                self.__author_list = author_list
+            self.__author_list = author_list
 
         @property
         def status(self):
@@ -348,11 +321,9 @@ class Publication(Commentable):
                 return self.__status
 
         @status.setter
+        @accepts(OntologyAnnotation, six.text_type, None)
         def status(self, status):
-            if status is not None and not isinstance(status, (OntologyAnnotation, str)):
-                raise AttributeError("Publication.status must be a str, OntologyAnnotation or None")
-            else:
-                self.__status = status
+            self.__status = status
 
 
 class Person(Commentable):
