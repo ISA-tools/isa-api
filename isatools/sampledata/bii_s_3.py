@@ -9,4 +9,5 @@ except ImportError as e:
     raise RuntimeError("phytoplankton data requires json to be installed")
 
 #  returns json representation of phytoplankton.json
-json = j.load(open(join(dirname(__file__), 'BII-S-3.json')))
+with open(join(dirname(__file__), 'BII-S-3.json')) as json_file:
+    json = j.load(json_file)
