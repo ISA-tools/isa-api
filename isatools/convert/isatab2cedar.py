@@ -20,7 +20,7 @@ class ISATab2CEDAR():
         self.primary_source = primary_source
 
     def createCEDARjson_folder(self, work_dir, json_dir, inv_identifier):
-        print("Convert ISA datasets in folder ", work_dir)
+        print("Convert ISA datasets in folder {}".format(work_dir))
         path = os.path.abspath(work_dir)
         folders = [ f for f in listdir(path) if isdir(join(path,f))]
 

@@ -232,7 +232,7 @@ def create_data_files(input_techtype, f, input_study_id, input_analysis_id):
     # print("file to download: ", f)
     try:
         # dlurl = urlopen(f)
-        print("tt:", input_techtype)
+        print("tt: {}".format(input_techtype))
         # saving a remote file to local drive
         # localcopy = open(studyID + "_" + analysisID + ".txt", 'w+')
         # localcopy.write(str(dlurl.read()))
@@ -524,7 +524,7 @@ def create_nmr_assay_records(lol, study_id, analysis_id, fv_records):
         # print("records:", [full_assay_record])
         # print("full assay record: ",fv_record[3], ": ", longrecords[fv_record[3]])
 
-    print("QTs:", nmr_maf_qt, nmr_rawdata_qt)
+    print("QTs: {} {}".format(nmr_maf_qt, nmr_rawdata_qt))
 
     return longrecords, assay_wf_header, nmr_maf_qt, nmr_rawdata_qt
 
@@ -1598,14 +1598,14 @@ try:
     for element in study_assays_dict["assays"]:
         print(element)
         if element["techtype"] == "mass spectrometry":
-            print("itemA:", element["techtype"])
+            print("itemA: {}".format(element["techtype"]))
             orefTT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
             oaTT = OntologyAnnotation(term="metabolite profiling", term_accession="", term_source=orefTT)
             orefMT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
             oaMT = OntologyAnnotation(term="mass spectrometry", term_accession="", term_source=orefMT)
 
             this_assay_file = "a_" + str(studyid) + "_" + str(element["analysis_id"]) + ".txt"
-            print("this assay_file:", this_assay_file)
+            print("this assay_file: {}".format(this_assay_file))
             this_assay = Assay(measurement_type=oaTT, technology_type=oaMT, filename=this_assay_file)
             study1.assays.append(this_assay)
 
@@ -1622,13 +1622,13 @@ try:
             write_assay(element["techtype"], element["analysis_id"], assay_records, assay_header)
 
         elif element["techtype"] == "nmr spectroscopy":
-            print("itemB:", element["techtype"])
+            print("itemB: {}".format(element["techtype"]))
             orefTT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
             oaTT = OntologyAnnotation(term="metabolite profiling", term_accession="", term_source=orefTT)
             orefMT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
             oaMT = OntologyAnnotation(term="nmr spectroscopy", term_accession="", term_source=orefMT)
             this_assay_file = "a_" + str(studyid) + "_" + str(element["analysis_id"]) + ".txt"
-            print("this assay_file:", this_assay_file)
+            print("this assay_file: {}".format(this_assay_file))
             this_assay = Assay(measurement_type=oaTT, technology_type=oaMT, filename=this_assay_file)
             study1.assays.append(this_assay)
             # print(study1.name)

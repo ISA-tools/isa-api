@@ -12,7 +12,7 @@ def validateSchemasInFolder(folder):
 
     for schemaFile in files:
         if (schemaFile.endswith('.json')):
-            print("Validating schema ", schemaFile, "...")
+            print("Validating schema {} ...".format(schemaFile))
             with open(join(path,schemaFile)) as fp:
                 schema = json.load(fp)
             Draft4Validator.check_schema(schema)

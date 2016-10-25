@@ -53,9 +53,9 @@ def create_sra(source_path, dest_path, config_path=default_config_dir):
         raise IOError("dest_path " + dest_path + " does not exist")
     if not os.path.exists(config_path):
         raise IOError("config_path " + config_path + " does not exist")
-    print("Using source ISA Tab folder: " + source_path)
-    print("Writing to destination SRA folder: " + dest_path)
-    print("ISA configuration XML folder: " + config_path)
+    print("Using source ISA Tab folder: {}".format(source_path))
+    print("Writing to destination SRA folder: {}".format(dest_path))
+    print("ISA configuration XML folder: {}".format(config_path))
     i_files = [f for f in os.listdir(source_path) if f.startswith('i_') and f.endswith('.txt')]
     if len(i_files) != 1:
         logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
@@ -81,7 +81,7 @@ def create_sra(source_path, dest_path, config_path=default_config_dir):
         #     logf.write(str(res, encoding='utf-8'))
 
     except subprocess.CalledProcessError as err:
-        print("Execution failed: ", err.output)
+        print("Execution failed: {}".format(err.output))
         error_message = str(err.output, encoding='utf-8')
         raise TypeError(error_message)
 

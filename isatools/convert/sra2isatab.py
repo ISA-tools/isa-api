@@ -117,12 +117,12 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
     buffer = BytesIO()
 
     destination_dir = os.path.abspath(dir_name)
-    print('Destination dir is: ' + destination_dir)
-    logger.info('Destination dir is: ' + destination_dir)
+    print('Destination dir is: {}'.format(destination_dir))
+    logger.info('Destination dir is: {}'.format(destination_dir))
 
     if os.path.exists(destination_dir):
-        logger.debug('Removing dir' + destination_dir)
-        print('Removing dir' + destination_dir)
+        logger.debug('Removing dir {}'.format(destination_dir))
+        print('Removing dir {}'.format(destination_dir))
         rmtree(destination_dir)
 
     for acc_number in formatted_sra_acc_numbers:

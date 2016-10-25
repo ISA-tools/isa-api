@@ -28,8 +28,8 @@ def validate(isatab_dir, config_dir):
     """
     if not os.path.exists(isatab_dir):
         raise IOError("isatab_dir {} does not exist".format(isatab_dir))
-    print("Using source ISA Tab folder: " + isatab_dir)
-    print("ISA configuration XML folder: " + config_dir)
+    print("Using source ISA Tab folder: {}".format(isatab_dir))
+    print("ISA configuration XML folder: {}".format(config_dir))
     convert_command = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                    "convert/isa_line_commands/bin/validate.sh -c " + config_dir + " " + isatab_dir)
     from subprocess import call
@@ -1879,7 +1879,7 @@ def check_study_table_against_config(s_df, protocols_declared, config):
 
     # Second, check if Protocol REFs are of valid types
     for row in s_df['Protocol REF']:
-        print(row, protocols_declared[row] in [k[1] for k in protocols], [k[1] for k in protocols])
+        print("{}: {} {}".format(row, protocols_declared[row] in [k[1] for k in protocols], [k[1] for k in protocols]))
     # Third, check if required values are present
 
 
