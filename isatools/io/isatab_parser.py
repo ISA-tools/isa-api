@@ -208,7 +208,7 @@ class InvestigationParser:
                 # add blank values if the line is stripped
                 while len(line) < len(out) + 1:
                     line.append("")
-                for i in range(len(out)):
+                for i in six.moves.range(len(out)):
                     out[i][line[0]] = line[i+1].strip()
                 line = None
         return out, line

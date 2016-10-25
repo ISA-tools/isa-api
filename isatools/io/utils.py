@@ -13,7 +13,7 @@ if six.PY3:
 else:
     def makedirs(dirpath, exist_ok=False):
         splitted_path = dirpath.split(os.path.sep)
-        for i in range(len(splitted_path)):
+        for i in six.moves.range(len(splitted_path)):
             try:
                 os.mkdir(os.path.sep.join(splitted_path[:i+1]))
             except OSError:
