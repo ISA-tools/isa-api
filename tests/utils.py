@@ -83,7 +83,7 @@ def assert_tab_content_equal(fp_x, fp_y):
             df_y = df_y.dropna(axis=1, how='all')
             df_y = df_y.replace(np.nan, '')
 
-            is_cols_equal = set([x.split('.', 1)[0] for x in df_x.columns]) == set([x.split('.', 1)[0] for x in df_y.columns])
+            is_cols_equal = {x.split('.', 1)[0] for x in df_x.columns} == {x.split('.', 1)[0] for x in df_y.columns}
             if not is_cols_equal:
                 print('x: ' + str(df_x.columns))
                 print('y: ' + str(df_y.columns))

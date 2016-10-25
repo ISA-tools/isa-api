@@ -1407,7 +1407,7 @@ def check_protocol_usage(i_df, dir_context):
                 study_df = load_table(os.path.join(dir_context, study_filename))
                 for protocol_ref_col in (k for k in study_df.columns if k.startswith('Protocol REF')):
                     protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
-                protocol_refs_used = set([r for r in protocol_refs_used if pd.notnull(r)])
+                protocol_refs_used = {r for r in protocol_refs_used if pd.notnull(r)}
                 if not protocol_refs_used.issubset(protocols_declared):
                     logger.error(
                         "(E) Some protocols used in a study file {} are not declared in the investigation file: {}".format(
@@ -1421,7 +1421,7 @@ def check_protocol_usage(i_df, dir_context):
                     assay_df = load_table(os.path.join(dir_context, assay_filename))
                     for protocol_ref_col in (k for k in assay_df.columns if k.startswith('Protocol REF')):
                         protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
-                    protocol_refs_used = set([r for r in protocol_refs_used if pd.notnull(r)])
+                    protocol_refs_used = {r for r in protocol_refs_used if pd.notnull(r)}
                     if not protocol_refs_used.issubset(protocols_declared):
                         logger.error(
                             "(E) Some protocols used in an assay file {} are not declared in the investigation file: {}".format(
@@ -1564,7 +1564,7 @@ def check_study_factor_usage(i_df, dir_context):
                 try:
                     study_factors_used = set()
                     assay_df = load_table(os.path.join(dir_context, assay_filename))
-                    study_factor_ref_cols = set([k for k in assay_df.columns if factor_value_regex.match(k)])
+                    study_factor_ref_cols = {k for k in assay_df.columns if factor_value_regex.match(k)}
                     for col in study_factor_ref_cols:
                         fv = factor_value_regex.findall(col)
                         study_factors_used = study_factors_used.union(set(fv))
