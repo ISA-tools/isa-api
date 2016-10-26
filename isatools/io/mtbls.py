@@ -208,6 +208,7 @@ def get_factor_values(mtbls_study_id, factor_name):
         if 'Factor Value[{}]'.format(factor_name) in list(df.columns.values):
             for indx, match in df['Factor Value[{}]'.format(factor_name)].items():
                 if isinstance(match, (str, int, float)):
-                    fvs.add(match)
+                    if str(match) != 'nan':
+                        fvs.add(match)
     shutil.rmtree(tmp_dir)
     return fvs
