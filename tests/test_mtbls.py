@@ -14,7 +14,7 @@ class TestMtblsIO(unittest.TestCase):
 
     """Mock-only test on MTBLS1"""
     @patch('ftplib.FTP', autospec=True)
-    def test_get_study(self, mock_ftp_constructor):  # FIXME: mock_open was working, but now doesn't (with no change to code...)
+    def test_get_study(self, mock_ftp_constructor):
         mock_ftp = mock_ftp_constructor.return_value
         mock_ftp.login.return_value = '230'  # means login OK
         tmp_dir = MTBLS.get_study('MTBLS1')  # only retrieves ISA files from MTBLS
@@ -32,15 +32,21 @@ class TestMtblsIO(unittest.TestCase):
 
     def test_get_factor_names(self):
         factors = MTBLS.get_factor_names('MTBLS2')
-        self.assertIsInstance(factors, list)
+        self.assertIsInstance(factors, set)
         self.assertEqual(len(factors), 2)
-        self.assertListEqual(factors, ['genotype', 'replicate'])
+        self.assertSetEqual(factors, {'genotype', 'replicate'})
+
+    def test_get_factor_values(self):
+        fvs = MTBLS.get_factor_values('MTBLS2', 'genotype')
+        self.assertIsInstance(fvs, set)
+        self.assertEqual(len(fvs), 2)
+        self.assertSetEqual(fvs, {'Col-0', 'cyp79'})
 
     def test_get_datafiles(self):
-        datafiles = MTBLS.get_data_files_urls('MTBLS2')
+        datafiles = MTBLS.get_data_files('MTBLS2')
         self.assertIsInstance(datafiles, list)
         self.assertEqual(len(datafiles), 16)
         factor_selection = {"genotype": "Col-0"}
-        datafiles = MTBLS.get_data_files_urls('MTBLS2', factor_selection)
-        self.assertEqual(len(datafiles), 8)
-        self.assertEqual(len(datafiles[0]['data']), 3)
+        results = MTBLS.get_data_files('MTBLS2', factor_selection)
+        self.assertEqual(len(results), 8)
+        self.assertEqual(len(results[0]['data_files']), 1)

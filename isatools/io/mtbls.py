@@ -79,24 +79,23 @@ def load(mtbls_study_id):
     if tmp_dir is None:
         raise IOError("There was a problem retrieving the study ", mtbls_study_id)
     isa_json = isatab2json.convert(tmp_dir, identifier_type=isatab2json.IdentifierType.name, validate_first=False)
+    shutil.rmtree(tmp_dir)
     return isa_json
 
 
-def get_data_files_urls(mtbls_study_id, factor_selection=None):
+def get_data_files(mtbls_study_id, factor_selection=None):
     """
-    This function gets the list of samples and related data file URLs for a given MetaboLights study, optionally
-    filtered by factor values (can filter on multiple factors)
+    This function gets a list of samples and related data file URLs for a given MetaboLights study, optionally
+    filtered by factor value (currently by matching on exactly 1 factor value)
 
     :param mtbls_study_id: Study identifier for MetaboLights study to get, as a str (e.g. MTBLS1)
     :param factor_selection: Selected factor values to filter on samples
-    :return: A list of dicts {sample_name, list of datafiles}, sample names with associated data filenames
+    :return: A list of dicts {sample_name, list of data_files} containing sample names with associated data filenames
 
     Example usage:
-        samples_and_data = mtbls.get_data_files_urls('MTBLS1', {'gender': 'male'})
+        samples_and_data = mtbls.get_data_files('MTBLS1', {'Gender': 'Male'})
 
-    TODO: Currently only works with exact matches (e.g. case 1 below). Need to work on more complex filter
-    Example selection filters:
-        {"gender": "male"} selects samples matching "male" factor value
+    TODO:  Need to work on more complex filters e.g.:
         {"gender": ["male", "female"]} selects samples matching "male" or "female" factor value
         {"age": {"equals": 60}} selects samples matching age 60
         {"age": {"less_than": 60}} selects samples matching age less than 60
@@ -110,66 +109,105 @@ def get_data_files_urls(mtbls_study_id, factor_selection=None):
             }
         }
     """
-    def match(fvs, selection):
-        if selection is None:
-            return True
-        matches = False
-        for select_name, select_value in selection.items():
-            for fv in fvs:
-                if fv.factor_name.name == select_name:
-                    if isinstance(fv.value, OntologyAnnotation):
-                        if fv.value.name == select_value:
-                            matches = True
-                    else:
-                        if fv.value == select_value:
-                            matches = True
-        return matches
-
-    from io import StringIO
-    import json
-    j = load(mtbls_study_id)
-    inv = isajson.load(StringIO(json.dumps(j)))
-    samples_and_data = list()
-    for study in inv.studies:
-        for sample in study.materials['samples']:
-            if match(sample.factor_values, factor_selection):
-                datafiles = collect_datafiles(sample, study)
-                samples_and_data.append({"sample": sample.name, "data": datafiles})
-    return samples_and_data
-
-
-def collect_datafiles(sample, study):
-    datafiles = list()
-    all_processes = [x for x in [a.process_sequence for a in study.assays] for x in x]
-    for process in all_processes:
-        for input in process.inputs:
-            if isinstance(input, Sample):
-                if input.name == sample.name:
-                    while process.next_process is not None:
-                        if len(process.outputs) > 0:
-                            for output in [o for o in process.outputs if isinstance(o, DataFile)]:
-                                datafiles.append(output.filename)
-                        process = process.next_process
-                    break
-    return datafiles
+    tmp_dir = get_study(mtbls_study_id)
+    if tmp_dir is None:
+        raise IOError("There was a problem retrieving study {}. Does it exist?".format(mtbls_study_id))
+    table_files = [f for f in os.listdir(tmp_dir) if f.startswith(('a_', 's_'))]
+    from isatools import isatab
+    results = list()
+    # first collect matching samples
+    for table_file in table_files:
+        df = isatab.load_table(os.path.join(tmp_dir, table_file))
+        if factor_selection is None:
+            matches = df['Sample Name'].items()
+            for indx, match in matches:
+                sample_name = match
+                if len([r for r in results if r['sample'] == sample_name]) == 1:
+                    continue
+                else:
+                    results.append(
+                        {
+                            "sample": sample_name,
+                            "data_files": []
+                        }
+                    )
+        else:
+            for factor_name, factor_value in factor_selection.items():
+                if 'Factor Value[{}]'.format(factor_name) in list(df.columns.values):
+                    matches = df.loc[df['Factor Value[{}]'.format(factor_name)] == factor_value]['Sample Name'].items()
+                    for indx, match in matches:
+                        sample_name = match
+                        if len([r for r in results if r['sample'] == sample_name]) == 1:
+                            continue
+                        else:
+                            results.append(
+                                {
+                                    "sample": sample_name,
+                                    "data_files": [],
+                                    "query_used": factor_selection
+                                }
+                            )
+    # now collect the data files relating to the samples
+    for result in results:
+        sample_name = result['sample']
+        for table_file in [f for f in os.listdir(tmp_dir) if f.startswith('a_')]:
+            df = isatab.load_table(os.path.join(tmp_dir, table_file))
+            data_files = list()
+            table_headers = list(df.columns.values)
+            sample_rows = df.loc[df['Sample Name'] == sample_name]
+            if 'Raw Spectral Data File' in table_headers:
+                data_files = sample_rows['Raw Spectral Data File']
+            elif 'Free Induction Decay Data File' in table_headers:
+                data_files = sample_rows['Free Induction Decay Data File']
+            result['data_files'] = [i for i in list(data_files) if str(i) != 'nan']
+    shutil.rmtree(tmp_dir)
+    return results
 
 
 def get_factor_names(mtbls_study_id):
     """
-    This function gets the factor names in a ISA JSON
+    This function gets the factor names used in a MetaboLights study
 
-    :param mtbls_isa_json: ISA JSON representation of the MetaboLights study
-    :return: A list of factor names associated data the studies
+    :param mtbls_study_id: Accession number of the MetaboLights study
+    :return: A set of factor names used in the study
 
     Example usage:
         factor_names = get_factor_names('MTBLS1')
     """
-    from io import StringIO
-    import json
-    j = load(mtbls_study_id)
-    inv = isajson.load(StringIO(json.dumps(j)))
-    factors = list()
-    for study in inv.studies:
-        for factor in study.factors:
-            factors.append(factor.name)
+    tmp_dir = get_study(mtbls_study_id)
+    table_files = [f for f in os.listdir(tmp_dir) if f.startswith(('a_', 's_'))]
+    from isatools import isatab
+    factors = set()
+    import re
+    for table_file in table_files:
+        df = isatab.load_table(os.path.join(tmp_dir, table_file))
+        factors_headers = [header for header in list(df.columns.values) if
+                           re.compile('Factor Value\[(.*?)\]').match(header)]
+        for header in factors_headers:
+            factors.add(header[13:-1])
     return factors
+
+
+def get_factor_values(mtbls_study_id, factor_name):
+    """
+    This function gets the factor values of a factor in a MetaboLights study
+
+    :param mtbls_study_id: Accession number of the MetaboLights study
+    :param factor_name: The factor name for which values are being queried
+    :return: A set of factor values associated with the factor and study
+
+    Example usage:
+        factor_values = get_factor_values('MTBLS1', 'genotype)
+    """
+    tmp_dir = get_study(mtbls_study_id)
+    table_files = [f for f in os.listdir(tmp_dir) if f.startswith(('a_', 's_'))]
+    from isatools import isatab
+    fvs = set()
+    for table_file in table_files:
+        df = isatab.load_table(os.path.join(tmp_dir, table_file))
+        if 'Factor Value[{}]'.format(factor_name) in list(df.columns.values):
+            for indx, match in df['Factor Value[{}]'.format(factor_name)].items():
+                if isinstance(match, (str, int, float)):
+                    fvs.add(match)
+    shutil.rmtree(tmp_dir)
+    return fvs
