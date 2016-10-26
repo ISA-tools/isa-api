@@ -27,12 +27,14 @@
 		
 		"designRationale":{"type": "string" },
 		
+		
 		"chemicalName":{
 			"type" : "object",
 			"properties": {
 				"name" : {"type" : "string"},
-				"termAccession" : {"type" : "string"},
-				"termSource" : {"type" : "string"}
+				"ontologyAnnotation" : {
+					"$ref": "ontology_annotation_schema.json#"
+				}
 			}
 		}
 	},
