@@ -11,6 +11,16 @@
 		},
 		"lotIdentifier": { "type": "string" },
 		"description": { "type": "string" },
-		"synthesis": { "type": "string" }
+		"synthesis": { "type": "string" },
+		"linkages":{
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"constituent": {"type": "string" },
+					"linkageType": {"type": "string" }
+				}
+			}
+		}
 	}
 }
