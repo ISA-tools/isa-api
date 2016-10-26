@@ -28,6 +28,20 @@
 					"$ref": "ontology_annotation_schema.json#"
 				}
 			}
+		},
+		"dataFiles":{
+			"type": "array",
+            "items": {
+				"type": "object",
+				"properties": {
+					"name": {"type": "string" },
+					"type": {"type": "string" },
+					"description": {"type": "string" },
+					"ontologyAnnotation": {
+						"$ref": "ontology_annotation_schema.json#"
+					}
+				}
+			}
 		}
 	}
 }
