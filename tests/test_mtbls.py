@@ -17,7 +17,7 @@ class TestMtblsIO(unittest.TestCase):
     def test_get_study(self, mock_ftp_constructor):
         mock_ftp = mock_ftp_constructor.return_value
         mock_ftp.login.return_value = '230'  # means login OK
-        tmp_dir = MTBLS.get_study('MTBLS1')  # only retrieves ISA files from MTBLS
+        tmp_dir = MTBLS.get('MTBLS1')  # only retrieves ISA files from MTBLS
         self.assertTrue(mock_ftp.login.called)
         mock_ftp_constructor.assert_called_with('ftp.ebi.ac.uk')
         mock_ftp.cwd.assert_called_with('/pub/databases/metabolights/studies/public/MTBLS1')
@@ -25,7 +25,7 @@ class TestMtblsIO(unittest.TestCase):
 
     """Tries to do actual call on MetaboLights; uses MTBLS2 as not so big"""
     def test_load_study(self):
-        isa_json = MTBLS.load('MTBLS2')  # loads MTBLS study into ISA JSON
+        isa_json = MTBLS.getj('MTBLS2')  # loads MTBLS study into ISA JSON
         self.assertIsInstance(isa_json, dict)
         self.assertEqual(isa_json['identifier'], 'MTBLS2')
         self.assertEqual(isa_json['studies'][0]['people'][0]['email'], 'boettch@ipb-halle.de')

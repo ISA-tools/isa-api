@@ -15,7 +15,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=loggi
 logger = logging.getLogger(__name__)
 
 
-def get_study(mtbls_study_id, target_dir=None):
+def get(mtbls_study_id, target_dir=None):
     """
     This function downloads ISA content from the MetaboLights FTP site.
 
@@ -65,7 +65,7 @@ def get_study(mtbls_study_id, target_dir=None):
         raise ConnectionError("There was a problem connecting to MetaboLights: " + response)
 
 
-def load(mtbls_study_id):
+def getj(mtbls_study_id):
     """
     This function downloads the specified MetaboLights study and returns an ISA JSON representation of it
 
@@ -75,7 +75,7 @@ def load(mtbls_study_id):
     Example usage:
         isa_json = MTBLS.load('MTBLS1')
     """
-    tmp_dir = get_study(mtbls_study_id)
+    tmp_dir = get(mtbls_study_id)
     if tmp_dir is None:
         raise IOError("There was a problem retrieving the study ", mtbls_study_id)
     isa_json = isatab2json.convert(tmp_dir, identifier_type=isatab2json.IdentifierType.name, validate_first=False)
@@ -109,7 +109,7 @@ def get_data_files(mtbls_study_id, factor_selection=None):
             }
         }
     """
-    tmp_dir = get_study(mtbls_study_id)
+    tmp_dir = get(mtbls_study_id)
     if tmp_dir is None:
         raise IOError("There was a problem retrieving study {}. Does it exist?".format(mtbls_study_id))
     table_files = [f for f in os.listdir(tmp_dir) if f.startswith(('a_', 's_'))]
@@ -174,7 +174,7 @@ def get_factor_names(mtbls_study_id):
     Example usage:
         factor_names = get_factor_names('MTBLS1')
     """
-    tmp_dir = get_study(mtbls_study_id)
+    tmp_dir = get(mtbls_study_id)
     table_files = [f for f in os.listdir(tmp_dir) if f.startswith(('a_', 's_'))]
     from isatools import isatab
     factors = set()
@@ -199,7 +199,7 @@ def get_factor_values(mtbls_study_id, factor_name):
     Example usage:
         factor_values = get_factor_values('MTBLS1', 'genotype)
     """
-    tmp_dir = get_study(mtbls_study_id)
+    tmp_dir = get(mtbls_study_id)
     table_files = [f for f in os.listdir(tmp_dir) if f.startswith(('a_', 's_'))]
     from isatools import isatab
     fvs = set()
