@@ -9,8 +9,11 @@
 			"type": "string",
 			"description":"Material name"
 		},		
-		"sourceName": {"type": "string" },		
-		"root": {"type": "string" },		
+		"sourceName": { "type": "string" },		
+		"root": {
+			"type": "string", 
+			"description": "Root constituent"
+		},		
 		"constituents":{
 			"type": "array",
 			"items" : {
@@ -20,6 +23,30 @@
 		"description":{"type": "string" },		
 		"synthesis":{"type": "string" },		
 		"designRationale":{"type": "string" },
+		"intendedApplication":{
+			"type" : "object",
+			"properties": {
+				"name" : {"type" : "string"},
+				"ontologyAnnotation" : {
+					"$ref": "ontology_annotation_schema.json#"
+				}
+			}
+		},
+		"characteristics" : {
+			"type" : "array",
+			"items" :  {
+				"$ref": "material_attribute_value_schema.json#"
+			}
+		},
+		"mcmType":{
+			"type" : "object",
+			"properties": {
+				"name" : {"type" : "string"},
+				"ontologyAnnotation" : {
+					"$ref": "ontology_annotation_schema.json#"
+				}
+			}
+		},
 		"chemicalName":{
 			"type" : "object",
 			"properties": {
