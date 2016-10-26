@@ -3,9 +3,7 @@ import logging
 import os
 import tempfile
 import shutil
-from isatools import isajson
 from isatools.convert import isatab2json
-from isatools.model.v1 import OntologyAnnotation, Sample, DataFile
 
 MTBLS_FTP_SERVER = 'ftp.ebi.ac.uk'
 MTBLS_BASE_DIR = '/pub/databases/metabolights/studies/public'
