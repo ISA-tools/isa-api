@@ -33,7 +33,7 @@ def _build_assay_graph(process_sequence=list()):
         if process.inputs:
             for input_ in process.inputs:
                 G.add_edge(input_, process)
-        elif  process.prev_process is not None:
+        elif process.prev_process is not None:
             G.add_edge(process.prev_process, process)
     return G
 
@@ -169,7 +169,7 @@ class OntologySource(Commentable):
 
     @property
     def file(self):
-        if self.__file is '':
+        if not self.__file:
             return None
         else:
             return self.__file
@@ -181,7 +181,7 @@ class OntologySource(Commentable):
 
     @property
     def version(self):
-        if self.__version is '':
+        if not self.__version:
             return None
         else:
             return self.__version
@@ -193,7 +193,7 @@ class OntologySource(Commentable):
 
     @property
     def description(self):
-        if self.__description is '':
+        if not self.__description:
             return None
         else:
             return self.__description
@@ -224,7 +224,7 @@ class OntologyAnnotation(Commentable):
 
     @property
     def term(self):
-        if self.__term is '':
+        if not self.__term:
             return None
         else:
             return self.__term
@@ -245,7 +245,7 @@ class OntologyAnnotation(Commentable):
 
     @property
     def term_accession(self):
-        if self.__term is '':
+        if not self.__term:
             return None
         else:
             return self.__term_accession
@@ -279,7 +279,7 @@ class Publication(Commentable):
 
         @property
         def pubmed_id(self):
-            if self.__pubmed_id is '':
+            if not self.__pubmed_id:
                 return None
             else:
                 return self.__pubmed_id
@@ -291,7 +291,7 @@ class Publication(Commentable):
 
         @property
         def doi(self):
-            if self.__doi is '':
+            if not self.__doi:
                 return None
             else:
                 return self.__doi
@@ -303,7 +303,7 @@ class Publication(Commentable):
 
         @property
         def author_list(self):
-            if self.__author_list is '':
+            if not self.__author_list:
                 return None
             else:
                 return self.__author_list
@@ -315,7 +315,7 @@ class Publication(Commentable):
 
         @property
         def status(self):
-            if self.__status is '':
+            if not self.__status:
                 return None
             else:
                 return self.__status
@@ -424,11 +424,11 @@ class Study(Commentable, object):
             'samples': list(),
             'other_material': list()
         }
-        if not (sources is None):
+        if sources is not None:
             self.materials['sources'].append(sources)
-        if not (samples is None):
+        if samples is not None:
             self.materials['samples'].append(samples)
-        if not (other_material is None):
+        if other_material is not None:
             self.materials['other_material'].append(other_material)
 
         if process_sequence is None:
