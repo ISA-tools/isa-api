@@ -45,7 +45,7 @@ class ISATab2CEDAR():
         if isa_tab is None:
             print("No ISAtab dataset found")
         else:
-                if isa_tab.metadata != {}:
+                if isa_tab.metadata:
                     investigationObject = {
                         "@id": "https://repo.metadatacenter.org/UUID/{}".format(uuid4()),
                         "_templateId": "http://example.org",

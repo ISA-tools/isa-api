@@ -2712,7 +2712,7 @@ def load(isatab_dir):
     if isa_tab is None:
         raise IOError("There was problem parsing the ISA Tab")
     else:
-        if isa_tab.metadata != {}:
+        if isa_tab.metadata:
             #print("isa_tab.metadata->",isa_tab.metadata)
             investigation = Investigation(
                 identifier=isa_tab.metadata['Investigation Identifier'],

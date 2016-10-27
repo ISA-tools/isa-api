@@ -63,7 +63,7 @@ class ISATab2ISAjson_v1:
         self.identifier_type = identifier_type
 
     def setIdentifier(self, type, name, identifier):
-        self.identifiers.append(dict([("type", type), ("name", name), ("identifier", identifier)]))
+        self.identifiers.append({"type": type, "name": name, "identifier": identifier})
 
     def getIdentifier(self, type, name):
         for subVal in self.identifiers:
@@ -76,8 +76,6 @@ class ISATab2ISAjson_v1:
         except KeyError:
             self.counters[type] = 1
 
-        identifier = ""
-
         if self.identifier_type==IdentifierType.counter:
             identifier = "http://data.isa-tools.org/{}/{}".format(type, self.counters[type])
         elif self.identifier_type == IdentifierType.uuid:
@@ -87,6 +85,8 @@ class ISATab2ISAjson_v1:
                 identifier = "#{}/{}".format(type, name.replace(" ", "_"))
             except UnicodeDecodeError:
                 identifier = "#{}/{}".format(type, name.decode('utf-8').replace(" ", "_"))
+        else:
+            identifier = ""
 
         self.setIdentifier(type, name, identifier)
         return identifier
@@ -106,7 +106,7 @@ class ISATab2ISAjson_v1:
         if isa_tab is None:
             logger.fatal("No ISAtab dataset found")
         else:
-                if isa_tab.metadata != {}:
+                if isa_tab.metadata:
                     #print("isa_tab.metadata->",isa_tab.metadata)
                     isa_json = dict([
                         ("identifier",isa_tab.metadata['Investigation Identifier']),
