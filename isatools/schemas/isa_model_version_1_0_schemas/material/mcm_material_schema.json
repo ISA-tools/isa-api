@@ -5,6 +5,7 @@
 	"type": "object",	
 	"properties":{
 		"@id": { "type": "string", "format": "uri" },		
+		"lotIdentifier": {"type": "string" },
 		"name": { 
 			"type": "string",
 			"description":"Material name"

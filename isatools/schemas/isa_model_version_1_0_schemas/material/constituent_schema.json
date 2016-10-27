@@ -9,7 +9,7 @@
 			"type": "string",
 			"description":"Constituent name"
 		},
-		"lotIdentifier": { "type": "string" },
+		"role": { "type": "string" },		
 		"description": { "type": "string" },
 		"synthesis": { "type": "string" },
 		"linkages":{
@@ -17,10 +17,19 @@
 			"items": {
 				"type": "object",
 				"properties": {
-					"constituent": {"type": "string" },
+					"constituent": {"type": "string", "format": "uri" },
 					"linkageType": {"type": "string" }
 				}
 			}
+		},
+		"characteristics" : {
+			"type" : "array",
+			"items" :  {
+				"$ref": "material_attribute_value_schema.json#"
+			}
+		},
+		"ontologyAnnotation" : {
+			"$ref": "ontology_annotation_schema.json#"
 		}
 	}
 }
