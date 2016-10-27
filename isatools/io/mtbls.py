@@ -137,7 +137,7 @@ def get_data_files(mtbls_study_id, factor_selection=None):
     for table_file in table_files:
         df = isatab.load_table(os.path.join(tmp_dir, table_file))
         if factor_selection is None:
-            matches = df['Sample Name'].items()
+            matches = six.iteritems(mdf['Sample Name'])
             for indx, match in matches:
                 sample_name = match
                 if len([r for r in results if r['sample'] == sample_name]) == 1:
@@ -150,9 +150,9 @@ def get_data_files(mtbls_study_id, factor_selection=None):
                         }
                     )
         else:
-            for factor_name, factor_value in factor_selection.items():
+            for factor_name, factor_value in six.iteritems(factor_selection):
                 if 'Factor Value[{}]'.format(factor_name) in list(df.columns.values):
-                    matches = df.loc[df['Factor Value[{}]'.format(factor_name)] == factor_value]['Sample Name'].items()
+                    matches = six.iteritems(df.loc[df['Factor Value[{}]'.format(factor_name)] == factor_value]['Sample Name'])
                     for indx, match in matches:
                         sample_name = match
                         if len([r for r in results if r['sample'] == sample_name]) == 1:
@@ -224,7 +224,7 @@ def get_factor_values(mtbls_study_id, factor_name):
     for table_file in table_files:
         df = isatab.load_table(os.path.join(tmp_dir, table_file))
         if 'Factor Value[{}]'.format(factor_name) in list(df.columns.values):
-            for indx, match in df['Factor Value[{}]'.format(factor_name)].items():
+            for indx, match in six.iteritems(df['Factor Value[{}]'.format(factor_name)]):
                 if isinstance(match, (str, int, float)):
                     if str(match) != 'nan':
                         fvs.add(match)

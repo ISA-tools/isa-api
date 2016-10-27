@@ -109,7 +109,7 @@ def generate_maf_file(mw_study_id):
         #
         # So I think you should use either dd.keys() or dd.values() here...
         #
-        if "other_id" in dd.items():
+        if "other_id" in six.iteritems(dd):
             data_rec_header = "metabolite number" + "\t" + "metabolite name" \
                               + "\t" + "metabolite identifier" \
                               + "\t" + "pubchem identifier" \
@@ -129,7 +129,7 @@ def generate_maf_file(mw_study_id):
             fh.writelines("\n")
 
         for key in dd:
-            if "other_id" in dd.items():
+            if "other_id" in six.iteritems(dd):
                 record_values = key + '\t' + dd[key]["metabolite_name"] + "\t" + dd[key]["metabolite_id"] \
                                 + "\t" + dd[key]["pubchem_id"] + "\t" + dd[key]["other_id"] + "\t" + dd[key][
                                     "other_id_type"]

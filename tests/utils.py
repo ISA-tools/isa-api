@@ -201,7 +201,7 @@ def assert_xml_equal(x1, x2):
 
 
 def strip_ids(J):
-    for k, v in J.items():
+    for k, v in six.iteritems(J):
         if isinstance(v, dict):
             strip_ids(v)
         elif isinstance(v, list):
