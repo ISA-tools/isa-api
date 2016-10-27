@@ -14,23 +14,34 @@ import datetime as datetime_
 import warnings as warnings_
 from lxml import etree as etree_
 import os
+import glob
 import six
 import itertools
+import functools
+
+if six.PY3:
+    from html import escape
+    escape = functools.partial(escape, quote=False)
+else:
+    from cgi import escape
+
+
+
 
 config_dict = {}
 
 
 def load(config_dir):
     global config_dict
-    for file in os.listdir(config_dir):
-        if file.endswith(".xml"):
-            try:
-                config_obj = parse(inFileName=os.path.join(config_dir, file), silence=True)
-                measurement_type = config_obj.get_isatab_configuration()[0].get_measurement().get_term_label()
-                technology_type = config_obj.get_isatab_configuration()[0].get_technology().get_term_label()
-                config_dict[(measurement_type, technology_type)] = config_obj
-            except GDSParseError as parse_error:
-                print(parse_error)
+    for file in glob.glob(os.path.join(config_dir, '*.xml')):
+        #if file.endswith(".xml"):
+        try:
+            config_obj = parse(inFileName=os.path.join(config_dir, file), silence=True)
+            measurement_type = config_obj.get_isatab_configuration()[0].get_measurement().get_term_label()
+            technology_type = config_obj.get_isatab_configuration()[0].get_technology().get_term_label()
+            config_dict[(measurement_type, technology_type)] = config_obj
+        except GDSParseError as parse_error:
+            print(parse_error)
     return config_dict
 
 
@@ -40,8 +51,7 @@ def get_config(measurement_type=None, technology_type=None):
         config = config_dict[(measurement_type, technology_type)].isatab_configuration[0]
         #from collections import OrderedDict
 
-
-        # althonos: directly build a list base on a sorted iterator
+        # althonos: directly build a list based on a sorted iterator
         sorted_config = [
             field
                 for field in sorted(
@@ -101,10 +111,7 @@ except ImportError as exp:
         def gds_format_string(self, input_data, input_name=''):
             return input_data
         def gds_validate_string(self, input_data, node=None, input_name=''):
-            if not input_data:
-                return ''
-            else:
-                return input_data or ''
+            return input_data or ''
         def gds_format_base64(self, input_data, input_name=''):
             return base64.b64encode(input_data)
         def gds_validate_base64(self, input_data, node=None, input_name=''):
@@ -426,34 +433,26 @@ def quote_xml(inStr):
     "Escape markup chars, but do not modify CDATA sections."
     if not inStr:
         return ''
-    s1 = (isinstance(inStr, str) and inStr or
-          '%s' % inStr)
-    s2 = ''
+    s1 = inStr if isinstance(inStr, six.text_type) else '%s' % inStr
+    s2_list = []
     pos = 0
     matchobjects = CDATA_pattern_.finditer(s1)
     for mo in matchobjects:
         s3 = s1[pos:mo.start()]
-        s2 += quote_xml_aux(s3)
-        s2 += s1[mo.start():mo.end()]
+        #s2 += escape(s3)
+        s2_list.append(escape(s3))
+        s2_list.append(s1[mo.start():mo.end()])
         pos = mo.end()
     s3 = s1[pos:]
-    s2 += quote_xml_aux(s3)
-    return s2
-
-
-def quote_xml_aux(inStr):
-    s1 = inStr.replace('&', '&amp;')
-    s1 = s1.replace('<', '&lt;')
-    s1 = s1.replace('>', '&gt;')
-    return s1
+    #s2 += escape(s3)
+    s2_list.append(escape(s3))
+    return ''.join(s2)
 
 
 def quote_attrib(inStr):
-    s1 = (isinstance(inStr, str) and inStr or
-          '%s' % inStr)
-    s1 = s1.replace('&', '&amp;')
-    s1 = s1.replace('<', '&lt;')
-    s1 = s1.replace('>', '&gt;')
+    s1 = inStr if isinstance(inStr, str) else '%s' % inStr
+    s1 = escape(s1)
+
     if '"' in s1:
         if "'" in s1:
             s1 = '"%s"' % s1.replace('"', "&quot;")
@@ -485,11 +484,12 @@ def get_all_text_(node):
     #     text = node.text
     # else:
     #     text = ''
-    text = node.text or ''
-    for child in node:
-        if child.tail is not None:
-            text += child.tail
-    return text
+    textlist = [node.text] if node.text else []
+    textlist.extend(child.tail for child in node if child.tail is not None)
+    # for child in node:
+    #     if child.tail is not None:
+    #         text += child.tail
+    return "".join(textlist)
 
 
 def find_attr_value_(attr_name, node):
@@ -636,7 +636,7 @@ class MemberSpec_(object):
     def get_data_type_chain(self): return self.data_type
     def get_data_type(self):
         if isinstance(self.data_type, list):
-            if len(self.data_type) > 0:
+            if self.data_type:
                 return self.data_type[-1]
             else:
                 return 'xs:string'
@@ -645,6 +645,13 @@ class MemberSpec_(object):
     def set_container(self, container): self.container = container
     def get_container(self): return self.container
 
+
+
+# althonos: not sure what's going on with this function, I reckon
+#           it directly gets the value transtyped into the right type,
+#           but why use self.attr = _cast(None, variable) ?! With the
+#           way this is designed, this is always equivalent to
+#           self.attr = variable !
 
 def _cast(typ, value):
     if typ is None or value is None:
@@ -660,14 +667,14 @@ class FieldType(GeneratedsSuper):
     superclass = None
     def __init__(self, is_file_field=None, section=None, is_forced_ontology=None, header=None, data_type=None, is_multiple_value=None, is_hidden=None, is_required=None, description=None, default_value=None, value_format=None, list_values=None, generated_value_template=None, recommended_ontologies=None, value_range=None):
         self.original_tagname_ = None
-        self.is_file_field = _cast(bool, is_file_field)
-        self.section = _cast(None, section)
-        self.is_forced_ontology = _cast(bool, is_forced_ontology)
-        self.header = _cast(None, header)
-        self.data_type = _cast(None, data_type)
-        self.is_multiple_value = _cast(bool, is_multiple_value)
-        self.is_hidden = _cast(bool, is_hidden)
-        self.is_required = _cast(bool, is_required)
+        self.is_file_field = None if is_file_field is None else bool(is_file_field)
+        self.section = section
+        self.is_forced_ontology = None if is_forced_ontology is None else bool(is_forced_ontology)
+        self.header = header
+        self.data_type = data_type
+        self.is_multiple_value = None if is_multiple_value is None else bool(is_multiple_value)
+        self.is_hidden = None if is_hidden is None else bool(is_hidden)
+        self.is_required = None if is_required is None else bool(is_required)
         self.description = description
         self.default_value = default_value
         self.value_format = value_format
@@ -714,18 +721,23 @@ class FieldType(GeneratedsSuper):
     def get_is_required(self): return self.is_required
     def set_is_required(self, is_required): self.is_required = is_required
     def hasContent_(self):
-        if (
-            self.description is not None or
-            self.default_value is not None or
-            self.value_format is not None or
-            self.list_values is not None or
-            self.generated_value_template is not None or
-            self.recommended_ontologies is not None or
-            self.value_range is not None
-        ):
-            return True
-        else:
-            return False
+        # if (
+        #     self.description is not None or
+        #     self.default_value is not None or
+        #     self.value_format is not None or
+        #     self.list_values is not None or
+        #     self.generated_value_template is not None or
+        #     self.recommended_ontologies is not None or
+        #     self.value_range is not None
+        # ):
+        #     return True
+        # else:
+        #     return False
+        return any([self.description, self.default_value, self.value_format,
+                    self.list_values, self.generated_value_template,
+                    self.recommended_ontologies, self.value_range])
+
+
     def export(self, outfile, level, namespace_='cfg:', name_='FieldType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
         if pretty_print:
             eol_ = '\n'
@@ -804,9 +816,9 @@ class FieldType(GeneratedsSuper):
         value = find_attr_value_('is-file-field', node)
         if value is not None and 'is-file-field' not in already_processed:
             already_processed.add('is-file-field')
-            if value in ('true', '1'):
+            if value in {'true', '1'}:
                 self.is_file_field = True
-            elif value in ('false', '0'):
+            elif value in {'false', '0'}:
                 self.is_file_field = False
             else:
                 raise_parse_error(node, 'Bad boolean attribute')
@@ -817,9 +829,9 @@ class FieldType(GeneratedsSuper):
         value = find_attr_value_('is-forced-ontology', node)
         if value is not None and 'is-forced-ontology' not in already_processed:
             already_processed.add('is-forced-ontology')
-            if value in ('true', '1'):
+            if value in {'true', '1'}:
                 self.is_forced_ontology = True
-            elif value in ('false', '0'):
+            elif value in {'false', '0'}:
                 self.is_forced_ontology = False
             else:
                 raise_parse_error(node, 'Bad boolean attribute')
@@ -834,27 +846,27 @@ class FieldType(GeneratedsSuper):
         value = find_attr_value_('is-multiple-value', node)
         if value is not None and 'is-multiple-value' not in already_processed:
             already_processed.add('is-multiple-value')
-            if value in ('true', '1'):
+            if value in {'true', '1'}:
                 self.is_multiple_value = True
-            elif value in ('false', '0'):
+            elif value in {'false', '0'}:
                 self.is_multiple_value = False
             else:
                 raise_parse_error(node, 'Bad boolean attribute')
         value = find_attr_value_('is-hidden', node)
         if value is not None and 'is-hidden' not in already_processed:
             already_processed.add('is-hidden')
-            if value in ('true', '1'):
+            if value in {'true', '1'}:
                 self.is_hidden = True
-            elif value in ('false', '0'):
+            elif value in {'false', '0'}:
                 self.is_hidden = False
             else:
                 raise_parse_error(node, 'Bad boolean attribute')
         value = find_attr_value_('is-required', node)
         if value is not None and 'is-required' not in already_processed:
             already_processed.add('is-required')
-            if value in ('true', '1'):
+            if value in {'true', '1'}:
                 self.is_required = True
-            elif value in ('false', '0'):
+            elif value in {'false', '0'}:
                 self.is_required = False
             else:
                 raise_parse_error(node, 'Bad boolean attribute')
@@ -916,12 +928,8 @@ class RecommendedOntologiesType(GeneratedsSuper):
     def insert_ontology_at(self, index, value): self.ontology.insert(index, value)
     def replace_ontology_at(self, index, value): self.ontology[index] = value
     def hasContent_(self):
-        if (
-            self.ontology
-        ):
-            return True
-        else:
-            return False
+        return bool(self.ontology)
+
     def export(self, outfile, level, namespace_='cfg:', name_='RecommendedOntologiesType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
         if pretty_print:
             eol_ = '\n'
@@ -972,10 +980,10 @@ class OntologyType(GeneratedsSuper):
     superclass = None
     def __init__(self, abbreviation=None, version=None, id=None, name=None, branch=None):
         self.original_tagname_ = None
-        self.abbreviation = _cast(None, abbreviation)
-        self.version = _cast(None, version)
-        self.id = _cast(None, id)
-        self.name = _cast(None, name)
+        self.abbreviation = abbreviation
+        self.version = version
+        self.id = id
+        self.name = name
         # if branch is None:
         #     self.branch = []
         # else:
@@ -1003,12 +1011,8 @@ class OntologyType(GeneratedsSuper):
     def get_name(self): return self.name
     def set_name(self, name): self.name = name
     def hasContent_(self):
-        if (
-            self.branch
-        ):
-            return True
-        else:
-            return False
+        return bool(self.branch)
+
     def export(self, outfile, level, namespace_='cfg:', name_='OntologyType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
         if pretty_print:
             eol_ = '\n'
@@ -1085,8 +1089,8 @@ class BranchType(GeneratedsSuper):
     superclass = None
     def __init__(self, id=None, name=None):
         self.original_tagname_ = None
-        self.id = _cast(None, id)
-        self.name = _cast(None, name)
+        self.id = id
+        self.name = name
 
     @staticmethod
     def factory(*args_, **kwargs_):
@@ -1158,7 +1162,7 @@ class StructuredFieldType(GeneratedsSuper):
     superclass = None
     def __init__(self, name=None):
         self.original_tagname_ = None
-        self.name = _cast(None, name)
+        self.name = name
 
     @staticmethod
     def factory(*args_, **kwargs_):
@@ -1221,9 +1225,9 @@ class ProtocolFieldType(GeneratedsSuper):
     superclass = None
     def __init__(self, data_type=None, protocol_type=None, is_required=None):
         self.original_tagname_ = None
-        self.data_type = _cast(None, data_type)
-        self.protocol_type = _cast(None, protocol_type)
-        self.is_required = _cast(bool, is_required)
+        self.data_type = data_type
+        self.protocol_type = protocol_type
+        self.is_required = None if is_required is None else bool(is_required)
 
     @staticmethod
     def factory(*args_, **kwargs_):
@@ -1293,9 +1297,9 @@ class ProtocolFieldType(GeneratedsSuper):
         value = find_attr_value_('is-required', node)
         if value is not None and 'is-required' not in already_processed:
             already_processed.add('is-required')
-            if value in ('true', '1'):
+            if value in {'true', '1'}:
                 self.is_required = True
-            elif value in ('false', '0'):
+            elif value in {'false', '0'}:
                 self.is_required = False
             else:
                 raise_parse_error(node, 'Bad boolean attribute')
@@ -1309,10 +1313,10 @@ class UnitFieldType(GeneratedsSuper):
     superclass = None
     def __init__(self, is_multiple_value=None, data_type=None, is_required=None, is_forced_ontology=None, description=None, list_values=None, recommended_ontologies=None, default_value=None):
         self.original_tagname_ = None
-        self.is_multiple_value = _cast(bool, is_multiple_value)
-        self.data_type = _cast(None, data_type)
-        self.is_required = _cast(bool, is_required)
-        self.is_forced_ontology = _cast(bool, is_forced_ontology)
+        self.is_multiple_value = None if is_multiple_value is None else bool(is_multiple_value)
+        self.data_type = data_type
+        self.is_required = None if is_required is None else bool(is_required)
+        self.is_forced_ontology = None if is_forced_ontology is None else bool(is_forced_ontology)
         self.description = description
         self.list_values = list_values
         self.recommended_ontologies = recommended_ontologies
@@ -1342,15 +1346,8 @@ class UnitFieldType(GeneratedsSuper):
     def get_is_forced_ontology(self): return self.is_forced_ontology
     def set_is_forced_ontology(self, is_forced_ontology): self.is_forced_ontology = is_forced_ontology
     def hasContent_(self):
-        if (
-            self.description is not None or
-            self.list_values is not None or
-            self.recommended_ontologies is not None or
-            self.default_value is not None
-        ):
-            return True
-        else:
-            return False
+        return any([self.description, self.list_values,
+                    self.recommended_ontologies, self.default_value])
     def export(self, outfile, level, namespace_='cfg:', name_='UnitFieldType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
         if pretty_print:
             eol_ = '\n'
@@ -1409,9 +1406,9 @@ class UnitFieldType(GeneratedsSuper):
         value = find_attr_value_('is-multiple-value', node)
         if value is not None and 'is-multiple-value' not in already_processed:
             already_processed.add('is-multiple-value')
-            if value in ('true', '1'):
+            if value in {'true', '1'}:
                 self.is_multiple_value = True
-            elif value in ('false', '0'):
+            elif value in {'false', '0'}:
                 self.is_multiple_value = False
             else:
                 raise_parse_error(node, 'Bad boolean attribute')
@@ -1422,18 +1419,18 @@ class UnitFieldType(GeneratedsSuper):
         value = find_attr_value_('is-required', node)
         if value is not None and 'is-required' not in already_processed:
             already_processed.add('is-required')
-            if value in ('true', '1'):
+            if value in {'true', '1'}:
                 self.is_required = True
-            elif value in ('false', '0'):
+            elif value in {'false', '0'}:
                 self.is_required = False
             else:
                 raise_parse_error(node, 'Bad boolean attribute')
         value = find_attr_value_('is-forced-ontology', node)
         if value is not None and 'is-forced-ontology' not in already_processed:
             already_processed.add('is-forced-ontology')
-            if value in ('true', '1'):
+            if value in {'true', '1'}:
                 self.is_forced_ontology = True
-            elif value in ('false', '0'):
+            elif value in {'false', '0'}:
                 self.is_forced_ontology = False
             else:
                 raise_parse_error(node, 'Bad boolean attribute')
@@ -1463,9 +1460,9 @@ class ValueRangeType(GeneratedsSuper):
     superclass = None
     def __init__(self, max=None, type_=None, min=None):
         self.original_tagname_ = None
-        self.max = _cast(None, max)
-        self.type_ = _cast(None, type_)
-        self.min = _cast(None, min)
+        self.max = max
+        self.type_ = type_
+        self.min = min
 
     @staticmethod
     def factory(*args_, **kwargs_):
@@ -1550,9 +1547,9 @@ class IsaTabConfigurationType(GeneratedsSuper):
     superclass = None
     def __init__(self, table_name=None, isatab_conversion_target=None, isatab_assay_type=None, measurement=None, technology=None, field=None, protocol_field=None, structured_field=None, unit_field=None):
         self.original_tagname_ = None
-        self.table_name = _cast(None, table_name)
-        self.isatab_conversion_target = _cast(None, isatab_conversion_target)
-        self.isatab_assay_type = _cast(None, isatab_assay_type)
+        self.table_name = table_name
+        self.isatab_conversion_target = isatab_conversion_target
+        self.isatab_assay_type = isatab_assay_type
         self.measurement = measurement
         self.technology = technology
         # if field is None:
@@ -1614,17 +1611,8 @@ class IsaTabConfigurationType(GeneratedsSuper):
     def get_isatab_assay_type(self): return self.isatab_assay_type
     def set_isatab_assay_type(self, isatab_assay_type): self.isatab_assay_type = isatab_assay_type
     def hasContent_(self):
-        if (
-            self.measurement is not None or
-            self.technology is not None or
-            self.field or
-            self.protocol_field or
-            self.structured_field or
-            self.unit_field
-        ):
-            return True
-        else:
-            return False
+        return any([self.measurement, self.technology, self.field,
+                    self.protocol_field, self.structured_field, self.unit_field])
     def export(self, outfile, level, namespace_='cfg:', name_='IsaTabConfigurationType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
         if pretty_print:
             eol_ = '\n'
@@ -1677,7 +1665,8 @@ class IsaTabConfigurationType(GeneratedsSuper):
         for child in node:
             nodeName_ = Tag_pattern_.match(child.tag).groups()[-1]
             self.buildChildren(child, node, nodeName_, pos)
-            if not ((nodeName_ == 'measurement') or (nodeName_ == 'technology')):
+            #if not ((nodeName_ == 'measurement') or (nodeName_ == 'technology')):
+            if nodeName_ not in {'measurement', 'technology'}:
                 pos += 1
         return self
     def buildAttributes(self, node, attrs, already_processed):
@@ -1736,10 +1725,10 @@ class IsaTabConfigFileType(GeneratedsSuper):
     superclass = None
     def __init__(self, isatab_configuration=None):
         self.original_tagname_ = None
-        if isatab_configuration is None:
-            self.isatab_configuration = []
-        else:
-            self.isatab_configuration = isatab_configuration
+        # if isatab_configuration is None:
+        #     self.isatab_configuration = []
+        # else:
+        self.isatab_configuration = isatab_configuration or []
 
     @staticmethod
     def factory(*args_, **kwargs_):
@@ -1754,12 +1743,7 @@ class IsaTabConfigFileType(GeneratedsSuper):
     def insert_isatab_configuration_at(self, index, value): self.isatab_configuration.insert(index, value)
     def replace_isatab_configuration_at(self, index, value): self.isatab_configuration[index] = value
     def hasContent_(self):
-        if (
-            self.isatab_configuration
-        ):
-            return True
-        else:
-            return False
+        return bool(self.isatab_configuration)
     def export(self, outfile, level, namespace_='cfg:', name_='IsaTabConfigFileType', namespacedef_='xmlns:cfg="http://www.ebi.ac.uk/bii/isatab_configuration#"', pretty_print=True):
         if pretty_print:
             eol_ = '\n'
@@ -1810,12 +1794,12 @@ class OntologyEntryType(GeneratedsSuper):
     superclass = None
     def __init__(self, term_accession=None, term_label=None, source_version=None, source_title=None, source_abbreviation=None, source_uri=None):
         self.original_tagname_ = None
-        self.term_accession = _cast(None, term_accession)
-        self.term_label = _cast(None, term_label)
-        self.source_version = _cast(None, source_version)
-        self.source_title = _cast(None, source_title)
-        self.source_abbreviation = _cast(None, source_abbreviation)
-        self.source_uri = _cast(None, source_uri)
+        self.term_accession = term_accession
+        self.term_label = term_label
+        self.source_version = source_version
+        self.source_title = source_title
+        self.source_abbreviation = source_abbreviation
+        self.source_uri = source_uri
 
     @staticmethod
     def factory(*args_, **kwargs_):
