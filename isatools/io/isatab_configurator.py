@@ -104,7 +104,7 @@ except ImportError as exp:
             if not input_data:
                 return ''
             else:
-                return input_data
+                return input_data or ''
         def gds_format_base64(self, input_data, input_name=''):
             return base64.b64encode(input_data)
         def gds_validate_base64(self, input_data, node=None, input_name=''):
@@ -675,12 +675,14 @@ class FieldType(GeneratedsSuper):
         self.generated_value_template = generated_value_template
         self.recommended_ontologies = recommended_ontologies
         self.value_range = value_range
+
+    @staticmethod
     def factory(*args_, **kwargs_):
         if FieldType.subclass:
             return FieldType.subclass(*args_, **kwargs_)
         else:
             return FieldType(*args_, **kwargs_)
-    factory = staticmethod(factory)
+
     def get_description(self): return self.description
     def set_description(self, description): self.description = description
     def get_default_value(self): return self.default_value
@@ -900,12 +902,14 @@ class RecommendedOntologiesType(GeneratedsSuper):
         # else:
         #     self.ontology = ontology
         self.ontology = ontology or []
+
+    @staticmethod
     def factory(*args_, **kwargs_):
         if RecommendedOntologiesType.subclass:
             return RecommendedOntologiesType.subclass(*args_, **kwargs_)
         else:
             return RecommendedOntologiesType(*args_, **kwargs_)
-    factory = staticmethod(factory)
+
     def get_ontology(self): return self.ontology
     def set_ontology(self, ontology): self.ontology = ontology
     def add_ontology(self, value): self.ontology.append(value)
@@ -977,12 +981,14 @@ class OntologyType(GeneratedsSuper):
         # else:
         #     self.branch = branch
         self.branch = branch or []
+
+    @staticmethod
     def factory(*args_, **kwargs_):
         if OntologyType.subclass:
             return OntologyType.subclass(*args_, **kwargs_)
         else:
             return OntologyType(*args_, **kwargs_)
-    factory = staticmethod(factory)
+
     def get_branch(self): return self.branch
     def set_branch(self, branch): self.branch = branch
     def add_branch(self, value): self.branch.append(value)
@@ -1081,12 +1087,14 @@ class BranchType(GeneratedsSuper):
         self.original_tagname_ = None
         self.id = _cast(None, id)
         self.name = _cast(None, name)
+
+    @staticmethod
     def factory(*args_, **kwargs_):
         if BranchType.subclass:
             return BranchType.subclass(*args_, **kwargs_)
         else:
             return BranchType(*args_, **kwargs_)
-    factory = staticmethod(factory)
+
     def get_id(self): return self.id
     def set_id(self, id): self.id = id
     def get_name(self): return self.name
@@ -1151,12 +1159,14 @@ class StructuredFieldType(GeneratedsSuper):
     def __init__(self, name=None):
         self.original_tagname_ = None
         self.name = _cast(None, name)
+
+    @staticmethod
     def factory(*args_, **kwargs_):
         if StructuredFieldType.subclass:
             return StructuredFieldType.subclass(*args_, **kwargs_)
         else:
             return StructuredFieldType(*args_, **kwargs_)
-    factory = staticmethod(factory)
+
     def get_name(self): return self.name
     def set_name(self, name): self.name = name
     def hasContent_(self):
@@ -1214,12 +1224,14 @@ class ProtocolFieldType(GeneratedsSuper):
         self.data_type = _cast(None, data_type)
         self.protocol_type = _cast(None, protocol_type)
         self.is_required = _cast(bool, is_required)
+
+    @staticmethod
     def factory(*args_, **kwargs_):
         if ProtocolFieldType.subclass:
             return ProtocolFieldType.subclass(*args_, **kwargs_)
         else:
             return ProtocolFieldType(*args_, **kwargs_)
-    factory = staticmethod(factory)
+
     def get_data_type(self): return self.data_type
     def set_data_type(self, data_type): self.data_type = data_type
     def get_protocol_type(self): return self.protocol_type
@@ -1305,12 +1317,14 @@ class UnitFieldType(GeneratedsSuper):
         self.list_values = list_values
         self.recommended_ontologies = recommended_ontologies
         self.default_value = default_value
+
+    @staticmethod
     def factory(*args_, **kwargs_):
         if UnitFieldType.subclass:
             return UnitFieldType.subclass(*args_, **kwargs_)
         else:
             return UnitFieldType(*args_, **kwargs_)
-    factory = staticmethod(factory)
+
     def get_description(self): return self.description
     def set_description(self, description): self.description = description
     def get_list_values(self): return self.list_values
@@ -1452,12 +1466,14 @@ class ValueRangeType(GeneratedsSuper):
         self.max = _cast(None, max)
         self.type_ = _cast(None, type_)
         self.min = _cast(None, min)
+
+    @staticmethod
     def factory(*args_, **kwargs_):
         if ValueRangeType.subclass:
             return ValueRangeType.subclass(*args_, **kwargs_)
         else:
             return ValueRangeType(*args_, **kwargs_)
-    factory = staticmethod(factory)
+
     def get_max(self): return self.max
     def set_max(self, max): self.max = max
     def get_type(self): return self.type_
@@ -1559,12 +1575,14 @@ class IsaTabConfigurationType(GeneratedsSuper):
         self.protocol_field = protocol_field or []
         self.structured_field = structured_field or []
         self.unit_field = unit_field or []
+
+    @staticmethod
     def factory(*args_, **kwargs_):
         if IsaTabConfigurationType.subclass:
             return IsaTabConfigurationType.subclass(*args_, **kwargs_)
         else:
             return IsaTabConfigurationType(*args_, **kwargs_)
-    factory = staticmethod(factory)
+
     def get_measurement(self): return self.measurement
     def set_measurement(self, measurement): self.measurement = measurement
     def get_technology(self): return self.technology
@@ -1722,12 +1740,14 @@ class IsaTabConfigFileType(GeneratedsSuper):
             self.isatab_configuration = []
         else:
             self.isatab_configuration = isatab_configuration
+
+    @staticmethod
     def factory(*args_, **kwargs_):
         if IsaTabConfigFileType.subclass:
             return IsaTabConfigFileType.subclass(*args_, **kwargs_)
         else:
             return IsaTabConfigFileType(*args_, **kwargs_)
-    factory = staticmethod(factory)
+
     def get_isatab_configuration(self): return self.isatab_configuration
     def set_isatab_configuration(self, isatab_configuration): self.isatab_configuration = isatab_configuration
     def add_isatab_configuration(self, value): self.isatab_configuration.append(value)
@@ -1796,12 +1816,14 @@ class OntologyEntryType(GeneratedsSuper):
         self.source_title = _cast(None, source_title)
         self.source_abbreviation = _cast(None, source_abbreviation)
         self.source_uri = _cast(None, source_uri)
+
+    @staticmethod
     def factory(*args_, **kwargs_):
         if OntologyEntryType.subclass:
             return OntologyEntryType.subclass(*args_, **kwargs_)
         else:
             return OntologyEntryType(*args_, **kwargs_)
-    factory = staticmethod(factory)
+
     def get_term_accession(self): return self.term_accession
     def set_term_accession(self, term_accession): self.term_accession = term_accession
     def get_term_label(self): return self.term_label
