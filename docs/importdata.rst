@@ -4,18 +4,17 @@ Importing data into ISA formats
 
 We have provided a number of modules that allow you to import data into ISA formats from well-known databases or services.
 
-----------------------------------------------------
-Importing SRA from the MetaboLights database, to ISA
-----------------------------------------------------
+------------------------------------------------
+Importing from the MetaboLights database, to ISA
+------------------------------------------------
 
-Notice: this method depends on SAXON XSLT Processor
-
-To import an MetaboLights study from the `MetaboLights <https://www.ebi.ac.uk/metabolights>`_ as ISA-Tab files, provide an MetaboLights accession number:
+To import an MetaboLights study from the `MetaboLights <https://www.ebi.ac.uk/metabolights>`_ as ISA-Tab files,
+provide an MetaboLights accession number:
 
 .. code-block:: python
 
-   from isatools.io import mtbls
-   tmp_dir = MTBLS.get_study('MTBLS1')
+   from isatools.io import mtbls as MTBLS
+   tmp_dir = MTBLS.get('MTBLS1')
 
 This method downloads the ISA-Tab files for a study, and returns a string path to a temporary directory containing the ISA-Tab files.
 
@@ -23,10 +22,35 @@ To import an MetaboLights study from the `MetaboLights <https://www.ebi.ac.uk/me
 
 .. code-block:: python
 
-   from isatools.io import mtbls
-   isa_json = MTBLS.load('MTBLS1')
+   from isatools.io import mtbls as MTBLS
+   isa_json = MTBLS.getj('MTBLS1')
 
 This method gets the study and returns the ISA content as ISA JSON.
+
+You can also do simple queries on MetaboLights studies to retrieve samples and related data files, based on factor
+selection:
+
+.. code-block:: python
+
+   from isatools.io import mtbls as MTBLS
+   mtbls.get_factor_names('MTBLS1')
+   # response:
+   # {'Gender', 'Age'}
+   mtbls.get_factor_values('MTBLS1', 'Gender')
+   # response:
+   # {'Male', 'Female'}
+   query = {
+         "Gender": "Male"
+      }
+   samples_and_files = mtbls.get_data_files('MTBLS1', factor_query=query)
+   # response:
+   #  [
+   #     {
+   #        'sample': 'ADG10003u_007'},
+   #        'data_files': ['ADG10003u_007.zip'],
+   #        'query_used': {'Gender': 'Male'}
+   #     }, ...
+   #  ]
 
 --------------------------------------------------------------
 Importing SRA from the European Nucleotide Archive, to ISA-Tab
@@ -34,7 +58,8 @@ Importing SRA from the European Nucleotide Archive, to ISA-Tab
 
 Notice: this method depends on SAXON XSLT Processor
 
-To import an SRA study from the `European Nucleotide Archive (ENA) <https://www.ebi.ac.uk/ena>`_ as ISA-Tab files, provide an ENA accession number and your path to the SAXON JAR file:
+To import an SRA study from the `European Nucleotide Archive (ENA) <https://www.ebi.ac.uk/ena>`_ as ISA-Tab files,
+provide an ENA accession number and your path to the SAXON JAR file:
 
 .. code-block:: python
 

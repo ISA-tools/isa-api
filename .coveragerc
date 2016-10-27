@@ -3,6 +3,7 @@ omit =
     /docs/*
     /features/*
     /tests/*
+    /isatools/io/isatab_configurator.py
 
 [report]
 exclude_lines =
