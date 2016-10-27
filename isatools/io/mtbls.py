@@ -137,7 +137,7 @@ def get_data_files(mtbls_study_id, factor_selection=None):
     for table_file in table_files:
         df = isatab.load_table(os.path.join(tmp_dir, table_file))
         if factor_selection is None:
-            matches = six.iteritems(mdf['Sample Name'])
+            matches = six.iteritems(df['Sample Name'])
             for indx, match in matches:
                 sample_name = match
                 if len([r for r in results if r['sample'] == sample_name]) == 1:

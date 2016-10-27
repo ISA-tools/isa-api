@@ -79,11 +79,14 @@ class ISATab2ISAjson_v1:
         identifier = ""
 
         if self.identifier_type==IdentifierType.counter:
-            identifier = "http://data.isa-tools.org/"+type+"/"+str(self.counters[type])
+            identifier = "http://data.isa-tools.org/{}/{}".format(type, self.counters[type])
         elif self.identifier_type == IdentifierType.uuid:
-            identifier = "http://data.isa-tools.org/UUID/"+str(uuid4())
+            identifier = "http://data.isa-tools.org/UUID/{}".format(uuid4())
         elif self.identifier_type == IdentifierType.name:
-            identifier = "#"+type+"/"+name.replace (" ", "_")
+            try:
+                identifier = "#{}/{}".format(type, name.replace(" ", "_"))
+            except UnicodeDecodeError:
+                identifier = "#{}/{}".format(type, name.decode('utf-8').replace(" ", "_"))
 
         self.setIdentifier(type, name, identifier)
         return identifier
