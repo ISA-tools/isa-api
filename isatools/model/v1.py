@@ -120,25 +120,29 @@ class Investigation(Commentable):
         self.description = description
         self.submission_date = submission_date
         self.public_release_date = public_release_date
-        if ontology_source_references is None:
-            self.ontology_source_references = list()
-        else:
-            self.ontology_source_references = ontology_source_references
-        if publications is None:
-            self.publications = list()
-        else:
-            self.publications = publications
-        if contacts is None:
-            self.contacts = list()
-        else:
-            self.contacts = contacts
-        if studies is None:
-            self.studies = list()
-        else:
-            self.studies = studies
+        # if ontology_source_references is None:
+        #     self.ontology_source_references = list()
+        # else:
+        #     self.ontology_source_references = ontology_source_references
+        # if publications is None:
+        #     self.publications = list()
+        # else:
+        #     self.publications = publications
+        # if contacts is None:
+        #     self.contacts = list()
+        # else:
+        #     self.contacts = contacts
+        # if studies is None:
+        #     self.studies = list()
+        # else:
+        #     self.studies = studies
         if comments is None:
             self.comments = list()
 
+        self.ontology_source_references = ontology_source_references or []
+        self.publications = publications or []
+        self.contacts = contacts or []
+        self.studies = studies or []
 
 class OntologySource(Commentable):
     """An OntologySource describes the resource from which the value of an OntologyAnnotation is derived from.
@@ -394,63 +398,84 @@ class Study(Commentable, object):
         self.submission_date = submission_date
         self.public_release_date = public_release_date
 
-        if publications is None:
-            self.publications = list()
-        else:
-            self.publications = publications
+        # if publications is None:
+        #     self.publications = list()
+        # else:
+        #     self.publications = publications
 
-        if contacts is None:
-            self.contacts = list()
-        else:
-            self.contacts = contacts
+        # if contacts is None:
+        #     self.contacts = list()
+        # else:
+        #     self.contacts = contacts
 
-        if design_descriptors is None:
-            self.design_descriptors = list()
-        else:
-            self.design_descriptors = design_descriptors
+        # if design_descriptors is None:
+        #     self.design_descriptors = list()
+        # else:
+        #     self.design_descriptors = design_descriptors
 
-        if protocols is None:
-            self.protocols = list()
-        else:
-            self.protocols = protocols
+        # if protocols is None:
+        #     self.protocols = list()
+        # else:
+        #     self.protocols = protocols
 
-        if units is None:
-            self.units = list()
-        else:
-            self.units = units
+        # if units is None:
+        #     self.units = list()
+        # else:
+        #     self.units = units
+
+        # self.materials = {
+        #     'sources': list(),
+        #     'samples': list(),
+        #     'other_material': list()
+        # }
+        # if sources is not None:
+        #     self.materials['sources'].append(sources)
+        # if samples is not None:
+        #     self.materials['samples'].append(samples)
+        # if other_material is not None:
+        #     self.materials['other_material'].append(other_material)
+
+        # if process_sequence is None:
+        #     self.process_sequence = list()
+        # else:
+        #     self.process_sequence = process_sequence
+
+        # if assays is None:
+        #     self.assays = list()
+        # else:
+        #     self.assays = assays
+
+        # if factors is None:
+        #     self.factors = list()
+        # else:
+        #     self.factors = factors
+
+        # if characteristic_categories is None:
+        #     self.characteristic_categories = list()
+        # else:
+        #     self.characteristic_categories = characteristic_categories
+        # self.graph = None
+
+        self.publications = publications or []
+        self.contacts = contacts or []
+        self.design_descriptors = design_descriptors or []
+        self.protocols = protocols or []
+        self.units = units or []
 
         self.materials = {
-            'sources': list(),
-            'samples': list(),
-            'other_material': list()
+            'sources': [sources] if sources is not None else [],
+            'samples': [samples] if samples is not None else [],
+            'other_material': [other_material] if other_material is not None else [],
         }
-        if sources is not None:
-            self.materials['sources'].append(sources)
-        if samples is not None:
-            self.materials['samples'].append(samples)
-        if other_material is not None:
-            self.materials['other_material'].append(other_material)
 
-        if process_sequence is None:
-            self.process_sequence = list()
-        else:
-            self.process_sequence = process_sequence
-
-        if assays is None:
-            self.assays = list()
-        else:
-            self.assays = assays
-
-        if factors is None:
-            self.factors = list()
-        else:
-            self.factors = factors
-
-        if characteristic_categories is None:
-            self.characteristic_categories = list()
-        else:
-            self.characteristic_categories = characteristic_categories
+        self.process_sequence = process_sequence or []
+        self.assays = assays or []
+        self.factors = factors or []
+        self.characteristic_categories = characteristic_categories or []
         self.graph = None
+
+
+
 
     #     self.__graph = None
 
@@ -480,10 +505,11 @@ class StudyFactor(Commentable):
         super(StudyFactor, self).__init__(comments)
         self.id = id_
         self.name = name
-        if factor_type is None:
-            self.factor_type = OntologyAnnotation()
-        else:
-            self.factor_type = factor_type
+        self.factor_type = factor_type or OntologyAnnotation()
+        # if factor_type is None:
+        #     self.factor_type = OntologyAnnotation()
+        # else:
+        #     self.factor_type = factor_type
 
 
 class Assay(Commentable):
@@ -501,44 +527,58 @@ class Assay(Commentable):
                  process_sequence=None, data_files=None, samples=None, other_material=None,
                  characteristic_categories=None, comments=None):
         super(Assay, self).__init__(comments)
-        if measurement_type is None:
-            self.measurement_type = OntologyAnnotation()
-        else:
-            self.measurement_type = measurement_type
+        # if measurement_type is None:
+        #     self.measurement_type = OntologyAnnotation()
+        # else:
+        #     self.measurement_type = measurement_type
 
-        if technology_type is None:
-            self.technology_type = OntologyAnnotation()
-        else:
-            self.technology_type = technology_type
+        # if technology_type is None:
+        #     self.technology_type = OntologyAnnotation()
+        # else:
+        #     self.technology_type = technology_type
 
+        # self.technology_platform = technology_platform
+        # self.filename = filename
+
+        # if process_sequence is None:
+        #     self.process_sequence = list()
+        # else:
+        #     self.process_sequence = process_sequence
+
+        # if data_files is None:
+        #     self.data_files = list()
+        # else:
+        #     self.data_files = data_files
+
+        # self.materials = {
+        #     'samples': list(),
+        #     'other_material': list()
+        # }
+
+        # if not (samples is None):
+        #     self.materials['samples'].append(samples)
+
+        # if not (other_material is None):
+        #     self.materials['other_material'].append(other_material)
+
+        # if characteristic_categories is None:
+        #     self.characteristic_categories = list()
+        # else:
+        #     self.characteristic_categories = characteristic_categories
+
+
+
+        self.measurement_type = measurement_type or OntologyAnnotation()
+        self.technology_type = technology_type or OntologyAnnotation()
         self.technology_platform = technology_platform
         self.filename = filename
-
-        if process_sequence is None:
-            self.process_sequence = list()
-        else:
-            self.process_sequence = process_sequence
-
-        if data_files is None:
-            self.data_files = list()
-        else:
-            self.data_files = data_files
-
+        self.process_sequence = process_sequence or []
+        self.data_files = data_files or []
         self.materials = {
-            'samples': list(),
-            'other_material': list()
+            'samples': [samples] if samples is not None else [],
+            'other_material': [other_material] if other_material is not None else [],
         }
-
-        if not (samples is None):
-            self.materials['samples'].append(samples)
-
-        if not (other_material is None):
-            self.materials['other_material'].append(other_material)
-
-        if characteristic_categories is None:
-            self.characteristic_categories = list()
-        else:
-            self.characteristic_categories = characteristic_categories
+        self.characteristic_categories = characteristic_categories or []
         self.graph = None
         # self.__graph = None
 
@@ -571,21 +611,25 @@ class Protocol(Commentable):
         super(Protocol, self).__init__(comments)
         self.id = id_
         self.name = name
-        if protocol_type is None:
-            self.protocol_type = OntologyAnnotation()
-        else:
-            self.protocol_type = protocol_type
+        # if protocol_type is None:
+        #     self.protocol_type = OntologyAnnotation()
+        # else:
+        #     self.protocol_type = protocol_type
+        self.protocol_type = protocol_type or OntologyAnnotation()
         self.description = description
         self.uri = uri
         self.version = version
-        if parameters is None:
-            self.parameters = list()
-        else:
-            self.parameters = parameters
-        if components is None:
-            self.components = list()
-        else:
-            self.components = components
+        # if parameters is None:
+        #     self.parameters = list()
+        # else:
+        #     self.parameters = parameters
+        # if components is None:
+        #     self.components = list()
+        # else:
+        #     self.components = components
+        self.parameters = parameters or []
+        self.components = components or []
+
 
 
 class ProtocolParameter(Commentable):
@@ -598,10 +642,11 @@ class ProtocolParameter(Commentable):
     def __init__(self, id_='', parameter_name=None, unit=None, comments=None):
         super(ProtocolParameter, self).__init__(comments)
         self.id = id_
-        if parameter_name is None:
-            self.parameter_name = OntologyAnnotation()
-        else:
-            self.parameter_name = parameter_name
+        # if parameter_name is None:
+        #     self.parameter_name = OntologyAnnotation()
+        # else:
+        #     self.parameter_name = parameter_name
+        self.parameter_name = parameter_name or OntologyAnnotation()
         # if unit is None:
         #     self.unit = OntologyAnnotation()
         # else:
@@ -613,10 +658,11 @@ class ProtocolComponent(Commentable):
         super(ProtocolComponent, self).__init__(comments)
         self.id = id_
         self.name = name
-        if component_type is None:
-            self.component_type = OntologyAnnotation()
-        else:
-            self.component_type = component_type
+        # if component_type is None:
+        #     self.component_type = OntologyAnnotation()
+        # else:
+        #     self.component_type = component_type
+        self.component_type = component_type or OntologyAnnotation()
 
 
 class Source(Commentable):
@@ -630,23 +676,26 @@ class Source(Commentable):
         super(Source, self).__init__(comments)
         self.id = id_
         self.name = name
-        if characteristics is None:
-            self.characteristics = list()
-        else:
-            self.characteristics = characteristics
+        # if characteristics is None:
+        #     self.characteristics = list()
+        # else:
+        #     self.characteristics = characteristics
+        self.characteristics = characteristics or []
 
 
 class Characteristic(Commentable):
     def __init__(self, category=None, value=None, unit=None, comments=None):
         super(Characteristic, self).__init__(comments)
-        if category is None:
-            self.category = OntologyAnnotation()
-        else:
-            self.category = category
-        if value is None:
-            self.value = OntologyAnnotation()
-        else:
-            self.value = value
+        # if category is None:
+        #     self.category = OntologyAnnotation()
+        # else:
+        #     self.category = category
+        # if value is None:
+        #     self.value = OntologyAnnotation()
+        # else:
+        #     self.value = value
+        self.category = category or OntologyAnnotation()
+        self.value = value or OntologyAnnotation()
         self.unit = unit
 
 
@@ -662,14 +711,16 @@ class Sample(Commentable):
         super(Sample, self).__init__(comments)
         self.id = id_
         self.name = name
-        if factor_values is None:
-            self.factor_values = list()
-        else:
-            self.factor_values = factor_values
-        if characteristics is None:
-            self.characteristics = list()
-        else:
-            self.characteristics = characteristics
+        # if factor_values is None:
+        #     self.factor_values = list()
+        # else:
+        #     self.factor_values = factor_values
+        # if characteristics is None:
+        #     self.characteristics = list()
+        # else:
+        #     self.characteristics = characteristics
+        self.factor_values = factor_values or []
+        self.characteristics = characteristics or []
         self.derives_from = derives_from
 
 
@@ -685,10 +736,11 @@ class Material(Commentable):
         self.id = id_
         self.name = name
         self.type = type_
-        if characteristics is None:
-            self.characteristics = list()
-        else:
-            self.characteristics = characteristics
+        # if characteristics is None:
+        #     self.characteristics = list()
+        # else:
+        #     self.characteristics = characteristics
+        self.characteristics = characteristics or []
         self.derives_from = derives_from
 
 
@@ -727,25 +779,29 @@ class Process(Commentable):
         super(Process, self).__init__(comments)
         self.id = id_
         self.name = name
-        if executes_protocol is None:
-            self.executes_protocol = Protocol()
-        else:
-            self.executes_protocol = executes_protocol
+        # if executes_protocol is None:
+        #     self.executes_protocol = Protocol()
+        # else:
+        #     self.executes_protocol = executes_protocol
+        self.executes_protocol = executes_protocol or Protocol()
         self.date = date_
         self.performer = performer
-        if parameter_values is None:
-            self.parameter_values = list()
-        else:
-            self.parameter_values = parameter_values
-        if inputs is None:
-            self.inputs = list()
-        else:
-            self.inputs = inputs
-        if outputs is None:
-            self.outputs = list()
-        else:
-            self.outputs = outputs
-        self.additional_properties = dict()
+        # if parameter_values is None:
+        #     self.parameter_values = list()
+        # else:
+        #     self.parameter_values = parameter_values
+        self.parameter_values = parameter_values or []
+        # if inputs is None:
+        #     self.inputs = list()
+        # else:
+        #     self.inputs = inputs
+        self.inputs = inputs or []
+        # if outputs is None:
+        #     self.outputs = list()
+        # else:
+        #     self.outputs = outputs
+        self.outputs = outputs or []
+        self.additional_properties = {}
         self.prev_process = None
         self.next_process = None
 

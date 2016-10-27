@@ -1019,7 +1019,7 @@ def check_pubmed_ids_format(isa_json):
         if pubmed_id_str:
             pmid_regex = re.compile('[0-9]{8}')
             pmcid_regex = re.compile('PMC[0-9]{8}')
-            if (pmid_regex.match(pubmed_id_str) is None) and (pmcid_regex.match(pubmed_id_str) is None):
+            if pmid_regex.match(pubmed_id_str) is None and pmcid_regex.match(pubmed_id_str) is None:
                 logger.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
     import re
     for ipub in isa_json['publications']:

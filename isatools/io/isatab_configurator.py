@@ -481,10 +481,11 @@ def quote_python(inStr):
 
 
 def get_all_text_(node):
-    if node.text is not None:
-        text = node.text
-    else:
-        text = ''
+    # if node.text is not None:
+    #     text = node.text
+    # else:
+    #     text = ''
+    text = node.text or ''
     for child in node:
         if child.tail is not None:
             text += child.tail
@@ -894,10 +895,11 @@ class RecommendedOntologiesType(GeneratedsSuper):
     superclass = None
     def __init__(self, ontology=None):
         self.original_tagname_ = None
-        if ontology is None:
-            self.ontology = []
-        else:
-            self.ontology = ontology
+        # if ontology is None:
+        #     self.ontology = []
+        # else:
+        #     self.ontology = ontology
+        self.ontology = ontology or []
     def factory(*args_, **kwargs_):
         if RecommendedOntologiesType.subclass:
             return RecommendedOntologiesType.subclass(*args_, **kwargs_)
@@ -970,10 +972,11 @@ class OntologyType(GeneratedsSuper):
         self.version = _cast(None, version)
         self.id = _cast(None, id)
         self.name = _cast(None, name)
-        if branch is None:
-            self.branch = []
-        else:
-            self.branch = branch
+        # if branch is None:
+        #     self.branch = []
+        # else:
+        #     self.branch = branch
+        self.branch = branch or []
     def factory(*args_, **kwargs_):
         if OntologyType.subclass:
             return OntologyType.subclass(*args_, **kwargs_)
@@ -1536,22 +1539,26 @@ class IsaTabConfigurationType(GeneratedsSuper):
         self.isatab_assay_type = _cast(None, isatab_assay_type)
         self.measurement = measurement
         self.technology = technology
-        if field is None:
-            self.field = []
-        else:
-            self.field = field
-        if protocol_field is None:
-            self.protocol_field = []
-        else:
-            self.protocol_field = protocol_field
-        if structured_field is None:
-            self.structured_field = []
-        else:
-            self.structured_field = structured_field
-        if unit_field is None:
-            self.unit_field = []
-        else:
-            self.unit_field = unit_field
+        # if field is None:
+        #     self.field = []
+        # else:
+        #     self.field = field
+        # if protocol_field is None:
+        #     self.protocol_field = []
+        # else:
+        #     self.protocol_field = protocol_field
+        # if structured_field is None:
+        #     self.structured_field = []
+        # else:
+        #     self.structured_field = structured_field
+        # if unit_field is None:
+        #     self.unit_field = []
+        # else:
+        #     self.unit_field = unit_field
+        self.field = field or []
+        self.protocol_field = protocol_field or []
+        self.structured_field = structured_field or []
+        self.unit_field = unit_field or []
     def factory(*args_, **kwargs_):
         if IsaTabConfigurationType.subclass:
             return IsaTabConfigurationType.subclass(*args_, **kwargs_)

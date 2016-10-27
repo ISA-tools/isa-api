@@ -717,8 +717,8 @@ class ISATabAssayRecord:
     """Represent an assay within an ISA-Tab record.
     """
     def __init__(self, metadata=None):
-        if metadata is None: metadata = {}
-        self.metadata = metadata
+        #if metadata is None: metadata = {}
+        self.metadata = metadata or {}
         self.nodes = {}
         self.process_nodes = {}
 

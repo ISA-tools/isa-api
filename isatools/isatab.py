@@ -378,11 +378,11 @@ def _longest_path_and_attrs(G):
                 if isinstance(n, Source):
                     length += len(n.characteristics)
                 elif isinstance(n, Sample):
-                    length += (len(n.characteristics) + len(n.factor_values))
+                    length += len(n.characteristics) + len(n.factor_values)
                 elif isinstance(n, Material):
-                    length += (len(n.characteristics))
+                    length += len(n.characteristics)
                 elif isinstance(n, Process):
-                    length += (len(n.additional_properties) + len([o for o in n.outputs if isinstance(o, DataFile)]))
+                    length += len(n.additional_properties) + len([o for o in n.outputs if isinstance(o, DataFile)])
                 if n.comments is not None:
                     length += len(n.comments)
             if length > longest[0]:
@@ -1290,7 +1290,7 @@ def check_pubmed_ids_format(i_df):
         if pubmed_id_str:
             pmid_regex = re.compile('[0-9]{8}')
             pmcid_regex = re.compile('PMC[0-9]{8}')
-            if (pmid_regex.match(pubmed_id_str) is None) and (pmcid_regex.match(pubmed_id_str) is None):
+            if pmid_regex.match(pubmed_id_str) is None and pmcid_regex.match(pubmed_id_str) is None:
                 logger.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
     import re
     for doi in i_df['INVESTIGATION PUBLICATIONS']['Investigation PubMed ID'].tolist():
