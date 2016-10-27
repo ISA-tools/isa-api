@@ -1,0 +1,77 @@
+{
+    "comments": [
+        {
+            "name": "",
+            "value": ""
+        }
+    ],
+    "description": "",
+    "identifier": "",
+    "ontologySourceReferences": [],
+    "people": [],
+    "publicReleaseDate": "",
+    "publications": [
+        {
+            "authorList": "",
+            "doi": "",
+            "pubMedID": "1872599",
+            "status": {
+                "annotationValue": "",
+                "termAccession": "",
+                "termSource": ""
+            },
+            "title": ""
+        }
+    ],
+    "studies": [
+        {
+            "@id": "",
+            "assays": [
+                {
+                    "@id": "",
+                    "characteristicCategories": [],
+                    "dataFiles": [],
+                    "filename": "",
+                    "materials": {
+                        "otherMaterials": [],
+                        "samples": []
+                    },
+                    "measurementType": {
+                        "annotationValue": "",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "processSequence": [],
+                    "technologyPlatform": "",
+                    "technologyType": {
+                        "annotationValue": "",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "unitCategories": []
+                }
+            ],
+            "characteristicCategories": [],
+            "description": "",
+            "factors": [],
+            "filename": "",
+            "identifier": "",
+            "materials": {
+                "otherMaterials": [],
+                "samples": [],
+                "sources": []
+            },
+            "people": [],
+            "processSequence": [],
+            "protocols": [],
+            "publicReleaseDate": "",
+            "publications": [],
+            "studyDesignDescriptors": [],
+            "submissionDate": "",
+            "title": "",
+            "unitCategories": []
+        }
+    ],
+    "submissionDate": "",
+    "title": ""
+}

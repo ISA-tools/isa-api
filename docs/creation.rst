@@ -15,15 +15,17 @@ The three main objects that you need to create ISA content are:
 For example, to create an empty ISA structure consisting of an investigation with one study, you might do something like this:
 
 .. code-block:: python
+
     from isatools.model.v1 import *
     investigation = Investigation()
     investigation.studies.append(Study())  # add a new Study object to the Investigation
 
-The constructor of each of these objects creates empty content for each of these. If you try and serialize these out to ISA tab format, we should see some output into an ``i_investigation.txt`` file. We can do this using the ``isatab`` package.
+The constructor of each of these objects creates empty content for each of these. If you try and serialize these out to ISA-Tab format, we should see some output into an ``i_investigation.txt`` file. We can do this using the ``isatab`` package.
 
 .. code-block:: python
+
     from isatools import isatab
-    isatab.dump(investigation, 'tmp/')  # dumps out ISA tab format of the investigation we made earlier
+    isatab.dump(investigation, 'tmp/')  # dumps out ISA-Tab format of the investigation we made earlier
 
 If all went as expected, you should find an ``i_investigation.txt`` file with the following content in the directory you specified in the ``isatab.dump()`` function::
 
@@ -79,4 +81,6 @@ If all went as expected, you should find an ``i_investigation.txt`` file with th
     Study Factor Type Term Accession Number
     Study Factor Type Term Source REF
 
-Obviously this isn't enough to create a fully populated ISA investigation, but we would recommend that you have a look at the full worked example for reproducing an ISA representation of our :doc:`BII-S-3 example </example>`_ of *Detection of Large Numbers of Novel Sequences in the Metatranscriptomes of Complex Marine Microbial Communities* by Jack A. Gilbert et al, 2008, and in the ``isatools.model.v1`` package to inspect all the docstring documentation that is included with each of the ISA model classes.
+Obviously this isn't enough to create a fully populated ISA investigation, but we would recommend that you have a look
+in the ``isatools.model.v1`` package to inspect all the docstring documentation that is included with each of the ISA
+model classes.

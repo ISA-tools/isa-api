@@ -1,0 +1,27 @@
+<SAMPLE center_name="{{sra_center_name}}" broker_name="{{sra_broker_name}}" alias="{{assay.sample_alias}}">
+    <TITLE>{{assay.sample_alias}}</TITLE>
+    <SAMPLE_NAME>
+        <TAXON_ID>{{assay.source.taxon_id}}</TAXON_ID>
+        <SCIENTIFIC_NAME>{{assay.source.scientific_name}}</SCIENTIFIC_NAME>
+    </SAMPLE_NAME>
+    <SAMPLE_ATTRIBUTES>
+        <SAMPLE_ATTRIBUTE>
+            <TAG>Source Name</TAG>
+            <VALUE>{{assay.source.name}}</VALUE>
+        </SAMPLE_ATTRIBUTE>
+        {% for characteristic in assay.source.characteristics %}{% if characteristic.category.term != 'organism' %}
+        <SAMPLE_ATTRIBUTE>
+            <TAG>{{characteristic.category.term}}</TAG>
+            {% if characteristic.unit.term %}<VALUE>{{characteristic.value}}</VALUE>
+            <UNITS>{{characteristic.unit.term}}</UNITS>{% else %}<VALUE>{{characteristic.value.term}}</VALUE>{% endif %}
+        </SAMPLE_ATTRIBUTE>
+        {% endif %}{% endfor %}
+        {% for characteristic in assay.sample.characteristics %}{% if characteristic.category.term != 'organism' %}
+        <SAMPLE_ATTRIBUTE>
+            <TAG>{{characteristic.category.term}}</TAG>
+            {% if characteristic.unit.term %}<VALUE>{{characteristic.value}}</VALUE>
+            <UNITS>{{characteristic.unit.term}}</UNITS>{% else %}<VALUE>{{characteristic.value.term}}</VALUE>{% endif %}
+        </SAMPLE_ATTRIBUTE>
+        {% endif %}{% endfor %}
+    </SAMPLE_ATTRIBUTES>
+</SAMPLE>

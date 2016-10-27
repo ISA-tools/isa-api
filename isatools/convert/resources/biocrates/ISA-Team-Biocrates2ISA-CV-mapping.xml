@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root xmlns="http://www.biocrates.com/metstat/result/xml_1.0">
+    <mapping-replacement>
+        <element biocratesid="" biocrateslabel="human" ontoterm="Homo sapiens" ontosource="NCBITax" url="http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+        <element biocratesid="" biocrateslabel="mouse" ontoterm="Mus musculus" ontosource="NCBITax" url="http://purl.obolibrary.org/obo/NCBITaxon_10090"/>
+        <element biocratesid="" biocrateslabel="rat" ontoterm="Rattus norvegicus" ontosource="NCBITax" url="http://purl.obolibrary.org/obo/NCBITaxon_10116"/>
+               
+        <element biocratesid="51" biocrateslabel="liver tissue" ontoterm="liver" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0002107"/>
+        <element biocratesid="52" biocrateslabel="muscle tissue" ontoterm="muscle" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0002385"/>
+        <element biocratesid="53" biocrateslabel="fibroblast tissue" ontoterm="muscle" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0002385"/>
+        <element biocratesid="54" biocrateslabel="prostate tissue" ontoterm="prostate" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0002367"/> 
+        <element biocratesid="55" biocrateslabel="spleen tissue" ontoterm="spleen" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0002106"/> 
+        <element biocratesid="56" biocrateslabel="brain tissue" ontoterm="brain" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0000955"/>
+        <element biocratesid="57" biocrateslabel="lung tissue" ontoterm="lung" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0002048"/>       
+        <element biocratesid="58" biocrateslabel="breast tissue" ontoterm="mammary gland" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0001911"/>
+        <element biocratesid="589" biocrateslabel="heart tissue" ontoterm="heart" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0000948"/>
+        <element biocratesid="59" biocrateslabel="kidney tissue" ontoterm="kidney" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0002113"/>
+        <element biocratesid="501" biocrateslabel="fat" ontoterm="adipose tissue" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0001013"/>
+        <element biocratesid="599" biocrateslabel="other tissue" ontoterm="other tissue" ontosource="" url=""/>
+        <element biocratesid="" biocrateslabel="unspecified" ontoterm="not reported" ontosource="" url=""/>     
+        <element biocratesid="6" biocrateslabel="Cells" ontoterm="liver" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0002107"/>
+        <element biocratesid="32" biocrateslabel="cell culture supernatant" ontoterm="cell culture supernatant" ontosource="OBI" url="http://purl.obolibrary.org/obo/OBI_1000023"/>
+        <element biocratesid="345" biocrateslabel="Mitochondria" ontoterm="mitochondria" ontosource="" url="http://purl.obolibrary.org/obo/OBI_1000024"/>
+        <element biocratesid="35" biocrateslabel="cell pellet" ontoterm="cell pellet" ontosource="OBI" url="http://purl.obolibrary.org/obo/OBI_1000024"/>
+        <element biocratesid="36" biocrateslabel="cell medium" ontoterm="culture medium" ontosource="OBI" url="http://purl.obolibrary.org/obo/OBI_0000079"/> 
+        <element biocratesid="61" biocrateslabel="hepatocytes" ontoterm="hepatocyte" ontosource="CL" url="http://purl.obolibrary.org/obo/CL_0000182"/> 
+        <element biocratesid="62" biocrateslabel="fibrablast cells" ontoterm="fibrablast" ontosource="CL" url="http://purl.obolibrary.org/obo/CL_0000057"/>
+        <element biocratesid="63" biocrateslabel="renal cell carcinoma A498" ontoterm="lung" ontosource="" url=""/>       
+        <element biocratesid="64" biocrateslabel="monocytes" ontoterm="monocyte" ontosource="CL" url="http://purl.obolibrary.org/obo/CL_0000576"/>
+        <element biocratesid="65" biocrateslabel="adipocytes" ontoterm="adipocyte" ontosource="CL" url="http://purl.obolibrary.org/obo/CL_0000136"/>
+        <element biocratesid="66" biocrateslabel="myocytes" ontoterm="myocyte" ontosource="CL" url="http://purl.obolibrary.org/obo/CL_0000187"/>
+        <element biocratesid="67" biocrateslabel="HUVEC cells (human umbilical vein endothelial cells)" ontoterm="endothelial cell of umbilical vein" ontosource="CL" url="http://purl.obolibrary.org/obo/CL_0002618"/>
+        <element biocratesid="68" biocrateslabel="skin" ontoterm="skin of body" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0002097"/> 
+        <element biocratesid="69" biocrateslabel="cell lysate" ontoterm="cell lysate" ontosource="OBI" url="http://purl.obolibrary.org/obo/OBI_1000036"/> 
+        <element biocratesid="73" biocrateslabel="cell extract" ontoterm="extract" ontosource="OBI" url="http://purl.obolibrary.org/obo/OBI_0000423"/> 
+        <element biocratesid="977" biocrateslabel="cells, not assigned yet" ontoterm="other tissue" ontosource="" url=""/> 
+        
+        
+        <element biocratesid="10" biocrateslabel="blood" ontoterm="blood" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0000178"/>
+        <element biocratesid="11" biocrateslabel="blood spots" ontoterm="blood spots" ontosource="blood spots" url=""/>
+        <element biocratesid="12" biocrateslabel="red blood cells" ontoterm="red blood cell" ontosource="UBERON" url="http://purl.obolibrary.org/obo/CL_0000232"/>
+        
+        <element biocratesid="20" biocrateslabel="serum" ontoterm="serum" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0001977"/>
+        <element biocratesid="30" biocrateslabel="plasma" ontoterm="plasma" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0001969"/>
+        
+        <element biocratesid="31" biocrateslabel="Follical Fluid" ontoterm="follicular fluid" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0000038"/>
+        <element biocratesid="40" biocrateslabel="urine" ontoterm="urine" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0001088"/>
+<!--    <element biocratesid="" biocrateslabel="sweat" ontoterm="sweat" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0001089"/>  -->
+        <element biocratesid="41" biocrateslabel="bronchio-alveolar lavage" ontoterm="bronchial-alveolar lavage" ontosource="OBI" url="http://purl.obolibrary.org/obo/OBI_0100067"/>  
+        <element biocratesid="42" biocrateslabel="saliva" ontoterm="saliva" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0001836"/>
+        <element biocratesid="43" biocrateslabel="induced sputum" ontoterm="sputum" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0007311"/>
+        <element biocratesid="44" biocrateslabel="amniotic fluid" ontoterm="amniotic fluid" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0000173"/>
+        <element biocratesid="45" biocrateslabel="bile" ontoterm="bile" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0001970"/>
+        <element biocratesid="46" biocrateslabel="feces" ontoterm="feces" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0001988"/>
+        <element biocratesid="47" biocrateslabel="milk" ontoterm="milk" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0001913"/>
+        <element biocratesid="48" biocrateslabel="sperm" ontoterm="semen" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0001968"/>
+        <element biocratesid="70" biocrateslabel="cerebro-spinal fluid" ontoterm="cerebro-spinal fluid" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0001970"/>
+        <element biocratesid="71" biocrateslabel="synovial fluid" ontoterm="synovial fluid" ontosource="UBERON" url="http://purl.obolibrary.org/obo/UBERON_0001090"/>
+        <element biocratesid="72" biocrateslabel="effluate" ontoterm="effluate" ontosource="" url=""/>
+        
+        
+    </mapping-replacement> 
+</root>

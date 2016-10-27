@@ -13,6 +13,7 @@ Usage without authentication
 If authentication is not required to access the required resource, you can directly instantiate an adapter object and use it.
 
 .. code-block:: python
+
     from isatools.io.storage_adapter import IsaGitHubStorageAdapter
     from zipfile import ZipFile
     adapter = IsaGitHubStorageAdapter()
@@ -44,6 +45,7 @@ Usage with authentication
 To access as authenticated user, the recommended way is to instantiate the storage adapter in a with statement.
 
 .. code-block:: python
+
     with IsaGitHubStorageAdapter(username='yourusername', password='yourpw',
                                  note='test_api') as adapter:
         adapter.is_authenticated # true
@@ -52,6 +54,7 @@ To access as authenticated user, the recommended way is to instantiate the stora
 Otherwise you must explicitly call the ``close()`` method to delete the current authorisation from the GitHub server
 
 .. code-block:: python
+
     adapter = IsaGitHubStorageAdapter(username='yourusername', password='youpw', note='test_api')
     adapter.is_authenticated # True
     # do stuff...

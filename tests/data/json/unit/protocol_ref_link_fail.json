@@ -1,0 +1,78 @@
+{
+    "comments": [
+        {
+            "name": "",
+            "value": ""
+        }
+    ],
+    "description": "",
+    "identifier": "",
+    "ontologySourceReferences": [],
+    "people": [],
+    "publicReleaseDate": "",
+    "publications": [],
+    "studies": [
+        {
+            "@id": "",
+            "assays": [
+                {
+                    "@id": "",
+                    "characteristicCategories": [],
+                    "dataFiles": [],
+                    "filename": "",
+                    "materials": {
+                        "otherMaterials": [],
+                        "samples": []
+                    },
+                    "measurementType": {
+                        "annotationValue": "",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "processSequence": [
+                        {
+                            "@id": "#process/1",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/1"
+                            },
+                            "inputs": [],
+                            "outputs": [],
+                            "parameterValues": [],
+                            "performer": ""
+                        }
+                    ],
+                    "technologyPlatform": "",
+                    "technologyType": {
+                        "annotationValue": "",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "unitCategories": []
+                }
+            ],
+            "characteristicCategories": [],
+            "description": "",
+            "factors": [],
+            "filename": "",
+            "identifier": "",
+            "materials": {
+                "otherMaterials": [],
+                "samples": [],
+                "sources": []
+            },
+            "people": [],
+            "processSequence": [],
+            "protocols": [],
+            "publicReleaseDate": "",
+            "publications": [],
+            "studyDesignDescriptors": [],
+            "submissionDate": "",
+            "title": "",
+            "unitCategories": []
+        }
+    ],
+    "submissionDate": "",
+    "title": ""
+}

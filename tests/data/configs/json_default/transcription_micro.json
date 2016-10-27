@@ -1,0 +1,47 @@
+{
+  "measurementType": "transcription profiling",
+  "technologyType": "DNA microarray",
+  "protocols": [
+    {
+      "inputs": "#sample",
+      "protocol": "RNA extraction",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "labeling",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "nucleic acid hybridization",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "data collection",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "normalization data transformation",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "data transformation",
+      "outputs": "#data"
+    }
+  ],
+  "protocolSequence": [
+    "RNA extraction",
+    "labeling",
+    "nucleic acid hybridization",
+    "data collection",
+    "normalization data transformation",
+    "data transformation"
+  ],
+  "description": [
+    "(Sample)->(chromatin immunoprecipitation assays)->(Material)->(labeling)->(Material)->(RNA extraction)->(Material)->(data collection)->(DataFiles)->(normalization data transformation)->(DerivedDataFile)->(data transformation)->(DataMatrixFile)"
+  ]
+}

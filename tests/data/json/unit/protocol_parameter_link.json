@@ -1,0 +1,109 @@
+{
+    "comments": [
+        {
+            "name": "",
+            "value": ""
+        }
+    ],
+    "description": "",
+    "identifier": "",
+    "ontologySourceReferences": [],
+    "people": [],
+    "publicReleaseDate": "",
+    "publications": [],
+    "studies": [
+        {
+            "@id": "",
+            "assays": [
+                {
+                    "@id": "",
+                    "characteristicCategories": [],
+                    "dataFiles": [],
+                    "filename": "",
+                    "materials": {
+                        "otherMaterials": [],
+                        "samples": []
+                    },
+                    "measurementType": {
+                        "annotationValue": "",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "processSequence": [
+                        {
+                            "@id": "#process/1",
+                            "comments": [],
+                            "date": "",
+                            "executesProtocol": {
+                                "@id": "#protocol/1"
+                            },
+                            "inputs": [],
+                            "outputs": [],
+                            "parameterValues": [
+                                {
+                                    "category": {
+                                        "@id": "#parameter/1"
+                                    },
+                                    "value": ""
+                                }
+                            ],
+                            "performer": ""
+                        }
+                    ],
+                    "technologyPlatform": "",
+                    "technologyType": {
+                        "annotationValue": "",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "unitCategories": []
+                }
+            ],
+            "characteristicCategories": [],
+            "description": "",
+            "factors": [],
+            "filename": "",
+            "identifier": "",
+            "materials": {
+                "otherMaterials": [],
+                "samples": [],
+                "sources": []
+            },
+            "people": [],
+            "processSequence": [],
+            "protocols": [
+                {
+                    "@id": "#protocol/1",
+                    "components": [],
+                    "description": "",
+                    "name": "",
+                    "parameters": [
+                        {
+                            "@id": "#parameter/1",
+                            "parameterName": {
+                                "annotationValue": "",
+                                "termAccession": "",
+                                "termSource": ""
+                            }
+                        }
+                    ],
+                    "protocolType": {
+                        "annotationValue": "",
+                        "termAccession": "",
+                        "termSource": ""
+                    },
+                    "uri": "",
+                    "version": ""
+                }
+            ],
+            "publicReleaseDate": "",
+            "publications": [],
+            "studyDesignDescriptors": [],
+            "submissionDate": "",
+            "title": "",
+            "unitCategories": []
+        }
+    ],
+    "submissionDate": "",
+    "title": ""
+}

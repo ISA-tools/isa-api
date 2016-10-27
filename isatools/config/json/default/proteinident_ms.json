@@ -1,0 +1,34 @@
+{
+  "measurementType": "protein identification",
+  "technologyType": "mass spectrometry",
+  "protocols": [
+    {
+      "inputs": "#sample",
+      "protocol": "extraction",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "labeling",
+      "outputs": "#material"
+    },
+    {
+      "inputs": "#material",
+      "protocol": "mass spectrometry",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "data transformation",
+      "outputs": "#data"
+    }
+  ],
+  "protocolSequence": [
+    "nucleic acid extraction",
+    "library construction",
+    "sequence assembly",
+    "sequence analysis data transformation"
+  ],
+  "description": [
+    "(Sample)->(extraction)->(Material)->(labeling)->(Material)->(mass spectrometry)->(DataFiles)->(data transformation)->(DataFiles)" ]
+}

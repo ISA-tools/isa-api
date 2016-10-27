@@ -1,0 +1,26 @@
+{
+  "measurementType": "transcription profiling",
+  "technologyType": "nucleotide sequencing",
+  "protocols": [
+    {
+      "inputs": "#sample",
+      "protocol": "nucleic acid extraction",
+      "outputs": "#material"
+    },
+    {
+      "protocol": "library construction"
+    },
+    {
+      "protocol": "nucleic acid sequencing",
+      "outputs": "#data"
+    },
+    {
+      "inputs": "#data",
+      "protocol": "sequence analysis data transformation",
+      "outputs": "#data"
+    }
+  ],
+  "description": [
+    "(Sample)->(nucleic acid extraction)->(Extract)->(library construction)->(nucleic acid sequencing)->(DataFile)->(sequence analysis data transformation)->(DataFile)"
+  ]
+}

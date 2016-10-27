@@ -1,0 +1,3 @@
+Source Name	Characteristics[organism]	Term Source REF	Term Accession Number	Protocol REF	Sample Name
+GSM655770	Homo sapiens	NCBITAXON	http://purl.obolibrary.org/obo/NCBITaxon_9606	sample collection - standard procedure 1	GSM655770
+GSM655771	Homo sapiens	NCBITAXON	http://purl.obolibrary.org/obo/NCBITaxon_9606	sample collection - standard procedure 1	GSM655771
