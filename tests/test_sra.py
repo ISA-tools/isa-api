@@ -66,3 +66,11 @@ class TestNewSraExport(TestCase):
         sra.export(self._inv_obj, self._tmp_dir, sra_settings=self._sra_default_config)
         actual_project_set_xml_obj = etree.fromstring(open(os.path.join(self._tmp_dir, 'project_set.xml'), 'rb').read())
         self.assertTrue(utils.assert_xml_equal(self._expected_project_set_xml_obj, actual_project_set_xml_obj))
+
+    def test_create_datafile_hashes_success(self):
+        datafilehashes = sra.create_datafile_hashes(os.path.join(utils.TAB_DATA_DIR, 'BII-S-7'), ['1EU.sff'])
+        self.assertEqual(datafilehashes['1EU.sff'], 'd41d8cd98f00b204e9800998ecf8427e')  # hash is for empty file
+
+    def test_create_datafile_hashes_fail(self):
+        with self.assertRaises(FileNotFoundError):
+            sra.create_datafile_hashes(os.path.join(utils.TAB_DATA_DIR, 'BII-S-7'), ['1EU'])

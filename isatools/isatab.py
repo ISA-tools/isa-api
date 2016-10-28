@@ -45,9 +45,9 @@ def dump(isa_obj, output_path):
         roles_accession_numbers = ''
         roles_source_refs = ''
         for role in roles:
-            roles_names += role.name + ';'
+            roles_names += role.term + ';'
             roles_accession_numbers += role.term_accession + ';'
-            roles_source_refs += role.term_source.name + ';'
+            roles_source_refs += role.term_source.name if role.term_source else '' + ';'
         if len(roles) > 0:
             roles_names = roles_names[:-1]
             roles_accession_numbers = roles_accession_numbers[:-1]
@@ -99,8 +99,11 @@ def dump(isa_obj, output_path):
                                 prefix + ' Publication Status Term Accession Number',
                                 prefix + ' Publication Status Term Source REF']
         if len(publications) > 0:
-            for comment in publications[0].comments:
-                publications_df_cols.append('Comment[' + comment.name + ']')
+            try:
+                for comment in publications[0].comments:
+                    publications_df_cols.append('Comment[' + comment.name + ']')
+            except TypeError:
+                pass
         publications_df = pd.DataFrame(columns=tuple(publications_df_cols))
         for i, publication in enumerate(publications):
             publications_df_row = [
@@ -108,12 +111,15 @@ def dump(isa_obj, output_path):
                 publication.doi,
                 publication.author_list,
                 publication.title,
-                publication.status.name,
+                publication.status.term,
                 publication.status.term_accession,
-                publication.status.term_source.name,
+                publication.status.term_source.name if publication.status.term_source else '',
             ]
-            for comment in publication.comments:
-                publications_df_row.append(comment.value)
+            try:
+                for comment in publication.comments:
+                    publications_df_row.append(comment.value)
+            except TypeError:
+                pass
             publications_df.loc[i] = publications_df_row
         return publications_df.set_index(prefix +' PubMed ID').T
 
@@ -190,8 +196,9 @@ def dump(isa_obj, output_path):
                          'Study Submission Date',
                          'Study Public Release Date',
                          'Study File Name']
-        for comment in sorted(study.comments, key=lambda x: x.name):
-            study_df_cols.append('Comment[' + comment.name + ']')
+        if study.comments is not None:
+            for comment in sorted(study.comments, key=lambda x: x.name):
+                study_df_cols.append('Comment[' + comment.name + ']')
         study_df = pd.DataFrame(columns=tuple(study_df_cols))
         study_df_row = [
             study.identifier,
@@ -201,8 +208,9 @@ def dump(isa_obj, output_path):
             study.public_release_date,
             study.filename
         ]
-        for comment in sorted(study.comments, key=lambda x: x.name):
-            study_df_row.append(comment.value)
+        if study.comments is not None:
+            for comment in sorted(study.comments, key=lambda x: x.name):
+                study_df_row.append(comment.value)
         study_df.loc[0] = study_df_row
         study_df = study_df.set_index('Study Identifier').T
         fp.write('STUDY\n')
@@ -216,9 +224,9 @@ def dump(isa_obj, output_path):
                                                    )
         for i, design_descriptor in enumerate(study.design_descriptors):
             study_design_descriptors_df.loc[i] = [
-                design_descriptor.name,
+                design_descriptor.term,
                 design_descriptor.term_accession,
-                design_descriptor.term_source.name
+                design_descriptor.term_source.name if design_descriptor.term_source else ''
             ]
             study_design_descriptors_df = study_design_descriptors_df.set_index('Study Design Type').T
             fp.write('STUDY DESIGN DESCRIPTORS\n')
@@ -240,9 +248,9 @@ def dump(isa_obj, output_path):
         for i, factor in enumerate(study.factors):
             study_factors_df.loc[i] = [
                 factor.name,
-                factor.factor_type.name,
+                factor.factor_type.term,
                 factor.factor_type.term_accession,
-                factor.factor_type.term_source.name
+                factor.factor_type.term_source.name if factor.factor_type.term_source else ''
             ]
         study_factors_df = study_factors_df.set_index('Study Factor Name').T
         fp.write('STUDY FACTORS\n')
@@ -264,12 +272,12 @@ def dump(isa_obj, output_path):
         for i, assay in enumerate(study.assays):
             study_assays_df.loc[i] = [
                 assay.filename,
-                assay.measurement_type.name,
+                assay.measurement_type.term,
                 assay.measurement_type.term_accession,
-                assay.measurement_type.term_source.name,
-                assay.technology_type.name,
+                assay.measurement_type.term_source.name if assay.measurement_type.term_source else '',
+                assay.technology_type.term,
                 assay.technology_type.term_accession,
-                assay.technology_type.term_source.name,
+                assay.technology_type.term_source.name if assay.technology_type.term_source else '',
                 assay.technology_platform
             ]
         study_assays_df = study_assays_df.set_index('Study Assay File Name').T
@@ -299,9 +307,9 @@ def dump(isa_obj, output_path):
             parameters_accession_numbers = ''
             parameters_source_refs = ''
             for parameter in protocol.parameters:
-                parameters_names += parameter.parameter_name.name + ';'
+                parameters_names += parameter.parameter_name.term + ';'
                 parameters_accession_numbers += parameter.parameter_name.term_accession + ';'
-                parameters_source_refs += parameter.parameter_name.term_source.name + ';'
+                parameters_source_refs += parameter.parameter_name.term_source.name if parameter.parameter_name.term_source else '' + ';'
             if len(protocol.parameters) > 0:
                 parameters_names = parameters_names[:-1]
                 parameters_accession_numbers = parameters_accession_numbers[:-1]
@@ -312,9 +320,9 @@ def dump(isa_obj, output_path):
             component_types_source_refs = ''
             for component in protocol.components:
                 component_names += component.name + ';'
-                component_types += component.component_type.name + ';'
+                component_types += component.component_type.term + ';'
                 component_types_accession_numbers += component.component_type.term_accession + ';'
-                component_types_source_refs += component.component_type.term_source.name + ';'
+                component_types_source_refs += component.component_type.term_source.name if component.component_type.term_source else '' + ';'
             if len(protocol.components) > 0:
                 component_names = component_names[:-1]
                 component_types = component_types[:-1]
@@ -322,9 +330,9 @@ def dump(isa_obj, output_path):
                 component_types_source_refs = component_types_source_refs[:-1]
             study_protocols_df.loc[i] = [
                 protocol.name,
-                protocol.protocol_type.name,
+                protocol.protocol_type.term,
                 protocol.protocol_type.term_accession,
-                protocol.protocol_type.term_source.name,
+                protocol.protocol_type.term_source.name if protocol.protocol_type.term_source else '',
                 protocol.description,
                 protocol.uri,
                 protocol.version,
@@ -386,7 +394,8 @@ def _longest_path_and_attrs(G):
                     length += (len(n.characteristics))
                 elif isinstance(n, Process):
                     length += (len(n.additional_properties) + len([o for o in n.outputs if isinstance(o, DataFile)]))
-                length += len(n.comments)
+                if n.comments is not None:
+                    length += len(n.comments)
             if length > longest[0]:
                 longest = (length, path)
     return longest[1]
@@ -417,9 +426,9 @@ def _charac_label(charac_type_name): return 'Characteristics[' + charac_type_nam
 
 def _set_charac_cols(prefix, characteristics, cols, col_map):
     for c in sorted(characteristics, key=lambda x: id(x.category)):
-        obj_charac_key = prefix + '_char[' + c.category.name + ']'
+        obj_charac_key = prefix + '_char[' + c.category.term + ']'
         cols.append(obj_charac_key)
-        col_map[obj_charac_key] = _charac_label(c.category.name)
+        col_map[obj_charac_key] = _charac_label(c.category.term)
         if isinstance(c.value, int) or isinstance(c.value, float):
             cols.extend((obj_charac_key + KEY_POSTFIX_UNIT,
                          obj_charac_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE,
@@ -436,15 +445,15 @@ def _set_charac_cols(prefix, characteristics, cols, col_map):
 
 def _set_charac_vals(prefix, characteristics, df, i):
     for c in sorted(characteristics, key=lambda x: id(x.category)):
-        obj_charac_key = prefix + '_char[' + c.category.name + ']'
+        obj_charac_key = prefix + '_char[' + c.category.term + ']'
         df.loc[i, obj_charac_key] = c.value
         if isinstance(c.value, int) or isinstance(c.value, float):
-            df.loc[i, obj_charac_key + KEY_POSTFIX_UNIT] = c.unit.name
-            df.loc[i, obj_charac_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE] = c.unit.term_source.name
+            df.loc[i, obj_charac_key + KEY_POSTFIX_UNIT] = c.unit.term
+            df.loc[i, obj_charac_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE] = c.unit.term_source.name if c.unit.term_source else ''
             df.loc[i, obj_charac_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMACCESSION] = c.unit.term_accession
         elif isinstance(c.value, OntologyAnnotation):
-            df.loc[i, obj_charac_key] = c.value.name
-            df.loc[i, obj_charac_key + KEY_POSTFIX_TERMSOURCE] = c.value.term_source.name
+            df.loc[i, obj_charac_key] = c.value.term
+            df.loc[i, obj_charac_key + KEY_POSTFIX_TERMSOURCE] = c.value.term_source.name if c.value.term_source else ''
             df.loc[i, obj_charac_key + KEY_POSTFIX_TERMACCESSION] = c.value.term_accession
 
 
@@ -472,12 +481,12 @@ def _set_factor_value_vals(prefix, factor_values, df, i):
         obj_fv_key = prefix + '_fv[' + fv.factor_name.name + ']'
         df.loc[i, obj_fv_key] = fv.value
         if isinstance(fv.value, int) or isinstance(fv.value, float):
-            df.loc[i, obj_fv_key + KEY_POSTFIX_UNIT] = fv.unit.name
-            df.loc[i, obj_fv_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE] = fv.unit.term_source.name
+            df.loc[i, obj_fv_key + KEY_POSTFIX_UNIT] = fv.unit.term
+            df.loc[i, obj_fv_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE] = fv.unit.term_source.name if fv.unit.term_source else ''
             df.loc[i, obj_fv_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMACCESSION] = fv.unit.term_accession
         elif isinstance(fv.value, OntologyAnnotation):
-            df.loc[i, obj_fv_key] = fv.value.name
-            df.loc[i, obj_fv_key + KEY_POSTFIX_TERMSOURCE] = fv.value.term_source.name
+            df.loc[i, obj_fv_key] = fv.value.term
+            df.loc[i, obj_fv_key + KEY_POSTFIX_TERMSOURCE] = fv.value.term_source.name if fv.value.term_source else ''
             df.loc[i, obj_fv_key + KEY_POSTFIX_TERMACCESSION] = fv.value.term_accession
 
 KEY_POSTFIX_DATE = '_date'
@@ -586,39 +595,39 @@ def write_assay_table_files(inv_obj, output_dir):
                         if node.performer is not None:
                             cols.append('protocol[' + str(protrefcount) + ']_performer')
                             col_map['protocol[' + str(protrefcount) + ']_performer'] = 'Performer'
-                        for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.name)):
+                        for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.term)):
                             if isinstance(pv.value, int) or isinstance(pv.value, float):
-                                cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']',
-                                             'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit',
-                                             'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource',
-                                             'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termaccession'))
-                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = 'Parameter Value[' + pv.category.parameter_name.name + ']'
-                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit'] = 'Unit'
-                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource'] = 'Term Source REF'
-                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termaccession'] = 'Term Accession Number'
+                                cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']',
+                                             'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit',
+                                             'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termsource',
+                                             'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termaccession'))
+                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = 'Parameter Value[' + pv.category.parameter_name.term + ']'
+                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit'] = 'Unit'
+                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termsource'] = 'Term Source REF'
+                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termaccession'] = 'Term Accession Number'
                             elif isinstance(pv.value, OntologyAnnotation):
-                                cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']',
-                                             'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termsource',
-                                             'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termaccession',))
-                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = 'Parameter Value[' + pv.category.parameter_name.name + ']'
-                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termsource'] = 'Term Source REF'
-                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termaccession'] = 'Term Accession Number'
+                                cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']',
+                                             'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termsource',
+                                             'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termaccession',))
+                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = 'Parameter Value[' + pv.category.parameter_name.term + ']'
+                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termsource'] = 'Term Source REF'
+                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termaccession'] = 'Term Accession Number'
                             else:
-                                cols.append('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']',)
-                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = 'Parameter Value[' + pv.category.parameter_name.name + ']'
+                                cols.append('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']',)
+                                col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = 'Parameter Value[' + pv.category.parameter_name.term + ']'
                         # TODO Check how model objects are used, do all additional_prop now go into .name?
                         for prop in reversed(sorted(node.additional_properties.keys())):
                             cols.append('protocol[' + str(protrefcount) + ']_prop[' + prop + ']')
                             col_map['protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = prop
-                        if node.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
+                        if node.executes_protocol.protocol_type.term == 'nucleic acid sequencing':
                             cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']')
                             col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']'] = 'Assay Name'
-                        elif node.executes_protocol.protocol_type.name == 'nucleic acid hybridization':
+                        elif node.executes_protocol.protocol_type.term == 'nucleic acid hybridization':
                             cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Hybridization Assay Name' + ']')
                             col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Hybridization Assay Name' + ']'] = 'Hybridization Assay Name'
                             cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Array Design REF' + ']')
                             col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Array Design REF' + ']'] = 'Array Design REF'
-                        elif node.executes_protocol.protocol_type.name == 'data collection':
+                        elif node.executes_protocol.protocol_type.term == 'data collection':
                             cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']')
                             col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']'] = 'Scan Name'
 
@@ -649,8 +658,8 @@ def write_assay_table_files(inv_obj, output_dir):
                             if node.type == 'Labeled Extract Name':
                                 df.loc[i, 'lextract'] = node.name
                                 compound_key += node.name + '/'
-                                df.loc[i, 'lextract_label'] = node.characteristics[0].value.name
-                                df.loc[i, 'lextract_label_termsource'] = node.characteristics[0].value.term_source.name
+                                df.loc[i, 'lextract_label'] = node.characteristics[0].value.term
+                                df.loc[i, 'lextract_label_termsource'] = node.characteristics[0].value.term_source.name if node.characteristics[0].value.term_source else ''
                                 df.loc[i, 'lextract_label_termaccession'] = node.characteristics[0].value.term_accession
                             elif node.type == 'Extract Name':
                                 df.loc[i, 'extract'] = node.name
@@ -675,31 +684,31 @@ def write_assay_table_files(inv_obj, output_dir):
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_date'] = node.date
                             if node.performer is not None:
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_performer'] = node.performer
-                            for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.name)):
+                            for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.term)):
                                 if isinstance(pv.value, int) or isinstance(pv.value, float):
-                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
-                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit'] = pv.unit.name
-                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource'] = pv.unit.term_source.name
-                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termaccession'] = pv.unit.term_accession
+                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = pv.value
+                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit'] = pv.unit.name
+                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termsource'] = pv.unit.term_source.name if pv.unit.term_source else ''
+                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termaccession'] = pv.unit.term_accession
                                 elif isinstance(pv.value, OntologyAnnotation):
-                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value.name
-                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termsource'] = pv.value.term_source.name
-                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termaccession'] = pv.value.term_accession
+                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = pv.value.term
+                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termsource'] = pv.value.term_source.name if pv.value.term_source else ''
+                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termaccession'] = pv.value.term_accession
                                 else:
-                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
+                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = pv.value
                             # TODO Check how model objects are used, do all additional_prop now go into .name?
                             for prop in reversed(sorted(node.additional_properties.keys())):
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = node.additional_properties[prop]
                                 compound_key += str(protrefcount) + '/' + prop + '/' + node.additional_properties[prop]
-                            if node.executes_protocol.protocol_type.name == 'nucleic acid sequencing':
+                            if node.executes_protocol.protocol_type.term == 'nucleic acid sequencing':
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']'] = node.name
                                 compound_key += str(protrefcount) + '/' + 'Assay Name' + '/' + node.name
-                            elif node.executes_protocol.protocol_type.name == 'nucleic acid hybridization':
+                            elif node.executes_protocol.protocol_type.term == 'nucleic acid hybridization':
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Hybridization Assay Name' + ']'] = node.name
                                 compound_key += str(protrefcount) + '/' + 'Hybridization Assay Name' + '/' + node.name
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Array Design REF' + ']'] = node.array_design_ref
                                 compound_key += str(protrefcount) + '/' + 'Array Design REF' + '/' + node.array_design_ref
-                            elif node.executes_protocol.protocol_type.name == 'data collection':
+                            elif node.executes_protocol.protocol_type.term == 'data collection':
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']'] = node.name
                                 compound_key += str(protrefcount) + '/' + 'Scan Name' + '/' + node.name
                             for output in [x for x in node.outputs if isinstance(x, DataFile)]:
@@ -748,7 +757,7 @@ def write_assay_table_files(inv_obj, output_dir):
                         cols[i] = 'Array Design REF'
                     if data_regex.match(col) is not None:
                         if data_regex.findall(col)[0] == 'Raw Data File':
-                            if assay_obj.technology_type.name == 'DNA microarray':
+                            if assay_obj.technology_type.term == 'DNA microarray':
                                 cols[i] = 'Array Data File'
                 df.columns = cols  # reset column headers
                 # drop completely empty columns
@@ -796,26 +805,26 @@ def write_study_table_files(inv_obj, output_dir):
                 if node.performer is not None:
                     cols.append('protocol[' + str(protrefcount) + ']_performer')
                     col_map['protocol[' + str(protrefcount) + ']_performer'] = 'Performer'
-                for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.name)):
+                for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.term)):
                     if isinstance(pv.value, int) or isinstance(pv.value, float):
-                        cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']',
-                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit',
-                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource',
-                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termaccession'))
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = 'Parameter Value[' + pv.category.parameter_name.name + ']'
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit'] = 'Unit'
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource'] = 'Term Source REF'
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termaccession'] = 'Term Accession Number'
+                        cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']',
+                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit',
+                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termsource',
+                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termaccession'))
+                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = 'Parameter Value[' + pv.category.parameter_name.term + ']'
+                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit'] = 'Unit'
+                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termsource'] = 'Term Source REF'
+                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termaccession'] = 'Term Accession Number'
                     elif isinstance(pv.value, OntologyAnnotation):
-                        cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']',
-                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termsource',
-                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termaccession',))
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = 'Parameter Value[' + pv.category.parameter_name.name + ']'
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termsource'] = 'Term Source REF'
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termaccession'] = 'Term Accession Number'
+                        cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']',
+                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termsource',
+                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termaccession',))
+                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = 'Parameter Value[' + pv.category.parameter_name.term + ']'
+                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termsource'] = 'Term Source REF'
+                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termaccession'] = 'Term Accession Number'
                     else:
-                        cols.append('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']')
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = 'Parameter Value[' + pv.category.parameter_name.name + ']'
+                        cols.append('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']')
+                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = 'Parameter Value[' + pv.category.parameter_name.term + ']'
                 if node.executes_protocol.name not in protnames.keys():
                     protnames[node.executes_protocol.name] = protrefcount
                     protrefcount += 1
@@ -847,16 +856,16 @@ def write_study_table_files(inv_obj, output_dir):
                         df.loc[i, 'protocol[' + str(protrefcount) + ']_date'] = node.date
                     if node.performer is not None:
                         df.loc[i, 'protocol[' + str(protrefcount) + ']_performer'] = node.performer
-                    for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.name)):
+                    for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.term)):
                         if isinstance(pv.value, int) or isinstance(pv.value, float):
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit'] = pv.unit.name
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termsource'] = pv.unit.term_source.name
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_unit_termaccession'] = pv.unit.term_accession
+                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = pv.value
+                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit'] = pv.unit.term
+                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termsource'] = pv.unit.term_source.name if pv.unit.term_source else ''
+                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termaccession'] = pv.unit.term_accession
                         elif isinstance(pv.value, OntologyAnnotation):
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']'] = pv.value.name
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termsource'] = pv.value.term_source
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.name + ']_termaccession'] = pv.value.term_accession
+                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = pv.value.term
+                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termsource'] = pv.value.term_source
+                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termaccession'] = pv.value.term_accession
                         else:
                             df.loc[i, i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value
                 elif isinstance(node, Sample):
@@ -2310,7 +2319,7 @@ def load(isatab_dir):
     def _createOntologySourceReferences(ontology_refs):
         ontologies = []
         for ontology_ref in ontology_refs:
-            ontology = OntologySourceReference(
+            ontology = OntologySource(
                 description=ontology_ref['Term Source Description'],
                 file=ontology_ref['Term Source File'],
                 name=ontology_ref['Term Source Name'],
@@ -2334,7 +2343,7 @@ def load(isatab_dir):
 
     def _createOntologyAnnotationForInvOrStudy(object_, inv_or_study, type_):
         onto_ann = OntologyAnnotation(
-                name=object_[inv_or_study+type_],
+                term=object_[inv_or_study + type_],
                 term_source=object_[inv_or_study+type_+" Term Source REF"],
                 term_accession=object_[inv_or_study+type_+" Term Accession Number"],
         )
@@ -2365,7 +2374,7 @@ def load(isatab_dir):
             if header.startswith("Characteristics"):
                 characteristic = header.replace("]", "").split("[")[-1]
                 characteristic_obj = Characteristic(
-                    value=OntologyAnnotation(name=characteristic)
+                    value=OntologyAnnotation(term=characteristic)
                 )
                 obj_item = dict([
                     ("characteristic", characteristic_obj)
@@ -2377,7 +2386,7 @@ def load(isatab_dir):
         onto_annotations = []
         for object_ in array:
             onto_ann = OntologyAnnotation(
-                name=object_[inv_or_study+type_],
+                term=object_[inv_or_study + type_],
                 term_source=object_[inv_or_study+type_+" Term Source REF"],
                 term_accession=object_[inv_or_study+type_+" Term Accession Number"],
             )
@@ -2417,7 +2426,7 @@ def load(isatab_dir):
         onto_annotations = []
         for i in range(0, len(name_array)):
              onto_ann = OntologyAnnotation(
-                 name=name_array[i],
+                 term=name_array[i],
                  term_source=term_source_array[i],
                  term_accession=term_accession_array[i],
              )
@@ -2505,11 +2514,11 @@ def load(isatab_dir):
             json_item = Assay(
                 filename=assay.metadata['Study Assay File Name'],
                 measurement_type=OntologyAnnotation(
-                    name=assay.metadata['Study Assay Measurement Type'],
+                    term=assay.metadata['Study Assay Measurement Type'],
                     term_source=assay.metadata['Study Assay Measurement Type Term Source REF'],
                     term_accession=assay.metadata['Study Assay Measurement Type Term Accession Number']),
                 technology_type=OntologyAnnotation(
-                    name=assay.metadata['Study Assay Technology Type'],
+                    term=assay.metadata['Study Assay Technology Type'],
                     term_source=assay.metadata['Study Assay Technology Type Term Source REF'],
                     term_accession=assay.metadata['Study Assay Technology Type Term Accession Number']),
                 technology_platform=assay.metadata['Study Assay Technology Platform'],
@@ -2531,7 +2540,7 @@ def load(isatab_dir):
                             category=value_header,
                             value=value,
                             unit=OntologyAnnotation(
-                                name=value_attributes.Unit,
+                                term=value_attributes.Unit,
                                 term_accession=value_attributes.Term_Accession_Number,
                                 term_source=value_attributes.Term_Source_REF,
                             )
@@ -2541,7 +2550,7 @@ def load(isatab_dir):
                             # factorName=value_header,
                             value=value,
                             unit=OntologyAnnotation(
-                                name=value_attributes.Unit,
+                                term=value_attributes.Unit,
                                 term_accession=value_attributes.Term_Accession_Number,
                                 term_source=value_attributes.Term_Source_REF,
                             )
@@ -2554,7 +2563,7 @@ def load(isatab_dir):
                             value_obj = Characteristic(
                                 category=value_header,
                                 value=OntologyAnnotation(
-                                    name=value,
+                                    term=value,
                                     term_accession=value_attributes.Term_Accession_Number,
                                     term_source=value_attributes.Term_Source_REF,
                                 )
@@ -2564,7 +2573,7 @@ def load(isatab_dir):
                             value_obj = FactorValue(
                                 # factorName=value_header,
                                 value=OntologyAnnotation(
-                                    name=value,
+                                    term=value,
                                     term_accession=value_attributes.Term_Accession_Number,
                                     term_source=value_attributes.Term_Source_REF,
                                 )
@@ -2575,14 +2584,14 @@ def load(isatab_dir):
                             value_obj = Characteristic(
                                 category=value_header,
                                 value=OntologyAnnotation(
-                                    name=value
+                                    term=value
                                 )
                             )
                         elif column_name == 'Factor Value':
                             value_obj = FactorValue(
                                 # factorName=value_header,
                                 value=OntologyAnnotation(
-                                    name=value
+                                    term=value
                                 )
                             )
                         obj_list.append(value_obj)
@@ -2706,7 +2715,7 @@ def read_study_file(fp):
                     peek_column = column_names[index+1]
                     if peek_column == 'Term Source REF':
                         characteristic.value = OntologyAnnotation(
-                            name=row_[index],
+                            term=row_[index],
                             term_source=row_[index+1],
                             term_accession=row_[index+2],
                         )
@@ -2726,14 +2735,14 @@ def read_study_file(fp):
                     peek_column = column_names[index+1]
                     if peek_column == 'Term Source REF':
                         factor_value.value = OntologyAnnotation(
-                            name=row_[index],
+                            term=row_[index],
                             term_source=row_[index+1],
                             term_accession=row_[index+2],
                         )
                     elif peek_column == 'Unit':
                         factor_value.value = row_[index]
                         factor_value.unit = OntologyAnnotation(
-                            name=row_[index+1],
+                            term=row_[index + 1],
                             term_source=row_[index+2],
                             term_accession=row_[index+3],
                         )

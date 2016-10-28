@@ -9,18 +9,18 @@
             <TAG>Source Name</TAG>
             <VALUE>{{assay.source.name}}</VALUE>
         </SAMPLE_ATTRIBUTE>
-        {% for characteristic in assay.source.characteristics %}{% if characteristic.category.name != 'organism' %}
+        {% for characteristic in assay.source.characteristics %}{% if characteristic.category.term != 'organism' %}
         <SAMPLE_ATTRIBUTE>
-            <TAG>{{characteristic.category.name}}</TAG>
-            {% if characteristic.unit.name %}<VALUE>{{characteristic.value}}</VALUE>
-            <UNITS>{{characteristic.unit.name}}</UNITS>{% else %}<VALUE>{{characteristic.value.name}}</VALUE>{% endif %}
+            <TAG>{{characteristic.category.term}}</TAG>
+            {% if characteristic.unit.term %}<VALUE>{{characteristic.value}}</VALUE>
+            <UNITS>{{characteristic.unit.term}}</UNITS>{% else %}<VALUE>{{characteristic.value.term}}</VALUE>{% endif %}
         </SAMPLE_ATTRIBUTE>
         {% endif %}{% endfor %}
-        {% for characteristic in assay.sample.characteristics %}{% if characteristic.category.name != 'organism' %}
+        {% for characteristic in assay.sample.characteristics %}{% if characteristic.category.term != 'organism' %}
         <SAMPLE_ATTRIBUTE>
-            <TAG>{{characteristic.category.name}}</TAG>
-            {% if characteristic.unit.name %}<VALUE>{{characteristic.value}}</VALUE>
-            <UNITS>{{characteristic.unit.name}}</UNITS>{% else %}<VALUE>{{characteristic.value.name}}</VALUE>{% endif %}
+            <TAG>{{characteristic.category.term}}</TAG>
+            {% if characteristic.unit.term %}<VALUE>{{characteristic.value}}</VALUE>
+            <UNITS>{{characteristic.unit.term}}</UNITS>{% else %}<VALUE>{{characteristic.value.term}}</VALUE>{% endif %}
         </SAMPLE_ATTRIBUTE>
         {% endif %}{% endfor %}
     </SAMPLE_ATTRIBUTES>
