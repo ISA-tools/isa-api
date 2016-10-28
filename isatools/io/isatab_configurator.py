@@ -34,7 +34,6 @@ config_dict = {}
 def load(config_dir):
     global config_dict
     for file in glob.glob(os.path.join(config_dir, '*.xml')):
-        #if file.endswith(".xml"):
         try:
             config_obj = parse(inFileName=os.path.join(config_dir, file), silence=True)
             measurement_type = config_obj.get_isatab_configuration()[0].get_measurement().get_term_label()

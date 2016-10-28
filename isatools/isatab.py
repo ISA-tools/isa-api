@@ -1784,7 +1784,7 @@ def load_config(config_dir):
         configs = isatab_configurator.load(config_dir)
     except (IOError, OSError):
         logger.error("(E) IOError on trying to load from {}".format(config_dir))
-    if configs is None:
+    if not configs:
         logger.error("(E) Could not load configurations from {}".format(config_dir))
     else:
         for k in six.iterkeys(configs):
@@ -2262,7 +2262,7 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
     logger.info("Finished prechecks...")
     logger.info("Loading configurations found in {}".format(config_dir))
     configs = load_config(config_dir)  # Rule 4001
-    if configs is None:
+    if not configs:
         raise SystemError("No configuration to load so cannot proceed with validation!")
     logger.info("Using configurations found in {}".format(config_dir))
     check_measurement_technology_types(i_df, configs)  # Rule 4002

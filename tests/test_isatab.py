@@ -217,6 +217,7 @@ class TestIsaTab(unittest.TestCase):
         with self.assertRaises(IOError):
             isatab.validate("/unexisting/directory", "/fake/config/dir")
 
+    def test_isatab_directory_without_config(self):
         with self.assertRaises(SystemError):
             with open(os.path.join(self._tab_data_dir, "MTBLS1", "i_investigation.txt")) as i:
                 isatab.validate2(i, "/dir/without/config")
