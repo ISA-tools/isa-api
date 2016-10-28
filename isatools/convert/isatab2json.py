@@ -19,7 +19,7 @@ open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open,
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-SCHEMAS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
+SCHEMAS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "schemas", "isa_model_version_1_0_schemas", "core")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
 
 
