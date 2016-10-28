@@ -33,16 +33,16 @@ selection:
 .. code-block:: python
 
    from isatools.io import mtbls as MTBLS
-   mtbls.get_factor_names('MTBLS1')
+   MTBLS.get_factor_names('MTBLS1')
    # response:
    # {'Gender', 'Age'}
-   mtbls.get_factor_values('MTBLS1', 'Gender')
+   MTBLS.get_factor_values('MTBLS1', 'Gender')
    # response:
    # {'Male', 'Female'}
    query = {
          "Gender": "Male"
       }
-   samples_and_files = mtbls.get_data_files('MTBLS1', factor_query=query)
+   samples_and_files = MTBLS.get_data_files('MTBLS1', factor_query=query)
    # response:
    #  [
    #     {
