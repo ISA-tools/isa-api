@@ -6,6 +6,7 @@ import shutil
 import json
 import six
 import functools
+import glob
 
 from isatools.convert import isatab2json
 from contextlib import closing
@@ -130,7 +131,7 @@ def get_data_files(mtbls_study_id, factor_selection=None):
     tmp_dir = get(mtbls_study_id)
     if tmp_dir is None:
         raise IOError("There was a problem retrieving study {}. Does it exist?".format(mtbls_study_id))
-    table_files = [f for f in os.listdir(tmp_dir) if f.startswith(('a_', 's_'))]
+    table_files = glob.iglob(os.path.join(tmp_dir, "[a|s]_*.txt"))
     from isatools import isatab
     results = list()
     # first collect matching samples
@@ -168,7 +169,7 @@ def get_data_files(mtbls_study_id, factor_selection=None):
     # now collect the data files relating to the samples
     for result in results:
         sample_name = result['sample']
-        for table_file in [f for f in os.listdir(tmp_dir) if f.startswith('a_')]:
+        for table_file in glob.iglob(os.path.join(tmp_dir, 'a_*')):
             df = isatab.load_table(os.path.join(tmp_dir, table_file))
             data_files = list()
             table_headers = list(df.columns.values)
@@ -193,7 +194,7 @@ def get_factor_names(mtbls_study_id):
         factor_names = get_factor_names('MTBLS1')
     """
     tmp_dir = get(mtbls_study_id)
-    table_files = [f for f in os.listdir(tmp_dir) if f.startswith(('a_', 's_'))]
+    table_files = glob.iglob(os.path.join(tmp_dir, "[a|s]_*"))
     from isatools import isatab
     factors = set()
     import re
@@ -218,7 +219,7 @@ def get_factor_values(mtbls_study_id, factor_name):
         factor_values = get_factor_values('MTBLS1', 'genotype)
     """
     tmp_dir = get(mtbls_study_id)
-    table_files = [f for f in os.listdir(tmp_dir) if f.startswith(('a_', 's_'))]
+    table_files = glob.iglob(os.path.join(tmp_dir, "[a|s]_*"))
     from isatools import isatab
     fvs = set()
     for table_file in table_files:

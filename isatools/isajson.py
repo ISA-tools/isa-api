@@ -7,6 +7,7 @@ import itertools
 import networkx as nx
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
+import glob
 import six
 
 from .model.v1 import *
@@ -1158,19 +1159,18 @@ def print_graph(study_or_assay):
 def load_config(config_dir):
     import json
     configs = dict()
-    for file in os.listdir(config_dir):
-        if file.endswith(".json"):  # ignore non json files
-            try:
-                with open(os.path.join(config_dir, file)) as fp:
-                    config_dict = json.load(fp)
-                if os.path.basename(file) == 'protocol_definitions.json':
-                    configs['protocol_definitions'] = config_dict
-                elif os.path.basename(file) == 'study_config.json':
-                    configs['study'] = config_dict
-                else:
-                    configs[(config_dict['measurementType'], config_dict['technologyType'])] = config_dict
-            except ValidationError:
-                logger.error("(E) Could not load configuration file {}".format(str(file)))
+    for file in glob.iglob(os.path.join(config_dir, "*.json")): # ignore non json files
+        try:
+            with open(os.path.join(config_dir, file)) as fp:
+                config_dict = json.load(fp)
+            if os.path.basename(file) == 'protocol_definitions.json':
+                configs['protocol_definitions'] = config_dict
+            elif os.path.basename(file) == 'study_config.json':
+                configs['study'] = config_dict
+            else:
+                configs[(config_dict['measurementType'], config_dict['technologyType'])] = config_dict
+        except ValidationError:
+            logger.error("(E) Could not load configuration file {}".format(str(file)))
     return configs
 
 

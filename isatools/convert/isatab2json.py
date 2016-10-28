@@ -11,6 +11,7 @@ from enum import Enum
 import re
 from isatools import isatab
 import logging
+import glob
 import six
 
 # This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
@@ -32,7 +33,7 @@ class IdentifierType(Enum):
 def convert(work_dir, identifier_type=IdentifierType.name, validate_first=True):
     if validate_first:
         logger.info("Validating input ISA tab before conversion")
-        i_files = [f for f in os.listdir(work_dir) if f.startswith('i_') and f.endswith('.txt')]
+        i_files = glob.glob(os.path.join(work_dir, "i_*.txt"))
         if len(i_files) != 1:
             logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
             return

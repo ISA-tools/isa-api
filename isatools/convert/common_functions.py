@@ -23,8 +23,8 @@ class CommonFunctions(object):
 
     @staticmethod
     def makeAttributeName(tag):
-        table = ''.maketrans('', '')
-        stripTag = tag.translate(dict.fromkeys(' ', table))
+        #table = ''.maketrans('', '')
+        #stripTag = tag.translate(dict.fromkeys(' ', table))
         stripped_tag = stripTag.split(' ',1)
         if len(stripped_tag) > 1:
             return "".join([CommonFunctions.makeLowercaseFirstChar(stripped_tag[0]), CommonFunctions.makeUppercaseFirstCharInStringArray(stripped_tag[1])])

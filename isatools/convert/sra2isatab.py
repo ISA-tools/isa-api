@@ -8,6 +8,7 @@ from shutil import rmtree
 import logging
 import pdb
 import uuid
+import os
 
 __author__ ='massi'
 
@@ -140,7 +141,7 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
 
             # post-process concatenation of a_ files written out
             output_folder = os.path.join(dir_name, acc_number)
-            a_files = [f for f in os.listdir(output_folder) if f.startswith('a_')]
+            a_files = glob.glob(os.path.join(output_folder, "a_*"))
             if len(a_files) > 1:
                 import pandas as pd
                 df_list = list()

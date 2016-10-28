@@ -410,6 +410,12 @@ def create_datafile_hashes(fileroot, filenames):
     >>> filenames = [f for f in listdir('/path/to/my/files') if f.endswith('.fastq.gz')]
     >>> create_datafile_hashes(fileroot='/path/to/my/files', filenames=filesnames)
     { 'myfile1.gz': 'd41d8cd98f00b204e9800998ecf8427e', 'myfile2.gz': 'd41d8cd98f00b204e9800998ecf8427e' }
+
+    Or with glob:
+    >>> from glob import glob
+    >>> create_datafile_hashes(fileroot='/path/to/my/files', filenames=glob("/path/to/my/files/*.fastq.gz"))
+    { 'myfile1.gz': 'd41d8cd98f00b204e9800998ecf8427e', 'myfile2.gz': 'd41d8cd98f00b204e9800998ecf8427e' }
+
     """
     def md5sum(filename):
         with open(filename, mode='rb') as f:
