@@ -38,7 +38,7 @@ def validate(isatab_dir, config_dir):
         print(sys.stderr, "Execution failed:", e)
 
 
-def dump(isa_obj, output_path):
+def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
 
     def _build_roles_str(roles=list()):
         roles_names = ''
@@ -122,9 +122,11 @@ def dump(isa_obj, output_path):
                 pass
             publications_df.loc[i] = publications_df_row
         return publications_df.set_index(prefix +' PubMed ID').T
-
+    import re
+    if not re.compile('i_(.*?)\.txt').match(i_file_name):
+        raise NameError("Investigation file must match pattern i_*.txt")
     if os.path.exists(output_path):
-        fp = open(os.path.join(output_path, 'i_investigation.txt'), 'w')
+        fp = open(os.path.join(output_path, i_file_name), 'w')
     else:
         raise FileNotFoundError("Can't find " + output_path)
     if not isinstance(isa_obj, Investigation):

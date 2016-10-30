@@ -20,6 +20,10 @@ class TestIsaTab(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
 
+    def test_isatab_bad_i_file_name(self):
+        with self.assertRaises(NameError):
+            isatab.dump(Investigation(), self._tmp_dir, i_file_name='investigation.txt')
+
     def test_isatab_dump_source_sample_split(self):
         i = Investigation()
         uberon = OntologySource(name='UBERON',
