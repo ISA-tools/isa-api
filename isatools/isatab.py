@@ -2774,6 +2774,18 @@ def read_study_file(fp):
 
 
 def batch_validate(tab_dir_list, report_file_path):
+    """ Validate a batch of ISA-Tab archives
+    :param tab_dir_list: List of file paths to the ISA-Tab archives to validate
+    :param report_file_path: Full path and file name of where to write the valdiation report to
+
+    Example:
+        from isatools import isatab
+        my_tabs = [
+            '/path/to/study1',
+            '/path/to/study2'
+        ]
+        isatab.batch_validate(my_tabs, '/path/to/report.txt')
+    """
     with open(report_file_path, 'w') as report_file:
         logger.info("Writing batch report to {}".format(report_file.name))
         report_file.write("Writing batch report to {}\n".format(report_file.name))

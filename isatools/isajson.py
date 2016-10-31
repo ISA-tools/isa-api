@@ -1206,6 +1206,18 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
 
 
 def batch_validate(json_file_list, report_file_path):
+    """ Validate a batch of ISA-JSON files
+        :param tab_dir_list: List of file paths to the ISA-JSON files to validate
+        :param report_file_path: Full path and file name of where to write the valdiation report to
+
+        Example:
+            from isatools import isajson
+            my_jsons = [
+                '/path/to/study1.json',
+                '/path/to/study2.json'
+            ]
+            isajson.batch_validate(my_jsons, '/path/to/report.txt')
+        """
     with open(report_file_path, 'w') as report_file:
         logger.info("Writing batch report to {}".format(report_file.name))
         report_file.write("Writing batch report to {}\n".format(report_file.name))
