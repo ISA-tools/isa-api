@@ -310,17 +310,23 @@ class TestBatchValidateIsaTab(unittest.TestCase):
 
     def setUp(self):
         self._tab_data_dir = utils.TAB_DATA_DIR
-
-    def tearDown(self):
-        pass
-
-    def test_batch_validate_bii(self):
-        tab_dir_list = [
+        self._bii_tab_dir_list = [
             os.path.join(self._tab_data_dir, 'BII-I-1'),
             os.path.join(self._tab_data_dir, 'BII-S-3'),
             os.path.join(self._tab_data_dir, 'BII-S-7')
         ]
-        isatab.batch_validate(tab_dir_list, report_file_name='isatab_report.txt')
+        self._mtbls_tab_dir_list = [os.path.join(self._tab_data_dir, 'MTBLS1')]
+
+    def tearDown(self):
+        for tab_dir in self._bii_tab_dir_list + self._mtbls_tab_dir_list:
+            try:
+                os.remove(os.path.join(tab_dir, 'isatab_report.txt'))
+            except FileNotFoundError:
+                pass
+
+    def test_batch_validate_bii(self):
+
+        isatab.batch_validate(self._bii_tab_dir_list, report_file_name='isatab_report.txt')
 
         bii_i_1_report_path = os.path.join(self._tab_data_dir, 'BII-I-1', 'isatab_report.txt')
         self.assertTrue(os.path.isfile(bii_i_1_report_path))
@@ -347,8 +353,7 @@ class TestBatchValidateIsaTab(unittest.TestCase):
             self.fail("Validation error and warnings are missing when should report some with BII-S-7")
 
     def test_batch_validate_mtbls(self):
-        tab_dir_list = [os.path.join(self._tab_data_dir, 'MTBLS1')]
-        isatab.batch_validate(tab_dir_list, report_file_name='isatab_report.txt')
+        isatab.batch_validate(self._mtbls_tab_dir_list, report_file_name='isatab_report.txt')
         self.assertTrue(os.path.isfile(os.path.join(self._tab_data_dir, 'MTBLS1', 'isatab_report.txt')))
 
 

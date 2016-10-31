@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def validate(isatab_dir, config_dir):
-    """ Validate an ISA-Tab archive using the Java validator that is embedded in the Python ISA-API
+    """ Validate an ISA-Tab archive using the Java validator that is embedded in the Python ISA-API (deprecated)
     :param isatab_dir: Path to ISA-Tab files
     :param config_dir: Path to configuration XML files
     """
@@ -2771,3 +2771,15 @@ def read_study_file(fp):
             experimental_graph[processing_event] = list()
             experimental_graph[processing_event].append(sample)
     return experimental_graph
+
+
+def batch_validate(tab_dir_list, report_file_name='isatab_report.txt'):
+    for tab_dir in tab_dir_list:
+        i_files = [f for f in os.listdir(tab_dir) if re.compile('i_(.*?)\.txt').match(f)]
+        if len(i_files) != 1:
+            logger.warn("Could not find an investigation file, skipping {}".format(tab_dir))
+        else:
+            with open(os.path.join(tab_dir, i_files[0])) as i_file:
+                log = validate2(i_file)
+                with open(os.path.join(tab_dir, report_file_name), 'w') as report_file:
+                    report_file.write(log.getvalue())
