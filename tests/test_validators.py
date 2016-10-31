@@ -2,6 +2,7 @@ import unittest
 from isatools import isajson, isatab
 import os
 from tests import utils
+import tempfile
 
 
 class TestValidateIsaJson(unittest.TestCase):
@@ -358,7 +359,9 @@ class TestBatchValidateIsaTab(unittest.TestCase):
 
 
 class TestBatchValidateIsaJson(unittest.TestCase):
+
     def setUp(self):
+        self._tmp_dir = tempfile.mkdtemp()
         self._json_dir = utils.JSON_DATA_DIR
         self._bii_json_files = [
             os.path.join(self._json_dir, 'BII-I-1', 'BII-I-1.json'),
@@ -368,18 +371,15 @@ class TestBatchValidateIsaJson(unittest.TestCase):
         self._mtbls_json_files = [os.path.join(self._json_dir, 'MTBLS1', 'MTBLS1.json')]
 
     def tearDown(self):
-        for json_dir in self._bii_json_files + self._mtbls_json_files:
-            try:
-                os.remove(os.path.join(os.path.dirname(json_dir), 'isajson_report.txt'))
-            except FileNotFoundError:
-                pass
+        try:
+            os.remove(os.path.join(self._tmp_dir, 'isajson_report.txt'))
+        except FileNotFoundError:
+            pass
 
     def test_batch_validate_bii(self):
-        isajson.batch_validate(self._bii_json_files, report_file_name='isajson_report.txt')
-        self.assertTrue(os.path.isfile(os.path.join(self._json_dir, 'BII-I-1', 'isajson_report.txt')))
-        self.assertTrue(os.path.isfile(os.path.join(self._json_dir, 'BII-S-3', 'isajson_report.txt')))
-        self.assertTrue(os.path.isfile(os.path.join(self._json_dir, 'BII-S-7', 'isajson_report.txt')))
+        isajson.batch_validate(self._bii_json_files, os.path.join(self._tmp_dir, 'isajson_report.txt'))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'isajson_report.txt')))
 
     def test_batch_validate_mtbls(self):
-        isajson.batch_validate(self._mtbls_json_files, report_file_name='isajson_report.txt')
-        self.assertTrue(os.path.isfile(os.path.join(self._json_dir, 'MTBLS1', 'isajson_report.txt')))
+        isajson.batch_validate(self._mtbls_json_files, os.path.join(self._tmp_dir, 'isajson_report.txt'))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'isajson_report.txt')))
