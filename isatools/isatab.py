@@ -2781,8 +2781,8 @@ def batch_validate(tab_dir_list, report_file_path):
     Example:
         from isatools import isatab
         my_tabs = [
-            '/path/to/study1',
-            '/path/to/study2'
+            '/path/to/study1/',
+            '/path/to/study2/'
         ]
         isatab.batch_validate(my_tabs, '/path/to/report.txt')
     """
