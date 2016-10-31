@@ -276,7 +276,7 @@ class TestValidateIsaJson(unittest.TestCase):
 class TestValidateIsaTab(unittest.TestCase):
 
     def setUp(self):
-        self._tab_data_dir = os.path.join(os.path.dirname(__file__), 'data', 'tab')
+        self._tab_data_dir = utils.TAB_DATA_DIR
 
     def tearDown(self):
         pass
@@ -304,3 +304,75 @@ class TestValidateIsaTab(unittest.TestCase):
             self.fail("Validation did not complete successfully when it should have!")
         elif '(W)' not in log:
             self.fail("Validation error and warnings are missing when should report some with BII-S-7")
+
+
+class TestBatchValidateIsaTab(unittest.TestCase):
+
+    def setUp(self):
+        self._tab_data_dir = utils.TAB_DATA_DIR
+
+    def tearDown(self):
+        pass
+
+    def test_batch_validate_bii(self):
+        tab_dir_list = [
+            os.path.join(self._tab_data_dir, 'BII-I-1'),
+            os.path.join(self._tab_data_dir, 'BII-S-3'),
+            os.path.join(self._tab_data_dir, 'BII-S-7')
+        ]
+        isatab.batch_validate(tab_dir_list, report_file_name='isatab_report.txt')
+
+        bii_i_1_report_path = os.path.join(self._tab_data_dir, 'BII-I-1', 'isatab_report.txt')
+        self.assertTrue(os.path.isfile(bii_i_1_report_path))
+        bii_i_1_report = open(bii_i_1_report_path).read()
+        if "Finished validation..." not in bii_i_1_report:
+            self.fail("Validation did not complete successfully when it should have!")
+        if '(W)' not in bii_i_1_report:
+            self.fail("Validation error and warnings are missing when should report some with BII-I-1")
+
+        bii_s_3_report_path = os.path.join(self._tab_data_dir, 'BII-S-3', 'isatab_report.txt')
+        self.assertTrue(os.path.isfile(bii_s_3_report_path))
+        bii_s_3_report = open(bii_s_3_report_path).read()
+        if "Finished validation..." not in bii_s_3_report:
+            self.fail("Validation did not complete successfully when it should have!")
+        elif '(W)' not in bii_s_3_report:
+            self.fail("Validation error and warnings are missing when should report some with BII-S-3")
+
+        bii_s_7_report_path = os.path.join(self._tab_data_dir, 'BII-S-7', 'isatab_report.txt')
+        self.assertTrue(os.path.isfile(bii_s_7_report_path))
+        bii_s_7_report = open(bii_s_7_report_path).read()
+        if "Finished validation..." not in bii_s_7_report:
+            self.fail("Validation did not complete successfully when it should have!")
+        elif '(W)' not in bii_s_7_report:
+            self.fail("Validation error and warnings are missing when should report some with BII-S-7")
+
+    def test_batch_validate_mtbls(self):
+        tab_dir_list = [os.path.join(self._tab_data_dir, 'MTBLS1')]
+        isatab.batch_validate(tab_dir_list, report_file_name='isatab_report.txt')
+        self.assertTrue(os.path.isfile(os.path.join(self._tab_data_dir, 'MTBLS1', 'isatab_report.txt')))
+
+
+class TestBatchValidateIsaJson(unittest.TestCase):
+    def setUp(self):
+        self._json_dir = utils.JSON_DATA_DIR
+
+    def tearDown(self):
+        pass
+
+    def test_batch_validate_bii(self):
+        json_list = [
+            os.path.join(self._json_dir, 'BII-I-1', 'BII-I-1.json'),
+            os.path.join(self._json_dir, 'BII-S-3', 'BII-S-3.json'),
+            os.path.join(self._json_dir, 'BII-S-7', 'BII-S-7.json')
+        ]
+        isajson.batch_validate(json_list, report_file_name='isajson_report.txt')
+        self.assertTrue(os.path.isfile(os.path.join(self._json_dir, 'BII-I-1', 'isajson_report.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._json_dir, 'BII-S-3', 'isajson_report.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._json_dir, 'BII-S-7', 'isajson_report.txt')))
+
+    def test_batch_validate_mtbls(self):
+        json_list = [
+            os.path.join(self._tab_data_dir, 'MTBLS1', 'MTBLS1.json')
+        ]
+        isajson.batch_validate(json_list, report_file_name='isajson_report.txt')
+        self.assertTrue(os.path.isfile(os.path.join(self._json_dir, 'MTBLS1', 'isajson_report.txt')))
