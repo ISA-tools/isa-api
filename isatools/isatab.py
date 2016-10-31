@@ -2773,13 +2773,18 @@ def read_study_file(fp):
     return experimental_graph
 
 
-def batch_validate(tab_dir_list, report_file_name='isatab_report.txt'):
-    for tab_dir in tab_dir_list:
-        i_files = [f for f in os.listdir(tab_dir) if re.compile('i_(.*?)\.txt').match(f)]
-        if len(i_files) != 1:
-            logger.warn("Could not find an investigation file, skipping {}".format(tab_dir))
-        else:
-            with open(os.path.join(tab_dir, i_files[0])) as i_file:
-                log = validate2(i_file)
-                with open(os.path.join(tab_dir, report_file_name), 'w') as report_file:
+def batch_validate(tab_dir_list, report_file_path):
+    with open(report_file_path, 'w') as report_file:
+        logger.info("Writing batch report to {}".format(report_file.name))
+        report_file.write("Writing batch report to {}\n".format(report_file.name))
+        for tab_dir in tab_dir_list:
+            report_file.write("--------\n")
+            report_file.write("***Validating {}***\n".format(tab_dir))
+            i_files = [f for f in os.listdir(tab_dir) if re.compile('i_(.*?)\.txt').match(f)]
+            if len(i_files) != 1:
+                logger.warn("Could not find an investigation file, skipping {}".format(tab_dir))
+                report_file.write("Could not find an investigation file, skipping {}".format(tab_dir))
+            else:
+                with open(os.path.join(tab_dir, i_files[0])) as i_file:
+                    log = validate2(i_file)
                     report_file.write(log.getvalue())

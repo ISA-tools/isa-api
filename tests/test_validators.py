@@ -3,6 +3,7 @@ from isatools import isajson, isatab
 import os
 from tests import utils
 import tempfile
+import shutil
 
 
 class TestValidateIsaJson(unittest.TestCase):
@@ -310,52 +311,20 @@ class TestValidateIsaTab(unittest.TestCase):
 class TestBatchValidateIsaTab(unittest.TestCase):
 
     def setUp(self):
+        self._tmp_dir = tempfile.mkdtemp()
         self._tab_data_dir = utils.TAB_DATA_DIR
         self._bii_tab_dir_list = [
             os.path.join(self._tab_data_dir, 'BII-I-1'),
             os.path.join(self._tab_data_dir, 'BII-S-3'),
             os.path.join(self._tab_data_dir, 'BII-S-7')
         ]
-        self._mtbls_tab_dir_list = [os.path.join(self._tab_data_dir, 'MTBLS1')]
 
     def tearDown(self):
-        for tab_dir in self._bii_tab_dir_list + self._mtbls_tab_dir_list:
-            try:
-                os.remove(os.path.join(tab_dir, 'isatab_report.txt'))
-            except FileNotFoundError:
-                pass
+        shutil.rmtree(os.path.join(self._tmp_dir))
 
     def test_batch_validate_bii(self):
-
-        isatab.batch_validate(self._bii_tab_dir_list, report_file_name='isatab_report.txt')
-
-        bii_i_1_report_path = os.path.join(self._tab_data_dir, 'BII-I-1', 'isatab_report.txt')
-        self.assertTrue(os.path.isfile(bii_i_1_report_path))
-        bii_i_1_report = open(bii_i_1_report_path).read()
-        if "Finished validation..." not in bii_i_1_report:
-            self.fail("Validation did not complete successfully when it should have!")
-        if '(W)' not in bii_i_1_report:
-            self.fail("Validation error and warnings are missing when should report some with BII-I-1")
-
-        bii_s_3_report_path = os.path.join(self._tab_data_dir, 'BII-S-3', 'isatab_report.txt')
-        self.assertTrue(os.path.isfile(bii_s_3_report_path))
-        bii_s_3_report = open(bii_s_3_report_path).read()
-        if "Finished validation..." not in bii_s_3_report:
-            self.fail("Validation did not complete successfully when it should have!")
-        elif '(W)' not in bii_s_3_report:
-            self.fail("Validation error and warnings are missing when should report some with BII-S-3")
-
-        bii_s_7_report_path = os.path.join(self._tab_data_dir, 'BII-S-7', 'isatab_report.txt')
-        self.assertTrue(os.path.isfile(bii_s_7_report_path))
-        bii_s_7_report = open(bii_s_7_report_path).read()
-        if "Finished validation..." not in bii_s_7_report:
-            self.fail("Validation did not complete successfully when it should have!")
-        elif '(W)' not in bii_s_7_report:
-            self.fail("Validation error and warnings are missing when should report some with BII-S-7")
-
-    def test_batch_validate_mtbls(self):
-        isatab.batch_validate(self._mtbls_tab_dir_list, report_file_name='isatab_report.txt')
-        self.assertTrue(os.path.isfile(os.path.join(self._tab_data_dir, 'MTBLS1', 'isatab_report.txt')))
+        isatab.batch_validate(self._bii_tab_dir_list, os.path.join(self._tmp_dir, 'isatab_report.txt'))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'isatab_report.txt')))
 
 
 class TestBatchValidateIsaJson(unittest.TestCase):
@@ -368,18 +337,10 @@ class TestBatchValidateIsaJson(unittest.TestCase):
             os.path.join(self._json_dir, 'BII-S-3', 'BII-S-3.json'),
             os.path.join(self._json_dir, 'BII-S-7', 'BII-S-7.json')
         ]
-        self._mtbls_json_files = [os.path.join(self._json_dir, 'MTBLS1', 'MTBLS1.json')]
 
     def tearDown(self):
-        try:
-            os.remove(os.path.join(self._tmp_dir, 'isajson_report.txt'))
-        except FileNotFoundError:
-            pass
+        shutil.rmtree(os.path.join(self._tmp_dir))
 
     def test_batch_validate_bii(self):
         isajson.batch_validate(self._bii_json_files, os.path.join(self._tmp_dir, 'isajson_report.txt'))
-        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'isajson_report.txt')))
-
-    def test_batch_validate_mtbls(self):
-        isajson.batch_validate(self._mtbls_json_files, os.path.join(self._tmp_dir, 'isajson_report.txt'))
         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'isajson_report.txt')))
