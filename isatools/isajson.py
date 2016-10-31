@@ -1203,3 +1203,14 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
     finally:
         handler.flush()
         return stream
+
+
+def batch_validate(json_file_list, report_file_name='isajson_report.txt'):
+    for json_file in json_file_list:
+        if not os.path.isfile(json_file):
+            logger.warn("Could not find ISA-JSON file, skipping {}".format(json_file))
+        else:
+            with open(json_file) as fp:
+                log = validate(fp)
+                with open(os.path.join(os.path.dirname(json_file), report_file_name), 'w') as report_file:
+                    report_file.write(log.getvalue())

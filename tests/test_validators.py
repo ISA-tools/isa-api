@@ -360,24 +360,26 @@ class TestBatchValidateIsaTab(unittest.TestCase):
 class TestBatchValidateIsaJson(unittest.TestCase):
     def setUp(self):
         self._json_dir = utils.JSON_DATA_DIR
-
-    def tearDown(self):
-        pass
-
-    def test_batch_validate_bii(self):
-        json_list = [
+        self._bii_json_files = [
             os.path.join(self._json_dir, 'BII-I-1', 'BII-I-1.json'),
             os.path.join(self._json_dir, 'BII-S-3', 'BII-S-3.json'),
             os.path.join(self._json_dir, 'BII-S-7', 'BII-S-7.json')
         ]
-        isajson.batch_validate(json_list, report_file_name='isajson_report.txt')
+        self._mtbls_json_files = [os.path.join(self._json_dir, 'MTBLS1', 'MTBLS1.json')]
+
+    def tearDown(self):
+        for json_dir in self._bii_json_files + self._mtbls_json_files:
+            try:
+                os.remove(os.path.join(os.path.dirname(json_dir), 'isajson_report.txt'))
+            except FileNotFoundError:
+                pass
+
+    def test_batch_validate_bii(self):
+        isajson.batch_validate(self._bii_json_files, report_file_name='isajson_report.txt')
         self.assertTrue(os.path.isfile(os.path.join(self._json_dir, 'BII-I-1', 'isajson_report.txt')))
         self.assertTrue(os.path.isfile(os.path.join(self._json_dir, 'BII-S-3', 'isajson_report.txt')))
         self.assertTrue(os.path.isfile(os.path.join(self._json_dir, 'BII-S-7', 'isajson_report.txt')))
 
     def test_batch_validate_mtbls(self):
-        json_list = [
-            os.path.join(self._tab_data_dir, 'MTBLS1', 'MTBLS1.json')
-        ]
-        isajson.batch_validate(json_list, report_file_name='isajson_report.txt')
+        isajson.batch_validate(self._mtbls_json_files, report_file_name='isajson_report.txt')
         self.assertTrue(os.path.isfile(os.path.join(self._json_dir, 'MTBLS1', 'isajson_report.txt')))
