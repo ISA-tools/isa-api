@@ -108,8 +108,17 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
         env = jinja2.Environment()
         env.loader = jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'resources', 'sra_templates'))
         xsub_template = env.get_template('submission_add.xml')
-        xsub = xsub_template.render(accession=study_acc, contacts=istudy.contacts, submission_date=istudy.submission_date,
-                                    sra_center_name=sra_center_name, sra_broker_name=sra_broker_name)
+        sra_contact = None
+        if sra_settings is not None:
+            inform_on_status = sra_settings['sra_broker_inform_on_status']
+            inform_on_error = sra_settings['sra_broker_inform_on_error']
+            sra_contact = {
+                'inform_on_status': inform_on_status,
+                'inform_on_error': inform_on_error
+            }
+        xsub = xsub_template.render(accession=study_acc, contacts=istudy.contacts,
+                                    submission_date=istudy.submission_date, sra_center_name=sra_center_name,
+                                    sra_broker_name=sra_broker_name, sra_contact=sra_contact)
         xproj_template = env.get_template('project_set.xml')
         xproj = xproj_template.render(study=istudy, sra_center_name=sra_center_name)
 

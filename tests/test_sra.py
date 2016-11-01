@@ -35,8 +35,8 @@ class TestNewSraExport(TestCase):
             "sra_center": "OXFORD",
             "sra_project": "OXFORD",
             "sra_lab": "Oxford e-Research Centre",
-            "inform_on_status_email": "proccaserra@gmail.com",
-            "inform_on_error_email": "proccaserra@gmail.com"
+            "sra_broker_inform_on_status": "proccaserra@gmail.com",
+            "sra_broker_inform_on_error": "proccaserra@gmail.com"
         }
 
     def tearDown(self):
