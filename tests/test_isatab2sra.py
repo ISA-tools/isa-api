@@ -88,7 +88,8 @@ class TestIsaTab2Sra(unittest.TestCase):
             "sra_project": "OXFORD",
             "sra_lab": "Oxford e-Research Centre",
             "sra_broker_inform_on_status": "proccaserra@gmail.com",
-            "sra_broker_inform_on_error": "proccaserra@gmail.com"
+            "sra_broker_inform_on_error": "proccaserra@gmail.com",
+            "sra_broker_contact_name": "PRS"
         }
         isatab2sra.convert(self._biis3_dir, self._tmp_dir, sra_settings=sra_settings, validate_first=False)
         submission_xml = open(os.path.join(self._tmp_dir, 'submission.xml'), 'rb').read()

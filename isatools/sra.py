@@ -112,9 +112,11 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
         if sra_settings is not None:
             inform_on_status = sra_settings['sra_broker_inform_on_status']
             inform_on_error = sra_settings['sra_broker_inform_on_error']
+            contact_name = sra_settings['sra_broker_contact_name']
             sra_contact = {
                 'inform_on_status': inform_on_status,
-                'inform_on_error': inform_on_error
+                'inform_on_error': inform_on_error,
+                'contact_name': contact_name
             }
         xsub = xsub_template.render(accession=study_acc, contacts=istudy.contacts,
                                     submission_date=istudy.submission_date, sra_center_name=sra_center_name,
