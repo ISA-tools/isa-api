@@ -8,6 +8,15 @@ import os
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+errors = {
+    "errors": [
+        {
+            "message": "Sorry, that page does not exist",
+            "code": 34
+        }
+    ]
+}
+
 
 def load(fp):
 
@@ -861,6 +870,11 @@ def check_utf8(fp):
     if charset['encoding'] is not 'UTF-8' and charset['encoding'] is not 'ascii':
         logger.warning("(W) File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
                     .format(charset['encoding'], charset['confidence']))
+        errors['errors'].append({
+            "message": "File should be UTF8 encoding",
+            "supplemental": "Encoding is '{0}' with confidence {1}".format(charset['encoding'], charset['confidence']),
+            "code": 10
+        })
         raise SystemError
 
 
@@ -872,6 +886,11 @@ def check_isa_schemas(isa_json, investigation_schema_path):
         validator = Draft4Validator(investigation_schema, resolver=resolver)
         validator.validate(isa_json)
     except ValidationError as ve:
+        errors['errors'].append({
+            "message": "Invalid JSON against ISA-JSON schemas",
+            "supplemental": str(ve),
+            "code": 3
+        })
         logger.fatal("(F) The JSON does not validate against the provided ISA-JSON schemas!")
         logger.fatal("Fatal error: " + str(ve))
         raise SystemError("(F) The JSON does not validate against the provided ISA-JSON schemas!")
@@ -884,6 +903,11 @@ def check_date_formats(isa_json):
             try:
                 iso8601.parse_date(date_str)
             except iso8601.ParseError:
+                errors['errors'].append({
+                    "message": "Date is not ISO8601 formatted",
+                    "supplemental": "Found {} in date field".format(date_str),
+                    "code": 3001
+                })
                 logger.warning("(W) Date {} does not conform to ISO8601 format".format(date_str))
     import iso8601
     check_iso8601_date(isa_json['publicReleaseDate'])
@@ -901,6 +925,11 @@ def check_dois(isa_json):
         if doi_str is not '':
             regexDOI = re.compile('(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
             if not regexDOI.match(doi_str):
+                errors['errors'].append({
+                    "message": "DOI is not valid format",
+                    "supplemental": "Found {} in DOI field".format(doi_str),
+                    "code": 3002
+                })
                 logger.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
     import re
     for ipub in isa_json['publications']:
@@ -912,11 +941,21 @@ def check_dois(isa_json):
 
 def check_filenames_present(isa_json):
     """Used for rule 3005"""
-    for study in isa_json['studies']:
+    for s_pos, study in enumerate(isa_json['studies']):
         if study['filename'] is '':
+            errors['errors'].append({
+                "message": "Missing study file name",
+                "supplemental": "At study position {}".format(s_pos),
+                "code": 3005
+            })
             logger.warning("(W) A study filename is missing")
-        for assay in study['assays']:
+        for a_pos, assay in enumerate(study['assays']):
             if assay['filename'] is '':
+                errors['errors'].append({
+                    "message": "Missing assay file name",
+                    "supplemental": "At study position {}, assay position {}".format(s_pos, a_pos),
+                    "code": 3005
+                })
                 logger.warning("(W) An assay filename is missing")
 
 
@@ -927,6 +966,11 @@ def check_pubmed_ids_format(isa_json):
             pmid_regex = re.compile('[0-9]{8}')
             pmcid_regex = re.compile('PMC[0-9]{8}')
             if (pmid_regex.match(pubmed_id_str) is None) and (pmcid_regex.match(pubmed_id_str) is None):
+                errors['errors'].append({
+                    "message": "PubMed ID is not valid format",
+                    "supplemental": "Found PubMedID {}".format(pubmed_id_str),
+                    "code": 3003
+                })
                 logger.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
     import re
     for ipub in isa_json['publications']:
@@ -941,6 +985,11 @@ def check_protocol_names(isa_json):
     for study in isa_json['studies']:
         for protocol in study['protocols']:
             if protocol['name'] is '':
+                errors['errors'].append({
+                    "message": "Protocol missing name",
+                    "supplemental": "Protocol @id={}".format(protocol['@id']),
+                    "code": 1010
+                })
                 logger.warning("(W) A Protocol {} is missing Protocol Name, so can't be referenced in ISA-tab"
                                .format(protocol['@id']))
 
@@ -951,6 +1000,11 @@ def check_protocol_parameter_names(isa_json):
         for protocol in study['protocols']:
             for parameter in protocol['parameters']:
                 if parameter['parameterName'] is '':
+                    errors['errors'].append({
+                        "message": "Protocol Parameter missing name",
+                        "supplemental": "Protocol Parameter @id={}".format(parameter['@id']),
+                        "code": 1011
+                    })
                     logger.warning("(W) A Protocol Parameter {} is missing name, so can't be referenced in ISA-tab"
                                    .format(parameter['@id']))
 
@@ -960,6 +1014,11 @@ def check_study_factor_names(isa_json):
     for study in isa_json['studies']:
         for factor in study['factors']:
             if factor['factorName'] is '':
+                errors['errors'].append({
+                    "message": "Study Factor missing name",
+                    "supplemental": "Study Factor @id={}".format(factor['@id']),
+                    "code": 1012
+                })
                 logger.warning("(W) A Study Factor is missing name, so can't be referenced in ISA-tab"
                                .format(factor['@id']))
 
@@ -968,6 +1027,11 @@ def check_ontology_sources(isa_json):
     """Used for rule 3008"""
     for ontology_source in isa_json['ontologySourceReferences']:
         if ontology_source['name'] is '':
+            errors['errors'].append({
+                "message": "Study Factor missing name",
+                "supplemental": "Study Factor @id={}".format(factor['@id']),
+                "code": 3008
+            })
             logger.warning("(W) An Ontology Source Reference is missing Term Source Name, so can't be referenced")
 
 
@@ -1004,10 +1068,20 @@ def check_term_source_refs(isa_json):
     term_sources_used = [annotation['termSource'] for annotation in collector if annotation['termSource'] is not '']
     if len(set(term_sources_used) - set(term_sources_declared)) > 0:
         diff = set(term_sources_used) - set(term_sources_declared)
+        errors['errors'].append({
+            "message": "Missing Term Source",
+            "supplemental": "Ontology sources missing {}".format(list(diff)),
+            "code": 3009
+        })
         logger.error("(E) There are ontology sources {} referenced in an annotation that have not been not declared"
               .format(list(diff)))
     elif len(set(term_sources_declared) - set(term_sources_used)) > 0:
         diff = set(term_sources_declared) - set(term_sources_used)
+        errors['errors'].append({
+            "message": "Ontology Source Reference is not used",
+            "supplemental": "Ontology sources not used {}".format(list(diff)),
+            "code": 3007
+        })
         logger.warning("(W) There are some ontology sources declared {} that have not been used in any annotation"
               .format(list(diff)))
 
@@ -1019,6 +1093,11 @@ def check_term_accession_used_no_source_ref(isa_json):
     terms_using_accession_no_source_ref = [annotation for annotation in collector if annotation['termAccession']
                                            is not '' and annotation['termSource'] is '']
     if len(terms_using_accession_no_source_ref) > 0:
+        errors['errors'].append({
+            "message": "Missing Term Source REF in annotation",
+            "supplemental": "Terms with accession but no source reference {}".format(terms_using_accession_no_source_ref),
+            "code": 3010
+        })
         logger.warning("(W) There are ontology annotations with termAccession set but no termSource referenced: {}"
                        .format(terms_using_accession_no_source_ref))
 
@@ -1037,6 +1116,11 @@ def load_config(config_dir):
                 else:
                     configs[(config_dict['measurementType'], config_dict['technologyType'])] = config_dict
             except ValidationError:
+                errors['errors'].append({
+                    "message": "Configurations could not be loaded",
+                    "supplemental": "On loading {}".format(os.path.join(config_dir, file)),
+                    "code": 4001
+                })
                 logger.error("(E) Could not load configuration file {}".format(str(file)))
     return configs
 
@@ -1049,6 +1133,11 @@ def check_measurement_technology_types(assay_json, configs):
         if config is None:
             raise KeyError
     except KeyError:
+        errors['errors'].append({
+            "message": "Measurement/technology type invalid",
+            "supplemental": "Measurement {}/technology {}".format(measurement_type, technology_type),
+            "code": 4002
+        })
         logger.error("(E) Could not load configuration for measurement type '{}' and technology type '{}'"
                      .format(measurement_type, technology_type))
 
@@ -1089,6 +1178,12 @@ def check_study_and_assay_graphs(study_json, configs):
             assay_protocol_sequence_of_interest = [i for i in assay_protocol_sequence if i in config_protocol_sequence]
             #  filter out protocols in sequence that are not of interest (additional ones to required by config)
             if config_protocol_sequence != assay_protocol_sequence_of_interest:
+                errors['errors'].append({
+                    "message": "Process sequence is not valid against configuration",
+                    "supplemental": "Protocol sequence {} does not in {}".format(config_protocol_sequence,
+                                                                                 assay_protocol_sequence),
+                    "code": 4004
+                })
                 logger.warn("Configuration protocol sequence {} does not match study graph found in {}"
                             .format(config_protocol_sequence, assay_protocol_sequence))
 
@@ -1193,13 +1288,57 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
             check_study_and_assay_graphs(study_json, configs)  # Rule 4004
         logger.info("Finished validation...")
     except KeyError as k:
+        errors['errors'].append({
+            "message": "Unknown/System Error",
+            "supplemental": "Error when reading JSON; key: {}".format(str(k)),
+            "code": 0
+        })
         logger.fatal("(F) There was an error when trying to read the JSON")
         logger.fatal("Key: " + str(k))
     except ValueError as v:
+        errors['errors'].append({
+            "message": "Unknown/System Error",
+            "supplemental": "Error when parsing JSON; key: {}".format(str(v)),
+            "code": 0
+        })
         logger.fatal("(F) There was an error when trying to parse the JSON")
         logger.fatal("Value: " + str(v))
     except SystemError as e:
+        errors['errors'].append({
+            "message": "Unknown/System Error",
+            "supplemental": str(e),
+            "code": 0
+        })
         logger.fatal("(F) Something went very very wrong! :(")
     finally:
         handler.flush()
         return stream
+
+
+def batch_validate(json_file_list, report_file_path):
+    """ Validate a batch of ISA-JSON files
+        :param tab_dir_list: List of file paths to the ISA-JSON files to validate
+        :param report_file_path: Full path and file name of where to write the valdiation report to
+
+        Example:
+            from isatools import isajson
+            my_jsons = [
+                '/path/to/study1.json',
+                '/path/to/study2.json'
+            ]
+            isajson.batch_validate(my_jsons, '/path/to/report.txt')
+        """
+    with open(report_file_path, 'w') as report_file:
+        logger.info("Writing batch report to {}".format(report_file.name))
+        report_file.write("Writing batch report to {}\n".format(report_file.name))
+        for json_file in json_file_list:
+            report_file.write("--------\n")
+            report_file.write("***Validating {}***\n".format(json_file))
+            if not os.path.isfile(json_file):
+                logger.warn("Could not find ISA-JSON file, skipping {}".format(json_file))
+                report_file.write("Could not find ISA-JSON file, skipping {}\n".format(json_file))
+            else:
+                with open(json_file) as fp:
+                    log = validate(fp)
+                    report_file.write(log.getvalue())
+

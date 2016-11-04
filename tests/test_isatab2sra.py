@@ -82,7 +82,16 @@ class TestIsaTab2Sra(unittest.TestCase):
         self.assertTrue(utils.assert_xml_equal(self._expected_run_set_xml_biis3, actual_run_set_xml_biis3))
 
     def test_isatab2sra_dump_submission_xml_biis7(self):
-        isatab2sra.convert(self._biis3_dir, self._tmp_dir, validate_first=False)
+        sra_settings = {
+            "sra_broker": "",
+            "sra_center": "OXFORD",
+            "sra_project": "OXFORD",
+            "sra_lab": "Oxford e-Research Centre",
+            "sra_broker_inform_on_status": "proccaserra@gmail.com",
+            "sra_broker_inform_on_error": "proccaserra@gmail.com",
+            "sra_broker_contact_name": "PRS"
+        }
+        isatab2sra.convert(self._biis3_dir, self._tmp_dir, sra_settings=sra_settings, validate_first=False)
         submission_xml = open(os.path.join(self._tmp_dir, 'submission.xml'), 'rb').read()
         actual_submission_xml_biis7 = etree.fromstring(submission_xml)
         self.assertTrue(utils.assert_xml_equal(self._expected_submission_xml_biis7, actual_submission_xml_biis7))

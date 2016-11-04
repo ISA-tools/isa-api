@@ -103,12 +103,12 @@ def create_sra(source_path, dest_path, config_path=default_config_dir):
         raise TypeError("The provided ISA tab could not be converted to SRA")
 
 
-def convert(source_path, dest_path, validate_first=True):
+def convert(source_path, dest_path, sra_settings=None, validate_first=True):
     from isatools.convert import isatab2json, json2sra
     isa_json = isatab2json.convert(source_path, validate_first=validate_first)
     isa_json_fp = StringIO(json.dumps(isa_json))
     isa_json_fp.name = "BII-S-3.json"
-    json2sra.convert2(isa_json_fp, dest_path, validate_first=False)
+    json2sra.convert2(isa_json_fp, dest_path, sra_settings=sra_settings, validate_first=False)
     logging.info("Conversion complete...")
     buffer = BytesIO()
     if os.path.isdir(dest_path):
