@@ -65,7 +65,7 @@ class TestJson2IsaTab(unittest.TestCase):
     def test_json2isatab_convert_bii_s_3_investigation(self):
         with open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')) as test_file:
             json2isatab.convert(test_file, self._tmp_dir, i_file_name='i_gilbert.txt')
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as dumped_file:
+        with open(os.path.join(self._tmp_dir, 'i_gilbert.txt')) as dumped_file:
             with open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt')) as expected_file:
                 self.assertTrue(assert_tab_content_equal(dumped_file, expected_file))
 
@@ -93,7 +93,7 @@ class TestJson2IsaTab(unittest.TestCase):
     def test_json2isatab_convert_bii_s_7_investigation(self):
         with open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')) as test_file:
             json2isatab.convert(test_file, self._tmp_dir, i_file_name='i_matteo.txt')
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as dumped_file:
+        with open(os.path.join(self._tmp_dir, 'i_matteo.txt')) as dumped_file:
             with open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt')) as expected_file:
                 self.assertTrue(assert_tab_content_equal(dumped_file, expected_file))
 
