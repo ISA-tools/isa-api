@@ -8,6 +8,8 @@ import six
 
 from isatools import isajson, isatab
 from tests import utils
+import tempfile
+import shutil
 
 # This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
 open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rU')
@@ -317,7 +319,7 @@ class TestValidateIsaJson(unittest.TestCase):
 class TestValidateIsaTab(unittest.TestCase):
 
     def setUp(self):
-        self._tab_data_dir = os.path.join(os.path.dirname(__file__), 'data', 'tab')
+        self._tab_data_dir = utils.TAB_DATA_DIR
 
     def tearDown(self):
         pass
@@ -348,3 +350,41 @@ class TestValidateIsaTab(unittest.TestCase):
             self.fail("Validation did not complete successfully when it should have!")
         elif '(W)' not in log:
             self.fail("Validation error and warnings are missing when should report some with BII-S-7")
+
+
+class TestBatchValidateIsaTab(unittest.TestCase):
+
+    def setUp(self):
+        self._tmp_dir = tempfile.mkdtemp()
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._bii_tab_dir_list = [
+            os.path.join(self._tab_data_dir, 'BII-I-1'),
+            os.path.join(self._tab_data_dir, 'BII-S-3'),
+            os.path.join(self._tab_data_dir, 'BII-S-7')
+        ]
+
+    def tearDown(self):
+        shutil.rmtree(os.path.join(self._tmp_dir))
+
+    def test_batch_validate_bii(self):
+        isatab.batch_validate(self._bii_tab_dir_list, os.path.join(self._tmp_dir, 'isatab_report.txt'))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'isatab_report.txt')))
+
+
+class TestBatchValidateIsaJson(unittest.TestCase):
+
+    def setUp(self):
+        self._tmp_dir = tempfile.mkdtemp()
+        self._json_dir = utils.JSON_DATA_DIR
+        self._bii_json_files = [
+            os.path.join(self._json_dir, 'BII-I-1', 'BII-I-1.json'),
+            os.path.join(self._json_dir, 'BII-S-3', 'BII-S-3.json'),
+            os.path.join(self._json_dir, 'BII-S-7', 'BII-S-7.json')
+        ]
+
+    def tearDown(self):
+        shutil.rmtree(os.path.join(self._tmp_dir))
+
+    def test_batch_validate_bii(self):
+        isajson.batch_validate(self._bii_json_files, os.path.join(self._tmp_dir, 'isajson_report.txt'))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'isajson_report.txt')))

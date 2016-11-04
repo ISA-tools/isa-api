@@ -29,5 +29,6 @@ This code is licensed under the `CPAL License <https://raw.githubusercontent.com
    Contributing your work <contributing>
    Importing and exporting SRA formatted datasets <sraconversion>
    Downloading files stored in Github <github>
+   Validating ISA-Tab and ISA JSON <validation>
    Importing data in ISA formats <importdata>
    Known Issues <knownissues>

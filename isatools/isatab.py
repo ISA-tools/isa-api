@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 def validate(isatab_dir, config_dir):
-    """ Validate an ISA-Tab archive using the Java validator that is embedded in the Python ISA-API
+    """ Validate an ISA-Tab archive using the Java validator that is embedded in the Python ISA-API (deprecated)
     :param isatab_dir: Path to ISA-Tab files
     :param config_dir: Path to configuration XML fileshttps://download.sublimetext.com/Sublime%20Text%202.0.2%20x64.tar.bz
     """
@@ -43,7 +43,7 @@ def validate(isatab_dir, config_dir):
         print(sys.stderr, "Execution failed:", e)
 
 
-def dump(isa_obj, output_path):
+def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
 
     def _build_roles_str(roles=list()):
         roles_names, roles_accession_numbers, roles_source_refs = [], [], []
@@ -122,9 +122,11 @@ def dump(isa_obj, output_path):
                 pass
             publications_df.loc[i] = publications_df_row
         return publications_df.set_index(prefix +' PubMed ID').T
-
+    import re
+    if not re.compile('i_(.*?)\.txt').match(i_file_name):
+        raise NameError("Investigation file must match pattern i_*.txt")
     if os.path.exists(output_path):
-        fp = open(os.path.join(output_path, 'i_investigation.txt'), 'w')
+        fp = open(os.path.join(output_path, i_file_name), 'w')
     else:
         raise IOError("Can't find " + output_path)
     if not isinstance(isa_obj, Investigation):
@@ -2823,3 +2825,32 @@ def read_study_file(fp):
             experimental_graph[processing_event] = list()
             experimental_graph[processing_event].append(sample)
     return experimental_graph
+
+
+def batch_validate(tab_dir_list, report_file_path):
+    """ Validate a batch of ISA-Tab archives
+    :param tab_dir_list: List of file paths to the ISA-Tab archives to validate
+    :param report_file_path: Full path and file name of where to write the valdiation report to
+
+    Example:
+        from isatools import isatab
+        my_tabs = [
+            '/path/to/study1/',
+            '/path/to/study2/'
+        ]
+        isatab.batch_validate(my_tabs, '/path/to/report.txt')
+    """
+    with open(report_file_path, 'w') as report_file:
+        logger.info("Writing batch report to {}".format(report_file.name))
+        report_file.write("Writing batch report to {}\n".format(report_file.name))
+        for tab_dir in tab_dir_list:
+            report_file.write("--------\n")
+            report_file.write("***Validating {}***\n".format(tab_dir))
+            i_files = [f for f in os.listdir(tab_dir) if re.compile('i_(.*?)\.txt').match(f)]
+            if len(i_files) != 1:
+                logger.warn("Could not find an investigation file, skipping {}".format(tab_dir))
+                report_file.write("Could not find an investigation file, skipping {}".format(tab_dir))
+            else:
+                with open(os.path.join(tab_dir, i_files[0])) as i_file:
+                    log = validate2(i_file)
+                    report_file.write(log.getvalue())

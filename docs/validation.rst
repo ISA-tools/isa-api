@@ -20,7 +20,7 @@ to run the legacy Java ISA-Tab validator.
 Validating ISA-Tab (native Python implementation)
 -------------------------------------------------
 
-From v0.2 of the ISA API, we have started implementing a replacement validator written in Python. To use this one, do something like:
+From v0.2+ of the ISA API, we have started implementing a replacement validator written in Python. To use this one, do something like:
 
 .. code-block:: python
 
@@ -49,3 +49,31 @@ To validate an ISA JSON file against the ISA JSON version 1.0 specification you 
 The rules we check for in the new validators are documented in `this working document <https://goo.gl/l0YzZt>`_  in Google spreadsheets. Please be aware as this is a working document, some of these rules may be amended as we get more feedback and evolve the ISA API code.
 
 This ISA JSON validator has been tested against `a range of dummy test data <https://github.com/ISA-tools/isa-api/tree/master/tests/data/json>`_ found in ``isatools`` tests package.
+
+Batch validation of ISA-Tab and ISA-JSON
+----------------------------------------
+To validate a batch of ISA-Tabs or ISA-JSONs, you can use the ``batch_validate()`` function.
+
+To validate a batch of ISA-Tabs, you can do something like:
+
+.. code-block:: python
+
+    from isatools import isatab
+    my_tabs = [
+        '/path/to/study1/',
+        '/path/to/study2/'
+    ]
+    isatab.batch_validate(my_tabs, '/path/to/report.txt')
+
+To validate a batch of ISA-JSONs, you can do something like
+
+.. code-block:: python
+
+    from isatools import isajson
+    my_jsons = [
+        '/path/to/study1.json',
+        '/path/to/study2.json'
+    ]
+    isajson.batch_validate(my_jsons, '/path/to/report.txt')
+
+In both cases, the batch validation will write the logging output from the respective validators into the file that you specify.
