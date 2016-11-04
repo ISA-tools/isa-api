@@ -13,12 +13,16 @@ import math
 import iso8601
 import six
 import contextlib
+import functools
 
 from .model.v1 import *
 from .io import isatab_parser
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rU')
 
 
 def validate(isatab_dir, config_dir):
@@ -126,7 +130,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
     if not re.compile('i_(.*?)\.txt').match(i_file_name):
         raise NameError("Investigation file must match pattern i_*.txt")
     if os.path.exists(output_path):
-        fp = open(os.path.join(output_path, i_file_name), 'w')
+        fp = open(os.path.join(output_path, i_file_name), mode='w')
     else:
         raise IOError("Can't find " + output_path)
     if not isinstance(isa_obj, Investigation):
@@ -2840,7 +2844,7 @@ def batch_validate(tab_dir_list, report_file_path):
         ]
         isatab.batch_validate(my_tabs, '/path/to/report.txt')
     """
-    with open(report_file_path, 'w') as report_file:
+    with open(report_file_path, mode='w') as report_file:
         logger.info("Writing batch report to {}".format(report_file.name))
         report_file.write("Writing batch report to {}\n".format(report_file.name))
         for tab_dir in tab_dir_list:

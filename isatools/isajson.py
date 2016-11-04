@@ -9,11 +9,15 @@ from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
 import glob
 import six
+import functools
 
 from .model.v1 import *
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rU')
 
 errors = {
     "errors": [
@@ -954,7 +958,7 @@ def check_unit_category_ids_usage(study_json):
 def check_utf8(fp):
     """Used for rule 0010"""
     import chardet
-    with open(fp.name, 'rb') as binary_fp:
+    with open(fp.name, mode='rb') as binary_fp:
         charset = chardet.detect(binary_fp.read())
     if charset['encoding'] not in {'UTF-8', 'ascii'}:
         #print(type(charset['encoding']), type('ascii'))
@@ -1494,7 +1498,7 @@ def batch_validate(json_file_list, report_file_path):
             ]
             isajson.batch_validate(my_jsons, '/path/to/report.txt')
         """
-    with open(report_file_path, 'w') as report_file:
+    with open(report_file_path, mode='w') as report_file:
         logger.info("Writing batch report to {}".format(report_file.name))
         report_file.write("Writing batch report to {}\n".format(report_file.name))
         for json_file in json_file_list:
