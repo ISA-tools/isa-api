@@ -1208,7 +1208,7 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
     if config_dir is None:
         config_dir = default_config_dir
     logger.setLevel(log_level)
-    logger.info("ISA JSON Validator from ISA tools API v0.2")
+    logger.info("ISA JSON Validator from ISA tools API v0.3")
     from io import StringIO
     stream = StringIO()
     handler = logging.StreamHandler(stream)
