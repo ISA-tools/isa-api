@@ -44,8 +44,9 @@ class TestJson2IsaTab(unittest.TestCase):
                               'a_test-template3-splitting_transcription_profiling_DNA_microarray.txt'))))
 
     def test_json2isatab_convert_bii_s_3_investigation(self):
-        json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir)
-        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'i_investigation.txt')),
+        json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir,
+                            i_file_name='i_gilbert.txt')
+        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'i_gilbert.txt')),
                                          open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt'))))
 
     def test_json2isatab_convert_bii_s_3_study_table(self):
@@ -66,8 +67,9 @@ class TestJson2IsaTab(unittest.TestCase):
                                                                    'a_gilbert-assay-Gx.txt'))))
 
     def test_json2isatab_convert_bii_s_7_investigation(self):
-        json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir)
-        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'i_investigation.txt')),
+        json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir,
+                            i_file_name='i_matteo.txt')
+        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'i_matteo.txt')),
                                                  open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt'))))
 
     def test_json2isatab_convert_bii_s_7_study_table(self):

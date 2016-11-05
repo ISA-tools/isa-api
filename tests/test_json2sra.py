@@ -30,17 +30,13 @@ class TestJsonToSra(TestCase):
         self._expected_run_set_xml_biis7 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-7', 'run_set.xml'), 'rb').read())
 
         self._sra_default_config = {
-            "broker_name": "",
-            "center_name": "OXFORD",
-            "center_project_name": "OXFORD",
-            "lab_name": "Oxford e-Research Centre",
-            "submission_action": "ADD",
-            "funding_agency": "None",
-            "grant_number": "None",
-            "inform_on_status_name": "Philippe Rocca-Serra",
-            "inform_on_status_email": "proccaserra@gmail.com",
-            "inform_on_error_name:": "Philippe Rocca-Serra",
-            "inform_on_error_email": "proccaserra@gmail.com"
+            "sra_broker": "",
+            "sra_center": "OXFORD",
+            "sra_project": "OXFORD",
+            "sra_lab": "Oxford e-Research Centre",
+            "sra_broker_inform_on_status": "proccaserra@gmail.com",
+            "sra_broker_inform_on_error": "proccaserra@gmail.com",
+            "sra_broker_contact_name": "PRS"
         }
 
     def tearDown(self):
@@ -96,7 +92,8 @@ class TestJsonToSra(TestCase):
         self.assertTrue(utils.assert_xml_equal(self._expected_run_set_xml_biis3, actual_run_set_xml_biis3))
 
     def test_sra_dump_submission_xml_biis7(self):
-        json2sra.convert2(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir, validate_first=False)
+        sra_settings = self._sra_default_config
+        json2sra.convert2(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir, sra_settings=sra_settings, validate_first=False)
         # Now try load the SRA output in test and compare against the expected output in test data directory
         submission_xml = open(os.path.join(self._tmp_dir, 'submission.xml'), 'rb').read()
         actual_submission_xml_biis7 = etree.fromstring(submission_xml)

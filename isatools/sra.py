@@ -108,8 +108,19 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
         env = jinja2.Environment()
         env.loader = jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'resources', 'sra_templates'))
         xsub_template = env.get_template('submission_add.xml')
-        xsub = xsub_template.render(accession=study_acc, contacts=istudy.contacts, submission_date=istudy.submission_date,
-                                    sra_center_name=sra_center_name, sra_broker_name=sra_broker_name)
+        sra_contact = None
+        if sra_settings is not None:
+            inform_on_status = sra_settings['sra_broker_inform_on_status']
+            inform_on_error = sra_settings['sra_broker_inform_on_error']
+            contact_name = sra_settings['sra_broker_contact_name']
+            sra_contact = {
+                'inform_on_status': inform_on_status,
+                'inform_on_error': inform_on_error,
+                'contact_name': contact_name
+            }
+        xsub = xsub_template.render(accession=study_acc, contacts=istudy.contacts,
+                                    submission_date=istudy.submission_date, sra_center_name=sra_center_name,
+                                    sra_broker_name=sra_broker_name, sra_contact=sra_contact)
         xproj_template = env.get_template('project_set.xml')
         xproj = xproj_template.render(study=istudy, sra_center_name=sra_center_name)
 
@@ -340,9 +351,14 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
         xrun_set_template = env.get_template('run_set.xml')
         xrun_set = xrun_set_template.render(assays_to_export=assays_to_export, study=istudy,
                                             sra_center_name=sra_center_name, sra_broker_name=sra_broker_name)
-
+        samples_to_export = list()
+        for assay_to_export in assays_to_export:
+            if len([s for s in samples_to_export if s['sample_alias'] == assay_to_export['sample_alias']]) > 0:
+                pass
+            else:
+                samples_to_export.append(assay_to_export)
         xsample_set_template = env.get_template('sample_set.xml')
-        xsample_set = xsample_set_template.render(assays_to_export=assays_to_export, study=istudy,
+        xsample_set = xsample_set_template.render(assays_to_export=samples_to_export, study=istudy,
                                             sra_center_name=sra_center_name, sra_broker_name=sra_broker_name)
         logger.debug("SRA exporter: writing SRA XML files for study " + study_acc)
 

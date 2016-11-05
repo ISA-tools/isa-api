@@ -4,6 +4,7 @@
             center_name="OXFORD" accession="" alias="BII-S-7" broker_name="ISAcreator"
             submission_date="2010-03-29T00:00:00+00:00">
     <CONTACTS>
+        <CONTACT inform_on_status="proccaserra@gmail.com" inform_on_error="proccaserra@gmail.com"/>
         <CONTACT name="Philippe Rocca-Serra" inform_on_status="proccaserra@gmail.com"
                  inform_on_error="proccaserra@gmail.com"/>
     </CONTACTS>
