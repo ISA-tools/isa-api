@@ -749,9 +749,7 @@ def get_parameter_value_parameter_ids(study_json):
 def check_protocol_parameter_ids_usage(study_json):
     """Used for rule 1009 and 1020"""
     protocols_declared = get_study_protocols_parameter_ids(study_json)
-    print(protocols_declared)
     protocols_used = get_parameter_value_parameter_ids(study_json)
-    print(protocols_used)
     if len(set(protocols_used) - set(protocols_declared)) > 0:
         diff = set(protocols_used) - set(protocols_declared)
         errors.append({
@@ -1365,7 +1363,9 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
         logger.fatal("(F) Something went very very wrong! :(")
     finally:
         handler.flush()
-        return { "errors": errors }
+        return {
+            "errors": errors
+        }
 
 
 def batch_validate(json_file_list):

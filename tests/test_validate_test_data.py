@@ -12,73 +12,73 @@ class TestIsaJsonTestData(unittest.TestCase):
 
     def test_validate_testdata_bii_i_1_json(self):
         test_case = 'BII-I-1'
-        log_msg_stream = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case, test_case + '.json')),
-                                          log_level=self._reporting_level)
-        if '(E)' in log_msg_stream.getvalue() or '(F)' in log_msg_stream.getvalue():
-            self.fail("Error found when validating ISA JSON: {}".format(log_msg_stream.getvalue()))
+        report = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case, test_case + '.json')),
+                                  log_level=self._reporting_level)
+        if len(report['errors']) > 0:
+            self.fail("Error found when validating ISA JSON: {}".format(report['errors']))
 
     def test_validate_testdata_bii_s_3_json(self):
         test_case = 'BII-S-3'
-        log_msg_stream = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case, test_case + '.json')),
-                                          log_level=self._reporting_level)
-        if '(E)' in log_msg_stream.getvalue() or '(F)' in log_msg_stream.getvalue():
-            self.fail("Error found when validating ISA JSON: {}".format(log_msg_stream.getvalue()))
+        report = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case, test_case + '.json')),
+                                  log_level=self._reporting_level)
+        if len(report['errors']) > 0:
+            self.fail("Error found when validating ISA JSON: {}".format(report['errors']))
 
     def test_validate_testdata_bii_s_7_json(self):
         test_case = 'BII-S-7'
-        log_msg_stream = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case, test_case + '.json')),
-                                          log_level=self._reporting_level)
-        if '(E)' in log_msg_stream.getvalue() or '(F)' in log_msg_stream.getvalue():
-            self.fail("Error found when validating ISA JSON: {}".format(log_msg_stream.getvalue()))
+        report = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case, test_case + '.json')),
+                                  log_level=self._reporting_level)
+        if len(report['errors']) > 0:
+            self.fail("Error found when validating ISA JSON: {}".format(report['errors']))
 
     def test_validate_testdata_charac_param_factor_json(self):
         test_case = 'TEST-ISA-charac-param-factor'
-        log_msg_stream = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case + '.json')),
-                                          log_level=self._reporting_level)
-        if '(E)' in log_msg_stream.getvalue() or '(F)' in log_msg_stream.getvalue():
-            self.fail("Error found when validating ISA JSON: {}".format(log_msg_stream.getvalue()))
+        report = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case + '.json')),
+                                  log_level=self._reporting_level)
+        if len(report['errors']) > 0:
+            self.fail("Error found when validating ISA JSON: {}".format(report['errors']))
 
     def test_validate_testdata_repeated_measure_json(self):
         test_case = 'TEST-ISA-repeated-measure'
-        log_msg_stream = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case + '.json')),
-                                          log_level=self._reporting_level)
-        if '(E)' in log_msg_stream.getvalue() or '(F)' in log_msg_stream.getvalue():
-            self.fail("Error found when validating ISA JSON: {}".format(log_msg_stream.getvalue()))
+        report = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case + '.json')),
+                                  log_level=self._reporting_level)
+        if len(report['errors']) > 0:
+            self.fail("Error found when validating ISA JSON: {}".format(report['errors']))
 
     def test_validate_testdata_sample_pool_json(self):
         test_case = 'TEST-ISA-sample-pool'
-        log_msg_stream = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case + '.json')),
-                                          log_level=self._reporting_level)
-        if '(E)' in log_msg_stream.getvalue() or '(F)' in log_msg_stream.getvalue():
-            self.fail("Error found when validating ISA JSON: {}".format(log_msg_stream.getvalue()))
+        report = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case + '.json')),
+                                  log_level=self._reporting_level)
+        if len(report['errors']) > 0:
+            self.fail("Error found when validating ISA JSON: {}".format(report['errors']))
 
     def test_validate_testdata_sample_pool_no_protocol_ref_json(self):
         test_case = 'TEST-ISA-sample-pool-no-protocolref'
-        log_msg_stream = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case + '.json')),
-                                          log_level=self._reporting_level)
-        if '(E)' in log_msg_stream.getvalue() or '(F)' in log_msg_stream.getvalue():
-            self.fail("Error found when validating ISA JSON: {}".format(log_msg_stream.getvalue()))
+        report = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case + '.json')),
+                                  log_level=self._reporting_level)
+        if len(report['errors']) > 0:
+            self.fail("Error found when validating ISA JSON: {}".format(report['errors']))
 
     def test_validate_testdata_sample_pool_with_error_json(self):
         test_case = 'TEST-ISA-sample-pool-with-error'
-        log_msg_stream = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case + '.json')),
-                                          log_level=self._reporting_level)
-        if '(E)' in log_msg_stream.getvalue() or '(F)' in log_msg_stream.getvalue():
-            self.fail("Error found when validating ISA JSON: {}".format(log_msg_stream.getvalue()))
+        report = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case + '.json')),
+                                  log_level=self._reporting_level)
+        if len(report['errors']) > 0:
+            self.fail("Error found when validating ISA JSON: {}".format(report['errors']))
 
     def test_validate_testdata_source_split_json(self):
         test_case = 'TEST-ISA-source-split'
-        log_msg_stream = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case + '.json')),
-                                          log_level=self._reporting_level)
-        if '(E)' in log_msg_stream.getvalue() or '(F)' in log_msg_stream.getvalue():
-            self.fail("Error found when validating ISA JSON: {}".format(log_msg_stream.getvalue()))
+        report = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case + '.json')),
+                                  log_level=self._reporting_level)
+        if len(report['errors']) > 0:
+            self.fail("Error found when validating ISA JSON: {}".format(report['errors']))
 
     def test_validate_testdata_source_split_with_error_json(self):
         test_case = 'TEST-ISA-source-split-with-error'
-        log_msg_stream = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case + '.json')),
-                                          log_level=self._reporting_level)
-        if '(E)' in log_msg_stream.getvalue() or '(F)' in log_msg_stream.getvalue():
-            self.fail("Error found when validating ISA JSON: {}".format(log_msg_stream.getvalue()))
+        report = isajson.validate(fp=open(os.path.join(utils.JSON_DATA_DIR, test_case + '.json')),
+                                  log_level=self._reporting_level)
+        if len(report['errors']) > 0:
+            self.fail("Error found when validating ISA JSON: {}".format(report['errors']))
 
 
 class TestIsaTabTestData(unittest.TestCase):
