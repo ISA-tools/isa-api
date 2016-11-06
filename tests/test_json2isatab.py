@@ -91,6 +91,10 @@ class TestJson2IsaTab(unittest.TestCase):
         self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'a_matteo-assay-Gx.txt')),
                                                  open(os.path.join(self._tab_data_dir, 'BII-S-7',
                                                                    'a_matteo-assay-Gx.txt'))))
+
+    def test_json2isatab_validate_first(self):
+        json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir,
+                            validate_first=True)
         
     # def test_json2isatab_convert_bii_i_1_investigation(self):
     #     json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')), self._tmp_dir)
