@@ -29,8 +29,8 @@ def convert(work_dir, identifier_type=IdentifierType.name, validate_first=True):
         if len(i_files) != 1:
             logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
             return
-        log_msgs = isatab.validate2(fp=open(os.path.join(work_dir, i_files[0])), log_level=logging.ERROR)
-        if '(F)' in log_msgs.getvalue():
+        report = isatab.validate2(fp=open(os.path.join(work_dir, i_files[0])), log_level=logging.ERROR)
+        if len(report['errors']) > 0:
             logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
             return
     converter = ISATab2ISAjson_v1(identifier_type)

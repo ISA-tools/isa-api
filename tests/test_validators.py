@@ -271,27 +271,24 @@ class TestValidateIsaTab(unittest.TestCase):
         pass
 
     def test_validate_isatab_bii_i_1(self):
-        log_msg_stream = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-I-1', 'i_investigation.txt')))
-        log = log_msg_stream.getvalue()
-        if "Finished validation..." not in log:
+        report = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-I-1', 'i_investigation.txt')))
+        if not report['validation_finished']:
             self.fail("Validation did not complete successfully when it should have!")
-        if '(W)' not in log:
+        if len(report['errors'] + report['warnings']) == 0:
             self.fail("Validation error and warnings are missing when should report some with BII-I-1")
 
     def test_validate_isatab_bii_s_3(self):
-        log_msg_stream = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt')))
-        log = log_msg_stream.getvalue()
-        if "Finished validation..." not in log:
+        report = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt')))
+        if not report['validation_finished']:
             self.fail("Validation did not complete successfully when it should have!")
-        elif '(W)' not in log:
+        elif len(report['errors'] + report['warnings']) == 0:
             self.fail("Validation error and warnings are missing when should report some with BII-S-3")
 
     def test_validate_isatab_bii_s_7(self):
-        log_msg_stream = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt')))
-        log = log_msg_stream.getvalue()
-        if "Finished validation..." not in log:
+        report = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt')))
+        if not report['validation_finished']:
             self.fail("Validation did not complete successfully when it should have!")
-        elif '(W)' not in log:
+        elif len(report['errors'] + report['warnings']) == 0:
             self.fail("Validation error and warnings are missing when should report some with BII-S-7")
 
 
@@ -310,8 +307,8 @@ class TestBatchValidateIsaTab(unittest.TestCase):
         shutil.rmtree(os.path.join(self._tmp_dir))
 
     def test_batch_validate_bii(self):
-        isatab.batch_validate(self._bii_tab_dir_list, os.path.join(self._tmp_dir, 'isatab_report.txt'))
-        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'isatab_report.txt')))
+        batch_report = isatab.batch_validate(self._bii_tab_dir_list)
+        self.assertTrue(len([f['filename'] for f in batch_report['batch_report']]) == len(self._bii_tab_dir_list))
 
 
 class TestBatchValidateIsaJson(unittest.TestCase):

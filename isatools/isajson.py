@@ -1133,15 +1133,13 @@ def check_term_source_refs(isa_json):
     term_sources_used = [annotation['termSource'] for annotation in collector if annotation['termSource'] is not '']
     if len(set(term_sources_used) - set(term_sources_declared)) > 0:
         diff = set(term_sources_used) - set(term_sources_declared)
-        print(term_sources_used)
-        print(term_sources_declared)
         errors.append({
             "message": "Missing Term Source",
             "supplemental": "Ontology sources missing {}".format(list(diff)),
             "code": 3009
         })
         logger.error("(E) There are ontology sources {} referenced in an annotation that have not been not declared"
-              .format(list(diff)))
+                     .format(list(diff)))
     elif len(set(term_sources_declared) - set(term_sources_used)) > 0:
         diff = set(term_sources_declared) - set(term_sources_used)
         warnings.append({
@@ -1388,7 +1386,8 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
         handler.flush()
         return {
             "errors": errors,
-            "warnings": warnings
+            "warnings": warnings,
+            "validation_finished": True
         }
 
 

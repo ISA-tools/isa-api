@@ -15,6 +15,9 @@ import iso8601
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+errors = list()
+warnings = list()
+
 
 def validate(isatab_dir, config_dir):
     """ Validate an ISA-Tab archive using the Java validator that is embedded in the Python ISA-API (deprecated)
@@ -1003,9 +1006,14 @@ def check_utf8(fp):
     import chardet
     charset = chardet.detect(open(fp.name, 'rb').read())
     if charset['encoding'] is not 'UTF-8' and charset['encoding'] is not 'ascii':
+        warnings.append({
+            "message": "File should be UTF8 encoding",
+            "supplemental": "Encoding is '{0}' with confidence {1}".format(charset['encoding'], charset['confidence']),
+            "code": 10
+        })
         logger.warning("File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
-                    .format(charset['encoding'], charset['confidence']))
-        raise SystemError
+                       .format(charset['encoding'], charset['confidence']))
+        raise SystemError()
 
 
 def load2(fp):
@@ -1212,12 +1220,22 @@ def load2(fp):
 
 def check_filenames_present(i_df):
     """Used for rule 3005"""
-    for i, study_df in enumerate(i_df['STUDY']):
+    for s_pos, study_df in enumerate(i_df['STUDY']):
         if study_df.iloc[0]['Study File Name'] is '':
-            logger.warning("(W) A study filename is missing for STUDY.{}".format(i))
-        for j, filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
+            warnings.append({
+                "message": "Missing study file name",
+                "supplemental": "STUDY.{}".format(s_pos),
+                "code": 3005
+            })
+            logger.warning("(W) A study filename is missing for STUDY.{}".format(s_pos))
+        for a_pos, filename in enumerate(i_df['STUDY ASSAYS'][s_pos]['Study Assay File Name'].tolist()):
             if filename is '':
-                logger.warning("(W) An assay filename is missing for STUDY ASSAY.{}".format(j))
+                warnings.append({
+                    "message": "Missing assay file name",
+                    "supplemental": "STUDY.{}, STUDY ASSAY.{}".format(s_pos, a_pos),
+                    "code": 3005
+                })
+                logger.warning("(W) An assay filename is missing for STUDY ASSAY.{}".format(a_pos))
 
 
 def check_date_formats(i_df):
@@ -1227,6 +1245,11 @@ def check_date_formats(i_df):
             try:
                 iso8601.parse_date(date_str)
             except iso8601.ParseError:
+                warnings.append({
+                    "message": "Date is not ISO8601 formatted",
+                    "supplemental": "Found {} in date field".format(date_str),
+                    "code": 3001
+                })
                 logger.warning("(W) Date {} does not conform to ISO8601 format".format(date_str))
     import iso8601
     check_iso8601_date(i_df['INVESTIGATION']['Investigation Public Release Date'].tolist()[0])
@@ -1244,6 +1267,11 @@ def check_dois(i_df):
         if doi_str is not '':
             regexDOI = re.compile('(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
             if not regexDOI.match(doi_str):
+                warnings.append({
+                    "message": "DOI is not valid format",
+                    "supplemental": "Found {} in DOI field".format(doi_str),
+                    "code": 3002
+                })
                 logger.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
     import re
     for doi in i_df['INVESTIGATION PUBLICATIONS']['Investigation Publication DOI'].tolist():
@@ -1260,6 +1288,11 @@ def check_pubmed_ids_format(i_df):
             pmid_regex = re.compile('[0-9]{8}')
             pmcid_regex = re.compile('PMC[0-9]{8}')
             if (pmid_regex.match(pubmed_id_str) is None) and (pmcid_regex.match(pubmed_id_str) is None):
+                warnings.append({
+                    "message": "PubMed ID is not valid format",
+                    "supplemental": "Found PubMedID {}".format(pubmed_id_str),
+                    "code": 3003
+                })
                 logger.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
     import re
     for doi in i_df['INVESTIGATION PUBLICATIONS']['Investigation PubMed ID'].tolist():
@@ -1273,8 +1306,14 @@ def check_protocol_names(i_df):
     """Used for rule 1010"""
     for study_protocols_df in i_df['STUDY PROTOCOLS']:
         for i, protocol_name in enumerate(study_protocols_df['Study Protocol Name'].tolist()):
-            if protocol_name is '' or 'Unnamed: ' in protocol_name:  #  DataFrames labels empty cells as 'Unnamed: n'
-                logger.warning("(W) A Protocol at position {} is missing Protocol Name, so can't be referenced in ISA-tab".format(i))
+            if protocol_name is '' or 'Unnamed: ' in protocol_name:  # DataFrames labels empty cells as 'Unnamed: n'
+                warnings.append({
+                    "message": "Protocol missing name",
+                    "supplemental": "pos={}".format(i),
+                    "code": 1010
+                })
+                logger.warning("(W) A Protocol at position {} is missing Protocol Name, so can't be referenced in "
+                               "ISA-tab".format(i))
 
 
 def check_protocol_parameter_names(i_df):
@@ -1283,24 +1322,41 @@ def check_protocol_parameter_names(i_df):
         for i, protocol_parameters_names in enumerate(study_protocols_df['Study Protocol Parameters Name'].tolist()):
             if len(protocol_parameters_names.split(sep=';')) > 1:  # There's an empty cell if no protocols
                 for protocol_parameter_name in protocol_parameters_names.split(sep=';'):
-                    if protocol_parameter_name is '' or 'Unnamed: ' in protocol_parameter_name:  # DataFrames labels empty cells as 'Unnamed: n'
-                        logger.warning(
-                            "(W) A Protocol Parameter used in Protocol position {} is missing a Name, so can't be referenced in ISA-tab".format(i))
+                    if protocol_parameter_name is '' or 'Unnamed: ' in protocol_parameter_name:
+                        warnings.append({
+                            "message": "Protocol Parameter missing name",
+                            "supplemental": "Protocol Parameter at pos={}".format(i),
+                            "code": 1011
+                        })
+                        logger.warning("(W) A Protocol Parameter used in Protocol position {} is missing a Name, so "
+                                       "can't be referenced in ISA-tab".format(i))
 
 
 def check_study_factor_names(i_df):
     """Used for rule 1012"""
     for study_protocols_df in i_df['STUDY FACTORS']:
         for i, protocol_name in enumerate(study_protocols_df['Study Factor Name'].tolist()):
-            if protocol_name is '' or 'Unnamed: ' in protocol_name:  #  DataFrames labels empty cells as 'Unnamed: n'
-                logger.warning("(W) A Study Factor at position {} is missing a name, so can't be referenced in ISA-tab".format(i))
+            if protocol_name is '' or 'Unnamed: ' in protocol_name:  # DataFrames labels empty cells as 'Unnamed: n'
+                warnings.append({
+                    "message": "Study Factor missing name",
+                    "supplemental": "Study Factor pos={}".format(i),
+                    "code": 1012
+                })
+                logger.warning("(W) A Study Factor at position {} is missing a name, so can't be referenced in ISA-tab"
+                               .format(i))
 
 
 def check_ontology_sources(i_df):
     """Used for rule 3008"""
-    for ontology_source_name in i_df['ONTOLOGY SOURCE REFERENCE']['Term Source Name'].tolist():
+    for i, ontology_source_name in enumerate(i_df['ONTOLOGY SOURCE REFERENCE']['Term Source Name'].tolist()):
         if ontology_source_name is '' or 'Unnamed: ' in ontology_source_name:
-            logger.warning("(W) An Ontology Source Reference is missing Term Source Name, so can't be referenced")
+            warnings.append({
+                "message": "Ontology Source missing name ref",
+                "supplemental": "pos={}".format(i),
+                "code": 3008
+            })
+            logger.warning("(W) An Ontology Source Reference at position {} is missing Term Source Name, so can't be "
+                           "referenced".format(i))
 
 
 def check_table_files_read(i_df, dir_context):
@@ -1311,12 +1367,22 @@ def check_table_files_read(i_df, dir_context):
             try:
                 open(os.path.join(dir_context, study_filename))
             except FileNotFoundError:
+                errors.append({
+                    "message": "Missing study tab file(s)",
+                    "supplemental": "Study File {} does not appear to exist".format(study_filename),
+                    "code": 6
+                })
                 logger.error("(E) Study File {} does not appear to exist".format(study_filename))
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
                     open(os.path.join(dir_context, assay_filename))
                 except FileNotFoundError:
+                    errors.append({
+                        "message": "Missing assay tab file(s)",
+                        "supplemental": "Assay File {} does not appear to exist".format(assay_filename),
+                        "code": 8
+                    })
                     logger.error("(E) Assay File {} does not appear to exist".format(assay_filename))
 
 
@@ -1369,10 +1435,17 @@ def check_protocol_usage(i_df, dir_context):
                 for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
                     protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
                 protocol_refs_used = set([r for r in protocol_refs_used if pd.notnull(r)])
-                if not protocol_refs_used.issubset(protocols_declared):
+                diff = list(protocol_refs_used - protocols_declared)
+                if len(diff) > 0:
+                    errors.append({
+                        "message": "Missing Protocol declaration",
+                        "supplemental": "protocols in study file {} are not declared in the investigation file: "
+                                        "{}".format(study_filename, diff),
+                        "code": 1007
+                    })
                     logger.error(
-                        "(E) Some protocols used in a study file {} are not declared in the investigation file: {}".format(
-                            study_filename, list(protocol_refs_used - protocols_declared)))
+                        "(E) Some protocols used in a study file {} are not declared in the investigation file: "
+                        "{}".format(study_filename, diff))
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
@@ -1383,10 +1456,16 @@ def check_protocol_usage(i_df, dir_context):
                     for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
                         protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
                     protocol_refs_used = set([r for r in protocol_refs_used if pd.notnull(r)])
-                    if not protocol_refs_used.issubset(protocols_declared):
-                        logger.error(
-                            "(E) Some protocols used in an assay file {} are not declared in the investigation file: {}".format(
-                                assay_filename, list(protocol_refs_used - protocols_declared)))
+                    diff = list(protocol_refs_used - protocols_declared)
+                    if len(diff) > 0:
+                        errors.append({
+                            "message": "Missing Protocol declaration",
+                            "supplemental": "protocols in study file {} are not declared in the investigation file: "
+                                            "{}".format(study_filename, diff),
+                            "code": 1007
+                        })
+                        logger.error("(E) Some protocols used in an assay file {} are not declared in the "
+                                     "investigation file: {}".format(assay_filename, diff))
                 except FileNotFoundError:
                     pass
         # now collect all protocols in all assays to compare to declared protocols
@@ -1406,10 +1485,17 @@ def check_protocol_usage(i_df, dir_context):
                         protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
                 except FileNotFoundError:
                     pass
-        if len(protocols_declared - protocol_refs_used) > 0:
+        diff = protocols_declared - protocol_refs_used
+        if len(diff) > 0:
+            warnings.append({
+                "message": "Protocol declared but not used",
+                "supplemental": "protocols declared in the file {} are not used in any assay file: "
+                                "{}".format(study_filename, diff),
+                "code": 1019
+            })
             logger.warn(
-                "(W) Some protocols declared in the investigation file {} are not used in any assay file: {}".format(
-                    study_filename, list(protocols_declared - protocol_refs_used)))
+                "(W) Some protocols declared in the file {} are not used in any assay file: {}".format(
+                    study_filename, list(diff)))
 
 
 def load_table(fp):
@@ -1635,7 +1721,7 @@ def get_ontology_source_refs(i_df):
 
 def check_term_source_refs_in_investigation(i_df):
     """Used for rules 3007 and 3009"""
-    ontology_sources_list = set(get_ontology_source_refs(i_df))
+    ontology_sources_list = get_ontology_source_refs(i_df)
 
     def check_study_term_sources_in_secton_field(section_label, pos, column_label):
         section_term_source_refs = [i for i in i_df[section_label][pos][column_label].tolist() if i != '']
@@ -1648,19 +1734,36 @@ def check_term_source_refs_in_investigation(i_df):
                 section_term_source_refs.extend(term_sources)
         for section_term_source_ref_to_remove in section_term_source_refs_to_remove:
             section_term_source_refs.remove(section_term_source_ref_to_remove)
-        if not set(section_term_source_refs).issubset(ontology_sources_list):
-            logger.warn("(W) In {} one or more of {} has not been declared in {}.{} section".format(column_label,
-                                                                                                section_term_source_refs,
-                                                                                                section_label, pos))
+        diff = set(section_term_source_refs) - set(ontology_sources_list)
+        if len(diff) > 0:
+            warnings.append({
+                "message": "Missing Term Source",
+                "supplemental": "Ontology sources missing {}".format(list(diff)),
+                "code": 3009
+            })
+            logger.warn("(W) In {} one or more of {} has not been declared in {}.{} section".format(
+                column_label, section_term_source_refs, section_label, pos))
 
     i_publication_status_term_source_ref = [i for i in i_df['INVESTIGATION PUBLICATIONS']['Investigation Publication Status Term Source REF'].tolist() if i != '']
-    if not set(i_publication_status_term_source_ref).issubset(ontology_sources_list):
-        logger.warn("(W) Investigation Publication Status Term Source REF {} has not been declared in ONTOLOGY SOURCE REFERENCE section".format(i_publication_status_term_source_ref))
+    diff = set(i_publication_status_term_source_ref) - set(ontology_sources_list)
+    if len(diff) > 0:
+        warnings.append({
+            "message": "Missing Term Source",
+            "supplemental": "Ontology sources missing {}".format(list(diff)),
+            "code": 3009
+        })
+        logger.warn("(W) Investigation Publication Status Term Source REF {} has not been declared in ONTOLOGY SOURCE "
+                    "REFERENCE section".format(i_publication_status_term_source_ref))
     i_person_roles_term_source_ref = [i for i in i_df['INVESTIGATION CONTACTS']['Investigation Person Roles Term Source REF'].tolist() if i != '']
-    if not set(i_person_roles_term_source_ref).issubset(ontology_sources_list):
-        logger.warn(
-            "(W) Investigation Person Roles Term Source REF {} has not been declared in ONTOLOGY SOURCE REFERENCE section".format(
-                i_person_roles_term_source_ref))
+    diff = set(i_person_roles_term_source_ref) - set(ontology_sources_list)
+    if len(diff) > 0:
+        warnings.append({
+            "message": "Missing Term Source",
+            "supplemental": "Ontology sources missing {}".format(list(diff)),
+            "code": 3009
+        })
+        logger.warn("(W) Investigation Person Roles Term Source REF {} has not been declared in ONTOLOGY SOURCE "
+                    "REFERENCE section".format(i_person_roles_term_source_ref))
 
     for i, study_df in enumerate(i_df['STUDY']):
         check_study_term_sources_in_secton_field('STUDY DESIGN DESCRIPTORS', i, 'Study Design Type Term Source REF')
@@ -1697,9 +1800,31 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                         if row not in ontology_sources_list:
                             if isinstance(row, float):
                                 if not math.isnan(row):
-                                    logger.warn("(W) Term Source REF {} at column position {} and row {} in {} not declared in ontology sources {}".format(row+1, object_index[x], y+1, study_filename, list(ontology_sources_list)))
+                                    warnings.append({
+                                        "message": "Missing Term Source",
+                                        "supplemental": "Ontology sources missing {} at column position {} and row {} "
+                                                        "in {} not declared in ontology "
+                                                        "sources {}".format(row+1, object_index[x], y+1, study_filename,
+                                                                            list(ontology_sources_list)),
+                                        "code": 3009
+                                    })
+                                    logger.warn("(W) Term Source REF {} at column position {} and row {} in {} not "
+                                                "declared in ontology sources {}".format(row+1, object_index[x], y+1,
+                                                                                         study_filename,
+                                                                                         list(ontology_sources_list)))
                             else:
-                                logger.warn("(W) Term Source REF {} at column position {} and row {} in {} not in declared ontology sources {}".format(row+1, object_index[x], y+1, study_filename, list(ontology_sources_list)))
+                                warnings.append({
+                                    "message": "Missing Term Source",
+                                    "supplemental": "Ontology sources missing {} at column position {} and row {} "
+                                                    "in {} not declared in ontology "
+                                                    "sources {}".format(row + 1, object_index[x], y + 1, study_filename,
+                                                                        list(ontology_sources_list)),
+                                    "code": 3009
+                                })
+                                logger.warn("(W) Term Source REF {} at column position {} and row {} in {} not in "
+                                            "declared ontology sources {}"
+                                            .format(row+1, object_index[x], y+1, study_filename,
+                                                    list(ontology_sources_list)))
             except FileNotFoundError:
                 pass
             for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
@@ -1721,14 +1846,31 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                 if row not in ontology_sources_list:
                                     if isinstance(row, float):
                                         if not math.isnan(row):
-                                            logger.warn(
-                                                "(W) Term Source REF {} at column position {} and row {} in {} not declared in ontology sources {}".format(
-                                                    row+1, object_index[x], y+1, study_filename,
-                                                    list(ontology_sources_list)))
+                                            warnings.append({
+                                                "message": "Missing Term Source",
+                                                "supplemental": "Ontology sources missing {} at column position {} and "
+                                                                "row {} in {} not declared in ontology sources {}"
+                                                    .format(row + 1, object_index[x], y + 1, study_filename,
+                                                            list(ontology_sources_list)),
+                                                "code": 3009
+                                            })
+                                            logger.warn("(W) Term Source REF {} at column position {} and row {} in {} "
+                                                        "not declared in ontology sources {}"
+                                                        .format(row+1, object_index[x], y+1, study_filename,
+                                                                list(ontology_sources_list)))
                                     else:
-                                        logger.warn(
-                                            "(W) Term Source REF {} at column position {} and row {} in {} not in declared ontology sources {}".format(
-                                                row+1, object_index[x], y+1, study_filename, list(ontology_sources_list)))
+                                        warnings.append({
+                                            "message": "Missing Term Source",
+                                            "supplemental": "Ontology sources missing {} at column position {} and row "
+                                                            "{} in {} not declared in ontology sources {}"
+                                                .format(row + 1, object_index[x], y + 1, study_filename,
+                                                        list(ontology_sources_list)),
+                                            "code": 3009
+                                        })
+                                        logger.warn("(W) Term Source REF {} at column position {} and row {} in {} not "
+                                                    "in declared ontology sources {}"
+                                                    .format(row+1, object_index[x], y+1, study_filename,
+                                                            list(ontology_sources_list)))
                     except FileNotFoundError:
                         pass
 
@@ -1745,12 +1887,23 @@ def load_config(config_dir):
     try:
         configs = isatab_configurator.load(config_dir)
     except FileNotFoundError:
+        errors.append({
+            "message": "Configurations could not be loaded",
+            "supplemental": "On loading {}".format(config_dir),
+            "code": 4001
+        })
         logger.error("(E) FileNotFoundError on trying to load from {}".format(config_dir))
     if configs is None:
+        errors.append({
+            "message": "Configurations could not be loaded",
+            "supplemental": "On loading {}".format(config_dir),
+            "code": 4001
+        })
         logger.error("(E) Could not load configurations from {}".format(config_dir))
     else:
         for k in configs.keys():
-            logger.info("Loaded table configuration '" + str(configs[k].get_isatab_configuration()[0].table_name) + "' for measurement and technology " + str(k))
+            logger.info("Loaded table configuration '{}' for measurement and technology {}"
+                        .format(str(configs[k].get_isatab_configuration()[0].table_name), str(k)))
     return configs
 
 
@@ -1762,9 +1915,14 @@ def check_measurement_technology_types(i_df, configs):
         if len(measurement_types) == len(technology_types):
             for x, measurement_type in enumerate(measurement_types):
                 if (measurement_types[x], technology_types[x]) not in configs.keys():
-                    logger.error(
-                        "(E) Could not load configuration for measurement type '{}' and technology type '{}' for STUDY ASSAY.{}'".format(
-                            measurement_types[x], technology_types[x], i))
+                    errors.append({
+                        "message": "Measurement/technology type invalid",
+                        "supplemental": "Measurement {}/technology {}, STUDY ASSAY.{}"
+                            .format(measurement_types[x], technology_types[x], i),
+                        "code": 4002
+                    })
+                    logger.error("(E) Could not load configuration for measurement type '{}' and technology type '{}' "
+                                 "for STUDY ASSAY.{}'".format(measurement_types[x], technology_types[x], i))
 
 
 def check_investigation_against_config(i_df, configs):
@@ -1780,20 +1938,44 @@ def check_investigation_against_config(i_df, configs):
                     if isinstance(required_value, float):
                         if math.isnan(required_value):
                             if i > 0:
+                                warnings.append({
+                                    "message": "A required property is missing",
+                                    "supplemental": "A property value in {}.{} of investigation file at column {} is "
+                                                    "required".format(col, i + 1, x + 1),
+                                    "code": 4003
+                                })
                                 logger.warn(
                                     "(W) A property value in {}.{} of investigation file at column {} is required".format(
                                         col, i+1, x + 1))
                             else:
+                                warnings.append({
+                                    "message": "A required property is missing",
+                                    "supplemental": "A property value in {} of investigation file at column {} is "
+                                                    "required".format(col, x + 1),
+                                    "code": 4003
+                                })
                                 logger.warn(
                                     "(W) A property value in {} of investigation file at column {} is required".format(
                                         col, x + 1))
                     else:
                         if required_value == '' or 'Unnamed: ' in required_value:
                             if i > 0:
+                                warnings.append({
+                                    "message": "A required property is missing",
+                                    "supplemental": "A property value in {}.{} of investigation file at column {} is "
+                                                    "required".format(col, i+1, x + 1),
+                                    "code": 4003
+                                })
                                 logger.warn(
                                     "(W) A property value in {}.{} of investigation file at column {} is required".format(
                                         col, i+1, x + 1))
                             else:
+                                warnings.append({
+                                    "message": "A required property is missing",
+                                    "supplemental": "A property value in {} of investigation file at column {} is "
+                                                    "required".format(col, x + 1),
+                                    "code": 4003
+                                })
                                 logger.warn(
                                     "(W) A property value in {} of investigation file at column {} is required".format(
                                         col, x + 1))
@@ -1834,7 +2016,14 @@ def check_study_table_against_config(s_df, protocols_declared, config):
     object_index = [i for i in object_index if i[1] in fields]
     for x, object in enumerate(object_index):
         if fields[x] != object[1]:
-            logger.warn("(W) Unexpected heading found. Expected {} but found {} at column number {}".format(fields[x], object[1], object[0]))
+            warnings.append({
+                "message": "The column order in assay table is not valid",
+                "supplemental": "Unexpected heading found. Expected {} but found {} at column number {}"
+                    .format(fields[x], object[1], object[0]),
+                "code": 4005
+            })
+            logger.warn("(W) Unexpected heading found. Expected {} but found {} at column number {}"
+                        .format(fields[x], object[1], object[0]))
 
     # Second, check if Protocol REFs are of valid types
     for row in s_df['Protocol REF']:
@@ -1871,6 +2060,12 @@ def check_assay_table_against_config(s_df, config):
     object_index = [i for i in object_index if i[1] in fields]
     for x, object in enumerate(object_index):
         if fields[x] != object[1]:
+            warnings.append({
+                "message": "The column order in assay table is not valid",
+                "supplemental": "Unexpected heading found. Expected {} but found {} at column number {}"
+                    .format(fields[x], object[1], object[0]),
+                "code": 4005
+            })
             logger.warn("(W) Unexpected heading found. Expected {} but found {} at column number {}".format(fields[x], object[1], object[0]))
 
 
@@ -1896,12 +2091,24 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
     required_fields = [i.header for i in config.get_isatab_configuration()[0].get_field() if i.is_required]
     for required_field in required_fields:
         if required_field not in columns:
+            warnings.append({
+                "message": "A required column in assay table is not present",
+                "supplemental": "In {} the required column {} missing from column headings"
+                    .format(filename, required_field),
+                "code": 4010
+            })
             logger.warn("(W) In {} the required column {} missing from column headings".format(filename, required_field))
         else:
             # Now check that the required column cells all have values, Rules 4003-4008
             for y, cell in enumerate(df[required_field]):
                 if not cell_has_value(cell):
-                    logger.warn("(W) Cell at row {} in column '{}' has no value, but it is required by the configuration".format(y, required_field))
+                    warnings.append({
+                        "message": "A required cell value is missing",
+                        "supplemental": "Cell at row {} in column '{}' has no value".format(y, required_field),
+                        "code": 4012
+                    })
+                    logger.warn("(W) Cell at row {} in column '{}' has no value, but it is required by the "
+                                "configuration".format(y, required_field))
 
     # Check if protocol ref column values are consistently structured
     protocol_ref_index = [i for i in columns if 'protocol ref' in i.lower()]
@@ -1911,6 +2118,11 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
         for cell in df[each]:
             prots_found.add(cell)
         if len(prots_found) > 1:
+            warnings.append({
+                "message": "Multiple protocol references in Protocol REF column",
+                "supplemental": "Multiple protocol references {} are found in {}".format(prots_found, each),
+                "code": 4999
+            })
             logger.warn("(W) Multiple protocol references {} are found in {}".format(prots_found, each))
             logger.warn("(W) Only one protocol reference should be used in a Protocol REF column.")
             prots_ok = False
@@ -1953,6 +2165,12 @@ def check_factor_value_presence(table):
     for factor_field in factor_fields:
         for x, cell_value in enumerate(table.fillna('')[factor_field]):
             if cell_value == '':
+                warnings.append({
+                    "message": "A required node factor value is missing value",
+                    "supplemental": "(W) Missing value for '" + factor_field + "' at row " + str(x) + " in " +
+                                    table.filename,
+                    "code": 4007
+                })
                 logger.warn("(W) Missing value for '" + factor_field + "' at row " + str(x) + " in " + table.filename)
 
 
@@ -1960,8 +2178,18 @@ def check_required_fields(table, cfg):
     for fheader in [i.header for i in cfg.get_isatab_configuration()[0].get_field() if i.is_required]:
         found_field = [i for i in table.columns if i.lower() == fheader.lower()]
         if len(found_field) == 0:
+            warnings.append({
+                "message": "A required column in assay table is not present",
+                "supplemental": "Required field '" + fheader + "' not found in the file '" + table.filename + "'",
+                "code": 4010
+            })
             logger.warn("(W) Required field '" + fheader + "' not found in the file '" + table.filename + "'")
         elif len(found_field) > 1:
+            warnings.append({
+                "message": "Multiple columns found",
+                "supplemental": "Field '" + fheader + "' cannot have multiple values in the file '" + table.filename,
+                "code": 4013
+            })
             logger.warn("(W) Field '" + fheader + "' cannot have multiple values in the file '" + table.filename)
 
 
@@ -1972,6 +2200,12 @@ def check_sample_names(study_sample_table, assay_tables=list()):
             assay_samples = set(assay_table['Sample Name'])
             for assay_sample in assay_samples:
                 if assay_sample not in study_samples:
+                    warnings.append({
+                        "message": "Missing Sample",
+                        "supplemental": "{} is a Sample Name in {}, but it is not defined in the Study Sample File {}."
+                                .format(assay_sample, assay_table.filename, study_sample_table.filename),
+                        "code": 1003
+                    })
                     logger.warn("(W) {} is a Sample Name in {}, but it is not defined in the Study Sample File {}."
                                 .format(assay_sample, assay_table.filename, study_sample_table.filename))
 
@@ -1982,6 +2216,12 @@ def check_field_values(table, cfg):
         if isinstance(cell_value, float):
             if math.isnan(cell_value):
                 if cfg_field.is_required:
+                    warnings.append({
+                        "message": "A required column in assay table is not present",
+                        "supplemental": "Missing value for the required field '" + cfg_field.header
+                                        + "' in the file '" + table.filename + "'",
+                        "code": 4010
+                    })
                     logger.warn("(W) Missing value for the required field '" + cfg_field.header + "' in the file '" +
                                 table.filename + "'")
                 return True
@@ -1989,6 +2229,12 @@ def check_field_values(table, cfg):
             value = cell_value.strip()
             if value == '':
                 if cfg_field.is_required:
+                    warnings.append({
+                        "message": "A required cell value is missing",
+                        "supplemental": "Missing value for the required field '" + cfg_field.header + "' in the file '" +
+                                table.filename + "'",
+                        "code": 4012
+                    })
                     logger.warn("(W) Missing value for the required field '" + cfg_field.header + "' in the file '" +
                                 table.filename + "'")
                 return True
@@ -2020,10 +2266,22 @@ def check_field_values(table, cfg):
         elif data_type in ['ontology-term', 'ontology term']:
             return True  # Structure and values checked in check_ontology_fields()
         else:
+            warnings.append({
+                "message": "Unknown data type found",
+                "supplemental": "Unknown data type '" + data_type + "' for field '" + cfg_field.header +
+                                "' in the file '" + table.filename + "'",
+                "code": 4011
+            })
             logger.warn("(W) Unknown data type '" + data_type + "' for field '" + cfg_field.header +
                         "' in the file '" + table.filename + "'")
             return False
         if not is_valid_value:
+            warnings.append({
+                "message": "A value does not correspond to the correct data type",
+                "supplemental": "Invalid value '" + cell_value + "' for type '" + data_type + "' of the field '"
+                                + cfg_field.header + "'",
+                "code": 4011
+            })
             logger.warn("(W) Invalid value '" + cell_value + "' for type '" + data_type + "' of the field '" +
                         cfg_field.header + "'")
             if data_type == 'list':
@@ -2044,7 +2302,13 @@ def check_field_values(table, cfg):
 def check_unit_field(table, cfg):
     def check_unit_value(cell_value, unit_value, cfield, filename):
         if cell_has_value(cell_value) or cell_has_value(unit_value):
-            logger.warn("(W) Field '" + cfield.header + "' has a unit but not a value in the file '" + filename + "'");
+            warnings.append({
+                "message": "Cell found has unit but no value",
+                "supplemental": "Field '" + cfield.header + "' has a unit but not a value in the file '" + filename
+                                + "'",
+                "code": 4999
+            })
+            logger.warn("(W) Field '" + cfield.header + "' has a unit but not a value in the file '" + filename + "'")
             return False
         return True
 
@@ -2064,6 +2328,12 @@ def check_unit_field(table, cfg):
             if rindx < len(table.columns):
                 rheader = table.columns[rindx]
             if rheader is None or rheader.lower() != 'unit':
+                warnings.append({
+                    "message": "Cell requires a Unit",
+                    "supplemental": "The field '" + header + "' in the file '" + table.filename + "' misses a required "
+                                                                                                  "'Unit' column",
+                    "code": 4999
+                })
                 logger.warn("(W) The field '" + header + "' in the file '" + table.filename +
                             "' misses a required 'Unit' column")
                 result = False
@@ -2125,12 +2395,25 @@ def check_protocol_fields(table, cfg, proto_map):
                         proto_type = proto_map[proto_name]
                         fprotos.append(proto_type)
                     except KeyError:
-                        logger.warn(
-                            "(W) Could not find protocol type for protocol name '{}', trying to validate against name only".format(
-                                proto_name))
+                        warnings.append({
+                            "message": "Missing Protocol declaration",
+                            "supplemental": " Could not find protocol type for protocol name '{}', trying to validate "
+                                            "against name only".format(proto_name),
+                            "code": 1007
+                        })
+                        logger.warn("(W) Could not find protocol type for protocol name '{}', trying to validate "
+                                    "against name only".format(proto_name))
                         fprotos.append(proto_name)
                 invalid_protos = set(cprotos) - set(fprotos)
                 if len(invalid_protos) > 0:
+                    warnings.append({
+                        "message": "Missing Protocol declaration",
+                        "supplemental": "Protocol(s) of type " + str(list(invalid_protos))
+                                        + " defined in the ISA-configuration expected as a between '"
+                                        + cleft.header + "' and '" + cright.header
+                                        + "' but has not been found, in the file '" + table.filename + "'",
+                        "code": 1007
+                    })
                     logger.warn("(W) Protocol(s) of type " + str(
                         list(invalid_protos)) + " defined in the ISA-configuration expected as a between '" +
                                 cleft.header + "' and '" + cright.header + "' but has not been found, in the file '" + table.filename + "'")
@@ -2141,6 +2424,13 @@ def check_protocol_fields(table, cfg, proto_map):
 def check_ontology_fields(table, cfg):
     def check_single_field(cell_value, source, acc, cfield, filename):
         if cell_has_value(cell_value) or cell_has_value(source) or cell_has_value(acc):
+            warnings.append({
+                "message": "Missing Term Source REF in annotation or missing Term Source Name",
+                "supplemental": "Incomplete values for ontology headers, for the field '"
+                                + cfield.header + "' in the file '"
+                                + filename + "'. Check that all the label/accession/source are provided.",
+                "code": 3008
+            })
             logger.warn(
                 "(W) Incomplete values for ontology headers, for the field '" + cfield.header + "' in the file '" +
                 filename + "'. Check that all the label/accession/source are provided.")
@@ -2166,8 +2456,8 @@ def check_ontology_fields(table, cfg):
         if rrindx < nfields:
             rrheader = table.columns[rrindx]
         if 'term source ref' not in rheader.lower() or 'term accession number' not in rrheader.lower():
-            logger.warn(
-                "(W) The Field '" + header + "' should have values from ontologies and has no ontology headers instead")
+            logger.warn("(W) The Field '" + header
+                        + "' should have values from ontologies and has no ontology headers instead")
             result = False
             continue
 
@@ -2300,17 +2590,36 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
                         logger.info("Finished checking study sample table against assay tables...")
                     logger.info("Finished validation...")
     except CParserError as cpe:
+        errors.append({
+            "message": "Unknown/System Error",
+            "supplemental": "The validator could not identify what the error is: {}".format(str(cpe)),
+            "code": 0
+        })
         logger.fatal("(F) There was an error when trying to parse the ISA tab")
         logger.fatal(cpe)
     except ValueError as ve:
+        errors.append({
+            "message": "Unknown/System Error",
+            "supplemental": "The validator could not identify what the error is: {}".format(str(ve)),
+            "code": 0
+        })
         logger.fatal("(F) There was an error when trying to parse the ISA tab")
         logger.fatal(ve)
     except SystemError as se:
+        errors.append({
+            "message": "Unknown/System Error",
+            "supplemental": "The validator could not identify what the error is: {}".format(str(se)),
+            "code": 0
+        })
         logger.fatal("(F) Something went very very wrong! :(")
         logger.fatal(se)
     finally:
         handler.flush()
-        return stream
+        return {
+            "errors": errors,
+            "warnings": warnings,
+            "validation_finished": True
+        }
 
 
 """ Everything below this line is work in progress. You're best off ignoring it! """
@@ -2773,10 +3082,10 @@ def read_study_file(fp):
     return experimental_graph
 
 
-def batch_validate(tab_dir_list, report_file_path):
+def batch_validate(tab_dir_list):
     """ Validate a batch of ISA-Tab archives
     :param tab_dir_list: List of file paths to the ISA-Tab archives to validate
-    :param report_file_path: Full path and file name of where to write the valdiation report to
+    :return: batch report as JSON
 
     Example:
         from isatools import isatab
@@ -2784,19 +3093,22 @@ def batch_validate(tab_dir_list, report_file_path):
             '/path/to/study1/',
             '/path/to/study2/'
         ]
-        isatab.batch_validate(my_tabs, '/path/to/report.txt')
+        batch_report = isatab.batch_validate(my_tabs, '/path/to/report.txt')
     """
-    with open(report_file_path, 'w') as report_file:
-        logger.info("Writing batch report to {}".format(report_file.name))
-        report_file.write("Writing batch report to {}\n".format(report_file.name))
-        for tab_dir in tab_dir_list:
-            report_file.write("--------\n")
-            report_file.write("***Validating {}***\n".format(tab_dir))
-            i_files = [f for f in os.listdir(tab_dir) if re.compile('i_(.*?)\.txt').match(f)]
-            if len(i_files) != 1:
-                logger.warn("Could not find an investigation file, skipping {}".format(tab_dir))
-                report_file.write("Could not find an investigation file, skipping {}".format(tab_dir))
-            else:
-                with open(os.path.join(tab_dir, i_files[0])) as i_file:
-                    log = validate2(i_file)
-                    report_file.write(log.getvalue())
+    batch_report = {
+        "batch_report": []
+    }
+    for tab_dir in tab_dir_list:
+        logger.info("***Validating {}***\n".format(tab_dir))
+        i_files = [f for f in os.listdir(tab_dir) if re.compile('i_(.*?)\.txt').match(f)]
+        if len(i_files) != 1:
+            logger.warn("Could not find an investigation file, skipping {}".format(tab_dir))
+        else:
+            with open(os.path.join(tab_dir, i_files[0])) as fp:
+                batch_report['batch_report'].append(
+                    {
+                        "filename": fp.name,
+                        "report": validate2(fp)
+                    }
+                )
+    return batch_report
