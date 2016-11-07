@@ -2480,6 +2480,7 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
     handler = logging.StreamHandler(stream)
     logger.addHandler(handler)
     try:
+        # check_utf8(fp)  # skip as does not correctly report right now
         logger.info("Loading... {}".format(fp.name))
         i_df = load2(fp=fp)
         logger.info("Running prechecks...")
@@ -2652,3 +2653,32 @@ def batch_validate(tab_dir_list):
                     }
                 )
     return batch_report
+
+
+def dumps(isa_obj):
+    import tempfile
+    import shutil
+    tmp = None
+    output = str()
+    try:
+        tmp = tempfile.mkdtemp()
+        dump(isa_obj=isa_obj, output_path=tmp)
+        with open(os.path.join(tmp, 'i_investigation.txt'), 'r') as i_fp:
+            output += os.path.join(tmp, 'i_investigation.txt') + '\n'
+            output += i_fp.read()
+        s_files = [f for f in os.listdir(tmp) if f.startswith('s_')]
+        for s_file in s_files:
+            with open(os.path.join(tmp, s_file), 'r') as s_fp:
+                output += "--------\n"
+                output += os.path.join(tmp, s_file) + '\n'
+                output += s_fp.read()
+        a_files = [f for f in os.listdir(tmp) if f.startswith('a_')]
+        for a_file in a_files:
+            with open(os.path.join(tmp, a_file), 'r') as a_fp:
+                output += "--------\n"
+                output += os.path.join(tmp, a_file) + '\n'
+                output += a_fp.read()
+    finally:
+        if tmp is not None:
+            shutil.rmtree(tmp)
+    return output

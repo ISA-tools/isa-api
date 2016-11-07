@@ -174,3 +174,4 @@ class TestIsaTab(unittest.TestCase):
         self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_pool.txt')),
                                                  open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',
                                                                    's_TEST-Template3-Splitting.txt'))))
+        self.assertIsInstance(isatab.dumps(i), str)
