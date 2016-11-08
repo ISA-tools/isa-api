@@ -43,7 +43,9 @@ def validate(isatab_dir, config_dir):
 
 def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
 
-    def _build_roles_str(roles=list()):
+    def _build_roles_str(roles):
+        if roles is None:
+            roles = list()
         roles_names = ''
         roles_accession_numbers = ''
         roles_source_refs = ''
@@ -70,8 +72,9 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
                             prefix + ' Person Roles Term Accession Number',
                             prefix + ' Person Roles Term Source REF']
         if len(contacts) > 0:
-            for comment in contacts[0].comments:
-                contacts_df_cols.append('Comment[' + comment.name + ']')
+            if contacts[0].comments:
+                for comment in contacts[0].comments:
+                    contacts_df_cols.append('Comment[' + comment.name + ']')
         contacts_df = pd.DataFrame(columns=tuple(contacts_df_cols))
         for i, contact in enumerate(contacts):
             roles_names, roles_accession_numbers, roles_source_refs = _build_roles_str(contact.roles)
@@ -88,8 +91,9 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
                 roles_accession_numbers,
                 roles_source_refs
             ]
-            for comment in contact.comments:
-                contacts_df_row.append(comment.value)
+            if contact.comments:
+                for comment in contact.comments:
+                    contacts_df_row.append(comment.value)
             contacts_df.loc[i] = contacts_df_row
         return contacts_df.set_index(prefix + ' Person Last Name').T
 
