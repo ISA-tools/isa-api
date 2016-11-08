@@ -25,6 +25,7 @@ This code is licensed under the `CPAL License <https://raw.githubusercontent.com
    Installation <installation>
    ISA model <isamodel>
    Creating objects <creation>
+   Tutorial: describing a simple experiment with objects <creationtutorial>
    Converting between ISA formats <conversions>
    Contributing your work <contributing>
    Importing and exporting SRA formatted datasets <sraconversion>
