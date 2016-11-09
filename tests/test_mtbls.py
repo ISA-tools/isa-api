@@ -27,8 +27,9 @@ class TestMtblsIO(unittest.TestCase):
     """Tries to do actual call on MetaboLights; uses MTBLS2 as not so big"""
     def test_get_study_as_tab(self):
         tmp_dir = MTBLS.get('MTBLS2')  # gets MTBLS ISA-Tab files
-        self.assertListEqual(os.listdir(tmp_dir), ['a_mtbl2_metabolite profiling_mass spectrometry.txt',
-                                                   'i_Investigation.txt', 's_MTBL2.txt'])
+        self.assertEqual(len(os.listdir(tmp_dir)), 3)
+        self.assertSetEqual(set(os.listdir(tmp_dir)), {'a_mtbl2_metabolite profiling_mass spectrometry.txt',
+                                                   'i_Investigation.txt', 's_MTBL2.txt'})
         shutil.rmtree(tmp_dir)
 
     def test_get_study_as_json(self):
