@@ -1503,7 +1503,11 @@ def check_protocol_usage(i_df, dir_context):
 
 
 def load_table(fp):
-    df = pd.read_csv(fp, sep='\t')
+    try:
+        df = pd.read_csv(fp, sep='\t', encoding='utf-8')
+    except UnicodeDecodeError:
+        logger.warning("Could not load file with UTF-8, trying ISO-8859-1")
+        df = pd.read_csv(fp, sep='\t', encoding='latin1')
     return df
 
 
