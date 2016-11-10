@@ -36,6 +36,18 @@ def _build_assay_graph(process_sequence=list()):
     return G
 
 
+def _build_assay_graph2(process_sequence=list()):
+    G = nx.DiGraph()
+    for process in process_sequence:
+        if process.next_process:
+            if '6.6' in process.next_process.id:
+                return process
+            G.add_edge(process, process.next_process)
+        if process.prev_process:
+            G.add_edge(process.prev_process, process)
+    return G
+
+
 class Comment(object):
     """A comment allows arbitrary annotation of all ISA classes
 
@@ -480,21 +492,18 @@ class Study(Commentable, object):
             self.characteristic_categories = list()
         else:
             self.characteristic_categories = characteristic_categories
-        self.graph = None
 
-    #     self.__graph = None
+    @property
+    def graph(self):
+        if len(self.process_sequence) > 0:
+            self.__graph = _build_assay_graph(self.process_sequence)
+        else:
+            self.__graph = None
+        return self.__graph
 
-    # @property
-    # def graph(self):
-    #     if len(self.process_sequence) > 0:
-    #         self.__graph = _build_assay_graph(self.process_sequence)
-    #     else:
-    #         self.__graph = None
-    #     return self.__graph
-    #
-    # @graph.setter
-    # def graph(self, graph):
-    #     raise AttributeError("Study.graph is not settable")
+    @graph.setter
+    def graph(self, graph):
+        raise AttributeError("Study.graph is not settable")
 
 
 class StudyFactor(Commentable):
@@ -569,20 +578,18 @@ class Assay(Commentable):
             self.characteristic_categories = list()
         else:
             self.characteristic_categories = characteristic_categories
-        self.graph = None
-        # self.__graph = None
 
-    # @property
-    # def graph(self):
-    #     if len(self.process_sequence) > 0:
-    #         self.__graph = _build_assay_graph(self.process_sequence)
-    #     else:
-    #         self.__graph = None
-    #     return self.__graph
-    #
-    # @graph.setter
-    # def graph(self, graph):
-    #     raise AttributeError("Assay.graph is not settable")
+    @property
+    def graph(self):
+        if len(self.process_sequence) > 0:
+            self.__graph = _build_assay_graph(self.process_sequence)
+        else:
+            self.__graph = None
+        return self.__graph
+
+    @graph.setter
+    def graph(self, graph):
+        raise AttributeError("Assay.graph is not settable")
 
 
 class Protocol(Commentable):
@@ -812,6 +819,7 @@ def batch_create_materials(material=None, n=1):
         for x in range(0, n):
             new_obj = deepcopy(material)
             new_obj.name = material.name + '-' + str(x)
+            new_obj.derives_from = material.derives_from
             material_list.append(new_obj)
     return material_list
 
@@ -855,7 +863,7 @@ def batch_create_assays(*args, n=1):
     for x in range(0, n):
         for arg in args:
             if isinstance(arg, list) and len(arg) > 0:
-                if isinstance(arg[0], Sample) or isinstance(arg[0], Material):
+                if isinstance(arg[0], Source) or isinstance(arg[0], Sample) or isinstance(arg[0], Material):
                     if materialA is None:
                         materialA = deepcopy(arg)
                         y = 0
@@ -874,7 +882,7 @@ def batch_create_assays(*args, n=1):
                     for p in process:
                         p.name = p.name + '-' + str(x) + '-' + str(y)
                         y += 1
-            if isinstance(arg, Sample) or isinstance(arg, Material):
+            if isinstance(arg, Source) or isinstance(arg, Sample) or isinstance(arg, Material):
                 if materialA is None:
                     materialA = deepcopy(arg)
                     materialA.name = materialA.name + '-' + str(x)

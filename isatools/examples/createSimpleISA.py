@@ -55,6 +55,66 @@ def create_descriptor():
     publication.status = OntologyAnnotation(term="published")
     study.publications.append(publication)
 
+    # To create the study graph that corresponds to the contents of the study table file (the s_*.txt file), we need
+    # to create a process sequence. To do this we use the Process class and attach it to the Study object's
+    # 'process_sequence' list instance variable. Each process must be linked with a Protocol object that is attached to
+    # a Study object's 'protocols' list instance variable. The sample collection Process object usually has as input
+    # a Source material and as output a Sample material.
+
+    source = Source(name='source_material')
+    study.materials['sources'].append(source)
+    prototype_sample = Sample(name='sample_material', derives_from=source)
+    study.materials['samples'] = batch_create_materials(prototype_sample, n=3)  # creates a batch of 3 samples
+
+    sample_collection_protocol = Protocol(name="sample collection",
+                                          protocol_type=OntologyAnnotation(term="sample collection"))
+    study.protocols.append(sample_collection_protocol)
+
+    sample_collection_process = Process(executes_protocol=sample_collection_protocol)
+    for src in study.materials['sources']:
+        sample_collection_process.inputs.append(src)
+    for sam in study.materials['samples']:
+        sample_collection_process.outputs.append(sam)
+
+    study.process_sequence.append(sample_collection_process)
+
+    assay = Assay(filename="a_assay.txt")
+
+    extraction_protocol = Protocol(name='extraction', protocol_type=OntologyAnnotation(term="material extraction"))
+    study.protocols.append(extraction_protocol)
+    sequencing_protocol = Protocol(name='sequencing', protocol_type=OntologyAnnotation(term="material sequencing"))
+    study.protocols.append(sequencing_protocol)
+
+    for i, sample in enumerate(study.materials['samples']):
+        # create an extraction process that executes the extraction protocol
+        extraction_process = Process(executes_protocol=extraction_protocol)
+        # extraction process takes as input a sample, and produces an extract material as output
+        extraction_process.inputs.append(sample)
+        extract = Material(name="extract-{}".format(i))
+        extraction_process.outputs.append(extract)
+
+        # create a sequencing process that executes the sequencing protocol
+        sequencing_process = Process(executes_protocol=sequencing_protocol)
+        sequencing_process.name = "assay-name-{}".format(i)
+        sequencing_process.inputs.append(extraction_process.outputs[0])
+
+        # Sequencing process usually has an output data file
+        datafile = DataFile(filename="sequenced-data-{}".format(i))
+        sequencing_process.outputs.append(datafile)
+
+        # ensure Processes are linked forward and backward
+        extraction_process.next_process = sequencing_process
+        sequencing_process.prev_process = extraction_process
+
+        # make sure the extract, data file, and the processes are attached to the assay
+        assay.data_files.append(datafile)
+        assay.materials['other_material'].append(extract)
+        assay.process_sequence.append(extraction_process)
+        assay.process_sequence.append(sequencing_process)
+
+    # attach the assay to the study
+    study.assays.append(assay)
+
     from isatools.isatab import dumps
     return dumps(investigation)  # dumps() writes out the ISA as a string representation of the ISA-Tab
 

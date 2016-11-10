@@ -643,9 +643,10 @@ def write_assay_table_files(inv_obj, output_dir):
                         for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                             cols.append('data[' + output.label + ']')
                             col_map['data[' + output.label + ']'] = output.label
-                            for comment in output.comments:
-                                cols.append('data[' + output.label + ']_comment[' + comment.name + ']')
-                                col_map['data[' + output.label + ']_comment[' + comment.name + ']'] = 'Comment[' + comment.name + ']'
+                            if output.comments:
+                                for comment in output.comments:
+                                    cols.append('data[' + output.label + ']_comment[' + comment.name + ']')
+                                    col_map['data[' + output.label + ']_comment[' + comment.name + ']'] = 'Comment[' + comment.name + ']'
                         if node.executes_protocol.name not in protnames.keys():
                             protnames[node.executes_protocol.name] = protrefcount
                             protrefcount += 1
@@ -722,8 +723,9 @@ def write_assay_table_files(inv_obj, output_dir):
                                 compound_key += str(protrefcount) + '/' + 'Scan Name' + '/' + node.name
                             for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                                 df.loc[i, 'data[' + output.label + ']'] = output.filename
-                                for comment in output.comments:
-                                    df.loc[i, 'data[' + output.label + ']_comment[' + comment.name + ']'] = comment.value
+                                if output.comments:
+                                    for comment in output.comments:
+                                        df.loc[i, 'data[' + output.label + ']_comment[' + comment.name + ']'] = comment.value
                     df.loc[i, 'compound_key'] = compound_key
                     i += 1
 

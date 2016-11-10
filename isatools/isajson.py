@@ -123,7 +123,6 @@ def load(fp):
     factors_dict = dict()
     parameters_dict = dict()
     units_dict = dict()
-    process_dict = dict()
 
     # populate assay characteristicCategories first
     for study_json in investigation_json['studies']:
@@ -138,6 +137,7 @@ def load(fp):
                 # study.characteristic_categories.append(characteristic_category)
                 categories_dict[characteristic_category.id] = characteristic_category
     for study_json in investigation_json['studies']:
+        process_dict = dict()
         study = Study(
             identifier=study_json['identifier'],
             title=study_json['title'],
@@ -413,8 +413,9 @@ def load(fp):
                 process_dict[study_process_json['@id']].next_process = process_dict[next_proc]
             except KeyError:
                 pass
-        study.graph = _build_assay_graph(study.process_sequence)
+        # study.graph = _build_assay_graph(study.process_sequence)
         for assay_json in study_json['assays']:
+            process_dict = dict()
             assay = Assay(
                 measurement_type=OntologyAnnotation(
                     term=assay_json['measurementType']['annotationValue'],
@@ -580,7 +581,6 @@ def load(fp):
                         process_dict[assay_process_json['@id']].next_process = process_dict[next_proc]
                     except KeyError:
                         pass
-                assay.graph = _build_assay_graph(assay.process_sequence)
             study.assays.append(assay)
         investigation.studies.append(study)
     return investigation
