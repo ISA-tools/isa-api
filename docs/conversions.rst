@@ -14,6 +14,8 @@ To convert from a directory ``./tabdir/`` containing valid ISA-Tab files (e.g. `
    from isatools.convert import isatab2json
    isa_json = isatab2json.convert('./tabdir/')
 
+.. hint:: The conversions by default run the ISA validator to check for correctness of the input content. To skup the validation step, set the ``validate_first`` parameter to ``False`` by doing something like ``converter.convert('./my/path/', validate_first=False)``.
+
 Converting from ISA JSON to ISA-Tab
 -----------------------------------
 
