@@ -2483,6 +2483,10 @@ default_config_dir = os.path.join(BASE_DIR, 'config', 'xml')
 
 
 def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
+    global errors
+    global warnings
+    errors = list()
+    warnings = list()
     logger.setLevel(log_level)
     logger.info("ISA tab Validator from ISA tools API v0.3")
     from io import StringIO
