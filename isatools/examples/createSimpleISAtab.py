@@ -128,8 +128,9 @@ def create_descriptor():
         # extraction process takes as input a sample, and produces an extract material as output
 
         extraction_process.inputs.append(sample)
-        extract = Material(name="extract-{}".format(i))
-        extraction_process.outputs.append(extract)
+        material = Material(name="extract-{}".format(i))
+        material.type = "Extract Name"
+        extraction_process.outputs.append(material)
 
         # create a sequencing process that executes the sequencing protocol
 
@@ -150,7 +151,7 @@ def create_descriptor():
         # make sure the extract, data file, and the processes are attached to the assay
 
         assay.data_files.append(datafile)
-        assay.materials['other_material'].append(extract)
+        assay.materials['other_material'].append(material)
         assay.process_sequence.append(extraction_process)
         assay.process_sequence.append(sequencing_process)
 
