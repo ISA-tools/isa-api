@@ -5,12 +5,14 @@ Downloading files stored in Github
 The ISA GitHub Adapter class
 ----------------------------
 
-The GitHub API wrapper/adapter may be useful to retrieve ISA datasets (as JSON or Tabs) or configuration files in XML format. The core class, ``IsaGitHubStorageAdapter`` can be instantiated with or without authorisation.
+The GitHub API wrapper/adapter may be useful to retrieve ISA datasets (as JSON or Tabs) or configuration files in XML
+format. The core class, ``IsaGitHubStorageAdapter`` can be instantiated with or without authorisation.
 
 Usage without authentication
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If authentication is not required to access the required resource, you can directly instantiate an adapter object and use it.
+If authentication is not required to access the required resource, you can directly instantiate an adapter object and
+use it.
 
 .. code-block:: python
 

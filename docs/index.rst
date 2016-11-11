@@ -7,6 +7,7 @@ The ISA tools API is published on PyPI as the ``isatools`` Python package. The p
 #. :doc:`Installation </installation>`
 #. :doc:`ISA model </isamodel>`
 #. :doc:`Creating objects </creation>`
+#. :doc:`Tutorial: describing a simple experiment with objects` <creationtutorial>
 #. :doc:`Converting between ISA formats </conversions>`
 #. :doc:`Importing and exporting SRA formatted datasets </sraconversion>`
 #. :doc:`Downloading files stored in Github </github>`
@@ -26,6 +27,9 @@ This code is licensed under the `CPAL License <https://raw.githubusercontent.com
    ISA model <isamodel>
    Creating objects <creation>
    Tutorial: describing a simple experiment with objects <creationtutorial>
+   Examples/example-createSimpleISAtab
+   Examples/example-validateISAtab
+   Examples/example-validateISAjson
    Converting between ISA formats <conversions>
    Contributing your work <contributing>
    Importing and exporting SRA formatted datasets <sraconversion>

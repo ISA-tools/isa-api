@@ -1,24 +1,15 @@
-########################################
-Tutorial: describing a simple experiment
-########################################
+#####################
+createSimpleISAtab.py
+#####################
 
-In this section, we provide a basic example of creating a complete experiment descriptor using the ISA API's model
-classes. The descriptor is not complete and realistic, but it demonstrates the range of component classes that you can use to
-create ISA content, including things like sample characteristics, ontology annotations and units.
-
-.. Important:: As a pre-requisite to using ISA model please make sure you have read and understood the :doc:`ISA Abstract Model </isamodel>` that the ISA formats are based on.
-
-Firstly, we need to import the ISA API's model classes from the ``isatools`` PyPI package.
+An example of using the ISA model classes to create an ISA-Tab set of files.
 
 .. code-block:: python
+
+    #!/usr/bin/env python
 
     from isatools.model.v1 import *
 
-Next, we build our descriptor encapsulated in a single Python function to simplify the example code. In a real
-application or script, you might decompose the functionality and hook it up to interactive components to solicit
-feedback from a user on-the-fly.
-
-.. code-block:: python
 
     def create_descriptor():
         """Returns a simple but complete ISA-Tab 1.0 descriptor for illustration."""
@@ -145,9 +136,8 @@ feedback from a user on-the-fly.
             # extraction process takes as input a sample, and produces an extract material as output
 
             extraction_process.inputs.append(sample)
-            material = Material(name="extract-{}".format(i))
-            material.type = "Extract Name"
-            extraction_process.outputs.append(material)
+            extract = Material(name="extract-{}".format(i))
+            extraction_process.outputs.append(extract)
 
             # create a sequencing process that executes the sequencing protocol
 
@@ -168,7 +158,7 @@ feedback from a user on-the-fly.
             # make sure the extract, data file, and the processes are attached to the assay
 
             assay.data_files.append(datafile)
-            assay.materials['other_material'].append(material)
+            assay.materials['other_material'].append(extract)
             assay.process_sequence.append(extraction_process)
             assay.process_sequence.append(sequencing_process)
 
@@ -179,20 +169,5 @@ feedback from a user on-the-fly.
         from isatools.isatab import dumps
         return dumps(investigation)  # dumps() writes out the ISA as a string representation of the ISA-Tab
 
-The function listed above is designed to return all three files as a single string output for ease of inspection.
-Alternatively you could do something like ``dump(isa_obj=investigation, output_path='./')`` to write the files to
-the file system. The final lines of code is a ``main`` routine to invoke the ``create_descriptor()`` function.
-
-.. code-block:: python
-
     if __name__ == '__main__':
-        print(create_descriptor())
-
-To execute this script on the command line and view the output, you would run it with::
-
-    python createSimpleISA.py
-
-
-This example can be found in the ``isatools.examples`` package in
-`createSimpleISA.py <https://github.com/ISA-tools/isa-api/blob/master/isatools/examples/createSimpleISA.py>`_.
-
+        print(create_descriptor())  # print the result to stdout
