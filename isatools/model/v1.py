@@ -36,26 +36,14 @@ def _build_assay_graph(process_sequence=list()):
     return G
 
 
-def _build_assay_graph2(process_sequence=list()):
-    G = nx.DiGraph()
-    for process in process_sequence:
-        if process.next_process:
-            if '6.6' in process.next_process.id:
-                return process
-            G.add_edge(process, process.next_process)
-        if process.prev_process:
-            G.add_edge(process.prev_process, process)
-    return G
-
-
 class Comment(object):
     """A comment allows arbitrary annotation of all ISA classes
 
     Comments are implemented in ISA-Tab and ISA-JSON formats.
 
     Attributes:
-        name (str): The name of the comment (as mapped to Comment[SomeName] in ISA-Tab) to give context to the comment field
-        value (str, int, float, NoneType): A value for the corresponding comment, as a string or number
+        name (str): The name of the comment (as mapped to Comment[SomeName] in ISA-Tab) to give context to the comment field.
+        value (str, int, float, NoneType): A value for the corresponding comment, as a string or number.
     """
     def __init__(self, name, value=None):
         self.name = name
@@ -93,7 +81,7 @@ class Commentable(object):
     """ An ISA Object is an abstract class to enable containment of Comments
 
     Attributes:
-        comments (list, NoneType): Comments associated with the implementing ISA class (all ISA classes)
+        comments (list, NoneType): Comments associated with the implementing ISA class (all ISA classes).
     """
     def __init__(self, comments=None):
         self.comments = comments
@@ -112,19 +100,19 @@ class Commentable(object):
 
 class Investigation(Commentable):
     """An investigation maintains metadata about the project context and links to one or more studies. There can only
-    be 1 Investigation in an ISA package. Investigations has the following properties:
+    be 1 Investigation in an ISA descriptor. Investigations has the following properties:
 
     Attributes:
-        identifier: A locally unique identifier or an accession number provided by a repository.
-        title: A concise name given to the investigation
-        description: A textual description of the investigation
-        submission_date: The date on which the investigation was reported to the repository.
-        public_release_date: The date on which the investigation should be released publicly
-        ontology_source_references: This annotation section is identical to that in the MAGE-TAB format.
-        publications: Publications associated with an Investigation.
-        contacts: People/contacts associated with an Investigation.
-        studies: Study is the central unit, containing information on the subject under study, its characteristics and
-        any treatments applied.
+        identifier (str): A locally unique identifier or an accession number provided by a repository.
+        title (str): A concise name given to the investigation.
+        description (str): A textual description of the investigation.
+        submission_date (str): The date on which the investigation was reported to the repository. This should be ISO8601 formatted.
+        public_release_date (str): The date on which the investigation should be released publicly. This should be ISO8601 formatted.
+        ontology_source_references (list, NoneType): OntologySources to be referenced by OntologyAnnotations used in this ISA descriptor.
+        publications (list, NoneType): A list of Publications associated with an Investigation.
+        contacts (list, NoneType): A list of People/contacts associated with an Investigation.
+        studies (list, NoneType): Study is the central unit, containing information on the subject under study.
+        comments (list, NoneType): Comments associated with instances of this class.
     """
 
     def __init__(self, id_='', filename='', identifier="", title="", description="", submission_date='',
@@ -237,7 +225,7 @@ class OntologyAnnotation(Commentable):
 
     Attributes:
         term (str, NoneType): A term taken from an ontology or controlled vocabulary.
-        term_source (OntologySource): Reference to the resource from which the term is derived.
+        term_source (OntologySource, NoneType): Reference to the OntologySource from which the term is derived.
         term_accession (str, NoneType): A URI or resource-specific identifier for the term.
         comments (list, NoneType): Comments associated with instances of this class.
     """
@@ -298,8 +286,7 @@ class Publication(Commentable):
         doi (str, NoneType): A Digital Object Identifier (DOI) for that publication (where available).
         author_list (str, NoneType): The list of authors associated with that publication.
         title (str, NoneType): The title of publication associated with the investigation.
-        status(str, OntologyAnnotation, NoneType): A term describing the status of that publication (i.e. submitted,
-            in preparation, published).
+        status(str, OntologyAnnotation, NoneType): A term describing the status of that publication (i.e. submitted, in preparation, published).
         comments (list, NoneType): Comments associated with instances of this class.
     """
 
@@ -406,21 +393,24 @@ class Study(Commentable, object):
     and any treatments applied.
 
     Attributes:
-        identifier: A unique identifier: either a temporary identifier supplied by users or one generated by a
-        repository or other database.
-        title: A concise phrase used to encapsulate the purpose and goal of the study.
-        description: A textual description of the study, with components such as objective or goals.
-        submission_date: The date on which the study is submitted to an archive.
-        public_release_date: The date on which the study should be released publicly.
-        file_name: A field to specify the name of the Study file corresponding the definition of that Study.
-        design_descriptors: Classifications of the study based on the overall experimental design.
-        publications: Publications associated with a Study.
-        contacts: People/contacts associated with a Study.
-        factors: A factor corresponds to an independent variable manipulated by the experimentalist with the intention
-        to affect biological systems in a way that can be measured by an assay.
-        protocols: Protocols used within the ISA artifact.
-        assays: An Assay represents a portion of the experimental design.
-        data: Data files associated with the study
+        identifier (str): A unique identifier: either a temporary identifier supplied by users or one generated by a repository or other database.
+        title (str): A concise phrase used to encapsulate the purpose and goal of the study.
+        description (str): A textual description of the study, with components such as objective or goals.
+        submission_date (str): The date on which the study was reported to the repository. This should be ISO8601 formatted.
+        public_release_date (str): The date on which the study should be released publicly. This should be ISO8601 formatted.
+        filename (str): A field to specify the name of the Study file corresponding the definition of that Study.
+        design_descriptors (list, NoneType): Classifications of the study based on the overall experimental design, a list of OntologyAnnotations.
+        publications (list, NoneType): A list of Publications associated with the Study.
+        contacts (list, NoneType): A list of People/contacts associated with the Study.
+        factors (list, NoneType): A factor corresponds to an independent variable manipulated by the experimentalist with the intention.
+        to affect biological systems in a way that can be measured by an assay.  A list of StudyFactor objects.
+        protocols (list, NoneType): Protocols used within the ISA artifact. A list of Protocol objects.
+        assays (list, NoneType): An Assay represents a portion of the experimental design. A list of Assay objects.
+        materials (dict): Materials associated with the study, lists of 'sources', 'samples' and 'other_material'.
+        units (list, NoneType): A list of Units used in the annotation of material units in the study.
+        characteristic_categories (list, NoneType): A list of OntologyAnnotation used in the annotation of material characteristics in the study.
+        process_sequence (list, NoneType): A list of Process objects representing the experimental graphs at the study level.
+        comments (list, NoneType): Comments associated with instances of this class.
     """
 
     def __init__(self, id_='', filename="", identifier="",  title="", description="", submission_date='',
@@ -511,10 +501,10 @@ class StudyFactor(Commentable):
     affect biological systems in a way that can be measured by an assay.
 
     Attributes:
-        name: Study factor name
-        factor_type: An ontology source reference of the study factor type
+        name (str): Study factor name
+        factor_type (OntologyAnnotation): An ontology source reference of the study factor type
+        comments (list, NoneType): Comments associated with instances of this class.
     """
-
     def __init__(self, id_='', name="", factor_type=None, comments=None):
         super().__init__(comments)
         self.id = id_
@@ -526,15 +516,22 @@ class StudyFactor(Commentable):
 
 
 class Assay(Commentable):
-    """A Study Assay declares and describes each of the Assay files associated with the current Study.
+    """An Assay represents a test performed either on material taken from a subject or on a whole initial subject,
+    producing qualitative or quantitative measurements. An Assay groups descriptions of provenance of sample processing
+    for related tests. Each test typically follows the steps of one particular experimental workflow described by a
+    particular protocol.
 
     Attributes:
-        measurement_type: A term to qualify the endpoint, or what is being measured (e.g. gene expression profiling or
-        protein identification). The term can be free text or from, for example, a controlled vocabulary or an ontology.
-        technology_type: Term to identify the technology used to perform the measurement, e.g. DNA microarray, mass
-        spectrometry. The term can be free text or from, for example, a controlled vocabulary or an ontology.
-        technology_platform: Manufacturer and platform name, e.g. Bruker AVANCE
-        file_name: A field to specify the name of the Assay file corresponding the definition of that assay.
+        measurement_type (OntologyAnnotation): An Ontology Annotation to qualify the endpoint, or what is being measured (e.g. gene expression profiling or protein identification).
+        technology_type (OntologyAnnotation): An Ontology Annotation to identify the technology used to perform the measurement.
+        technology_platform (str): Manufacturer and platform name, e.g. Bruker AVANCE.
+        filename (str): A field to specify the name of the Assay file for compatibility with ISA-Tab.
+        materials (dict): Materials associated with the Assay, lists of 'samples' and 'other_material'.
+        units (list, NoneType): A list of Units used in the annotation of material units in the Assay.
+        characteristic_categories (list, NoneType): A list of OntologyAnnotation used in the annotation of material characteristics in the Assay.
+        process_sequence (list, NoneType): A list of Process objects representing the experimental graphs at the Assay level.
+        comments (list, NoneType): Comments associated with instances of this class.
+        graph (networkx.DiGraph): A graph representation of the process_sequence using the networkx package.
     """
     def __init__(self, measurement_type=None, technology_type=None, technology_platform="", filename="",
                  process_sequence=None, data_files=None, samples=None, other_material=None,
@@ -593,15 +590,17 @@ class Assay(Commentable):
 
 
 class Protocol(Commentable):
-    """A Protocol.
+    """An experimental Protocol used in the study.
 
     Attributes:
-        name:
-        protocol_type:
-        description:
-        version:
-        parameters:
-        components:
+        name (str): The name of the protocol used
+        protocol_type (OntologyAnnotation, NoneType): Term to classify the protocol.
+        description (str): A free-text description of the protocol.
+        uri (str): Pointer to protocol resources externally that can be accessed by their Uniform Resource Identifier (URI).
+        version (str): An identifier for the version to ensure protocol tracking.
+        parameters (list, None): A list of ProtocolParameter describing the list of parameters required to execute the protocol.
+        components (list, None): A list of OntologyAnnotation describing a protocol’s components; e.g. instrument names, software names, and reagents names.
+        comments (list, NoneType): Comments associated with instances of this class.
     """
     def __init__(self, id_='', name="", protocol_type=None, uri="", description="", version="", parameters=None,
                  components=None, comments=None):
@@ -626,11 +625,12 @@ class Protocol(Commentable):
 
 
 class ProtocolParameter(Commentable):
-    """A Protocol Parameter.
+    """A parameter used by a protocol.
 
     Attributes:
-        name:
-        unit:
+        name (OntologyAnnotation): A parameter name as a term
+        unit (OntologyAnnotation): A unit, if applicable
+        comments (list, NoneType): Comments associated with instances of this class.
     """
     def __init__(self, id_='', parameter_name=None, unit=None, comments=None):
         super().__init__(comments)
@@ -645,7 +645,32 @@ class ProtocolParameter(Commentable):
         #     self.unit = unit
 
 
+class ParameterValue(object):
+    """A ParameterValue represents the instance value of a ProtocolParameter, that is used in a Process.
+
+    Attributes:
+        category (ProtocolParameter): A link to the relevant ProtocolParameter that the value is set for.
+        value (OntologyAnnotation): The value of the parameter.
+        unit (OntologyAnnotation): The qualifying unit classifier, if the value is numeric.
+        comments (list, NoneType): Comments associated with instances of this class.
+    """
+    def __init__(self, category=None, value=None, unit=None):
+        super().__init__()
+        # if category is None:
+        #     raise TypeError("You must specify a category")
+        self.category = category
+        self.value = value
+        self.unit = unit
+
+
 class ProtocolComponent(Commentable):
+    """A component used in a protocol.
+
+    Attributes:
+        name (str): A component name.
+        component_type (OntologyAnnotation): The classifier as a term for the component.
+        comments (list, NoneType): Comments associated with instances of this class.
+    """
     def __init__(self, id_='', name='', component_type=None, comments=None):
         super().__init__(comments)
         self.id = id_
@@ -657,11 +682,12 @@ class ProtocolComponent(Commentable):
 
 
 class Source(Commentable):
-    """A Source.
+    """Represents a Source material in an experimental graph.
 
     Attributes:
-        name:
-        characteristics:
+        name (str): A name/reference for the source material.
+        characteristics (list, NoneType): A list of Characteristics used to qualify the material properties.
+        comments (list, NoneType): Comments associated with instances of this class.
     """
     def __init__(self, id_='', name="", characteristics=None, comments=None):
         super().__init__(comments)
@@ -674,6 +700,13 @@ class Source(Commentable):
 
 
 class Characteristic(Commentable):
+    """A Characteristic acts as a qualifying property to a material object.
+
+    Attributes:
+        category (OntologyAnnotation, NoneType): The classifier of the type of characteristic being described.
+        value (OntologyAnnotation, NoneType): The value of this instance of a characteristic as relevant to the attached material.
+        unit (OntologyAnnotation, NoneType): If applicable, a unit qualifier for the value (if the value is numeric).
+        """
     def __init__(self, category=None, value=None, unit=None, comments=None):
         super().__init__(comments)
         if category is None:
@@ -688,12 +721,14 @@ class Characteristic(Commentable):
 
 
 class Sample(Commentable):
-    """A Sample.
+    """Represents a Sample material in an experimental graph.
 
     Attributes:
-        name:
-        characteristics:
-        factors:
+        name (str): A name/reference for the sample material.
+        characteristics (list, NoneType): A list of Characteristics used to qualify the material properties.
+        factor_values (list, NoneType): A list of FactorValues used to qualify the material in terms of study factors/design.
+        derives_from (Source): A link to the source material that the sample is derived from.
+        comments (list, NoneType): Comments associated with instances of this class.
     """
     def __init__(self, id_='', name="", factor_values=None, characteristics=None, derives_from=None, comments=None):
         super().__init__(comments)
@@ -711,11 +746,13 @@ class Sample(Commentable):
 
 
 class Material(Commentable):
-    """A Material.
+    """Represents a generic material in an experimental graph.
 
     Attributes:
-        name:
-        characteristics:
+        name (str): A name/reference for the sample material.
+        characteristics (list, NoneType): A list of Characteristics used to qualify the material properties.
+        derives_from (Source): A link to the material that this material is derived from.
+        comments (list, NoneType): Comments associated with instances of this class.
     """
     def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None):
         super().__init__(comments)
@@ -729,19 +766,15 @@ class Material(Commentable):
         self.derives_from = derives_from
 
 
-class Extract(Material):
-    def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None):
-        super().__init__(id_, name, type_, characteristics, derives_from, comments)
-        self.type = 'Extract Name'
-
-
-class LabeledExtract(Extract):
-    def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None, label=None):
-        super().__init__(id_, name, type_, characteristics, derives_from, comments)
-        self.label = label
-
-
 class FactorValue(Commentable):
+    """A FactorValue represents the value instance of a StudyFactor.
+
+    Attributes:
+        factor_name (StudyFactor): Reference to an instance of a relevant StudyFactor.
+        value (OntologyAnnotation, NoneType): The value of the factor at hand.
+        unit (OntologyAnnotation, NoneType): If numeric, the unit qualifier for the value.
+        comments (list, NoneType): Comments associated with instances of this class.
+    """
     def __init__(self, factor_name=None, value=None, unit=None, comments=None):
         super().__init__(comments)
         self.factor_name = factor_name
@@ -750,14 +783,18 @@ class FactorValue(Commentable):
 
 
 class Process(Commentable):
-    """A Process.
+    """Process nodes represent the application of a protocol to some input material (e.g. a Source) to produce some
+    output (e.g.a Sample).
 
     Attributes:
-        name:
-        executes_protocol:
-        parameters:
-        inputs:
-        outputs:
+        name (str): If relevant, a unique name for the process to disambiguate it from other processes.
+        executes_protocol (Protocol): A reference to the Protocol that this process executes.
+        date_ (str): A date formatted as an ISO8601 string corresponding to when the process event occurred.
+        performer (str): The name of the person or organisation that carried out the process.
+        parameter_values (list, NoneType): A list of ParameterValues relevant to the executing protocol.
+        inputs (list, NoneType): A list of input materials, possibly Sources, Samples, Materials, DataFiles
+        outputs (list, NoneType): A list of output materials, possibly Samples, Materials, DataFiles
+        comments (list, NoneType): Comments associated with instances of this class.
     """
     def __init__(self, id_='', name="", executes_protocol=None, date_=None, performer=None,
                  parameter_values=None, inputs=None, outputs=None, comments=None):
@@ -788,6 +825,13 @@ class Process(Commentable):
 
 
 class DataFile(Commentable):
+    """Represents a data file in an experimental graph.
+
+        Attributes:
+            filename (str): A name/reference for the data file.
+            label (str):
+            comments (list, NoneType): Comments associated with instances of this class.
+        """
     def __init__(self, id_='', filename='', label='', comments=None):
         super().__init__(comments)
         self.id = id_
@@ -923,20 +967,3 @@ def batch_create_assays(*args, n=1):
                 process = None
                 materialB = None
     return process_sequence
-
-
-def batch_set_attr(l=list(), attr=None, val=None):
-    for i in l:
-        setattr(i, attr, val)
-
-
-class ParameterValue(object):
-    """A Parameter Value
-    """
-    def __init__(self, category=None, value=None, unit=None):
-        super().__init__()
-        # if category is None:
-        #     raise TypeError("You must specify a category")
-        self.category = category
-        self.value = value
-        self.unit = unit
