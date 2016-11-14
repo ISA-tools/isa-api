@@ -29,8 +29,8 @@ def convert(json_fp, path, i_file_name='i_investigation.txt', config_dir=isajson
     """
     if validate_first:
         logger.info("Validating input JSON before conversion")
-        log_msgs = isajson.validate(fp=json_fp, config_dir=config_dir, log_level=logging.ERROR)
-        if '(F)' in log_msgs.getvalue():
+        report = isajson.validate(fp=json_fp, config_dir=config_dir, log_level=logging.ERROR)
+        if len(report['errors']) > 0:
             logger.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
             return
         json_fp.seek(0)  # reset file pointer after validation

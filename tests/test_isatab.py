@@ -92,8 +92,8 @@ class TestIsaTab(unittest.TestCase):
         sample_collection_process.inputs = [source1]
         sample_collection_process.outputs = [sample1, sample2, sample3, sample4]
         s.process_sequence = [sample_collection_process]
-        from isatools.model.v1 import _build_assay_graph
-        s.graph = _build_assay_graph(s.process_sequence)
+        # from isatools.model.v1 import _build_assay_graph
+        # s.graph = _build_assay_graph(s.process_sequence)
         i.studies = [s]
         isatab.dump(i, self._tmp_dir)
         self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_pool.txt')),
@@ -167,10 +167,22 @@ class TestIsaTab(unittest.TestCase):
         sample_collection_process.inputs = [source1, source2, source3, source4]
         sample_collection_process.outputs = [sample1]
         s.process_sequence = [sample_collection_process]
-        from isatools.model.v1 import _build_assay_graph
-        s.graph = _build_assay_graph(s.process_sequence)
+        # from isatools.model.v1 import _build_assay_graph
+        # s.graph = _build_assay_graph(s.process_sequence)
         i.studies = [s]
         isatab.dump(i, self._tmp_dir)
         self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_pool.txt')),
                                                  open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',
                                                                    's_TEST-Template3-Splitting.txt'))))
+        self.assertIsInstance(isatab.dumps(i), str)
+
+    def test_batch_create_materials(self):
+        source = Source(name='source_material')
+        prototype_sample = Sample(name='sample_material', derives_from=source)
+        batch = batch_create_materials(prototype_sample, n=3)
+        self.assertEqual(len(batch), 3)
+        for material in batch:
+            self.assertIsInstance(material, Sample)
+            self.assertEqual(material.derives_from, source)
+        self.assertSetEqual(set([m.name for m in batch]), {'sample_material-0', 'sample_material-1',
+                                                           'sample_material-2'})
