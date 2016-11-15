@@ -24,18 +24,6 @@ class TestJsonToSra(TestCase):
         self._sra_configs_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
-        # self._expected_submission_xml_biis3 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-3', 'submission.xml'), 'rb').read())
-        # self._expected_project_set_xml_biis3 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-3', 'project_set.xml'), 'rb').read())
-        # self._expected_sample_set_xml_biis3 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-3', 'sample_set.xml'), 'rb').read())
-        # self._expected_experiment_set_xml_biis3 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-3', 'experiment_set.xml'), 'rb').read())
-        # self._expected_run_set_xml_biis3 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-3', 'run_set.xml'), 'rb').read())
-
-        # self._expected_submission_xml_biis7 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-7', 'submission.xml'), 'rb').read())
-        # self._expected_project_set_xml_biis7 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-7', 'project_set.xml'), 'rb').read())
-        # self._expected_sample_set_xml_biis7 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-7', 'sample_set.xml'), 'rb').read())
-        # self._expected_experiment_set_xml_biis7 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-7', 'experiment_set.xml'), 'rb').read())
-        # self._expected_run_set_xml_biis7 = etree.fromstring(open(os.path.join(self._sra_data_dir, 'BII-S-7', 'run_set.xml'), 'rb').read())
-
         self._expected_submission_xml_biis3 = etree.parse(os.path.join(self._sra_data_dir, 'BII-S-3', 'submission.xml'))
         self._expected_project_set_xml_biis3 = etree.parse(os.path.join(self._sra_data_dir, 'BII-S-3', 'project_set.xml'))
         self._expected_sample_set_xml_biis3 = etree.parse(os.path.join(self._sra_data_dir, 'BII-S-3', 'sample_set.xml'))

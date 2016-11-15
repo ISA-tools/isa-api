@@ -1,6 +1,7 @@
 # coding: utf-8
 import unittest
 import shutil
+import os
 
 try:
     from unittest.mock import patch, mock_open
@@ -30,7 +31,14 @@ class TestMtblsIO(unittest.TestCase):
         shutil.rmtree(tmp_dir)
 
     """Tries to do actual call on MetaboLights; uses MTBLS2 as not so big"""
-    def test_load_study(self):
+    def test_get_study_as_tab(self):
+        tmp_dir = MTBLS.get('MTBLS2')  # gets MTBLS ISA-Tab files
+        self.assertEqual(len(os.listdir(tmp_dir)), 3)
+        self.assertSetEqual(set(os.listdir(tmp_dir)), {'a_mtbl2_metabolite profiling_mass spectrometry.txt',
+                                                   'i_Investigation.txt', 's_MTBL2.txt'})
+        shutil.rmtree(tmp_dir)
+
+    def test_get_study_as_json(self):
         isa_json = MTBLS.getj('MTBLS2')  # loads MTBLS study into ISA JSON
         self.assertIsInstance(isa_json, dict)
         self.assertEqual(isa_json['identifier'], 'MTBLS2')

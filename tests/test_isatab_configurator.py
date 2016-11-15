@@ -10,6 +10,7 @@ class TestIsaTabConfigurator(unittest.TestCase):
 
     def setUp(self):
         self._config_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
+        print(len(configurator.config_dict))
 
     def tearDown(self):
         pass

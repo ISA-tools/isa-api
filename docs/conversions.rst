@@ -2,17 +2,23 @@
 ISA Conversions
 ###############
 
-The ISA API includes a set of functions to allow you to convert between ISA formats, as well as between ISA formats and other formats such as SRA. These converters can be found in the ``isatools.convert`` package.
+The ISA API includes a set of functions to allow you to convert between ISA formats, as well as between ISA formats and
+other formats such as SRA. These converters can be found in the ``isatools.convert`` package.
 
 Converting from ISA-Tab to ISA JSON
 -----------------------------------
 
-To convert from a directory ``./tabdir/`` containing valid ISA-Tab files (e.g. ``i_investigation.txt``, ``s_...txt`` and ``a_...txt`` files):
+To convert from a directory ``./tabdir/`` containing valid ISA-Tab files (e.g. ``i_investigation.txt``, ``s_...txt``
+and ``a_...txt`` files):
 
 .. code-block:: python
 
    from isatools.convert import isatab2json
    isa_json = isatab2json.convert('./tabdir/')
+
+.. hint:: The conversions by default run the ISA validator to check for correctness of the input content. To skup the
+validation step, set the ``validate_first`` parameter to ``False`` by doing something like
+``converter.convert('./my/path/', validate_first=False)``.
 
 Converting from ISA JSON to ISA-Tab
 -----------------------------------

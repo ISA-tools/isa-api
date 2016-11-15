@@ -99,8 +99,8 @@ class TestIsaTab(unittest.TestCase):
         sample_collection_process.inputs = [source1]
         sample_collection_process.outputs = [sample1, sample2, sample3, sample4]
         s.process_sequence = [sample_collection_process]
-        from isatools.model.v1 import _build_assay_graph
-        s.graph = _build_assay_graph(s.process_sequence)
+        # from isatools.model.v1 import _build_assay_graph
+        # s.graph = _build_assay_graph(s.process_sequence)
         i.studies = [s]
         isatab.dump(i, self._tmp_dir)
 
@@ -178,51 +178,25 @@ class TestIsaTab(unittest.TestCase):
         sample_collection_process.inputs = [source1, source2, source3, source4]
         sample_collection_process.outputs = [sample1]
         s.process_sequence = [sample_collection_process]
-        from isatools.model.v1 import _build_assay_graph
-        s.graph = _build_assay_graph(s.process_sequence)
+        # from isatools.model.v1 import _build_assay_graph
+        # s.graph = _build_assay_graph(s.process_sequence)
         i.studies = [s]
         isatab.dump(i, self._tmp_dir)
-        with open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool', 's_TEST-Template3-Splitting.txt')) as src_file:
-            with open(os.path.join(self._tmp_dir, 's_pool.txt')) as dumped_file:
-                self.assertTrue(utils.assert_tab_content_equal(src_file, dumped_file))
-        # self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_pool.txt')),
-        #                                          open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',
-        #                                                            's_TEST-Template3-Splitting.txt'))))
 
-    def test_isatab_load_utf8_unix_investigation(self):
-        """Load investigation encoded in utf-8 with Unix endlines"""
-        test_case = "TEST-ISA-utf8-unix"
-        with open(os.path.join(self._tab_data_dir, test_case, "i_investigation.txt")) as i:
-            try:
-                isatab.load2(i)
-            except BaseException as e:
-                self.fail("Error found when loading ISA TAB: {}".format(e))
+        with open(os.path.join(self._tmp_dir, 's_pool.txt')) as dumped_file:
+            with open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',\
+                                            's_TEST-Template3-Splitting.txt')) as template_file:
+                self.assertTrue(utils.assert_tab_content_equal(dumped_file, template_file))
+                self.assertIsInstance(isatab.dumps(i), six.text_type)
 
-    def test_isatab_load_utf8_mac_investigation(self):
-        """Load investigation encoded in utf-8 with Mac endlines"""
-        test_case = "TEST-ISA-utf8-mac"
-        with open(os.path.join(self._tab_data_dir, test_case, "i_investigation.txt")) as i:
-            try:
-                isatab.load2(i)
-            except BaseException as e:
-                self.fail("Error found when loading ISA TAB: {}".format(e))
-
-    def test_isatab_load_utf8_dos_investigation(self):
-        """Load investigation encoded in utf-8 with DOS/Windows endlines"""
-        test_case = "TEST-ISA-utf8-dos"
-        with open(os.path.join(self._tab_data_dir, test_case, "i_investigation.txt")) as i:
-            try:
-                isatab.load2(i)
-            except BaseException as e:
-                self.fail("Error found when loading ISA TAB: {}".format(e))
-
-    def test_isatab_unexisting_directory(self):
-        #try:
-        with self.assertRaises(IOError):
-            isatab.validate("/unexisting/directory", "/fake/config/dir")
-
-    def test_isatab_directory_without_config(self):
-        with self.assertRaises(SystemError):
-            with open(os.path.join(self._tab_data_dir, "MTBLS1", "i_investigation.txt")) as i:
-                isatab.validate2(i, "/dir/without/config")
+    def test_batch_create_materials(self):
+        source = Source(name='source_material')
+        prototype_sample = Sample(name='sample_material', derives_from=source)
+        batch = batch_create_materials(prototype_sample, n=3)
+        self.assertEqual(len(batch), 3)
+        for material in batch:
+            self.assertIsInstance(material, Sample)
+            self.assertEqual(material.derives_from, source)
+        self.assertSetEqual({m.name for m in batch}, {'sample_material-0', 'sample_material-1',
+                                                           'sample_material-2'})
 

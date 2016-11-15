@@ -33,9 +33,10 @@ config_dict = {}
 
 def load(config_dir):
     global config_dict
+    print(len(config_dict))
     for file in glob.glob(os.path.join(config_dir, '*.xml')):
         try:
-            config_obj = parse(inFileName=os.path.join(config_dir, file), silence=True)
+            config_obj = parse(inFileName=file, silence=True)
             measurement_type = config_obj.get_isatab_configuration()[0].get_measurement().get_term_label()
             technology_type = config_obj.get_isatab_configuration()[0].get_technology().get_term_label()
             config_dict[(measurement_type, technology_type)] = config_obj
@@ -48,7 +49,6 @@ def get_config(measurement_type=None, technology_type=None):
     global config_dict
     try:
         config = config_dict[(measurement_type, technology_type)].isatab_configuration[0]
-        #from collections import OrderedDict
 
         # althonos: directly build a list based on a sorted iterator
         sorted_config = [
@@ -58,7 +58,6 @@ def get_config(measurement_type=None, technology_type=None):
                         key=lambda x: x.pos,
                     )
         ]
-
         # fields = {}
         # for field in config.field:
         #     fields[field.pos] = field

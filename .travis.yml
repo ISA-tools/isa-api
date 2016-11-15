@@ -8,8 +8,7 @@ matrix:
 install:
 - pip install --upgrade pip && pip install -r requirements-tests.txt
 script:
-- coverage run --source=isatools setup.py test
-#- coverage run --source=isatools -m behave --no-capture --no-capture-stderr --format=progress features/isa-file-handler.feature
+- coverage run --source=isatools --omit=isatools/io/isatab_configurator.py setup.py test
 - behave --no-capture --no-capture-stderr --format=progress features/isa-file-handler.feature
 branches:
   except:

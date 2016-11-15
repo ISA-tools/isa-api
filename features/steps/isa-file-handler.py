@@ -18,7 +18,6 @@ from zipfile import is_zipfile
 from six.moves.urllib.parse import urljoin
 from isatools.io.storage_adapter import IsaGitHubStorageAdapter, REPOS, CONTENTS
 from lxml import etree
-from io import BytesIO, StringIO
 from requests.exceptions import HTTPError
 
 open = functools.partial(open, mode='rU') if six.PY2 else functools.partial(open, mode='r')
@@ -198,7 +197,7 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    expect(context.res).to.be.a(BytesIO)
+    expect(context.res).to.be.a(six.BytesIO)
     dir_name = context.source_path.split('/')[-1]
     file_names = [os.path.join(dir_name, item['name']) for item in context.items_in_dir]
     with ZipFile(context.res) as zip_file:
@@ -355,7 +354,7 @@ def step_impl(context):
         except AttributeError: pass
 
         httpretty.register_uri(httpretty.GET, download_url, body=context.xml_text, content_type='text/plain')
-        context.xml = etree.parse(StringIO(context.xml_text))
+        context.xml = etree.parse(six.StringIO(context.xml_text))
 
 
 
@@ -388,8 +387,8 @@ def step_impl(context):
     # test equality of input and output
     expect(written_xml_text).to.equal(context.xml_text)
     # test that the stored output is valid XML
-    # expect(etree.parse(StringIO(written_xml_text))).to_not.throw(etree.XMLSyntaxError)
-    xml = etree.parse(StringIO(written_xml_text))
+    # expect(etree.parse(six.StringIO(written_xml_text))).to_not.throw(etree.XMLSyntaxError)
+    xml = etree.parse(six.StringIO(written_xml_text))
     expect(etree.iselement(xml.getroot())).to.be.true
 
 

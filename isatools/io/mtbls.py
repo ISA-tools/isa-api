@@ -103,6 +103,16 @@ def getj(mtbls_study_id):
 
 
 def get_data_files(mtbls_study_id, factor_selection=None):
+    tmp_dir = get(mtbls_study_id)
+    if tmp_dir is None:
+        raise IOError("There was a problem retrieving study {}. Does it exist?".format(mtbls_study_id))
+    else:
+        result = slice_data_files(tmp_dir, factor_selection=factor_selection)
+    shutil.rmtree(tmp_dir)
+    return result
+
+
+def slice_data_files(folder, factor_selection=None):
     """
     This function gets a list of samples and related data file URLs for a given MetaboLights study, optionally
     filtered by factor value (currently by matching on exactly 1 factor value)
@@ -128,15 +138,13 @@ def get_data_files(mtbls_study_id, factor_selection=None):
             }
         }
     """
-    tmp_dir = get(mtbls_study_id)
-    if tmp_dir is None:
-        raise IOError("There was a problem retrieving study {}. Does it exist?".format(mtbls_study_id))
-    table_files = glob.iglob(os.path.join(tmp_dir, "[a|s]_*.txt"))
+    table_files = glob.iglob(os.path.join(folder, "[a|s]_*.txt"))
     from isatools import isatab
     results = list()
     # first collect matching samples
     for table_file in table_files:
-        df = isatab.load_table(os.path.join(tmp_dir, table_file))
+        logger.info("Loading {}".format(table_file))
+        df = isatab.load_table(table_file)
         if factor_selection is None:
             matches = six.iteritems(df['Sample Name'])
             for indx, match in matches:
@@ -169,8 +177,8 @@ def get_data_files(mtbls_study_id, factor_selection=None):
     # now collect the data files relating to the samples
     for result in results:
         sample_name = result['sample']
-        for table_file in glob.iglob(os.path.join(tmp_dir, 'a_*')):
-            df = isatab.load_table(os.path.join(tmp_dir, table_file))
+        for table_file in glob.iglob(os.path.join(folder, 'a_*')):
+            df = isatab.load_table(table_file)
             data_files = list()
             table_headers = list(df.columns.values)
             sample_rows = df.loc[df['Sample Name'] == sample_name]
@@ -179,7 +187,6 @@ def get_data_files(mtbls_study_id, factor_selection=None):
             elif 'Free Induction Decay Data File' in table_headers:
                 data_files = sample_rows['Free Induction Decay Data File']
             result['data_files'] = [i for i in list(data_files) if str(i) != 'nan']
-    shutil.rmtree(tmp_dir)
     return results
 
 
@@ -199,7 +206,7 @@ def get_factor_names(mtbls_study_id):
     factors = set()
     import re
     for table_file in table_files:
-        df = isatab.load_table(os.path.join(tmp_dir, table_file))
+        df = isatab.load_table(table_file)
         factors_headers = [header for header in list(df.columns.values) if
                            re.compile('Factor Value\[(.*?)\]').match(header)]
         for header in factors_headers:
@@ -223,10 +230,10 @@ def get_factor_values(mtbls_study_id, factor_name):
     from isatools import isatab
     fvs = set()
     for table_file in table_files:
-        df = isatab.load_table(os.path.join(tmp_dir, table_file))
+        df = isatab.load_table(table_file)
         if 'Factor Value[{}]'.format(factor_name) in list(df.columns.values):
             for indx, match in six.iteritems(df['Factor Value[{}]'.format(factor_name)]):
-                if isinstance(match, (str, int, float)):
+                if isinstance(match, (str, six.text_type, int, float)):
                     if str(match) != 'nan':
                         fvs.add(match)
     shutil.rmtree(tmp_dir)
