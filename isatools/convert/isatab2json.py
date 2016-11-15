@@ -15,6 +15,9 @@ logger = logging.getLogger(__name__)
 SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
 
+# REGEXES
+_RX_COMMENTS = re.compile('Comment\[(.*?)\]')
+
 
 class IdentifierType(Enum):
     counter = 1
@@ -122,9 +125,8 @@ class ISATab2ISAjson_v1:
 
     def createComments(self, isadict):
         comments = []
-        comments_regex = re.compile('Comment\[(.*?)\]')
-        for k in [k for k in isadict.keys() if comments_regex.match(k)]:
-            comments.append(self.createComment(comments_regex.findall(k)[0], isadict[k]))
+        for k in [k for k in isadict.keys() if _RX_COMMENTS.match(k)]:
+            comments.append(self.createComment(_RX_COMMENTS.findall(k)[0], isadict[k]))
         return comments
 
     def createComment(self, name, value):
@@ -500,10 +502,9 @@ class ISATab2ISAjson_v1:
 
     def createFromNodeComments(self, node):
         comments = []
-        comments_regex = re.compile('Comment\[(.*?)\]')
-        for key in [key for key in node.metadata.keys() if comments_regex.match(key)]:
-            comments.append(self.createComment(comments_regex.findall(key)[0], getattr(
-                node.metadata[key][0], comments_regex.findall(key)[0].replace(' ', '_'))))
+        for key in [key for key in node.metadata.keys() if _RX_COMMENTS.match(key)]:
+            comments.append(self.createComment(_RX_COMMENTS.findall(key)[0], getattr(
+                node.metadata[key][0], _RX_COMMENTS.findall(key)[0].replace(' ', '_'))))
         return comments
 
     def createDataFiles(self, nodes):

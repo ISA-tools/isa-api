@@ -4,6 +4,7 @@ import logging
 import networkx as nx
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
+import re
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -11,6 +12,10 @@ logger = logging.getLogger(__name__)
 errors = list()
 warnings = list()
 
+# REGEXES
+_RX_DOI = re.compile('(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
+_RX_PMID = re.compile('[0-9]{8}')
+_RX_PMCID = re.compile('PMC[0-9]{8}')
 
 def load(fp):
 
@@ -988,15 +993,13 @@ def check_dois(isa_json):
     """Used for rule 3002"""
     def check_doi(doi_str):
         if doi_str is not '':
-            regexDOI = re.compile('(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
-            if not regexDOI.match(doi_str):
+            if not _RX_DOI.match(doi_str):
                 warnings.append({
                     "message": "DOI is not valid format",
                     "supplemental": "Found {} in DOI field".format(doi_str),
                     "code": 3002
                 })
                 logger.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
-    import re
     for ipub in isa_json['publications']:
         check_doi(ipub['doi'])
     for study in isa_json['studies']:
@@ -1028,16 +1031,13 @@ def check_pubmed_ids_format(isa_json):
     """Used for rule 3003"""
     def check_pubmed_id(pubmed_id_str):
         if pubmed_id_str is not '':
-            pmid_regex = re.compile('[0-9]{8}')
-            pmcid_regex = re.compile('PMC[0-9]{8}')
-            if (pmid_regex.match(pubmed_id_str) is None) and (pmcid_regex.match(pubmed_id_str) is None):
+            if (_RX_PMID.match(pubmed_id_str) is None) and (_RX_PMCID.match(pubmed_id_str) is None):
                 warnings.append({
                     "message": "PubMed ID is not valid format",
                     "supplemental": "Found PubMedID {}".format(pubmed_id_str),
                     "code": 3003
                 })
                 logger.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
-    import re
     for ipub in isa_json['publications']:
         check_pubmed_id(ipub['pubMedID'])
     for study in isa_json['studies']:

@@ -3,6 +3,7 @@ import logging
 import os
 import tempfile
 import shutil
+import re
 from isatools.convert import isatab2json
 
 MTBLS_FTP_SERVER = 'ftp.ebi.ac.uk'
@@ -11,6 +12,9 @@ INVESTIGATION_FILENAME = 'i_Investigation.txt'
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# REGEXES
+_RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
 
 
 def get(mtbls_study_id, target_dir=None):
@@ -183,11 +187,9 @@ def get_factor_names(mtbls_study_id):
     table_files = [f for f in os.listdir(tmp_dir) if f.startswith(('a_', 's_'))]
     from isatools import isatab
     factors = set()
-    import re
     for table_file in table_files:
         df = isatab.load_table(os.path.join(tmp_dir, table_file))
-        factors_headers = [header for header in list(df.columns.values) if
-                           re.compile('Factor Value\[(.*?)\]').match(header)]
+        factors_headers = [header for header in list(df.columns.values) if _RX_FACTOR_VALUE.match(header)]
         for header in factors_headers:
             factors.add(header[13:-1])
     return factors
