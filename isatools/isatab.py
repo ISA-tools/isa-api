@@ -23,7 +23,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=loggi
 logger = logging.getLogger(__name__)
 
 # This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
-open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rU')
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
 
 errors = list()
 warnings = list()
@@ -913,15 +913,16 @@ def read_investigation_file(fp):
         l = f.readline()
         f.seek(position)
 
-        try: l = l.decode("utf-8")
-        except AttributeError: pass
+        if isinstance(l, six.binary_type):
+            l = l.decode("utf-8")
+
         return l
 
     def _read_tab_section(f, sec_key, next_sec_key=None):
 
         line = f.readline()
-        try: line = line.decode("utf-8")
-        except AttributeError: pass
+        if isinstance(line, six.binary_type):
+            line = line.decode("utf-8")
 
         normed_line = line.rstrip().strip('"')
 
@@ -931,8 +932,8 @@ def read_investigation_file(fp):
         while not _peek(f=f).rstrip() == next_sec_key:
 
             line = f.readline()
-            try: line = line.decode("utf-8")
-            except AttributeError: pass
+            if isinstance(line, six.binary_type):
+                line = line.decode("utf-8")
 
             if not line:
                 break
@@ -1049,27 +1050,32 @@ def load2(fp):
             finally:
                 f.seek(position)
 
-            try:
-                return l.decode('utf-8')
-            except AttributeError:
-                return l
-            except UnicodeEncodeError:
-                return l.encode("utf-8").decode("utf-8")
+            #try:
+            if isinstance(l, six.binary_type):
+                l = l.decode('utf-8')
+
+            return l
+            # except AttributeError:
+            #     return l
+            # except UnicodeEncodeError:
+            #     return l.encode("utf-8").decode("utf-8")
 
         def _strip_label(s):
-            try:
-                return s.decode('utf-8').rstrip().strip('"')
-            except AttributeError:
-                return s.rstrip().strip('"')
+            if isinstance(s, six.binary_type):
+                s = s.decode('utf-8')
+
+            return s.rstrip().strip('"')
+            #try:
+            #    return s.decode('utf-8').rstrip().strip('"')
+            #except AttributeError:
+            #    return s.rstrip().strip('"')
 
         def _read_tab_section(f, sec_key, next_sec_key=None):
 
             line = _strip_label(f.readline())
 
-            try:
+            if isinstance(line, six.binary_type):
                 line = line.decode('utf-8')
-            except AttributeError:
-                pass
 
             if not line == sec_key:
                 raise IOError("Expected: " + sec_key + " section, but got: " + line)
@@ -1077,8 +1083,8 @@ def load2(fp):
             while not _peek(f=f) == next_sec_key:
                 line = f.readline()
 
-                try: line = line.decode('utf-8')
-                except AttributeError: pass
+                if isinstance(line, six.binary_type):
+                    line = line.decode('utf-8')
 
                 if not line:
                     break

@@ -12,7 +12,7 @@ from isatools.model.v1 import *
 from tests import utils
 
 # This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
-open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rU')
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
 
 #  Manually testing object model to write to isatab, study file-out only to check if model and writer function correctly
 #  Currently only tests source-split and sample pooling, at study level

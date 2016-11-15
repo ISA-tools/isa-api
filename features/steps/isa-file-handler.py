@@ -20,7 +20,7 @@ from isatools.io.storage_adapter import IsaGitHubStorageAdapter, REPOS, CONTENTS
 from lxml import etree
 from requests.exceptions import HTTPError
 
-open = functools.partial(open, mode='rU') if six.PY2 else functools.partial(open, mode='r')
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
 
 
 __author__ = 'massi'

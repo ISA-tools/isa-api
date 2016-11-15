@@ -12,7 +12,7 @@ from isatools.convert import isatab2json, json2isatab
 from tests import utils
 
 # This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
-open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rU')
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
 
 
 class TestJsonIsaTabTwoWayConvert(unittest.TestCase):

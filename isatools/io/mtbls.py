@@ -19,7 +19,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=loggi
 logger = logging.getLogger(__name__)
 
 # This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
-open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rU')
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
 
 _STRIPCHARS = "\"\'\r\n\t"
 
