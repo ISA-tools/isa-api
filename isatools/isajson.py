@@ -4,6 +4,7 @@ import logging
 import networkx as nx
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
+import glob
 import re
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
@@ -1170,23 +1171,22 @@ def check_term_accession_used_no_source_ref(isa_json):
 def load_config(config_dir):
     import json
     configs = dict()
-    for file in os.listdir(config_dir):
-        if file.endswith(".json"):  # ignore non json files
-            try:
-                config_dict = json.load(open(os.path.join(config_dir, file)))
-                if os.path.basename(file) == 'protocol_definitions.json':
-                    configs['protocol_definitions'] = config_dict
-                elif os.path.basename(file) == 'study_config.json':
-                    configs['study'] = config_dict
-                else:
-                    configs[(config_dict['measurementType'], config_dict['technologyType'])] = config_dict
-            except ValidationError:
-                errors.append({
-                    "message": "Configurations could not be loaded",
-                    "supplemental": "On loading {}".format(os.path.join(config_dir, file)),
-                    "code": 4001
-                })
-                logger.error("(E) Could not load configuration file {}".format(str(file)))
+    for file in glob.iglob(os.path.join(config_dir, '*.json')):
+        try:
+            config_dict = json.load(open(file))
+            if os.path.basename(file) == 'protocol_definitions.json':
+                configs['protocol_definitions'] = config_dict
+            elif os.path.basename(file) == 'study_config.json':
+                configs['study'] = config_dict
+            else:
+                configs[(config_dict['measurementType'], config_dict['technologyType'])] = config_dict
+        except ValidationError:
+            errors.append({
+                "message": "Configurations could not be loaded",
+                "supplemental": "On loading {}".format(file),
+                "code": 4001
+            })
+            logger.error("(E) Could not load configuration file {}".format(os.path.basename(file)))
     return configs
 
 

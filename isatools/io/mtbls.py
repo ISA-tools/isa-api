@@ -4,6 +4,7 @@ import os
 import tempfile
 import shutil
 import re
+import glob
 from isatools.convert import isatab2json
 
 MTBLS_FTP_SERVER = 'ftp.ebi.ac.uk'
@@ -121,13 +122,12 @@ def slice_data_files(dir, factor_selection=None):
             }
         }
     """
-    table_files = [f for f in os.listdir(dir) if f.startswith(('a_', 's_'))]
     from isatools import isatab
     results = list()
     # first collect matching samples
-    for table_file in table_files:
+    for table_file in glob.iglob(os.path.join(dir, '[a|s]_*')):
         logger.info("Loading {}".format(table_file))
-        df = isatab.load_table(os.path.join(dir, table_file))
+        df = isatab.load_table(table_file)
         if factor_selection is None:
             matches = df['Sample Name'].items()
             for indx, match in matches:
@@ -160,8 +160,8 @@ def slice_data_files(dir, factor_selection=None):
     # now collect the data files relating to the samples
     for result in results:
         sample_name = result['sample']
-        for table_file in [f for f in os.listdir(dir) if f.startswith('a_')]:
-            df = isatab.load_table(os.path.join(dir, table_file))
+        for table_file in glob.iglob(os.path.join(dir, 'a_*')):
+            df = isatab.load_table(table_file)
             data_files = list()
             table_headers = list(df.columns.values)
             sample_rows = df.loc[df['Sample Name'] == sample_name]
@@ -184,10 +184,9 @@ def get_factor_names(mtbls_study_id):
         factor_names = get_factor_names('MTBLS1')
     """
     tmp_dir = get(mtbls_study_id)
-    table_files = [f for f in os.listdir(tmp_dir) if f.startswith(('a_', 's_'))]
     from isatools import isatab
     factors = set()
-    for table_file in table_files:
+    for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         df = isatab.load_table(os.path.join(tmp_dir, table_file))
         factors_headers = [header for header in list(df.columns.values) if _RX_FACTOR_VALUE.match(header)]
         for header in factors_headers:
@@ -207,10 +206,9 @@ def get_factor_values(mtbls_study_id, factor_name):
         factor_values = get_factor_values('MTBLS1', 'genotype)
     """
     tmp_dir = get(mtbls_study_id)
-    table_files = [f for f in os.listdir(tmp_dir) if f.startswith(('a_', 's_'))]
     from isatools import isatab
     fvs = set()
-    for table_file in table_files:
+    for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         df = isatab.load_table(os.path.join(tmp_dir, table_file))
         if 'Factor Value[{}]'.format(factor_name) in list(df.columns.values):
             for indx, match in df['Factor Value[{}]'.format(factor_name)].items():

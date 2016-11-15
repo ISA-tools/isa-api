@@ -2679,17 +2679,15 @@ def dumps(isa_obj):
         with open(os.path.join(tmp, 'i_investigation.txt'), 'r') as i_fp:
             output += os.path.join(tmp, 'i_investigation.txt') + '\n'
             output += i_fp.read()
-        s_files = [f for f in os.listdir(tmp) if f.startswith('s_')]
-        for s_file in s_files:
-            with open(os.path.join(tmp, s_file), 'r') as s_fp:
+        for s_file in glob.iglob(os.path.join(tmp, 's_*')):
+            with open(s_file, 'r') as s_fp:
                 output += "--------\n"
-                output += os.path.join(tmp, s_file) + '\n'
+                output += s_file + '\n'
                 output += s_fp.read()
-        a_files = [f for f in os.listdir(tmp) if f.startswith('a_')]
-        for a_file in a_files:
-            with open(os.path.join(tmp, a_file), 'r') as a_fp:
+        for a_file in glob.iglob(os.path.join(tmp, 'a_*')):
+            with open(a_file, 'r') as a_fp:
                 output += "--------\n"
-                output += os.path.join(tmp, a_file) + '\n'
+                output += a_file + '\n'
                 output += a_fp.read()
     finally:
         if tmp is not None:

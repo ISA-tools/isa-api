@@ -14,21 +14,21 @@ import datetime as datetime_
 import warnings as warnings_
 from lxml import etree as etree_
 import os
+import glob
 
 config_dict = dict()
 
 
 def load(config_dir):
     global config_dict
-    for file in os.listdir(config_dir):
-        if file.endswith(".xml"):
-            try:
-                config_obj = parse(inFileName=os.path.join(config_dir, file), silence=True)
-                measurement_type = config_obj.get_isatab_configuration()[0].get_measurement().get_term_label()
-                technology_type = config_obj.get_isatab_configuration()[0].get_technology().get_term_label()
-                config_dict[(measurement_type, technology_type)] = config_obj
-            except GDSParseError as parse_error:
-                print(parse_error)
+    for file in glob.iglob(os.path.join(config_dir, '*.xml')):
+        try:
+            config_obj = parse(inFileName=file, silence=True)
+            measurement_type = config_obj.get_isatab_configuration()[0].get_measurement().get_term_label()
+            technology_type = config_obj.get_isatab_configuration()[0].get_technology().get_term_label()
+            config_dict[(measurement_type, technology_type)] = config_obj
+        except GDSParseError as parse_error:
+            print(parse_error)
     return config_dict
 
 

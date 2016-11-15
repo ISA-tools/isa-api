@@ -6,6 +6,7 @@ from jsonschema import RefResolver, Draft4Validator
 from uuid import uuid4
 from enum import Enum
 import re
+import glob
 from isatools import isatab
 import logging
 
@@ -28,11 +29,11 @@ class IdentifierType(Enum):
 def convert(work_dir, identifier_type=IdentifierType.name, validate_first=True):
     if validate_first:
         logger.info("Validating input ISA tab before conversion")
-        i_files = [f for f in os.listdir(work_dir) if f.startswith('i_') and f.endswith('.txt')]
+        i_files = glob.glob(os.path.join(work_dir, 'i_*.txt'))
         if len(i_files) != 1:
             logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
             return
-        report = isatab.validate2(fp=open(os.path.join(work_dir, i_files[0])), log_level=logging.ERROR)
+        report = isatab.validate2(fp=open(i_files[0]), log_level=logging.ERROR)
         if len(report['errors']) > 0:
             logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
             return

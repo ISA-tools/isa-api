@@ -8,6 +8,7 @@ from zipfile import ZipFile
 from shutil import rmtree
 import logging
 import pdb
+import glob
 import uuid
 import os
 import sys
@@ -60,25 +61,23 @@ def merge_biocrates_files(input_dir):
     projects = []
     metabolites = []
 
-    for i in os.listdir(input_dir):
+    for i in glob.iglob(os.path.join(input_dir, '*.xml')):
 
-        if i.endswith(".xml"):
+        # f = open('/Users/Philippe/Documents/git/biocrates/Biocrates-TUM/input-Biocrates-XML-files/'
+        #          'all-biocrates-xml-files/'+i)
 
-            # f = open('/Users/Philippe/Documents/git/biocrates/Biocrates-TUM/input-Biocrates-XML-files/'
-            #          'all-biocrates-xml-files/'+i)
+        # note the "xml" argument: this is to ensure that BeautifulSoup does not lowercase attribute elements
+        # (without, the resulting xml trips the xsl)
+        # soup = BeautifulSoup(open('/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/input-Biocrates'
+        #                           '-XML-files/all-biocrates-xml-files/'+i), "xml")
 
-            # note the "xml" argument: this is to ensure that BeautifulSoup does not lowercase attribute elements
-            # (without, the resulting xml trips the xsl)
-            # soup = BeautifulSoup(open('/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/input-Biocrates'
-            #                           '-XML-files/all-biocrates-xml-files/'+i), "xml")
+        soup = BeautifulSoup(open(i), "xml")
 
-            soup = BeautifulSoup(open(input_dir + i), "xml")
-
-            contacts = contacts + soup.find_all('contact')
-            samples = samples + soup.find_all('sample')
-            projects = projects + soup.find_all('project')
-            plate_set = plate_set + soup.find_all('plate')
-            metabolites = metabolites + soup.find_all('metabolite')
+        contacts = contacts + soup.find_all('contact')
+        samples = samples + soup.find_all('sample')
+        projects = projects + soup.find_all('project')
+        plate_set = plate_set + soup.find_all('plate')
+        metabolites = metabolites + soup.find_all('metabolite')
 
     # fh = open("/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/biocrates-merged-output.xml",  'w+')
     fh = open("biocrates-merged-output.xml",  'w+')
