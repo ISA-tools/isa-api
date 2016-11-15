@@ -18,33 +18,24 @@ class TestNewSraExport(TestCase):
 
     # TODO: Isolate testing SRA writer (don't rely on ISA JSON loader)
 
-    def setUp(self):
-
-        self._json_data_dir = utils.JSON_DATA_DIR
-        self._sra_data_dir = utils.SRA_DATA_DIR
-        self._tmp_dir = tempfile.mkdtemp()
+    @classmethod
+    def setUpClass(cls):
+        cls._json_data_dir = utils.JSON_DATA_DIR
+        cls._sra_data_dir = utils.SRA_DATA_DIR
 
         study_id = 'BII-S-7'
-        with open(os.path.join(self._json_data_dir, study_id, study_id + '.json')) as investigation:
-            self._inv_obj = isajson.load(investigation)
-        self._study_sra_data_dir = os.path.join(self._sra_data_dir, study_id)
-        # self._expected_submission_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'submission.xml'), 'rb').read())
-        # self._expected_project_set_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'project_set.xml'),
-        #                                                          'rb').read())
-        # self._expected_sample_set_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'sample_set.xml'),
-        #                                                          'rb').read())
-        # self._expected_exp_set_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'experiment_set.xml'),
-        #                                                           'rb').read())
-        # self._expected_run_set_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'run_set.xml'),
-        #                                                        'rb').read())
-        self._expected_submission_xml_obj = etree.parse(os.path.join(self._study_sra_data_dir, 'submission.xml'))
-        self._expected_project_set_xml_obj = etree.parse(os.path.join(self._study_sra_data_dir, 'project_set.xml'))
-        self._expected_sample_set_xml_obj = etree.parse(os.path.join(self._study_sra_data_dir, 'sample_set.xml'))
-        self._expected_exp_set_xml_obj = etree.parse(os.path.join(self._study_sra_data_dir, 'experiment_set.xml'))
-        self._expected_run_set_xml_obj = etree.parse(os.path.join(self._study_sra_data_dir, 'run_set.xml'))
+        with open(os.path.join(cls._json_data_dir, study_id, study_id + '.json')) as investigation:
+            cls._inv_obj = isajson.load(investigation)
+        cls._study_sra_data_dir = os.path.join(cls._sra_data_dir, study_id)
+
+        cls._expected_submission_xml_obj = etree.parse(os.path.join(cls._study_sra_data_dir, 'submission.xml'))
+        cls._expected_project_set_xml_obj = etree.parse(os.path.join(cls._study_sra_data_dir, 'project_set.xml'))
+        cls._expected_sample_set_xml_obj = etree.parse(os.path.join(cls._study_sra_data_dir, 'sample_set.xml'))
+        cls._expected_exp_set_xml_obj = etree.parse(os.path.join(cls._study_sra_data_dir, 'experiment_set.xml'))
+        cls._expected_run_set_xml_obj = etree.parse(os.path.join(cls._study_sra_data_dir, 'run_set.xml'))
 
 
-        self._sra_default_config = {
+        cls._sra_default_config = {
             "sra_broker": "",
             "sra_center": "OXFORD",
             "sra_project": "OXFORD",
@@ -53,6 +44,9 @@ class TestNewSraExport(TestCase):
             "sra_broker_inform_on_error": "proccaserra@gmail.com",
             "sra_broker_contact_name": "PRS"
         }
+
+    def setUp(self):
+        self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)

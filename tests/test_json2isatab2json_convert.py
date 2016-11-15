@@ -17,8 +17,11 @@ open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open,
 
 class TestJsonIsaTabTwoWayConvert(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls._json_data_dir = utils.JSON_DATA_DIR
+
     def setUp(self):
-        self._json_data_dir = utils.JSON_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):

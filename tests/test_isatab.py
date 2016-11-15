@@ -20,8 +20,11 @@ open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open,
 
 class TestIsaTab(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls._tab_data_dir = utils.TAB_DATA_DIR
+
     def setUp(self):
-        self._tab_data_dir = utils.TAB_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):

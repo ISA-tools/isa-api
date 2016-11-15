@@ -18,9 +18,12 @@ open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open,
 
 class TestJson2IsaTab(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls._json_data_dir = utils.JSON_DATA_DIR
+        cls._tab_data_dir = utils.TAB_DATA_DIR
+
     def setUp(self):
-        self._json_data_dir = utils.JSON_DATA_DIR
-        self._tab_data_dir = utils.TAB_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):

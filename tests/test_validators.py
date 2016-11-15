@@ -17,12 +17,10 @@ open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open,
 
 class TestValidateIsaJson(unittest.TestCase):
 
-    def setUp(self):
-        self._unit_json_data_dir = utils.UNIT_JSON_DATA_DIR
-        self._configs_json_data_dir = utils.JSON_DEFAULT_CONFIGS_DATA_DIR
-
-    def tearDown(self):
-        pass
+    @classmethod
+    def setUpClass(cls):
+        cls._unit_json_data_dir = utils.UNIT_JSON_DATA_DIR
+        cls._configs_json_data_dir = utils.JSON_DEFAULT_CONFIGS_DATA_DIR
 
     def test_validate_isajson_json_load(self):
         """Tests against 0002"""

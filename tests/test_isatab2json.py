@@ -16,14 +16,11 @@ open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open,
 
 class TestIsaTab2JsonIdentifierName(unittest.TestCase):
 
-    def setUp(self):
-        self._tab_data_dir = utils.TAB_DATA_DIR
-        self._json_data_dir = utils.JSON_DATA_DIR
-
-        self.identifier_type = isatab2json.IdentifierType.name
-
-    def tearDown(self):
-        pass
+    @classmethod
+    def setUpClass(cls):
+        cls._tab_data_dir = utils.TAB_DATA_DIR
+        cls._json_data_dir = utils.JSON_DATA_DIR
+        cls.identifier_type = isatab2json.IdentifierType.name
 
     def test_isatab2json_convert_charac_param_factor(self):
         test_case = 'TEST-ISA-charac-param-factor'

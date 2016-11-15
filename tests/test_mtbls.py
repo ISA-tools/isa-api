@@ -13,12 +13,6 @@ from isatools.io import mtbls as MTBLS
 
 class TestMtblsIO(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
     """Mock-only test on MTBLS1"""
     @patch('ftplib.FTP', autospec=True)
     def test_get_study(self, mock_ftp_constructor):

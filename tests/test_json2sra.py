@@ -16,28 +16,27 @@ open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open,
 
 class TestJsonToSra(TestCase):
 
-    def setUp(self):
-        self._json_data_dir = utils.JSON_DATA_DIR
-        self._unit_json_data_dir = utils.UNIT_JSON_DATA_DIR
-        self._configs_json_data_dir = utils.JSON_DEFAULT_CONFIGS_DATA_DIR
-        self._sra_data_dir = utils.SRA_DATA_DIR
-        self._sra_configs_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
-        self._tmp_dir = tempfile.mkdtemp()
+    @classmethod
+    def setUpClass(cls):
+        cls._json_data_dir = utils.JSON_DATA_DIR
+        cls._unit_json_data_dir = utils.UNIT_JSON_DATA_DIR
+        cls._configs_json_data_dir = utils.JSON_DEFAULT_CONFIGS_DATA_DIR
+        cls._sra_data_dir = utils.SRA_DATA_DIR
+        cls._sra_configs_dir = utils.DEFAULT2015_XML_CONFIGS_DATA_DIR
 
-        self._expected_submission_xml_biis3 = etree.parse(os.path.join(self._sra_data_dir, 'BII-S-3', 'submission.xml'))
-        self._expected_project_set_xml_biis3 = etree.parse(os.path.join(self._sra_data_dir, 'BII-S-3', 'project_set.xml'))
-        self._expected_sample_set_xml_biis3 = etree.parse(os.path.join(self._sra_data_dir, 'BII-S-3', 'sample_set.xml'))
-        self._expected_experiment_set_xml_biis3 = etree.parse(os.path.join(self._sra_data_dir, 'BII-S-3', 'experiment_set.xml'))
-        self._expected_run_set_xml_biis3 = etree.parse(os.path.join(self._sra_data_dir, 'BII-S-3', 'run_set.xml'))
+        cls._expected_submission_xml_biis3 = etree.parse(os.path.join(cls._sra_data_dir, 'BII-S-3', 'submission.xml'))
+        cls._expected_project_set_xml_biis3 = etree.parse(os.path.join(cls._sra_data_dir, 'BII-S-3', 'project_set.xml'))
+        cls._expected_sample_set_xml_biis3 = etree.parse(os.path.join(cls._sra_data_dir, 'BII-S-3', 'sample_set.xml'))
+        cls._expected_experiment_set_xml_biis3 = etree.parse(os.path.join(cls._sra_data_dir, 'BII-S-3', 'experiment_set.xml'))
+        cls._expected_run_set_xml_biis3 = etree.parse(os.path.join(cls._sra_data_dir, 'BII-S-3', 'run_set.xml'))
 
-        self._expected_submission_xml_biis7 = etree.parse(os.path.join(self._sra_data_dir, 'BII-S-7', 'submission.xml'))
-        self._expected_project_set_xml_biis7 = etree.parse(os.path.join(self._sra_data_dir, 'BII-S-7', 'project_set.xml'))
-        self._expected_sample_set_xml_biis7 = etree.parse(os.path.join(self._sra_data_dir, 'BII-S-7', 'sample_set.xml'))
-        self._expected_experiment_set_xml_biis7 = etree.parse(os.path.join(self._sra_data_dir, 'BII-S-7', 'experiment_set.xml'))
-        self._expected_run_set_xml_biis7 = etree.parse(os.path.join(self._sra_data_dir, 'BII-S-7', 'run_set.xml'))
+        cls._expected_submission_xml_biis7 = etree.parse(os.path.join(cls._sra_data_dir, 'BII-S-7', 'submission.xml'))
+        cls._expected_project_set_xml_biis7 = etree.parse(os.path.join(cls._sra_data_dir, 'BII-S-7', 'project_set.xml'))
+        cls._expected_sample_set_xml_biis7 = etree.parse(os.path.join(cls._sra_data_dir, 'BII-S-7', 'sample_set.xml'))
+        cls._expected_experiment_set_xml_biis7 = etree.parse(os.path.join(cls._sra_data_dir, 'BII-S-7', 'experiment_set.xml'))
+        cls._expected_run_set_xml_biis7 = etree.parse(os.path.join(cls._sra_data_dir, 'BII-S-7', 'run_set.xml'))
 
-
-        self._sra_default_config = {
+        cls._sra_default_config = {
             "sra_broker": "",
             "sra_center": "OXFORD",
             "sra_project": "OXFORD",
@@ -46,6 +45,9 @@ class TestJsonToSra(TestCase):
             "sra_broker_inform_on_error": "proccaserra@gmail.com",
             "sra_broker_contact_name": "PRS"
         }
+
+    def setUp(self):
+        self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)

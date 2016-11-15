@@ -6,8 +6,9 @@ import os
 
 class TestImportSampleData(unittest.TestCase):
 
-    def setUp(self):
-        self._json_data_dir = utils.JSON_DATA_DIR
+    @classmethod
+    def setUpClass(cls):
+        cls._json_data_dir = utils.JSON_DATA_DIR
 
     def test_import_bii_i_1(self):
         test_case = 'BII-I-1'

@@ -7,12 +7,6 @@ import os
 
 class TestSimpleExamples(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
     def test_create_simple_ISAtab_example(self):
         from isatools.examples import createSimpleISAtab
         sys.stdout = six.StringIO()
