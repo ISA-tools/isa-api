@@ -15,11 +15,9 @@ import warnings as warnings_
 from lxml import etree as etree_
 import os
 
-config_dict = dict()
-
 
 def load(config_dir):
-    global config_dict
+    config_dict = dict()
     for file in os.listdir(config_dir):
         if file.endswith(".xml"):
             try:
@@ -32,8 +30,7 @@ def load(config_dir):
     return config_dict
 
 
-def get_config(measurement_type=None, technology_type=None):
-    global config_dict
+def get_config(config_dict, measurement_type=None, technology_type=None):
     try:
         config = config_dict[(measurement_type, technology_type)].isatab_configuration[0]
         from collections import OrderedDict
