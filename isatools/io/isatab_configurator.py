@@ -25,15 +25,9 @@ if six.PY3:
 else:
     from cgi import escape
 
-
-
-
-config_dict = {}
-
-
 def load(config_dir):
-    global config_dict
-    for file in glob.glob(os.path.join(config_dir, '*.xml')):
+    config_dict = dict()
+    for file in glob.iglob(os.path.join(config_dir, '*.xml'):
         try:
             config_obj = parse(inFileName=file, silence=True)
             measurement_type = config_obj.get_isatab_configuration()[0].get_measurement().get_term_label()
@@ -44,8 +38,7 @@ def load(config_dir):
     return config_dict
 
 
-def get_config(measurement_type=None, technology_type=None):
-    global config_dict
+def get_config(config_dict, measurement_type=None, technology_type=None):
     try:
         config = config_dict[(measurement_type, technology_type)].isatab_configuration[0]
 
