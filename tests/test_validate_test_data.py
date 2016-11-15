@@ -8,7 +8,7 @@ import functools
 import six
 
 from isatools import isajson, isatab
-import utils
+from tests import utils
 
 # This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
 open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rU')

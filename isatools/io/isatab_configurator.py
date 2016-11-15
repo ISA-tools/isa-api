@@ -33,7 +33,6 @@ config_dict = {}
 
 def load(config_dir):
     global config_dict
-    print(len(config_dict))
     for file in glob.glob(os.path.join(config_dir, '*.xml')):
         try:
             config_obj = parse(inFileName=file, silence=True)
