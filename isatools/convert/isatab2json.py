@@ -1,6 +1,9 @@
+# coding: utf-8
+from __future__ import unicode_literals
+
 import json
 import os
-from os.path import join
+import functools
 from isatools.io.isatab_parser import parse
 from jsonschema import RefResolver, Draft4Validator
 from uuid import uuid4
@@ -8,11 +11,16 @@ from enum import Enum
 import re
 from isatools import isatab
 import logging
+import glob
+import six
+
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
+SCHEMAS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "schemas", "isa_model_version_1_0_schemas", "core")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
 
 
@@ -25,14 +33,15 @@ class IdentifierType(Enum):
 def convert(work_dir, identifier_type=IdentifierType.name, validate_first=True):
     if validate_first:
         logger.info("Validating input ISA tab before conversion")
-        i_files = [f for f in os.listdir(work_dir) if f.startswith('i_') and f.endswith('.txt')]
+        i_files = glob.glob(os.path.join(work_dir, "i_*.txt"))
         if len(i_files) != 1:
             logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
             return
-        report = isatab.validate2(fp=open(os.path.join(work_dir, i_files[0])), log_level=logging.ERROR)
-        if len(report['errors']) > 0:
-            logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
-            return
+        with open(os.path.join(work_dir, i_files[0])) as handler:
+            report = isatab.validate2(fp=handler, log_level=logging.ERROR)
+            if report['errors']:
+                logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
+                return
     converter = ISATab2ISAjson_v1(identifier_type)
     logger.info("Converting ISA-Tab to ISA JSON...")
     return converter.convert(work_dir)
@@ -55,7 +64,7 @@ class ISATab2ISAjson_v1:
         self.identifier_type = identifier_type
 
     def setIdentifier(self, type, name, identifier):
-        self.identifiers.append(dict([("type", type), ("name", name), ("identifier", identifier)]))
+        self.identifiers.append({"type": type, "name": name, "identifier": identifier})
 
     def getIdentifier(self, type, name):
         for subVal in self.identifiers:
@@ -68,14 +77,17 @@ class ISATab2ISAjson_v1:
         except KeyError:
             self.counters[type] = 1
 
-        identifier = ""
-
         if self.identifier_type==IdentifierType.counter:
-            identifier = "http://data.isa-tools.org/"+type+"/"+str(self.counters[type])
+            identifier = "http://data.isa-tools.org/{}/{}".format(type, self.counters[type])
         elif self.identifier_type == IdentifierType.uuid:
-            identifier = "http://data.isa-tools.org/UUID/"+str(uuid4())
+            identifier = "http://data.isa-tools.org/UUID/{}".format(uuid4())
         elif self.identifier_type == IdentifierType.name:
-            identifier = "#"+type+"/"+name.replace (" ", "_")
+            try:
+                identifier = "#{}/{}".format(type, name.replace(" ", "_"))
+            except UnicodeDecodeError:
+                identifier = "#{}/{}".format(type, name.decode('utf-8').replace(" ", "_"))
+        else:
+            identifier = ""
 
         self.setIdentifier(type, name, identifier)
         return identifier
@@ -91,12 +103,11 @@ class ISATab2ISAjson_v1:
 
 
         isa_tab = parse(work_dir)
-        #print(isa_tab)
 
         if isa_tab is None:
             logger.fatal("No ISAtab dataset found")
         else:
-                if isa_tab.metadata != {}:
+                if isa_tab.metadata:
                     #print("isa_tab.metadata->",isa_tab.metadata)
                     isa_json = dict([
                         ("identifier",isa_tab.metadata['Investigation Identifier']),
@@ -112,8 +123,10 @@ class ISATab2ISAjson_v1:
                     ])
 
                 #validate json
-                schema = json.load(open(join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)))
-                resolver = RefResolver('file://'+join(SCHEMAS_PATH, INVESTIGATION_SCHEMA), schema)
+                with open(os.path.join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)) as investigation_schema:
+                    schema = json.load(investigation_schema)
+
+                resolver = RefResolver('file://'+os.path.join(SCHEMAS_PATH, INVESTIGATION_SCHEMA), schema)
                 validator = Draft4Validator(schema, resolver=resolver)
                 validator.validate(isa_json, schema)
 
@@ -123,7 +136,7 @@ class ISATab2ISAjson_v1:
     def createComments(self, isadict):
         comments = []
         comments_regex = re.compile('Comment\[(.*?)\]')
-        for k in [k for k in isadict.keys() if comments_regex.match(k)]:
+        for k in (k for k in six.iterkeys(isadict) if comments_regex.match(k)):
             comments.append(self.createComment(comments_regex.findall(k)[0], isadict[k]))
         return comments
 
@@ -247,8 +260,8 @@ class ISATab2ISAjson_v1:
         term_source_array = object[inv_or_study+type+" Term Source REF"].split(";")
         term_accession_array = object[inv_or_study+type+" Term Accession Number"].split(";")
         onto_annotations = []
-        for i in range(0,len(name_array)):
-             if (not name_array[i]):
+        for i in six.moves.range(len(name_array)):
+             if not name_array[i]:
                  continue
              onto_ann = self.createOntologyAnnotation(name_array[i],
                                                       term_source_array[i],
@@ -398,9 +411,9 @@ class ISATab2ISAjson_v1:
             ])
 
             if previous_process_identifier:
-                json_item.update({  "previousProcess" : dict([("@id", previous_process_identifier)]) })
+                json_item["previousProcess"] = {"@id": previous_process_identifier}
             if next_process_identifier:
-                json_item.update({ "nextProcess" :  dict([("@id", next_process_identifier)]) })
+                json_item["nextProcess"] = {"@id": next_process_identifier}
             json_list.append(json_item)
         return json_list
 
@@ -409,26 +422,26 @@ class ISATab2ISAjson_v1:
         for argument in inputs:
             try:
                 json_item = source_dict[argument]
-                source_id = dict([("@id", json_item["@id"])])
+                source_id = {"@id": json_item["@id"]}
                 json_list.append(source_id)
             except KeyError:
                 pass
             try:
                 json_item = sample_dict[argument]
-                sample_id = dict([("@id", json_item["@id"])])
+                sample_id = {"@id": json_item["@id"]}
                 json_list.append(sample_id)
             except KeyError:
                 pass
             try:
                 json_item = material_dict[argument]
-                material_id = dict([("@id", json_item["@id"])])
+                material_id = {"@id": json_item["@id"]}
                 json_list.append(material_id)
             except KeyError:
                 pass
 
             try:
                 json_item = data_dict[argument]
-                data_id = dict([("@id", json_item["@id"])])
+                data_id = {"@id": json_item["@id"]}
                 json_list.append(data_id)
             except KeyError:
                 pass
@@ -501,7 +514,7 @@ class ISATab2ISAjson_v1:
     def createFromNodeComments(self, node):
         comments = []
         comments_regex = re.compile('Comment\[(.*?)\]')
-        for key in [key for key in node.metadata.keys() if comments_regex.match(key)]:
+        for key in (key for key in six.iterkeys(node.metadata) if comments_regex.match(key)):
             comments.append(self.createComment(comments_regex.findall(key)[0], getattr(
                 node.metadata[key][0], comments_regex.findall(key)[0].replace(' ', '_'))))
         return comments
@@ -517,7 +530,7 @@ class ISATab2ISAjson_v1:
                     ("type", nodes[node_index].ntype),
                     ("comments", self.createFromNodeComments(nodes[node_index]))
                 ])
-                json_dict.update({node_index: json_item})
+                json_dict[node_index] = json_item
         return json_dict
 
     def createSampleDictionary(self, nodes):
@@ -545,7 +558,7 @@ class ISATab2ISAjson_v1:
                 except KeyError:
                      logger.error("There is no source declared for sample {}".format(node_index))
 
-                json_dict.update({node_index: json_item})
+                json_dict[node_index] = json_item
 
         return json_dict
 
@@ -580,7 +593,7 @@ class ISATab2ISAjson_v1:
                     ("name", node_index),
                     ("characteristics", self.createValueList(self.CHARACTERISTICS, node_index, nodes[node_index])),
                 ])
-                json_dict.update({node_index: json_item})
+                json_dict[node_index] = json_item
         return json_dict
 
     def createMaterialDictionary(self, nodes):
@@ -594,7 +607,7 @@ class ISATab2ISAjson_v1:
                     ("type", nodes[node_index].ntype),
                     ("characteristics", self.createValueList(self.CHARACTERISTICS, node_index, nodes[node_index])),
                 ])
-                json_dict.update({node_index: json_item})
+                json_dict[node_index] = json_item
         return json_dict
 
     def createCharacteristicsCategories(self, nodes):

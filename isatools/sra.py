@@ -1,14 +1,23 @@
+# coding: utf-8
+from __future__ import absolute_import
+
 import logging
 import os
 import iso8601
 import jinja2
-import html
 import datetime
 import hashlib
 from functools import partial
 from lxml import etree
 import xml.dom.minidom
-from isatools.model.v1 import Sample, OntologyAnnotation, DataFile
+
+try:
+    from html import escape
+except:
+    from cgi import escape
+
+
+from .model.v1 import Sample, OntologyAnnotation, DataFile
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -87,10 +96,11 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
         # Flag SRA contacts for template
         has_sra_contact = False
         for contact in istudy.contacts:
-            if "sra inform on status" in [r.term.lower() for r in contact.roles]:
+            contact_roles_names = {r.term.lower() for r in contact.roles}
+            if "sra inform on status" in contact_roles_names:
                 contact.inform_on_status = True
                 has_sra_contact = True
-            if "sra inform on error" in [r.term.lower() for r in contact.roles]:
+            if "sra inform on error" in contact_roles_names:
                 contact.inform_on_error = True
                 has_sra_contact = True
         if not has_sra_contact:
@@ -99,11 +109,11 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                 "ensure you have one contact with a 'Role' as 'SRA Inform On Status', otherwise we cannot "
                 "export to SRA.".format(istudy.identifier))
 
-        if istudy.submission_date is None or istudy.submission_date == '':
+        if istudy.submission_date is None or not istudy.submission_date:
             istudy.submission_date = iso8601.parse_date(datetime.date.today().isoformat(), iso8601.UTC).isoformat()
         else:
             istudy.submission_date = iso8601.parse_date(istudy.submission_date, iso8601.UTC).isoformat()
-        istudy.description = html.escape(istudy.description)  # ideally make it a requirement in the model or JSON to have html escaped content
+        istudy.description = escape(istudy.description)  # ideally make it a requirement in the model or JSON to have html escaped content
 
         env = jinja2.Environment()
         env.loader = jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), 'resources', 'sra_templates'))
@@ -127,8 +137,8 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
         assays_to_export = list()
         for iassay in istudy.assays:
             if (iassay.measurement_type.term, iassay.technology_type.term) in supported_sra_assays:
-                assay_seq_processes = [a for a in iassay.process_sequence if a.executes_protocol.protocol_type.term ==
-                                       'nucleic acid sequencing']
+                assay_seq_processes = (a for a in iassay.process_sequence
+                                         if a.executes_protocol.protocol_type.term=='nucleic acid sequencing')
                 for assay_seq_process in assay_seq_processes:
                     do_export = True
                     if get_comment(assay_seq_process, 'export') is not None:
@@ -187,23 +197,23 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                         assay_to_export['targeted_loci'] = False
                         assay_to_export['min_match'] = 0
                         # BEGIN genome seq library selection
-                        if iassay.measurement_type.term in ['genome sequencing', 'whole genome sequencing']:
+                        if iassay.measurement_type.term in {'genome sequencing', 'whole genome sequencing'}:
                             library_source = get_pv(assay_to_export['library construction'],
                                                       'library source')
-                            if library_source.upper() not in ['GENOMIC', 'GENOMIC SINGLE CELL', 'METAGENOMIC', 'OTHER']:
-                                logger.warn("ERROR:value supplied is not compatible with SRA1.5 schema " + library_source)
+                            if library_source.upper() not in {'GENOMIC', 'GENOMIC SINGLE CELL', 'METAGENOMIC', 'OTHER'}:
+                                logger.warning("ERROR:value supplied is not compatible with SRA1.5 schema " + library_source)
                                 library_source = 'OTHER'
 
                             library_strategy = get_pv(assay_to_export['library construction'],
                                                       'library strategy')
-                            if library_strategy.upper() not in ['WGS', 'OTHER']:
-                                logger.warn("ERROR:value supplied is not compatible with SRA1.5 schema " + library_strategy)
+                            if library_strategy.upper() not in {'WGS', 'OTHER'}:
+                                logger.warning("ERROR:value supplied is not compatible with SRA1.5 schema " + library_strategy)
                                 library_strategy = 'OTHER'
 
                             library_selection = get_pv(assay_to_export['library construction'],
                                                        'library selection')
-                            if library_selection not in ['RANDOM', 'UNSPECIFIED']:
-                                logger.warn("ERROR:value supplied is not compatible with SRA1.5 schema " + library_selection)
+                            if library_selection not in {'RANDOM', 'UNSPECIFIED'}:
+                                logger.warning("ERROR:value supplied is not compatible with SRA1.5 schema " + library_selection)
                                 library_selection = 'unspecified'
 
                             protocol = "\n protocol_description: " \
@@ -221,7 +231,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             assay_to_export['library_layout'] = library_layout.lower()
                         # END genome seq library selection
                         # BEGIN environmental gene survey library selection
-                        elif iassay.measurement_type.term in ['environmental gene survey']:
+                        elif iassay.measurement_type.term in {'environmental gene survey'}:
                             assay_to_export['library_source'] = 'METAGENOMIC'
                             assay_to_export['library_strategy'] = 'AMPLICON'
                             assay_to_export['library_selection'] = 'PCR'
@@ -265,19 +275,19 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 assay_to_export['locus_name'] = target_gene
                         # END environmental gene survey library selection
                         # BEGIN metagenome seq library selection
-                        elif iassay.measurement_type.term in ['metagenome sequencing']:
+                        elif iassay.measurement_type.term in {'metagenome sequencing'}:
                             library_source = 'METAGENOMIC'
                             library_strategy = get_pv(assay_to_export['library construction'],
                                                       'library strategy')
-                            if library_strategy.upper() not in ['WGS', 'OTHER']:
-                                logger.warn(
+                            if library_strategy.upper() not in {'WGS', 'OTHER'}:
+                                logger.warning(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_strategy)
                                 library_strategy = 'OTHER'
 
                             library_selection = get_pv(assay_to_export['library construction'],
                                                        'library selection')
-                            if library_selection not in ['RANDOM', 'UNSPECIFIED']:
-                                logger.warn(
+                            if library_selection not in {'RANDOM', 'UNSPECIFIED'}:
+                                logger.warning(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_selection)
                                 library_selection = 'unspecified'
 
@@ -296,32 +306,32 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             assay_to_export['library_layout'] = library_layout.lower()
                         # END metagenome seq library selection
                         # BEGIN transciption profiling library selection
-                        elif iassay.measurement_type.term in ['transcription profiling']:
+                        elif iassay.measurement_type.term in {'transcription profiling'}:
                             library_source = get_pv(assay_to_export['library construction'],
                                                     'library source')
                             if library_source is None:  # if not specified, select TRANSCRIPTOMIC by default
                                 library_source = 'TRANSCRIPTOMIC'
 
-                            if library_source.upper() not in ['TRANSCRIPTOMIC', 'TRANSCRIPTOMIC SINGLE CELL',
-                                                              'METATRANSCRIPTOMIC', 'OTHER']:
-                                logger.warn(
+                            if library_source.upper() not in {'TRANSCRIPTOMIC', 'TRANSCRIPTOMIC SINGLE CELL',
+                                                              'METATRANSCRIPTOMIC', 'OTHER'}:
+                                logger.warning(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_source)
                                 library_source = 'OTHER'
 
                             library_strategy = get_pv(assay_to_export['library construction'],
                                                       'library strategy')
-                            if library_strategy not in ['RNA-Seq', 'ssRNA-Seq', 'miRNA-Seq', 'ncRNA-Seq', 'FL-cDNA',
-                                                        'EST', 'OTHER']:
-                                logger.warn(
+                            if library_strategy not in {'RNA-Seq', 'ssRNA-Seq', 'miRNA-Seq', 'ncRNA-Seq', 'FL-cDNA',
+                                                        'EST', 'OTHER'}:
+                                logger.warning(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_strategy)
                                 library_strategy = 'OTHER'
 
                             library_selection = get_pv(assay_to_export['library construction'],
                                                        'library selection')
-                            if library_selection not in ['RT-PCR', 'cDNA', "cDNA_randomPriming", "cDNA_oligo_dT",
+                            if library_selection not in {'RT-PCR', 'cDNA', "cDNA_randomPriming", "cDNA_oligo_dT",
                                                          "PolyA", "Oligo-dT", "Inverse rRNA", "Inverse rRNA selection",
-                                                         "CAGE", "RACE", "other"]:
-                                logger.warn(
+                                                         "CAGE", "RACE", "other"}:
+                                logger.warning(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_selection)
                                 library_selection = 'other'
 
@@ -386,19 +396,19 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
 
         if os.path.exists(export_path):
             with open(os.path.join(export_path, 'submission.xml'), 'w') as xsub_file:
-                print(prettify(xsub), file=xsub_file)
+                xsub_file.write(prettify(xsub))
             validate(os.path.join(export_path, 'submission.xml'), 'SRA.submission.xsd')
             with open(os.path.join(export_path, 'project_set.xml'), 'w') as xproj_set_file:
-                print(prettify(xproj), file=xproj_set_file)
+                xproj_set_file.write(prettify(xproj))
             validate(os.path.join(export_path, 'project_set.xml'), 'ENA.project.xsd')
             with open(os.path.join(export_path, 'experiment_set.xml'), 'w') as xexp_set_file:
-                print(prettify(xexp_set), file=xexp_set_file)
+                xexp_set_file.write(prettify(xexp_set))
             validate(os.path.join(export_path, 'experiment_set.xml'), 'SRA.experiment.xsd')
             with open(os.path.join(export_path, 'run_set.xml'), 'w') as xrun_set_file:
-                print(prettify(xrun_set), file=xrun_set_file)
+                xrun_set_file.write(prettify(xrun_set))
             validate(os.path.join(export_path, 'run_set.xml'), 'SRA.run.xsd')
             with open(os.path.join(export_path, 'sample_set.xml'), 'w') as xsample_set_file:
-                print(prettify(xsample_set), file=xsample_set_file)
+                xsample_set_file.write(prettify(xsample_set))
             validate(os.path.join(export_path, 'sample_set.xml'), 'SRA.sample.xsd')
         else:
             raise NotADirectoryError("export path '{}' is not a directory".format(export_path))
@@ -416,6 +426,12 @@ def create_datafile_hashes(fileroot, filenames):
     >>> filenames = [f for f in listdir('/path/to/my/files') if f.endswith('.fastq.gz')]
     >>> create_datafile_hashes(fileroot='/path/to/my/files', filenames=filesnames)
     { 'myfile1.gz': 'd41d8cd98f00b204e9800998ecf8427e', 'myfile2.gz': 'd41d8cd98f00b204e9800998ecf8427e' }
+
+    Or with glob:
+    >>> from glob import glob
+    >>> create_datafile_hashes(fileroot='/path/to/my/files', filenames=glob("/path/to/my/files/*.fastq.gz"))
+    { 'myfile1.gz': 'd41d8cd98f00b204e9800998ecf8427e', 'myfile2.gz': 'd41d8cd98f00b204e9800998ecf8427e' }
+
     """
     def md5sum(filename):
         with open(filename, mode='rb') as f:
@@ -425,10 +441,10 @@ def create_datafile_hashes(fileroot, filenames):
         return d.hexdigest()
 
     from os.path import isfile, join
-    datafilehashes = dict()
+    datafilehashes = {}
     for file in filenames:
         if isfile(join(fileroot, file)):
             datafilehashes[file] = md5sum(filename=join(fileroot, file))
         else:
-            raise FileNotFoundError("{} is not a file".format(join(fileroot, file)))
+            raise IOError("{} is not a file".format(join(fileroot, file)))
     return datafilehashes

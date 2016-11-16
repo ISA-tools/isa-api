@@ -1,19 +1,26 @@
+# coding: utf-8
 import unittest
-from isatools import isajson, isatab
 import os
+import re
+import logging
+import functools
+import six
+
+from isatools import isajson, isatab
 from tests import utils
 import tempfile
 import shutil
 
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
+
 
 class TestValidateIsaJson(unittest.TestCase):
 
-    def setUp(self):
-        self._unit_json_data_dir = utils.UNIT_JSON_DATA_DIR
-        self._configs_json_data_dir = utils.JSON_DEFAULT_CONFIGS_DATA_DIR
-
-    def tearDown(self):
-        pass
+    @classmethod
+    def setUpClass(cls):
+        cls._unit_json_data_dir = utils.UNIT_JSON_DATA_DIR
+        cls._configs_json_data_dir = utils.JSON_DEFAULT_CONFIGS_DATA_DIR
 
     def test_validate_isajson_json_load(self):
         """Tests against 0002"""
@@ -228,7 +235,7 @@ class TestValidateIsaJson(unittest.TestCase):
     def test_validate_isajson_load_config(self):
         """Tests against 4001"""
         try:
-            isajson.load_config(os.path.join(self._configs_json_data_dir))
+            isajson.load_config(self._configs_json_data_dir)#os.path.join(self._configs_json_data_dir))
         except IOError as e:
             self.fail("Could not load config because... " + str(e))
 
@@ -254,7 +261,8 @@ class TestValidateIsaJson(unittest.TestCase):
 
     def test_validate_isajson_assay_config_validation(self):
         """Tests against 4004"""
-        report = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'assay_config.json')))
+        with open(os.path.join(self._unit_json_data_dir, 'assay_config.json')) as json_file:
+            report = isajson.validate(json_file)
         if 4004 in [e['code'] for e in report['warnings']]:
             self.fail("Validation failed against transcription_seq.json configuration, when it should have passed")
         report = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'assay_config_fail.json')))
@@ -282,6 +290,7 @@ class TestValidateIsaTab(unittest.TestCase):
         if not report['validation_finished']:
             self.fail("Validation did not complete successfully when it should have!")
         elif len(report['errors'] + report['warnings']) == 0:
+            print(report)
             self.fail("Validation error and warnings are missing when should report some with BII-S-3")
 
     def test_validate_isatab_bii_s_7(self):

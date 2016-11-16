@@ -13,3 +13,8 @@ chardet
 jinja2
 deepdiff
 bs4
+mock
+enum34
+six
+pathlib2
+pytz

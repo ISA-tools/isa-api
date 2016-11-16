@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 """ISA Model 1.0 implementation in Python.
 
 This module implements the ISA Abstract Model 1.0 as Python classes, as
@@ -13,26 +13,28 @@ Todo:
 .. _ISA Model and Serialization Specifications 1.0: http://isa-specs.readthedocs.io/
 
 """
+from __future__ import absolute_import
 
 import networkx as nx
+import six
 
+from .utils import accepts
 
 def _build_assay_graph(process_sequence=list()):
     G = nx.DiGraph()
     for process in process_sequence:
-        if process.next_process is not None or len(
-                process.outputs) > 0:  # first check if there's some valid outputs to connect
-            if len(process.outputs) > 0:
-                for output in [n for n in process.outputs if not isinstance(n, DataFile)]:
+        if process.next_process is not None or process.outputs:  # first check if there's some valid outputs to connect
+            if process.outputs:
+                for output in (n for n in process.outputs if not isinstance(n, DataFile)):
                     G.add_edge(process, output)
             else:  # otherwise just connect the process to the next one
                 G.add_edge(process, process.next_process)
-        if process.prev_process is not None or len(process.inputs) > 0:
-            if len(process.inputs) > 0:
-                for input_ in process.inputs:
-                    G.add_edge(input_, process)
-            else:
-                G.add_edge(process.prev_process, process)
+        #if process.prev_process is not None or process.inputs > 0:
+        if process.inputs:
+            for input_ in process.inputs:
+                G.add_edge(input_, process)
+        elif process.prev_process is not None:
+            G.add_edge(process.prev_process, process)
     return G
 
 
@@ -54,27 +56,21 @@ class Comment(object):
         return self.__name
 
     @name.setter
+    @accepts(six.text_type, None, allow_empty=False)
     def name(self, name):
-        if not isinstance(name, str):
-            raise AttributeError("Comment.name must be a str")
-        elif name.strip() == '':
-            raise AttributeError("Comment.name must not be empty")
-        else:
-            self.__name = name
+        self.__name = name
 
     @property
     def value(self):
-        if self.__value is '':
+        if not self.__value:
             return None
         else:
             return self.__value
 
     @value.setter
+    @accepts(six.text_type, int, float, None)
     def value(self, value):
-        if value is not None and not isinstance(value, (str, int, float)):  # allow instance of str, int, float or None
-            raise AttributeError("Comment.value must be an instance of str, int, float, or None")
-        else:
-            self.__value = value
+        self.__value = value
 
 
 class Commentable(object):
@@ -91,11 +87,9 @@ class Commentable(object):
         return self.__comments
 
     @comments.setter
+    @accepts(list, None)
     def comments(self, comments):
-        if comments is not None and not isinstance(comments, list):
-            raise AttributeError("comments must be an instance of list or None")
-        else:
-            self.__comments = comments
+        self.__comments = comments
 
 
 class Investigation(Commentable):
@@ -118,7 +112,7 @@ class Investigation(Commentable):
     def __init__(self, id_='', filename='', identifier="", title="", description="", submission_date='',
                  public_release_date='', ontology_source_references=None, publications=None,
                  contacts=None, studies=None, comments=None):
-        super().__init__(comments)
+        super(Investigation, self).__init__(comments)
         self.id = id_
         self.filename = filename
         self.identifier = identifier
@@ -126,25 +120,29 @@ class Investigation(Commentable):
         self.description = description
         self.submission_date = submission_date
         self.public_release_date = public_release_date
-        if ontology_source_references is None:
-            self.ontology_source_references = list()
-        else:
-            self.ontology_source_references = ontology_source_references
-        if publications is None:
-            self.publications = list()
-        else:
-            self.publications = publications
-        if contacts is None:
-            self.contacts = list()
-        else:
-            self.contacts = contacts
-        if studies is None:
-            self.studies = list()
-        else:
-            self.studies = studies
+        # if ontology_source_references is None:
+        #     self.ontology_source_references = list()
+        # else:
+        #     self.ontology_source_references = ontology_source_references
+        # if publications is None:
+        #     self.publications = list()
+        # else:
+        #     self.publications = publications
+        # if contacts is None:
+        #     self.contacts = list()
+        # else:
+        #     self.contacts = contacts
+        # if studies is None:
+        #     self.studies = list()
+        # else:
+        #     self.studies = studies
         if comments is None:
             self.comments = list()
 
+        self.ontology_source_references = ontology_source_references or []
+        self.publications = publications or []
+        self.contacts = contacts or []
+        self.studies = studies or []
 
 class OntologySource(Commentable):
     """An OntologySource describes the resource from which the value of an OntologyAnnotation is derived from.
@@ -158,7 +156,7 @@ class OntologySource(Commentable):
     """
 
     def __init__(self, name, file=None, version=None, description=None, comments=None):
-        super().__init__(comments)
+        super(OntologySource, self).__init__(comments)
         self.name = name
         self.file = file
         self.version = version
@@ -169,55 +167,45 @@ class OntologySource(Commentable):
         return self.__name
 
     @name.setter
+    @accepts(six.text_type, None, allow_empty=False)
     def name(self, name):
-        if not isinstance(name, str):
-            raise AttributeError("OntologySource.name must be a str")
-        elif name.strip() == '':
-            raise AttributeError("OntologySource.name must not be empty")
-        else:
-            self.__name = name
+        self.__name = name
 
     @property
     def file(self):
-        if self.__file is '':
+        if not self.__file:
             return None
         else:
             return self.__file
 
     @file.setter
+    @accepts(six.text_type, None)
     def file(self, file):
-        if file is not None and not isinstance(file, str):
-            raise AttributeError("OntologySource.file must be a str or None")
-        else:
-            self.__file = file
+        self.__file = file
 
     @property
     def version(self):
-        if self.__version is '':
+        if not self.__version:
             return None
         else:
             return self.__version
 
     @version.setter
+    @accepts(six.text_type, None)
     def version(self, version):
-        if version is not None and not isinstance(version, str):
-            raise AttributeError("OntologySource.version must be a str or None")
-        else:
-            self.__version = version
+        self.__version = version
 
     @property
     def description(self):
-        if self.__description is '':
+        if not self.__description:
             return None
         else:
             return self.__description
 
     @description.setter
+    @accepts(six.text_type, None)
     def description(self, description):
-        if description is not None and not isinstance(description, str):
-            raise AttributeError("OntologySource.description must be a str or None")
-        else:
-            self.__description = description
+        self.__description = description
 
 
 class OntologyAnnotation(Commentable):
@@ -231,7 +219,7 @@ class OntologyAnnotation(Commentable):
     """
 
     def __init__(self, term=None, term_source=None, term_accession=None, comments=None, id_=''):
-        super().__init__(comments)
+        super(OntologyAnnotation, self).__init__(comments)
 
         self.term = term
         self.term_source = term_source
@@ -240,42 +228,36 @@ class OntologyAnnotation(Commentable):
 
     @property
     def term(self):
-        if self.__term is '':
+        if not self.__term:
             return None
         else:
             return self.__term
 
     @term.setter
+    @accepts(six.text_type, None)
     def term(self, term):
-        if term is not None and not isinstance(term, str):
-            raise AttributeError("OntologyAnnotation.term must be a str or None; got {}:{}".format(term, type(term)))
-        else:
-            self.__term = term
+        self.__term = term
 
     @property
     def term_source(self):
         return self.__term_source
 
     @term_source.setter
+    @accepts(OntologySource, None)
     def term_source(self, term_source):
-        if term_source is not None and not isinstance(term_source, OntologySource):
-            raise AttributeError("OntologyAnnotation.term_source must be a OntologySource or None; got {}:{}".format(term_source, type(term_source)))
-        else:
-            self.__term_source = term_source
+        self.__term_source = term_source
 
     @property
     def term_accession(self):
-        if self.__term is '':
+        if not self.__term:
             return None
         else:
             return self.__term_accession
 
     @term_accession.setter
+    @accepts(six.text_type, None)
     def term_accession(self, term_accession):
-        if term_accession is not None and not isinstance(term_accession, str):
-            raise AttributeError("OntologyAnnotation.term_accession must be a str or None")
-        else:
-            self.__term_accession = term_accession
+        self.__term_accession = term_accession
 
 
 class Publication(Commentable):
@@ -291,7 +273,7 @@ class Publication(Commentable):
     """
 
     def __init__(self, pubmed_id=None, doi=None, author_list=None, title=None, status=None, comments=None):
-        super().__init__(comments)
+        super(Publication, self).__init__(comments)
         self.pubmed_id = pubmed_id
         self.doi = doi
         self.author_list = author_list
@@ -300,59 +282,51 @@ class Publication(Commentable):
 
         @property
         def pubmed_id(self):
-            if self.__pubmed_id is '':
+            if not self.__pubmed_id:
                 return None
             else:
                 return self.__pubmed_id
 
         @pubmed_id.setter
+        @accepts(six.text_type, None)
         def pubmed_id(self, pubmed_id):
-            if pubmed_id is not None and not isinstance(pubmed_id, str):
-                raise AttributeError("Publication.pubmed_id must be a str or None")
-            else:
-                self.__pubmed_id = pubmed_id
+            self.__pubmed_id = pubmed_id
 
         @property
         def doi(self):
-            if self.__doi is '':
+            if not self.__doi:
                 return None
             else:
                 return self.__doi
 
         @doi.setter
+        @accepts(six.text_type, None)
         def doi(self, doi):
-            if doi is not None and not isinstance(doi, str):
-                raise AttributeError("Publication.doi must be a str or None")
-            else:
-                self.__doi = doi
+            self.__doi = doi
 
         @property
         def author_list(self):
-            if self.__author_list is '':
+            if not self.__author_list:
                 return None
             else:
                 return self.__author_list
 
         @author_list.setter
+        @accepts(six.text_type, None)
         def doi(self, author_list):
-            if author_list is not None and not isinstance(author_list, str):
-                raise AttributeError("Publication.author_list must be a str or None")
-            else:
-                self.__author_list = author_list
+            self.__author_list = author_list
 
         @property
         def status(self):
-            if self.__status is '':
+            if not self.__status:
                 return None
             else:
                 return self.__status
 
         @status.setter
+        @accepts(OntologyAnnotation, six.text_type, None)
         def status(self, status):
-            if status is not None and not isinstance(status, (OntologyAnnotation, str)):
-                raise AttributeError("Publication.status must be a str, OntologyAnnotation or None")
-            else:
-                self.__status = status
+            self.__status = status
 
 
 class Person(Commentable):
@@ -375,7 +349,7 @@ class Person(Commentable):
 
     def __init__(self, first_name=None, last_name=None, mid_initials=None, email=None, phone=None, fax=None,
                  address=None, affiliation=None, roles=None, comments=None, id_=''):
-        super().__init__(comments)
+        super(Person, self).__init__(comments)
         self.id = id_
         self.last_name = last_name
         self.first_name = first_name
@@ -417,7 +391,7 @@ class Study(Commentable, object):
                  public_release_date='', contacts=None, design_descriptors=None, publications=None,
                  factors=None, protocols=None, assays=None, sources=None, samples=None,
                  process_sequence=None, other_material=None, characteristic_categories=None, comments=None, units=None):
-        super().__init__(comments)
+        super(Study, self).__init__(comments)
         self.id = id_
         self.filename = filename
         self.identifier = identifier
@@ -426,70 +400,31 @@ class Study(Commentable, object):
         self.submission_date = submission_date
         self.public_release_date = public_release_date
 
-        if publications is None:
-            self.publications = list()
-        else:
-            self.publications = publications
-
-        if contacts is None:
-            self.contacts = list()
-        else:
-            self.contacts = contacts
-
-        if design_descriptors is None:
-            self.design_descriptors = list()
-        else:
-            self.design_descriptors = design_descriptors
-
-        if protocols is None:
-            self.protocols = list()
-        else:
-            self.protocols = protocols
-
-        if units is None:
-            self.units = list()
-        else:
-            self.units = units
+        self.publications = publications or []
+        self.contacts = contacts or []
+        self.design_descriptors = design_descriptors or []
+        self.protocols = protocols or []
+        self.units = units or []
 
         self.materials = {
-            'sources': list(),
-            'samples': list(),
-            'other_material': list()
+            'sources': [sources] if sources is not None else [],
+            'samples': [samples] if samples is not None else [],
+            'other_material': [other_material] if other_material is not None else [],
         }
-        if not (sources is None):
-            self.materials['sources'].append(sources)
-        if not (samples is None):
-            self.materials['samples'].append(samples)
-        if not (other_material is None):
-            self.materials['other_material'].append(other_material)
 
-        if process_sequence is None:
-            self.process_sequence = list()
-        else:
-            self.process_sequence = process_sequence
-
-        if assays is None:
-            self.assays = list()
-        else:
-            self.assays = assays
-
-        if factors is None:
-            self.factors = list()
-        else:
-            self.factors = factors
-
-        if characteristic_categories is None:
-            self.characteristic_categories = list()
-        else:
-            self.characteristic_categories = characteristic_categories
+        self.process_sequence = process_sequence or []
+        self.assays = assays or []
+        self.factors = factors or []
+        self.characteristic_categories = characteristic_categories or []
+        self._graph = None
 
     @property
     def graph(self):
         if len(self.process_sequence) > 0:
-            self.__graph = _build_assay_graph(self.process_sequence)
+            self._graph = _build_assay_graph(self.process_sequence)
         else:
-            self.__graph = None
-        return self.__graph
+            self._graph = None
+        return self._graph
 
     @graph.setter
     def graph(self, graph):
@@ -506,13 +441,14 @@ class StudyFactor(Commentable):
         comments (list, NoneType): Comments associated with instances of this class.
     """
     def __init__(self, id_='', name="", factor_type=None, comments=None):
-        super().__init__(comments)
+        super(StudyFactor, self).__init__(comments)
         self.id = id_
         self.name = name
-        if factor_type is None:
-            self.factor_type = OntologyAnnotation()
-        else:
-            self.factor_type = factor_type
+        self.factor_type = factor_type or OntologyAnnotation()
+        # if factor_type is None:
+        #     self.factor_type = OntologyAnnotation()
+        # else:
+        #     self.factor_type = factor_type
 
 
 class Assay(Commentable):
@@ -536,53 +472,29 @@ class Assay(Commentable):
     def __init__(self, measurement_type=None, technology_type=None, technology_platform="", filename="",
                  process_sequence=None, data_files=None, samples=None, other_material=None,
                  characteristic_categories=None, comments=None):
-        super().__init__(comments)
-        if measurement_type is None:
-            self.measurement_type = OntologyAnnotation()
-        else:
-            self.measurement_type = measurement_type
+        super(Assay, self).__init__(comments)
 
-        if technology_type is None:
-            self.technology_type = OntologyAnnotation()
-        else:
-            self.technology_type = technology_type
-
+        self.measurement_type = measurement_type or OntologyAnnotation()
+        self.technology_type = technology_type or OntologyAnnotation()
         self.technology_platform = technology_platform
         self.filename = filename
-
-        if process_sequence is None:
-            self.process_sequence = list()
-        else:
-            self.process_sequence = process_sequence
-
-        if data_files is None:
-            self.data_files = list()
-        else:
-            self.data_files = data_files
-
+        self.process_sequence = process_sequence or []
+        self.data_files = data_files or []
         self.materials = {
-            'samples': list(),
-            'other_material': list()
+            'samples': [samples] if samples is not None else [],
+            'other_material': [other_material] if other_material is not None else [],
         }
+        self.characteristic_categories = characteristic_categories or []
+        self._graph = None
 
-        if not (samples is None):
-            self.materials['samples'].append(samples)
-
-        if not (other_material is None):
-            self.materials['other_material'].append(other_material)
-
-        if characteristic_categories is None:
-            self.characteristic_categories = list()
-        else:
-            self.characteristic_categories = characteristic_categories
 
     @property
     def graph(self):
-        if len(self.process_sequence) > 0:
-            self.__graph = _build_assay_graph(self.process_sequence)
+        if self.process_sequence:
+            self._graph = _build_assay_graph(self.process_sequence)
         else:
-            self.__graph = None
-        return self.__graph
+            self._graph = None
+        return self._graph
 
     @graph.setter
     def graph(self, graph):
@@ -604,24 +516,16 @@ class Protocol(Commentable):
     """
     def __init__(self, id_='', name="", protocol_type=None, uri="", description="", version="", parameters=None,
                  components=None, comments=None):
-        super().__init__(comments)
+        super(Protocol, self).__init__(comments)
         self.id = id_
         self.name = name
-        if protocol_type is None:
-            self.protocol_type = OntologyAnnotation()
-        else:
-            self.protocol_type = protocol_type
+        self.protocol_type = protocol_type or OntologyAnnotation()
         self.description = description
         self.uri = uri
         self.version = version
-        if parameters is None:
-            self.parameters = list()
-        else:
-            self.parameters = parameters
-        if components is None:
-            self.components = list()
-        else:
-            self.components = components
+        self.parameters = parameters or []
+        self.components = components or []
+
 
 
 class ProtocolParameter(Commentable):
@@ -633,12 +537,13 @@ class ProtocolParameter(Commentable):
         comments (list, NoneType): Comments associated with instances of this class.
     """
     def __init__(self, id_='', parameter_name=None, unit=None, comments=None):
-        super().__init__(comments)
+        super(ProtocolParameter, self).__init__(comments)
         self.id = id_
-        if parameter_name is None:
-            self.parameter_name = OntologyAnnotation()
-        else:
-            self.parameter_name = parameter_name
+        # if parameter_name is None:
+        #     self.parameter_name = OntologyAnnotation()
+        # else:
+        #     self.parameter_name = parameter_name
+        self.parameter_name = parameter_name or OntologyAnnotation()
         # if unit is None:
         #     self.unit = OntologyAnnotation()
         # else:
@@ -655,7 +560,7 @@ class ParameterValue(object):
         comments (list, NoneType): Comments associated with instances of this class.
     """
     def __init__(self, category=None, value=None, unit=None):
-        super().__init__()
+        super(ParameterValue, self).__init__()
         # if category is None:
         #     raise TypeError("You must specify a category")
         self.category = category
@@ -672,13 +577,14 @@ class ProtocolComponent(Commentable):
         comments (list, NoneType): Comments associated with instances of this class.
     """
     def __init__(self, id_='', name='', component_type=None, comments=None):
-        super().__init__(comments)
+        super(ProtocolComponent, self).__init__(comments)
         self.id = id_
         self.name = name
-        if component_type is None:
-            self.component_type = OntologyAnnotation()
-        else:
-            self.component_type = component_type
+        # if component_type is None:
+        #     self.component_type = OntologyAnnotation()
+        # else:
+        #     self.component_type = component_type
+        self.component_type = component_type or OntologyAnnotation()
 
 
 class Source(Commentable):
@@ -690,13 +596,14 @@ class Source(Commentable):
         comments (list, NoneType): Comments associated with instances of this class.
     """
     def __init__(self, id_='', name="", characteristics=None, comments=None):
-        super().__init__(comments)
+        super(Source, self).__init__(comments)
         self.id = id_
         self.name = name
-        if characteristics is None:
-            self.characteristics = list()
-        else:
-            self.characteristics = characteristics
+        # if characteristics is None:
+        #     self.characteristics = list()
+        # else:
+        #     self.characteristics = characteristics
+        self.characteristics = characteristics or []
 
 
 class Characteristic(Commentable):
@@ -708,15 +615,17 @@ class Characteristic(Commentable):
         unit (OntologyAnnotation, NoneType): If applicable, a unit qualifier for the value (if the value is numeric).
         """
     def __init__(self, category=None, value=None, unit=None, comments=None):
-        super().__init__(comments)
-        if category is None:
-            self.category = OntologyAnnotation()
-        else:
-            self.category = category
-        if value is None:
-            self.value = OntologyAnnotation()
-        else:
-            self.value = value
+        super(Characteristic, self).__init__(comments)
+        # if category is None:
+        #     self.category = OntologyAnnotation()
+        # else:
+        #     self.category = category
+        # if value is None:
+        #     self.value = OntologyAnnotation()
+        # else:
+        #     self.value = value
+        self.category = category or OntologyAnnotation()
+        self.value = value or OntologyAnnotation()
         self.unit = unit
 
 
@@ -731,17 +640,19 @@ class Sample(Commentable):
         comments (list, NoneType): Comments associated with instances of this class.
     """
     def __init__(self, id_='', name="", factor_values=None, characteristics=None, derives_from=None, comments=None):
-        super().__init__(comments)
+        super(Sample, self).__init__(comments)
         self.id = id_
         self.name = name
-        if factor_values is None:
-            self.factor_values = list()
-        else:
-            self.factor_values = factor_values
-        if characteristics is None:
-            self.characteristics = list()
-        else:
-            self.characteristics = characteristics
+        # if factor_values is None:
+        #     self.factor_values = list()
+        # else:
+        #     self.factor_values = factor_values
+        # if characteristics is None:
+        #     self.characteristics = list()
+        # else:
+        #     self.characteristics = characteristics
+        self.factor_values = factor_values or []
+        self.characteristics = characteristics or []
         self.derives_from = derives_from
 
 
@@ -755,14 +666,15 @@ class Material(Commentable):
         comments (list, NoneType): Comments associated with instances of this class.
     """
     def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None):
-        super().__init__(comments)
+        super(Material, self).__init__(comments)
         self.id = id_
         self.name = name
         self.type = type_
-        if characteristics is None:
-            self.characteristics = list()
-        else:
-            self.characteristics = characteristics
+        # if characteristics is None:
+        #     self.characteristics = list()
+        # else:
+        #     self.characteristics = characteristics
+        self.characteristics = characteristics or []
         self.derives_from = derives_from
 
 
@@ -776,7 +688,7 @@ class FactorValue(Commentable):
         comments (list, NoneType): Comments associated with instances of this class.
     """
     def __init__(self, factor_name=None, value=None, unit=None, comments=None):
-        super().__init__(comments)
+        super(FactorValue, self).__init__(comments)
         self.factor_name = factor_name
         self.value = value
         self.unit = unit
@@ -798,28 +710,32 @@ class Process(Commentable):
     """
     def __init__(self, id_='', name="", executes_protocol=None, date_=None, performer=None,
                  parameter_values=None, inputs=None, outputs=None, comments=None):
-        super().__init__(comments)
+        super(Process, self).__init__(comments)
         self.id = id_
         self.name = name
-        if executes_protocol is None:
-            self.executes_protocol = Protocol()
-        else:
-            self.executes_protocol = executes_protocol
+        # if executes_protocol is None:
+        #     self.executes_protocol = Protocol()
+        # else:
+        #     self.executes_protocol = executes_protocol
+        self.executes_protocol = executes_protocol or Protocol()
         self.date = date_
         self.performer = performer
-        if parameter_values is None:
-            self.parameter_values = list()
-        else:
-            self.parameter_values = parameter_values
-        if inputs is None:
-            self.inputs = list()
-        else:
-            self.inputs = inputs
-        if outputs is None:
-            self.outputs = list()
-        else:
-            self.outputs = outputs
-        self.additional_properties = dict()
+        # if parameter_values is None:
+        #     self.parameter_values = list()
+        # else:
+        #     self.parameter_values = parameter_values
+        self.parameter_values = parameter_values or []
+        # if inputs is None:
+        #     self.inputs = list()
+        # else:
+        #     self.inputs = inputs
+        self.inputs = inputs or []
+        # if outputs is None:
+        #     self.outputs = list()
+        # else:
+        #     self.outputs = outputs
+        self.outputs = outputs or []
+        self.additional_properties = {}
         self.prev_process = None
         self.next_process = None
 
@@ -833,7 +749,7 @@ class DataFile(Commentable):
             comments (list, NoneType): Comments associated with instances of this class.
         """
     def __init__(self, id_='', filename='', label='', comments=None):
-        super().__init__(comments)
+        super(DataFile, self).__init__(comments)
         self.id = id_
         self.filename = filename
         self.label = label
@@ -858,17 +774,17 @@ def batch_create_materials(material=None, n=1):
 
     """
     material_list = list()
-    if isinstance(material, Source) or isinstance(material, Sample) or isinstance(material, Material):
+    if isinstance(material, (Source, Sample, Material)):
         from copy import deepcopy
-        for x in range(0, n):
+        for x in six.moves.range(n):
             new_obj = deepcopy(material)
-            new_obj.name = material.name + '-' + str(x)
+            new_obj.name = '-'.join([material.name, str(x)])
             new_obj.derives_from = material.derives_from
             material_list.append(new_obj)
     return material_list
 
 
-def batch_create_assays(*args, n=1):
+def batch_create_assays(*args, **kwargs):
     """Creates a batch of assay process sequences (Material->Process->Material) from a prototype sequence
     (currently works only as flat end-to-end processes of Material->Process->Material->...)
 
@@ -899,43 +815,44 @@ def batch_create_assays(*args, n=1):
         batch = batch_create_assays([sample1, sample2], process, [material1, material2], n=3)
 
     """
+    n = kwargs['n'] if 'n' in kwargs else 1
     process_sequence = list()
     materialA = None
     process = None
     materialB = None
     from copy import deepcopy
-    for x in range(0, n):
+    for x in six.moves.range(n):
         for arg in args:
-            if isinstance(arg, list) and len(arg) > 0:
-                if isinstance(arg[0], Source) or isinstance(arg[0], Sample) or isinstance(arg[0], Material):
+            if isinstance(arg, list) and arg:
+                if isinstance(arg[0], (Source, Sample, Material)):
                     if materialA is None:
                         materialA = deepcopy(arg)
                         y = 0
                         for material in materialA:
-                            material.name = material.name + '-' + str(x) + '-' + str(y)
+                            material.name = '-'.join([material.name, str(x), str(y)])
                             y += 1
                     else:
                         materialB = deepcopy(arg)
                         y = 0
                         for material in materialB:
-                            material.name = material.name + '-' + str(x) + '-' + str(y)
+                            material.name = '-'.join([material.name, str(x), str(y)])
                             y += 1
                 elif isinstance(arg[0], Process):
                     process = deepcopy(arg)
                     y = 0
                     for p in process:
-                        p.name = p.name + '-' + str(x) + '-' + str(y)
+                        p.name = '-'.join([p.name, str(x), str(y)])
                         y += 1
-            if isinstance(arg, Source) or isinstance(arg, Sample) or isinstance(arg, Material):
+            if isinstance(arg, (Source, Sample, Material)):
                 if materialA is None:
                     materialA = deepcopy(arg)
-                    materialA.name = materialA.name + '-' + str(x)
+                    materialA.name = '-'.join([materialA.name, str(x)])
                 else:
                     materialB = deepcopy(arg)
-                    materialB.name = materialB.name + '-' + str(x)
+                    materialB.name = '-'.join([materialB.name, str(x)])
             elif isinstance(arg, Process):
                 process = deepcopy(arg)
-                process.name = process.name + '-' + str(x)
+                process.name = '-'.join([process.name, str(x)])
             if materialA is not None and materialB is not None and process is not None:
                 if isinstance(process, list):
                     for p in process:
@@ -967,3 +884,4 @@ def batch_create_assays(*args, n=1):
                 process = None
                 materialB = None
     return process_sequence
+

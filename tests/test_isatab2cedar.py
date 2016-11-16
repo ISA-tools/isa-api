@@ -1,17 +1,27 @@
+# coding: utf-8
 import os
-from isatools.convert.isatab2cedar import ISATab2CEDAR
 import unittest
 import shutil
-from tests import utils
 import json
 import tempfile
+import functools
+import six
+
+from isatools.convert.isatab2cedar import ISATab2CEDAR
+from tests import utils
+
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
 
 
 class TestIsaTab2Cedar(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls._tab_data_dir = utils.TAB_DATA_DIR
+        cls._json_data_dir = utils.JSON_DATA_DIR
+
     def setUp(self):
-        self._tab_data_dir = utils.TAB_DATA_DIR
-        self._json_data_dir = utils.JSON_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
@@ -21,8 +31,10 @@ class TestIsaTab2Cedar(unittest.TestCase):
         test_case = 'BII-I-1'
         isa2cedar = ISATab2CEDAR("http://www.isa-tools.org/")
         isa2cedar.createCEDARjson(os.path.join(self._tab_data_dir, test_case), self._tmp_dir, True)
-        expected_json = json.load(open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')))
-        actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
+        with open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')) as expected_file:
+            expected_json = json.load(expected_file)
+        with open(os.path.join(self._tmp_dir, test_case + '.json')) as actual_file:
+            actual_json = json.load(actual_file)
         utils.strip_ids(expected_json)
         utils.strip_ids(actual_json)
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
@@ -31,8 +43,10 @@ class TestIsaTab2Cedar(unittest.TestCase):
         test_case = 'BII-S-3'
         isa2cedar = ISATab2CEDAR("http://www.isa-tools.org/")
         isa2cedar.createCEDARjson(os.path.join(self._tab_data_dir, test_case), self._tmp_dir, True)
-        expected_json = json.load(open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')))
-        actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
+        with open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')) as expected_file:
+            expected_json = json.load(expected_file)
+        with open(os.path.join(self._tmp_dir, test_case + '.json')) as actual_file:
+            actual_json = json.load(actual_file)
         utils.strip_ids(expected_json)
         utils.strip_ids(actual_json)
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
@@ -41,8 +55,10 @@ class TestIsaTab2Cedar(unittest.TestCase):
         test_case = 'BII-S-7'
         isa2cedar = ISATab2CEDAR("http://www.isa-tools.org/")
         isa2cedar.createCEDARjson(os.path.join(self._tab_data_dir, test_case), self._tmp_dir, True)
-        expected_json = json.load(open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')))
-        actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
+        with open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')) as expected_file:
+            expected_json = json.load(expected_file)
+        with open(os.path.join(self._tmp_dir, test_case + '.json')) as actual_file:
+            actual_json = json.load(actual_file)
         utils.strip_ids(expected_json)
         utils.strip_ids(actual_json)
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
@@ -51,8 +67,11 @@ class TestIsaTab2Cedar(unittest.TestCase):
         test_case = 'TEST-ISA-charac-param-factor'
         isa2cedar = ISATab2CEDAR("http://www.isa-tools.org/")
         isa2cedar.createCEDARjson(os.path.join(self._tab_data_dir, test_case), self._tmp_dir, True)
-        expected_json = json.load(open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')))
-        actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
+
+        with open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')) as expected_file:
+            expected_json = json.load(expected_file)
+        with open(os.path.join(self._tmp_dir, test_case + '.json')) as actual_file:
+            actual_json = json.load(actual_file)
         utils.strip_ids(expected_json)
         utils.strip_ids(actual_json)
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
@@ -61,8 +80,10 @@ class TestIsaTab2Cedar(unittest.TestCase):
         test_case = 'MTBLS1'
         isa2cedar = ISATab2CEDAR("http://www.isa-tools.org/")
         isa2cedar.createCEDARjson(os.path.join(self._tab_data_dir, test_case), self._tmp_dir, True)
-        expected_json = json.load(open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')))
-        actual_json = json.load(open(os.path.join(self._tmp_dir, '1425901783014' + '.json')))
+        with open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')) as expected_file:
+            expected_json = json.load(expected_file)
+        with open(os.path.join(self._tmp_dir, '1425901783014' + '.json')) as actual_file:
+            actual_json = json.load(actual_file)
         utils.strip_ids(expected_json)
         utils.strip_ids(actual_json)
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
@@ -71,8 +92,10 @@ class TestIsaTab2Cedar(unittest.TestCase):
         test_case = 'MTBLS2'
         isa2cedar = ISATab2CEDAR("http://www.isa-tools.org/")
         isa2cedar.createCEDARjson(os.path.join(self._tab_data_dir, test_case), self._tmp_dir, True)
-        expected_json = json.load(open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')))
-        actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
+        with open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')) as expected_file:
+            expected_json = json.load(expected_file)
+        with open(os.path.join(self._tmp_dir, test_case + '.json')) as actual_file:
+            actual_json = json.load(actual_file)
         utils.strip_ids(expected_json)
         utils.strip_ids(actual_json)
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
@@ -81,8 +104,10 @@ class TestIsaTab2Cedar(unittest.TestCase):
         test_case = 'MTBLS3'
         isa2cedar = ISATab2CEDAR("http://www.isa-tools.org/")
         isa2cedar.createCEDARjson(os.path.join(self._tab_data_dir, test_case), self._tmp_dir, True)
-        expected_json = json.load(open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')))
-        actual_json = json.load(open(os.path.join(self._tmp_dir, test_case + '.json')))
+        with open(os.path.join(self._json_data_dir, 'cedar', test_case + '.json')) as expected_file:
+            expected_json = json.load(expected_file)
+        with open(os.path.join(self._tmp_dir, test_case + '.json')) as actual_file:
+            actual_json = json.load(actual_file)
         utils.strip_ids(expected_json)
         utils.strip_ids(actual_json)
         self.assertTrue(utils.assert_json_equal(expected_json, actual_json))

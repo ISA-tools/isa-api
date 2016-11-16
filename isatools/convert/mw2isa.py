@@ -1,12 +1,15 @@
+# coding: utf-8
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from isatools import isatab
 from isatools.model.v1 import *
 from datetime import date
 from collections import defaultdict
+from contextlib import closing
 import urllib
 import json
 import ftplib
+import six
 
 __author__ = 'prs'
 
@@ -50,23 +53,22 @@ def get_archived_file(mw_study_id):
         success = True
         archive2download = mw_study_id + ".zip"
 
-        try:
-            ftp = ftplib.FTP("metabolomicsworkbench.org")
-            ftp.login()
-            ftp.cwd('Studies')
-            ftp.retrlines('LIST')
-            ftp.retrbinary("RETR " + archive2download, open(archive2download, 'wb').write)
-            ftp.close()
-            return success
-
-        except ConnectionRefusedError:
-            print("connection refused \n")
-        except FileNotFoundError:
-            print("file not found on server \n")
-        else:
-            success = False
-            print("someone broke the internet")
-            return success
+        with closing(ftplib.FTP("metabolomicsworkbench.org")) as ftp:
+            try:
+                ftp.login()
+                ftp.cwd('Studies')
+                ftp.retrlines('LIST')
+                with open(archive2download, 'wb') as downloaded_file:
+                    ftp.retrbinary("RETR {}".format(archive2download), downloaded_file.write)
+                return success
+            except ConnectionRefusedError:
+                print("connection refused \n")
+            except IOError:
+                print("file not found on server \n")
+            else:
+                success = False
+                print("someone broke the internet")
+                return success
 
 # a method to create an EBI Metabolights MAF file from Metabolomics Workbench REST API over data and metabolites
 # input: a valid Metabolomics Workbench study accession number that should follow this pattern ^ST\d+[6]
@@ -89,15 +91,25 @@ def generate_maf_file(mw_study_id):
 
         for d in (metabolites, data):
             # you can list as many input dicts as you want here
-            for key, value in d.items():
+            for key, value in six.iteritems(d):
                 dd[key].append(value)
 
         # merging the 2 json feeds and removing duplicated key, since values are always the same
-        for k, v in dd.items():
+        for k, v in six.iteritems(dd):
             # print({k: {i: j for x in v for i, j in x.items()}})
-            dd[k] = {i: j for x in v for i, j in x.items()}
+            dd[k] = {i: j for x in v for i, j in six.iteritems(x)}
 
-        if "other_id" in dd.items():
+
+        # ML: not sure what's happening here, this will always be evaluated as False
+        #    >>> d = {'a':1, 'b':2}
+        #    >>> 'a' in d.items()
+        #    False
+        #    >>> 1 in d.items()
+        #    False
+        #
+        # So I think you should use either dd.keys() or dd.values() here...
+        #
+        if "other_id" in six.iteritems(dd):
             data_rec_header = "metabolite number" + "\t" + "metabolite name" \
                               + "\t" + "metabolite identifier" \
                               + "\t" + "pubchem identifier" \
@@ -112,12 +124,12 @@ def generate_maf_file(mw_study_id):
                               + '\t' + \
                               ("(" + dd["1"]["units"] + ')\t').join(dd["1"]["DATA"].keys())
 
-        fh = open("temp/" + mw_study_id + "-maf-data.txt", "w")
-        fh.writelines(data_rec_header)
-        fh.writelines("\n")
+        with open("temp/{}-maf-data.txt".format(mw_study_id), "w") as fh:
+            fh.writelines(data_rec_header)
+            fh.writelines("\n")
 
         for key in dd:
-            if "other_id" in dd.items():
+            if "other_id" in six.iteritems(dd):
                 record_values = key + '\t' + dd[key]["metabolite_name"] + "\t" + dd[key]["metabolite_id"] \
                                 + "\t" + dd[key]["pubchem_id"] + "\t" + dd[key]["other_id"] + "\t" + dd[key][
                                     "other_id_type"]
@@ -136,9 +148,11 @@ def generate_maf_file(mw_study_id):
                 fh.writelines("\n")
 
         # Output resulting json to file
-        open("output.json", "w").write(
-            json.dumps(dd, sort_keys=True, indent=4, separators=(',', ': '))
-        )
+        with open("output.json", "w") as output_json:
+            json.dump(dd, output_json, sort_keys=True, indent=4, separators=(',', ': '))
+        #open("output.json", "w").write(
+        #    json.dumps(dd, sort_keys=True, indent=4, separators=(',', ': '))
+        #)
 
 
 # a method to obtain the nature of the technology used in the analysis from a Metabolomics Workbench Header line
@@ -205,9 +219,10 @@ def write_assay(technotype, mw_analysis_nb, assayrecords, assay_wf_header):
                 assay_file.write("\n")
             assay_file.write("\n")
 
-        assay_file.close()
     except IOError:
         print("what is happening? situation not recognized")
+    finally:
+        assay_file.close()
 # a method to create Metabolights formated data files which will be referenced in the ISA-Tab document
 # the method takes 3 parameters as input: a filehandle, a MW identifier for the study, a MW identifier for the analysis
 # the method return nothing but creates a raw signal quantification file and a metabolite assignment file.
@@ -217,14 +232,14 @@ def create_data_files(input_techtype, f, input_study_id, input_analysis_id):
     # print("file to download: ", f)
     try:
         # dlurl = urlopen(f)
-        print("tt:", input_techtype)
+        print("tt: {}".format(input_techtype))
         # saving a remote file to local drive
         # localcopy = open(studyID + "_" + analysisID + ".txt", 'w+')
         # localcopy.write(str(dlurl.read()))
 
         # the combination of MW study ID and analysis ID ensure unicity of file name.
 
-        raw_data_file_name = 'data/' + input_study_id + '_' + input_analysis_id + '_raw_data.txt'
+        raw_data_file_name = 'data/{}_{}_raw_data.txt'.format(input_study_id, input_analysis_id)
         # print("techtype:",tt)
         with open(raw_data_file_name, 'w+') as rawdata:
             # print("file to download: ", f)
@@ -363,7 +378,7 @@ def create_nmr_assay_records(lol, study_id, analysis_id, fv_records):
     input_nmr_file = urlopen(lol).read()
     input_nmr_file = str(input_nmr_file).split('\\n')
 
-    maf_file = str(study_id) + "_" + str(analysis_id) + "_maf_data.txt"
+    maf_file = "{}_{}_maf_data.txt".format(study_id, analysis_id)
 
     for this_row in input_nmr_file:
         this_row = this_row.rstrip()
@@ -509,7 +524,7 @@ def create_nmr_assay_records(lol, study_id, analysis_id, fv_records):
         # print("records:", [full_assay_record])
         # print("full assay record: ",fv_record[3], ": ", longrecords[fv_record[3]])
 
-    print("QTs:", nmr_maf_qt, nmr_rawdata_qt)
+    print("QTs: {} {}".format(nmr_maf_qt, nmr_rawdata_qt))
 
     return longrecords, assay_wf_header, nmr_maf_qt, nmr_rawdata_qt
 
@@ -722,7 +737,7 @@ def get_fv_records(lol):
                         factor = factor.strip()
                         newrecord.append(value.strip())
 
-                        if factor in factors.keys():
+                        if factor in factors:
                             factors[factor] += 1
                         else:
                             factors[factor] = 1
@@ -734,7 +749,7 @@ def get_fv_records(lol):
                     else:
                         value = elements[1]
 
-                    if factor in factors.keys():
+                    if factor in factors:
                         factors[factor] += 1
                     else:
                         factors[factor] = 1
@@ -743,7 +758,7 @@ def get_fv_records(lol):
 
                 records.append(newrecord)
 
-    for my_key in factors.keys():
+    for my_key in six.iterkeys(factors):
                 restofrecordheader.append("Factor Value[" + my_key + "]")
 
     return records, factors, restofrecordheader
@@ -790,8 +805,6 @@ def write_study_file(study_acc_num, study_file_header, longrecords):
                     study_file.write('\t')
                 study_file.write('\n')
 
-            study_file.close()
-
         except IOError:
             print("Error: can not write to file, in write_study_file method")
 
@@ -802,7 +815,8 @@ def write_study_file(study_acc_num, study_file_header, longrecords):
         print("Error: can not open file or read data, in write_study_file method")
     else:
         print("doh, something went wrong but don't know why in write_study_file method!")
-
+    finally:
+        study_file.close()
 
 # METHOD: given a Metabolomics Workbench Identifier, download the corresponding zip archive via anonymous FTP
 
@@ -1584,14 +1598,14 @@ try:
     for element in study_assays_dict["assays"]:
         print(element)
         if element["techtype"] == "mass spectrometry":
-            print("itemA:", element["techtype"])
+            print("itemA: {}".format(element["techtype"]))
             orefTT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
             oaTT = OntologyAnnotation(term="metabolite profiling", term_accession="", term_source=orefTT)
             orefMT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
             oaMT = OntologyAnnotation(term="mass spectrometry", term_accession="", term_source=orefMT)
 
             this_assay_file = "a_" + str(studyid) + "_" + str(element["analysis_id"]) + ".txt"
-            print("this assay_file:", this_assay_file)
+            print("this assay_file: {}".format(this_assay_file))
             this_assay = Assay(measurement_type=oaTT, technology_type=oaMT, filename=this_assay_file)
             study1.assays.append(this_assay)
 
@@ -1608,13 +1622,13 @@ try:
             write_assay(element["techtype"], element["analysis_id"], assay_records, assay_header)
 
         elif element["techtype"] == "nmr spectroscopy":
-            print("itemB:", element["techtype"])
+            print("itemB: {}".format(element["techtype"]))
             orefTT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
             oaTT = OntologyAnnotation(term="metabolite profiling", term_accession="", term_source=orefTT)
             orefMT = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
             oaMT = OntologyAnnotation(term="nmr spectroscopy", term_accession="", term_source=orefMT)
             this_assay_file = "a_" + str(studyid) + "_" + str(element["analysis_id"]) + ".txt"
-            print("this assay_file:", this_assay_file)
+            print("this assay_file: {}".format(this_assay_file))
             this_assay = Assay(measurement_type=oaTT, technology_type=oaMT, filename=this_assay_file)
             study1.assays.append(this_assay)
             # print(study1.name)
@@ -1755,7 +1769,8 @@ try:
 
     # Building Investigation Study Factor Section:
     factor_keys = study_factors.keys()
-    for key in study_factors.keys():
+
+    for key in six.iterkeys(study_factors):
         oref = OntologySource(name="OBI", description="Ontology for Biomedical Investigation")
         oa = OntologyAnnotation(term=key, term_accession="", term_source=oref)
         study1.factors.append(StudyFactor(name=key, factor_type=oa))
@@ -1790,6 +1805,7 @@ except:
     print("conversion failed\n")
 
 try:
-    isatab.validate2(open('temp/i_investigation.txt'),'./isaconfig-default_v2015-07-02/')
+    with open('temp/i_investigation.txt') as investigation:
+        isatab.validate2(investigation,'./isaconfig-default_v2015-07-02/')
 except:
     print("not working")

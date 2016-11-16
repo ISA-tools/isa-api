@@ -1,9 +1,10 @@
+# coding: utf-8
 from bs4 import BeautifulSoup
 from collections import defaultdict
 import subprocess
 import os
 import re
-from io import BytesIO, StringIO
+from io import BytesIO
 from zipfile import ZipFile
 from shutil import rmtree
 import logging
@@ -12,6 +13,7 @@ import uuid
 import os
 import sys
 import bs4
+import glob
 
 
 sys.modules['BeautifulSoup'] = bs4
@@ -19,6 +21,7 @@ sys.modules['BeautifulSoup'] = bs4
 __author__ = 'philippe.rocca-serra@oerc.ox.ac.uk'
 __author__ = 'massi@oerc.ox.ac.uk'
 __author__ = 'alfie'
+__author__ = 'althonos'
 
 DESTINATION_DIR = 'output'
 DEFAULT_SAXON_DIR = os.path.join(os.path.expanduser('~'), 'Applications', 'SaxonHE')
@@ -60,55 +63,54 @@ def merge_biocrates_files(input_dir):
     projects = []
     metabolites = []
 
-    for i in os.listdir(input_dir):
+    for i in glob.iglob(os.path.join(input_dir, "*.xml")): 
+        
+        # f = open('/Users/Philippe/Documents/git/biocrates/Biocrates-TUM/input-Biocrates-XML-files/'
+        #          'all-biocrates-xml-files/'+i)
 
-        if i.endswith(".xml"):
+        # note the "xml" argument: this is to ensure that BeautifulSoup does not lowercase attribute elements
+        # (without, the resulting xml trips the xsl)
+        # soup = BeautifulSoup(open('/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/input-Biocrates'
+        #                           '-XML-files/all-biocrates-xml-files/'+i), "xml")
 
-            # f = open('/Users/Philippe/Documents/git/biocrates/Biocrates-TUM/input-Biocrates-XML-files/'
-            #          'all-biocrates-xml-files/'+i)
+        with open(os.path.join(input_dir,i)) as investigation_file:
+            soup = BeautifulSoup(investigation_file, "xml")
 
-            # note the "xml" argument: this is to ensure that BeautifulSoup does not lowercase attribute elements
-            # (without, the resulting xml trips the xsl)
-            # soup = BeautifulSoup(open('/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/input-Biocrates'
-            #                           '-XML-files/all-biocrates-xml-files/'+i), "xml")
-
-            soup = BeautifulSoup(open(input_dir + i), "xml")
-
-            contacts = contacts + soup.find_all('contact')
-            samples = samples + soup.find_all('sample')
-            projects = projects + soup.find_all('project')
-            plate_set = plate_set + soup.find_all('plate')
-            metabolites = metabolites + soup.find_all('metabolite')
+        contacts = contacts + soup.find_all('contact')
+        samples = samples + soup.find_all('sample')
+        projects = projects + soup.find_all('project')
+        plate_set = plate_set + soup.find_all('plate')
+        metabolites = metabolites + soup.find_all('metabolite')
 
     # fh = open("/Users/Philippe/Documents/git/biocrates-DATA/Biocrates-TUM/biocrates-merged-output.xml",  'w+')
-    fh = open("biocrates-merged-output.xml",  'w+')
-    fh.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>")
-    fh.write("<data xmlns=\"http://www.biocrates.com/metstat/result/xml_1.0\" swVersion=\"MetIQ_5.4.8-DB100-Boron-2607"
-             "-DB100-2607\" "
-             "concentrationUnit=\"uM\" dateExport=\"2015-10-28T10:37:23.484+01:00\" user=\"labadmin\">")
+    with open("biocrates-merged-output.xml",  'w+') as fh:
+        fh.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>")
+        fh.write("<data xmlns=\"http://www.biocrates.com/metstat/result/xml_1.0\" swVersion=\"MetIQ_5.4.8-DB100-Boron-2607"
+                 "-DB100-2607\" "
+                 "concentrationUnit=\"uM\" dateExport=\"2015-10-28T10:37:23.484+01:00\" user=\"labadmin\">")
 
     # the order in which these objects are written reflect the Biocrates XML structure.
     # known issue: some elements (e.g. contacts may be duplicated but as the objects differ from one attribute value,
     # it is not possible to remove them without further alignment heuristic
 
-    metabolites = list(set(metabolites))
-    for element in metabolites:
+    #metabolites = list(set(metabolites))
+    for element in set(metabolites):
         fh.write(str(element))
 
-    plate_set = list(set(plate_set))
-    for element in plate_set:
+    #plate_set = list(set(plate_set))
+    for element in set(plate_set):
         fh.write(str(element))
 
-    projects = list(set(projects))
-    for element in projects:
+    #projects = list(set(projects))
+    for element in set(projects):
         fh.write(str(element))
 
-    samples = list(set(samples))
-    for element in samples:
+    #samples = list(set(samples))
+    for element in set(samples):
         fh.write(str(element))
 
-    contacts = list(set(contacts))
-    for element in contacts:
+    #contacts = list(set(contacts))
+    for element in set(contacts):
         fh.write(str(element.encode('utf-8')))
 
     fh.write("</data>")
@@ -145,12 +147,12 @@ def biocrates_to_isatab_convert(biocrates_filename, saxon_jar_path=DEFAULT_SAXON
     buffer = BytesIO()
 
     destination_dir = os.path.abspath(dir_name)
-    print('Destination dir is: ' + destination_dir)
-    logger.info('Destination dir is: ' + destination_dir)
+    #print('Destination dir is: {}'.format(destination_dir))
+    logger.info('Destination dir is: {}'.format(destination_dir))
 
     if os.path.exists(destination_dir):
-        logger.debug('Removing dir' + destination_dir)
-        print('Removing dir' + destination_dir)
+        logger.debug('Removing dir {}'.format(destination_dir))
+        #print('Removing dir' + destination_dir)
         rmtree(destination_dir)
 
     try:
@@ -182,7 +184,7 @@ def generatePolarityAttrsDict(plate, polarity, myAttrs, myMetabolites, mydict):
     usedop = plate.get('usedop')
     platebarcode = plate.get('platebarcode')
     injection = plate.find_all('injection', {'polarity': polarity})
-    if len(injection) > 0:
+    if injection:
         for pi in injection:
             myAttrList = []
             myMetabolitesList = []
@@ -190,7 +192,7 @@ def generatePolarityAttrsDict(plate, polarity, myAttrs, myMetabolites, mydict):
                 myrdfname = p.find_parent('injection').get('rawdatafilename').split('.')[0]
                 for attr, value in p.attrs.iteritems():
                     if attr != 'metabolite':
-                        mydict[p.get('metabolite') + '-' + myrdfname + '-' + attr + '-' + polarity.lower() + '-' + usedop + '-' + platebarcode] = value
+                        mydict['-'.join([p.get('metabolite'), myrdfname, attr, polarity.lower(), usedop, platebarcode])] = value
                         if attr not in myAttrList:
                             myAttrList.append(attr)
                 myMblite = p.get('metabolite')
@@ -198,7 +200,7 @@ def generatePolarityAttrsDict(plate, polarity, myAttrs, myMetabolites, mydict):
                     myMetabolitesList.append(myMblite)
             # it is assume that the rawdatafilename is unique in each of the plate grouping and polarity
             myAttrs[pi.get('rawdatafilename').split('.')[0]] = myAttrList
-        myMetabolites[usedop + '-' + platebarcode + '-' + polarity.lower()] = myMetabolitesList
+        myMetabolites['-'.join([usedop, platebarcode, polarity.lower()])] = myMetabolitesList
     return myAttrs, mydict
 
 
@@ -216,23 +218,23 @@ def generateAttrsDict(plate):
 
 def writeOutToFile(plate, polarity, usedop, platebarcode, output_dir, uniqueAttrs, uniqueMetaboliteIdentifiers, mydict):
     pos_injection = plate.find_all('injection', {'polarity': polarity})
-    if len(pos_injection) > 0:
-        filename = usedop + '-' + platebarcode + '-' + polarity.lower() + '-maf.txt'
+    if pos_injection:
+        filename = '-'.join([usedop, platebarcode, polarity.lower(), 'maf.txt'])
         print(filename)
         with open(os.path.join(output_dir, filename), 'w') as file_handler:
             # writing out the header
             file_handler.write('Sample ID')
             for ua in uniqueAttrs:
                 for myattr in uniqueAttrs[ua]:
-                    file_handler.write('\t' + ua + '[' + myattr + ']')
+                    file_handler.write('\t{}[{}]'.format(ua, myattr))
             # now the rest of the rows
-            for myMetabolite in uniqueMetaboliteIdentifiers[usedop + '-' + platebarcode + '-' + polarity.lower()]:
-                file_handler.write('\n' + myMetabolite)
+            for myMetabolite in uniqueMetaboliteIdentifiers['-'.join([usedop, platebarcode, polarity.lower()])]:
+                file_handler.write('\n{}'.format(myMetabolite))
                 for ua in uniqueAttrs:
                     for myattr in uniqueAttrs[ua]:
-                        mykey = myMetabolite + '-' + ua + '-' + myattr + '-' + polarity.lower() + '-' + usedop + '-' + platebarcode
+                        mykey = '-'.join([myMetabolite, ua, myattr, polarity.lower(), usedop, platebarcode])
                         if mykey in mydict:
-                            file_handler.write('\t' + mydict[mykey])
+                            file_handler.write('\t{}'.format(mydict[mykey]))
                         else:
                             file_handler.write('\t')
         file_handler.close()
@@ -248,8 +250,9 @@ def parseSample(file):
 
     file = sys.argv[1]
     # open and read up the file
-    handler = open(file).read()
-    soup = BeautifulSoup(handler)
+    with open(file) as handler:
+        #handler = open(file).read()
+        soup = BeautifulSoup(handler.read())
 
     # get all the plates
     plates = soup.find_all('plate')

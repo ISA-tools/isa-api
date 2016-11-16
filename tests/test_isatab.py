@@ -1,11 +1,18 @@
+# coding: utf-8
 import unittest
 import os
+import sys
 import shutil
-from tests.utils import assert_tab_content_equal
+import tempfile
+import functools
+import six
+
+from isatools import isatab
 from isatools.model.v1 import *
 from tests import utils
-import tempfile
-from isatools import isatab
+
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
 
 #  Manually testing object model to write to isatab, study file-out only to check if model and writer function correctly
 #  Currently only tests source-split and sample pooling, at study level
@@ -13,8 +20,11 @@ from isatools import isatab
 
 class TestIsaTab(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls._tab_data_dir = utils.TAB_DATA_DIR
+
     def setUp(self):
-        self._tab_data_dir = utils.TAB_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
@@ -96,9 +106,13 @@ class TestIsaTab(unittest.TestCase):
         # s.graph = _build_assay_graph(s.process_sequence)
         i.studies = [s]
         isatab.dump(i, self._tmp_dir)
-        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_pool.txt')),
-                                                 open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split',
-                                                                   's_TEST-Template1-Splitting.txt'))))
+
+        with open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split','s_TEST-Template1-Splitting.txt')) as src_file:
+            with open(os.path.join(self._tmp_dir, 's_pool.txt')) as dumped_file:
+                self.assertTrue(utils.assert_tab_content_equal(src_file, dumped_file))
+        # self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_pool.txt')),
+        #                                          open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split',
+        #                                                            's_TEST-Template1-Splitting.txt'))))
 
     def test_isatab_dump_source_sample_pool(self):
         i = Investigation()
@@ -171,10 +185,12 @@ class TestIsaTab(unittest.TestCase):
         # s.graph = _build_assay_graph(s.process_sequence)
         i.studies = [s]
         isatab.dump(i, self._tmp_dir)
-        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_pool.txt')),
-                                                 open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',
-                                                                   's_TEST-Template3-Splitting.txt'))))
-        self.assertIsInstance(isatab.dumps(i), str)
+
+        with open(os.path.join(self._tmp_dir, 's_pool.txt')) as dumped_file:
+            with open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',\
+                                            's_TEST-Template3-Splitting.txt')) as template_file:
+                self.assertTrue(utils.assert_tab_content_equal(dumped_file, template_file))
+                self.assertIsInstance(isatab.dumps(i), six.text_type)
 
     def test_batch_create_materials(self):
         source = Source(name='source_material')
@@ -184,5 +200,6 @@ class TestIsaTab(unittest.TestCase):
         for material in batch:
             self.assertIsInstance(material, Sample)
             self.assertEqual(material.derives_from, source)
-        self.assertSetEqual(set([m.name for m in batch]), {'sample_material-0', 'sample_material-1',
+        self.assertSetEqual({m.name for m in batch}, {'sample_material-0', 'sample_material-1',
                                                            'sample_material-2'})
+

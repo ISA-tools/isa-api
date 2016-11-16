@@ -1,17 +1,29 @@
-import unittest
+# coding: utf-8
 import os
+import unittest
 import shutil
+import json
+import tempfile
+import functools
+import contextlib
+import six
+
 from isatools.convert import json2isatab
 from tests.utils import assert_tab_content_equal
 from tests import utils
-import tempfile
+
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
 
 
 class TestJson2IsaTab(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls._json_data_dir = utils.JSON_DATA_DIR
+        cls._tab_data_dir = utils.TAB_DATA_DIR
+
     def setUp(self):
-        self._json_data_dir = utils.JSON_DATA_DIR
-        self._tab_data_dir = utils.TAB_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
@@ -95,7 +107,7 @@ class TestJson2IsaTab(unittest.TestCase):
     def test_json2isatab_validate_first(self):
         json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-S-7', 'BII-S-7.json')), self._tmp_dir,
                             validate_first=True)
-        
+
     # def test_json2isatab_convert_bii_i_1_investigation(self):
     #     json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')), self._tmp_dir)
     #     self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'i_investigation.txt')),

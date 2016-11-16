@@ -1,7 +1,10 @@
+# coding: utf-8
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 from isatools.isatab import read_investigation_file
 import os
+import six
+import sys
 
 _data_dir = os.path.join(os.path.dirname(__file__), 'data')
 
@@ -18,9 +21,8 @@ CONFIGS_DATA_DIR = os.path.join(_data_dir, 'configs')
 XML_CONFIGS_DATA_DIR = os.path.join(CONFIGS_DATA_DIR, 'xml')
 DEFAULT2015_XML_CONFIGS_DATA_DIR = os.path.join(XML_CONFIGS_DATA_DIR, 'isaconfig-default_v2015-07-02')
 SRA2016_XML_CONFIGS_DATA_DIR = os.path.join(XML_CONFIGS_DATA_DIR, 'isaconfig-seq_v2016-08-30-SRA1.5-august2014mod')
-JSON_DEFAULT_CONFIGS_DATA_DIR = os.path.join(_data_dir, CONFIGS_DATA_DIR, 'json_default')
-JSON_SRA_CONFIGS_DATA_DIR = os.path.join(_data_dir, CONFIGS_DATA_DIR, 'json_sra')
-
+JSON_DEFAULT_CONFIGS_DATA_DIR = os.path.join(CONFIGS_DATA_DIR, 'json_default')
+JSON_SRA_CONFIGS_DATA_DIR = os.path.join(CONFIGS_DATA_DIR, 'json_sra')
 
 def assert_tab_content_equal(fp_x, fp_y):
     """
@@ -47,7 +49,7 @@ def assert_tab_content_equal(fp_x, fp_y):
         df_dict_x = read_investigation_file(fp_x)
         df_dict_y = read_investigation_file(fp_y)
         eq = True
-        for k in df_dict_x.keys():
+        for k in six.iterkeys(df_dict_x):
             dfx = df_dict_x[k]
             dfy = df_dict_y[k]
             if not isinstance(dfx, list):
@@ -81,7 +83,7 @@ def assert_tab_content_equal(fp_x, fp_y):
             df_y = df_y.dropna(axis=1, how='all')
             df_y = df_y.replace(np.nan, '')
 
-            is_cols_equal = set([x.split('.', 1)[0] for x in df_x.columns]) == set([x.split('.', 1)[0] for x in df_y.columns])
+            is_cols_equal = {x.split('.', 1)[0] for x in df_x.columns} == {x.split('.', 1)[0] for x in df_y.columns}
             if not is_cols_equal:
                 print('x: ' + str(df_x.columns))
                 print('y: ' + str(df_y.columns))
@@ -146,7 +148,7 @@ def assert_tab_content_equal(fp_x, fp_y):
 
 def sortlistsj(J):
     if isinstance(J, dict):
-        for k in J.keys():
+        for k in six.iterkeys(J):
             sortlistsj(J[k])
     elif isinstance(J, list):
         for o in J:
@@ -199,7 +201,7 @@ def assert_xml_equal(x1, x2):
 
 
 def strip_ids(J):
-    for k, v in J.items():
+    for k, v in six.iteritems(J):
         if isinstance(v, dict):
             strip_ids(v)
         elif isinstance(v, list):

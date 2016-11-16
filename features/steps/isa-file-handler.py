@@ -1,18 +1,27 @@
-from datetime import datetime, timezone
+try:
+    from datetime import datetime, timezone
+except:
+    from datetime import datetime
+    from pytz import timezone, utc
+    timezone.utc = utc
 
 import hashlib
 import httpretty
 import json
 import os
+import six
+import functools
 from zipfile import ZipFile
 from behave import *
 from sure import expect
 from zipfile import is_zipfile
-from urllib.parse import urljoin
+from six.moves.urllib.parse import urljoin
 from isatools.io.storage_adapter import IsaGitHubStorageAdapter, REPOS, CONTENTS
 from lxml import etree
-from io import BytesIO, StringIO
 from requests.exceptions import HTTPError
+
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
+
 
 __author__ = 'massi'
 
@@ -107,6 +116,8 @@ def step_impl(context):
     expect(context.isa_adapter.token).to.equal(AUTH_TOKEN)
 
 
+
+
 @step('a file object named "{remote_source}" in the remote repository "{repo_name}" owned by "{owner_name}"')
 def step_impl(context, remote_source, repo_name, owner_name):
     """
@@ -138,7 +149,7 @@ def step_impl(context, destination_dir):
     # set as a destination path a subfolder of 'features' where all the output will be collected
     destination_path = os.path.join(os.path.dirname(__file__), '..', 'test_outputs', destination_dir)
     context.destination_path = os.path.abspath(destination_path)
-    print(context.destination_path)
+    #print(context.destination_path)
 
 
 @when("the file object is a directory")
@@ -180,12 +191,13 @@ def step_impl(context):
     [expect(os.path.isfile(os.path.join(out_dir, item['name']))).to.be.true for item in context.items_in_dir]
 
 
+
 @step("it should return a binary stream with the zipped content of the directory")
 def step_impl(context):
     """
     :type context: behave.runner.Context
     """
-    expect(context.res).to.be.a(BytesIO)
+    expect(context.res).to.be.a(six.BytesIO)
     dir_name = context.source_path.split('/')[-1]
     file_names = [os.path.join(dir_name, item['name']) for item in context.items_in_dir]
     with ZipFile(context.res) as zip_file:
@@ -221,7 +233,7 @@ def step_impl(context):
     download_url = context.zipped_dataset_encoded['download_url']
 
     # get the raw zipped file
-    with open(fixture_file_path_raw, 'rb') as zip_file:
+    with open(fixture_file_path_raw, mode='rb') as zip_file:
         context.zip_content = zip_file.read()
         httpretty.register_uri(httpretty.GET, download_url, body=context.zip_content, content_type='application/zip')
 
@@ -233,6 +245,7 @@ def step_impl(context):
     expect(httpretty.has_request()).to.be.true
 
 
+
 @then("it should download it as it is")
 def step_impl(context):
     """
@@ -241,7 +254,7 @@ def step_impl(context):
     out_file = os.path.join(context.destination_path, context.source_path.split('/')[-1])
     # file should have been saved
     expect(os.path.isfile(out_file)).to.be.true
-    with open(out_file, 'rb') as zip_file:
+    with open(out_file, mode='rb') as zip_file:
         written_zip_content = zip_file.read()
 
     expect(written_zip_content).to.equal(context.zip_content)
@@ -336,13 +349,18 @@ def step_impl(context):
     # get the raw zipped file
     with open(fixture_file_path_raw) as xml_file:
         context.xml_text = xml_file.read()
+
+        try: context.xml_text = context.xml_text.decode("utf-8")
+        except AttributeError: pass
+
         httpretty.register_uri(httpretty.GET, download_url, body=context.xml_text, content_type='text/plain')
-        context.xml = etree.parse(StringIO(context.xml_text))
+        context.xml = etree.parse(six.StringIO(context.xml_text))
+
+
 
     branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
     context.res = context.isa_adapter.retrieve(context.source_path, destination=context.destination_path,
                                                owner=context.owner_name, repository=context.repo_name, ref=branch)
-
     expect(httpretty.has_request()).to.be.true
     expect(httpretty.last_request().method).to.equal('GET')
     branch = context.branch_name if hasattr(context, 'branch_name') else 'master'
@@ -355,18 +373,25 @@ def step_impl(context):
     """
     :type context: behave.runner.Context
     """
+
     out_file_path = os.path.join(context.destination_path, context.source_path.split('/')[-1])
     # written_xml_config_content = etree.parse(out_file)
     # expect(set(written_xml_config_content.getroot().itertext()))\
     #    .to.equal(set(context.config_xml_content.getroot().itertext()))
     with open(out_file_path) as xml_file:
         written_xml_text = xml_file.read()
+
+    try: written_xml_text = written_xml_text.decode('utf-8')
+    except AttributeError: pass
+
     # test equality of input and output
     expect(written_xml_text).to.equal(context.xml_text)
     # test that the stored output is valid XML
-    # expect(etree.parse(StringIO(written_xml_text))).to_not.throw(etree.XMLSyntaxError)
-    xml = etree.parse(StringIO(written_xml_text))
+    # expect(etree.parse(six.StringIO(written_xml_text))).to_not.throw(etree.XMLSyntaxError)
+    xml = etree.parse(six.StringIO(written_xml_text))
     expect(etree.iselement(xml.getroot())).to.be.true
+
+
 
 
 @step("it should return it as an XML object")
@@ -391,7 +416,7 @@ def step_impl(context):
                                  context.source_path])
     fixture_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fixtures', fixture_file_name))
 
-    print('Encoded file URL: ', encoded_file_url)
+    #print('Encoded file URL: ', encoded_file_url)
 
     with open(fixture_file_path) as json_file:
         context.text_encoded = json.load(json_file)

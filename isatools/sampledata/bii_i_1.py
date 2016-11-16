@@ -8,4 +8,5 @@ except ImportError as e:
     raise RuntimeError("BII-I-1 data requires json to be installed")
 
 #  returns json representation of eukaryotecell.json
-json = j.load(open(join(dirname(__file__), 'BII-I-1.json')))
+with open(join(dirname(__file__), 'BII-I-1.json')) as json_file:
+    json = j.load(json_file)

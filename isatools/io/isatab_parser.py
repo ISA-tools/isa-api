@@ -34,6 +34,11 @@ import glob
 import collections
 import pprint
 import bisect
+import six
+import functools
+
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
 
 
 def find_lt(a, x):
@@ -108,7 +113,7 @@ def parse(isatab_ref):
         isatab_ref = fnames[0]
     assert os.path.exists(isatab_ref), "Did not find investigation file: %s" % isatab_ref
     i_parser = InvestigationParser()
-    with open(isatab_ref, "rU") as in_handle:
+    with open(isatab_ref) as in_handle:
         rec = i_parser.parse(in_handle)
     s_parser = StudyAssayParser(isatab_ref)
     rec = s_parser.parse(rec)
@@ -180,9 +185,9 @@ class InvestigationParser:
         """
         reader = csv.reader(in_handle, dialect="excel-tab")
         for line in reader:
-            if len(line) > 0 and line[0]:
+            if line and line[0]:
                 # check for section headers; all uppercase and a single value
-                if line[0].upper() == line[0] and "".join(line[1:]) == "":
+                if line[0].upper() == line[0] and not "".join(line[1:]):
                     line = [line[0]]
                 yield line
 
@@ -203,7 +208,7 @@ class InvestigationParser:
                 # add blank values if the line is stripped
                 while len(line) < len(out) + 1:
                     line.append("")
-                for i in range(len(out)):
+                for i in six.moves.range(len(out)):
                     out[i][line[0]] = line[i+1].strip()
                 line = None
         return out, line
@@ -277,7 +282,7 @@ class StudyAssayParser:
             return {}
         process_nodes = {}
 
-        with open(os.path.join(self._dir, fname), "rU") as in_handle:
+        with open(os.path.join(self._dir, fname)) as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
             headers = self._swap_synonyms(next(reader))
             hgroups = self._collapse_header(headers)
@@ -350,7 +355,7 @@ class StudyAssayParser:
                                         process_number = 0
 
                                     process_number +=1
-                                    process_counters.update({processing_name: process_number})
+                                    process_counters[processing_name] = process_number
                                     unique_process_name = processing_name+str(process_number)
 
                         try:
@@ -368,7 +373,7 @@ class StudyAssayParser:
 
                         if assay_name:
                             process_node.assay_name = assay_name
-                            assay_name_map.update({assay_name : process_node})
+                            assay_name_map[assay_name] = process_node
 
                         #Add qualifiers (performer and date)
                         for qualifier_index in qualifier_indices:
@@ -410,7 +415,7 @@ class StudyAssayParser:
                     else:
                         line_number += 1
                 #study.process_nodes = process_nodes
-        return dict([(k, self._finalize_metadata(v)) for k, v in process_nodes.items()])
+        return {k:self._finalize_metadata(v)for k,v in six.iteritems(process_nodes)}
 
 
     def _parse_study(self, fname, node_types):
@@ -419,7 +424,7 @@ class StudyAssayParser:
         if not os.path.exists(os.path.join(self._dir, fname)):
             return None
         nodes = {}
-        with open(os.path.join(self._dir, fname), "rU") as in_handle:
+        with open(os.path.join(self._dir, fname)) as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
             headers = self._swap_synonyms(next(reader))
             hgroups = self._collapse_header(headers)
@@ -450,11 +455,11 @@ class StudyAssayParser:
 
                 in_handle.seek(0, 0)
                 for line in reader:
-                    if (line[0].startswith("#")):
+                    if line[0].startswith("#"):
                         continue
                     name = self._swap_synonyms([line[header_index]])[0]
                     #skip the header line and empty lines
-                    if (not name or name in headers):
+                    if not name or name in headers:
                         continue
                     #to deal with same name used for different node types (e.g. Source Name and Sample Name using the same string)
                     node_index_name = self._build_node_index(node_type,name)
@@ -486,13 +491,13 @@ class StudyAssayParser:
                     if not (previous_node_index == -1):
                         node.derivesFrom.append(line[previous_node_index])
 
-        return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
+        return {k:self._finalize_metadata(v) for k,v in six.iteritems(nodes)}
 
     def _finalize_metadata(self, node):
         """Convert node metadata back into a standard dictionary and list.
         """
         final = {}
-        for key, val in iter(node.metadata.items()):
+        for key, val in six.iteritems(node.metadata):
             #val = list(val)
             #if isinstance(val[0], tuple):
             #    val = [dict(v) for v in val]
@@ -555,9 +560,9 @@ class StudyAssayParser:
         """Characterize header groups into different data types.
         """
         out = []
-        for h in [header[g[0]] for g in hgroups]:
+        for h in (header[g[0]] for g in hgroups):
             this_ctype = None
-            for ctype, names in self._col_types.items():
+            for ctype, names in six.iteritems(self._col_types):
                 if (h in names) or ( h.startswith(names) and h.endswith("]")):
                     this_ctype = ctype
                     break
@@ -712,8 +717,8 @@ class ISATabAssayRecord:
     """Represent an assay within an ISA-Tab record.
     """
     def __init__(self, metadata=None):
-        if metadata is None: metadata = {}
-        self.metadata = metadata
+        #if metadata is None: metadata = {}
+        self.metadata = metadata or {}
         self.nodes = {}
         self.process_nodes = {}
 

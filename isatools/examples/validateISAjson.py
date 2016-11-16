@@ -2,6 +2,8 @@
 
 # Inspired by validateSBML.py example from libSBML Python API
 
+from __future__ import unicode_literals
+
 from isatools.isajson import validate
 import sys
 import os

@@ -1,3 +1,4 @@
+# coding: utf-8
 import subprocess
 import os
 import re
@@ -7,6 +8,7 @@ from shutil import rmtree
 import logging
 import pdb
 import uuid
+import os
 
 __author__ ='massi'
 
@@ -116,22 +118,22 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
     buffer = BytesIO()
 
     destination_dir = os.path.abspath(dir_name)
-    print('Destination dir is: ' + destination_dir)
-    logger.info('Destination dir is: ' + destination_dir)
+    print('Destination dir is: {}'.format(destination_dir))
+    logger.info('Destination dir is: {}'.format(destination_dir))
 
     if os.path.exists(destination_dir):
-        logger.debug('Removing dir' + destination_dir)
-        print('Removing dir' + destination_dir)
+        logger.debug('Removing dir {}'.format(destination_dir))
+        print('Removing dir {}'.format(destination_dir))
         rmtree(destination_dir)
 
     for acc_number in formatted_sra_acc_numbers:
         try:
 
-            if acc_number.startswith('SRA') or acc_number.startswith('ERA'):
+            if acc_number.startswith(('SRA', 'ERA')):
                 res = subprocess.call(['java', '-jar', saxon_jar_path, INPUT_FILE, STUDY_XSL_FILE,
                                        'acc-number='+acc_number, 'outputdir='+destination_dir])
 
-            elif acc_number.startswith('SRP') or acc_number.startswith('ERP'):
+            elif acc_number.startswith(('SRP', 'ERP')):
                 res = subprocess.call(['java', '-jar', saxon_jar_path, INPUT_FILE, SUBMISSION_XSL_FILE,
                                  'acc-number='+acc_number, 'outputdir='+destination_dir])
 
@@ -139,7 +141,7 @@ def sra_to_isatab_batch_convert(sra_acc_numbers, saxon_jar_path=DEFAULT_SAXON_EX
 
             # post-process concatenation of a_ files written out
             output_folder = os.path.join(dir_name, acc_number)
-            a_files = [f for f in os.listdir(output_folder) if f.startswith('a_')]
+            a_files = glob.glob(os.path.join(output_folder, "a_*"))
             if len(a_files) > 1:
                 import pandas as pd
                 df_list = list()

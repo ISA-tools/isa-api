@@ -1,14 +1,24 @@
+# coding: utf-8
+from __future__ import absolute_import
+
 import unittest
 import os
+import logging
+import functools
+import six
+
 from isatools import isajson, isatab
 from tests import utils
-import logging
+
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
 
 
 class TestIsaJsonTestData(unittest.TestCase):
 
-    def setUp(self):
-        self._reporting_level = logging.ERROR
+    @classmethod
+    def setUpClass(cls):
+        cls._reporting_level = logging.ERROR
 
     def test_validate_testdata_bii_i_1_json(self):
         test_case = 'BII-I-1'

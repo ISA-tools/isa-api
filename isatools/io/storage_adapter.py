@@ -1,15 +1,26 @@
+from __future__ import absolute_import
+
 from abc import ABCMeta, abstractmethod
-from urllib.parse import urljoin
+from six.moves.urllib.parse import urljoin
 from lxml import etree
 from jsonschema import RefResolver, Draft4Validator
-from io import BytesIO, StringIO
+from io import BytesIO
 from zipfile import ZipFile
 import requests
 import json
 import os
-import pathlib
 import base64
 import pdb
+import six
+
+from .utils import makedirs
+
+try:
+    import pathlib
+except ImportError:
+    import pathlib2 as pathlib
+
+
 
 __author__ = 'massi'
 
@@ -38,7 +49,7 @@ def validate_xml_against_schema(xml_str, xml_schema_file):
     if not schema.validate(xml):
         raise etree.DocumentInvalid("Retrieved file does not validate against ISA configuration xsd")
     else:
-        return etree.parse(StringIO(xml_str))
+        return etree.parse(six.StringIO(xml_str))
 
 
 def validate_json_against_schema(json_dict, schema_src):
@@ -54,7 +65,9 @@ def validate_json_against_schema(json_dict, schema_src):
     return validator.validate(json_dict, schema)
 
 
-class IsaStorageAdapter(metaclass=ABCMeta):
+class IsaStorageAdapter(object):#metaclass=ABCMeta):
+
+    __metaclass__ = ABCMeta
 
     @abstractmethod
     def download(self, source, destination=None, owner=None, repository=None):
@@ -119,13 +132,12 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             if res.status_code == requests.codes.ok:
                 auths = json.loads(res.text)
 
+
                 # filter the existing authorizations according to thw provided criteria (note and scopes)
-                auths = [auth for auth in auths
-                         if auth['note'] == payload['note'] and auth['scopes'] == payload['scopes']]
+                auth = next((auth for auth in auths if auth['note']==payload['note'] and auth['scopes']==payload['scopes']), None)
 
                 # if the required authorization already exists, delete it
-                if len(auths) > 0:
-                    requests.delete(auths[0]['url'], headers=headers, auth=(username, password))
+                if auth is not None: requests.delete(auth['url'], headers=headers, auth=(username, password))
 
                 # require a new authorization
                 res = requests.post(self.AUTH_ENDPOINT,  json=payload, headers=headers, auth=(username, password))
@@ -207,7 +219,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                         validate_json_against_schema(res_payload, INVESTIGATION_SCHEMA_FILE)
 
                     # save it to disk
-                    os.makedirs(destination, exist_ok=True)
+                    makedirs(destination, exist_ok=True)
                     with open(os.path.join(destination, source.split('/')[-1]), 'w+') as out_file:
                         json.dump(res_payload, out_file)
                     return True
@@ -222,7 +234,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                     etree.fromstring(res.text, xml_parser)
 
                     # if it is a valid XML save it to disk
-                    os.makedirs(destination, exist_ok=True)
+                    makedirs(destination, exist_ok=True)
                     with open(os.path.join(destination, source.split('/')[-1]), 'w+') as out_file:
                         out_file.write(res.text)
                     return True
@@ -258,16 +270,14 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         Raises:
             :raise requests.exceptions.HTTPException when the request to GitHub fails
         """
+
         get_content_frag = '/'.join([REPOS, owner, repository, CONTENTS, source])
-
         headers = {'Authorization': 'token %s' % self.token} if self.token else {}
-
         req_payload = {
             'ref': ref
         }
 
         r = requests.get(urljoin(GITHUB_API_BASE_URL, get_content_frag), headers=headers, params=req_payload)
-
         if r.status_code == requests.codes.ok:
             res_payload = json.loads(r.text)
 
@@ -286,7 +296,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             if write_to_file and ('content' in processed_payload or 'text' in processed_payload):
                 (out_data, modality) = (processed_payload['text'], 'w+') if 'text' in processed_payload \
                     else (processed_payload['content'], 'wb+')
-                os.makedirs(destination, exist_ok=True)
+                makedirs(destination, exist_ok=True)
                 with open(os.path.join(destination, source.split('/')[-1]), modality) as out_file:
                     out_file.write(out_data)
 
@@ -316,7 +326,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
         """
         headers = {'Authorization': 'token %s' % self.token} if self.token else {}
         # filter the items to keep only files
-        files = [item for item in dir_items if item['type'] == 'file']
+        files = (item for item in dir_items if item['type'] == 'file')
         buf = BytesIO()
 
         with ZipFile(buf, 'w') as zip_file:
@@ -329,14 +339,17 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                 if res.status_code == requests.codes.ok and res.headers['Content-Type'].split(";")[0] == 'text/plain':
 
                     # zip the text payload
-                    zip_file.writestr(os.path.join(directory, file["name"]), res.text)
+                    try: zip_file.writestr(os.path.join(directory, file["name"]), res.text)
+                    except TypeError: zip_file.writestr(os.path.join(directory, file["name"]), res.text.encode('utf-8'))
+
 
                     # write to a target dir
                     if write_to_directory:
                         dir_path = os.path.join(destination, directory)
-                        os.makedirs(dir_path, exist_ok=True)
+                        makedirs(dir_path, exist_ok=True)
                         with open(os.path.join(dir_path, file_name), 'w+') as out_file:
                             out_file.write(res.text)
+
 
         buf.seek(0)
         return buf

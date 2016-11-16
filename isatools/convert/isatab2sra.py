@@ -1,19 +1,21 @@
+# coding: utf-8
 import os
 import subprocess
-from io import BytesIO
+from six import BytesIO
 from zipfile import ZipFile
 import logging
 from isatools import isatab
 import json
-from io import StringIO
+import glob
+import six
 
 
 def zipdir(path, zip_file):
     """utility function to zip only SRA xmls from a whole directory"""
     # zip_file is zipfile handle
     for root, dirs, files in os.walk(path):
-        for file in [f for f in files if f in ['submission.xml', 'project_set.xml', 'run_set.xml',
-                                               'experiment_set.xml', 'sample_set.xml']]:
+        for file in (f for f in files if f in {'submission.xml', 'project_set.xml', 'run_set.xml',
+                                               'experiment_set.xml', 'sample_set.xml'}):
             zip_file.write(os.path.join(root, file),
                            arcname=os.path.join(os.path.basename(root), file))
 
@@ -52,14 +54,15 @@ def create_sra(source_path, dest_path, config_path=default_config_dir):
         raise IOError("dest_path " + dest_path + " does not exist")
     if not os.path.exists(config_path):
         raise IOError("config_path " + config_path + " does not exist")
-    print("Using source ISA Tab folder: " + source_path)
-    print("Writing to destination SRA folder: " + dest_path)
-    print("ISA configuration XML folder: " + config_path)
-    i_files = [f for f in os.listdir(source_path) if f.startswith('i_') and f.endswith('.txt')]
+    print("Using source ISA Tab folder: {}".format(source_path))
+    print("Writing to destination SRA folder: {}".format(dest_path))
+    print("ISA configuration XML folder: {}".format(config_path))
+    i_files = glob.glob(os.path.join(source_path, "i_*.txt"))
     if len(i_files) != 1:
         logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
         return
-    log_msgs = isatab.validate2(fp=open(os.path.join(source_path, i_files[0])), log_level=logging.ERROR)
+    with open(os.path.join(source_path, i_files[0])) as i_file:
+        log_msgs = isatab.validate2(fp=i_file, log_level=logging.ERROR)
     if '(F)' in log_msgs.getvalue():
         logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
         return
@@ -79,7 +82,7 @@ def create_sra(source_path, dest_path, config_path=default_config_dir):
         #     logf.write(str(res, encoding='utf-8'))
 
     except subprocess.CalledProcessError as err:
-        print("Execution failed: ", err.output)
+        print("Execution failed: {}".format(err.output))
         error_message = str(err.output, encoding='utf-8')
         raise TypeError(error_message)
 
@@ -106,7 +109,7 @@ def create_sra(source_path, dest_path, config_path=default_config_dir):
 def convert(source_path, dest_path, sra_settings=None, validate_first=True):
     from isatools.convert import isatab2json, json2sra
     isa_json = isatab2json.convert(source_path, validate_first=validate_first)
-    isa_json_fp = StringIO(json.dumps(isa_json))
+    isa_json_fp = six.StringIO(json.dumps(isa_json))
     isa_json_fp.name = "BII-S-3.json"
     json2sra.convert2(isa_json_fp, dest_path, sra_settings=sra_settings, validate_first=False)
     logging.info("Conversion complete...")

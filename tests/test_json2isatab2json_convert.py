@@ -1,16 +1,27 @@
+# coding: utf-8
 import os
 import unittest
-from isatools.convert import isatab2json, json2isatab
 import shutil
 import json
-from tests import utils
 import tempfile
+import functools
+import contextlib
+import six
+
+from isatools.convert import isatab2json, json2isatab
+from tests import utils
+
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
 
 
 class TestJsonIsaTabTwoWayConvert(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls._json_data_dir = utils.JSON_DATA_DIR
+
     def setUp(self):
-        self._json_data_dir = utils.JSON_DATA_DIR
         self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
@@ -18,21 +29,22 @@ class TestJsonIsaTabTwoWayConvert(unittest.TestCase):
 
     def test_json2isatab_isatab2json_2way_convert_sample_pool(self):
         test_case = 'TEST-ISA-sample-pool'
-        test_json = open(os.path.join(self._json_data_dir, test_case + '.json'))
-        json2isatab.convert(test_json, self._tmp_dir, validate_first=False)
-        test_json.seek(0)  # reset pointer
-        expected_json = json.load(test_json)
-        actual_json = isatab2json.convert(self._tmp_dir, validate_first=False)
-        self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
+        with open(os.path.join(self._json_data_dir, test_case + '.json')) as test_json:
+            json2isatab.convert(test_json, self._tmp_dir, validate_first=False)
+            test_json.seek(0)  # reset pointer
+            expected_json = json.load(test_json)
+            actual_json = isatab2json.convert(self._tmp_dir, validate_first=False)
+            self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_json2isatab_isatab2json_2way_convert_source_split(self):
         test_case = 'TEST-ISA-source-split'
-        test_json = open(os.path.join(self._json_data_dir, test_case + '.json'))
-        json2isatab.convert(test_json, self._tmp_dir, validate_first=False)
-        test_json.seek(0)  # reset pointer
-        expected_json = json.load(test_json)
-        actual_json = isatab2json.convert(self._tmp_dir, validate_first=False)
-        self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
+        with open(os.path.join(self._json_data_dir, test_case + '.json')) as test_json:
+            json2isatab.convert(test_json, self._tmp_dir, validate_first=False)
+            test_json.seek(0)  # reset pointer
+            expected_json = json.load(test_json)
+            actual_json = isatab2json.convert(self._tmp_dir, validate_first=False)
+            self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
+
 
     # def test_json2isatab_isatab2json_2way_convert_bii_i_1(self):
     #     #  FIXME: Get error in isatab2json.createUnitsCategories

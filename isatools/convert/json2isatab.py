@@ -1,3 +1,4 @@
+# coding: utf-8
 from isatools import isajson
 from isatools import isatab
 import os
@@ -40,9 +41,8 @@ def convert(json_fp, path, i_file_name='i_investigation.txt', config_dir=isajson
     isatab.dump(isa_obj=isa_obj, output_path=path, i_file_name=i_file_name)
     #  copy data files across from source directory where JSON is located
     logger.info("Copying data files from source to target...")
-    for file in [f for f in os.listdir(os.path.dirname(json_fp.name))
-                 if not (f.endswith('.txt') and (f.startswith('i_') or f.startswith('s_') or f.startswith('a_'))) and
-                 not (f.endswith('.json'))]:
+    for file in (f for f in os.listdir(os.path.dirname(json_fp.name))
+                 if not (f.endswith('.txt') and f.startswith(('i_', 's_', 'a_'))) and not (f.endswith('.json'))):
         filepath = os.path.join(os.path.dirname(json_fp.name), file)
         if os.path.isfile(filepath):
             shutil.copy(filepath, path)

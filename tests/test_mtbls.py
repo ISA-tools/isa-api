@@ -1,17 +1,17 @@
+# coding: utf-8
 import unittest
-from unittest.mock import patch, mock_open
-from isatools.io import mtbls as MTBLS
 import shutil
 import os
 
+try:
+    from unittest.mock import patch, mock_open
+except ImportError:
+    from mock import patch, mock_open
+
+from isatools.io import mtbls as MTBLS
+
 
 class TestMtblsIO(unittest.TestCase):
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
 
     """Mock-only test on MTBLS1"""
     @patch('ftplib.FTP', autospec=True)

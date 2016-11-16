@@ -1,12 +1,15 @@
+# coding: utf-8
 import unittest
-from isatools.validate.validate_schemas import validateSchemasInFolder
 import os
+
+from isatools.validate.validate_schemas import validateSchemasInFolder
 
 
 class TestIsaJsonSchemas(unittest.TestCase):
 
-    def setUp(self):
-        self._schemas_dir = os.path.join(os.path.dirname(__file__), '..', 'isatools', 'schemas')
+    @classmethod
+    def setUpClass(cls):
+        cls._schemas_dir = os.path.join(os.path.dirname(__file__), '..', 'isatools', 'schemas')
 
     # validating schemas for isa v1 model
     def test_isa_model_v1_schemas(self):

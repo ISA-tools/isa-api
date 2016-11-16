@@ -1,15 +1,27 @@
-from isatools.model.v1 import *
+# coding: utf-8
+from __future__ import absolute_import, unicode_literals
+
 import json
 import logging
+import itertools
 import networkx as nx
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
+import glob
+import six
+import functools
+
+from .model.v1 import *
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
+open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
+
 errors = list()
 warnings = list()
+
 
 
 def load(fp):
@@ -40,24 +52,24 @@ def load(fp):
     def _build_assay_graph(process_sequence=list()):
         G = nx.DiGraph()
         for process in process_sequence:
-            if process.next_process is not None or len(process.outputs) > 0:  # first check if there's some valid outputs to connect
-                if len(process.outputs) > 0:
-                    for output in [n for n in process.outputs if not isinstance(n, DataFile)]:
+            if process.next_process is not None or process.outputs:  # first check if there's some valid outputs to connect
+                if process.outputs:
+                    for output in (n for n in process.outputs if not isinstance(n, DataFile)):
                         G.add_edge(process, output)
                 else:  # otherwise just connect the process to the next one
                     G.add_edge(process, process.next_process)
-            if process.prev_process is not None or len(process.inputs) > 0:
-                if len(process.inputs) > 0:
+            if process.prev_process is not None or process.inputs:
+                if process.inputs:
                     for input_ in process.inputs:
                         G.add_edge(input_, process)
                 else:
                     G.add_edge(process.prev_process, process)
         return G
 
-    def get_jvalue(dict, key):
-        if key in dict.keys():
-            return dict[key]
-        else:
+    def get_jvalue(d, key):
+        try:
+            return d[key]
+        except KeyError:
             return None
 
     investigation_json = json.load(fp)
@@ -116,13 +128,14 @@ def load(fp):
             person.roles.append(role)
         person.comments = get_comments(person_json)
         investigation.contacts.append(person)
-    samples_dict = dict()
-    sources_dict = dict()
-    categories_dict = dict()
-    protocols_dict = dict()
-    factors_dict = dict()
-    parameters_dict = dict()
-    units_dict = dict()
+    samples_dict = {}
+    sources_dict = {}
+    categories_dict = {}
+    protocols_dict = {}
+    factors_dict = {}
+    parameters_dict = {}
+    units_dict = {}
+    process_dict = {}
 
     # populate assay characteristicCategories first
     for study_json in investigation_json['studies']:
@@ -278,8 +291,9 @@ def load(fp):
                     try:
                         unit = units_dict[characteristic_json['unit']['@id']]
                     except KeyError:
-                        unit = None
-                elif not isinstance(value, str):
+                    	unit = None
+                        #raise IOError("Can't create unit annotation")
+                elif not isinstance(value, six.text_type):
                     raise IOError("Unexpected type in characteristic value")
                 characteristic.value = value
                 characteristic.unit = unit
@@ -305,12 +319,12 @@ def load(fp):
                             term_accession=characteristic_json['value']['termAccession'])
                     except KeyError:
                         raise IOError("Can't create value as annotation")
-                elif isinstance(value, int) or isinstance(value, float):
+                elif isinstance(value, (int, float)):
                     try:
                         unit = units_dict[characteristic_json['unit']['@id']]
                     except KeyError:
                         raise IOError("Can't create unit annotation")
-                elif not isinstance(value, str):
+                elif not isinstance(value, six.text_type):
                     raise IOError("Unexpected type in characteristic value")
                 characteristic.value = value
                 characteristic.unit = unit
@@ -353,7 +367,7 @@ def load(fp):
             except KeyError:
                 pass
             for parameter_value_json in study_process_json['parameterValues']:
-                if isinstance(parameter_value_json['value'], int) or isinstance(parameter_value_json['value'], float):
+                if isinstance(parameter_value_json['value'], (int, float)):
                     parameter_value = ParameterValue(
                         category=parameters_dict[parameter_value_json['category']['@id']],
                         value=parameter_value_json['value'],
@@ -436,7 +450,7 @@ def load(fp):
                                           term_source=term_source_dict[assay_unit_json['termSource']],
                                           term_accession=assay_unit_json['termAccession'])
                 units_dict[unit.id] = unit
-            data_dict = dict()
+            data_dict = {}
             for data_json in assay_json['dataFiles']:
                 data_file = DataFile(
                     id_=data_json['@id'],
@@ -461,7 +475,7 @@ def load(fp):
                 )
                 study.characteristic_categories.append(characteristic_category)
                 categories_dict[characteristic_category.id] = characteristic_category
-            other_materials_dict = dict()
+            other_materials_dict = {}
             for other_material_json in assay_json['materials']['otherMaterials']:
                 material_name = other_material_json['name']
                 if material_name.startswith('labeledextract-'):
@@ -548,8 +562,7 @@ def load(fp):
                 for parameter_value_json in assay_process_json['parameterValues']:
                     if parameter_value_json['category']['@id'] == '#parameter/Array_Design_REF':  # Special case
                         process.array_design_ref = parameter_value_json['value']
-                    elif isinstance(parameter_value_json['value'], int) or \
-                            isinstance(parameter_value_json['value'], float):
+                    elif isinstance(parameter_value_json['value'], (int, float)):
                         parameter_value = ParameterValue(
                             category=parameters_dict[parameter_value_json['category']['@id']],
                             value=parameter_value_json['value'],
@@ -620,8 +633,15 @@ def get_io_ids_in_process_sequence(study_json):
     all_process_sequences = list(study_json['processSequence'])
     for assay_json in study_json['assays']:
         all_process_sequences.extend(assay_json['processSequence'])
-    return [elem for iterabl in [[i['@id'] for i in process['inputs']] + [o['@id'] for o in process['outputs']] for process in
-                                 all_process_sequences] for elem in iterabl]
+    # return [elem for iterabl in [[i['@id'] for i in process['inputs']] + [o['@id'] for o in process['outputs']] for process in
+    #                              all_process_sequences] for elem in iterabl]
+
+    return [
+            io['@id']
+                for process in all_process_sequences
+                    for io in itertools.chain(process['inputs'], process['outputs'])
+           ]
+
 
 
 def check_material_ids_declared_used(study_json, id_collector_func):
@@ -644,16 +664,17 @@ def check_material_ids_not_declared_used(study_json):
     node_ids = get_source_ids(study_json) + get_sample_ids(study_json) + get_material_ids(study_json) + \
                get_data_file_ids(study_json)
     io_ids_in_process_sequence = get_io_ids_in_process_sequence(study_json)
-    if len(set(io_ids_in_process_sequence)) - len(set(node_ids)) > 0:
-        diff = set(io_ids_in_process_sequence) - set(node_ids)
+    diff = set(io_ids_in_process_sequence) - set(node_ids)
+    if diff: #len(set(io_ids_in_process_sequence)) - len(set(node_ids)) > 0:
+        #diff = set(io_ids_in_process_sequence) - set(node_ids)
         errors.append({
             "message": "Missing Material",
             "supplemental": "Inputs/outputs in {}  not found in sources, samples, materials or datafiles "
                             "declarations".format(list(diff)),
             "code": 1005
         })
-        logger.error("(E) There are some inputs/outputs IDs {} not found in sources, samples, materials or data files"
-                     "declared".format(list(diff)))
+        logger.error("(E) There are some inputs/outputs IDs {} not found in sources, samples, materials or data files declared"
+              .format(list(diff)))
 
 
 def check_process_sequence_links(process_sequence_json):
@@ -708,17 +729,18 @@ def check_process_protocol_ids_usage(study_json):
                 protocol_ids_used.append(process['executesProtocol']['@id'])
             except KeyError:
                 pass
-    if len(set(protocol_ids_used) - set(protocol_ids_declared)) > 0:
-        diff = set(protocol_ids_used) - set(protocol_ids_declared)
+    diff = set(protocol_ids_used) - set(protocol_ids_declared)
+    if diff:
         errors.append({
             "message": "Missing Protocol declaration",
             "supplemental": "protocol IDs {} not declared".format(list(diff)),
             "code": 1007
         })
-        logger.error("(E) There are protocol IDs {} used in a study or assay process sequence not declared".format(
-            list(diff)))
-    elif len(set(protocol_ids_declared) - set(protocol_ids_used)) > 0:
-        diff = set(protocol_ids_declared) - set(protocol_ids_used)
+        logger.error("(E) There are protocol IDs {} used in a study or assay process sequence not declared"
+              .format(list(diff)))
+
+    diff = set(protocol_ids_declared) - set(protocol_ids_used)
+    if diff:
         warnings.append({
             "message": "Protocol declared but not used",
             "supplemental": "protocol IDs declared {} not used".format(list(diff)),
@@ -730,21 +752,35 @@ def check_process_protocol_ids_usage(study_json):
 
 def get_study_protocols_parameter_ids(study_json):
     """Used for rule 1009"""
-    return [elem for iterabl in [[param['@id'] for param in protocol['parameters']] for protocol in
-                                 study_json['protocols']] for elem in iterabl]
+    # return [elem for iterabl in [[param['@id'] for param in protocol['parameters']] for protocol in
+    #                              study_json['protocols']] for elem in iterabl]
+    return [ param['@id'] for protocol in study_json['protocols'] for param in protocol['parameters'] ]
 
 
 def get_parameter_value_parameter_ids(study_json):
     """Used for rule 1009"""
-    study_pv_parameter_ids = [elem for iterabl in
-                              [[parameter_value['category']['@id'] for parameter_value in process['parameterValues']]
-                               for process in study_json['processSequence']] for elem in iterabl]
-    for assay in study_json['assays']:
-        study_pv_parameter_ids.extend([elem for iterabl in
-                                       [[parameter_value['category']['@id'] for parameter_value in
-                                         process['parameterValues']]
-                                        for process in assay['processSequence']] for elem in iterabl]
-                                      )
+    # study_pv_parameter_ids = [elem for iterabl in
+    #                           [[parameter_value['category']['@id'] for parameter_value in process['parameterValues']]
+    #                               for process in study_json['processSequence']] for elem in iterabl]
+    study_pv_parameter_ids = [
+        parameter_value['category']['@id']
+            for process in study_json['processSequence']
+                for parameter_value in process['parameterValues']
+
+    ]
+
+    # for assay in study_json['assays']:
+    #     # study_pv_parameter_ids.extend([elem for iterabl in
+    #     #                                [[parameter_value['category']['@id'] for parameter_value in
+    #     #                                  process['parameterValues']]
+    #     #                                 for process in assay['processSequence']] for elem in iterabl]
+    #     #                               )
+    study_pv_parameter_ids.extend([
+        parameter_value['category']['@id']
+            for assay in study_json['assays']
+                for process in assay['processSequence']
+                    for parameter_value in process['parameterValues']
+    ])
     return study_pv_parameter_ids
 
 
@@ -752,17 +788,18 @@ def check_protocol_parameter_ids_usage(study_json):
     """Used for rule 1009 and 1020"""
     protocols_declared = get_study_protocols_parameter_ids(study_json) + ['#parameter/Array_Design_REF'] # + special case
     protocols_used = get_parameter_value_parameter_ids(study_json)
-    if len(set(protocols_used) - set(protocols_declared)) > 0:
-        diff = set(protocols_used) - set(protocols_declared)
+
+    diff = set(protocols_used) - set(protocols_declared)
+    if diff:
         errors.append({
             "message": "Missing Protocol Parameter declaration",
             "supplemental": "protocol parameters {} used".format(list(diff)),
             "code": 1009
         })
-        logger.error("(E) There are protocol parameters {} used in a study or assay process not declared in any "
-                     "protocol".format(list(diff)))
-    elif len(set(protocols_declared) - set(protocols_used)) > 0:
-        diff = set(protocols_declared) - set(protocols_used)
+        logger.error("(E) There are protocol parameters {} used in a study or assay process not declared in any protocol"
+              .format(list(diff)))
+    diff = set(protocols_declared) - set(protocols_used)
+    if diff:
         warnings.append({
             "message": "Protocol parameter declared in a protocol but never used",
             "supplemental": "protocol declared {} are not used".format(list(diff)),
@@ -779,16 +816,30 @@ def get_characteristic_category_ids(study_or_assay_json):
 
 def get_characteristic_category_ids_in_study_materials(study_json):
     """Used for rule 1013"""
-    return [elem for iterabl in
-            [[characteristic['category']['@id'] for characteristic in material['characteristics']] for material in
-             study_json['materials']['sources'] + study_json['materials']['samples']] for elem in iterabl]
+
+    return [
+            characteristic['category']['@id']
+                for material in itertools.chain(study_json['materials']['sources'], study_json['materials']['samples'])
+                    for characteristic in material['characteristics']
+            ]
+
+    # return [elem for iterabl in
+    #         [[characteristic['category']['@id'] for characteristic in material['characteristics']] for material in
+    #          study_json['materials']['sources'] + study_json['materials']['samples']] for elem in iterabl]
 
 
 def get_characteristic_category_ids_in_assay_materials(assay_json):
     """Used for rule 1013"""
-    return [elem for iterabl in [[characteristic['category']['@id']  for characteristic in material['characteristics']]
-                                 if 'characteristics' in material.keys() else [] for material in
-              assay_json['materials']['samples'] + assay_json['materials']['otherMaterials']] for elem in iterabl]
+    # return [elem for iterabl in [[characteristic['category']['@id']  for characteristic in material['characteristics']]
+    #                              if 'characteristics' in material else [] for material in
+    #           assay_json['materials']['samples'] + assay_json['materials']['otherMaterials']] for elem in iterabl]
+    return [
+             characteristic['category']['@id']
+                for material in itertools.chain(assay_json['materials']['samples'], assay_json['materials']['otherMaterials'])
+                    if 'characteristics' in material
+                        for characteristic in material['characteristics']
+           ]
+
 
 
 def check_characteristic_category_ids_usage(studies_json):
@@ -804,8 +855,9 @@ def check_characteristic_category_ids_usage(studies_json):
         for assay in study_json['assays']:
             characteristic_categories_used_in_assay = get_characteristic_category_ids_in_assay_materials(assay)
             characteristic_categories_used += characteristic_categories_used_in_assay
-    if len(set(characteristic_categories_used) - set(characteristic_categories_declared)) > 0:
-        diff = set(characteristic_categories_used) - set(characteristic_categories_declared)
+
+    diff = set(characteristic_categories_used) - set(characteristic_categories_declared)
+    if diff:
         errors.append({
                 "message": "Missing Characteristic Category declaration",
                 "supplemental": "Characteristic Categories {} used not declared".format(list(diff)),
@@ -813,8 +865,8 @@ def check_characteristic_category_ids_usage(studies_json):
             })
         logger.error("(E) There are characteristic categories {} used in a source or sample characteristic that have "
                      "not been not declared".format(list(diff)))
-    elif len(set(characteristic_categories_declared) - set(characteristic_categories_used)) > 0:
-        diff = set(characteristic_categories_declared) - set(characteristic_categories_used)
+    diff = set(characteristic_categories_declared) - set(characteristic_categories_used)
+    if diff:
         warnings.append({
             "message": "Characteristic Category not used",
             "supplemental": "Characteristic Categories {} declared".format(list(diff)),
@@ -831,15 +883,19 @@ def get_study_factor_ids(study_json):
 
 def get_study_factor_ids_in_sample_factor_values(study_json):
     """Used for rule 1008 and 1021"""
-    return [elem for iterabl in [[factor['category']['@id'] for factor in sample['factorValues']] for sample in
-                                 study_json['materials']['samples']] for elem in iterabl]
+    # return [elem for iterabl in [[factor['category']['@id'] for factor in sample['factorValues']] for sample in
+    #                              study_json['materials']['samples']] for elem in iterabl]
+    return [ factor['category']['@id']
+                for sample in study_json['materials']['samples']
+                    for factor in sample['factorValues']
+           ]
 
 
 def check_study_factor_usage(study_json):
     """Used for rules 1008 and 1021"""
     factors_declared = get_study_factor_ids(study_json)
     factors_used = get_study_factor_ids_in_sample_factor_values(study_json)
-    if len(set(factors_used) - set(factors_declared)) > 0:
+    if set(factors_used) - set(factors_declared):
         diff = set(factors_used) - set(factors_declared)
         errors.append({
             "message": "Missing Study Factor declaration",
@@ -848,7 +904,7 @@ def check_study_factor_usage(study_json):
         })
         logger.error("(E) There are study factors {} used in a sample factor value that have not been not declared"
               .format(list(diff)))
-    elif len(set(factors_declared) - set(factors_used)) > 0:
+    elif set(factors_declared) - set(factors_used):
         diff = set(factors_declared) - set(factors_used)
         warnings.append({
             "message": "Study Factor is not used",
@@ -866,38 +922,78 @@ def get_unit_category_ids(study_or_assay_json):
 
 def get_study_unit_category_ids_in_materials_and_processes(study_json):
     """Used for rule 1014"""
-    study_characteristics_units_used = [elem for iterabl in
-                                        [[characteristic['unit']['@id'] if 'unit' in characteristic.keys() else None for
-                                          characteristic in material['characteristics']] for material in
-                                         study_json['materials']['sources'] + study_json['materials']['samples']] for
-                                        elem in iterabl]
-    study_factor_value_units_used = [elem for iterabl in
-                                     [[factor_value['unit']['@id'] if 'unit' in factor_value.keys() else None for
-                                       factor_value in material['factorValues']] for material in
-                                      study_json['materials']['samples']] for
-                                     elem in iterabl]
-    parameter_value_units_used = [elem for iterabl in[[parameter_value['unit']['@id']
-                                                       if 'unit' in parameter_value.keys() else None for
-                                   parameter_value in process['parameterValues']] for process in
-                                  study_json['processSequence']] for
-                                  elem in iterabl]
-    return [x for x in study_characteristics_units_used + study_factor_value_units_used + parameter_value_units_used
-            if x is not None]
+    # study_characteristics_units_used = [elem for iterabl in
+    #                                     [[characteristic['unit']['@id'] if 'unit' in characteristic else None for
+    #                                       characteristic in material['characteristics']] for material in
+    #                                      study_json['materials']['sources'] + study_json['materials']['samples']] for
+    #                                     elem in iterabl]
+    study_characteristics_units_used = [characteristic['unit']['@id']
+                                            for material in itertools.chain(study_json['materials']['sources'],study_json['materials']['samples'])
+                                                for characteristic in material['characteristics']
+                                                    if 'unit' in characteristic
+                                        ]
+
+    # study_factor_value_units_used = [elem for iterabl in
+    #                                  [[factor_value['unit']['@id'] if 'unit' in factor_value else None for
+    #                                    factor_value in material['factorValues']] for material in
+    #                                   study_json['materials']['samples']] for
+    #                                  elem in iterabl]
+    study_factor_value_units_used = [factor_value['unit']['@id']
+                                        for material in study_json['materials']['samples']
+                                            for factor_value in material['factorValues']
+                                                if 'unit' in factor_value
+                                    ]
+
+
+
+    # parameter_value_units_used = [elem for iterabl in[[parameter_value['unit']['@id']
+    #                                                    if 'unit' in parameter_value else None for
+    #                                parameter_value in process['parameterValues']] for process in
+    #                               study_json['processSequence']] for
+    #                               elem in iterabl]
+    parameter_value_units_used = [parameter_value['unit']['@id']
+                                    for process in study_json['processSequence']
+                                        for parameter_value in process['parameterValues']
+                                            if 'unit' in parameter_value
+                                 ]
+
+    # return [x for x in study_characteristics_units_used + study_factor_value_units_used + parameter_value_units_used
+    #         if x is not None]
+    return study_characteristics_units_used + study_factor_value_units_used + parameter_value_units_used
+
 
 
 def get_assay_unit_category_ids_in_materials_and_processes(assay_json):
     """Used for rule 1014"""
-    assay_characteristics_units_used = [elem for iterabl in [[characteristic['unit']['@id'] if 'unit' in
-                                        characteristic.keys() else None
-                                                              for characteristic in material['characteristics']]
-                                                             if 'characteristics' in material.keys() else None for
-                                     material in assay_json['materials']['otherMaterials']] for elem in iterabl]
-    parameter_value_units_used = [elem for iterabl in[[parameter_value['unit']['@id']
-                                                       if 'unit' in parameter_value.keys() else None
-                                                       for parameter_value in process['parameterValues']] for process in
-                                                      assay_json['processSequence']] for
-                                  elem in iterabl]
-    return [x for x in assay_characteristics_units_used + parameter_value_units_used if x is not None]
+    # assay_characteristics_units_used = [elem for iterabl in [[characteristic['unit']['@id'] if 'unit' in
+    #                                     characteristic else None
+    #                                                           for characteristic in material['characteristics']]
+    #                                                          if 'characteristics' in material else None for
+    #                                  material in assay_json['materials']['otherMaterials']] for elem in iterabl]
+    assay_characteristics_units_used = [
+        characteristic['unit']['@id']
+            for material in assay_json['materials']['otherMaterials']
+                if 'characteristics' in material
+                    for characteristic in material
+                        if 'unit' in characteristic
+    ]
+
+
+    # parameter_value_units_used = [elem for iterabl in[[parameter_value['unit']['@id']
+    #                                                    if 'unit' in parameter_value else None
+    #                                                    for parameter_value in process['parameterValues']] for process in
+    #                                                   assay_json['processSequence']] for
+    #                               elem in iterabl]
+
+    parameter_value_units_used = [
+        parameter_value['unit']['@id']
+            for process in assay_json['processSequence']
+                for parameter_value in process['parameterValues']
+                    if 'unit' in parameter_value
+    ]
+
+    return parameter_value_units_used + assay_characteristics_units_used
+
 
 
 def check_unit_category_ids_usage(study_json):
@@ -912,11 +1008,11 @@ def check_unit_category_ids_usage(study_json):
     for assay in study_json['assays']:
         units_used.extend(get_assay_unit_category_ids_in_materials_and_processes(assay))
     logger.info("Comparing units declared vs units used...")
-    if len(set(units_used) - set(units_declared)) > 0:
+    if set(units_used) - set(units_declared):
         diff = set(units_used) - set(units_declared)
         logger.error("(E) There are units {} used in a material or parameter value that have not been not declared"
               .format(list(diff)))
-    elif len(set(units_declared) - set(units_used)) > 0:
+    elif set(units_declared) - set(units_used):
         diff = set(units_declared) - set(units_used)
         warnings.append({
             "message": "Unit declared but not used",
@@ -930,23 +1026,27 @@ def check_unit_category_ids_usage(study_json):
 def check_utf8(fp):
     """Used for rule 0010"""
     import chardet
-    with open(fp.name, 'rb') as fp:
-        charset = chardet.detect(fp.read())
-        if charset['encoding'] is not 'UTF-8' and charset['encoding'] is not 'ascii':
-            warnings.append({
-                "message": "File should be UTF8 encoding",
-                "supplemental": "Encoding is '{0}' with confidence {1}".format(charset['encoding'], charset['confidence']),
-                "code": 10
-            })
-            logger.warning("(W) File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
-                           .format(charset['encoding'], charset['confidence']))
-            raise SystemError()
+    with open(fp.name, mode='rb') as binary_fp:
+        charset = chardet.detect(binary_fp.read())
+    if charset['encoding'] not in {'UTF-8', 'ascii'}:
+        #print(type(charset['encoding']), type('ascii'))
+        warnings.append({
+            "message": "File should be UTF8 encoding",
+            "supplemental": "Encoding is '{0}' with confidence {1}".format(charset['encoding'], charset['confidence']),
+            "code": 10
+        })
+        logger.warning("(W) File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
+                       .format(charset['encoding'], charset['confidence']))
+        raise SystemError
+
 
 
 def check_isa_schemas(isa_json, investigation_schema_path):
     """Used for rule 0003 and 4003"""
     try:
-        investigation_schema = json.load(open(investigation_schema_path))
+        with open(investigation_schema_path) as schema_json:
+            investigation_schema = json.load(schema_json)
+        #investigation_schema_path = os.path.abspath(investigation_schema_path)
         resolver = RefResolver('file://' + investigation_schema_path, investigation_schema)
         validator = Draft4Validator(investigation_schema, resolver=resolver)
         validator.validate(isa_json)
@@ -959,12 +1059,14 @@ def check_isa_schemas(isa_json, investigation_schema_path):
         logger.fatal("(F) The JSON does not validate against the provided ISA-JSON schemas!")
         logger.fatal("Fatal error: " + str(ve))
         raise SystemError("(F) The JSON does not validate against the provided ISA-JSON schemas!")
+    except BaseException as be:
+        logger.error("{}: {}".format(type(be).__name__, be))
 
 
 def check_date_formats(isa_json):
     """Used for rule 3001"""
     def check_iso8601_date(date_str):
-        if date_str is not '':
+        if date_str:
             try:
                 iso8601.parse_date(date_str)
             except iso8601.ParseError:
@@ -987,7 +1089,7 @@ def check_date_formats(isa_json):
 def check_dois(isa_json):
     """Used for rule 3002"""
     def check_doi(doi_str):
-        if doi_str is not '':
+        if doi_str:
             regexDOI = re.compile('(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
             if not regexDOI.match(doi_str):
                 warnings.append({
@@ -1007,7 +1109,7 @@ def check_dois(isa_json):
 def check_filenames_present(isa_json):
     """Used for rule 3005"""
     for s_pos, study in enumerate(isa_json['studies']):
-        if study['filename'] is '':
+        if not study['filename']:
             warnings.append({
                 "message": "Missing study file name",
                 "supplemental": "At study position {}".format(s_pos),
@@ -1015,7 +1117,7 @@ def check_filenames_present(isa_json):
             })
             logger.warning("(W) A study filename is missing")
         for a_pos, assay in enumerate(study['assays']):
-            if assay['filename'] is '':
+            if not assay['filename']:
                 warnings.append({
                     "message": "Missing assay file name",
                     "supplemental": "At study position {}, assay position {}".format(s_pos, a_pos),
@@ -1027,10 +1129,10 @@ def check_filenames_present(isa_json):
 def check_pubmed_ids_format(isa_json):
     """Used for rule 3003"""
     def check_pubmed_id(pubmed_id_str):
-        if pubmed_id_str is not '':
+        if pubmed_id_str:
             pmid_regex = re.compile('[0-9]{8}')
             pmcid_regex = re.compile('PMC[0-9]{8}')
-            if (pmid_regex.match(pubmed_id_str) is None) and (pmcid_regex.match(pubmed_id_str) is None):
+            if pmid_regex.match(pubmed_id_str) is None and pmcid_regex.match(pubmed_id_str) is None:
                 warnings.append({
                     "message": "PubMed ID is not valid format",
                     "supplemental": "Found PubMedID {}".format(pubmed_id_str),
@@ -1049,7 +1151,7 @@ def check_protocol_names(isa_json):
     """Used for rule 1010"""
     for study in isa_json['studies']:
         for protocol in study['protocols']:
-            if protocol['name'] is '':
+            if not protocol['name']:
                 warnings.append({
                     "message": "Protocol missing name",
                     "supplemental": "Protocol @id={}".format(protocol['@id']),
@@ -1064,7 +1166,7 @@ def check_protocol_parameter_names(isa_json):
     for study in isa_json['studies']:
         for protocol in study['protocols']:
             for parameter in protocol['parameters']:
-                if parameter['parameterName'] is '':
+                if not parameter['parameterName']:
                     warnings.append({
                         "message": "Protocol Parameter missing name",
                         "supplemental": "Protocol Parameter @id={}".format(parameter['@id']),
@@ -1078,7 +1180,7 @@ def check_study_factor_names(isa_json):
     """Used for rule 1012"""
     for study in isa_json['studies']:
         for factor in study['factors']:
-            if factor['factorName'] is '':
+            if not factor['factorName']:
                 warnings.append({
                     "message": "Study Factor missing name",
                     "supplemental": "Study Factor @id={}".format(factor['@id']),
@@ -1091,7 +1193,7 @@ def check_study_factor_names(isa_json):
 def check_ontology_sources(isa_json):
     """Used for rule 3008"""
     for ontology_source in isa_json['ontologySourceReferences']:
-        if ontology_source['name'] is '':
+        if not ontology_source['name']:
             warnings.append({
                 "message": "Ontology Source missing name ref",
                 "supplemental": "name={}".format(ontology_source['name']),
@@ -1118,7 +1220,7 @@ def walk_and_get_annotations(isa_json, collector):
         if set(isa_json.keys()) == {'annotationValue', 'termAccession', 'termSource'} or \
                         set(isa_json.keys()) == {'@id', 'annotationValue', 'termAccession', 'termSource'}:
             collector.append(isa_json)
-        for i in isa_json.keys():
+        for i in six.iterkeys(isa_json):
             walk_and_get_annotations(isa_json[i], collector)
     elif isinstance(isa_json, list):
         for j in isa_json:
@@ -1130,18 +1232,18 @@ def check_term_source_refs(isa_json):
     term_sources_declared = get_ontology_source_refs(isa_json)
     collector = list()
     walk_and_get_annotations(isa_json, collector)
-    term_sources_used = [annotation['termSource'] for annotation in collector if annotation['termSource'] is not '']
-    if len(set(term_sources_used) - set(term_sources_declared)) > 0:
-        diff = set(term_sources_used) - set(term_sources_declared)
+    term_sources_used = [annotation['termSource'] for annotation in collector if annotation['termSource']]
+    diff = set(term_sources_used) - set(term_sources_declared)
+    if diff:
         errors.append({
             "message": "Missing Term Source",
             "supplemental": "Ontology sources missing {}".format(list(diff)),
             "code": 3009
         })
         logger.error("(E) There are ontology sources {} referenced in an annotation that have not been not declared"
-                     .format(list(diff)))
-    elif len(set(term_sources_declared) - set(term_sources_used)) > 0:
-        diff = set(term_sources_declared) - set(term_sources_used)
+              .format(list(diff)))
+    diff = set(term_sources_declared) - set(term_sources_used)
+    if diff:
         warnings.append({
             "message": "Ontology Source Reference is not used",
             "supplemental": "Ontology sources not used {}".format(list(diff)),
@@ -1156,8 +1258,8 @@ def check_term_accession_used_no_source_ref(isa_json):
     collector = list()
     walk_and_get_annotations(isa_json, collector)
     terms_using_accession_no_source_ref = [annotation for annotation in collector if annotation['termAccession']
-                                           is not '' and annotation['termSource'] is '']
-    if len(terms_using_accession_no_source_ref) > 0:
+                                           and not annotation['termSource']]
+    if terms_using_accession_no_source_ref:
         warnings.append({
             "message": "Missing Term Source REF in annotation",
             "supplemental": "Terms with accession but no source reference {}".format(terms_using_accession_no_source_ref),
@@ -1167,26 +1269,65 @@ def check_term_accession_used_no_source_ref(isa_json):
                        .format(terms_using_accession_no_source_ref))
 
 
+def print_graph(study_or_assay):
+    print(study_or_assay.filename)
+    G = study_or_assay.graph
+    from isatools.isatab import _get_start_end_nodes, _all_end_to_end_paths
+    start_nodes, end_nodes = _get_start_end_nodes(G)
+    for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
+        #type_seq_str = ""
+        type_seq = []
+        for node in path:
+            if isinstance(node, Source):
+                #type_seq_str += '(' + node.name + ":Source)->"
+                type_seq.append('({}:Source'.format(node.name))
+            elif isinstance(node, Sample):
+                #type_seq_str += '(' + node.name + ":Sample)->"
+                type_seq.append('({}:Sample'.format(node.name))
+            elif isinstance(node, Material):
+                if '#material/extract' in node.id:
+                    #type_seq_str += '(' + node.name + ":Extract)->"
+                    type_seq.append('({}:Extract'.format(node.name))
+                else:
+                    #type_seq_str += '(' + node.name + ":Material)->"
+                    type_seq.append('({}:Material'.format(node.name))
+            elif isinstance(node, Process):
+                protocol_type = node.executes_protocol.protocol_type.name
+                #type_seq_str += "({})->".format(protocol_type)
+                type_seq.append("({})".format(protocol_type))
+                type_seq.extend([ "({})".format(node.filename) for node in node.outputs if isinstance(node, DataFile) ])
+                #for data in [node for node in node.outputs if isinstance(node, DataFile)]:
+                #    #type_seq_str += '(' + data.filename + ":DataFile)->"
+
+            else:
+                #type_seq_str += "({})->".format(type(node))
+                type_seq.append("({})".format(type(node)))
+        #if type_seq_str.endswith('->'):
+        #    type_seq_str = type_seq_str[:len(type_seq_str) - 2]
+        #print(type_seq_str)
+        print("->".join(type_seq))
+
+
 def load_config(config_dir):
     import json
     configs = dict()
-    for file in os.listdir(config_dir):
-        if file.endswith(".json"):  # ignore non json files
-            try:
-                config_dict = json.load(open(os.path.join(config_dir, file)))
-                if os.path.basename(file) == 'protocol_definitions.json':
-                    configs['protocol_definitions'] = config_dict
-                elif os.path.basename(file) == 'study_config.json':
-                    configs['study'] = config_dict
-                else:
-                    configs[(config_dict['measurementType'], config_dict['technologyType'])] = config_dict
-            except ValidationError:
-                errors.append({
+    for file in glob.iglob(os.path.join(config_dir, "*.json")): # ignore non json files
+        try:
+            with open(os.path.join(config_dir, file)) as fp:
+                config_dict = json.load(fp)
+            if os.path.basename(file) == 'protocol_definitions.json':
+                configs['protocol_definitions'] = config_dict
+            elif os.path.basename(file) == 'study_config.json':
+                configs['study'] = config_dict
+            else:
+                configs[(config_dict['measurementType'], config_dict['technologyType'])] = config_dict
+        except ValidationError:
+            errors.append({
                     "message": "Configurations could not be loaded",
                     "supplemental": "On loading {}".format(os.path.join(config_dir, file)),
                     "code": 4001
                 })
-                logger.error("(E) Could not load configuration file {}".format(str(file)))
+            logger.error("(E) Could not load configuration file {}".format(str(file)))
     return configs
 
 
@@ -1207,10 +1348,40 @@ def check_measurement_technology_types(assay_json, configs):
                      .format(measurement_type, technology_type))
 
 
+def list_process_sequences(process_sequence_json):
+    list_of_last_processes_in_sequence = (i for i in process_sequence_json if 'nextProcess' not in i)
+    for process in list_of_last_processes_in_sequence:  # build graphs backwards
+        assay_graph = list()
+        try:
+            while True:
+                process_graph = list()
+                if 'outputs' in process:
+                    #outputs = process['outputs']
+                    #if len(outputs) > 0:
+                    for output in process['outputs']: #outputs:
+                        output_id = output['@id']
+                        process_graph.append(output_id)
+                protocol_id = process['executesProtocol']['@id']
+                process_graph.append(protocol_id)
+                if 'inputs' in process:
+                    #inputs = process['inputs']
+                    #if len(inputs) > 0:
+                    for input_ in process['inputs']:
+                        input_id = input_['@id']
+                        process_graph.append(input_id)
+                process_graph.reverse()
+                assay_graph.append(process_graph)
+                process = [i for i in process_sequence_json if i['@id'] == process['previousProcess']['@id']][0]
+        except KeyError:
+            pass
+        assay_graph.reverse()
+        yield assay_graph
+
+
 def check_study_and_assay_graphs(study_json, configs):
 
     def check_assay_graph(process_sequence_json, config):
-        list_of_last_processes_in_sequence = [i for i in process_sequence_json if 'nextProcess' not in i.keys()]
+        list_of_last_processes_in_sequence = (i for i in process_sequence_json if 'nextProcess' not in i)
         logger.info("Checking against assay protocol sequence configuration {}".format(config['description']))
         config_protocol_sequence = [i['protocol'] for i in config['protocols']]
         for process in list_of_last_processes_in_sequence:  # build graphs backwards
@@ -1218,28 +1389,27 @@ def check_study_and_assay_graphs(study_json, configs):
             try:
                 while True:
                     process_graph = list()
-                    if 'outputs' in process.keys():
+                    if 'outputs' in process:
                         outputs = process['outputs']
-                        if len(outputs) > 0:
-                            for output in outputs:
-                                output_id = output['@id']
-                                process_graph.append(output_id)
+                        #if outputs:
+                        for output in outputs:
+                            output_id = output['@id']
+                            process_graph.append(output_id)
                     protocol_id = protocols_and_types[process['executesProtocol']['@id']]
                     process_graph.append(protocol_id)
-                    if 'inputs' in process.keys():
+                    if 'inputs' in process:
                         inputs = process['inputs']
-                        if len(inputs) > 0:
-                            for input_ in inputs:
-                                input_id = input_['@id']
-                                process_graph.append(input_id)
+                        #if len(inputs) > 0:
+                        for input_ in inputs:
+                            input_id = input_['@id']
+                            process_graph.append(input_id)
                     process_graph.reverse()
                     assay_graph.append(process_graph)
-                    process = [i for i in process_sequence_json if i['@id'] == process['previousProcess']['@id']][0]
+                    process = next(i for i in process_sequence_json if i['@id'] == process['previousProcess']['@id'])
             except KeyError:  # this happens when we can't find a previousProcess
                 pass
             assay_graph.reverse()
-            assay_protocol_sequence = [[j for j in i if not j.startswith('#')] for i in assay_graph]
-            assay_protocol_sequence = [i for j in assay_protocol_sequence for i in j]  # flatten list
+            assay_protocol_sequence = [j for i in assay_graph for j in i if not j.startswith('#') ]
             assay_protocol_sequence_of_interest = [i for i in assay_protocol_sequence if i in config_protocol_sequence]
             #  filter out protocols in sequence that are not of interest (additional ones to required by config)
             if config_protocol_sequence != assay_protocol_sequence_of_interest:
@@ -1249,10 +1419,10 @@ def check_study_and_assay_graphs(study_json, configs):
                                                                                  assay_protocol_sequence),
                     "code": 4004
                 })
-                logger.warn("Configuration protocol sequence {} does not match study graph found in {}"
+                logger.warning("Configuration protocol sequence {} does not match study graph found in {}"
                             .format(config_protocol_sequence, assay_protocol_sequence))
 
-    protocols_and_types = dict([(i['@id'], i['protocolType']['annotationValue']) for i in study_json['protocols']])
+    protocols_and_types = {i['@id']: i['protocolType']['annotationValue'] for i in study_json['protocols']}
     # first check study graph
     logger.info("Loading configuration (study)")
     config = configs['study']
@@ -1265,7 +1435,7 @@ def check_study_and_assay_graphs(study_json, configs):
         check_assay_graph(assay_json['processSequence'], config)
 
 
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 default_config_dir = os.path.join(BASE_DIR, 'config', 'json', 'default')
 
 
@@ -1274,8 +1444,7 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
         config_dir = default_config_dir
     logger.setLevel(log_level)
     logger.info("ISA JSON Validator from ISA tools API v0.3")
-    from io import StringIO
-    stream = StringIO()
+    stream = six.StringIO()
     handler = logging.StreamHandler(stream)
     logger.addHandler(handler)
     try:
@@ -1382,6 +1551,9 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
             "code": 0
         })
         logger.fatal("(F) Something went very very wrong! :(")
+    except BaseException as b:
+        logger.fatal("(F) An {} was raised!".format(type(b).__name__))
+        logger.fatal("Value: {}".format(b))
     finally:
         handler.flush()
         return {
@@ -1403,14 +1575,14 @@ def batch_validate(json_file_list):
                 '/path/to/study2.json'
             ]
             my_reports = isajson.batch_validate(my_jsons)
-        """
+    """
     batch_report = {
         "batch_report": []
     }
     for json_file in json_file_list:
         logger.info("***Validating {}***\n".format(json_file))
         if not os.path.isfile(json_file):
-            logger.warn("Could not find ISA-JSON file, skipping {}".format(json_file))
+            logger.warning("Could not find ISA-JSON file, skipping {}".format(json_file))
         else:
             with open(json_file) as fp:
                 batch_report['batch_report'].append(

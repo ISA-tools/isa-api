@@ -1,21 +1,15 @@
 import unittest
 import sys
-from io import StringIO
+import six
 from tests import utils
 import os
 
 
 class TestSimpleExamples(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
     def test_create_simple_ISAtab_example(self):
         from isatools.examples import createSimpleISAtab
-        sys.stdout = StringIO()
+        sys.stdout = six.StringIO()
         out = createSimpleISAtab.create_descriptor()
         self.assertIn("i_investigation.txt", out)
         self.assertIn("s_study.txt", out)
@@ -37,7 +31,7 @@ class TestSimpleExamples(unittest.TestCase):
     def test_validate_ISAtab_example_skip_file(self):
         from isatools.examples import validateISAtab
         old_stdout = sys.stdout
-        sys.stdout = mystdout = StringIO()
+        sys.stdout = mystdout = six.StringIO()
         args = ['validateISAtab.py', os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 'i_investigation.tx')]
         validateISAtab.main(args)
         sys.stdout = old_stdout
@@ -48,7 +42,7 @@ class TestSimpleExamples(unittest.TestCase):
         from isatools.examples import validateISAtab
         with self.assertRaises(SystemExit):
             old_stdout = sys.stdout
-            sys.stdout = mystdout = StringIO()
+            sys.stdout = mystdout = six.StringIO()
             args = ['validateISAtab.py', os.path.join(utils.TAB_DATA_DIR, 'i_invalid', 'i_01.txt')]
             validateISAtab.main(args)
             sys.stdout = old_stdout
@@ -58,7 +52,7 @@ class TestSimpleExamples(unittest.TestCase):
     def test_validate_ISAtab_example(self):
         from isatools.examples import validateISAtab
         old_stdout = sys.stdout
-        sys.stdout = mystdout = StringIO()
+        sys.stdout = mystdout = six.StringIO()
         args = ['validateISAtab.py', os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 'i_investigation.txt')]
         validateISAtab.main(args)
         sys.stdout = old_stdout
@@ -74,7 +68,7 @@ class TestSimpleExamples(unittest.TestCase):
     def test_validate_ISAjson_example_skip_file(self):
         from isatools.examples import validateISAjson
         old_stdout = sys.stdout
-        sys.stdout = mystdout = StringIO()
+        sys.stdout = mystdout = six.StringIO()
         args = ['validateISAjson.py', os.path.join(utils.JSON_DATA_DIR, 'BII-I-1', 'BII-I-1.jso')]
         validateISAjson.main(args)
         sys.stdout = old_stdout
@@ -84,7 +78,7 @@ class TestSimpleExamples(unittest.TestCase):
         from isatools.examples import validateISAjson
         with self.assertRaises(SystemExit):
             old_stdout = sys.stdout
-            sys.stdout = mystdout = StringIO()
+            sys.stdout = mystdout = six.StringIO()
             args = ['validateISAjson.py', os.path.join(utils.JSON_DATA_DIR, 'unit', 'invalid_isajson.json')]
             validateISAjson.main(args)
             sys.stdout = old_stdout
@@ -93,7 +87,7 @@ class TestSimpleExamples(unittest.TestCase):
     def test_validate_ISAjson_example(self):
         from isatools.examples import validateISAjson
         old_stdout = sys.stdout
-        sys.stdout = mystdout = StringIO()
+        sys.stdout = mystdout = six.StringIO()
         args = ['validateISAjson.py', os.path.join(utils.JSON_DATA_DIR, 'BII-I-1', 'BII-I-1.json')]
         validateISAjson.main(args)
         sys.stdout = old_stdout
