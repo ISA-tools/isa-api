@@ -35,6 +35,8 @@ import collections
 import pprint
 import bisect
 
+# REGEXES
+_RX_COLLAPSE_ATTRIBUTE = re.compile("[\W]+")
 
 def find_lt(a, x):
     """Find rightmost value less than x"""
@@ -529,10 +531,9 @@ class StudyAssayParser:
         """
         names = []
         vals = []
-        pat = re.compile("[\W]+")
         for i in indexes:
             if header[i]:
-                names.append(pat.sub("_", self._clean_header(header[i])))
+                names.append(_RX_COLLAPSE_ATTRIBUTE.sub("_", self._clean_header(header[i])))
                 vals.append(line[i])
         Attrs = collections.namedtuple('Attrs', names)
         return Attrs(*vals)

@@ -55,11 +55,11 @@ def create_sra(source_path, dest_path, config_path=default_config_dir):
     print("Using source ISA Tab folder: " + source_path)
     print("Writing to destination SRA folder: " + dest_path)
     print("ISA configuration XML folder: " + config_path)
-    i_files = [f for f in os.listdir(source_path) if f.startswith('i_') and f.endswith('.txt')]
+    i_files = glob.glob(os.path.join(source_path, 'i_*.txt'))
     if len(i_files) != 1:
         logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
         return
-    log_msgs = isatab.validate2(fp=open(os.path.join(source_path, i_files[0])), log_level=logging.ERROR)
+    log_msgs = isatab.validate2(fp=open(i_files[0]), log_level=logging.ERROR)
     if '(F)' in log_msgs.getvalue():
         logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
         return

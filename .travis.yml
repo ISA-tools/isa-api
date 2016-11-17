@@ -21,4 +21,4 @@ deploy:
     repo: ISA-tools/isa-api
 after_success:
 - coveralls
-  
+

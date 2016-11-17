@@ -6,6 +6,7 @@ from jsonschema import RefResolver, Draft4Validator
 from uuid import uuid4
 from enum import Enum
 import re
+import glob
 from isatools import isatab
 import logging
 
@@ -14,6 +15,9 @@ logger = logging.getLogger(__name__)
 
 SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
+
+# REGEXES
+_RX_COMMENTS = re.compile('Comment\[(.*?)\]')
 
 
 class IdentifierType(Enum):
@@ -25,11 +29,11 @@ class IdentifierType(Enum):
 def convert(work_dir, identifier_type=IdentifierType.name, validate_first=True):
     if validate_first:
         logger.info("Validating input ISA tab before conversion")
-        i_files = [f for f in os.listdir(work_dir) if f.startswith('i_') and f.endswith('.txt')]
+        i_files = glob.glob(os.path.join(work_dir, 'i_*.txt'))
         if len(i_files) != 1:
             logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
             return
-        report = isatab.validate2(fp=open(os.path.join(work_dir, i_files[0])), log_level=logging.ERROR)
+        report = isatab.validate2(fp=open(i_files[0]), log_level=logging.ERROR)
         if len(report['errors']) > 0:
             logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
             return
@@ -122,9 +126,8 @@ class ISATab2ISAjson_v1:
 
     def createComments(self, isadict):
         comments = []
-        comments_regex = re.compile('Comment\[(.*?)\]')
-        for k in [k for k in isadict.keys() if comments_regex.match(k)]:
-            comments.append(self.createComment(comments_regex.findall(k)[0], isadict[k]))
+        for k in [k for k in isadict.keys() if _RX_COMMENTS.match(k)]:
+            comments.append(self.createComment(_RX_COMMENTS.findall(k)[0], isadict[k]))
         return comments
 
     def createComment(self, name, value):
@@ -500,10 +503,9 @@ class ISATab2ISAjson_v1:
 
     def createFromNodeComments(self, node):
         comments = []
-        comments_regex = re.compile('Comment\[(.*?)\]')
-        for key in [key for key in node.metadata.keys() if comments_regex.match(key)]:
-            comments.append(self.createComment(comments_regex.findall(key)[0], getattr(
-                node.metadata[key][0], comments_regex.findall(key)[0].replace(' ', '_'))))
+        for key in [key for key in node.metadata.keys() if _RX_COMMENTS.match(key)]:
+            comments.append(self.createComment(_RX_COMMENTS.findall(key)[0], getattr(
+                node.metadata[key][0], _RX_COMMENTS.findall(key)[0].replace(' ', '_'))))
         return comments
 
     def createDataFiles(self, nodes):

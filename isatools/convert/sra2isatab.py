@@ -22,6 +22,9 @@ STUDY_XSL_FILE = os.path.join(SRA_DIR, 'sra-study-embl-online2isatab.xsl')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+# REGEXES
+_RX_ACCESSION_VALIDATION = re.compile("^(ERA|SRA|ERP|SRP)([0-9]+)$")
+
 
 def zipdir(path, zip_file):
     """utility function to zip a whole directory"""
@@ -35,12 +38,9 @@ def format_acc_numbers(sra_acc_numbers):
 
     sra_acc_numbers = sra_acc_numbers.split(',') if isinstance(sra_acc_numbers, str) else sra_acc_numbers
 
-    # RegExp to validate the accession number
-    pattern = re.compile("^(ERA|SRA|ERP|SRP)([0-9]+)$")
-
     # filter and clean the elements in the input array tomatch valid SRA types
     sra_acc_numbers = [elem.strip().upper() for elem in sra_acc_numbers]
-    return [elem for elem in sra_acc_numbers if pattern.match(elem)]
+    return [elem for elem in sra_acc_numbers if _RX_ACCESSION_VALIDATION.match(elem)]
 
 
 def create_isatab_xslt(sra_acc_numbers, saxon_jar_path=None):
