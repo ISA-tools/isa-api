@@ -1270,11 +1270,19 @@ def check_date_formats(i_df):
                 })
                 logger.warning("(W) Date {} does not conform to ISO8601 format".format(date_str))
     import iso8601
-    check_iso8601_date(i_df['INVESTIGATION']['Investigation Public Release Date'].tolist()[0])
-    check_iso8601_date(i_df['INVESTIGATION']['Investigation Submission Date'].tolist()[0])
+    release_date_vals = i_df['INVESTIGATION']['Investigation Public Release Date'].tolist()
+    if len(release_date_vals) > 0:
+        check_iso8601_date(release_date_vals[0])
+    sub_date_values = i_df['INVESTIGATION']['Investigation Submission Date'].tolist()
+    if len(sub_date_values) > 0:
+        check_iso8601_date(sub_date_values[0])
     for i, study_df in enumerate(i_df['STUDY']):
-        check_iso8601_date(study_df['Study Public Release Date'].tolist()[0])
-        check_iso8601_date(study_df['Study Submission Date'].tolist()[0])
+        release_date_vals = study_df['Study Public Release Date'].tolist()
+        if len(release_date_vals) > 0:
+            check_iso8601_date(release_date_vals[0])
+        sub_date_values = study_df['Study Submission Date'].tolist()
+        if len(sub_date_values) > 0:
+            check_iso8601_date(sub_date_values[0])
         # for process in study['processSequence']:
         #     check_iso8601_date(process['date'])
 
@@ -2523,9 +2531,9 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
         logger.info("Finished checking investigation file")
         for i, study_df in enumerate(i_df['STUDY']):
             study_filename = study_df.iloc[0]['Study File Name']
+            study_sample_table = None
+            assay_tables = list()
             if study_filename is not '':
-                study_sample_table = None
-                assay_tables = list()
                 protocol_names = i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist()
                 protocol_types = i_df['STUDY PROTOCOLS'][i]['Study Protocol Type'].tolist()
                 protocol_names_and_types = dict(zip(protocol_names, protocol_types))
@@ -2598,11 +2606,11 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
                             logger.info("Finished validation on {}".format(assay_filename))
                         except FileNotFoundError:
                             pass
-                    if study_sample_table is not None:
-                        logger.info("Checking consistencies between study sample table and assay tables...")
-                        check_sample_names(study_sample_table, assay_tables)
-                        logger.info("Finished checking study sample table against assay tables...")
-                    logger.info("Finished validation...")
+            if study_sample_table is not None:
+                logger.info("Checking consistencies between study sample table and assay tables...")
+                check_sample_names(study_sample_table, assay_tables)
+                logger.info("Finished checking study sample table against assay tables...")
+        logger.info("Finished validation...")
     except CParserError as cpe:
         errors.append({
             "message": "Unknown/System Error",
