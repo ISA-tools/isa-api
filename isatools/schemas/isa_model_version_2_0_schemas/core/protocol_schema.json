@@ -60,7 +60,7 @@
 
             }
         },
-        "softwares": {
+        "softwareTools": {
             "type": "array",
             "items": {
                 "type": "object",

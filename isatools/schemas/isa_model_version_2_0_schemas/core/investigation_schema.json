@@ -14,8 +14,8 @@
             "description" : "to remove?"
         },
         "commentLastOpenedWithConfiguration" : {
-                "type" : "string",
-                 "description" : "to remove?"},
+            "type" : "string",
+            "description" : "to remove?"},
         "resourceReference" : {
             "type" : "array",
             "items" : {
@@ -26,27 +26,27 @@
             "type" : "array",
             "description" : "It specifies the licenses for the ISA document (investigation, study, assay, etc files). It could be one for commercial use, another one for academic use, etc.",
             "items" : {
-                 "$ref": "license_schema.json#"
+                "$ref": "license_schema.json#"
             }
         },
         "publications" : {
             "type" : "array",
             "items" : {
-                 "$ref": "publication_schema.json#"
+                "$ref": "publication_schema.json#"
 
             }
         },
         "people" : {
             "type" : "array",
             "items" : {
-                 "$ref": "person_schema.json#"
+                "$ref": "person_schema.json#"
 
             }
         },
         "studies" : {
             "type" : "array",
             "items" : {
-                 "$ref": "study_schema.json#"
+                "$ref": "study_schema.json#"
 
             }
         }

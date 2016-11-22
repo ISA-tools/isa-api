@@ -100,6 +100,7 @@ class ISATab2ISAjson_v1:
         if isa_tab is None:
             logger.fatal("No ISAtab dataset found")
         else:
+                isa_json = dict([])
                 if isa_tab.metadata != {}:
                     #print("isa_tab.metadata->",isa_tab.metadata)
                     isa_json = dict([
