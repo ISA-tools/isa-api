@@ -53,7 +53,8 @@ setup(
         'chardet',
         'iso8601',
         'jinja2',
-        'bs4'
+        'bs4',
+        'mzml2isa'
     ],
     test_suite='tests'
 )

@@ -15,6 +15,8 @@ SRA_DATA_DIR = os.path.join(_data_dir, 'sra')
 
 TAB_DATA_DIR = os.path.join(_data_dir, 'tab')
 
+MZML_DATA_DIR = os.path.join(_data_dir, 'mzml')
+
 CONFIGS_DATA_DIR = os.path.join(_data_dir, 'configs')
 XML_CONFIGS_DATA_DIR = os.path.join(CONFIGS_DATA_DIR, 'xml')
 DEFAULT2015_XML_CONFIGS_DATA_DIR = os.path.join(XML_CONFIGS_DATA_DIR, 'isaconfig-default_v2015-07-02')

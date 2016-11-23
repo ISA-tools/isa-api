@@ -1,0 +1,3 @@
+"Source Name"	"Characteristics[Organism]"	"Term Source REF"	"Term Accession Number"	"Characteristics[Variant]"	"Term Source REF"	"Term Accession Number"	"Characteristics[Organism part]"	"Term Source REF"	"Term Accession Number"	"Protocol REF"	"Sample Name"
+"Person01_RBC_youth_NEG"	""	""	""	""	""	""	""	""	""	"Sample collection"	"Person01_RBC_youth_NEG"
+"Person02_RBC_youth_NEG"	""	""	""	""	""	""	""	""	""	"Sample collection"	"Person02_RBC_youth_NEG"
