@@ -343,8 +343,6 @@ class StudyAssayParser:
                             except KeyError:
                                 try:
                                     unique_process_name = output_process_map[qualifier_indices_string+output_node_indices_string]
-                                    if 'Chromatography' in unique_process_name:
-                                        print(unique_process_name, qualifier_indices_string+output_node_indices_string)
                                     if not (unique_process_name.startswith(processing_name)):
                                         raise KeyError
                                 except KeyError:
