@@ -967,3 +967,34 @@ def batch_create_assays(*args, n=1):
                 process = None
                 materialB = None
     return process_sequence
+
+
+class ISADocument:
+
+
+    valid_isajson = False
+
+    def __init__(self, isa_obj):
+        self._root = None
+        if isinstance(isa_obj, Investigation):
+            self._root = isa_obj
+        elif isinstance(isa_obj, Study):
+            self._root = Investigation(studies=[isa_obj])
+        elif isinstance(isa_obj, Assay):
+            self._root = Investigation(studies=[Study(assays=[isa_obj])])
+
+    @property
+    def valid_isatab(self):
+        if self._root.filename is None or self._root.filename == '':
+            return False
+        for study in self._root.studies:
+            if study.filename is None or study.filename == '':
+                return False
+            for assay in study.assays:
+                if assay.filename is None or assay.filename == '':
+                    return False
+        return True
+
+    @property
+    def valid_isajson(self):
+        return True
