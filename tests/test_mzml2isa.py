@@ -23,7 +23,7 @@ class TestMzml2IsaTab(unittest.TestCase):
                                   validate_output=True)
         self.assertTrue(report['validation_finished'])
         self.assertEqual(len(report['errors']), 0)
-        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, study_id, 'i_investigation.txt')),
+        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, study_id, 'i_Investigation.txt')),
                                                  open(os.path.join(self._tab_data_dir, study_id + '-partial',
                                                                    'i_investigation.txt'))))
 
