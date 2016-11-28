@@ -1,4 +1,4 @@
-from mzml2isa.parsing import full_parse
+from mzml2isa.parsing import convert as mzml_convert
 from isatools import isatab
 
 import logging
@@ -17,6 +17,6 @@ def convert(mzml_folder, out_folder, study_id, validate_output=False):
     """
     if not os.path.exists(mzml_folder):
         raise FileNotFoundError("Could not find input mzml folder")
-    full_parse(mzml_folder, out_folder, study_id)
+    mzml_convert(mzml_folder, out_folder, study_id)
     if validate_output and os.path.exists(out_folder):
         return isatab.validate2(open(os.path.join(out_folder, study_id, 'i_investigation.txt')))
