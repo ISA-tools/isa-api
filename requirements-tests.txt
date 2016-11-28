@@ -1,4 +1,3 @@
-biopy-isatab
 jsonschema
 pandas
 networkx

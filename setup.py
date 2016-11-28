@@ -44,7 +44,6 @@ setup(
         ],
     install_requires=[
         'numpy',
-        'biopy-isatab',
         'jsonschema',
         'pandas',
         'networkx',
