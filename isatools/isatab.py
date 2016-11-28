@@ -33,7 +33,6 @@ _RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
 _RX_INDEXED_COL = re.compile('(.*?)\.\d+')
 
 
-
 def validate(isatab_dir, config_dir):
     """ Validate an ISA-Tab archive using the Java validator that is embedded in the Python ISA-API (deprecated)
     :param isatab_dir: Path to ISA-Tab files
@@ -2500,6 +2499,7 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
     stream = StringIO()
     handler = logging.StreamHandler(stream)
     logger.addHandler(handler)
+    validation_finished = False
     try:
         # check_utf8(fp)  # skip as does not correctly report right now
         logger.info("Loading... {}".format(fp.name))
@@ -2611,6 +2611,7 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
                 check_sample_names(study_sample_table, assay_tables)
                 logger.info("Finished checking study sample table against assay tables...")
         logger.info("Finished validation...")
+        validation_finished = True
     except CParserError as cpe:
         errors.append({
             "message": "Unknown/System Error",
@@ -2640,7 +2641,7 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
         return {
             "errors": errors,
             "warnings": warnings,
-            "validation_finished": True
+            "validation_finished": validation_finished
         }
 
 

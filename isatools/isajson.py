@@ -559,8 +559,9 @@ def load(fp):
                         parameter_value = ParameterValue(
                             category=parameters_dict[parameter_value_json['category']['@id']],
                             value=parameter_value_json['value'],
-                            unit=units_dict[parameter_value_json['unit']['@id']]
                         )
+                        if 'unit' in parameter_value_json.keys():
+                            parameter_value.unit = units_dict[parameter_value_json['unit']['@id']]
                         process.parameter_values.append(parameter_value)
                     else:
                         parameter_value = ParameterValue(
