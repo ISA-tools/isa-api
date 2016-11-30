@@ -9,6 +9,7 @@ def create_descriptor():
     # Create an empty Investigation object and set some values to the instance variables.
 
     investigation = Investigation()
+    investigation.identifier = "i1"
     investigation.title = "My Simple ISA Investigation"
     investigation.description = "We could alternatively use the class constructor's parameters to set some default " \
                                 "values at the time of creation, however we want to demonstrate how to use the " \
@@ -21,6 +22,7 @@ def create_descriptor():
     # to the 'investigation' object's list of studies.
 
     study = Study(filename="s_study.txt")
+    study.identifier = "s1"
     study.title = "My ISA Study"
     study.description = "Like with the Investigation, we could use the class constructor to set some default values, " \
                         "but have chosen to demonstrate in this example the use of instance variables to set initial " \
@@ -140,7 +142,7 @@ def create_descriptor():
 
         # Sequencing process usually has an output data file
 
-        datafile = DataFile(filename="sequenced-data-{}".format(i))
+        datafile = DataFile(filename="sequenced-data-{}".format(i), label="Raw Data File")
         sequencing_process.outputs.append(datafile)
 
         # ensure Processes are linked forward and backward
@@ -154,6 +156,8 @@ def create_descriptor():
         assay.materials['other_material'].append(material)
         assay.process_sequence.append(extraction_process)
         assay.process_sequence.append(sequencing_process)
+        assay.measurement_type = OntologyAnnotation(term="gene sequencing")
+        assay.technology_type = OntologyAnnotation(term="nucleotide sequencing")
 
     # attach the assay to the study
 
