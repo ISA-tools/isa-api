@@ -64,9 +64,9 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
         roles_accession_numbers = ''
         roles_source_refs = ''
         for role in roles:
-            roles_names += role.term + ';'
-            roles_accession_numbers += role.term_accession + ';'
-            roles_source_refs += role.term_source.name if role.term_source else '' + ';'
+            roles_names += (role.term if role.term else '') + ';'
+            roles_accession_numbers += (role.term_accession if role.term_accession else '') + ';'
+            roles_source_refs += (role.term_source.name if role.term_source else '') + ';'
         if len(roles) > 0:
             roles_names = roles_names[:-1]
             roles_accession_numbers = roles_accession_numbers[:-1]
