@@ -58,28 +58,10 @@
                     "executesProtocol": {
                         "@id": "#protocol/1"
                     },
-                    "nextProcess" : {
-                      "@id": "#process/2"
-                    },
                     "inputs": [],
                     "outputs": [],
                     "parameterValues": [],
                     "performer": ""
-                },
-               {
-                    "@id": "#process/2",
-                    "comments": [],
-                    "date": "",
-                    "executesProtocol": {
-                        "@id": "#protocol/1"
-                    },
-                    "inputs": [],
-                    "outputs": [],
-                    "parameterValues": [],
-                    "performer": "",
-                    "previousProcess" : {
-                      "@id": "#process/1"
-                    }
                 }
             ],
             "protocols": [
@@ -90,7 +72,7 @@
                     "name": "",
                     "parameters": [],
                     "protocolType": {
-                        "annotationValue": "sample collection",
+                        "annotationValue": "simple collection",
                         "termAccession": "",
                         "termSource": ""
                     },

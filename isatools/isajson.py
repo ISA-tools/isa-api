@@ -1243,11 +1243,18 @@ def check_study_and_assay_graphs(study_json, configs):
             assay_protocol_sequence = [i for j in assay_protocol_sequence for i in j]  # flatten list
             assay_protocol_sequence_of_interest = [i for i in assay_protocol_sequence if i in config_protocol_sequence]
             #  filter out protocols in sequence that are not of interest (additional ones to required by config)
-            if config_protocol_sequence != assay_protocol_sequence_of_interest:
+            squished_assay_protocol_sequence_of_interest = list()
+            prev_prot = None
+            for prot in assay_protocol_sequence_of_interest:  # remove consecutive same protocols
+                if prev_prot != prot:
+                    squished_assay_protocol_sequence_of_interest.append(prot)
+                prev_prot = prot
+            from isatools.utils import contains
+            if not contains(squished_assay_protocol_sequence_of_interest, config_protocol_sequence):
                 warnings.append({
                     "message": "Process sequence is not valid against configuration",
-                    "supplemental": "Protocol sequence {} does not in {}".format(config_protocol_sequence,
-                                                                                 assay_protocol_sequence),
+                    "supplemental": "Config protocol sequence {} does not in assay protocol sequence {}".format(config_protocol_sequence,
+                                                                                                                squished_assay_protocol_sequence_of_interest),
                     "code": 4004
                 })
                 logger.warn("Configuration protocol sequence {} does not match study graph found in {}"
