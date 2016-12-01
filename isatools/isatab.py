@@ -2636,6 +2636,14 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
         })
         logger.fatal("(F) Something went very very wrong! :(")
         logger.fatal(se)
+    except Exception as e:
+        errors.append({
+            "message": "Unknown/System Error",
+            "supplemental": "The validator could not identify what the error is: {}".format(str(e)),
+            "code": 0
+        })
+        logger.fatal("(F) Something went very very wrong! :(")
+        logger.fatal(e)
     finally:
         handler.flush()
         return {
