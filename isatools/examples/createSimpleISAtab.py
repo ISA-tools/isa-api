@@ -50,7 +50,7 @@ def create_descriptor():
     # Other instance variables common to both Investigation and Study objects include 'contacts' and 'publications',
     # each with lists of corresponding Person and Publication objects.
 
-    contact = Person(first_name="Alice", last_name="Robertson", affiliation="University of Life")
+    contact = Person(first_name="Alice", last_name="Robertson", affiliation="University of Life", roles=[OntologyAnnotation(term='submitter')])
     study.contacts.append(contact)
     publication = Publication(title="Experiments with Elephants", author_list="A. Robertson, B. Robertson")
     publication.pubmed_id = "12345678"
