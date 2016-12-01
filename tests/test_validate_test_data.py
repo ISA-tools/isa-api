@@ -96,7 +96,7 @@ class TestIsaTabTestData(unittest.TestCase):
     def setUp(self):
         self._reporting_level = logging.ERROR
 
-    def test_validate_testdata_bii_i_1_isatab(self):  # FIXME: Fails because of #135
+    def test_validate_testdata_bii_i_1_isatab(self):
         test_case = 'BII-I-1'
         report = isatab.validate2(fp=open(os.path.join(utils.TAB_DATA_DIR, test_case,
                                                                'i_investigation.txt')),

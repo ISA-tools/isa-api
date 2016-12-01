@@ -7,6 +7,8 @@ import json
 import six
 import functools
 import glob
+import re
+
 
 from isatools.convert import isatab2json
 from contextlib import closing
@@ -18,10 +20,15 @@ INVESTIGATION_FILENAME = 'i_Investigation.txt'
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 # This will remove the "'U' flag is deprecated" DeprecationWarning in Python3
 open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open, mode='rbU')
-
 _STRIPCHARS = "\"\'\r\n\t"
+
+# REGEXES
+_RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
+
+
 
 def get(mtbls_study_id, target_dir=None):
     """
@@ -138,11 +145,11 @@ def slice_data_files(folder, factor_selection=None):
             }
         }
     """
-    table_files = glob.iglob(os.path.join(folder, "[a|s]_*.txt"))
+
     from isatools import isatab
     results = list()
     # first collect matching samples
-    for table_file in table_files:
+    for table_file in glob.iglob(os.path.join(folder, '[a|s]_*')):
         logger.info("Loading {}".format(table_file))
         df = isatab.load_table(table_file)
         if factor_selection is None:
@@ -201,14 +208,11 @@ def get_factor_names(mtbls_study_id):
         factor_names = get_factor_names('MTBLS1')
     """
     tmp_dir = get(mtbls_study_id)
-    table_files = glob.iglob(os.path.join(tmp_dir, "[a|s]_*"))
     from isatools import isatab
     factors = set()
-    import re
-    for table_file in table_files:
+    for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         df = isatab.load_table(table_file)
-        factors_headers = [header for header in list(df.columns.values) if
-                           re.compile('Factor Value\[(.*?)\]').match(header)]
+        factors_headers = [header for header in list(df.columns.values) if _RX_FACTOR_VALUE.match(header)]
         for header in factors_headers:
             factors.add(header[13:-1])
     return factors
@@ -226,10 +230,9 @@ def get_factor_values(mtbls_study_id, factor_name):
         factor_values = get_factor_values('MTBLS1', 'genotype)
     """
     tmp_dir = get(mtbls_study_id)
-    table_files = glob.iglob(os.path.join(tmp_dir, "[a|s]_*"))
     from isatools import isatab
     fvs = set()
-    for table_file in table_files:
+    for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         df = isatab.load_table(table_file)
         if 'Factor Value[{}]'.format(factor_name) in list(df.columns.values):
             for indx, match in six.iteritems(df['Factor Value[{}]'.format(factor_name)]):

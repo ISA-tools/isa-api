@@ -5,6 +5,9 @@ import os
 import sys
 import pandas as pd
 from pandas.parser import CParserError
+
+import io
+import glob
 import networkx as nx
 import itertools
 import logging
@@ -28,6 +31,18 @@ open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open,
 errors = list()
 warnings = list()
 
+
+## REGEXES
+_RX_I_FILE_NAME = re.compile('i_(.*?)\.txt')
+_RX_DATA = re.compile('data\[(.*?)\]')
+_RX_COMMENT = re.compile('Comment\[(.*?)\]')
+_RX_DOI = re.compile('(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
+_RX_PMID = re.compile('[0-9]{8}')
+_RX_PMCID = re.compile('PMC[0-9]{8}')
+_RX_CHARACTERISTICS = re.compile('Characteristics\[(.*?)\]')
+_RX_PARAMETER_VALUE = re.compile('Parameter Value\[(.*?)\]')
+_RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
+_RX_INDEXED_COL = re.compile('(.*?)\.\d+')
 
 
 def validate(isatab_dir, config_dir):
@@ -58,8 +73,8 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
         roles = roles or []
         roles_names, roles_accession_numbers, roles_source_refs = [], [], []
         for role in roles:
-            roles_names.append(role.term)
-            roles_accession_numbers.append(role.term_accession)
+            roles_names.append(role.term if role.term else '')
+            roles_accession_numbers.append(role.term_accession if role.term_accession else '')
             roles_source_refs.append(role.term_source.name if role.term_source else '')
         return ";".join(roles_names), ";".join(roles_accession_numbers), ";".join(roles_source_refs)
 
@@ -133,8 +148,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
                 pass
             publications_df.loc[i] = publications_df_row
         return publications_df.set_index(prefix +' PubMed ID').T
-    import re
-    if not re.compile('i_(.*?)\.txt').match(i_file_name):
+    if not _RX_I_FILE_NAME.match(i_file_name):
         raise NameError("Investigation file must match pattern i_*.txt")
     if os.path.exists(output_path):
         fp = open(os.path.join(output_path, i_file_name), mode='w')
@@ -737,9 +751,7 @@ def write_assay_table_files(inv_obj, output_dir):
                 # reduce rows of data on separate lines
 
                 # can we group by matching all columns minus the data columns?
-                import re
-                data_regex = re.compile('data\[(.*?)\]')
-                # cols_no_data = [col for col in cols if not data_regex.match(col)]  # column list without data cols
+                # cols_no_data = [col for col in cols if not _RX_DATA.match(col)]  # column list without data cols
 
                 # calculate groupings
                 def rolling_group(val):
@@ -771,8 +783,8 @@ def write_assay_table_files(inv_obj, output_dir):
                         cols[i] = 'Material Type'
                     if col_map[col] == 'Parameter Value[Array Design REF]':
                         cols[i] = 'Array Design REF'
-                    if data_regex.match(col) is not None:
-                        if data_regex.findall(col)[0] == 'Raw Data File':
+                    if _RX_DATA.match(col) is not None:
+                        if _RX_DATA.findall(col)[0] == 'Raw Data File':
                             if assay_obj.technology_type.term == 'DNA microarray':
                                 cols[i] = 'Array Data File'
                 df.columns = cols  # reset column headers
@@ -1106,7 +1118,7 @@ def load2(fp):
 
         def check_labels(section, labels_expected, df):
             labels_found = set(df.columns)
-            comment_regex = re.compile('Comment\[(.*?)\]')
+
             if not labels_expected.issubset(labels_found):
                 missing_labels = labels_expected - labels_found
                 logger.fatal("(F) In {} section, expected labels {} not found in {}"
@@ -1115,7 +1127,7 @@ def load2(fp):
                 # check extra labels, i.e. make sure they're all comments
                 extra_labels = labels_found - labels_expected
                 for label in extra_labels:
-                    if comment_regex.match(label) is None:
+                    if _RX_COMMENT.match(label) is None:
                         logger.fatal("(F) In {} section, label {} is not allowed".format(section, label))
 
         # Read in investigation file into DataFrames first
@@ -1307,23 +1319,19 @@ def check_date_formats(i_df):
         try: check_iso8601_date(study_df['Study Submission Date'].tolist()[0])
         except IndexError: pass
 
-        # for process in study['processSequence']:
-        #     check_iso8601_date(process['date'])
 
 
 def check_dois(i_df):
     """Used for rule 3002"""
     def check_doi(doi_str):
         if doi_str:
-            regexDOI = re.compile('(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
-            if not regexDOI.match(doi_str):
+            if not _RX_DOI.match(doi_str):
                 warnings.append({
                     "message": "DOI is not valid format",
                     "supplemental": "Found {} in DOI field".format(doi_str),
                     "code": 3002
                 })
                 logger.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
-    import re
     for doi in i_df['INVESTIGATION PUBLICATIONS']['Investigation Publication DOI'].tolist():
         check_doi(doi)
     for i, study_df in enumerate(i_df['STUDY PUBLICATIONS']):
@@ -1334,17 +1342,15 @@ def check_dois(i_df):
 def check_pubmed_ids_format(i_df):
     """Used for rule 3003"""
     def check_pubmed_id(pubmed_id_str):
+
         if pubmed_id_str:
-            pmid_regex = re.compile('[0-9]{8}')
-            pmcid_regex = re.compile('PMC[0-9]{8}')
-            if pmid_regex.match(pubmed_id_str) is None and pmcid_regex.match(pubmed_id_str) is None:
+            if (_RX_PMID.match(pubmed_id_str) is None) and (_RX_PMCID.match(pubmed_id_str) is None):
                 warnings.append({
                     "message": "PubMed ID is not valid format",
                     "supplemental": "Found PubMedID {}".format(pubmed_id_str),
                     "code": 3003
                 })
                 logger.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
-    import re
     for doi in i_df['INVESTIGATION PUBLICATIONS']['Investigation PubMed ID'].tolist():
         check_pubmed_id(doi)
     for study_pubs_df in i_df['STUDY PUBLICATIONS']:
@@ -1561,16 +1567,13 @@ def load_table(fp):
     return df
 
 
-def load_table_checks(f):
-    characteristics_regex = re.compile('Characteristics\[(.*?)\]')
-    parameter_value_regex = re.compile('Parameter Value\[(.*?)\]')
-    factor_value_regex = re.compile('Factor Value\[(.*?)\]')
-    comment_regex = re.compile('Comment\[(.*?)\]')
-    indexed_col_regex = re.compile('(.*?)\.\d+')
-    df = load_table(f)
+
+def load_table_checks(fp):
+
+    df = load_table(fp)
     columns = df.columns
     for x, column in enumerate(columns):  # check if columns have valid labels
-        if indexed_col_regex.match(column):
+        if _RX_INDEXED_COL.match(column):
             column = column[:column.rfind('.')]
         if (column not in {'Source Name', 'Sample Name', 'Term Source REF', 'Protocol REF', 'Term Accession Number',
                            'Unit', 'Assay Name', 'Extract Name', 'Raw Data File', 'Material Type', 'MS Assay Name',
@@ -1578,11 +1581,12 @@ def load_table_checks(f):
                            'Array Design REF', 'Scan Name', 'Array Data File', 'Protein Assignment File',
                            'Peptide Assignment File', 'Post Translational Modification Assignment File',
                            'Data Transformation Name', 'Derived Spectral Data File', 'Normalization Name',
-                           'Derived Array Data File', 'Image File'}) and not characteristics_regex.match(column) and not parameter_value_regex.match(column) and not factor_value_regex.match(column) and not comment_regex.match(column):
+                           'Derived Array Data File', 'Image File'}) and not _RX_CHARACTERISTICS.match(column) and not _RX_PARAMETER_VALUE.match(column) and not _RX_FACTOR_VALUE.match(column) and not _RX_COMMENT.match(column):
+
             logger.error("Unrecognised column heading {} at column position {} in table file {}".format(column, x, os.path.basename(fp.name)))
     norm_columns = list()
     for x, column in enumerate(columns):
-        if indexed_col_regex.match(column):
+        if _RX_INDEXED_COL.match(column):
             norm_columns.append(column[:column.rfind('.')])
         else:
             norm_columns.append(column)
@@ -1592,7 +1596,8 @@ def load_table_checks(f):
                                                               'Protein Assignment File', 'Peptide Assignment File',
                                                               'Post Translational Modification Assignment File',
                                                               'Derived Spectral Data File', 'Derived Array Data File'}
-                    or factor_value_regex.match(x))
+                                                                or _RX_FACTOR_VALUE.match(x))
+
     # this bit strips out the postfix .n that DataFrames adds to multiples of column labels
     object_columns_list = list()
     prev_i = next(object_index) # this will also automatically skip first one
@@ -1606,12 +1611,12 @@ def load_table_checks(f):
         prop_name = object_columns[0]
         if prop_name in {'Sample Name', 'Source Name'}:
             for x, col in enumerate(object_columns[1:]):
-                if col not in {'Term Source REF', 'Term Accession Number', 'Unit'} and not characteristics_regex.match(col) and not factor_value_regex.match(col) and not comment_regex.match(col):
+                if col not in {'Term Source REF', 'Term Accession Number', 'Unit'} and not _RX_CHARACTERISTICS.match(col) and not _RX_FACTOR_VALUE.match(col) and not _RX_COMMENT.match(col):
                     logger.error("(E) Expected only Characteristics, Factor Values or Comments following {} columns but found {} at offset {}".format(prop_name, col, x+1))
         elif prop_name == 'Protocol REF':
             for x, col in enumerate(object_columns[1:]):
                 if col not in {'Term Source REF', 'Term Accession Number', 'Unit', 'Assay Name',
-                               'Hybridization Assay Name', 'Array Design REF', 'Scan Name'} and not parameter_value_regex.match(col) and not comment_regex.match(col):
+                               'Hybridization Assay Name', 'Array Design REF', 'Scan Name'} and not _RX_PARAMETER_VALUE.match(col) and not _RX_COMMENT.match(col):
                     logger.error("(E) Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, col, x+1))
         elif prop_name == 'Extract Name':
             if len(object_columns) > 1:
@@ -1631,9 +1636,9 @@ def load_table_checks(f):
                            'Raw Spectral Data File', 'Protein Assignment File', 'Peptide Assignment File',
                            'Post Translational Modification Assignment File'}:
             for x, col in enumerate(object_columns[1:]):
-                if not comment_regex.match(col):
+                if not _RX_COMMENT.match(col):
                     logger.error("(E) Expected only Comments following {} columns but found {} at offset {}".format(prop_name, col, x+1))
-        elif factor_value_regex.match(prop_name):
+        elif _RX_FACTOR_VALUE.match(prop_name):
             for x, col in enumerate(object_columns[2:]):
                 if col not in {'Term Source REF', 'Term Accession Number'}:
                     logger.error(
@@ -1647,17 +1652,16 @@ def load_table_checks(f):
 
 def check_study_factor_usage(i_df, dir_context):
     """Used for rules 1008 and 1021"""
-    factor_value_regex = re.compile('Factor Value\[(.*?)\]')
     for i, study_df in enumerate(i_df['STUDY']):
         study_factors_declared = set(i_df['STUDY FACTORS'][i]['Study Factor Name'].tolist())
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename:
             try:
                 study_factors_used = set()
-                study_df = load_table(os.path.join(dir_context, study_filename))
-                study_factor_ref_cols = (k for k in study_df.columns if factor_value_regex.match(k))
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                study_factor_ref_cols = {k for k in study_df.columns if _RX_FACTOR_VALUE.match(k)}
                 for col in study_factor_ref_cols:
-                    fv = factor_value_regex.findall(col)
+                    fv = _RX_FACTOR_VALUE.findall(col)
                     study_factors_used = study_factors_used.union(set(fv))
                 if not study_factors_used.issubset(study_factors_declared):
                     logger.error(
@@ -1669,10 +1673,10 @@ def check_study_factor_usage(i_df, dir_context):
             if assay_filename:
                 try:
                     study_factors_used = set()
-                    assay_df = load_table(os.path.join(dir_context, assay_filename))
-                    study_factor_ref_cols = {k for k in assay_df.columns if factor_value_regex.match(k)}
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    study_factor_ref_cols = {k for k in assay_df.columns if _RX_FACTOR_VALUE.match(k)}
                     for col in study_factor_ref_cols:
-                        fv = factor_value_regex.findall(col)
+                        fv = _RX_FACTOR_VALUE.findall(col)
                         study_factors_used = study_factors_used.union(set(fv))
                     if not study_factors_used.issubset(study_factors_declared):
                         logger.error(
@@ -1683,20 +1687,20 @@ def check_study_factor_usage(i_df, dir_context):
         study_factors_used = set()
         if study_filename:
             try:
-                study_df = load_table(os.path.join(dir_context, study_filename))
-                study_factor_ref_cols = (k for k in study_df.columns if factor_value_regex.match(k))
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                study_factor_ref_cols = (k for k in study_df.columns if _RX_FACTOR_VALUE.match(k))
                 for col in study_factor_ref_cols:
-                    fv = factor_value_regex.findall(col)
+                    fv = _RX_FACTOR_VALUE.findall(col)
                     study_factors_used = study_factors_used.union(set(fv))
             except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
             if assay_filename:
                 try:
-                    study_df = load_table(os.path.join(dir_context, assay_filename))
-                    study_factor_ref_cols = (k for k in assay_df.columns if factor_value_regex.match(k))
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    study_factor_ref_cols = {k for k in assay_df.columns if _RX_FACTOR_VALUE.match(k)}
                     for col in study_factor_ref_cols:
-                        fv = factor_value_regex.findall(col)
+                        fv = _RX_FACTOR_VALUE.findall(col)
                         study_factors_used = study_factors_used.union(set(fv))
                 except IOError:
                     pass
@@ -1708,7 +1712,6 @@ def check_study_factor_usage(i_df, dir_context):
 
 def check_protocol_parameter_usage(i_df, dir_context):
     """Used for rules 1009 and 1020"""
-    parameter_value_regex = re.compile('Parameter Value\[(.*?)\]')
     for i, study_df in enumerate(i_df['STUDY']):
         protocol_parameters_declared = set()
         protocol_parameters_per_protocol = set(i_df['STUDY PROTOCOLS'][i]['Study Protocol Parameters Name'].tolist())
@@ -1720,10 +1723,10 @@ def check_protocol_parameter_usage(i_df, dir_context):
         if study_filename:
             try:
                 protocol_parameters_used = set()
-                study_df = load_table(os.path.join(dir_context, study_filename))
-                parameter_value_cols = (k for k in study_df.columns if parameter_value_regex.match(k))
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                parameter_value_cols = (k for k in study_df.columns if _RX_PARAMETER_VALUE.match(k))
                 for col in parameter_value_cols:
-                    pv = parameter_value_regex.findall(col)
+                    pv = _RX_PARAMETER_VALUE.findall(col)
                     protocol_parameters_used = protocol_parameters_used.union(set(pv))
                 if not protocol_parameters_used.issubset(protocol_parameters_declared):
                     logger.error(
@@ -1735,10 +1738,10 @@ def check_protocol_parameter_usage(i_df, dir_context):
             if assay_filename:
                 try:
                     protocol_parameters_used = set()
-                    assay_df = load_table(os.path.join(dir_context, assay_filename))
-                    parameter_value_cols = (k for k in assay_df.columns if parameter_value_regex.match(k))
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    parameter_value_cols = (k for k in assay_df.columns if _RX_PARAMETER_VALUE.match(k))
                     for col in parameter_value_cols:
-                        pv = parameter_value_regex.findall(col)
+                        pv = _RX_PARAMETER_VALUE.findall(col)
                         protocol_parameters_used = protocol_parameters_used.union(set(pv))
                     if not protocol_parameters_used.issubset(protocol_parameters_declared):
                         logger.error(
@@ -1750,20 +1753,20 @@ def check_protocol_parameter_usage(i_df, dir_context):
         protocol_parameters_used = set()
         if study_filename:
             try:
-                study_df = load_table(os.path.join(dir_context, study_filename))
-                parameter_value_cols = (k for k in study_df.columns if parameter_value_regex.match(k))
+                study_df = load_table(open(os.path.join(dir_context, study_filename)))
+                parameter_value_cols = (k for k in study_df.columns if _RX_PARAMETER_VALUE.match(k))
                 for col in parameter_value_cols:
-                    pv = parameter_value_regex.findall(col)
+                    pv = _RX_PARAMETER_VALUE.findall(col)
                     protocol_parameters_used = protocol_parameters_used.union(set(pv))
             except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['STUDY ASSAYS'][i]['Study Assay File Name'].tolist()):
             if assay_filename:
                 try:
-                    assay_df = load_table(os.path.join(dir_context, assay_filename))
-                    parameter_value_cols = (k for k in assay_df.columns if parameter_value_regex.match(k))
+                    assay_df = load_table(open(os.path.join(dir_context, assay_filename)))
+                    parameter_value_cols = (k for k in assay_df.columns if _RX_PARAMETER_VALUE.match(k))
                     for col in parameter_value_cols:
-                        pv = parameter_value_regex.findall(col)
+                        pv = _RX_PARAMETER_VALUE.findall(col)
                         protocol_parameters_used = protocol_parameters_used.union(set(pv))
                 except IOError:
                     pass
@@ -2080,13 +2083,12 @@ def check_study_table_against_config(s_df, protocols_declared, config):
 
 def check_assay_table_against_config(s_df, config):
     import itertools
-    indexed_col_regex = re.compile('(.*?)\.\d+')
     # We are assuming the table load validation earlier passed
     # First check column order is correct against the configuration
     columns = s_df.columns
     norm_columns = list()
     for x, column in enumerate(columns):
-        if indexed_col_regex.match(column):
+        if _RX_INDEXED_COL.match(column):
             norm_columns.append(column[:column.rfind('.')])
         else:
             norm_columns.append(column)
@@ -2132,7 +2134,6 @@ def cell_has_value(cell):
 
 
 def check_assay_table_with_config(df, config, filename, protocol_names_and_types):
-    indexed_col_regex = re.compile('(.*?)\.\d+')
     columns = list(df.columns)
     # Get required headers from config and check if they are present in the table; Rule 4010
     required_fields = (k.header for k in config.get_isatab_configuration()[0].get_field() if k.is_required)
@@ -2532,6 +2533,7 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
     stream = six.StringIO()
     handler = logging.StreamHandler(stream)
     logger.addHandler(handler)
+    validation_finished = False
     try:
         # check_utf8(fp)  # skip as does not correctly report right now
         logger.info("Loading... {}".format(fp.name))
@@ -2563,9 +2565,9 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
         logger.info("Finished checking investigation file")
         for i, study_df in enumerate(i_df['STUDY']):
             study_filename = study_df.iloc[0]['Study File Name']
+            study_sample_table = None
+            assay_tables = list()
             if study_filename:
-                study_sample_table = None
-                assay_tables = list()
                 protocol_names = i_df['STUDY PROTOCOLS'][i]['Study Protocol Name'].tolist()
                 protocol_types = i_df['STUDY PROTOCOLS'][i]['Study Protocol Type'].tolist()
                 protocol_names_and_types = dict(zip(protocol_names, protocol_types))
@@ -2638,11 +2640,12 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
                             logger.info("Finished validation on {}".format(assay_filename))
                         except IOError:
                             pass
-                    if study_sample_table is not None:
-                        logger.info("Checking consistencies between study sample table and assay tables...")
-                        check_sample_names(study_sample_table, assay_tables)
-                        logger.info("Finished checking study sample table against assay tables...")
-                    logger.info("Finished validation...")
+            if study_sample_table is not None:
+                logger.info("Checking consistencies between study sample table and assay tables...")
+                check_sample_names(study_sample_table, assay_tables)
+                logger.info("Finished checking study sample table against assay tables...")
+        logger.info("Finished validation...")
+        validation_finished = True
     except CParserError as cpe:
         errors.append({
             "message": "Unknown/System Error",
@@ -2675,7 +2678,7 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
         return {
             "errors": errors,
             "warnings": warnings,
-            "validation_finished": True
+            "validation_finished": validation_finished
         }
 
 
@@ -2697,17 +2700,17 @@ def batch_validate(tab_dir_list):
     }
     for tab_dir in tab_dir_list:
         logger.info("***Validating {}***\n".format(tab_dir))
-        try:
-            i_file = next(glob.iglob(os.path.join(tab_dir, 'i_*.txt')))
-            with open(i_file) as fp:
+        i_files = glob.glob(os.path.join(tab_dir, 'i_*.txt'))
+        if len(i_files) != 1:
+            logger.warn("Could not find an investigation file, skipping {}".format(tab_dir))
+        else:
+            with open(i_files[0]) as fp:
                 batch_report['batch_report'].append(
                     {
                         "filename": fp.name,
                         "report": validate2(fp)
                     }
                 )
-        except StopIteration:
-            logger.warning("Could not find an investigation file, skipping {}".format(tab_dir))
     return batch_report
 
 

@@ -9,6 +9,7 @@ from zipfile import ZipFile
 from shutil import rmtree
 import logging
 import pdb
+import glob
 import uuid
 import os
 import sys
@@ -63,8 +64,8 @@ def merge_biocrates_files(input_dir):
     projects = []
     metabolites = []
 
-    for i in glob.iglob(os.path.join(input_dir, "*.xml")): 
-        
+    for i in glob.iglob(os.path.join(input_dir, "*.xml")):
+
         # f = open('/Users/Philippe/Documents/git/biocrates/Biocrates-TUM/input-Biocrates-XML-files/'
         #          'all-biocrates-xml-files/'+i)
 

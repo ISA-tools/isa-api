@@ -15,7 +15,6 @@ open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open,
 
 def validateSchemasInFolder(folder):
     path = os.path.abspath(folder)
-    #files = (f for f in os.listdir(path) if os.path.isfile(os.path.join(path,f)))
     files = (f for f in glob.iglob(os.path.join(path, '*')) if os.path.isfile(f))
 
     for schemaFile in files:

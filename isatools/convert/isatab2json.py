@@ -9,6 +9,7 @@ from jsonschema import RefResolver, Draft4Validator
 from uuid import uuid4
 from enum import Enum
 import re
+import glob
 from isatools import isatab
 import logging
 import glob
@@ -23,6 +24,9 @@ logger = logging.getLogger(__name__)
 SCHEMAS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "schemas", "isa_model_version_1_0_schemas", "core")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
 
+# REGEXES
+_RX_COMMENTS = re.compile('Comment\[(.*?)\]')
+
 
 class IdentifierType(Enum):
     counter = 1
@@ -33,7 +37,7 @@ class IdentifierType(Enum):
 def convert(work_dir, identifier_type=IdentifierType.name, validate_first=True):
     if validate_first:
         logger.info("Validating input ISA tab before conversion")
-        i_files = glob.glob(os.path.join(work_dir, "i_*.txt"))
+        i_files = glob.glob(os.path.join(work_dir, 'i_*.txt'))
         if len(i_files) != 1:
             logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
             return
@@ -107,37 +111,38 @@ class ISATab2ISAjson_v1:
         if isa_tab is None:
             logger.fatal("No ISAtab dataset found")
         else:
-                if isa_tab.metadata:
-                    #print("isa_tab.metadata->",isa_tab.metadata)
-                    isa_json = dict([
-                        ("identifier",isa_tab.metadata['Investigation Identifier']),
-                        ("title", isa_tab.metadata['Investigation Title']),
-                        ("description",isa_tab.metadata['Investigation Description']),
-                        ("submissionDate", isa_tab.metadata['Investigation Submission Date']),
-                        ("publicReleaseDate", isa_tab.metadata['Investigation Public Release Date']),
-                        ("ontologySourceReferences", self.createOntologySourceReferences(isa_tab.ontology_refs)),
-                        ("publications", self.createPublications(isa_tab.publications, "Investigation")),
-                        ("people", self.createContacts(isa_tab.contacts, "Investigation")),
-                        ("studies", self.createStudies(isa_tab.studies)),
-                        ("comments", self.createComments(isa_tab.metadata))
-                    ])
+            isa_json = {}
+            if isa_tab.metadata:
 
-                #validate json
-                with open(os.path.join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)) as investigation_schema:
-                    schema = json.load(investigation_schema)
+                #print("isa_tab.metadata->",isa_tab.metadata)
+                isa_json = dict([
+                    ("identifier",isa_tab.metadata['Investigation Identifier']),
+                    ("title", isa_tab.metadata['Investigation Title']),
+                    ("description",isa_tab.metadata['Investigation Description']),
+                    ("submissionDate", isa_tab.metadata['Investigation Submission Date']),
+                    ("publicReleaseDate", isa_tab.metadata['Investigation Public Release Date']),
+                    ("ontologySourceReferences", self.createOntologySourceReferences(isa_tab.ontology_refs)),
+                    ("publications", self.createPublications(isa_tab.publications, "Investigation")),
+                    ("people", self.createContacts(isa_tab.contacts, "Investigation")),
+                    ("studies", self.createStudies(isa_tab.studies)),
+                    ("comments", self.createComments(isa_tab.metadata))
+                ])
 
-                resolver = RefResolver('file://'+os.path.join(SCHEMAS_PATH, INVESTIGATION_SCHEMA), schema)
-                validator = Draft4Validator(schema, resolver=resolver)
-                validator.validate(isa_json, schema)
+            #validate json
+            with open(os.path.join(SCHEMAS_PATH, INVESTIGATION_SCHEMA)) as investigation_schema:
+                schema = json.load(investigation_schema)
 
-                logger.info("... conversion finished.")
-                return isa_json
+            resolver = RefResolver('file://'+os.path.join(SCHEMAS_PATH, INVESTIGATION_SCHEMA), schema)
+            validator = Draft4Validator(schema, resolver=resolver)
+            validator.validate(isa_json, schema)
+
+            logger.info("... conversion finished.")
+            return isa_json
 
     def createComments(self, isadict):
         comments = []
-        comments_regex = re.compile('Comment\[(.*?)\]')
-        for k in (k for k in six.iterkeys(isadict) if comments_regex.match(k)):
-            comments.append(self.createComment(comments_regex.findall(k)[0], isadict[k]))
+        for k in (k for k in six.iterkeys(isadict) if _RX_COMMENTS.match(k)):
+            comments.append(self.createComment(_RX_COMMENTS.findall(k)[0], isadict[k]))
         return comments
 
     def createComment(self, name, value):
@@ -513,10 +518,9 @@ class ISATab2ISAjson_v1:
 
     def createFromNodeComments(self, node):
         comments = []
-        comments_regex = re.compile('Comment\[(.*?)\]')
-        for key in (key for key in six.iterkeys(node.metadata) if comments_regex.match(key)):
-            comments.append(self.createComment(comments_regex.findall(key)[0], getattr(
-                node.metadata[key][0], comments_regex.findall(key)[0].replace(' ', '_'))))
+        for key in [key for key in six.iterkeys(node.metadata) if _RX_COMMENTS.match(key)]:
+            comments.append(self.createComment(_RX_COMMENTS.findall(key)[0], getattr(
+                node.metadata[key][0], _RX_COMMENTS.findall(key)[0].replace(' ', '_'))))
         return comments
 
     def createDataFiles(self, nodes):

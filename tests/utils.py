@@ -3,8 +3,10 @@ import pandas as pd
 from pandas.util.testing import assert_frame_equal
 from isatools.isatab import read_investigation_file
 import os
+
 import six
 import sys
+import re
 
 _data_dir = os.path.join(os.path.dirname(__file__), 'data')
 
@@ -17,12 +19,19 @@ SRA_DATA_DIR = os.path.join(_data_dir, 'sra')
 
 TAB_DATA_DIR = os.path.join(_data_dir, 'tab')
 
+MZML_DATA_DIR = os.path.join(_data_dir, 'mzml')
+
 CONFIGS_DATA_DIR = os.path.join(_data_dir, 'configs')
 XML_CONFIGS_DATA_DIR = os.path.join(CONFIGS_DATA_DIR, 'xml')
 DEFAULT2015_XML_CONFIGS_DATA_DIR = os.path.join(XML_CONFIGS_DATA_DIR, 'isaconfig-default_v2015-07-02')
 SRA2016_XML_CONFIGS_DATA_DIR = os.path.join(XML_CONFIGS_DATA_DIR, 'isaconfig-seq_v2016-08-30-SRA1.5-august2014mod')
 JSON_DEFAULT_CONFIGS_DATA_DIR = os.path.join(CONFIGS_DATA_DIR, 'json_default')
 JSON_SRA_CONFIGS_DATA_DIR = os.path.join(CONFIGS_DATA_DIR, 'json_sra')
+
+_RX_CHARACTERISTICS = re.compile('Characteristics\[(.*?)\]')
+_RX_PARAM_VALUE = re.compile('Parameter Value\[(.*?)\]')
+_RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
+
 
 def assert_tab_content_equal(fp_x, fp_y):
     """
@@ -92,14 +101,11 @@ def assert_tab_content_equal(fp_x, fp_y):
 
             # reindex to add contexts for duplicate named columns (i.e. Term Accession Number, Unit, etc.)
             import re
-            char_regex = re.compile('Characteristics\[(.*?)\]')
-            pv_regex = re.compile('Parameter Value\[(.*?)\]')
-            fv_regex = re.compile('Factor Value\[(.*?)\]')
             newcolsx = list()
             for col in df_x.columns:
                 newcolsx.append(col)
             for i, col in enumerate(df_x.columns):
-                if char_regex.match(col) or pv_regex.match(col) or fv_regex.match(col):
+                if any(RX.match(col) for RX in (_RX_CHARACTERISTICS, _RX_PARAM_VALUE, _RX_FACTOR_VALUE)):
                     try:
                         if 'Unit' in df_x.columns[i+1]:
                             newcolsx[i+1] = col + '/Unit'
@@ -118,7 +124,7 @@ def assert_tab_content_equal(fp_x, fp_y):
             for col in df_y.columns:
                 newcolsy.append(col)
             for i, col in enumerate(df_y.columns):
-                if char_regex.match(col) or pv_regex.match(col) or fv_regex.match(col):
+                if any(RX.match(col) for RX in (_RX_CHARACTERISTICS, _RX_PARAM_VALUE, _RX_FACTOR_VALUE)):
                     try:
                         if 'Unit' in df_y.columns[i+1]:
                             newcolsy[i+1] = col + '/Unit'

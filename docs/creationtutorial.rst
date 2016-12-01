@@ -194,5 +194,5 @@ To execute this script on the command line and view the output, you would run it
 
 
 This example can be found in the ``isatools.examples`` package in
-`createSimpleISA.py <https://github.com/ISA-tools/isa-api/blob/master/isatools/examples/createSimpleISA.py>`_.
+`createSimpleISAtab.py <https://github.com/ISA-tools/isa-api/blob/master/isatools/examples/createSimpleISAtab.py>`_.
 

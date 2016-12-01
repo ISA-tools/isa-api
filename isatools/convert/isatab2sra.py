@@ -54,10 +54,11 @@ def create_sra(source_path, dest_path, config_path=default_config_dir):
         raise IOError("dest_path " + dest_path + " does not exist")
     if not os.path.exists(config_path):
         raise IOError("config_path " + config_path + " does not exist")
+
     print("Using source ISA Tab folder: {}".format(source_path))
     print("Writing to destination SRA folder: {}".format(dest_path))
     print("ISA configuration XML folder: {}".format(config_path))
-    i_files = glob.glob(os.path.join(source_path, "i_*.txt"))
+    i_files = glob.glob(os.path.join(source_path, 'i_*.txt'))
     if len(i_files) != 1:
         logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
         return

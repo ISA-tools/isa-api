@@ -1,0 +1,23 @@
+from mzml2isa.parsing import convert as mzml_convert
+from isatools import isatab
+
+import logging
+import os
+
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def convert(mzml_folder, out_folder, study_id, validate_output=False):
+    """ Converter for MZML to ISA-Tab.
+    :param mzml_folder: Path to folder containing mzml files.
+    :param out_folder: Path to output folder to write ISA-Tab to.
+    :param study_id: A study identifier.
+    :param validate_output: Flag to indicate whether to validate the generated ISA-Tab
+    """
+    if not os.path.exists(mzml_folder):
+        raise FileNotFoundError("Could not find input mzml folder")
+    mzml_convert(mzml_folder, out_folder, study_id)
+    if validate_output and os.path.exists(out_folder):
+        with open(os.path.join(out_folder, study_id, 'i_Investigation.txt')) as i_fp:
+            return isatab.validate2(i_fp)

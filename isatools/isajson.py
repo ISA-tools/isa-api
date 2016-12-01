@@ -9,9 +9,11 @@ from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
 import glob
 import six
+import re
 import functools
 
 from .model.v1 import *
+
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -22,6 +24,10 @@ open = functools.partial(open, mode='r') if six.PY3 else functools.partial(open,
 errors = list()
 warnings = list()
 
+# REGEXES
+_RX_DOI = re.compile('(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
+_RX_PMID = re.compile('[0-9]{8}')
+_RX_PMCID = re.compile('PMC[0-9]{8}')
 
 
 def load(fp):
@@ -566,8 +572,9 @@ def load(fp):
                         parameter_value = ParameterValue(
                             category=parameters_dict[parameter_value_json['category']['@id']],
                             value=parameter_value_json['value'],
-                            unit=units_dict[parameter_value_json['unit']['@id']]
                         )
+                        if 'unit' in parameter_value_json.keys():
+                            parameter_value.unit = units_dict[parameter_value_json['unit']['@id']]
                         process.parameter_values.append(parameter_value)
                     else:
                         parameter_value = ParameterValue(
@@ -1090,15 +1097,13 @@ def check_dois(isa_json):
     """Used for rule 3002"""
     def check_doi(doi_str):
         if doi_str:
-            regexDOI = re.compile('(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)')
-            if not regexDOI.match(doi_str):
+            if not _RX_DOI.match(doi_str):
                 warnings.append({
                     "message": "DOI is not valid format",
                     "supplemental": "Found {} in DOI field".format(doi_str),
                     "code": 3002
                 })
                 logger.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
-    import re
     for ipub in isa_json['publications']:
         check_doi(ipub['doi'])
     for study in isa_json['studies']:
@@ -1130,16 +1135,13 @@ def check_pubmed_ids_format(isa_json):
     """Used for rule 3003"""
     def check_pubmed_id(pubmed_id_str):
         if pubmed_id_str:
-            pmid_regex = re.compile('[0-9]{8}')
-            pmcid_regex = re.compile('PMC[0-9]{8}')
-            if pmid_regex.match(pubmed_id_str) is None and pmcid_regex.match(pubmed_id_str) is None:
+            if (_RX_PMID.match(pubmed_id_str) is None) and (_RX_PMCID.match(pubmed_id_str) is None):
                 warnings.append({
                     "message": "PubMed ID is not valid format",
                     "supplemental": "Found PubMedID {}".format(pubmed_id_str),
                     "code": 3003
                 })
                 logger.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
-    import re
     for ipub in isa_json['publications']:
         check_pubmed_id(ipub['pubMedID'])
     for study in isa_json['studies']:
@@ -1313,7 +1315,7 @@ def load_config(config_dir):
     configs = dict()
     for file in glob.iglob(os.path.join(config_dir, "*.json")): # ignore non json files
         try:
-            with open(os.path.join(config_dir, file)) as fp:
+            with open(file) as fp:
                 config_dict = json.load(fp)
             if os.path.basename(file) == 'protocol_definitions.json':
                 configs['protocol_definitions'] = config_dict
@@ -1324,7 +1326,7 @@ def load_config(config_dir):
         except ValidationError:
             errors.append({
                     "message": "Configurations could not be loaded",
-                    "supplemental": "On loading {}".format(os.path.join(config_dir, file)),
+                    "supplemental": "On loading {}".format(file),
                     "code": 4001
                 })
             logger.error("(E) Could not load configuration file {}".format(str(file)))
@@ -1412,11 +1414,18 @@ def check_study_and_assay_graphs(study_json, configs):
             assay_protocol_sequence = [j for i in assay_graph for j in i if not j.startswith('#') ]
             assay_protocol_sequence_of_interest = [i for i in assay_protocol_sequence if i in config_protocol_sequence]
             #  filter out protocols in sequence that are not of interest (additional ones to required by config)
-            if config_protocol_sequence != assay_protocol_sequence_of_interest:
+            squished_assay_protocol_sequence_of_interest = list()
+            prev_prot = None
+            for prot in assay_protocol_sequence_of_interest:  # remove consecutive same protocols
+                if prev_prot != prot:
+                    squished_assay_protocol_sequence_of_interest.append(prot)
+                prev_prot = prot
+            from isatools.utils import contains
+            if not contains(squished_assay_protocol_sequence_of_interest, config_protocol_sequence):
                 warnings.append({
                     "message": "Process sequence is not valid against configuration",
-                    "supplemental": "Protocol sequence {} does not in {}".format(config_protocol_sequence,
-                                                                                 assay_protocol_sequence),
+                    "supplemental": "Config protocol sequence {} does not in assay protocol sequence {}".format(config_protocol_sequence,
+                                                                                                                squished_assay_protocol_sequence_of_interest),
                     "code": 4004
                 })
                 logger.warning("Configuration protocol sequence {} does not match study graph found in {}"
