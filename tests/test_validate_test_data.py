@@ -213,6 +213,21 @@ class TestIsaTabTestData(unittest.TestCase):
             self.fail("Error found when validating ISA tab: {}".format(report['errors']))
 
 
+class TestIsaTabInvalidTestData(unittest.TestCase):
+
+    def setUp(self):
+        self._reporting_level = logging.ERROR
+
+    def test_validate_testdata_invalid_data(self):
+        test_case = 'i_invalid'
+        report = isatab.validate2(fp=open(os.path.join(utils.TAB_DATA_DIR, test_case, 'i_00.txt')),
+                                          config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
+                                          log_level=self._reporting_level)
+        if len(report['errors']) == 0:
+            self.fail("No errors found when validating invalid ISA tab: {}".format(
+                os.path.join(utils.TAB_DATA_DIR, test_case, 'i_00.txt')))
+
+
 class TestIsaTabSraTestData(unittest.TestCase):
 
     def setUp(self):
