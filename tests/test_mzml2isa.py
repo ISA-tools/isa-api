@@ -19,7 +19,7 @@ class TestMzml2IsaTab(unittest.TestCase):
 
     def test_mzml2isa_convert_investigation(self):
         study_id = 'MTBLS267'
-        report = mzml2isatab.convert(os.path.join(self._mzml_data_dir, study_id + '-partial'), self._tmp_dir, study_id,
+        report = mzml2isa.convert(os.path.join(self._mzml_data_dir, study_id + '-partial'), self._tmp_dir, study_id,
                                   validate_output=True)
         self.assertTrue(report['validation_finished'])
         self.assertEqual(len(report['errors']), 0)
@@ -29,7 +29,7 @@ class TestMzml2IsaTab(unittest.TestCase):
 
     def test_mzml2isa_convert_study_table(self):
         study_id = 'MTBLS267'
-        report = mzml2isatab.convert(os.path.join(self._mzml_data_dir, study_id + '-partial'), self._tmp_dir, study_id,
+        report = mzml2isa.convert(os.path.join(self._mzml_data_dir, study_id + '-partial'), self._tmp_dir, study_id,
                                   validate_output=True)
         self.assertTrue(report['validation_finished'])
         self.assertEqual(len(report['errors']), 0)
@@ -40,7 +40,7 @@ class TestMzml2IsaTab(unittest.TestCase):
 
     def test_mzml2isa_convert_assay_table(self):
         study_id = 'MTBLS267'
-        report = mzml2isatab.convert(os.path.join(self._mzml_data_dir, study_id + '-partial'), self._tmp_dir, study_id,
+        report = mzml2isa.convert(os.path.join(self._mzml_data_dir, study_id + '-partial'), self._tmp_dir, study_id,
                                   validate_output=True)
         self.assertTrue(report['validation_finished'])
         self.assertEqual(len(report['errors']), 0)

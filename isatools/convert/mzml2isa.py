@@ -1,4 +1,8 @@
+from __future__ import absolute_import
+
 from mzml2isa.parsing import convert as mzml_convert
+
+
 from isatools import isatab
 
 import logging
