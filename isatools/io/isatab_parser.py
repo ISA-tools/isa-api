@@ -418,10 +418,27 @@ class StudyAssayParser:
     def _parse_study(self, fname, node_types):
         """Parse study or assay row oriented file around the supplied base node.
         """
+
+        def _preprocess(fname):
+            """Check headers, and insert Protocol REF if needed"""
+            process_node_names = {'Data Transformation Name',
+                                  'Normalization Name',
+                                  'Scan Name',
+                                  'Hybridization Assay Name'}
+            in_handle = open(os.path.join(self._dir, fname), "rU")
+            reader = csv.reader(in_handle, dialect="excel-tab")
+            headers = next(reader)  # get column headings
+            process_node_name_indices = [x for x, y in enumerate(headers) if y in process_node_names]
+            for i in process_node_name_indices:
+                if headers[i - 1] != 'Protocol REF':
+                    print('warning: Protocol REF missing before \'{}\', found \'{}\''.format(headers[i], headers[i - 1]))
+            in_handle.seek(0)
+            return in_handle
+
         if not os.path.exists(os.path.join(self._dir, fname)):
             return None
         nodes = {}
-        with open(os.path.join(self._dir, fname), "rU") as in_handle:
+        with _preprocess(os.path.join(self._dir, fname)) as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
             headers = self._swap_synonyms(next(reader))
             hgroups = self._collapse_header(headers)
