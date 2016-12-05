@@ -98,4 +98,4 @@ class TestSimpleExamples(unittest.TestCase):
         validateISAjson.main(args)
         sys.stdout = old_stdout
         self.assertIn("Validated 1 ISA-JSONs, 1 valid ISA-JSONs, 0 invalid ISA-JSONs", mystdout.getvalue())
-        self.assertIn("Found 0 errors and 187 warnings in across all ISA-JSONs", mystdout.getvalue())
+        self.assertIn("Found 0 errors and 25 warnings in across all ISA-JSONs", mystdout.getvalue())
