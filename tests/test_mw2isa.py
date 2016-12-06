@@ -5,7 +5,7 @@ from isatools.convert.mw2isa import mw2isa_convert
 __author__ = 'proccaserra@gmail.com'
 
 
-class ms2ISATest(unittest.TestCase):
+class mw2ISATest(unittest.TestCase):
 
     def setUp(self):
         pass
@@ -15,10 +15,10 @@ class ms2ISATest(unittest.TestCase):
         # exit_code = sys.exit()
 
         if success and validate:
-            print("conversion successfull, invoking the validator for " + study_id)
-            try:
-                isatab.validate2(open('temp/' + study_id + '/i_investigation.txt'), './isaconfig-default_v2015-07-02/')
-            except:
-                print("conversion successful but validation failed")
+            print("conversion successful, invoking the validator for " + study_id)
+            with open('temp/' + study_id + '/i_investigation.txt') as fp:
+                report = isatab.validate2(fp)
+                if len(report['errors']) > 0:
+                    self.fail("conversion successful but validation failed")
         else:
-            print("conversion failed, validation was not invoked")
+            self.fail("conversion failed, validation was not invoked")
