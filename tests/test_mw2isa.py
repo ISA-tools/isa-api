@@ -1,6 +1,8 @@
 import unittest
 from isatools import isatab
 from isatools.convert.mw2isa import mw2isa_convert
+import tempfile
+import shutil
 
 __author__ = 'proccaserra@gmail.com'
 
@@ -8,10 +10,14 @@ __author__ = 'proccaserra@gmail.com'
 class mw2ISATest(unittest.TestCase):
 
     def setUp(self):
-        pass
+        self._tmp_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
 
     def test_conversion(self):
-        success, study_id, validate = mw2isa_convert(studyid="ST000367", outputdir='output', dl_option="no", validate_option="yes")
+        success, study_id, validate = mw2isa_convert(studyid="ST000367", outputdir=self._tmp_dir, dl_option="no",
+                                                     validate_option="yes")
         # exit_code = sys.exit()
 
         if success and validate:
