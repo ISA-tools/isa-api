@@ -225,15 +225,15 @@ class StudyAssayParser:
                            "Term Accession Number", "Term Source REF")
         self._col_types = {"attribute": ("Characteristics", "Factor Type",
                                          "Comment", "Label", "Material Type", "Factor Value"),
-                           "node" : ("Sample Name", "Source Name", "Image File",
-                                     "Raw Data File", "Derived Data File", "Acquisition Parameter Data File",
-                                     "Extract Name", "Labeled Extract Name"),
-                           "node_assay" : ("Assay Name", "Data Transformation Name",
-                                           "Normalization Name"),
-                           "processing": ("Protocol REF"),
+                           "node": ("Sample Name", "Source Name", "Image File",
+                                    "Raw Data File", "Derived Data File", "Acquisition Parameter Data File",
+                                    "Extract Name", "Labeled Extract Name"),
+                           "node_assay": ("Assay Name", "Data Transformation Name",
+                                          "Normalization Name"),
+                           "processing": "Protocol REF",
                            "parameter": ("Parameter Value", "Array Design REF")
                            }
-        self._synonyms = {"Array Data File" : "Raw Data File",
+        self._synonyms = {"Array Data File": "Raw Data File",
                           "Free Induction Decay Data File": "Raw Data File",
                           "Derived Array Data File" : "Derived Data File",
                           "Hybridization Assay Name": "Assay Name",
@@ -241,7 +241,8 @@ class StudyAssayParser:
                           "Array Data Matrix File": "Derived Data File",
                           "Derived Array Data Matrix File": "Derived Data File",
                           "Raw Spectral Data File": "Raw Data File",
-                          "Derived Spectral Data File": "Derived Data File"}
+                          "Derived Spectral Data File": "Derived Data File",
+                          "MS Assay Name": "Assay Name"}
 
     def parse(self, rec):
         """Retrieve row data from files associated with the ISATabRecord.
@@ -434,7 +435,7 @@ class StudyAssayParser:
         in_handle.seek(0)
         import pandas as pd
         num_protocol_refs = headers.count('Protocol REF')
-        df = pd.read_csv(in_handle, sep='\t')
+        df = pd.read_csv(in_handle, dtype=str, sep='\t')
         offset = 0
         for i in reversed(missing_process_indices):
             df.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown')

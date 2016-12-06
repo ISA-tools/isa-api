@@ -185,7 +185,12 @@ class ISATab2ISAjson_v1:
             for process_node in assay.process_nodes.values():
                 if self.ARRAY_DESIGN_REF in process_node.parameters:
                         protocols_to_attach_parameter.append(process_node.protocol)
-
+        protocol_identifier = self.generateIdentifier("protocol", "unknown")
+        protocol_json = dict([
+                                 ("@id", protocol_identifier),
+                                 ("name", "unknown")
+                             ])
+        protocols_json.append(protocol_json)
         for protocol in protocols:
             protocol_name = protocol['Study Protocol Name']
             if not protocol_name:
@@ -320,6 +325,16 @@ class ISATab2ISAjson_v1:
                 ("filename", study.metadata['Study File Name']),
                 ("comments", self.createComments(study.metadata)),
             ])
+            # clean up unknown process if it's not used in process sequence
+            unknown_used = False
+            for assay in assay_list:
+                for process in assay['processSequence']:
+                    if process['executesProtocol']['@id'] == '#process/unknown':
+                        unknown_used = True
+                        break
+            if not unknown_used:
+                unknown_prot_index = protocol_list.index({'name': 'unknown', '@id': '#protocol/unknown'})
+                del studyJson['protocols'][unknown_prot_index]
             study_array.append(studyJson)
         return study_array
 
