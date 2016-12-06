@@ -225,15 +225,15 @@ class StudyAssayParser:
                            "Term Accession Number", "Term Source REF")
         self._col_types = {"attribute": ("Characteristics", "Factor Type",
                                          "Comment", "Label", "Material Type", "Factor Value"),
-                           "node" : ("Sample Name", "Source Name", "Image File",
-                                     "Raw Data File", "Derived Data File", "Acquisition Parameter Data File",
-                                     "Extract Name", "Labeled Extract Name"),
-                           "node_assay" : ("Assay Name", "Data Transformation Name",
-                                           "Normalization Name"),
-                           "processing": ("Protocol REF"),
+                           "node": ("Sample Name", "Source Name", "Image File",
+                                    "Raw Data File", "Derived Data File", "Acquisition Parameter Data File",
+                                    "Extract Name", "Labeled Extract Name"),
+                           "node_assay": ("Assay Name", "Data Transformation Name",
+                                          "Normalization Name"),
+                           "processing": "Protocol REF",
                            "parameter": ("Parameter Value", "Array Design REF")
                            }
-        self._synonyms = {"Array Data File" : "Raw Data File",
+        self._synonyms = {"Array Data File": "Raw Data File",
                           "Free Induction Decay Data File": "Raw Data File",
                           "Derived Array Data File" : "Derived Data File",
                           "Hybridization Assay Name": "Assay Name",
@@ -241,7 +241,8 @@ class StudyAssayParser:
                           "Array Data Matrix File": "Derived Data File",
                           "Derived Array Data Matrix File": "Derived Data File",
                           "Raw Spectral Data File": "Raw Data File",
-                          "Derived Spectral Data File": "Derived Data File"}
+                          "Derived Spectral Data File": "Derived Data File",
+                          "MS Assay Name": "Assay Name"}
 
     def parse(self, rec):
         """Retrieve row data from files associated with the ISATabRecord.
@@ -279,7 +280,7 @@ class StudyAssayParser:
             return {}
         process_nodes = {}
 
-        with open(os.path.join(self._dir, fname), "rU") as in_handle:
+        with self._preprocess(os.path.join(self._dir, fname)) as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
             headers = self._swap_synonyms(next(reader))
             hgroups = self._collapse_header(headers)
@@ -287,7 +288,7 @@ class StudyAssayParser:
             processing_indices = [i for i, x in enumerate(htypes) if x == "processing"]
             all_parameters_indices = [i for i, x in enumerate(htypes) if x == "parameter"]
             node_indices = [i for i, x in enumerate(htypes) if x == "node"]
-            node_assay_indices =  [i for i, x in enumerate(htypes) if x == "node_assay"]
+            node_assay_indices = [i for i, x in enumerate(htypes) if x == "node_assay"]
             line_number = 0
             max_number = 0
             process_counters = {}
@@ -311,18 +312,18 @@ class StudyAssayParser:
                         assay_name_indices = find_in_between(node_assay_indices, processing_index, next_processing_index)
                         qualifier_indices = hgroups[processing_index][1:]
 
-                        input_headers = [ headers[hgroups[x][0]] for i, x in enumerate(input_indices) ]
-                        output_headers = [  headers[hgroups[x][0]] for i, x in enumerate(output_indices) ]
+                        input_headers = [headers[hgroups[x][0]] for i, x in enumerate(input_indices) ]
+                        output_headers = [headers[hgroups[x][0]] for i, x in enumerate(output_indices) ]
                         processing_header = headers[hgroups[processing_index][0]]
 
-                        qualifier_headers = [  headers[x] for i, x in enumerate(qualifier_indices) ]
-                        qualifier_values = [ line[x] for i, x in enumerate(qualifier_indices) ]
+                        qualifier_headers = [headers[x] for i, x in enumerate(qualifier_indices) ]
+                        qualifier_values = [line[x] for i, x in enumerate(qualifier_indices) ]
 
-                        input_values = [ line[hgroups[x][0]] for i, x in enumerate(input_indices) ]
-                        input_node_indices = [ self._build_node_index(input_headers[i],input_values[i]) for i, x in enumerate(input_values) ]
+                        input_values = [line[hgroups[x][0]] for i, x in enumerate(input_indices) ]
+                        input_node_indices = [self._build_node_index(input_headers[i],input_values[i]) for i, x in enumerate(input_values) ]
 
                         output_values = [ line[hgroups[x][0]] for i, x in enumerate(output_indices) ]
-                        output_node_indices = [ self._build_node_index(output_headers[i], output_values[i]) for i, x in enumerate(output_values)]
+                        output_node_indices = [self._build_node_index(output_headers[i], output_values[i]) for i, x in enumerate(output_values)]
 
                         qualifier_indices_string = '-'.join(qualifier_values)
                         input_node_indices_string = "-".join(input_node_indices)
@@ -330,7 +331,7 @@ class StudyAssayParser:
 
                         assay_name = ""
                         if assay_name_indices:
-                            if len(assay_name_indices)==1:
+                            if len(assay_name_indices) == 1:
                                 assay_name = line[hgroups[assay_name_indices[0]][0]]
 
                         if (assay_name):
@@ -414,14 +415,47 @@ class StudyAssayParser:
                 #study.process_nodes = process_nodes
         return dict([(k, self._finalize_metadata(v)) for k, v in process_nodes.items()])
 
+    def _preprocess(self, fname):
+        """Check headers, and insert Protocol REF if needed"""
+        process_node_names = {'Data Transformation Name',
+                              'Normalization Name',
+                              'Scan Name',
+                              'Hybridization Assay Name',
+                              'MS Assay Name'}
+        in_handle = open(os.path.join(self._dir, fname), "rU")
+        reader = csv.reader(in_handle, dialect="excel-tab")
+        headers = next(reader)  # get column headings
+        process_node_name_indices = [x for x, y in enumerate(headers) if y in process_node_names]
+        missing_process_indices = list()
+        for i in process_node_name_indices:
+            if headers[i - 1] != 'Protocol REF':
+                print('warning: Protocol REF missing before \'{}\', found \'{}\''.format(headers[i], headers[i - 1]))
+                missing_process_indices.append(i)
+        # insert Protocol REF columns
+        in_handle.seek(0)
+        import pandas as pd
+        num_protocol_refs = headers.count('Protocol REF')
+        df = pd.read_csv(in_handle, dtype=str, sep='\t')
+        offset = 0
+        for i in reversed(missing_process_indices):
+            df.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown')
+            headers.insert(i, 'Protocol REF')
+            print('inserting Protocol REF.{}'.format(num_protocol_refs + offset), 'at position {}'.format(i))
+            offset += 1
+        import io
+        out_handle = io.StringIO()
+        df.to_csv(out_handle, header=headers, sep='\t', index=False)
+        out_handle.seek(0)
+        return out_handle
 
     def _parse_study(self, fname, node_types):
         """Parse study or assay row oriented file around the supplied base node.
         """
+
         if not os.path.exists(os.path.join(self._dir, fname)):
             return None
         nodes = {}
-        with open(os.path.join(self._dir, fname), "rU") as in_handle:
+        with self._preprocess(os.path.join(self._dir, fname)) as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
             headers = self._swap_synonyms(next(reader))
             hgroups = self._collapse_header(headers)
