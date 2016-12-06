@@ -1,6 +1,6 @@
 import unittest
 from isatools import isatab
-from mw2isa import mw2isa_convert
+from isatools.convert.mw2isa import mw2isa_convert
 
 __author__ = 'proccaserra@gmail.com'
 
