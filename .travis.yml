@@ -5,7 +5,7 @@ python:
 install:
 - pip install --upgrade pip && pip install -r requirements-tests.txt
 script:
-- coverage run
+- coverage run --source=isatools setup.py test
 - behave --no-capture --no-capture-stderr --format=progress features/isa-file-handler.feature
 branches:
   except:
