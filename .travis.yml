@@ -20,4 +20,4 @@ deploy:
     tags: true
     repo: ISA-tools/isa-api
 after_success:
-- coveralls --config_file .coveragerc
+- coveralls --rcfile=.coveragerc
