@@ -188,7 +188,15 @@ class ISATab2ISAjson_v1:
         protocol_identifier = self.generateIdentifier("protocol", "unknown")
         protocol_json = dict([
                                  ("@id", protocol_identifier),
-                                 ("name", "unknown")
+                                 ("name", "unknown"),
+                                 ("protocolType", dict([
+                                     ("annotationValue", "")
+                                 ])),
+                                 ("description", ""),
+                                 ("uri", ""),
+                                 ("version", ""),
+                                 ("parameters", []),
+                                 ("components", [])
                              ])
         protocols_json.append(protocol_json)
         for protocol in protocols:
@@ -329,11 +337,22 @@ class ISATab2ISAjson_v1:
             unknown_used = False
             for assay in assay_list:
                 for process in assay['processSequence']:
-                    if process['executesProtocol']['@id'] == '#process/unknown':
+                    if process['executesProtocol']['@id'] == '#protocol/unknown':
                         unknown_used = True
                         break
             if not unknown_used:
-                unknown_prot_index = protocol_list.index({'name': 'unknown', '@id': '#protocol/unknown'})
+                unknown_prot_index = protocol_list.index(dict([
+                                 ("@id", "#protocol/unknown"),
+                                 ("name", "unknown"),
+                                 ("protocolType", dict([
+                                     ("annotationValue", "")
+                                 ])),
+                                 ("description", ""),
+                                 ("uri", ""),
+                                 ("version", ""),
+                                 ("parameters", []),
+                                 ("components", [])
+                             ]))
                 del studyJson['protocols'][unknown_prot_index]
             study_array.append(studyJson)
         return study_array
