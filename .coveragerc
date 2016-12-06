@@ -1,4 +1,5 @@
 [run]
+source = isatools
 omit =
     /docs/*
     /features/*
