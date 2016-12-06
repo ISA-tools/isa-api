@@ -3,6 +3,7 @@ from isatools import isatab
 from isatools.convert.mw2isa import mw2isa_convert
 import tempfile
 import shutil
+import os
 
 __author__ = 'proccaserra@gmail.com'
 
@@ -22,7 +23,7 @@ class mw2ISATest(unittest.TestCase):
 
         if success and validate:
             print("conversion successful, invoking the validator for " + study_id)
-            with open('temp/' + study_id + '/i_investigation.txt') as fp:
+            with open(os.path.join(self._tmp_dir, study_id, 'i_investigation.txt')) as fp:
                 report = isatab.validate2(fp)
                 if len(report['errors']) > 0:
                     self.fail("conversion successful but validation failed")
