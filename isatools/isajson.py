@@ -953,10 +953,11 @@ def check_utf8(fp):
 def check_isa_schemas(isa_json, investigation_schema_path):
     """Used for rule 0003 and 4003"""
     try:
-        investigation_schema = json.load(open(investigation_schema_path))
-        resolver = RefResolver('file://' + investigation_schema_path, investigation_schema)
-        validator = Draft4Validator(investigation_schema, resolver=resolver)
-        validator.validate(isa_json)
+        with open(investigation_schema_path) as fp:
+            investigation_schema = json.load(fp)
+            resolver = RefResolver('file://' + investigation_schema_path, investigation_schema)
+            validator = Draft4Validator(investigation_schema, resolver=resolver)
+            validator.validate(isa_json)
     except ValidationError as ve:
         errors.append({
             "message": "Invalid JSON against ISA-JSON schemas",
@@ -1174,13 +1175,14 @@ def load_config(config_dir):
     configs = dict()
     for file in glob.iglob(os.path.join(config_dir, '*.json')):
         try:
-            config_dict = json.load(open(file))
-            if os.path.basename(file) == 'protocol_definitions.json':
-                configs['protocol_definitions'] = config_dict
-            elif os.path.basename(file) == 'study_config.json':
-                configs['study'] = config_dict
-            else:
-                configs[(config_dict['measurementType'], config_dict['technologyType'])] = config_dict
+            with open(file) as fp:
+                config_dict = json.load(fp)
+                if os.path.basename(file) == 'protocol_definitions.json':
+                    configs['protocol_definitions'] = config_dict
+                elif os.path.basename(file) == 'study_config.json':
+                    configs['study'] = config_dict
+                else:
+                    configs[(config_dict['measurementType'], config_dict['technologyType'])] = config_dict
         except ValidationError:
             errors.append({
                 "message": "Configurations could not be loaded",
