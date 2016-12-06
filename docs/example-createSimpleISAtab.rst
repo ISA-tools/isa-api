@@ -17,6 +17,7 @@ An example of using the ISA model classes to create an ISA-Tab set of files.
         # Create an empty Investigation object and set some values to the instance variables.
 
         investigation = Investigation()
+        investigation.identifier = "i1"
         investigation.title = "My Simple ISA Investigation"
         investigation.description = "We could alternatively use the class constructor's parameters to set some default " \
                                     "values at the time of creation, however we want to demonstrate how to use the " \
@@ -29,6 +30,7 @@ An example of using the ISA model classes to create an ISA-Tab set of files.
         # to the 'investigation' object's list of studies.
 
         study = Study(filename="s_study.txt")
+        study.identifier = "s1"
         study.title = "My ISA Study"
         study.description = "Like with the Investigation, we could use the class constructor to set some default values, " \
                             "but have chosen to demonstrate in this example the use of instance variables to set initial " \
@@ -56,7 +58,7 @@ An example of using the ISA model classes to create an ISA-Tab set of files.
         # Other instance variables common to both Investigation and Study objects include 'contacts' and 'publications',
         # each with lists of corresponding Person and Publication objects.
 
-        contact = Person(first_name="Alice", last_name="Robertson", affiliation="University of Life")
+        contact = Person(first_name="Alice", last_name="Robertson", affiliation="University of Life", roles=[OntologyAnnotation(term='submitter')])
         study.contacts.append(contact)
         publication = Publication(title="Experiments with Elephants", author_list="A. Robertson, B. Robertson")
         publication.pubmed_id = "12345678"
@@ -74,12 +76,18 @@ An example of using the ISA model classes to create an ISA-Tab set of files.
         source = Source(name='source_material')
         study.materials['sources'].append(source)
 
-        # Then we create three Sample objects and attach them to the study. We use the utility function
+        # Then we create three Sample objects, with organism as Homo Sapiens, and attach them to the study. We use the utility function
         # batch_create_material() to clone a prototype material object. The function automatiaclly appends
         # an index to the material name. In this case, three samples will be created, with the names
         # 'sample_material-0', 'sample_material-1' and 'sample_material-2'.
 
         prototype_sample = Sample(name='sample_material', derives_from=source)
+        ncbitaxon = OntologySource(name='NCBITaxon', description="NCBI Taxonomy")
+        characteristic_organism = Characteristic(category=OntologyAnnotation(term="Organism"),
+                                         value=OntologyAnnotation(term="Homo Sapiens", term_source=ncbitaxon,
+                                                                  term_accession="http://purl.bioontology.org/ontology/NCBITAXON/9606"))
+        prototype_sample.characteristics.append(characteristic_organism)
+
         study.materials['samples'] = batch_create_materials(prototype_sample, n=3)  # creates a batch of 3 samples
 
         # Now we create a single Protocol object that represents our sample collection protocol, and attach it to the
@@ -136,8 +144,9 @@ An example of using the ISA model classes to create an ISA-Tab set of files.
             # extraction process takes as input a sample, and produces an extract material as output
 
             extraction_process.inputs.append(sample)
-            extract = Material(name="extract-{}".format(i))
-            extraction_process.outputs.append(extract)
+            material = Material(name="extract-{}".format(i))
+            material.type = "Extract Name"
+            extraction_process.outputs.append(material)
 
             # create a sequencing process that executes the sequencing protocol
 
@@ -147,7 +156,7 @@ An example of using the ISA model classes to create an ISA-Tab set of files.
 
             # Sequencing process usually has an output data file
 
-            datafile = DataFile(filename="sequenced-data-{}".format(i))
+            datafile = DataFile(filename="sequenced-data-{}".format(i), label="Raw Data File")
             sequencing_process.outputs.append(datafile)
 
             # ensure Processes are linked forward and backward
@@ -158,9 +167,11 @@ An example of using the ISA model classes to create an ISA-Tab set of files.
             # make sure the extract, data file, and the processes are attached to the assay
 
             assay.data_files.append(datafile)
-            assay.materials['other_material'].append(extract)
+            assay.materials['other_material'].append(material)
             assay.process_sequence.append(extraction_process)
             assay.process_sequence.append(sequencing_process)
+            assay.measurement_type = OntologyAnnotation(term="gene sequencing")
+            assay.technology_type = OntologyAnnotation(term="nucleotide sequencing")
 
         # attach the assay to the study
 
