@@ -9,10 +9,10 @@ import json
 import ftplib
 import os.path
 import re
-import errno,sys
 import logging
 
-__author__ = 'prs'
+
+__author__ = 'proccaserra@gmail.com'
 
 # a method to obtain a block of line between a start and an end marker
 # this will be invoked to obtain raw data, metabolite identification,metabolite annotation and possible study factors
@@ -69,7 +69,7 @@ def get_archived_file(mw_study_id):
             print("file not found on server \n")
         else:
             success = False
-            print("someone broke the internet")
+            # print("someone broke the internet")
             return success
 
 # a method to create an EBI Metabolights MAF file from Metabolomics Workbench REST API over data and metabolites
@@ -926,37 +926,46 @@ def get_raw_data(study_accession_number):
 # "ST00036"
 
 
-def mw2isa_convert():
+def mw2isa_convert(**kwargs):
+    options = {
+        'studyid': '',
+        'dl_option': '',
+        'validate_option': ''}
 
     conversion_success = True
     try:
+
+        options.update(kwargs)
+        print("user options", options)
+        studyid = options['studyid']
+        dl_option = options['dl_option']
+        validate_option = options['validate_option']
         # Retrieve DCC MW Webpage for an study entry and obtaining the list of associated 'analysis' (i.a. ISA assays)
 
-        studyid = input('Enter a study ID name: ')
-        download_study = input('Download raw data file: yes/no')
-        study_url = "http://www.metabolomicsworkbench.org/rest/study/study_id/" + studyid + "/analysis"
+        # studyid = input('Enter a study ID name: ')
+        # dl_option = input('Download raw data file: yes/no')
 
-        with urllib.request.urlopen(study_url) as url:
-            study_response = url.read().decode('utf8')
-            analyses = json.loads(study_response)
-            # print("study analysis", analyses)
-            if "1" in analyses.keys():
-                print("several analysis")
-                for key in analyses.keys():
-                    tt = analyses[key]["analysis_type"]
-                    print("analysis_type:", tt)
-            else:
-                print("Technology is: ", analyses["analysis_type"])
-                tt = analyses["analysis_type"]
-
-        if download_study == 'yes':
-            get_archived_file(studyid)
-
-        if not ((re.match(r"(^ST\d{6})", studyid)) and (tt == "MS" or tt == "NMR")):
+        # checking MW study accession number is conform:
+        if not re.match(r"(^ST\d{6})", studyid):
 
             print("this is not a MW accession number, please try again")
 
         else:
+            study_url = "http://www.metabolomicsworkbench.org/rest/study/study_id/" + studyid + "/analysis"
+
+            with urllib.request.urlopen(study_url) as url:
+                study_response = url.read().decode('utf8')
+                analyses = json.loads(study_response)
+                # print("study analysis", analyses)
+                if "1" in analyses.keys():
+                    print("several analysis")
+                    for key in analyses.keys():
+                        tt = analyses[key]["analysis_type"]
+                        print("analysis_type:", tt)
+                else:
+                    print("Technology is: ", analyses["analysis_type"])
+                    tt = analyses["analysis_type"]
+
             print("proceeding with MW study identifier: ", studyid, "and technology:", tt)
             # studyid = "ST000367"
             # tt = "MS"
@@ -1914,7 +1923,12 @@ def mw2isa_convert():
             #  print("doh, something went wrong while writing investigation but don't know why!: from main method")
 
             # ATTEMTPING TO DOWNLOAD THE CORRESPONDING DATA ARCHIVE FROM MW ANONYMOUS FTP:
-            # get_archived_file(mw_accnum)
+            if dl_option == 'yes':
+                get_archived_file(studyid)
+            elif dl_option == 'no':
+                print('user elected not to dowload raw data')
+            else:
+                print('user input not recognized')
 
     except Exception as e:
         logging.exception(e)
@@ -1922,16 +1936,5 @@ def mw2isa_convert():
         print("conversion failed\n")
         conversion_success = False
 
-    return conversion_success,studyid
+    return conversion_success, studyid, validate_option
 
-success,study_id = mw2isa_convert()
-# exit_code = sys.exit()
-
-if success:
-    print("conversion successfull, invoking the validator for " + study_id)
-    try:
-        isatab.validate2(open('temp/' + study_id + '/i_investigation.txt'),'./isaconfig-default_v2015-07-02/')
-    except:
-        print("conversion successful but validation failed")
-else:
-    print("conversion failed, validation was not invoked")
