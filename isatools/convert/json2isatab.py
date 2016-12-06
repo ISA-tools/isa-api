@@ -24,7 +24,7 @@ def convert(json_fp, path, i_file_name='i_investigation.txt', config_dir=isajson
         from isatools.convert import json2isatab
         json_file = open('BII-I-1.json', 'r')
         tab_file = open('i_investigation.txt', 'w')
-        json2isatab.convert(json_file, tab_file)
+        json2isatab.convert(json_file, path)
 
     """
     if validate_first:

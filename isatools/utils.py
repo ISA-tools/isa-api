@@ -16,9 +16,12 @@ def format_report_csv(report):
 
 def detect_graph_process_pooling(G):
     from isatools.model.v1 import Process
+    report = list()
     for process in [n for n in G.nodes() if isinstance(n, Process)]:
         if len(G.in_edges(process)) > 1:
             print("Possible process pooling detected on: ", process.id)
+            report.append(process.id)
+    return report
 
 
 def contains(small_list, big_list):

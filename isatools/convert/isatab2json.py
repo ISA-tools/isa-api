@@ -341,19 +341,22 @@ class ISATab2ISAjson_v1:
                         unknown_used = True
                         break
             if not unknown_used:
-                unknown_prot_index = protocol_list.index(dict([
-                                 ("@id", "#protocol/unknown"),
-                                 ("name", "unknown"),
-                                 ("protocolType", dict([
-                                     ("annotationValue", "")
-                                 ])),
-                                 ("description", ""),
-                                 ("uri", ""),
-                                 ("version", ""),
-                                 ("parameters", []),
-                                 ("components", [])
-                             ]))
-                del studyJson['protocols'][unknown_prot_index]
+                try:
+                    unknown_prot_index = protocol_list.index(dict([
+                                     ("@id", "#protocol/unknown"),
+                                     ("name", "unknown"),
+                                     ("protocolType", dict([
+                                         ("annotationValue", "")
+                                     ])),
+                                     ("description", ""),
+                                     ("uri", ""),
+                                     ("version", ""),
+                                     ("parameters", []),
+                                     ("components", [])
+                                 ]))
+                    del studyJson['protocols'][unknown_prot_index]
+                except ValueError:
+                    pass  # if something went wrong earlier and the unknown protocol was never generated
             study_array.append(studyJson)
         return study_array
 
