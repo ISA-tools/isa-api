@@ -2383,7 +2383,10 @@ def check_protocol_fields(table, cfg, proto_map):
                          i.lower().endswith(' name') or i.lower().endswith(' data file') or i.lower().endswith(
                              ' data matrix file')]
         protos = [i for i in table.columns if i.lower() == 'protocol ref']
-        last_proto_indx = table.columns.get_loc(protos[len(protos) - 1])
+        if len(protos) > 0:
+            last_proto_indx = table.columns.get_loc(protos[len(protos) - 1])
+        else:
+            last_proto_indx = -1
         last_mat_or_dat_indx = table.columns.get_loc(field_headers[len(field_headers) - 1])
         if last_proto_indx > last_mat_or_dat_indx:
             logger.warn("(W) Protocol REF column without output in file '" + table.filename + "'")
