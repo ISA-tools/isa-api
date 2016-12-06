@@ -1892,8 +1892,7 @@ def mw2isa_convert(**kwargs):
                                       parameters=ident_protocol_params)
             study1.protocols.append(ident_protocol)
 
-            study1.protocols.append(Protocol(name="annotation protocol",
-                                             protocol_type=OntologyAnnotation(term="annotation")))
+            study1.protocols.append(Protocol(name="annotation protocol", protocol_type=OntologyAnnotation(term="annotation")))
 
             publication = Publication(pubmed_id='12314444', status=OntologyAnnotation())
             study1.publications.append(publication)
