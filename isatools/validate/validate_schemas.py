@@ -9,6 +9,7 @@ def validateSchemasInFolder(folder):
     path = os.path.abspath(folder)
     for schemaFile in glob.iglob(os.path.join(path, '*.json')):
         print("Validating schema ", os.path.basename(schemaFile), "...")
-        schema = json.load(open(schemaFile))
-        Draft4Validator.check_schema(schema)
-        print("done.")
+        with open(schemaFile) as schema_fp:
+            schema = json.load(schema_fp)
+            Draft4Validator.check_schema(schema)
+            print("done.")
