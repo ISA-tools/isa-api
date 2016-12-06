@@ -19,6 +19,7 @@ __author__ = 'proccaserra@gmail.com'
 # parameters are a filehandle and 2 strings allowing the specify the section brackets
 
 
+
 def getblock(container, start_marker, end_marker):
     try:
         begin = False
@@ -76,7 +77,7 @@ def get_archived_file(mw_study_id):
 # input: a valid Metabolomics Workbench study accession number that should follow this pattern ^ST\d+[6]
 
 
-def generate_maf_file(mw_study_id, mw_analysis_id):
+def generate_maf_file(write_dir,mw_study_id, mw_analysis_id):
     try:
         data_url = "http://www.metabolomicsworkbench.org/rest/study/study_id/" + mw_study_id + "/data"
         metabolites_url = "http://www.metabolomicsworkbench.org/rest/study/study_id/" + mw_study_id + "/metabolites"
@@ -127,7 +128,7 @@ def generate_maf_file(mw_study_id, mw_analysis_id):
                                   ("(" + dd["1"]["units"] + ')\t').join(dd["1"]["DATA"].keys()) \
                                   + ("(" + dd["1"]["units"] + ")")
 
-            fh = open("temp/" + mw_study_id + "/data/" + mw_study_id + "_"+ mw_analysis_id + "-maf-data-jsonparsing.txt", "w")
+            fh = open(write_dir + "/" + mw_study_id + "/data/" + mw_study_id + "_" + mw_analysis_id + "-maf-data-jsonparsing.txt", "w")
             # print("writing 'maf file document' to file from 'generate_maf_file' method:...")
             fh.writelines(data_rec_header)
             fh.writelines("\n")
@@ -196,10 +197,10 @@ def get_assay_type(container):
         print("Error: in get_assay_type() method, situation not recognized")
 
 
-def write_assay(technotype, accnum, mw_analysis_nb, assayrecords, assay_wf_header):
+def write_assay(write_dir,technotype, accnum, mw_analysis_nb, assayrecords, assay_wf_header):
     try:
         # /Users/Philippe/Documents/git/MW2ISA/
-        assayfileoutputpath = "temp/" + accnum + "/"
+        assayfileoutputpath = write_dir + "/" + accnum + "/"
         if not os.path.exists(assayfileoutputpath):
             os.makedirs(assayfileoutputpath)
 
@@ -255,7 +256,7 @@ def write_assay(technotype, accnum, mw_analysis_nb, assayrecords, assay_wf_heade
 # the method return nothing but creates a raw signal quantification file and a metabolite assignment file.
 
 
-def create_raw_data_files(input_techtype, f, input_study_id, input_analysis_id):
+def create_raw_data_files(write_dir, input_techtype, f, input_study_id, input_analysis_id):
     # print("file to download: ", f)
     try:
         # dlurl = urlopen(f)
@@ -264,7 +265,7 @@ def create_raw_data_files(input_techtype, f, input_study_id, input_analysis_id):
         # localcopy.write(str(dlurl.read()))
 
         # the combination of MW study ID and analysis ID ensure unicity of file name.
-        dataoutputdirectory = "temp/" + input_study_id + "/data/"
+        dataoutputdirectory = write_dir + "/" + input_study_id + "/data/"
         if not os.path.exists(dataoutputdirectory):
             os.makedirs(dataoutputdirectory)
 
@@ -841,12 +842,12 @@ def get_mwfile_as_lol(input_url):
 # a
 
 
-def write_study_file(study_acc_num, study_file_header, longrecords):
+def write_study_file(write_dir, study_acc_num, study_file_header, longrecords):
 
     try:
         this_study_filename = "s_" + study_acc_num + ".txt"
         # print("study filename: ",this_study_filename) /Users/Philippe/Documents/git/MW2ISA
-        studyfilepath = "temp/" + study_acc_num
+        studyfilepath = write_dir + "/" + study_acc_num
         if not os.path.exists(studyfilepath):
             os.makedirs(studyfilepath)
         study_file = open((studyfilepath + "/" + this_study_filename), 'w')
@@ -929,6 +930,7 @@ def get_raw_data(study_accession_number):
 def mw2isa_convert(**kwargs):
     options = {
         'studyid': '',
+        'outputdir':'',
         'dl_option': '',
         'validate_option': ''}
 
@@ -938,6 +940,7 @@ def mw2isa_convert(**kwargs):
         options.update(kwargs)
         print("user options", options)
         studyid = options['studyid']
+        outputdir = options['outputdir']
         dl_option = options['dl_option']
         validate_option = options['validate_option']
         # Retrieve DCC MW Webpage for an study entry and obtaining the list of associated 'analysis' (i.a. ISA assays)
@@ -969,7 +972,7 @@ def mw2isa_convert(**kwargs):
             print("proceeding with MW study identifier: ", studyid, "and technology:", tt)
             # studyid = "ST000367"
             # tt = "MS"
-            outputpath = "temp/" + studyid + "/"
+            outputpath = outputdir + "/" + studyid + "/"
             if not os.path.exists(outputpath):
                 os.makedirs(outputpath)
 
@@ -1734,15 +1737,15 @@ def mw2isa_convert(**kwargs):
 
                     downLoadURI = downLoadURI + element["analysis_id"] + "&MODE=d"
 
-                    create_raw_data_files(tt, downLoadURI, studyid, element["analysis_id"])
+                    create_raw_data_files(outputdir, tt, downLoadURI, studyid, element["analysis_id"])
 
-                    generate_maf_file(studyid,element["analysis_id"])
+                    generate_maf_file(outputdir, studyid,element["analysis_id"])
 
                     assay_records, assay_header, qt1, qt2 = create_ms_assay_records(downLoadURI, studyid,
                                                                                     element["analysis_id"],
                                                                           study_factor_records)
 
-                    write_assay(element["techtype"],studyid, element["analysis_id"], assay_records, assay_header)
+                    write_assay(outputdir, element["techtype"],studyid, element["analysis_id"], assay_records, assay_header)
 
                 elif element["techtype"] == "nmr spectroscopy":
                     print("detected technology type:", element["techtype"])
@@ -1761,15 +1764,15 @@ def mw2isa_convert(**kwargs):
 
                     downLoadURI = downLoadURI + element["analysis_id"] + "&MODE=d"
                     print("invoking create_raw_data_method for NMR data now\n")
-                    create_raw_data_files(tt, downLoadURI, studyid, element["analysis_id"])
+                    create_raw_data_files(outputdir, tt, downLoadURI, studyid, element["analysis_id"])
 
-                    generate_maf_file(studyid,element["analysis_id"])
+                    generate_maf_file(outputdir, studyid,element["analysis_id"])
 
                     assay_records, assay_header, qt1, qt2 = create_nmr_assay_records(downLoadURI, studyid,
                                                                                      element["analysis_id"],
                                                                                      study_factor_records)
 
-                    write_assay(element["techtype"], studyid, element["analysis_id"], assay_records, assay_header)
+                    write_assay(outputdir, element["techtype"], studyid, element["analysis_id"], assay_records, assay_header)
 
             chromatography_param_oa = OntologyAnnotation(name="injection temperature")
             chromatography_param = ProtocolParameter(parameter_name=chromatography_param_oa)
@@ -1911,7 +1914,7 @@ def mw2isa_convert(**kwargs):
             studyfileheader = basestudysamplerecordheader + fv_record_header
 
             # ATTEMPTING TO WRITE STUDY FILES:
-            write_study_file(studyid, studyfileheader, study_factor_records)
+            write_study_file(outputdir, studyid, studyfileheader, study_factor_records)
 
             # ATTEMPTING TO WRITE INVESTIGATION FILE:
             try:

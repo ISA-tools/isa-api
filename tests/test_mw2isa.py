@@ -11,7 +11,7 @@ class ms2ISATest(unittest.TestCase):
         pass
 
     def test_conversion(self):
-        success, study_id, validate = mw2isa_convert(studyid="ST000406", dl_option="no", validate_option="yes")
+        success, study_id, validate = mw2isa_convert(studyid="ST000367", outputdir='output', dl_option="no", validate_option="yes")
         # exit_code = sys.exit()
 
         if success and validate:
