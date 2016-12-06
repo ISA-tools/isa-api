@@ -96,9 +96,10 @@ class TestIsaTab(unittest.TestCase):
         # s.graph = _build_assay_graph(s.process_sequence)
         i.studies = [s]
         isatab.dump(i, self._tmp_dir)
-        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_pool.txt')),
-                                                 open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split',
-                                                                   's_TEST-Template1-Splitting.txt'))))
+        with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
+                open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split',
+                                  's_TEST-Template1-Splitting.txt')) as expected_file:
+            self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
 
     def test_isatab_dump_source_sample_pool(self):
         i = Investigation()
@@ -167,14 +168,13 @@ class TestIsaTab(unittest.TestCase):
         sample_collection_process.inputs = [source1, source2, source3, source4]
         sample_collection_process.outputs = [sample1]
         s.process_sequence = [sample_collection_process]
-        # from isatools.model.v1 import _build_assay_graph
-        # s.graph = _build_assay_graph(s.process_sequence)
         i.studies = [s]
         isatab.dump(i, self._tmp_dir)
-        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_pool.txt')),
-                                                 open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',
-                                                                   's_TEST-Template3-Splitting.txt'))))
-        self.assertIsInstance(isatab.dumps(i), str)
+        with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
+                open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',
+                                  's_TEST-Template3-Splitting.txt')) as expected_file:
+            self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
+            self.assertIsInstance(isatab.dumps(i), str)
 
     def test_batch_create_materials(self):
         source = Source(name='source_material')
