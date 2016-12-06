@@ -330,8 +330,8 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
             parameters_source_refs = ''
             for parameter in protocol.parameters:
                 parameters_names += parameter.parameter_name.term + ';'
-                parameters_accession_numbers += parameter.parameter_name.term_accession if parameter.parameter_name.term_accession is not None else '' + ';'
-                parameters_source_refs += parameter.parameter_name.term_source.name if parameter.parameter_name.term_source else '' + ';'
+                parameters_accession_numbers += (parameter.parameter_name.term_accession if parameter.parameter_name.term_accession is not None else '') + ';'
+                parameters_source_refs += (parameter.parameter_name.term_source.name if parameter.parameter_name.term_source else '') + ';'
             if len(protocol.parameters) > 0:
                 parameters_names = parameters_names[:-1]
                 parameters_accession_numbers = parameters_accession_numbers[:-1]
