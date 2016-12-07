@@ -71,6 +71,14 @@ This method returns the ISA-Tab files as a byte stream (``io.BytesIO``).
 ----------------------------------------------------
 Importing SRA from MetabolomicsWorkbench, to ISA-Tab
 ----------------------------------------------------
+To import a study from the `Metabolomics Workbench <http://www.metabolomicsworkbench.org/>`_ as ISA-Tab files,
+provide an accession number and your local path to write your files to:
+
+.. code-block:: python
+
+    from isatools.convert.mw2isa import mw2isa_convert
+    success, study_id, validate = mw2isa_convert(studyid="ST000367", outputdir='tmp/', dl_option="no", validate_option="yes")
+    #  If success == True, download and conversion ran OK. If validate == True, the ISA-Tabs generated passed validation
 
 See ``isa-api/isatools/convert/mw2isa.py``
 
