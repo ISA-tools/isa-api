@@ -18,7 +18,7 @@ To check for possible erroneous pooling events in an ISA-Tab archive, you can tr
     >>> from isatools import utils
     >>> utils.detect_isatab_process_pooling('tests/data/tab/MTBLS1/')
     INFO: Converting ISA-Tab to ISA JSON...
-    INFO: Converting ISAtab to ISAjson for /Users/dj/PycharmProjects/isa-api/tests/data/tab/MTBLS1/
+    INFO: Converting ISAtab to ISAjson for tests/data/tab/MTBLS1/
     INFO: ... conversion finished.
     Checking s_MTBLS1.txt
     Checking a_mtbls1_metabolite_profiling_NMR_spectroscopy.txt
