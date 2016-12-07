@@ -552,29 +552,32 @@ def load(fp):
                                       output_json['@id'])
                     process.outputs.append(output)
                 for parameter_value_json in assay_process_json['parameterValues']:
-                    if parameter_value_json['category']['@id'] == '#parameter/Array_Design_REF':  # Special case
-                        process.array_design_ref = parameter_value_json['value']
-                    elif isinstance(parameter_value_json['value'], int) or \
-                            isinstance(parameter_value_json['value'], float):
-                        parameter_value = ParameterValue(
-                            category=parameters_dict[parameter_value_json['category']['@id']],
-                            value=parameter_value_json['value'],
-                        )
-                        if 'unit' in parameter_value_json.keys():
-                            parameter_value.unit = units_dict[parameter_value_json['unit']['@id']]
-                        process.parameter_values.append(parameter_value)
-                    else:
-                        parameter_value = ParameterValue(
-                            category=parameters_dict[parameter_value_json['category']['@id']],
+                    if 'category' in parameter_value_json.keys():
+                        if parameter_value_json['category']['@id'] == '#parameter/Array_Design_REF':  # Special case
+                            process.array_design_ref = parameter_value_json['value']
+                        elif isinstance(parameter_value_json['value'], int) or \
+                                isinstance(parameter_value_json['value'], float):
+                            parameter_value = ParameterValue(
+                                category=parameters_dict[parameter_value_json['category']['@id']],
+                                value=parameter_value_json['value'],
                             )
-                        try:
-                            parameter_value.value = OntologyAnnotation(
-                                term=parameter_value_json['value']['annotationValue'],
-                                term_accession=parameter_value_json['value']['termAccession'],
-                                term_source=term_source_dict[parameter_value_json['value']['termSource']],)
-                        except TypeError:
-                            parameter_value.value = parameter_value_json['value']
-                        process.parameter_values.append(parameter_value)
+                            if 'unit' in parameter_value_json.keys():
+                                parameter_value.unit = units_dict[parameter_value_json['unit']['@id']]
+                            process.parameter_values.append(parameter_value)
+                        else:
+                            parameter_value = ParameterValue(
+                                category=parameters_dict[parameter_value_json['category']['@id']],
+                                )
+                            try:
+                                parameter_value.value = OntologyAnnotation(
+                                    term=parameter_value_json['value']['annotationValue'],
+                                    term_accession=parameter_value_json['value']['termAccession'],
+                                    term_source=term_source_dict[parameter_value_json['value']['termSource']],)
+                            except TypeError:
+                                parameter_value.value = parameter_value_json['value']
+                            process.parameter_values.append(parameter_value)
+                    else:
+                        print('warning: parameter category not found for instance {}'.format(parameter_json))
                 assay.process_sequence.append(process)
                 process_dict[process.id] = process
                 for assay_process_json in assay_json['processSequence']:  # 2nd pass

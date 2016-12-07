@@ -14,6 +14,31 @@ def format_report_csv(report):
     return output
 
 
+def detect_isatab_process_pooling(tab_path):
+    from isatools.convert import isatab2json
+    from isatools import isajson
+    from io import StringIO
+    import json
+    report = list()
+    J = isatab2json.convert(tab_path, validate_first=False)
+    ISA = isajson.load(StringIO(json.dumps(J)))
+    for study in ISA.studies:
+        print("Checking {}".format(study.filename))
+        pooling_list = detect_graph_process_pooling(study.graph)
+        if len(pooling_list) > 0:
+            report.append({
+                study.filename: pooling_list
+            })
+        for assay in study.assays:
+            print("Checking {}".format(assay.filename))
+            pooling_list = detect_graph_process_pooling(assay.graph)
+            if len(pooling_list) > 0:
+                report.append({
+                    assay.filename: pooling_list
+                })
+    return report
+
+
 def detect_graph_process_pooling(G):
     from isatools.model.v1 import Process
     report = list()
@@ -22,6 +47,28 @@ def detect_graph_process_pooling(G):
             print("Possible process pooling detected on: ", process.id)
             report.append(process.id)
     return report
+
+
+def insert_distinct_parameter(table_fp, protocol_ref_to_unpool):
+    from isatools.isatab import load_table
+    import uuid
+    import csv
+    reader = csv.reader(table_fp, dialect="excel-tab")
+    headers = next(reader)  # get column headings
+    table_fp.seek(0)
+    df = load_table(table_fp)
+    protocol_ref_indices = [x for x, y in enumerate(df.columns) if df[y][0] == protocol_ref_to_unpool]  # find protocol ref column by index
+    if len(protocol_ref_indices) != 1:
+        raise IndexError("Could not find Protocol REF with provided value {}".format(protocol_ref_to_unpool))
+    distindex = list()
+    for i in range(0, len(df.index)):
+        distindex.append(str(uuid.uuid4())[:8])
+    protocol_ref_index = protocol_ref_indices[0]
+    df.insert(protocol_ref_index + 1, 'Parameter Value[distindex]', distindex)
+    headers.insert(protocol_ref_index + 1, 'Parameter Value[distindex]')
+    table_fp.seek(0)
+    df.to_csv(table_fp, index=None, header=headers, sep='\t')
+    return df
 
 
 def contains(small_list, big_list):
