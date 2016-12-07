@@ -64,11 +64,22 @@ def insert_distinct_parameter(table_fp, protocol_ref_to_unpool):
     for i in range(0, len(df.index)):
         distindex.append(str(uuid.uuid4())[:8])
     protocol_ref_index = protocol_ref_indices[0]
-    df.insert(protocol_ref_index + 1, 'Parameter Value[distindex]', distindex)
-    headers.insert(protocol_ref_index + 1, 'Parameter Value[distindex]')
-    table_fp.seek(0)
-    df.to_csv(table_fp, index=None, header=headers, sep='\t')
-    return df
+    name_header = None
+    head_from_prot = headers[protocol_ref_index:]
+    for x, y in enumerate(head_from_prot):
+        if y.endswith(" Name"):
+            name_header = y
+            break
+    if name_header is not None:
+        print("Are you sure you want to add a column of hash values in {}? Y/(N)".format(name_header))
+        confirm = input()
+        if confirm == "Y":
+            df[name_header] = distindex
+            table_fp.seek(0)
+            df.to_csv(table_fp, index=None, header=headers, sep='\t')
+    else:
+        print("Could not find appropriate column to fill with hashes")
+    # return df
 
 
 def contains(small_list, big_list):
