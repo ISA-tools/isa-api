@@ -2638,6 +2638,14 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
                 logger.info("Checking consistencies between study sample table and assay tables...")
                 check_sample_names(study_sample_table, assay_tables)
                 logger.info("Finished checking study sample table against assay tables...")
+            if len(errors) != 0:
+                logger.info("Skipping pooling test as there are outstanding errors")
+            else:
+                from isatools import utils
+                try:
+                    utils.detect_isatab_process_pooling(os.path.dirname(fp.name))
+                except:
+                    pass
         logger.info("Finished validation...")
         validation_finished = True
     except CParserError as cpe:
