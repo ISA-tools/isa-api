@@ -342,13 +342,13 @@ class StudyAssayParser:
                         else:
                             try:
                                 # unique_process_name = input_process_map[qualifier_indices_string+input_node_indices_string]
-                                unique_process_name = input_process_map[parameters_indices_string+qualifier_indices_string+input_node_indices_string]
+                                unique_process_name = input_process_map[qualifier_indices_string+input_node_indices_string]
                                 if not (unique_process_name.startswith(processing_name)):
                                     raise KeyError
                             except KeyError:
                                 try:
                                     # unique_process_name = output_process_map[qualifier_indices_string+output_node_indices_string]
-                                    unique_process_name = output_process_map[parameters_indices_string+qualifier_indices_string+output_node_indices_string]
+                                    unique_process_name = output_process_map[qualifier_indices_string+output_node_indices_string]
                                     if not (unique_process_name.startswith(processing_name)):
                                         raise KeyError
                                 except KeyError:
@@ -397,8 +397,8 @@ class StudyAssayParser:
                             in_second_but_not_in_first = in_second - in_first
                             process_node.outputs = process_node.outputs + list(in_second_but_not_in_first)
 
-                        input_process_map[parameters_indices_string+qualifier_indices_string+input_node_indices_string] = unique_process_name
-                        output_process_map[parameters_indices_string+qualifier_indices_string+output_node_indices_string] = unique_process_name
+                        input_process_map[qualifier_indices_string+input_node_indices_string] = unique_process_name
+                        output_process_map[qualifier_indices_string+output_node_indices_string] = unique_process_name
 
                         # Add parameters
                         parameter_headers = []
