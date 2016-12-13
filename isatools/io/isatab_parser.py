@@ -242,7 +242,10 @@ class StudyAssayParser:
                           "Derived Array Data Matrix File": "Derived Data File",
                           "Raw Spectral Data File": "Raw Data File",
                           "Derived Spectral Data File": "Derived Data File",
-                          "MS Assay Name": "Assay Name"}
+                          "MS Assay Name": "Assay Name",
+                          "Protein Assignment File": "Derived Data File",
+                          "Peptide Assignment File": "Derived Data File",
+                          "Post Translational Modification Assignment File": "Derived Data File"}
 
     def parse(self, rec):
         """Retrieve row data from files associated with the ISATabRecord.
