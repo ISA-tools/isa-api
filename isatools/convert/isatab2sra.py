@@ -5,6 +5,7 @@ from zipfile import ZipFile
 import logging
 from isatools import isatab
 import json
+import glob
 from io import StringIO
 
 
