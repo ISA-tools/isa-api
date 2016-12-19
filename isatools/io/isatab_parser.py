@@ -404,15 +404,13 @@ class StudyAssayParser:
                         output_process_map[qualifier_indices_string+output_node_indices_string] = unique_process_name
 
                         # Add parameters
-                        parameter_headers = []
                         for parameter_index in parameters_indices:
                             parameter_header = headers[hgroups[parameter_index][0]]
-                            parameter_headers.append(parameter_header)
                             process_node.parameters.append(parameter_header)
-                            # creating the metadata object
-                            process_node.metadata = collections.defaultdict(set)
-                            attrs = self._line_keyvals(line, headers, hgroups, htypes, process_node.metadata)
-                            process_node.metadata = attrs
+                        # creating the metadata object
+                        process_node.metadata = collections.defaultdict(set)
+                        attrs = self._line_keyvals(line, headers, hgroups, htypes, process_node.metadata)
+                        process_node.metadata = attrs
 
                         # max_number = max(len(process_node.inputs), len(process_node.outputs))
                         line_number += 1
