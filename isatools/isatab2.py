@@ -4,8 +4,9 @@ import numpy as np
 from bisect import bisect_left, bisect_right
 
 """
-In progress; do not use!
+In progress; do not use yet as contents of this package will move!!!
 """
+
 
 class ProcessSequence(object):
 
