@@ -164,40 +164,40 @@ class ProcessSequenceFactory(object):
             pass
 
         try:
-            raw_data_files = dict(map(lambda x: ('Raw Data File' + x, RawDataFile(name=x)), DF['Raw Data File'].drop_duplicates()))
+            raw_data_files = dict(map(lambda x: ('Raw Data File:' + x, RawDataFile(name=x)), DF['Raw Data File'].drop_duplicates()))
             data.update(raw_data_files)
         except KeyError:
             pass
 
         try:
-            derived_spectral_data_files = dict(map(lambda x: ('Derived Spectral Data File' + x, DerivedSpectralDataFile(name=x)),
+            derived_spectral_data_files = dict(map(lambda x: ('Derived Spectral Data File:' + x, DerivedSpectralDataFile(name=x)),
                                                   DF['Derived Spectral Data File'].drop_duplicates()))
             data.update(derived_spectral_data_files)
         except KeyError:
             pass
 
         try:
-            derived_array_data_files = dict(map(lambda x: ('Derived Array Data File' + x, DerivedArrayDataFile(name=x)),
+            derived_array_data_files = dict(map(lambda x: ('Derived Array Data File:' + x, DerivedArrayDataFile(name=x)),
                                                 DF['Derived Array Data File'].drop_duplicates()))
             data.update(derived_array_data_files)
         except KeyError:
             pass
 
         try:
-            array_data_files = dict(map(lambda x: ('Array Data File' + x, ArrayDataFile(name=x)), DF['Array Data File'].drop_duplicates()))
+            array_data_files = dict(map(lambda x: ('Array Data File:' + x, ArrayDataFile(name=x)), DF['Array Data File'].drop_duplicates()))
             data.update(array_data_files)
         except KeyError:
             pass
 
         try:
-            protein_assignment_files = dict(map(lambda x: ('Protein Assignment File' + x, ProteinAssignmentFile(name=x)),
+            protein_assignment_files = dict(map(lambda x: ('Protein Assignment File:' + x, ProteinAssignmentFile(name=x)),
                                                 DF['Protein Assignment File'].drop_duplicates()))
             data.update(protein_assignment_files)
         except KeyError:
             pass
 
         try:
-            peptide_assignment_files = dict(map(lambda x: ('Peptide Assignment File' + x, PeptideAssignmentFile(name=x)),
+            peptide_assignment_files = dict(map(lambda x: ('Peptide Assignment File:' + x, PeptideAssignmentFile(name=x)),
                                                 DF['Peptide Assignment File'].drop_duplicates()))
             data.update(peptide_assignment_files)
         except KeyError:
@@ -205,7 +205,7 @@ class ProcessSequenceFactory(object):
 
         try:
             post_translational_modification_assignment_files = \
-                dict(map(lambda x: ('Post Translational Modification Assignment File' + x, PostTranslationalModificationAssignmentFile(name=x)),
+                dict(map(lambda x: ('Post Translational Modification Assignment File:' + x, PostTranslationalModificationAssignmentFile(name=x)),
                          DF['Post Translational Modification Assignment File'].drop_duplicates()))
             data.update(post_translational_modification_assignment_files)
         except KeyError:
@@ -316,21 +316,21 @@ class ProcessSequenceFactory(object):
                         elif input_node_label == 'Labeled Extract Name':
                             input_node = other_material['Labeled Extract Name:' + node_key]
                         elif input_node_label == 'Raw Data File':
-                            input_node = other_material['Raw Data File' + node_key]
+                            input_node = data['Raw Data File:' + node_key]
                         elif input_node_label == 'Derived Spectral Data File':
-                            input_node = other_material['Derived Spectral Data File' + node_key]
+                            input_node = data['Derived Spectral Data File:' + node_key]
                         elif input_node_label == 'Derived Array Data File':
-                            input_node = other_material['Derived Array Data File' + node_key]
+                            input_node = data['Derived Array Data File:' + node_key]
                         elif input_node_label == 'Array Data File':
-                            input_node = other_material['Array Data File' + node_key]
+                            input_node = data['Array Data File:' + node_key]
                         elif input_node_label == 'Protein Assignment File':
-                            input_node = other_material['Protein Assignment File' + node_key]
+                            input_node = data['Protein Assignment File:' + node_key]
                         elif input_node_label == 'Peptide Assignment File':
-                            input_node = other_material['Peptide Assignment File' + node_key]
+                            input_node = data['Peptide Assignment File:' + node_key]
                         elif input_node_label == 'Post Translational Modification Assignment File':
-                            input_node = other_material['Post Translational Modification Assignment File' + node_key]
+                            input_node = data['Post Translational Modification Assignment File:' + node_key]
                         elif input_node_label == 'Acquisition Parameter Data File':
-                            input_node = other_material['Acquisition Parameter Data File' + node_key]
+                            input_node = data['Acquisition Parameter Data File:' + node_key]
                         if input_node is not None:
                             # print('adding ', input_node, ' to ', 'process input', process_key)
                             process.inputs.append(input_node)
@@ -348,21 +348,21 @@ class ProcessSequenceFactory(object):
                         elif DF.columns[output_node_index] == 'Labeled Extract Name':
                             output_node = other_material['Labeled Extract Name:' + node_key]
                         elif output_node_label == 'Raw Data File':
-                            output_node = other_material['Raw Data File' + node_key]
+                            output_node = data['Raw Data File:' + node_key]
                         elif output_node_label == 'Derived Spectral Data File':
-                            output_node = other_material['Derived Spectral Data File' + node_key]
+                            output_node = data['Derived Spectral Data File:' + node_key]
                         elif output_node_label == 'Derived Array Data File':
-                            output_node = other_material['Derived Array Data File' + node_key]
+                            output_node = data['Derived Array Data File:' + node_key]
                         elif output_node_label == 'Array Data File':
-                            output_node = other_material['Array Data File' + node_key]
+                            output_node = data['Array Data File:' + node_key]
                         elif output_node_label == 'Protein Assignment File':
-                            output_node = other_material['Protein Assignment File' + node_key]
+                            output_node = data['Protein Assignment File:' + node_key]
                         elif output_node_label == 'Peptide Assignment File':
-                            output_node = other_material['Peptide Assignment File' + node_key]
+                            output_node = data['Peptide Assignment File:' + node_key]
                         elif output_node_label == 'Post Translational Modification Assignment File':
-                            output_node = other_material['Post Translational Modification Assignment File' + node_key]
+                            output_node = data['Post Translational Modification Assignment File:' + node_key]
                         elif output_node_label == 'Acquisition Parameter Data File':
-                            output_node = other_material['Acquisition Parameter Data File' + node_key]
+                            output_node = data['Acquisition Parameter Data File:' + node_key]
                         if output_node is not None:
                             # print('adding ', output_node, ' to ', 'process output', process_key)
                             process.outputs.append(output_node)
