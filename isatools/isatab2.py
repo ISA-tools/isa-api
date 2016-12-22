@@ -405,3 +405,29 @@ def find_gt(a, x):
         return a[i]
     else:
         return -1
+
+
+def _preprocess(DF):
+    """Check headers, and insert Protocol REF if needed"""
+    process_node_names = {'Data Transformation Name',
+                          'Normalization Name',
+                          'Scan Name',
+                          'Hybridization Assay Name',
+                          'MS Assay Name'}
+
+    headers = DF.columns
+    process_node_name_indices = [x for x, y in enumerate(headers) if y in process_node_names]
+    missing_process_indices = list()
+    for i in process_node_name_indices:
+        if not headers[i - 1].startswith('Protocol REF'):
+            print('warning: Protocol REF missing before \'{}\', found \'{}\''.format(headers[i], headers[i - 1]))
+            missing_process_indices.append(i)
+    # insert Protocol REF columns
+    num_protocol_refs = headers.count('Protocol REF')
+    offset = 0
+    for i in reversed(missing_process_indices):
+        DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown')
+        headers.insert(i, 'Protocol REF')
+        print('inserting Protocol REF.{}'.format(num_protocol_refs + offset), 'at position {}'.format(i))
+        offset += 1
+    return DF
