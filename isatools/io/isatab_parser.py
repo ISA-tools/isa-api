@@ -638,7 +638,7 @@ class StudyAssayParser:
                             if type=="Derived Data File":
                                 return "deriveddatafile-"+name
                             else:
-                                if type=="Acquisiton Parameter Data File":
+                                if type=="Acquisition Parameter Data File":
                                     return "acquisitionparameterfile-"+name
                                 else:
                                      if type=="Image File":

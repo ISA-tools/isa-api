@@ -7,6 +7,11 @@ from bisect import bisect_left, bisect_right
 In progress; do not use yet as contents of this package will move!!!
 """
 
+_LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name', 'Labeled Extract Name']
+_LABELS_DATA_NODES = ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
+                      'Protein Assignment File', 'Peptide Assignment File',
+                      'Post Translational Modification Assignment File', 'Acquisition Parameter Data File']
+
 
 class ProcessSequence(object):
 
@@ -223,8 +228,8 @@ class ProcessSequenceFactory(object):
             pass
 
         isatab_header = DF.isatab_header
-        object_index = [i for i, x in enumerate(isatab_header) if x in
-                        ['Source Name', 'Sample Name', 'Extract Name', 'Labeled Extract Name', 'Protocol REF']]
+        object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_MATERIAL_NODES
+                        + ['Protocol REF']]
 
         # group headers regarding objects delimited by object_index by slicing up the header list
         object_column_map = list()
@@ -241,7 +246,7 @@ class ProcessSequenceFactory(object):
             # for each object, parse column group
             object_label = column_group[0]
 
-            if object_label in ['Source Name', 'Sample Name', 'Extract Name', 'Labeled Extract Name']:  # characs
+            if object_label in _LABELS_MATERIAL_NODES:  # characs
 
                 for _, object_series in DF[column_group].drop_duplicates().iterrows():
                     material_name = object_series[column_group[0]]
@@ -284,8 +289,7 @@ class ProcessSequenceFactory(object):
                                                                            value=object_series[pv_column]))
 
         process_cols = [i for i, c in enumerate(DF.columns) if c.startswith('Protocol REF')]
-        node_cols = [i for i, c in enumerate(DF.columns) if c in ['Source Name', 'Sample Name', 'Extract Name',
-                                                                  'Labeled Extract Name']]  # TODO: Add data files here
+        node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
 
         process_sequences = list()
         for _, process_series in DF[sorted(process_cols + node_cols)].iterrows():  # don't drop dups
@@ -325,8 +329,8 @@ class ProcessSequenceFactory(object):
                             input_node = other_material['Peptide Assignment File' + node_key]
                         elif input_node_label == 'Post Translational Modification Assignment File':
                             input_node = other_material['Post Translational Modification Assignment File' + node_key]
-                        elif input_node_label == 'Acquisiton Parameter Data File':
-                            input_node = other_material['Acquisiton Parameter Data File' + node_key]
+                        elif input_node_label == 'Acquisition Parameter Data File':
+                            input_node = other_material['Acquisition Parameter Data File' + node_key]
                         if input_node is not None:
                             # print('adding ', input_node, ' to ', 'process input', process_key)
                             process.inputs.append(input_node)
@@ -357,8 +361,8 @@ class ProcessSequenceFactory(object):
                             output_node = other_material['Peptide Assignment File' + node_key]
                         elif output_node_label == 'Post Translational Modification Assignment File':
                             output_node = other_material['Post Translational Modification Assignment File' + node_key]
-                        elif output_node_label == 'Acquisiton Parameter Data File':
-                            output_node = other_material['Acquisiton Parameter Data File' + node_key]
+                        elif output_node_label == 'Acquisition Parameter Data File':
+                            output_node = other_material['Acquisition Parameter Data File' + node_key]
                         if output_node is not None:
                             # print('adding ', output_node, ' to ', 'process output', process_key)
                             process.outputs.append(output_node)
