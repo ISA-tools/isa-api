@@ -1095,6 +1095,18 @@ def load2(fp):
                 for label in extra_labels:
                     if _RX_COMMENT.match(label) is None:
                         logger.fatal("(F) In {} section, label {} is not allowed".format(section, label))
+                        errors.append({
+                            "message": "Invalid label found in investigation file",
+                            "supplemental": "In {} section, label {} is not allowed".format(section, label),
+                            "code": 5
+                        })
+                    elif len(_RX_COMMENT.findall(label)) == 0:
+                        logger.warn("(W) In {} section, label {} is missing a name".format(section, label))
+                        warnings.append({
+                            "message": "Missing name in Comment[] label",
+                            "supplemental": "In {} section, label {} is missing a name".format(section, label),
+                            "code": 4014
+                        })
 
         # Read in investigation file into DataFrames first
         logger.info("Loading ONTOLOGY SOURCE REFERENCE section")
@@ -1553,6 +1565,38 @@ def load_table_checks(fp):
                            'Data Transformation Name', 'Derived Spectral Data File', 'Normalization Name',
                            'Derived Array Data File', 'Image File']) and not _RX_CHARACTERISTICS.match(column) and not _RX_PARAMETER_VALUE.match(column) and not _RX_FACTOR_VALUE.match(column) and not _RX_COMMENT.match(column):
             logger.error("Unrecognised column heading {} at column position {} in table file {}".format(column, x, os.path.basename(fp.name)))
+        if _RX_COMMENT.match(column):
+            if len(_RX_COMMENT.findall(column)) == 0:
+                logger.warn("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
+                warnings.append({
+                    "message": "Missing name in Comment[] label",
+                    "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
+                    "code": 4014
+                })
+        if _RX_CHARACTERISTICS.match(column):
+            if len(_RX_CHARACTERISTICS.findall(column)) == 0:
+                logger.warn("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
+                warnings.append({
+                    "message": "Missing name in Characteristics[] label",
+                    "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
+                    "code": 4014
+                })
+        if _RX_PARAMETER_VALUE.match(column):
+            if len(_RX_PARAMETER_VALUE.findall(column)) == 0:
+                logger.warn("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
+                warnings.append({
+                    "message": "Missing name in Parameter Value[] label",
+                    "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
+                    "code": 4014
+                })
+        if _RX_FACTOR_VALUE.match(column):
+            if len(_RX_FACTOR_VALUE.findall(column)) == 0:
+                logger.warn("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
+                warnings.append({
+                    "message": "Missing name in Factor Value[] label",
+                    "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
+                    "code": 4014
+                })
     norm_columns = list()
     for x, column in enumerate(columns):
         if _RX_INDEXED_COL.match(column):
