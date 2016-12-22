@@ -159,40 +159,40 @@ class ProcessSequenceFactory(object):
             pass
 
         try:
-            raw_data_files = dict(map(lambda x: (x, RawDataFile(name=x)), DF['Raw Data File'].drop_duplicates()))
+            raw_data_files = dict(map(lambda x: ('Raw Data File' + x, RawDataFile(name=x)), DF['Raw Data File'].drop_duplicates()))
             data.update(raw_data_files)
         except KeyError:
             pass
 
         try:
-            derived_spectral_data_files = dict(map(lambda x: (x, DerivedSpectralDataFile(name=x)),
+            derived_spectral_data_files = dict(map(lambda x: ('Derived Spectral Data File' + x, DerivedSpectralDataFile(name=x)),
                                                   DF['Derived Spectral Data File'].drop_duplicates()))
             data.update(derived_spectral_data_files)
         except KeyError:
             pass
 
         try:
-            derived_array_data_files = dict(map(lambda x: (x, DerivedArrayDataFile(name=x)),
+            derived_array_data_files = dict(map(lambda x: ('Derived Array Data File' + x, DerivedArrayDataFile(name=x)),
                                                 DF['Derived Array Data File'].drop_duplicates()))
             data.update(derived_array_data_files)
         except KeyError:
             pass
 
         try:
-            array_data_files = dict(map(lambda x: (x, ArrayDataFile(name=x)), DF['Array Data File'].drop_duplicates()))
+            array_data_files = dict(map(lambda x: ('Array Data File' + x, ArrayDataFile(name=x)), DF['Array Data File'].drop_duplicates()))
             data.update(array_data_files)
         except KeyError:
             pass
 
         try:
-            protein_assignment_files = dict(map(lambda x: (x, ProteinAssignmentFile(name=x)),
+            protein_assignment_files = dict(map(lambda x: ('Protein Assignment File' + x, ProteinAssignmentFile(name=x)),
                                                 DF['Protein Assignment File'].drop_duplicates()))
             data.update(protein_assignment_files)
         except KeyError:
             pass
 
         try:
-            peptide_assignment_files = dict(map(lambda x: (x, PeptideAssignmentFile(name=x)),
+            peptide_assignment_files = dict(map(lambda x: ('Peptide Assignment File' + x, PeptideAssignmentFile(name=x)),
                                                 DF['Peptide Assignment File'].drop_duplicates()))
             data.update(peptide_assignment_files)
         except KeyError:
@@ -200,9 +200,16 @@ class ProcessSequenceFactory(object):
 
         try:
             post_translational_modification_assignment_files = \
-                dict(map(lambda x: (x, PostTranslationalModificationAssignmentFile(name=x)),
+                dict(map(lambda x: ('Post Translational Modification Assignment File' + x, PostTranslationalModificationAssignmentFile(name=x)),
                          DF['Post Translational Modification Assignment File'].drop_duplicates()))
             data.update(post_translational_modification_assignment_files)
+        except KeyError:
+            pass
+
+        try:
+            acquisition_parameter_data_files = dict(map(lambda x: ('Acquisiton Parameter Data File' + x, PeptideAssignmentFile(name=x)),
+                                                DF['Acquisiton Parameter Data File'].drop_duplicates()))
+            data.update(acquisition_parameter_data_files)
         except KeyError:
             pass
 
@@ -262,7 +269,7 @@ class ProcessSequenceFactory(object):
 
             elif object_label.startswith('Protocol REF'):  # parameter vals
 
-               for _, object_series in DF[column_group].iterrows():  # don't drop duplicates
+                for _, object_series in DF[column_group].iterrows():  # don't drop duplicates
                     protocol_ref = object_series[column_group[0]]
                     process = None
 
@@ -271,14 +278,14 @@ class ProcessSequenceFactory(object):
                     except KeyError:
                         pass
 
-                    if process is not None:
+                    if process is not None:  # TODO: Deal with ___ Name columns for special cases
                         for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
                             process.parameter_values.append(ParameterValue(category=pv_column[16:-1],
                                                                            value=object_series[pv_column]))
 
         process_cols = [i for i, c in enumerate(DF.columns) if c.startswith('Protocol REF')]
         node_cols = [i for i, c in enumerate(DF.columns) if c in ['Source Name', 'Sample Name', 'Extract Name',
-                                                                  'Labeled Extract Name']]
+                                                                  'Labeled Extract Name']]  # TODO: Add data files here
 
         process_sequences = list()
         for _, process_series in DF[sorted(process_cols + node_cols)].iterrows():  # don't drop dups
@@ -295,16 +302,31 @@ class ProcessSequenceFactory(object):
                     if (input_node_index > -1) and (input_node_index not in process_cols):
                         input_node = None
                         node_key = process_series[DF.columns[input_node_index]]
-
-                        if DF.columns[input_node_index] == 'Source Name':
+                        input_node_label = DF.columns[input_node_index]
+                        if input_node_label == 'Source Name':
                             input_node = sources[node_key]
-                        elif DF.columns[input_node_index] == 'Sample Name':
+                        elif input_node_label == 'Sample Name':
                             input_node = samples[node_key]
-                        elif DF.columns[input_node_index] == 'Extract Name':
+                        elif input_node_label == 'Extract Name':
                             input_node = other_material['Extract Name:' + node_key]
-                        elif DF.columns[input_node_index] == 'Labeled Extract Name':
+                        elif input_node_label == 'Labeled Extract Name':
                             input_node = other_material['Labeled Extract Name:' + node_key]
-
+                        elif input_node_label == 'Raw Data File':
+                            input_node = other_material['Raw Data File' + node_key]
+                        elif input_node_label == 'Derived Spectral Data File':
+                            input_node = other_material['Derived Spectral Data File' + node_key]
+                        elif input_node_label == 'Derived Array Data File':
+                            input_node = other_material['Derived Array Data File' + node_key]
+                        elif input_node_label == 'Array Data File':
+                            input_node = other_material['Array Data File' + node_key]
+                        elif input_node_label == 'Protein Assignment File':
+                            input_node = other_material['Protein Assignment File' + node_key]
+                        elif input_node_label == 'Peptide Assignment File':
+                            input_node = other_material['Peptide Assignment File' + node_key]
+                        elif input_node_label == 'Post Translational Modification Assignment File':
+                            input_node = other_material['Post Translational Modification Assignment File' + node_key]
+                        elif input_node_label == 'Acquisiton Parameter Data File':
+                            input_node = other_material['Acquisiton Parameter Data File' + node_key]
                         if input_node is not None:
                             # print('adding ', input_node, ' to ', 'process input', process_key)
                             process.inputs.append(input_node)
@@ -314,14 +336,29 @@ class ProcessSequenceFactory(object):
                     if (output_node_index > -1) and (output_node_index not in process_cols):
                         output_node = None
                         node_key = process_series[DF.columns[output_node_index]]
-
-                        if DF.columns[output_node_index] == 'Sample Name':
+                        output_node_label = DF.columns[output_node_index]
+                        if output_node_label == 'Sample Name':
                             output_node = samples[node_key]
-                        elif DF.columns[output_node_index] == 'Extract Name':
+                        elif output_node_label == 'Extract Name':
                             output_node = other_material['Extract Name:' + node_key]
                         elif DF.columns[output_node_index] == 'Labeled Extract Name':
                             output_node = other_material['Labeled Extract Name:' + node_key]
-
+                        elif output_node_label == 'Raw Data File':
+                            output_node = other_material['Raw Data File' + node_key]
+                        elif output_node_label == 'Derived Spectral Data File':
+                            output_node = other_material['Derived Spectral Data File' + node_key]
+                        elif output_node_label == 'Derived Array Data File':
+                            output_node = other_material['Derived Array Data File' + node_key]
+                        elif output_node_label == 'Array Data File':
+                            output_node = other_material['Array Data File' + node_key]
+                        elif output_node_label == 'Protein Assignment File':
+                            output_node = other_material['Protein Assignment File' + node_key]
+                        elif output_node_label == 'Peptide Assignment File':
+                            output_node = other_material['Peptide Assignment File' + node_key]
+                        elif output_node_label == 'Post Translational Modification Assignment File':
+                            output_node = other_material['Post Translational Modification Assignment File' + node_key]
+                        elif output_node_label == 'Acquisiton Parameter Data File':
+                            output_node = other_material['Acquisiton Parameter Data File' + node_key]
                         if output_node is not None:
                             # print('adding ', output_node, ' to ', 'process output', process_key)
                             process.outputs.append(output_node)
