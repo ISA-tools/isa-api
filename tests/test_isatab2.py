@@ -18,5 +18,5 @@ class TestIsaTab2JsonIdentifierName(unittest.TestCase):
         self.assertEqual(len(samples), 2)  # expecting 2 samples
         self.assertEqual(len(other_material), 4)  # expecting 2 extracts, 2 labeled extracts
         self.assertEqual(len(data), 4)  # expecting 3 array data files and 1 derived array data file
-        self.assertEqual(len(processes), 18)  # expecting 18 processes (3 sets of 6)
+        self.assertEqual(len(processes), 21)  # expecting 18 processes (3 sets of 7)
         self.assertEqual(len(process_sequences), 3)  # expecting 3 process sequences

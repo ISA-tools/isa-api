@@ -134,6 +134,8 @@ class ProcessSequenceFactory(object):
 
         config = self._xml_configuration
 
+        DF = preprocess(DF=DF)
+
         sources = {}
         samples = {}
         other_material = {}
@@ -388,7 +390,7 @@ def read_tfile(tfile_path, index_col=None):
 
 
 def get_multiple_index(file_index, key):
-    return np.where(np.array(file_index) == key)[0]
+    return np.where(np.array(file_index) in key)[0]
 
 
 def find_lt(a, x):
@@ -407,7 +409,7 @@ def find_gt(a, x):
         return -1
 
 
-def _preprocess(DF):
+def preprocess(DF):
     """Check headers, and insert Protocol REF if needed"""
     process_node_names = {'Data Transformation Name',
                           'Normalization Name',
@@ -418,12 +420,12 @@ def _preprocess(DF):
     headers = DF.columns
     process_node_name_indices = [x for x, y in enumerate(headers) if y in process_node_names]
     missing_process_indices = list()
+    num_protocol_refs = len([x for x in headers if x.startswith('Protocol REF')])
     for i in process_node_name_indices:
         if not headers[i - 1].startswith('Protocol REF'):
             print('warning: Protocol REF missing before \'{}\', found \'{}\''.format(headers[i], headers[i - 1]))
             missing_process_indices.append(i)
     # insert Protocol REF columns
-    num_protocol_refs = headers.count('Protocol REF')
     offset = 0
     for i in reversed(missing_process_indices):
         DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown')
