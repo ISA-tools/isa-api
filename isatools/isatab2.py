@@ -248,7 +248,7 @@ class ProcessSequenceFactory(object):
             for protocol_ref_col in [c for c in DF.columns if c.startswith('Protocol REF')]:
                 processes_list = list()
                 for i, protocol_ref in enumerate(DF[protocol_ref_col]):
-                    processes_list.append((protocol_ref + '-' + str(i), Process(executes_protocol=protocol_ref)))
+                    processes_list.append((protocol_ref + '-' + str(i), Process(executes_protocol=protocol_ref)))  # TODO: Change keygen
                 processes.update(dict(processes_list))
         except KeyError:
             pass
@@ -268,7 +268,10 @@ class ProcessSequenceFactory(object):
             prev_i = curr_i
         object_column_map.append(DF.columns[prev_i:])  # finally collect last object's columns
 
-        for column_group in object_column_map:
+        process_cols = [i for i, c in enumerate(DF.columns) if c.startswith('Protocol REF')]
+        node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
+
+        for _cg, column_group in enumerate(object_column_map):
             # for each object, parse column group
             object_label = column_group[0]
 
@@ -300,12 +303,24 @@ class ProcessSequenceFactory(object):
 
             elif object_label.startswith('Protocol REF'):  # parameter vals
 
-                for _, object_series in DF[column_group].iterrows():  # don't drop duplicates
+                for _, object_series in DF.iterrows():  # don't drop duplicates
                     protocol_ref = object_series[column_group[0]]
                     process = None
 
+                    # build key
+                    process_key = protocol_ref + '-' + str(_)
+
+                    # build key based on inputs and outputs
+                    input_node_index = find_lt(sorted(process_cols + node_cols), _cg)
+                    if (input_node_index > -1) and (input_node_index not in process_cols):
+                        input_node_label = object_series[DF.columns[input_node_index]]
+                        output_node_index = find_gt(sorted(process_cols + node_cols), _cg)
+                        if (output_node_index > -1) and (output_node_index not in process_cols):
+                            output_node_label = object_series[DF.columns[output_node_index]]
+                            process_key = '-'.join([input_node_label, protocol_ref, output_node_label])
+                    print(process_key)
                     try:
-                        process = processes[protocol_ref + '-' + str(_)]
+                        process = processes[process_key]
                     except KeyError:
                         pass
 
@@ -326,10 +341,8 @@ class ProcessSequenceFactory(object):
                         else:
                             print("Multiple Assay Node Names found, skipping setting process.name")
 
-        process_cols = [i for i, c in enumerate(DF.columns) if c.startswith('Protocol REF')]
-        node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
-
         process_sequences = list()
+
         for _, process_series in DF[sorted(process_cols + node_cols)].iterrows():  # don't drop dups
             process_sequence = list()
             for process_col in process_cols:
@@ -406,6 +419,10 @@ class ProcessSequenceFactory(object):
                         if output_node is not None:
                             process.outputs.append(output_node)
                     # TODO: Calculate if this process is the same as another already existing process
+                    # process_hits = [p for p in processes.items() if p[1].inputs == process.inputs and
+                    #                 p[1].outputs == process.outputs and p[1] != process]
+                    # if len(process_hits) > 0:
+                    #     print("Found process with same inputs/outputs, ", process_hits[0])
                     process_sequence.append(process_key)
 
                 except KeyError as ke:
