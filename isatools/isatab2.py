@@ -10,7 +10,10 @@ In progress; do not use yet as contents of this package will move!!!
 _LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name', 'Labeled Extract Name']
 _LABELS_DATA_NODES = ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
                       'Protein Assignment File', 'Peptide Assignment File',
-                      'Post Translational Modification Assignment File', 'Acquisition Parameter Data File']
+                      'Post Translational Modification Assignment File', 'Acquisition Parameter Data File',
+                      'Free Induction Decay Data File']
+_LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name', 'Scan Name',
+                       'Data Transformation Name', 'Normalization Name']
 
 
 class ProcessSequence(object):
@@ -221,6 +224,14 @@ class ProcessSequenceFactory(object):
             pass
 
         try:
+            post_translational_modification_assignment_files = \
+                dict(map(lambda x: ('Free Induction Decay Data File:' + x, PostTranslationalModificationAssignmentFile(name=x)),
+                         DF['Free Induction Decay Data File'].drop_duplicates()))
+            data.update(post_translational_modification_assignment_files)
+        except KeyError:
+            pass
+
+        try:
             for protocol_ref_col in [c for c in DF.columns if c.startswith('Protocol REF')]:
                 processes_list = list()
                 for i, protocol_ref in enumerate(DF[protocol_ref_col]):
@@ -285,10 +296,22 @@ class ProcessSequenceFactory(object):
                     except KeyError:
                         pass
 
-                    if process is not None:  # TODO: Deal with ___ Name columns for special cases
+                    if process is not None:
+
+                        # Set pvs on process given by Parameter Values
                         for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
                             process.parameter_values.append(ParameterValue(category=pv_column[16:-1],
                                                                            value=object_series[pv_column]))
+
+                        # Set name on process given by ___ Name
+                        name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
+                        if len(name_column_hits) == 1:
+                            print("setting process as ", object_series[name_column_hits[0]])
+                            process.name = name_column_hits[0]
+                        elif len(name_column_hits) == 0:
+                            print("No Assay Node Name found, not setting process.name")
+                        else:
+                            print("Multiple Assay Node Names found, skipping setting process.name")
 
         process_cols = [i for i, c in enumerate(DF.columns) if c.startswith('Protocol REF')]
         node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
@@ -333,6 +356,8 @@ class ProcessSequenceFactory(object):
                             input_node = data['Post Translational Modification Assignment File:' + node_key]
                         elif input_node_label == 'Acquisition Parameter Data File':
                             input_node = data['Acquisition Parameter Data File:' + node_key]
+                        elif input_node_label == 'Free Induction Decay Data File':
+                            input_node = data['Free Induction Decay Data File:' + node_key]
                         if input_node is not None:
                             # print('adding ', input_node, ' to ', 'process input', process_key)
                             process.inputs.append(input_node)
@@ -365,6 +390,8 @@ class ProcessSequenceFactory(object):
                             output_node = data['Post Translational Modification Assignment File:' + node_key]
                         elif output_node_label == 'Acquisition Parameter Data File':
                             output_node = data['Acquisition Parameter Data File:' + node_key]
+                        elif output_node_label == 'Free Induction Decay Data File':
+                            output_node = data['Free Induction Decay Data File:' + node_key]
                         if output_node is not None:
                             # print('adding ', output_node, ' to ', 'process output', process_key)
                             process.outputs.append(output_node)
