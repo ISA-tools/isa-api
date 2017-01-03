@@ -114,16 +114,29 @@ class PostTranslationalModificationAssignmentFile(DataFile):
 
 class Process:
 
-    def __init__(self, executes_protocol='', parameter_values=list(), inputs=list(), outputs=list()):
+    def __init__(self, executes_protocol='', parameter_values=None, inputs=None, outputs=None):
+
         self.executes_protocol = executes_protocol
-        self.parameter_values = parameter_values
-        self.inputs = inputs
-        self.outputs = outputs
+
+        if parameter_values is None:
+            self.parameter_values = []
+        else:
+            self.parameter_values = parameter_values
+
+        if inputs is None:
+            self.inputs = []
+        else:
+            self.inputs = inputs
+
+        if outputs is None:
+            self.outputs = []
+        else:
+            self.outputs = outputs
 
 
 class ParameterValue:
 
-    def __init__(self, category=None, value=str()):
+    def __init__(self, category=None, value=''):
         self.category = category
         self.value = value
 
@@ -325,7 +338,6 @@ class ProcessSequenceFactory(object):
 
                     process_key = process_series[DF.columns[process_col]] + '-' + str(_)
                     process = processes[process_key]
-                    
                     input_node_index = find_lt(sorted(process_cols + node_cols), process_col)
 
                     if (input_node_index > -1) and (input_node_index not in process_cols):
@@ -359,7 +371,6 @@ class ProcessSequenceFactory(object):
                         elif input_node_label == 'Free Induction Decay Data File':
                             input_node = data['Free Induction Decay Data File:' + node_key]
                         if input_node is not None:
-                            # print('adding ', input_node, ' to ', 'process input', process_key)
                             process.inputs.append(input_node)
 
                     output_node_index = find_gt(sorted(process_cols + node_cols), process_col)
@@ -393,10 +404,9 @@ class ProcessSequenceFactory(object):
                         elif output_node_label == 'Free Induction Decay Data File':
                             output_node = data['Free Induction Decay Data File:' + node_key]
                         if output_node is not None:
-                            # print('adding ', output_node, ' to ', 'process output', process_key)
                             process.outputs.append(output_node)
-                            
-                    process_sequence.append(process)
+                    # TODO: Calculate if this process is the same as another already existing process
+                    process_sequence.append(process_key)
 
                 except KeyError as ke:
                     print('Key error:', ke)
