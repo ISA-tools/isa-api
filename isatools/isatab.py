@@ -652,6 +652,9 @@ def write_assay_table_files(inv_obj, output_dir):
                         elif node.executes_protocol.protocol_type.term == 'data collection':
                             cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']')
                             col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']'] = 'Scan Name'
+                        elif node.executes_protocol.protocol_type.term == 'mass spectrometry':
+                            cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'MS Assay Name' + ']')
+                            col_map['protocol[' + str(protrefcount) + ']_prop[' + 'MS Assay Name' + ']'] = 'MS Assay Name'
 
                         for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                             cols.append('data[' + output.label + ']')
@@ -734,6 +737,9 @@ def write_assay_table_files(inv_obj, output_dir):
                             elif node.executes_protocol.protocol_type.term == 'data collection':
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Scan Name' + ']'] = node.name
                                 compound_key += str(protrefcount) + '/' + 'Scan Name' + '/' + node.name
+                            elif node.executes_protocol.protocol_type.term == 'mass spectrometry':
+                                df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'MS Assay Name' + ']'] = node.name
+                                compound_key += str(protrefcount) + '/' + 'MS Assay Name' + '/' + node.name
                             for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                                 df.loc[i, 'data[' + output.label + ']'] = output.filename
                                 if output.comments:
