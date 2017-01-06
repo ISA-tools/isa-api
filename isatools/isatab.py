@@ -250,10 +250,10 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
                 design_descriptor.term_accession,
                 design_descriptor.term_source.name if design_descriptor.term_source else ''
             ]
-            study_design_descriptors_df = study_design_descriptors_df.set_index('Study Design Type').T
-            fp.write('STUDY DESIGN DESCRIPTORS\n')
-            study_design_descriptors_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                               index_label='Study Design Type')
+        study_design_descriptors_df = study_design_descriptors_df.set_index('Study Design Type').T
+        fp.write('STUDY DESIGN DESCRIPTORS\n')
+        study_design_descriptors_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
+                                           index_label='Study Design Type')
 
         # Write STUDY PUBLICATIONS section
         study_publications_df = _build_publications_section_df(prefix='Study', publications=study.publications)
