@@ -11,7 +11,7 @@ _LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name', 'Labeled
 _LABELS_DATA_NODES = ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
                       'Protein Assignment File', 'Peptide Assignment File',
                       'Post Translational Modification Assignment File', 'Acquisition Parameter Data File',
-                      'Free Induction Decay Data File']
+                      'Free Induction Decay Data File', 'Derived Array Data Matrix File']
 _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name', 'Scan Name',
                        'Data Transformation Name', 'Normalization Name']
 
@@ -244,31 +244,24 @@ class ProcessSequenceFactory(object):
         except KeyError:
             pass
 
-        try:
-            for protocol_ref_col in [c for c in DF.columns if c.startswith('Protocol REF')]:
-                processes_list = list()
-                for i, protocol_ref in enumerate(DF[protocol_ref_col]):
-                    processes_list.append((protocol_ref + '-' + str(i), Process(executes_protocol=protocol_ref)))  # TODO: Change keygen
-                processes.update(dict(processes_list))
-        except KeyError:
-            pass
-
         isatab_header = DF.isatab_header
-        object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_MATERIAL_NODES
+        object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
                         + ['Protocol REF']]
 
         # group headers regarding objects delimited by object_index by slicing up the header list
         object_column_map = list()
         prev_i = object_index[0]
+
         for curr_i in object_index:  # collect each object's columns
+
             if prev_i == curr_i:
                 pass  # skip if there's no diff, i.e. first one
             else:
                 object_column_map.append(DF.columns[prev_i:curr_i])
             prev_i = curr_i
+
         object_column_map.append(DF.columns[prev_i:])  # finally collect last object's columns
 
-        process_cols = [i for i, c in enumerate(DF.columns) if c.startswith('Protocol REF')]
         node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
 
         for _cg, column_group in enumerate(object_column_map):
@@ -305,58 +298,59 @@ class ProcessSequenceFactory(object):
 
                 for _, object_series in DF.iterrows():  # don't drop duplicates
                     protocol_ref = object_series[column_group[0]]
-                    process = None
+
+                    input_node = None
+                    output_node = None
 
                     # build key
-                    process_key = protocol_ref + '-' + str(_)
+                    process_key = protocol_ref
 
                     # build key based on inputs and outputs
-                    input_node_index = find_lt(sorted(process_cols + node_cols), _cg)
-                    if (input_node_index > -1) and (input_node_index not in process_cols):
-                        input_node_label = object_series[DF.columns[input_node_index]]
-                        output_node_index = find_gt(sorted(process_cols + node_cols), _cg)
-                        if (output_node_index > -1) and (output_node_index not in process_cols):
-                            output_node_label = object_series[DF.columns[output_node_index]]
-                            process_key = '-'.join([input_node_label, protocol_ref, output_node_label])
-                    print(process_key)
-                    try:
-                        process = processes[process_key]
-                    except KeyError:
-                        pass
+                    node_key = None
 
-                    if process is not None:
+                    output_node_index = find_gt(node_cols, _cg)
 
-                        # Set pvs on process given by Parameter Values
-                        for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
-                            process.parameter_values.append(ParameterValue(category=pv_column[16:-1],
-                                                                           value=object_series[pv_column]))
+                    if output_node_index > -1:
 
-                        # Set name on process given by ___ Name
-                        name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
-                        if len(name_column_hits) == 1:
-                            print("setting process as ", object_series[name_column_hits[0]])
-                            process.name = name_column_hits[0]
-                        elif len(name_column_hits) == 0:
-                            print("No Assay Node Name found, not setting process.name")
-                        else:
-                            print("Multiple Assay Node Names found, skipping setting process.name")
+                        output_node_label = DF.columns[output_node_index]
+                        output_node_value = object_series[output_node_label]
 
-        process_sequences = list()
+                        node_key = output_node_value
 
-        for _, process_series in DF[sorted(process_cols + node_cols)].iterrows():  # don't drop dups
-            process_sequence = list()
-            for process_col in process_cols:
+                        if output_node_label == 'Sample Name':
+                            output_node = samples[node_key]
+                        elif output_node_label == 'Extract Name':
+                            output_node = other_material['Extract Name:' + node_key]
+                        elif DF.columns[output_node_index] == 'Labeled Extract Name':
+                            output_node = other_material['Labeled Extract Name:' + node_key]
+                        elif output_node_label == 'Raw Data File':
+                            output_node = data['Raw Data File:' + node_key]
+                        elif output_node_label == 'Derived Spectral Data File':
+                            output_node = data['Derived Spectral Data File:' + node_key]
+                        elif output_node_label == 'Derived Array Data File':
+                            output_node = data['Derived Array Data File:' + node_key]
+                        elif output_node_label == 'Array Data File':
+                            output_node = data['Array Data File:' + node_key]
+                        elif output_node_label == 'Protein Assignment File':
+                            output_node = data['Protein Assignment File:' + node_key]
+                        elif output_node_label == 'Peptide Assignment File':
+                            output_node = data['Peptide Assignment File:' + node_key]
+                        elif output_node_label == 'Post Translational Modification Assignment File':
+                            output_node = data['Post Translational Modification Assignment File:' + node_key]
+                        elif output_node_label == 'Acquisition Parameter Data File':
+                            output_node = data['Acquisition Parameter Data File:' + node_key]
+                        elif output_node_label == 'Free Induction Decay Data File':
+                            output_node = data['Free Induction Decay Data File:' + node_key]
 
-                try:
+                    input_node_index = find_lt(node_cols, _cg)
 
-                    process_key = process_series[DF.columns[process_col]] + '-' + str(_)
-                    process = processes[process_key]
-                    input_node_index = find_lt(sorted(process_cols + node_cols), process_col)
+                    if input_node_index > -1:
 
-                    if (input_node_index > -1) and (input_node_index not in process_cols):
-                        input_node = None
-                        node_key = process_series[DF.columns[input_node_index]]
                         input_node_label = DF.columns[input_node_index]
+                        input_node_value = object_series[input_node_label]
+
+                        node_key = input_node_value
+
                         if input_node_label == 'Source Name':
                             input_node = sources[node_key]
                         elif input_node_label == 'Sample Name':
@@ -383,52 +377,58 @@ class ProcessSequenceFactory(object):
                             input_node = data['Acquisition Parameter Data File:' + node_key]
                         elif input_node_label == 'Free Induction Decay Data File':
                             input_node = data['Free Induction Decay Data File:' + node_key]
-                        if input_node is not None:
-                            process.inputs.append(input_node)
 
-                    output_node_index = find_gt(sorted(process_cols + node_cols), process_col)
+                    # TODO: Update keygen for processes
+                    print('processing protocol:', protocol_ref)
+                    # 0. Default if there is no input/output/name, assume they're all separate processes
+                    if process_key == protocol_ref:
+                        process_key += '-' + str(_)
 
-                    if (output_node_index > -1) and (output_node_index not in process_cols):
-                        output_node = None
-                        node_key = process_series[DF.columns[output_node_index]]
-                        output_node_label = DF.columns[output_node_index]
-                        if output_node_label == 'Sample Name':
-                            output_node = samples[node_key]
-                        elif output_node_label == 'Extract Name':
-                            output_node = other_material['Extract Name:' + node_key]
-                        elif DF.columns[output_node_index] == 'Labeled Extract Name':
-                            output_node = other_material['Labeled Extract Name:' + node_key]
-                        elif output_node_label == 'Raw Data File':
-                            output_node = data['Raw Data File:' + node_key]
-                        elif output_node_label == 'Derived Spectral Data File':
-                            output_node = data['Derived Spectral Data File:' + node_key]
-                        elif output_node_label == 'Derived Array Data File':
-                            output_node = data['Derived Array Data File:' + node_key]
-                        elif output_node_label == 'Array Data File':
-                            output_node = data['Array Data File:' + node_key]
-                        elif output_node_label == 'Protein Assignment File':
-                            output_node = data['Protein Assignment File:' + node_key]
-                        elif output_node_label == 'Peptide Assignment File':
-                            output_node = data['Peptide Assignment File:' + node_key]
-                        elif output_node_label == 'Post Translational Modification Assignment File':
-                            output_node = data['Post Translational Modification Assignment File:' + node_key]
-                        elif output_node_label == 'Acquisition Parameter Data File':
-                            output_node = data['Acquisition Parameter Data File:' + node_key]
-                        elif output_node_label == 'Free Induction Decay Data File':
-                            output_node = data['Free Induction Decay Data File:' + node_key]
-                        if output_node is not None:
-                            process.outputs.append(output_node)
-                    # TODO: Calculate if this process is the same as another already existing process
-                    # process_hits = [p for p in processes.items() if p[1].inputs == process.inputs and
-                    #                 p[1].outputs == process.outputs and p[1] != process]
-                    # if len(process_hits) > 0:
-                    #     print("Found process with same inputs/outputs, ", process_hits[0])
-                    process_sequence.append(process_key)
+                    # 1. If ___ Name column exists, use it as key
+                    # Set name on process given by ___ Name
+                    name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
 
-                except KeyError as ke:
-                    print('Key error:', ke)
+                    if len(name_column_hits) == 1:
+                        print("setting process as ", object_series[name_column_hits[0]])
+                        process_key = object_series[name_column_hits[0]]
+                    else:
+                        print("Could not resolve Assay Node Name, not setting process.name")
+                        pv_cols = [c for c in column_group if c.startswith('Parameter Value[')]
+                        if len(pv_cols) > 0:
+                            # print('pvs: ', '/'.join(list(object_series[pv_cols])))
+                            # 2. else try use protocol REF + Parameter Values as key
+                            if node_key is not None:
+                                process_key = node_key + \
+                                              ':' + protocol_ref + \
+                                              ':' + '/'.join([str(v) for v in object_series[pv_cols]])
+                            else:
+                                process_key = protocol_ref + \
+                                              ':' + '/'.join([str(v) for v in object_series[pv_cols]])
+                        else:
+                            # 3. else try use input + protocol REF as key
+                            # 4. else try use output + protocol REF as key
+                            if node_key is not None:
+                                process_key = node_key + '/' + protocol_ref
 
-            process_sequences.append(process_sequence)
+                    try:
+                        process = processes[process_key]
+                    except KeyError:
+                        process = Process(executes_protocol=object_series[object_label])
+                        processes.update(dict([(process_key, process)]))
+
+                    if len(name_column_hits) == 1:
+                        process.name = name_column_hits[0]
+
+                    for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
+                        process.parameter_values.append(ParameterValue(category=pv_column[16:-1],
+                                                                       value=object_series[pv_column]))
+                    if input_node is not None:
+                        process.inputs.append(input_node)
+
+                    if output_node is not None:
+                        process.outputs.append(output_node)
+
+        process_sequences = list()
 
         return sources, samples, other_material, data, processes, process_sequences
 
@@ -473,10 +473,11 @@ def preprocess(DF):
 
     headers = DF.columns
     process_node_name_indices = [x for x, y in enumerate(headers) if y in process_node_names]
+    process_cols = [i for i, c in enumerate(DF.columns) if c.startswith('Protocol REF')]
     missing_process_indices = list()
     num_protocol_refs = len([x for x in headers if x.startswith('Protocol REF')])
     for i in process_node_name_indices:
-        if not headers[i - 1].startswith('Protocol REF'):
+        if not headers[find_lt(process_cols, i)].startswith('Protocol REF'):
             print('warning: Protocol REF missing before \'{}\', found \'{}\''.format(headers[i], headers[i - 1]))
             missing_process_indices.append(i)
     # insert Protocol REF columns

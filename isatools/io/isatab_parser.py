@@ -344,13 +344,11 @@ class StudyAssayParser:
                            unique_process_name = assay_name
                         else:
                             try:
-                                # unique_process_name = input_process_map[qualifier_indices_string+input_node_indices_string]
                                 unique_process_name = input_process_map[qualifier_indices_string+input_node_indices_string]
                                 if not (unique_process_name.startswith(processing_name)):
                                     raise KeyError
                             except KeyError:
                                 try:
-                                    # unique_process_name = output_process_map[qualifier_indices_string+output_node_indices_string]
                                     unique_process_name = output_process_map[qualifier_indices_string+output_node_indices_string]
                                     if not (unique_process_name.startswith(processing_name)):
                                         raise KeyError
