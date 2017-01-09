@@ -280,11 +280,6 @@ class ProcessSequenceFactory(object):
                             material.characteristics.append(Characteristic(category=charac_column[16:-1],
                                                                            value=object_series[charac_column]))
 
-                    if isinstance(material, Sample):
-                        if len(material.characteristics) > 0:
-                            print(object_series)
-                            return
-
             elif object_label.startswith('Protocol REF'):
 
                 for _, object_series in DF.iterrows():  # don't drop duplicates
@@ -293,13 +288,7 @@ class ProcessSequenceFactory(object):
                     input_node = None
                     output_node = None
 
-                    # build key
-                    process_key = protocol_ref
-
-                    # build key based on inputs and outputs
-                    node_key = None
-
-                    output_node_index = find_gt(node_cols, _cg)
+                    output_node_index = find_gt(node_cols, _cg)  # TODO: Fix how far right we look for outputs
 
                     if output_node_index > -1:
 
@@ -333,7 +322,7 @@ class ProcessSequenceFactory(object):
                         elif output_node_label == 'Free Induction Decay Data File':
                             output_node = data['Free Induction Decay Data File:' + node_key]
 
-                    input_node_index = find_lt(node_cols, _cg)
+                    input_node_index = find_lt(node_cols, _cg)  # TODO: Fix how far left we look for outputs
 
                     if input_node_index > -1:
 
@@ -369,37 +358,7 @@ class ProcessSequenceFactory(object):
                         elif input_node_label == 'Free Induction Decay Data File':
                             input_node = data['Free Induction Decay Data File:' + node_key]
 
-                    # TODO: Update keygen for processes
-                    # print('processing protocol:', protocol_ref)
-                    # 0. Default if there is no input/output/name, assume they're all separate processes
-                    if process_key == protocol_ref:
-                        process_key += '-' + str(_)
-
-                    # 1. If ___ Name column exists, use it as key
-                    # Set name on process given by ___ Name
-                    name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
-
-                    if len(name_column_hits) == 1:
-                        # print("setting process as ", object_series[name_column_hits[0]])
-                        process_key = object_series[name_column_hits[0]]
-                    else:
-                        # print("Could not resolve Assay Node Name, not setting process.name")
-                        pv_cols = [c for c in column_group if c.startswith('Parameter Value[')]
-                        if len(pv_cols) > 0:
-                            # print('pvs: ', '/'.join(list(object_series[pv_cols])))
-                            # 2. else try use protocol REF + Parameter Values as key
-                            if node_key is not None:
-                                process_key = node_key + \
-                                              ':' + protocol_ref + \
-                                              ':' + '/'.join([str(v) for v in object_series[pv_cols]])
-                            else:
-                                process_key = protocol_ref + \
-                                              ':' + '/'.join([str(v) for v in object_series[pv_cols]])
-                        else:
-                            # 3. else try use input + protocol REF as key
-                            # 4. else try use output + protocol REF as key
-                            if node_key is not None:
-                                process_key = node_key + '/' + protocol_ref
+                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _)
 
                     try:
                         process = processes[process_key]
@@ -407,6 +366,7 @@ class ProcessSequenceFactory(object):
                         process = Process(executes_protocol=object_series[object_label])
                         processes.update(dict([(process_key, process)]))
 
+                    name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
                     if len(name_column_hits) == 1:
                         process.name = name_column_hits[0]
 
@@ -435,58 +395,17 @@ class ProcessSequenceFactory(object):
                 object_label = column_group[0]
 
                 if object_label.startswith('Protocol REF'):
-                    protocol_ref = object_series[column_group[0]]  # TODO: Refactor keygen algo to ensure same as above
 
-                    process_key = protocol_ref
+                    protocol_ref = object_series[column_group[0]]
 
-                    node_key = None
-
-                    output_node_index = find_gt(node_cols, _cg)
-
-                    if output_node_index > -1:
-                        output_node_label = DF.columns[output_node_index]
-                        output_node_value = object_series[output_node_label]
-
-                        node_key = output_node_value
-
-                    input_node_index = find_lt(node_cols, _cg)
-
-                    if input_node_index > -1:
-                        input_node_label = DF.columns[input_node_index]
-                        input_node_value = object_series[input_node_label]
-
-                        node_key = input_node_value
-
-                    if process_key == protocol_ref:
-                        process_key += '-' + str(_)
-
-                    name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
-
-                    if len(name_column_hits) == 1:
-                        process_key = object_series[name_column_hits[0]]
-                    else:
-                        pv_cols = [c for c in column_group if c.startswith('Parameter Value[')]
-                        if len(pv_cols) > 0:
-                            # 2. else try use protocol REF + Parameter Values as key
-                            if node_key is not None:
-                                process_key = node_key + \
-                                              ':' + protocol_ref + \
-                                              ':' + '/'.join([str(v) for v in object_series[pv_cols]])
-                            else:
-                                process_key = protocol_ref + \
-                                              ':' + '/'.join([str(v) for v in object_series[pv_cols]])
-                        else:
-                            # 3. else try use input + protocol REF as key
-                            # 4. else try use output + protocol REF as key
-                            if node_key is not None:
-                                process_key = node_key + '/' + protocol_ref
+                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _)
 
                     process_key_sequence.append(process_key)
 
             # print('key sequence = ', process_key_sequence)
 
             # Link the processes in each sequence
-            for pair in pairwise(process_key_sequence):
+            for pair in pairwise(process_key_sequence):  # TODO: Make split/pool model with multi prev/next_process
                 # link processes
                 l = processes[pair[0]]
                 r = processes[pair[1]]
@@ -494,6 +413,56 @@ class ProcessSequenceFactory(object):
                 r.prev_process = l
 
         return sources, samples, other_material, data, processes, process_sequences
+
+
+def process_keygen(protocol_ref, column_group, cg_index, all_columns, series, series_index):
+    process_key = protocol_ref
+
+    node_key = None
+
+    node_cols = [i for i, c in enumerate(all_columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
+
+    output_node_index = find_gt(node_cols, cg_index)
+
+    if output_node_index > -1:
+        output_node_label = all_columns[output_node_index]
+        output_node_value = series[output_node_label]
+
+        node_key = output_node_value
+
+    input_node_index = find_lt(node_cols, cg_index)
+
+    if input_node_index > -1:
+        input_node_label = all_columns[input_node_index]
+        input_node_value = series[input_node_label]
+
+        node_key = input_node_value
+
+    if process_key == protocol_ref:
+        process_key += '-' + str(series_index)
+
+    name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
+
+    if len(name_column_hits) == 1:
+        process_key = series[name_column_hits[0]]
+    else:
+        pv_cols = [c for c in column_group if c.startswith('Parameter Value[')]
+        if len(pv_cols) > 0:
+            # 2. else try use protocol REF + Parameter Values as key
+            if node_key is not None:
+                process_key = node_key + \
+                              ':' + protocol_ref + \
+                              ':' + '/'.join([str(v) for v in series[pv_cols]])
+            else:
+                process_key = protocol_ref + \
+                              ':' + '/'.join([str(v) for v in series[pv_cols]])
+        else:
+            # 3. else try use input + protocol REF as key
+            # 4. else try use output + protocol REF as key
+            if node_key is not None:
+                process_key = node_key + '/' + protocol_ref
+
+    return process_key
 
 
 def pairwise(iterable):
