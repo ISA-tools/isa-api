@@ -30,31 +30,12 @@ class ProcessSequence(object):
 
 class Material(object):
 
-    def __init__(self, name, characteristics=list()):
-        self._name = name
-        self._characteristics = characteristics
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, name):
-        if isinstance(name, str):
-            self._name = name
+    def __init__(self, name, characteristics=None):
+        self.name = name
+        if characteristics is None:
+            self.characteristics = []
         else:
-            raise TypeError
-
-    @property
-    def characteristics(self):
-        return self._characteristics
-
-    @characteristics.setter
-    def characteristics(self, characteristics):
-        if isinstance(characteristics, list):
-            self._characteristics = characteristics
-        else:
-            raise TypeError
+            self.characteristics = characteristics
 
 
 class Source(Material):
@@ -276,21 +257,21 @@ class ProcessSequenceFactory(object):
             if object_label in _LABELS_MATERIAL_NODES:  # characs
 
                 for _, object_series in DF[column_group].drop_duplicates().iterrows():
-                    material_name = object_series[column_group[0]]
+                    node_key = object_series[column_group[0]]
                     material = None
 
                     try:
-                        material = sources[material_name]
+                        material = sources[node_key]
                     except KeyError:
                         pass
 
                     try:
-                        material = samples[material_name]
+                        material = samples[node_key]
                     except KeyError:
                         pass
 
                     try:
-                        material = other_material[material_name]
+                        material = other_material[column_group[0] + ':' + node_key]
                     except KeyError:
                         pass
 
@@ -298,6 +279,11 @@ class ProcessSequenceFactory(object):
                         for charac_column in [c for c in column_group if c.startswith('Characteristics[')]:
                             material.characteristics.append(Characteristic(category=charac_column[16:-1],
                                                                            value=object_series[charac_column]))
+
+                    if isinstance(material, Sample):
+                        if len(material.characteristics) > 0:
+                            print(object_series)
+                            return
 
             elif object_label.startswith('Protocol REF'):
 
@@ -497,7 +483,7 @@ class ProcessSequenceFactory(object):
 
                     process_key_sequence.append(process_key)
 
-            print('key sequence = ', process_key_sequence)
+            # print('key sequence = ', process_key_sequence)
 
             # Link the processes in each sequence
             for pair in pairwise(process_key_sequence):
