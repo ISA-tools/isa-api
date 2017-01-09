@@ -2,6 +2,8 @@ import csv
 import pandas as pd
 import numpy as np
 from bisect import bisect_left, bisect_right
+from itertools import tee
+
 
 """
 In progress; do not use yet as contents of this package will move!!!
@@ -132,6 +134,8 @@ class Process:
             self.outputs = []
         else:
             self.outputs = outputs
+        self.prev_process = None
+        self.next_process = None
 
 
 class ParameterValue:
@@ -175,6 +179,7 @@ class ProcessSequenceFactory(object):
             pass
 
         try:
+            # TODO: Add label to LabeledExtract objects
             labeled_extracts = dict(map(lambda x: ('Labeled Extract Name:' + x,  LabeledExtract(name=x)),
                                         DF['Labeled Extract Name'].drop_duplicates()))
             other_material.update(labeled_extracts)
@@ -294,7 +299,7 @@ class ProcessSequenceFactory(object):
                             material.characteristics.append(Characteristic(category=charac_column[16:-1],
                                                                            value=object_series[charac_column]))
 
-            elif object_label.startswith('Protocol REF'):  # parameter vals
+            elif object_label.startswith('Protocol REF'):
 
                 for _, object_series in DF.iterrows():  # don't drop duplicates
                     protocol_ref = object_series[column_group[0]]
@@ -379,7 +384,7 @@ class ProcessSequenceFactory(object):
                             input_node = data['Free Induction Decay Data File:' + node_key]
 
                     # TODO: Update keygen for processes
-                    print('processing protocol:', protocol_ref)
+                    # print('processing protocol:', protocol_ref)
                     # 0. Default if there is no input/output/name, assume they're all separate processes
                     if process_key == protocol_ref:
                         process_key += '-' + str(_)
@@ -389,10 +394,10 @@ class ProcessSequenceFactory(object):
                     name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
 
                     if len(name_column_hits) == 1:
-                        print("setting process as ", object_series[name_column_hits[0]])
+                        # print("setting process as ", object_series[name_column_hits[0]])
                         process_key = object_series[name_column_hits[0]]
                     else:
-                        print("Could not resolve Assay Node Name, not setting process.name")
+                        # print("Could not resolve Assay Node Name, not setting process.name")
                         pv_cols = [c for c in column_group if c.startswith('Parameter Value[')]
                         if len(pv_cols) > 0:
                             # print('pvs: ', '/'.join(list(object_series[pv_cols])))
@@ -430,7 +435,85 @@ class ProcessSequenceFactory(object):
 
         process_sequences = list()
 
+        # now go row by row pulling out processes and linking them accordingly
+
+        for _, object_series in DF.iterrows():  # don't drop duplicates
+
+            process_key_sequence = list()
+
+            for _cg, column_group in enumerate(object_column_map):
+
+                # for each object, parse column group
+
+                object_label = column_group[0]
+
+                if object_label.startswith('Protocol REF'):
+                    protocol_ref = object_series[column_group[0]]  # TODO: Refactor keygen algo to ensure same as above
+
+                    process_key = protocol_ref
+
+                    node_key = None
+
+                    output_node_index = find_gt(node_cols, _cg)
+
+                    if output_node_index > -1:
+                        output_node_label = DF.columns[output_node_index]
+                        output_node_value = object_series[output_node_label]
+
+                        node_key = output_node_value
+
+                    input_node_index = find_lt(node_cols, _cg)
+
+                    if input_node_index > -1:
+                        input_node_label = DF.columns[input_node_index]
+                        input_node_value = object_series[input_node_label]
+
+                        node_key = input_node_value
+
+                    if process_key == protocol_ref:
+                        process_key += '-' + str(_)
+
+                    name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
+
+                    if len(name_column_hits) == 1:
+                        process_key = object_series[name_column_hits[0]]
+                    else:
+                        pv_cols = [c for c in column_group if c.startswith('Parameter Value[')]
+                        if len(pv_cols) > 0:
+                            # 2. else try use protocol REF + Parameter Values as key
+                            if node_key is not None:
+                                process_key = node_key + \
+                                              ':' + protocol_ref + \
+                                              ':' + '/'.join([str(v) for v in object_series[pv_cols]])
+                            else:
+                                process_key = protocol_ref + \
+                                              ':' + '/'.join([str(v) for v in object_series[pv_cols]])
+                        else:
+                            # 3. else try use input + protocol REF as key
+                            # 4. else try use output + protocol REF as key
+                            if node_key is not None:
+                                process_key = node_key + '/' + protocol_ref
+
+                    process_key_sequence.append(process_key)
+
+            print('key sequence = ', process_key_sequence)
+
+            # Link the processes in each sequence
+            for pair in pairwise(process_key_sequence):
+                # link processes
+                l = processes[pair[0]]
+                r = processes[pair[1]]
+                l.next_process = r
+                r.prev_process = l
+
         return sources, samples, other_material, data, processes, process_sequences
+
+
+def pairwise(iterable):
+    """Pairwise iterator"""
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)
 
 
 def read_tfile(tfile_path, index_col=None):
