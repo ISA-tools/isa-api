@@ -427,10 +427,11 @@ class ProcessSequenceFactory(object):
                     for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
                         process.parameter_values.append(ParameterValue(category=pv_column[16:-1],
                                                                        value=object_series[pv_column]))
-                    if input_node is not None:
+
+                    if input_node is not None and input_node not in process.inputs:
                         process.inputs.append(input_node)
 
-                    if output_node is not None:
+                    if output_node is not None and output_node not in process.outputs:
                         process.outputs.append(output_node)
 
         process_sequences = list()
