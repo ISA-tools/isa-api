@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 from bisect import bisect_left, bisect_right
 from itertools import tee
-import os
 from isatools.model.v1 import *
 
 """
@@ -19,105 +18,105 @@ _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name'
                        'Data Transformation Name', 'Normalization Name']
 
 
-class ProcessSequence(object):
-
-    def __init__(self):
-        self.sources = list()
-        self.samples = list()
-        self.other_material = list()
-        self.data = list()
-        self.processes = list()
-
-
-class Material(object):
-
-    def __init__(self, name, characteristics=None):
-        self.name = name
-        if characteristics is None:
-            self.characteristics = []
-        else:
-            self.characteristics = characteristics
-
-
-class Source(Material):
-    pass
-
-
-class Sample(Material):
-    pass
-
-
-class Extract(Material):
-    pass
-
-
-class LabeledExtract(Material):
-    pass
-
-
-class Characteristic:
-
-    def __init__(self, category=None, value=str()):
-        self.category = category
-        self.value = value
-
-
-class DataFile:
-
-    def __init__(self, name):
-        self.name = name
-
-
-class RawDataFile(DataFile):
-    pass
-
-
-class DerivedSpectralDataFile(DataFile):
-    pass
-
-
-class DerivedArrayDataFile(DataFile):
-    pass
-
-
-class ArrayDataFile(DataFile):
-    pass
-
-
-class ProteinAssignmentFile(DataFile):
-    pass
-
-
-class PeptideAssignmentFile(DataFile):
-    pass
-
-
-class PostTranslationalModificationAssignmentFile(DataFile):
-    pass
-
-
-class Process:
-
-    def __init__(self, executes_protocol='', parameter_values=None, inputs=None, outputs=None):
-
-        self.executes_protocol = executes_protocol
-
-        if parameter_values is None:
-            self.parameter_values = []
-        else:
-            self.parameter_values = parameter_values
-
-        if inputs is None:
-            self.inputs = []
-        else:
-            self.inputs = inputs
-
-        if outputs is None:
-            self.outputs = []
-        else:
-            self.outputs = outputs
-        self.prev_process = None
-        self.next_process = None
+# class ProcessSequence(object):
+#
+#     def __init__(self):
+#         self.sources = list()
+#         self.samples = list()
+#         self.other_material = list()
+#         self.data = list()
+#         self.processes = list()
+#
+#
+# class Material(object):
+#
+#     def __init__(self, name, characteristics=None):
+#         self.name = name
+#         if characteristics is None:
+#             self.characteristics = []
+#         else:
+#             self.characteristics = characteristics
+#
+#
+# class Source(Material):
+#     pass
+#
+#
+# class Sample(Material):
+#     pass
+#
+#
+# class Extract(Material):
+#     pass
+#
+#
+# class LabeledExtract(Material):
+#     pass
+#
+#
+# class Characteristic:
+#
+#     def __init__(self, category=None, value=str()):
+#         self.category = category
+#         self.value = value
+#
+#
+# class DataFile:
+#
+#     def __init__(self, name):
+#         self.name = name
+#
+#
+# class RawDataFile(DataFile):
+#     pass
+#
+#
+# class DerivedSpectralDataFile(DataFile):
+#     pass
+#
+#
+# class DerivedArrayDataFile(DataFile):
+#     pass
+#
+#
+# class ArrayDataFile(DataFile):
+#     pass
+#
+#
+# class ProteinAssignmentFile(DataFile):
+#     pass
+#
+#
+# class PeptideAssignmentFile(DataFile):
+#     pass
+#
+#
+# class PostTranslationalModificationAssignmentFile(DataFile):
+#     pass
+#
+#
+# class Process:
+#
+#     def __init__(self, executes_protocol='', parameter_values=None, inputs=None, outputs=None):
+#
+#         self.executes_protocol = executes_protocol
+#
+#         if parameter_values is None:
+#             self.parameter_values = []
+#         else:
+#             self.parameter_values = parameter_values
+#
+#         if inputs is None:
+#             self.inputs = []
+#         else:
+#             self.inputs = inputs
+#
+#         if outputs is None:
+#             self.outputs = []
+#         else:
+#             self.outputs = outputs
+#         self.prev_process = None
+#         self.next_process = None
 
 
 class ParameterValue:
@@ -165,6 +164,7 @@ class StudyFactory:
             study.filename = row['Study File Name']
 
             # TODO: build Protocol section, as needed for tables
+            protocol_map = {}
             for j in range(0, len(df_dict['s_protocols'][i])):
                 row = df_dict['s_protocols'][i].iloc[j]
                 protocol = Protocol()
@@ -181,10 +181,15 @@ class StudyFactory:
                 else:
                     protocol.protocol_type.term_source = None
                 study.protocols.append(protocol)
+                protocol_map[protocol.name] = protocol
 
-                study_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), study.filename))
-                so, sa, o, d, processes, ps = ProcessSequenceFactory().create_from_df(study_tfile_df)
-                study.process_sequence = list(processes.values())
+            import os
+            study_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), study.filename))
+            so, sa, o, d, processes, ps = ProcessSequenceFactory(investigation).create_from_df(study_tfile_df)
+            study.process_sequence = list(processes.values())
+
+            for process in study.process_sequence:
+                process.executes_protocol = protocol_map[process.executes_protocol]
 
             investigation.studies.append(study)
 
@@ -193,14 +198,18 @@ class StudyFactory:
 
 class ProcessSequenceFactory:
 
-    def __init__(self, xml_configuration=None):
-        self._xml_configuration = xml_configuration
+    def __init__(self, I=None):
+        self.I = I
+
 
     def create_from_df(self, DF):  # from DF of a table file
 
-        config = self._xml_configuration  # TODO: Use for validation
-
         DF = preprocess(DF=DF)
+
+        if self.I is not None:
+            ontology_source_map = dict(map(lambda x: (x.name, x), self.I.ontology_source_references))
+        else:
+            ontology_source_map = {}
 
         sources = {}
         samples = {}
@@ -220,54 +229,54 @@ class ProcessSequenceFactory:
             pass
 
         try:
-            extracts = dict(map(lambda x: ('Extract Name:' + x, Extract(name=x)), DF['Extract Name'].drop_duplicates()))
+            extracts = dict(map(lambda x: ('Extract Name:' + x, Material(name=x, type_='Extract Name')), DF['Extract Name'].drop_duplicates()))
             other_material.update(extracts)
         except KeyError:
             pass
 
         try:
             # TODO: Add label to LabeledExtract objects
-            labeled_extracts = dict(map(lambda x: ('Labeled Extract Name:' + x,  LabeledExtract(name=x)),
+            labeled_extracts = dict(map(lambda x: ('Labeled Extract Name:' + x,  Material(name=x, type_='Labeled Extract Name')),
                                         DF['Labeled Extract Name'].drop_duplicates()))
             other_material.update(labeled_extracts)
         except KeyError:
             pass
 
         try:
-            raw_data_files = dict(map(lambda x: ('Raw Data File:' + x, RawDataFile(name=x)), DF['Raw Data File'].drop_duplicates()))
+            raw_data_files = dict(map(lambda x: ('Raw Data File:' + x, DataFile(filename=x, label='Raw Data File')), DF['Raw Data File'].drop_duplicates()))
             data.update(raw_data_files)
         except KeyError:
             pass
 
         try:
-            derived_spectral_data_files = dict(map(lambda x: ('Derived Spectral Data File:' + x, DerivedSpectralDataFile(name=x)),
+            derived_spectral_data_files = dict(map(lambda x: ('Derived Spectral Data File:' + x, DataFile(filename=x, label='Derived Spectral Data File')),
                                                   DF['Derived Spectral Data File'].drop_duplicates()))
             data.update(derived_spectral_data_files)
         except KeyError:
             pass
 
         try:
-            derived_array_data_files = dict(map(lambda x: ('Derived Array Data File:' + x, DerivedArrayDataFile(name=x)),
+            derived_array_data_files = dict(map(lambda x: ('Derived Array Data File:' + x, DataFile(filename=x, label='Derived Array Data File')),
                                                 DF['Derived Array Data File'].drop_duplicates()))
             data.update(derived_array_data_files)
         except KeyError:
             pass
 
         try:
-            array_data_files = dict(map(lambda x: ('Array Data File:' + x, ArrayDataFile(name=x)), DF['Array Data File'].drop_duplicates()))
+            array_data_files = dict(map(lambda x: ('Array Data File:' + x, DataFile(filename=x, label='Array Data File')), DF['Array Data File'].drop_duplicates()))
             data.update(array_data_files)
         except KeyError:
             pass
 
         try:
-            protein_assignment_files = dict(map(lambda x: ('Protein Assignment File:' + x, ProteinAssignmentFile(name=x)),
+            protein_assignment_files = dict(map(lambda x: ('Protein Assignment File:' + x, DataFile(filename=x, label='Protein Assignment File')),
                                                 DF['Protein Assignment File'].drop_duplicates()))
             data.update(protein_assignment_files)
         except KeyError:
             pass
 
         try:
-            peptide_assignment_files = dict(map(lambda x: ('Peptide Assignment File:' + x, PeptideAssignmentFile(name=x)),
+            peptide_assignment_files = dict(map(lambda x: ('Peptide Assignment File:' + x, DataFile(filename=x, label='Peptide Assignment File')),
                                                 DF['Peptide Assignment File'].drop_duplicates()))
             data.update(peptide_assignment_files)
         except KeyError:
@@ -275,14 +284,14 @@ class ProcessSequenceFactory:
 
         try:
             post_translational_modification_assignment_files = \
-                dict(map(lambda x: ('Post Translational Modification Assignment File:' + x, PostTranslationalModificationAssignmentFile(name=x)),
+                dict(map(lambda x: ('Post Translational Modification Assignment File:' + x, DataFile(filename=x, label='Post Translational Modification Assignment File')),
                          DF['Post Translational Modification Assignment File'].drop_duplicates()))
             data.update(post_translational_modification_assignment_files)
         except KeyError:
             pass
 
         try:
-            acquisition_parameter_data_files = dict(map(lambda x: ('Acquisiton Parameter Data File' + x, PeptideAssignmentFile(name=x)),
+            acquisition_parameter_data_files = dict(map(lambda x: ('Acquisiton Parameter Data File' + x, DataFile(filename=x, label='Acquisiton Parameter Data File')),
                                                 DF['Acquisiton Parameter Data File'].drop_duplicates()))
             data.update(acquisition_parameter_data_files)
         except KeyError:
@@ -290,7 +299,7 @@ class ProcessSequenceFactory:
 
         try:
             post_translational_modification_assignment_files = \
-                dict(map(lambda x: ('Free Induction Decay Data File:' + x, PostTranslationalModificationAssignmentFile(name=x)),
+                dict(map(lambda x: ('Free Induction Decay Data File:' + x, DataFile(filename=x, label='Free Induction Decay Data File')),
                          DF['Free Induction Decay Data File'].drop_duplicates()))
             data.update(post_translational_modification_assignment_files)
         except KeyError:
@@ -344,9 +353,54 @@ class ProcessSequenceFactory:
                     if material is not None:
                         for charac_column in [c for c in column_group if c.startswith('Characteristics[')]:
                             #  TODO: Link Characteristics to Characteristic categories
-                            #  TODO: Handle multiple data types including OntologyAnnotations
-                            material.characteristics.append(Characteristic(category=charac_column[16:-1],
-                                                                           value=object_series[charac_column]))
+                            #  TODO: Handle multiple data types including OntologyAnnotations, Units
+                            characteristic = Characteristic(category=OntologyAnnotation(
+                                term=charac_column[16:-1]))
+
+                            cell_value = object_series[charac_column]
+
+                            charac_column_index = list(column_group).index(charac_column)
+
+                            offset_1r_col = DF.columns[charac_column_index + 1]
+                            offset_2r_col = DF.columns[charac_column_index + 2]
+                            offset_3r_col = DF.columns[charac_column_index + 3]
+
+                            # Determine if the cell value is an OntologyAnnotation, and cast it if it is
+                            if offset_1r_col.startswith('Term Source REF'):
+                                cell_value = object_series[charac_column]
+                                if cell_value is not '':
+                                    value = OntologyAnnotation(
+                                        term=str(cell_value)
+                                    )
+                                    term_source_value = object_series[offset_1r_col]
+                                    if term_source_value is not '':
+                                        try:
+                                            value.term_source = ontology_source_map[term_source_value]
+                                        except KeyError:
+                                            print('term source: ', type(term_source_value), ' not declared')
+                                    term_accession_value = object_series[offset_2r_col]
+                                    if term_accession_value is not '':
+                                        value.term_accession = term_accession_value
+
+                            # Determine if a numeric value has an associated Unit
+                            # TODO: Check and fix Unit parsing
+                            if offset_1r_col.startswith('Unit') or isinstance(cell_value, (int, float)):
+                                unit_term = object_series[offset_1r_col]
+                                unit = OntologyAnnotation(
+                                    term=unit_term
+                                )
+                                term_source_value = object_series[offset_2r_col]
+                                try:
+                                    unit.term_source = ontology_source_map[term_source_value]
+                                except KeyError:
+                                    print('term source: ', term_source_value, ' not declared, not linking')
+                                term_accession_value = object_series[offset_3r_col]
+                                unit.term_accession = str(term_accession_value)
+
+                                characteristic.unit = unit
+
+                            characteristic.value = cell_value
+                            material.characteristics.append(characteristic)
 
             elif object_label.startswith('Protocol REF'):
 
@@ -552,7 +606,7 @@ def read_tfile(tfile_path, index_col=None):
         reader = csv.reader(tfile_fp, delimiter='\t')
         header = list(next(reader))
         tfile_fp.seek(0)
-        tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col)
+        tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col).fillna('')
         tfile_df.isatab_header = header
     return tfile_df
 

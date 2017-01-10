@@ -451,7 +451,7 @@ def _set_charac_cols(prefix, characteristics, cols, col_map):
         obj_charac_key = prefix + '_char[' + c.category.term + ']'
         cols.append(obj_charac_key)
         col_map[obj_charac_key] = _charac_label(c.category.term)
-        if isinstance(c.value, int) or isinstance(c.value, float):
+        if isinstance(c.value, (int, float)):
             cols.extend((obj_charac_key + KEY_POSTFIX_UNIT,
                          obj_charac_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMSOURCE,
                          obj_charac_key + KEY_POSTFIX_UNIT + KEY_POSTFIX_TERMACCESSION))
