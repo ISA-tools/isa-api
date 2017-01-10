@@ -3,7 +3,8 @@ import pandas as pd
 import numpy as np
 from bisect import bisect_left, bisect_right
 from itertools import tee
-
+import os
+from isatools.model.v1 import *
 
 """
 In progress; do not use yet as contents of this package will move!!!
@@ -126,14 +127,78 @@ class ParameterValue:
         self.value = value
 
 
-class ProcessSequenceFactory(object):
+class StudyFactory:
+
+    def __init__(self):
+        pass
+
+    def create_from_fp(self, FP):  # from DF of investigation file
+
+        from isatools.isatab import read_investigation_file
+        df_dict = read_investigation_file(FP)
+
+        from isatools.model.v1 import Investigation, Study
+        investigation = Investigation()
+
+        # TODO: build Ontology Source section, as needed for OntologyAnnotation references
+        for _, row in df_dict['ontology_sources'].iterrows():
+            ontology_source = OntologySource(name=row['Term Source Name'],
+                                             file=row['Term Source File'],
+                                             version=row['Term Source File'],
+                                             description=row['Term Source Description'])
+            investigation.ontology_source_references.append(ontology_source)
+
+        row = df_dict['investigation'].iloc[0]
+        investigation.identifier = row['Investigation Identifier']
+        investigation.title = row['Investigation Title']
+        investigation.description = row['Investigation Description']
+        investigation.submission_date = row['Investigation Submission Date']
+        investigation.public_release_date = row['Investigation Public Release Date']
+        for i in range(0, len(df_dict['studies'])):
+            row = df_dict['studies'][i].iloc[0]
+            study = Study()
+            study.identifier = row['Study Identifier']
+            study.title = row['Study Title']
+            study.description = row['Study Description']
+            study.submission_date = row['Study Submission Date']
+            study.public_release_date = row['Study Public Release Date']
+            study.filename = row['Study File Name']
+
+            # TODO: build Protocol section, as needed for tables
+            for j in range(0, len(df_dict['s_protocols'][i])):
+                row = df_dict['s_protocols'][i].iloc[j]
+                protocol = Protocol()
+                protocol.name = row['Study Protocol Name']
+                protocol.description = row['Study Protocol Description']
+                protocol.uri = row['Study Protocol URI']
+                protocol.version = row['Study Protocol Version']
+                protocol.protocol_type = OntologyAnnotation()
+                protocol.protocol_type.term = row['Study Protocol Type']
+                protocol.protocol_type.term_accession = row['Study Protocol Type Term Accession Number']
+                term_source_hits = [os for os in investigation.ontology_source_references if os.name == row['Study Protocol Type Term Source REF']]
+                if len(term_source_hits) == 1:
+                    protocol.protocol_type.term_source = term_source_hits[0]
+                else:
+                    protocol.protocol_type.term_source = None
+                study.protocols.append(protocol)
+
+                study_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), study.filename))
+                so, sa, o, d, processes, ps = ProcessSequenceFactory().create_from_df(study_tfile_df)
+                study.process_sequence = list(processes.values())
+
+            investigation.studies.append(study)
+
+        return investigation
+
+
+class ProcessSequenceFactory:
 
     def __init__(self, xml_configuration=None):
         self._xml_configuration = xml_configuration
 
-    def create_from_df(self, DF):
+    def create_from_df(self, DF):  # from DF of a table file
 
-        config = self._xml_configuration
+        config = self._xml_configuration  # TODO: Use for validation
 
         DF = preprocess(DF=DF)
 
@@ -142,6 +207,7 @@ class ProcessSequenceFactory(object):
         other_material = {}
         data = {}
         processes = {}
+        # TODO: Handle comment columns
 
         try:
             sources = dict(map(lambda x: (x, Source(name=x)), DF['Source Name'].drop_duplicates()))
@@ -277,6 +343,8 @@ class ProcessSequenceFactory(object):
 
                     if material is not None:
                         for charac_column in [c for c in column_group if c.startswith('Characteristics[')]:
+                            #  TODO: Link Characteristics to Characteristic categories
+                            #  TODO: Handle multiple data types including OntologyAnnotations
                             material.characteristics.append(Characteristic(category=charac_column[16:-1],
                                                                            value=object_series[charac_column]))
 
@@ -363,6 +431,7 @@ class ProcessSequenceFactory(object):
                     try:
                         process = processes[process_key]
                     except KeyError:
+                        #  TODO: point to Protocol object
                         process = Process(executes_protocol=object_series[object_label])
                         processes.update(dict([(process_key, process)]))
 
@@ -406,9 +475,10 @@ class ProcessSequenceFactory(object):
 
             # Link the processes in each sequence
             for pair in pairwise(process_key_sequence):  # TODO: Make split/pool model with multi prev/next_process
-                # link processes
-                l = processes[pair[0]]
-                r = processes[pair[1]]
+
+                l = processes[pair[0]]  # get process on left of pair
+                r = processes[pair[1]]  # get process on right of pair
+
                 l.next_process = r
                 r.prev_process = l
 
@@ -416,6 +486,7 @@ class ProcessSequenceFactory(object):
 
 
 def process_keygen(protocol_ref, column_group, cg_index, all_columns, series, series_index):
+
     process_key = protocol_ref
 
     node_key = None
@@ -425,6 +496,7 @@ def process_keygen(protocol_ref, column_group, cg_index, all_columns, series, se
     output_node_index = find_gt(node_cols, cg_index)
 
     if output_node_index > -1:
+
         output_node_label = all_columns[output_node_index]
         output_node_value = series[output_node_label]
 
@@ -433,12 +505,14 @@ def process_keygen(protocol_ref, column_group, cg_index, all_columns, series, se
     input_node_index = find_lt(node_cols, cg_index)
 
     if input_node_index > -1:
+
         input_node_label = all_columns[input_node_index]
         input_node_value = series[input_node_label]
 
         node_key = input_node_value
 
     if process_key == protocol_ref:
+
         process_key += '-' + str(series_index)
 
     name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
@@ -447,6 +521,7 @@ def process_keygen(protocol_ref, column_group, cg_index, all_columns, series, se
         process_key = series[name_column_hits[0]]
     else:
         pv_cols = [c for c in column_group if c.startswith('Parameter Value[')]
+
         if len(pv_cols) > 0:
             # 2. else try use protocol REF + Parameter Values as key
             if node_key is not None:
@@ -504,26 +579,33 @@ def find_gt(a, x):
 
 def preprocess(DF):
     """Check headers, and insert Protocol REF if needed"""
-    process_node_names = {'Data Transformation Name',
-                          'Normalization Name',
-                          'Scan Name',
-                          'Hybridization Assay Name',
-                          'MS Assay Name'}
 
     headers = DF.columns
-    process_node_name_indices = [x for x, y in enumerate(headers) if y in process_node_names]
+
+    process_node_name_indices = [x for x, y in enumerate(headers) if y in _LABELS_ASSAY_NODES]
+
     process_cols = [i for i, c in enumerate(DF.columns) if c.startswith('Protocol REF')]
+
     missing_process_indices = list()
+
     num_protocol_refs = len([x for x in headers if x.startswith('Protocol REF')])
+
     for i in process_node_name_indices:
+
         if not headers[find_lt(process_cols, i)].startswith('Protocol REF'):
             print('warning: Protocol REF missing before \'{}\', found \'{}\''.format(headers[i], headers[i - 1]))
             missing_process_indices.append(i)
+
     # insert Protocol REF columns
     offset = 0
+
     for i in reversed(missing_process_indices):
+
         DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown')
+
         headers.insert(i, 'Protocol REF')
+
         print('inserting Protocol REF.{}'.format(num_protocol_refs + offset), 'at position {}'.format(i))
         offset += 1
+
     return DF
