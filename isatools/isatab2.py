@@ -117,13 +117,13 @@ _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name'
 #             self.outputs = outputs
 #         self.prev_process = None
 #         self.next_process = None
-
-
-class ParameterValue:
-
-    def __init__(self, category=None, value=''):
-        self.category = category
-        self.value = value
+#
+#
+# class ParameterValue:
+#
+#     def __init__(self, category=None, value=''):
+#         self.category = category
+#         self.value = value
 
 
 class StudyFactory:
@@ -201,7 +201,6 @@ class ProcessSequenceFactory:
     def __init__(self, I=None):
         self.I = I
 
-
     def create_from_df(self, DF):  # from DF of a table file
 
         DF = preprocess(DF=DF)
@@ -216,6 +215,9 @@ class ProcessSequenceFactory:
         other_material = {}
         data = {}
         processes = {}
+        characteristic_categories = {}
+        parameter_value_categories = {}
+
         # TODO: Handle comment columns
 
         try:
@@ -352,54 +354,22 @@ class ProcessSequenceFactory:
 
                     if material is not None:
                         for charac_column in [c for c in column_group if c.startswith('Characteristics[')]:
-                            #  TODO: Link Characteristics to Characteristic categories
-                            #  TODO: Handle multiple data types including OntologyAnnotations, Units
-                            characteristic = Characteristic(category=OntologyAnnotation(
-                                term=charac_column[16:-1]))
 
-                            cell_value = object_series[charac_column]
+                            category_key = charac_column[16:-1]
 
-                            charac_column_index = list(column_group).index(charac_column)
+                            try:
+                                category = characteristic_categories[category_key]
+                            except KeyError:
+                                category = OntologyAnnotation(term=category_key)
+                                characteristic_categories[category_key] = category
 
-                            offset_1r_col = DF.columns[charac_column_index + 1]
-                            offset_2r_col = DF.columns[charac_column_index + 2]
-                            offset_3r_col = DF.columns[charac_column_index + 3]
+                            characteristic = Characteristic(category=category)
 
-                            # Determine if the cell value is an OntologyAnnotation, and cast it if it is
-                            if offset_1r_col.startswith('Term Source REF'):
-                                cell_value = object_series[charac_column]
-                                if cell_value is not '':
-                                    value = OntologyAnnotation(
-                                        term=str(cell_value)
-                                    )
-                                    term_source_value = object_series[offset_1r_col]
-                                    if term_source_value is not '':
-                                        try:
-                                            value.term_source = ontology_source_map[term_source_value]
-                                        except KeyError:
-                                            print('term source: ', type(term_source_value), ' not declared')
-                                    term_accession_value = object_series[offset_2r_col]
-                                    if term_accession_value is not '':
-                                        value.term_accession = term_accession_value
+                            v, u = get_value(charac_column, column_group, object_series, ontology_source_map)
 
-                            # Determine if a numeric value has an associated Unit
-                            # TODO: Check and fix Unit parsing
-                            if offset_1r_col.startswith('Unit') or isinstance(cell_value, (int, float)):
-                                unit_term = object_series[offset_1r_col]
-                                unit = OntologyAnnotation(
-                                    term=unit_term
-                                )
-                                term_source_value = object_series[offset_2r_col]
-                                try:
-                                    unit.term_source = ontology_source_map[term_source_value]
-                                except KeyError:
-                                    print('term source: ', term_source_value, ' not declared, not linking')
-                                term_accession_value = object_series[offset_3r_col]
-                                unit.term_accession = str(term_accession_value)
+                            characteristic.value = v
+                            characteristic.unit = u
 
-                                characteristic.unit = unit
-
-                            characteristic.value = cell_value
                             material.characteristics.append(characteristic)
 
             elif object_label.startswith('Protocol REF'):
@@ -494,8 +464,23 @@ class ProcessSequenceFactory:
                         process.name = name_column_hits[0]
 
                     for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
-                        process.parameter_values.append(ParameterValue(category=pv_column[16:-1],
-                                                                       value=object_series[pv_column]))
+
+                        category_key = pv_column[16:-1]
+
+                        try:
+                            category = parameter_value_categories[category_key]
+                        except KeyError:
+                            category = OntologyAnnotation(term=category_key)
+                            parameter_value_categories[category_key] = category
+
+                        parameter_value = ParameterValue(category=category)
+
+                        v, u = get_value(pv_column, column_group, object_series, ontology_source_map)
+
+                        parameter_value.value = v
+                        parameter_value.unit = u
+
+                        process.parameter_values.append(parameter_value)
 
                     if input_node is not None and input_node not in process.inputs:
                         process.inputs.append(input_node)
@@ -594,20 +579,81 @@ def process_keygen(protocol_ref, column_group, cg_index, all_columns, series, se
     return process_key
 
 
+def get_value(object_column, column_group, object_series, ontology_source_map):
+
+    cell_value = object_series[object_column]
+
+    if cell_value == '':
+        return cell_value, None
+
+    column_index = list(column_group).index(object_column)
+    offset_1r_col = column_group[column_index + 1]
+    offset_2r_col = column_group[column_index + 2]
+    offset_3r_col = column_group[column_index + 3]
+
+    if (offset_1r_col.startswith('Unit') and offset_2r_col.startswith('Term Source REF') and offset_3r_col.startswith(
+            'Term Accession Number')):
+
+        unit_term_value = OntologyAnnotation(term=object_series[offset_1r_col])
+
+        unit_term_source_value = object_series[offset_2r_col]
+
+        if unit_term_source_value is not '':
+
+            try:
+                unit_term_value.term_source = ontology_source_map[unit_term_source_value]
+            except KeyError:
+                print('term source: ', type(unit_term_source_value), ' not found')
+
+        term_accession_value = object_series[offset_3r_col]
+
+        if term_accession_value is not '':
+            unit_term_value.term_accession = term_accession_value
+        return cell_value, unit_term_value
+
+    if offset_1r_col.startswith('Term Source REF') and offset_2r_col.startswith('Term Accession Number'):
+
+        value = OntologyAnnotation(term=str(cell_value))
+
+        term_source_value = object_series[offset_1r_col]
+
+        if term_source_value is not '':
+
+            try:
+                value.term_source = ontology_source_map[term_source_value]
+            except KeyError:
+                print('term source: ', type(term_source_value), ' not found')
+
+        term_accession_value = object_series[offset_2r_col]
+
+        if term_accession_value is not '':
+            value.term_accession = term_accession_value
+
+        return value, None
+
+
 def pairwise(iterable):
     """Pairwise iterator"""
     a, b = tee(iterable)
+
     next(b, None)
+
     return zip(a, b)
 
 
 def read_tfile(tfile_path, index_col=None):
+
     with open(tfile_path) as tfile_fp:
+
         reader = csv.reader(tfile_fp, delimiter='\t')
+
         header = list(next(reader))
+
         tfile_fp.seek(0)
+
         tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col).fillna('')
         tfile_df.isatab_header = header
+
     return tfile_df
 
 
@@ -616,7 +662,9 @@ def get_multiple_index(file_index, key):
 
 
 def find_lt(a, x):
+
     i = bisect_left(a, x)
+
     if i:
         return a[i - 1]
     else:
@@ -624,7 +672,9 @@ def find_lt(a, x):
 
 
 def find_gt(a, x):
+
     i = bisect_right(a, x)
+
     if i != len(a):
         return a[i]
     else:
