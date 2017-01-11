@@ -4,10 +4,7 @@ import numpy as np
 from bisect import bisect_left, bisect_right
 from itertools import tee
 from isatools.model.v1 import *
-
-"""
-In progress; do not use yet as contents of this package will move!!!
-"""
+import os
 
 _LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name', 'Labeled Extract Name']
 _LABELS_DATA_NODES = ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
@@ -18,120 +15,86 @@ _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name'
                        'Data Transformation Name', 'Normalization Name']
 
 
-# class ProcessSequence(object):
-#
-#     def __init__(self):
-#         self.sources = list()
-#         self.samples = list()
-#         self.other_material = list()
-#         self.data = list()
-#         self.processes = list()
-#
-#
-# class Material(object):
-#
-#     def __init__(self, name, characteristics=None):
-#         self.name = name
-#         if characteristics is None:
-#             self.characteristics = []
-#         else:
-#             self.characteristics = characteristics
-#
-#
-# class Source(Material):
-#     pass
-#
-#
-# class Sample(Material):
-#     pass
-#
-#
-# class Extract(Material):
-#     pass
-#
-#
-# class LabeledExtract(Material):
-#     pass
-#
-#
-# class Characteristic:
-#
-#     def __init__(self, category=None, value=str()):
-#         self.category = category
-#         self.value = value
-#
-#
-# class DataFile:
-#
-#     def __init__(self, name):
-#         self.name = name
-#
-#
-# class RawDataFile(DataFile):
-#     pass
-#
-#
-# class DerivedSpectralDataFile(DataFile):
-#     pass
-#
-#
-# class DerivedArrayDataFile(DataFile):
-#     pass
-#
-#
-# class ArrayDataFile(DataFile):
-#     pass
-#
-#
-# class ProteinAssignmentFile(DataFile):
-#     pass
-#
-#
-# class PeptideAssignmentFile(DataFile):
-#     pass
-#
-#
-# class PostTranslationalModificationAssignmentFile(DataFile):
-#     pass
-#
-#
-# class Process:
-#
-#     def __init__(self, executes_protocol='', parameter_values=None, inputs=None, outputs=None):
-#
-#         self.executes_protocol = executes_protocol
-#
-#         if parameter_values is None:
-#             self.parameter_values = []
-#         else:
-#             self.parameter_values = parameter_values
-#
-#         if inputs is None:
-#             self.inputs = []
-#         else:
-#             self.inputs = inputs
-#
-#         if outputs is None:
-#             self.outputs = []
-#         else:
-#             self.outputs = outputs
-#         self.prev_process = None
-#         self.next_process = None
-#
-#
-# class ParameterValue:
-#
-#     def __init__(self, category=None, value=''):
-#         self.category = category
-#         self.value = value
-
-
 class StudyFactory:
 
     def __init__(self):
         pass
 
     def create_from_fp(self, FP):  # from DF of investigation file
+
+        def get_ontology_source(term_source_ref):
+            try:
+                os = ontology_source_map[term_source_ref]
+            except KeyError:
+                os = None
+            return os
+
+        def get_oa(val, accession, ts_ref):
+            return OntologyAnnotation(
+                term=val,
+                term_accession=accession,
+                term_source=get_ontology_source(ts_ref)
+            )
+
+        def get_oa_list_from_semi_c_list(vals, accessions, ts_refs):
+            oa_list = []
+            for _, val in enumerate(vals.split(';')):
+                oa_list.append(get_oa(val, accessions.split(';')[_], ts_refs.split(';')[_]))
+            return oa_list
+
+        def get_publications(section_df):
+
+            if 'Investigation PubMed ID' in section_df.columns:
+                prefix = 'Investigation '
+            elif 'Study PubMed ID' in section_df.columns:
+                prefix = 'Study '
+            else:
+                raise KeyError
+
+            publications = []
+
+            for _, row in section_df.iterrows():
+                publication = Publication(pubmed_id=row[prefix + 'PubMed ID'],
+                                          doi=row[prefix + 'Publication DOI'],
+                                          author_list=row[prefix + 'Publication Author List'],
+                                          title=row[prefix + 'Publication Title'])
+
+                publication.status = get_oa(row[prefix + 'Publication Status'],
+                                            row[prefix + 'Publication Status Term Accession Number'],
+                                            row[prefix + 'Publication Status Term Source REF'])
+
+                publications.append(publication)
+
+            return publications
+
+        def get_contacts(section_df):
+
+            if 'Investigation Person Last Name' in section_df.columns:
+                prefix = 'Investigation '
+            elif 'Study Person Last Name' in section_df.columns:
+                prefix = 'Study '
+            else:
+                raise KeyError
+
+            contacts = []
+
+            for _, row in section_df.iterrows():
+                person = Person(last_name=row[prefix + 'Person Last Name'],
+                                first_name=row[prefix + 'Person First Name'],
+                                mid_initials=row[prefix + 'Person Mid Initials'],
+                                email=row[prefix + 'Person Email'],
+                                phone=row[prefix + 'Person Phone'],
+                                fax=row[prefix + 'Person Fax'],
+                                address=row[prefix + 'Person Address'],
+                                affiliation=row[prefix + 'Person Affiliation'])
+
+                person.roles = get_oa_list_from_semi_c_list(row[prefix + 'Person Roles'],
+                                                            row[prefix + 'Person Roles Term Accession Number'],
+                                                            row[prefix + 'Person Roles Term Source REF'])
+
+                contacts.append(person)
+
+            return contacts
 
         from isatools.isatab import read_investigation_file
         df_dict = read_investigation_file(FP)
@@ -147,12 +110,17 @@ class StudyFactory:
                                              description=row['Term Source Description'])
             investigation.ontology_source_references.append(ontology_source)
 
+        ontology_source_map = dict(map(lambda x: (x.name, x), investigation.ontology_source_references))
+
         row = df_dict['investigation'].iloc[0]
         investigation.identifier = row['Investigation Identifier']
         investigation.title = row['Investigation Title']
         investigation.description = row['Investigation Description']
         investigation.submission_date = row['Investigation Submission Date']
         investigation.public_release_date = row['Investigation Public Release Date']
+        investigation.publications = get_publications(df_dict['i_publications'])
+        investigation.contacts = get_contacts(df_dict['i_contacts'])
+
         for i in range(0, len(df_dict['studies'])):
             row = df_dict['studies'][i].iloc[0]
             study = Study()
@@ -162,34 +130,65 @@ class StudyFactory:
             study.submission_date = row['Study Submission Date']
             study.public_release_date = row['Study Public Release Date']
             study.filename = row['Study File Name']
+            study.publications = get_publications(df_dict['s_publications'][i])
+            study.contacts = get_contacts(df_dict['s_contacts'][i])
 
-            # TODO: build Protocol section, as needed for tables
+            for _, row in df_dict['s_design_descriptors'][i].iterrows():
+                design_descriptor = get_oa(row['Study Design Type'],
+                                           row['Study Design Type Term Accession Number'],
+                                           row['Study Design Type Term Source REF'])
+                study.design_descriptors.append(design_descriptor)
+
+            for _, row in df_dict['s_factors'][i].iterrows():
+                factor = StudyFactor(name=row['Study Factor Name'])
+                factor.factor_type = get_oa(row['Study Factor Type'],
+                                            row['Study Factor Type Term Accession Number'],
+                                            row['Study Factor Type Term Source REF'])
+                study.factors.append(factor)
+
             protocol_map = {}
-            for j in range(0, len(df_dict['s_protocols'][i])):
-                row = df_dict['s_protocols'][i].iloc[j]
+            for _, row in df_dict['s_protocols'][i].iterrows():
                 protocol = Protocol()
                 protocol.name = row['Study Protocol Name']
                 protocol.description = row['Study Protocol Description']
                 protocol.uri = row['Study Protocol URI']
                 protocol.version = row['Study Protocol Version']
-                protocol.protocol_type = OntologyAnnotation()
-                protocol.protocol_type.term = row['Study Protocol Type']
-                protocol.protocol_type.term_accession = row['Study Protocol Type Term Accession Number']
-                term_source_hits = [os for os in investigation.ontology_source_references if os.name == row['Study Protocol Type Term Source REF']]
-                if len(term_source_hits) == 1:
-                    protocol.protocol_type.term_source = term_source_hits[0]
-                else:
-                    protocol.protocol_type.term_source = None
+                protocol.protocol_type = get_oa(row['Study Protocol Type'],
+                                                row['Study Protocol Type Term Accession Number'],
+                                                row['Study Protocol Type Term Source REF'])
                 study.protocols.append(protocol)
                 protocol_map[protocol.name] = protocol
 
-            import os
             study_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), study.filename))
-            so, sa, o, d, processes, ps = ProcessSequenceFactory(investigation).create_from_df(study_tfile_df)
+            so, sa, o, d, processes = ProcessSequenceFactory(investigation).create_from_df(study_tfile_df)
             study.process_sequence = list(processes.values())
 
             for process in study.process_sequence:
                 process.executes_protocol = protocol_map[process.executes_protocol]
+
+            for _, row in df_dict['s_assays'][i].iterrows():
+                assay = Assay()
+                assay.filename = row['Study Assay File Name']
+                assay.measurement_type = get_oa(
+                    row['Study Assay Measurement Type'],
+                    row['Study Assay Measurement Type Term Accession Number'],
+                    row['Study Assay Measurement Type Term Source REF']
+                )
+                assay.technology_type = get_oa(
+                    row['Study Assay Technology Type'],
+                    row['Study Assay Technology Type Term Accession Number'],
+                    row['Study Assay Technology Type Term Source REF']
+                )
+                assay.technology_platform = row['Study Assay Technology Platform']
+
+                assay_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), assay.filename))
+                so, sa, o, d, processes = ProcessSequenceFactory(investigation).create_from_df(assay_tfile_df)
+                assay.process_sequence = list(processes.values())
+
+                for process in assay.process_sequence:
+                    process.executes_protocol = protocol_map[process.executes_protocol]
+
+                study.assays.append(assay)
 
             investigation.studies.append(study)
 
@@ -329,6 +328,7 @@ class ProcessSequenceFactory:
 
         for _cg, column_group in enumerate(object_column_map):
             # for each object, parse column group
+            # TODO: Deal with Factor Values
             object_label = column_group[0]
 
             if object_label in _LABELS_MATERIAL_NODES:  # characs
@@ -455,7 +455,6 @@ class ProcessSequenceFactory:
                     try:
                         process = processes[process_key]
                     except KeyError:
-                        #  TODO: point to Protocol object
                         process = Process(executes_protocol=object_series[object_label])
                         processes.update(dict([(process_key, process)]))
 
@@ -470,7 +469,7 @@ class ProcessSequenceFactory:
                         try:
                             category = parameter_value_categories[category_key]
                         except KeyError:
-                            category = ProtocolParameter(parameter_name=category_key)
+                            category = ProtocolParameter(parameter_name=OntologyAnnotation(term=category_key))
                             parameter_value_categories[category_key] = category
 
                         parameter_value = ParameterValue(category=category)
@@ -486,8 +485,6 @@ class ProcessSequenceFactory:
 
                     if output_node is not None and output_node not in process.outputs:
                         process.outputs.append(output_node)
-
-        process_sequences = list()
 
         # now go row by row pulling out processes and linking them accordingly
 
@@ -520,7 +517,7 @@ class ProcessSequenceFactory:
                 l.next_process = r
                 r.prev_process = l
 
-        return sources, samples, other_material, data, processes, process_sequences
+        return sources, samples, other_material, data, processes
 
 
 def process_keygen(protocol_ref, column_group, cg_index, all_columns, series, series_index):
