@@ -474,7 +474,6 @@ class ProcessSequenceFactory:
                             parameter_value_categories[category_key] = category
 
                         parameter_value = ParameterValue(category=category)
-
                         v, u = get_value(pv_column, column_group, object_series, ontology_source_map)
 
                         parameter_value.value = v
@@ -590,10 +589,6 @@ def get_value(object_column, column_group, object_series, ontology_source_map):
 
     try:
         offset_1r_col = column_group[column_index + 1]
-    except IndexError:
-        return cell_value, None
-
-    try:
         offset_2r_col = column_group[column_index + 2]
     except IndexError:
         return cell_value, None
@@ -623,8 +618,8 @@ def get_value(object_column, column_group, object_series, ontology_source_map):
     except IndexError:
         return cell_value, None
 
-    if (offset_1r_col.startswith('Unit') and offset_2r_col.startswith('Term Source REF') and offset_3r_col.startswith(
-            'Term Accession Number')):
+    if offset_1r_col.startswith('Unit') and offset_2r_col.startswith('Term Source REF') \
+            and offset_3r_col.startswith('Term Accession Number'):
 
         unit_term_value = OntologyAnnotation(term=object_series[offset_1r_col])
 
@@ -642,6 +637,9 @@ def get_value(object_column, column_group, object_series, ontology_source_map):
         if term_accession_value is not '':
             unit_term_value.term_accession = term_accession_value
         return cell_value, unit_term_value
+
+    else:
+        return cell_value, None
 
 
 def pairwise(iterable):
