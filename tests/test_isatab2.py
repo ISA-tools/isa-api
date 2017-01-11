@@ -23,14 +23,14 @@ class TestIsaTab2(unittest.TestCase):
 
     def test_isatab2_bii_s_7(self):
         test_case = 'BII-S-7'
-        df = isatab2.read_tfile(os.path.join(self._tab_data_dir, test_case, 'a_matteo-assay-Gx.txt'))
+        df = isatab2.read_tfile(os.path.join(self._tab_data_dir, test_case, 's_BII-S-7.txt'))
         sources, samples, other_material, data, processes, process_sequences = isatab2.ProcessSequenceFactory().create_from_df(df)
         print(sources, samples, other_material, data, processes, process_sequences)
-        self.assertEqual(len(sources), 0)  # expecting no sources
+        self.assertEqual(len(sources), 29)  # expecting 29 sources
         self.assertEqual(len(samples), 29)  # expecting 29 samples
-        self.assertEqual(len(other_material), 29)  # expecting 29 extracts
-        self.assertEqual(len(data), 29)  # expecting 29 raw data files
-        self.assertEqual(len(processes), 116)  # expecting 116 processes (29 sets of 4)
+        self.assertEqual(len(other_material), 0)  # expecting no other materials
+        self.assertEqual(len(data), 0)  # expecting no raw data files
+        self.assertEqual(len(processes), 29)  # expecting 29 processes
         # self.assertEqual(len(process_sequences), 29)  # expecting 29 process sequences
         #  TODO: Fix processes and sequences to combine repeated parts to build graph properly.
 

@@ -470,7 +470,7 @@ class ProcessSequenceFactory:
                         try:
                             category = parameter_value_categories[category_key]
                         except KeyError:
-                            category = OntologyAnnotation(term=category_key)
+                            category = ProtocolParameter(parameter_name=category_key)
                             parameter_value_categories[category_key] = category
 
                         parameter_value = ParameterValue(category=category)
@@ -587,9 +587,41 @@ def get_value(object_column, column_group, object_series, ontology_source_map):
         return cell_value, None
 
     column_index = list(column_group).index(object_column)
-    offset_1r_col = column_group[column_index + 1]
-    offset_2r_col = column_group[column_index + 2]
-    offset_3r_col = column_group[column_index + 3]
+
+    try:
+        offset_1r_col = column_group[column_index + 1]
+    except IndexError:
+        return cell_value, None
+
+    try:
+        offset_2r_col = column_group[column_index + 2]
+    except IndexError:
+        return cell_value, None
+
+    if offset_1r_col.startswith('Term Source REF') and offset_2r_col.startswith('Term Accession Number'):
+
+        value = OntologyAnnotation(term=str(cell_value))
+
+        term_source_value = object_series[offset_1r_col]
+
+        if term_source_value is not '':
+
+            try:
+                value.term_source = ontology_source_map[term_source_value]
+            except KeyError:
+                print('term source: ', term_source_value, ' not found')
+
+        term_accession_value = object_series[offset_2r_col]
+
+        if term_accession_value is not '':
+            value.term_accession = term_accession_value
+
+        return value, None
+
+    try:
+        offset_3r_col = column_group[column_index + 3]
+    except IndexError:
+        return cell_value, None
 
     if (offset_1r_col.startswith('Unit') and offset_2r_col.startswith('Term Source REF') and offset_3r_col.startswith(
             'Term Accession Number')):
@@ -603,33 +635,13 @@ def get_value(object_column, column_group, object_series, ontology_source_map):
             try:
                 unit_term_value.term_source = ontology_source_map[unit_term_source_value]
             except KeyError:
-                print('term source: ', type(unit_term_source_value), ' not found')
+                print('term source: ', unit_term_source_value, ' not found')
 
         term_accession_value = object_series[offset_3r_col]
 
         if term_accession_value is not '':
             unit_term_value.term_accession = term_accession_value
         return cell_value, unit_term_value
-
-    if offset_1r_col.startswith('Term Source REF') and offset_2r_col.startswith('Term Accession Number'):
-
-        value = OntologyAnnotation(term=str(cell_value))
-
-        term_source_value = object_series[offset_1r_col]
-
-        if term_source_value is not '':
-
-            try:
-                value.term_source = ontology_source_map[term_source_value]
-            except KeyError:
-                print('term source: ', type(term_source_value), ' not found')
-
-        term_accession_value = object_series[offset_2r_col]
-
-        if term_accession_value is not '':
-            value.term_accession = term_accession_value
-
-        return value, None
 
 
 def pairwise(iterable):
