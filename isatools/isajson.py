@@ -172,6 +172,7 @@ def load(fp):
                                       term_source=term_source_dict[study_unit_json["termSource"]],
                                       term_accession=study_unit_json["termAccession"])
             units_dict[unit.id] = unit
+            study.units.append(unit)
         for study_publication_json in study_json["publications"]:
             study_publication = Publication(
                 pubmed_id=study_publication_json["pubMedID"],
@@ -443,6 +444,7 @@ def load(fp):
                                           term_source=term_source_dict[assay_unit_json["termSource"]],
                                           term_accession=assay_unit_json["termAccession"])
                 units_dict[unit.id] = unit
+                assay.units.append(unit)
             data_dict = dict()
             for data_json in assay_json["dataFiles"]:
                 data_file = DataFile(
@@ -1462,7 +1464,7 @@ class ISAJSONEncoder(JSONEncoder):
     def default(self, o):
 
         def clean_nulls(d):
-            return {k: v for k, v in d.items() if v or isinstance(v, list)}   # TODO: How best to deal with nulls? Fix reader?
+            return {k: v for k, v in d.items() if v or isinstance(v, list) or v == ''}   # TODO: How best to deal with nulls? Fix reader?
 
         def get_comment(o):
             return clean_nulls(
@@ -1487,7 +1489,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_ontology_annotation(o):
             return clean_nulls(
                 {
-                    # "@id": id_gen(o),
+                    "@id": id_gen(o),
                     "annotationValue": o.term,
                     "termAccession": o.term_accession,
                     "termSource": o.term_source.name if o.term_source else None
@@ -1507,7 +1509,7 @@ class ISAJSONEncoder(JSONEncoder):
                     "fax": o.fax,
                     "firstName": o.first_name,
                     "lastName": o.last_name,
-                    "midInitials": o.mid_initials,
+                    "midInitials": o.mid_initials if o.mid_initials else '',
                     "phone": o.phone,
                     "roles": get_ontology_annotations(o.roles)
                 }
@@ -1689,7 +1691,7 @@ class ISAJSONEncoder(JSONEncoder):
                 "processSequence": list(map(lambda x: get_process(x), o.process_sequence)),
                 "factors": list(map(lambda x: get_factor(x), o.factors)),
                 "characteristicCategories": list(map(lambda x: get_characteristic_category(x), o.characteristic_categories)),
-                "unitCategories": list(map(lambda x: get_ontology_annotations(x), o.units)),
+                "unitCategories": get_ontology_annotations(o.units),
                 "comments": get_comments(o.comments),
                 "assays": []  # TODO: Output assay objects
                 # "assays": list(map(lambda x: get_assays(x), o.assays)),

@@ -535,7 +535,7 @@ class Assay(Commentable):
     """
     def __init__(self, measurement_type=None, technology_type=None, technology_platform="", filename="",
                  process_sequence=None, data_files=None, samples=None, other_material=None,
-                 characteristic_categories=None, comments=None):
+                 characteristic_categories=None, units=None, comments=None):
         super().__init__(comments)
         if measurement_type is None:
             self.measurement_type = OntologyAnnotation()
@@ -575,6 +575,11 @@ class Assay(Commentable):
             self.characteristic_categories = list()
         else:
             self.characteristic_categories = characteristic_categories
+
+        if units is None:
+            self.units = list()
+        else:
+            self.units = units
 
     @property
     def graph(self):
