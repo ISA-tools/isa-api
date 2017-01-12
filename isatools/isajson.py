@@ -1433,3 +1433,45 @@ def batch_validate(json_file_list):
                     }
                 )
     return batch_report
+
+
+from json import JSONEncoder
+
+
+class ISAJSONEncoder(JSONEncoder):
+
+    def default(self, o):
+
+        def get_comment(o): return {"name": o.name, "value": o.value}
+
+        def get_comments(o): return list(map(lambda x: get_comment(x), o.comments))
+
+        def get_ontology_source(o): return {"name": o.name, "description": o.description, "file": o.file, "version": o.version}
+
+        def get_ontology_annotation(o): return {"annotationValue": o.term, "termAccession": o.term_accession, "termSource": o.term_source}
+
+        def get_roles(o): return {list(map(lambda x: get_ontology_annotation(x), o))}
+
+        def get_person(o): return {"address": o.address, "affiliation": o.affiliation, "comments": get_comments(o.comments), "email": o.email, "fax": o.fax, "firstName": o.first_name, "lastName": o.last_name, "midInitials": o.mid_initials, "phone": o.phone, "roles": get_roles(o.roles)}
+
+        def get_publication(o): return {"authorList": o.author_list, "doi": o.doi, "pubMedID": o.pubmed_id, "status": get_ontology_annotation(o.status), "title": o.title}
+
+        if isinstance(o, Investigation):
+            return {
+                "identifier": o.identifier,
+                "title": o.title,
+                "description": o.description,
+                "comments": get_comments(o),
+                "ontologySourceReferences": list(map(lambda x: get_ontology_source(x), o.ontology_source_references)),
+                "people": list(map(lambda x: get_person(x), o.contacts)),
+                "publicReleaseDate": o.public_release_date,
+                "publications": list(map(lambda x: get_publication(x), o.publications))
+            }
+        elif isinstance(o, OntologySource):
+            return get_ontology_source(o)
+        elif isinstance(o, OntologyAnnotation):
+            return get_ontology_annotation(o)
+        elif isinstance(o, Person):
+            return get_person(o)
+        elif isinstance(o, Publication):
+            return get_publication(o)
