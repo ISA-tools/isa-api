@@ -1626,24 +1626,40 @@ class ISAJSONEncoder(JSONEncoder):
                     "name": o.name,
                     "type": o.type,
                     "characteristics": get_characteristics(o.characteristics)
-            }
+                }
             )
 
         def id_gen(o):
-            base_id = str(id(o))
-            if isinstance(o, Source):
-                return '#source/' + base_id
-            elif isinstance(o, Sample):
-                return '#sample/' + base_id
-            elif isinstance(o, Material):
-                if o.type == 'Extract Name':
-                    return '#material/extract-' + base_id
-                elif o.type == 'Labled Extract Name':
-                    return '#material/labledextract-' + base_id
+            if o is not None:
+                o_id = str(id(o))
+                if isinstance(o, Source):
+                    return '#source/' + o_id
+                elif isinstance(o, Sample):
+                    return '#sample/' + o_id
+                elif isinstance(o, Material):
+                    if o.type == 'Extract Name':
+                        return '#material/extract-' + o_id
+                    elif o.type == 'Labled Extract Name':
+                        return '#material/labledextract-' + o_id
+                    else:
+                        raise TypeError("Could not resolve data type labeled: " + o.type)
+                elif isinstance(o, DataFile):  # TODO: Implement ID gen on other data file types
+                    if o.label == 'Raw Data File':
+                        return '#data/rawdatafile-' + o_id
+                    elif o.label == 'Derived Data File':
+                        return '#data/deriveddatafile-' + o_id
+                    elif o.label == 'Image File':
+                        return '#data/imagefile-' + o_id
+                    elif o.label == 'Acquisition Parameter Data File':
+                        return '#data/acquisitionparameterdatafile-' + o_id
+                    else:
+                        raise TypeError("Could not resolve data type labeled: " + o.label)
+                elif isinstance(o, Process):
+                    return '#' + o_id  # TODO: Implement ID gen on different kinds of processes?
                 else:
-                    raise TypeError("Could not resolve data type labeled: " + o.type)
+                    return '#' + o_id
             else:
-                return base_id
+                return None
 
         def get_process(o):
             return clean_nulls(
@@ -1654,11 +1670,11 @@ class ISAJSONEncoder(JSONEncoder):
                     "parameterValues": list(map(lambda x: get_parameter_value(x), o.parameter_values)),
                     "performer": o.performer,
                     "date": o.date,
-                    "previousProcess": o.prev_process,
-                    "nextProcess": o.next_process,
+                    "previousProcess": {"@id": id_gen(o.prev_process)} if o.prev_process else None,
+                    "nextProcess": {"@id": id_gen(o.next_process)} if o.next_process else None,
                     "inputs": list(map(lambda x: {"@id": id_gen(x)}, o.inputs)),
                     "outputs": list(map(lambda x: {"@id": id_gen(x)}, o.outputs)),
-                    "comments": get_comments(o.comments) if o.comments else []
+                    "comments": get_comments(o.comments)
                 }
             )
 
@@ -1693,10 +1709,37 @@ class ISAJSONEncoder(JSONEncoder):
                 "characteristicCategories": list(map(lambda x: get_characteristic_category(x), o.characteristic_categories)),
                 "unitCategories": get_ontology_annotations(o.units),
                 "comments": get_comments(o.comments),
-                "assays": []  # TODO: Output assay objects
-                # "assays": list(map(lambda x: get_assays(x), o.assays)),
+                "assays": list(map(lambda x: get_assay(x), o.assays))
             }
         )
+
+        def get_assay(o):
+            return clean_nulls(
+                {
+                    "measurementType": get_ontology_annotation(o.measurement_type),
+                    "technologyType": get_ontology_annotation(o.technology_type),
+                    "technologyPlatform": o.technology_platform,
+                    "filename": o.filename,
+                    "characteristicCategories": list(map(lambda x: get_characteristic_category(x), o.characteristic_categories)),  ## TODO: Refactor into get_characteristic_categories()
+                    "unitCategories": get_ontology_annotations(o.units),
+                    "comments": get_comments(o.comments) if o.comments else None,
+                    "materials": {
+                        "samples": list(map(lambda x: get_sample(x), o.materials['samples'])),  # TODO: Refactor into get_samples()
+                        "otherMaterials": list(map(lambda x: get_other_material(x), o.materials['other_material']))  # TODO: Refactor into get_other_materials()
+                    },
+                    "dataFiles": list(map(lambda x: get_data_file(x), o.data_files)),
+                    "processSequence": list(map(lambda x: get_process(x), o.process_sequence))  # TODO: Refactor into get_processes()
+                }
+            )
+
+        def get_data_file(o):
+            return clean_nulls(
+                {
+                    "@id": id_gen(o),
+                    "name": o.filename,
+                    "type": o.label
+                }
+            )
 
         if isinstance(o, Investigation):
             return clean_nulls(
