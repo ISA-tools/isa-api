@@ -987,13 +987,28 @@ def check_date_formats(isa_json):
                 })
                 logger.warning("(W) Date {} does not conform to ISO8601 format".format(date_str))
     import iso8601
-    check_iso8601_date(isa_json["publicReleaseDate"])
-    check_iso8601_date(isa_json["submissionDate"])
+    try:
+        check_iso8601_date(isa_json["publicReleaseDate"])
+    except KeyError:
+        pass
+    try:
+        check_iso8601_date(isa_json["submissionDate"])
+    except KeyError:
+        pass
     for study in isa_json["studies"]:
-        check_iso8601_date(study["publicReleaseDate"])
-        check_iso8601_date(study["submissionDate"])
+        try:
+            check_iso8601_date(study["publicReleaseDate"])
+        except KeyError:
+            pass
+        try:
+            check_iso8601_date(study["submissionDate"])
+        except KeyError:
+            pass
         for process in study["processSequence"]:
-            check_iso8601_date(process["date"])
+            try:
+                check_iso8601_date(process["date"])
+            except KeyError:
+                pass
 
 
 def check_dois(isa_json):
@@ -1008,10 +1023,16 @@ def check_dois(isa_json):
                 })
                 logger.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
     for ipub in isa_json["publications"]:
-        check_doi(ipub["doi"])
+        try:
+            check_doi(ipub["doi"])
+        except KeyError:
+            pass
     for study in isa_json["studies"]:
         for spub in study["publications"]:
-            check_doi(spub["doi"])
+            try:
+                check_doi(spub["doi"])
+            except KeyError:
+                pass
 
 
 def check_filenames_present(isa_json):
@@ -1441,7 +1462,7 @@ class ISAJSONEncoder(JSONEncoder):
     def default(self, o):
 
         def clean_nulls(d):
-            return {k: v for k, v in d.items() if v or isinstance(v, list)}
+            return {k: v for k, v in d.items() if v or isinstance(v, list)}   # TODO: How best to deal with nulls? Fix reader?
 
         def get_comment(o):
             return clean_nulls(
@@ -1670,7 +1691,7 @@ class ISAJSONEncoder(JSONEncoder):
                 "characteristicCategories": list(map(lambda x: get_characteristic_category(x), o.characteristic_categories)),
                 "unitCategories": list(map(lambda x: get_ontology_annotations(x), o.units)),
                 "comments": get_comments(o.comments),
-                "assays": []
+                "assays": []  # TODO: Output assay objects
                 # "assays": list(map(lambda x: get_assays(x), o.assays)),
             }
         )
