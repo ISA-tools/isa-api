@@ -1463,14 +1463,29 @@ class ISAJSONEncoder(JSONEncoder):
 
     def default(self, o):
 
-        def clean_nulls(d):
+        def remove_nulls(d):
             return {k: v for k, v in d.items() if v or isinstance(v, list) or v == ''}   # TODO: How best to deal with nulls? Fix reader?
+
+        def nulls_to_str(d):
+            to_del = []
+            for k, v in d.items():
+                if not isinstance(v, list) and v is None:
+                    d[k] = ''
+                if (k == "unit" or k == "previousProcess" or k == "nextProcess") and (v is None or v == ''):
+                    to_del.append(k)
+            for k in to_del:
+                del d[k]
+            return d
+
+        clean_nulls = nulls_to_str  # creates verbose JSON
+        # clean_nulls = remove_nulls  # optimises by removing k-v's that are null or empty strings
 
         def get_comment(o):
             return clean_nulls(
                 {
                     "name": o.name,
-                    "value": o.value}
+                    "value": o.value
+                }
             )
 
         def get_comments(o):
@@ -1545,7 +1560,7 @@ class ISAJSONEncoder(JSONEncoder):
                     "protocolType": get_ontology_annotation(o.protocol_type),
                     "uri": o.uri,
                     "comments": get_comments(o.comments) if o.comments else [],
-                    "components": None,  # TODO: Output components
+                    "components": [],  # TODO: Output components
                     "version": o.version
                 }
             )
@@ -1562,13 +1577,9 @@ class ISAJSONEncoder(JSONEncoder):
         def get_characteristic(o):
             return clean_nulls(
                 {
-                    "category": {
-                        "@id": id_gen(o.category)
-                    },
+                    "category": {"@id": id_gen(o.category)} if o.category else None,
                     "value": get_value(o.value),
-                    "unit": {
-                        "@id": id_gen(o.unit)
-                    } if o.unit else None
+                    "unit": {"@id": id_gen(o.unit)} if o.unit else None
                 }
             )
 
@@ -1599,13 +1610,9 @@ class ISAJSONEncoder(JSONEncoder):
                     "characteristics": get_characteristics(o.characteristics),
                     "factorValues": list(map(lambda x: clean_nulls(
                         {
-                            "category": {
-                                "@id": id_gen(x.factor_name)
-                            },
+                            "category": {"@id": id_gen(x.factor_name)} if x.factor_name else None,
                             "value": get_value(x.value),
-                            "unit": {
-                                "@id": id_gen(x.unit)
-                            } if x.unit else None
+                            "unit": {"@id": id_gen(x.unit)} if x.unit else None
                         }
                     ), o.factor_values))
             })
@@ -1681,7 +1688,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_parameter_value(o):
             return clean_nulls(
                 {
-                    "category": {"@id": id_gen(o.category)},
+                    "category": {"@id": id_gen(o.category)} if o.category else None,
                     "value": get_value(o.value),
                     "unit": {"@id": id_gen(o.unit)} if o.unit else None
                 }
@@ -1722,7 +1729,7 @@ class ISAJSONEncoder(JSONEncoder):
                     "filename": o.filename,
                     "characteristicCategories": list(map(lambda x: get_characteristic_category(x), o.characteristic_categories)),  ## TODO: Refactor into get_characteristic_categories()
                     "unitCategories": get_ontology_annotations(o.units),
-                    "comments": get_comments(o.comments) if o.comments else None,
+                    "comments": get_comments(o.comments) if o.comments else [],
                     "materials": {
                         "samples": list(map(lambda x: get_sample(x), o.materials['samples'])),  # TODO: Refactor into get_samples()
                         "otherMaterials": list(map(lambda x: get_other_material(x), o.materials['other_material']))  # TODO: Refactor into get_other_materials()
