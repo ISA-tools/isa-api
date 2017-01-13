@@ -10,7 +10,7 @@
                 "type" : "object",
                 "properties": {
                     "name" : {"type" : "string"},
-                     "annotation" : {
+                    "annotation" : {
                         "$ref": "resource_annotation_schema.json#"
                     }
                 }

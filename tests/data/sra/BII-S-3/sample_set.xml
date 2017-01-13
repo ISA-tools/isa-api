@@ -1,779 +1,780 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" ?>
 <SAMPLE_SET xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.sample.xsd">
-  <SAMPLE center_name="OXFORD" broker_name="" alias="BII-S-3:source:GSM255772">
-    <TITLE>BII-S-3:source:GSM255772</TITLE>
-    <SAMPLE_NAME>
-      <TAXON_ID>408172</TAXON_ID>
-      <SCIENTIFIC_NAME>marine metagenome</SCIENTIFIC_NAME>
-    </SAMPLE_NAME>
-    <SAMPLE_ATTRIBUTES>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>Material Type</TAG>
-        <VALUE>messenger RNA</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-c2 concentration</TAG>
-        <VALUE>0.31</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>water salinity</TAG>
-        <VALUE>31.5</VALUE>
-        <UNITS>psu</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>divinyl-chl-b concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>hexfucoxanthin concentration</TAG>
-        <VALUE>0.15</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>water temperature at 3 meter depth</TAG>
-        <VALUE>9.0</VALUE>
-        <UNITS>degree celsius</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>small picoeukaryotes count</TAG>
-        <VALUE>21435</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>lutein concentration</TAG>
-        <VALUE>0.02</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>diatoxanthin concentration</TAG>
-        <VALUE>0.04</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>divinyl-chl-a concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location</TAG>
-        <VALUE>5.222222</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>alloxanthin concentration</TAG>
-        <VALUE>0.03</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>neoxanthin concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>peridinin concentration</TAG>
-        <VALUE>0.41</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>violaxanthin concentration</TAG>
-        <VALUE>0.05</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>primary production depth integrated production to 3 m expressed_in mgC m-2 d-1</TAG>
-        <VALUE>118.0</VALUE>
-        <UNITS>mg/m2/d</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>particulate organic carbon concentration</TAG>
-        <VALUE>783</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>butfucoxanthin concentration</TAG>
-        <VALUE>0.06</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>BB carotene concentration</TAG>
-        <VALUE>0.06</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>nitrate concentration</TAG>
-        <VALUE>3.94</VALUE>
-        <UNITS>umol/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-b concentration</TAG>
-        <VALUE>0.21</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>nanoflagellates count</TAG>
-        <VALUE>138</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-c3 concentration</TAG>
-        <VALUE>0.05</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>phosphate concentration</TAG>
-        <VALUE>0.2</VALUE>
-        <UNITS>umol/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>diadinoxanthin concentration</TAG>
-        <VALUE>0.2</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>zeaxanthin concentration</TAG>
-        <VALUE>0.13</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-a concentration</TAG>
-        <VALUE>1.6</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>large picoeukaryotes count</TAG>
-        <VALUE>878</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>fluorescence</TAG>
-        <VALUE>4.5</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>bacteria count</TAG>
-        <VALUE>9516120</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>fucoxanthin concentration</TAG>
-        <VALUE>0.21</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>cryptophytes count</TAG>
-        <VALUE>75</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chlorophyll a concentration</TAG>
-        <VALUE>1.6</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>prasinoxanthin concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location</TAG>
-        <VALUE>60.269444</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location</TAG>
-        <VALUE>Norway, fjord, coastal</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>synechococcus count</TAG>
-        <VALUE>16465</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>particulate organic nitrogen concentration</TAG>
-        <VALUE>128</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-    </SAMPLE_ATTRIBUTES>
-  </SAMPLE>
-  <SAMPLE center_name="OXFORD" broker_name="" alias="BII-S-3:source:GSM255771">
-    <TITLE>BII-S-3:source:GSM255771</TITLE>
-    <SAMPLE_NAME>
-      <TAXON_ID>408172</TAXON_ID>
-      <SCIENTIFIC_NAME>marine metagenome</SCIENTIFIC_NAME>
-    </SAMPLE_NAME>
-    <SAMPLE_ATTRIBUTES>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>Material Type</TAG>
-        <VALUE>deoxyribonucleic acid</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-c2 concentration</TAG>
-        <VALUE>0.87</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>water salinity</TAG>
-        <VALUE>31.4</VALUE>
-        <UNITS>psu</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>divinyl-chl-b concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>hexfucoxanthin concentration</TAG>
-        <VALUE>1.15</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>water temperature at 3 meter depth</TAG>
-        <VALUE>9.6</VALUE>
-        <UNITS>degree celsius</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>small picoeukaryotes count</TAG>
-        <VALUE>38513</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>lutein concentration</TAG>
-        <VALUE>0.41</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>diatoxanthin concentration</TAG>
-        <VALUE>0.11</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>divinyl-chl-a concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location</TAG>
-        <VALUE>5.222222</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>alloxanthin concentration</TAG>
-        <VALUE>0.33</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>neoxanthin concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>peridinin concentration</TAG>
-        <VALUE>0.14</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>violaxanthin concentration</TAG>
-        <VALUE>0.99</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>primary production depth integrated production to 3 m expressed_in mgC m-2 d-1</TAG>
-        <VALUE>938.1</VALUE>
-        <UNITS>mg/m2/d</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>particulate organic carbon concentration</TAG>
-        <VALUE>561</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>butfucoxanthin concentration</TAG>
-        <VALUE>0.17</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>BB carotene concentration</TAG>
-        <VALUE>0.83</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>nitrate concentration</TAG>
-        <VALUE>3.84</VALUE>
-        <UNITS>umol/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-b concentration</TAG>
-        <VALUE>5.97</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>nanoflagellates count</TAG>
-        <VALUE>4390</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-c3 concentration</TAG>
-        <VALUE>0.65</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>phosphate concentration</TAG>
-        <VALUE>0.19</VALUE>
-        <UNITS>umol/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>diadinoxanthin concentration</TAG>
-        <VALUE>0.64</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>zeaxanthin concentration</TAG>
-        <VALUE>0.23</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-a concentration</TAG>
-        <VALUE>11.22</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>large picoeukaryotes count</TAG>
-        <VALUE>12035</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>fluorescence</TAG>
-        <VALUE>23.6</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>bacteria count</TAG>
-        <VALUE>4862861</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>fucoxanthin concentration</TAG>
-        <VALUE>1.43</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>cryptophytes count</TAG>
-        <VALUE>1702</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chlorophyll a concentration</TAG>
-        <VALUE>11.22</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>prasinoxanthin concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location</TAG>
-        <VALUE>60.269444</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location</TAG>
-        <VALUE>Norway, fjord, coastal</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>synechococcus count</TAG>
-        <VALUE>13867</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>particulate organic nitrogen concentration</TAG>
-        <VALUE>104</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-    </SAMPLE_ATTRIBUTES>
-  </SAMPLE>
-  <SAMPLE center_name="OXFORD" broker_name="" alias="BII-S-3:source:GSM255773">
-    <TITLE>BII-S-3:source:GSM255773</TITLE>
-    <SAMPLE_NAME>
-      <TAXON_ID>408172</TAXON_ID>
-      <SCIENTIFIC_NAME>marine metagenome</SCIENTIFIC_NAME>
-    </SAMPLE_NAME>
-    <SAMPLE_ATTRIBUTES>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>Material Type</TAG>
-        <VALUE>deoxyribonucleic acid</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-c2 concentration</TAG>
-        <VALUE>0.3</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>water salinity</TAG>
-        <VALUE>31.5</VALUE>
-        <UNITS>psu</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>divinyl-chl-b concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>hexfucoxanthin concentration</TAG>
-        <VALUE>0.27</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>water temperature at 3 meter depth</TAG>
-        <VALUE>8.9</VALUE>
-        <UNITS>degree celsius</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>small picoeukaryotes count</TAG>
-        <VALUE>42927</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>lutein concentration</TAG>
-        <VALUE>0.02</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>diatoxanthin concentration</TAG>
-        <VALUE>0.05</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>divinyl-chl-a concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location</TAG>
-        <VALUE>5.222222</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>alloxanthin concentration</TAG>
-        <VALUE>0.05</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>neoxanthin concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>peridinin concentration</TAG>
-        <VALUE>0.26</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>violaxanthin concentration</TAG>
-        <VALUE>0.1</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>primary production depth integrated production to 3 m expressed_in mgC m-2 d-1</TAG>
-        <VALUE>129.9</VALUE>
-        <UNITS>mg/m2/d</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>particulate organic carbon concentration</TAG>
-        <VALUE>945</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>butfucoxanthin concentration</TAG>
-        <VALUE>0.03</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>BB carotene concentration</TAG>
-        <VALUE>0.12</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>nitrate concentration</TAG>
-        <VALUE>0.59</VALUE>
-        <UNITS>umol/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-b concentration</TAG>
-        <VALUE>0.43</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>nanoflagellates count</TAG>
-        <VALUE>283</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-c3 concentration</TAG>
-        <VALUE>0.07</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>phosphate concentration</TAG>
-        <VALUE>0.25</VALUE>
-        <UNITS>umol/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>diadinoxanthin concentration</TAG>
-        <VALUE>0.21</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>zeaxanthin concentration</TAG>
-        <VALUE>0.13</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-a concentration</TAG>
-        <VALUE>1.77</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>large picoeukaryotes count</TAG>
-        <VALUE>2916</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>fluorescence</TAG>
-        <VALUE>4.1</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>bacteria count</TAG>
-        <VALUE>6143892</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>fucoxanthin concentration</TAG>
-        <VALUE>0.19</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>cryptophytes count</TAG>
-        <VALUE>216</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chlorophyll a concentration</TAG>
-        <VALUE>1.77</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>prasinoxanthin concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location</TAG>
-        <VALUE>60.269444</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location</TAG>
-        <VALUE>Norway, fjord, coastal</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>synechococcus count</TAG>
-        <VALUE>22049</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>particulate organic nitrogen concentration</TAG>
-        <VALUE>166</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-    </SAMPLE_ATTRIBUTES>
-  </SAMPLE>
-  <SAMPLE center_name="OXFORD" broker_name="" alias="BII-S-3:source:GSM255770">
-    <TITLE>BII-S-3:source:GSM255770</TITLE>
-    <SAMPLE_NAME>
-      <TAXON_ID>408172</TAXON_ID>
-      <SCIENTIFIC_NAME>marine metagenome</SCIENTIFIC_NAME>
-    </SAMPLE_NAME>
-    <SAMPLE_ATTRIBUTES>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>Material Type</TAG>
-        <VALUE>deoxyribonucleic acid</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-c2 concentration</TAG>
-        <VALUE>0.59</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>water salinity</TAG>
-        <VALUE>31.3</VALUE>
-        <UNITS>psu</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>divinyl-chl-b concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>hexfucoxanthin concentration</TAG>
-        <VALUE>0.82</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>water temperature at 3 meter depth</TAG>
-        <VALUE>9.7</VALUE>
-        <UNITS>degree celsius</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>small picoeukaryotes count</TAG>
-        <VALUE>36257</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>lutein concentration</TAG>
-        <VALUE>0.37</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>diatoxanthin concentration</TAG>
-        <VALUE>0.1</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>divinyl-chl-a concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location</TAG>
-        <VALUE>5.222222</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>alloxanthin concentration</TAG>
-        <VALUE>0.36</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>neoxanthin concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>peridinin concentration</TAG>
-        <VALUE>0.18</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>violaxanthin concentration</TAG>
-        <VALUE>0.64</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>primary production depth integrated production to 3 m expressed_in mgC m-2 d-1</TAG>
-        <VALUE>591.4</VALUE>
-        <UNITS>mg/m2/d</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>particulate organic carbon concentration</TAG>
-        <VALUE>844</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>butfucoxanthin concentration</TAG>
-        <VALUE>0.14</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>BB carotene concentration</TAG>
-        <VALUE>0.72</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>nitrate concentration</TAG>
-        <VALUE>7.53</VALUE>
-        <UNITS>umol/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-b concentration</TAG>
-        <VALUE>5.25</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>nanoflagellates count</TAG>
-        <VALUE>2851</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-c3 concentration</TAG>
-        <VALUE>0.29</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>phosphate concentration</TAG>
-        <VALUE>0.23</VALUE>
-        <UNITS>umol/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>diadinoxanthin concentration</TAG>
-        <VALUE>0.46</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>zeaxanthin concentration</TAG>
-        <VALUE>0.35</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chl-a concentration</TAG>
-        <VALUE>9.23</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>large picoeukaryotes count</TAG>
-        <VALUE>5450</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>fluorescence</TAG>
-        <VALUE>17.6</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>bacteria count</TAG>
-        <VALUE>4666004</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>fucoxanthin concentration</TAG>
-        <VALUE>0.54</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>cryptophytes count</TAG>
-        <VALUE>660</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>chlorophyll a concentration</TAG>
-        <VALUE>9.23</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>prasinoxanthin concentration</TAG>
-        <VALUE>0</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location</TAG>
-        <VALUE>60.269444</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>geographic location</TAG>
-        <VALUE>Norway, fjord, coastal</VALUE>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>synechococcus count</TAG>
-        <VALUE>7064</VALUE>
-        <UNITS>number/ml</UNITS>
-      </SAMPLE_ATTRIBUTE>
-      <SAMPLE_ATTRIBUTE>
-        <TAG>particulate organic nitrogen concentration</TAG>
-        <VALUE>143</VALUE>
-        <UNITS>ug/l</UNITS>
-      </SAMPLE_ATTRIBUTE>
-    </SAMPLE_ATTRIBUTES>
-  </SAMPLE>
+	<SAMPLE alias="BII-S-3:sample:GSM255773" broker_name="ISAcreator" center_name="OXFORD">
+		<TITLE>BII-S-3:sample:GSM255773</TITLE>
+		<SAMPLE_NAME>
+			<TAXON_ID>408172</TAXON_ID>
+			<SCIENTIFIC_NAME>marine metagenome</SCIENTIFIC_NAME>
+		</SAMPLE_NAME>
+		<SAMPLE_ATTRIBUTES>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>Source Name</TAG>
+				<VALUE>GSM255773</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>small picoeukaryotes count</TAG>
+				<VALUE>42927</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-c2 concentration</TAG>
+				<VALUE>0.3</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>neoxanthin concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>particulate organic carbon concentration</TAG>
+				<VALUE>945</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>hexfucoxanthin concentration</TAG>
+				<VALUE>0.27</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>water salinity</TAG>
+				<VALUE>31.5</VALUE>
+				<UNITS>psu</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>butfucoxanthin concentration</TAG>
+				<VALUE>0.03</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-c3 concentration</TAG>
+				<VALUE>0.07</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>diatoxanthin concentration</TAG>
+				<VALUE>0.05</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>nitrate concentration</TAG>
+				<VALUE>0.59</VALUE>
+				<UNITS>umol/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>geographic location (latitude)</TAG>
+				<VALUE>60.269444</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>geographic location (longitude)</TAG>
+				<VALUE>5.222222</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>alloxanthin concentration</TAG>
+				<VALUE>0.05</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-a concentration</TAG>
+				<VALUE>1.77</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>large picoeukaryotes count</TAG>
+				<VALUE>2916</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>divinyl-chl-b concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>fucoxanthin concentration</TAG>
+				<VALUE>0.19</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>phosphate concentration</TAG>
+				<VALUE>0.25</VALUE>
+				<UNITS>umol/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>geographic location (country and/or sea,region)</TAG>
+				<VALUE>Norway, fjord, coastal</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-b concentration</TAG>
+				<VALUE>0.43</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>violaxanthin concentration</TAG>
+				<VALUE>0.1</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>particulate organic nitrogen concentration</TAG>
+				<VALUE>166</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>lutein concentration</TAG>
+				<VALUE>0.02</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chlorophyll a concentration</TAG>
+				<VALUE>1.77</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>peridinin concentration</TAG>
+				<VALUE>0.26</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>zeaxanthin concentration</TAG>
+				<VALUE>0.13</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>fluorescence</TAG>
+				<VALUE>4.1</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>nanoflagellates count</TAG>
+				<VALUE>283</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>BB carotene concentration</TAG>
+				<VALUE>0.12</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>diadinoxanthin concentration</TAG>
+				<VALUE>0.21</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>primary production depth integrated production to 3 m expressed_in mgC m-2 d-1</TAG>
+				<VALUE>129.9</VALUE>
+				<UNITS>mg/m2/d</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>prasinoxanthin concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>water temperature at 3 meter depth</TAG>
+				<VALUE>8.9</VALUE>
+				<UNITS>degree celsius</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>synechococcus count</TAG>
+				<VALUE>22049</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>divinyl-chl-a concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>bacteria count</TAG>
+				<VALUE>6143892</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>cryptophytes count</TAG>
+				<VALUE>216</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+		</SAMPLE_ATTRIBUTES>
+	</SAMPLE>
+	<SAMPLE alias="BII-S-3:sample:GSM255770" broker_name="ISAcreator" center_name="OXFORD">
+		<TITLE>BII-S-3:sample:GSM255770</TITLE>
+		<SAMPLE_NAME>
+			<TAXON_ID>408172</TAXON_ID>
+			<SCIENTIFIC_NAME>marine metagenome</SCIENTIFIC_NAME>
+		</SAMPLE_NAME>
+		<SAMPLE_ATTRIBUTES>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>Source Name</TAG>
+				<VALUE>GSM255770</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>small picoeukaryotes count</TAG>
+				<VALUE>36257</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-c2 concentration</TAG>
+				<VALUE>0.59</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>neoxanthin concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>particulate organic carbon concentration</TAG>
+				<VALUE>844</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>hexfucoxanthin concentration</TAG>
+				<VALUE>0.82</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>water salinity</TAG>
+				<VALUE>31.3</VALUE>
+				<UNITS>psu</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>butfucoxanthin concentration</TAG>
+				<VALUE>0.14</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-c3 concentration</TAG>
+				<VALUE>0.29</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>diatoxanthin concentration</TAG>
+				<VALUE>0.1</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>nitrate concentration</TAG>
+				<VALUE>7.53</VALUE>
+				<UNITS>umol/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>geographic location (latitude)</TAG>
+				<VALUE>60.269444</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>geographic location (longitude)</TAG>
+				<VALUE>5.222222</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>alloxanthin concentration</TAG>
+				<VALUE>0.36</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-a concentration</TAG>
+				<VALUE>9.23</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>large picoeukaryotes count</TAG>
+				<VALUE>5450</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>divinyl-chl-b concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>fucoxanthin concentration</TAG>
+				<VALUE>0.54</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>phosphate concentration</TAG>
+				<VALUE>0.23</VALUE>
+				<UNITS>umol/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>geographic location (country and/or sea,region)</TAG>
+				<VALUE>Norway, fjord, coastal</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-b concentration</TAG>
+				<VALUE>5.25</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>violaxanthin concentration</TAG>
+				<VALUE>0.64</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>particulate organic nitrogen concentration</TAG>
+				<VALUE>143</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>lutein concentration</TAG>
+				<VALUE>0.37</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chlorophyll a concentration</TAG>
+				<VALUE>9.23</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>peridinin concentration</TAG>
+				<VALUE>0.18</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>zeaxanthin concentration</TAG>
+				<VALUE>0.35</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>fluorescence</TAG>
+				<VALUE>17.6</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>nanoflagellates count</TAG>
+				<VALUE>2851</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>BB carotene concentration</TAG>
+				<VALUE>0.72</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>diadinoxanthin concentration</TAG>
+				<VALUE>0.46</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>primary production depth integrated production to 3 m expressed_in mgC m-2 d-1</TAG>
+				<VALUE>591.4</VALUE>
+				<UNITS>mg/m2/d</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>prasinoxanthin concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>water temperature at 3 meter depth</TAG>
+				<VALUE>9.7</VALUE>
+				<UNITS>degree celsius</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>synechococcus count</TAG>
+				<VALUE>7064</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>divinyl-chl-a concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>bacteria count</TAG>
+				<VALUE>4666004</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>cryptophytes count</TAG>
+				<VALUE>660</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+		</SAMPLE_ATTRIBUTES>
+	</SAMPLE>
+	<SAMPLE alias="BII-S-3:sample:GSM255772" broker_name="ISAcreator" center_name="OXFORD">
+		<TITLE>BII-S-3:sample:GSM255772</TITLE>
+		<SAMPLE_NAME>
+			<TAXON_ID>408172</TAXON_ID>
+			<SCIENTIFIC_NAME>marine metagenome</SCIENTIFIC_NAME>
+		</SAMPLE_NAME>
+		<SAMPLE_ATTRIBUTES>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>Source Name</TAG>
+				<VALUE>GSM255772</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>small picoeukaryotes count</TAG>
+				<VALUE>21435</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-c2 concentration</TAG>
+				<VALUE>0.31</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>neoxanthin concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>particulate organic carbon concentration</TAG>
+				<VALUE>783</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>hexfucoxanthin concentration</TAG>
+				<VALUE>0.15</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>water salinity</TAG>
+				<VALUE>31.5</VALUE>
+				<UNITS>psu</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>butfucoxanthin concentration</TAG>
+				<VALUE>0.06</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-c3 concentration</TAG>
+				<VALUE>0.05</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>diatoxanthin concentration</TAG>
+				<VALUE>0.04</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>nitrate concentration</TAG>
+				<VALUE>3.94</VALUE>
+				<UNITS>umol/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>geographic location (latitude)</TAG>
+				<VALUE>60.269444</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>geographic location (longitude)</TAG>
+				<VALUE>5.222222</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>alloxanthin concentration</TAG>
+				<VALUE>0.03</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-a concentration</TAG>
+				<VALUE>1.6</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>large picoeukaryotes count</TAG>
+				<VALUE>878</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>divinyl-chl-b concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>fucoxanthin concentration</TAG>
+				<VALUE>0.21</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>phosphate concentration</TAG>
+				<VALUE>0.2</VALUE>
+				<UNITS>umol/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>geographic location (country and/or sea,region)</TAG>
+				<VALUE>Norway, fjord, coastal</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-b concentration</TAG>
+				<VALUE>0.21</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>violaxanthin concentration</TAG>
+				<VALUE>0.05</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>particulate organic nitrogen concentration</TAG>
+				<VALUE>128</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>lutein concentration</TAG>
+				<VALUE>0.02</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chlorophyll a concentration</TAG>
+				<VALUE>1.6</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>peridinin concentration</TAG>
+				<VALUE>0.41</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>zeaxanthin concentration</TAG>
+				<VALUE>0.13</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>fluorescence</TAG>
+				<VALUE>4.5</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>nanoflagellates count</TAG>
+				<VALUE>138</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>BB carotene concentration</TAG>
+				<VALUE>0.06</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>diadinoxanthin concentration</TAG>
+				<VALUE>0.2</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>primary production depth integrated production to 3 m expressed_in mgC m-2 d-1</TAG>
+				<VALUE>118</VALUE>
+				<UNITS>mg/m2/d</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>prasinoxanthin concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>water temperature at 3 meter depth</TAG>
+				<VALUE>9</VALUE>
+				<UNITS>degree celsius</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>synechococcus count</TAG>
+				<VALUE>16465</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>divinyl-chl-a concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>bacteria count</TAG>
+				<VALUE>9516120</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>cryptophytes count</TAG>
+				<VALUE>75</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+		</SAMPLE_ATTRIBUTES>
+	</SAMPLE>
+	<SAMPLE alias="BII-S-3:sample:GSM255771" broker_name="ISAcreator" center_name="OXFORD">
+		<TITLE>BII-S-3:sample:GSM255771</TITLE>
+		<SAMPLE_NAME>
+			<TAXON_ID>408172</TAXON_ID>
+			<SCIENTIFIC_NAME>marine metagenome</SCIENTIFIC_NAME>
+		</SAMPLE_NAME>
+		<SAMPLE_ATTRIBUTES>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>Source Name</TAG>
+				<VALUE>GSM255771</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>small picoeukaryotes count</TAG>
+				<VALUE>38513</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-c2 concentration</TAG>
+				<VALUE>0.87</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>neoxanthin concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>particulate organic carbon concentration</TAG>
+				<VALUE>561</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>hexfucoxanthin concentration</TAG>
+				<VALUE>1.15</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>water salinity</TAG>
+				<VALUE>31.4</VALUE>
+				<UNITS>psu</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>butfucoxanthin concentration</TAG>
+				<VALUE>0.17</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-c3 concentration</TAG>
+				<VALUE>0.65</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>diatoxanthin concentration</TAG>
+				<VALUE>0.11</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>nitrate concentration</TAG>
+				<VALUE>3.84</VALUE>
+				<UNITS>umol/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>geographic location (latitude)</TAG>
+				<VALUE>60.269444</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>geographic location (longitude)</TAG>
+				<VALUE>5.222222</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>alloxanthin concentration</TAG>
+				<VALUE>0.33</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-a concentration</TAG>
+				<VALUE>11.22</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>large picoeukaryotes count</TAG>
+				<VALUE>12035</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>divinyl-chl-b concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>fucoxanthin concentration</TAG>
+				<VALUE>1.43</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>phosphate concentration</TAG>
+				<VALUE>0.19</VALUE>
+				<UNITS>umol/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>geographic location (country and/or sea,region)</TAG>
+				<VALUE>Norway, fjord, coastal</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chl-b concentration</TAG>
+				<VALUE>5.97</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>violaxanthin concentration</TAG>
+				<VALUE>0.99</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>particulate organic nitrogen concentration</TAG>
+				<VALUE>104</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>lutein concentration</TAG>
+				<VALUE>0.41</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>chlorophyll a concentration</TAG>
+				<VALUE>11.22</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>peridinin concentration</TAG>
+				<VALUE>0.14</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>zeaxanthin concentration</TAG>
+				<VALUE>0.23</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>fluorescence</TAG>
+				<VALUE>23.6</VALUE>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>nanoflagellates count</TAG>
+				<VALUE>4390</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>BB carotene concentration</TAG>
+				<VALUE>0.83</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>diadinoxanthin concentration</TAG>
+				<VALUE>0.64</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>primary production depth integrated production to 3 m expressed_in mgC m-2 d-1</TAG>
+				<VALUE>938.1</VALUE>
+				<UNITS>mg/m2/d</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>prasinoxanthin concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>water temperature at 3 meter depth</TAG>
+				<VALUE>9.6</VALUE>
+				<UNITS>degree celsius</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>synechococcus count</TAG>
+				<VALUE>13867</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>divinyl-chl-a concentration</TAG>
+				<VALUE>0</VALUE>
+				<UNITS>ug/l</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>bacteria count</TAG>
+				<VALUE>4862861</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+			<SAMPLE_ATTRIBUTE>
+				<TAG>cryptophytes count</TAG>
+				<VALUE>1702</VALUE>
+				<UNITS>number/ml</UNITS>
+			</SAMPLE_ATTRIBUTE>
+		</SAMPLE_ATTRIBUTES>
+	</SAMPLE>
 </SAMPLE_SET>
+

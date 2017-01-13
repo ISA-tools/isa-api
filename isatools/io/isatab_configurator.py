@@ -14,26 +14,23 @@ import datetime as datetime_
 import warnings as warnings_
 from lxml import etree as etree_
 import os
-
-config_dict = dict()
+import glob
 
 
 def load(config_dir):
-    global config_dict
-    for file in os.listdir(config_dir):
-        if file.endswith(".xml"):
-            try:
-                config_obj = parse(inFileName=os.path.join(config_dir, file), silence=True)
-                measurement_type = config_obj.get_isatab_configuration()[0].get_measurement().get_term_label()
-                technology_type = config_obj.get_isatab_configuration()[0].get_technology().get_term_label()
-                config_dict[(measurement_type, technology_type)] = config_obj
-            except GDSParseError as parse_error:
-                print(parse_error)
+    config_dict = dict()
+    for file in glob.iglob(os.path.join(config_dir, '*.xml')):
+        try:
+            config_obj = parse(inFileName=file, silence=True)
+            measurement_type = config_obj.get_isatab_configuration()[0].get_measurement().get_term_label()
+            technology_type = config_obj.get_isatab_configuration()[0].get_technology().get_term_label()
+            config_dict[(measurement_type, technology_type)] = config_obj
+        except GDSParseError as parse_error:
+            print(parse_error)
     return config_dict
 
 
-def get_config(measurement_type=None, technology_type=None):
-    global config_dict
+def get_config(config_dict, measurement_type=None, technology_type=None):
     try:
         config = config_dict[(measurement_type, technology_type)].isatab_configuration[0]
         from collections import OrderedDict

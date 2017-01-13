@@ -28,7 +28,7 @@
         "affiliations" : {
             "type" : "array",
             "items" : {
-                 "$ref": "organization_schema.json#"
+                "$ref": "organization_schema.json#"
 
             }
         },

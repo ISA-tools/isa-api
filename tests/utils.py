@@ -2,6 +2,7 @@ import pandas as pd
 from pandas.util.testing import assert_frame_equal
 from isatools.isatab import read_investigation_file
 import os
+import re
 
 _data_dir = os.path.join(os.path.dirname(__file__), 'data')
 
@@ -14,11 +15,19 @@ SRA_DATA_DIR = os.path.join(_data_dir, 'sra')
 
 TAB_DATA_DIR = os.path.join(_data_dir, 'tab')
 
+MZML_DATA_DIR = os.path.join(_data_dir, 'mzml')
+
 CONFIGS_DATA_DIR = os.path.join(_data_dir, 'configs')
 XML_CONFIGS_DATA_DIR = os.path.join(CONFIGS_DATA_DIR, 'xml')
 DEFAULT2015_XML_CONFIGS_DATA_DIR = os.path.join(XML_CONFIGS_DATA_DIR, 'isaconfig-default_v2015-07-02')
 SRA2016_XML_CONFIGS_DATA_DIR = os.path.join(XML_CONFIGS_DATA_DIR, 'isaconfig-seq_v2016-08-30-SRA1.5-august2014mod')
 JSON_DEFAULT_CONFIGS_DATA_DIR = os.path.join(_data_dir, CONFIGS_DATA_DIR, 'json_default')
+JSON_SRA_CONFIGS_DATA_DIR = os.path.join(_data_dir, CONFIGS_DATA_DIR, 'json_sra')
+
+
+_RX_CHARACTERISTICS = re.compile('Characteristics\[(.*?)\]')
+_RX_PARAM_VALUE = re.compile('Parameter Value\[(.*?)\]')
+_RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
 
 
 def assert_tab_content_equal(fp_x, fp_y):
@@ -89,14 +98,11 @@ def assert_tab_content_equal(fp_x, fp_y):
 
             # reindex to add contexts for duplicate named columns (i.e. Term Accession Number, Unit, etc.)
             import re
-            char_regex = re.compile('Characteristics\[(.*?)\]')
-            pv_regex = re.compile('Parameter Value\[(.*?)\]')
-            fv_regex = re.compile('Factor Value\[(.*?)\]')
             newcolsx = list()
             for col in df_x.columns:
                 newcolsx.append(col)
             for i, col in enumerate(df_x.columns):
-                if char_regex.match(col) or pv_regex.match(col) or fv_regex.match(col):
+                if any(RX.match(col) for RX in (_RX_CHARACTERISTICS, _RX_PARAM_VALUE, _RX_FACTOR_VALUE)):
                     try:
                         if 'Unit' in df_x.columns[i+1]:
                             newcolsx[i+1] = col + '/Unit'
@@ -115,7 +121,7 @@ def assert_tab_content_equal(fp_x, fp_y):
             for col in df_y.columns:
                 newcolsy.append(col)
             for i, col in enumerate(df_y.columns):
-                if char_regex.match(col) or pv_regex.match(col) or fv_regex.match(col):
+                if any(RX.match(col) for RX in (_RX_CHARACTERISTICS, _RX_PARAM_VALUE, _RX_FACTOR_VALUE)):
                     try:
                         if 'Unit' in df_y.columns[i+1]:
                             newcolsy[i+1] = col + '/Unit'
@@ -143,29 +149,6 @@ def assert_tab_content_equal(fp_x, fp_y):
             return False
 
 
-def immutablesort(json):
-
-    def _sortlist(L):
-        keys = list()
-        if isinstance(L[0], dict):
-            keys = L[0].keys()
-            ok = True
-            for i in L:
-                if isinstance(i, dict):
-                    if i.keys() not in keys:
-                        ok = False
-                        continue
-            if ok:  # if all keys the same, shuffle on values
-                return sorted(L, key=lambda i: i['@id'])
-            else:
-                return L
-    # sorted(L1, key=lambda i: str(i.values())) == sorted(L2, key=lambda i: str(i.values()))
-    for k, v in json.items():
-        if isinstance(v, list):
-            json[k] = _sortlist(v)
-    return json
-
-
 def sortlistsj(J):
     if isinstance(J, dict):
         for k in J.keys():
@@ -183,6 +166,9 @@ def sortlistsx(X):
 
 
 def assert_json_equal(jx, jy):
+    import json
+    jx = json.loads(json.dumps(jx, sort_keys=True))
+    jy = json.loads(json.dumps(jy, sort_keys=True))
     sortlistsj(jx)
     sortlistsj(jy)
     if jx == jy:
@@ -194,4 +180,36 @@ def assert_json_equal(jx, jy):
 
 
 def assert_xml_equal(x1, x2):
-    pass
+    # Only counts tags of x1 and x2 to check if the right number appear in each
+
+    def collect_tags(X):
+        foundtags = set()
+        for node in X.iter():
+            foundtags.add(node.tag)
+        return foundtags
+
+    x1tags = collect_tags(x1)
+    x2tags = collect_tags(x2)
+    if len(x1tags - x2tags) > 0 or len(x2tags - x1tags) > 0:
+        print("Collected tags don't match: ", x1tags, x2tags)
+        return False
+    else:
+        for tag in x1tags:
+            tagcount1 = x1.xpath('count(//{})'.format(tag))
+            tagcount2 = x2.xpath('count(//{})'.format(tag))
+            if tagcount1 != tagcount2:
+                print("Counts of {0} tag do not match {1}:{2}".format(tag, int(tagcount1), int(tagcount2)))
+                return False
+        return True
+
+
+def strip_ids(J):
+    for k, v in J.items():
+        if isinstance(v, dict):
+            strip_ids(v)
+        elif isinstance(v, list):
+            for i in v:
+                strip_ids(i)
+        else:
+            if k == '@id':
+                J[k] = ''

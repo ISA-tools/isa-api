@@ -6,6 +6,21 @@
         <DESIGN_DESCRIPTION>See study and sample descriptions for details</DESIGN_DESCRIPTION>
         <SAMPLE_DESCRIPTOR refname="{{assay.sample_alias}}"/>
         {% include 'experiment_library_descriptor.xml' %}
+        {% if '454 GS' in assay.platform and assay.library_layout == 'single' and assay.min_match > 0 %}
+        {% include 'experiment_spot_descriptor_454_single_barcode.xml' %}
+        {% elif '454 GS' in assay.platform and assay.library_layout == 'single' %}
+        {% include 'experiment_spot_descriptor_454_single.xml' %}
+        {% elif '454 GS' in assay.platform and assay.library_layout == 'paired' %}
+        {% include 'experiment_spot_descriptor_454_paired.xml' %}
+        {% elif 'illumina' in assay.platform and assay.library_layout == 'single' %}
+        {% include 'experiment_spot_descriptor_illumina_single.xml' %}
+        {% elif 'illumina' in assay.platform and assay.library_layout == 'paired' %}
+        {% include 'experiment_spot_descriptor_illumina_paired.xml' %}
+        {% elif 'solid' in assay.platform and assay.library_layout == 'single' %}
+        {% include 'experiment_spot_descriptor_solid_single.xml' %}
+        {% elif 'solid' in assay.platform and assay.library_layout == 'paired' %}
+        {% include 'experiment_spot_descriptor_solid_paired.xml' %}
+        {% endif %}
     </DESIGN>
     <PLATFORM>
         {% if '454 GS' in assay.platform %}

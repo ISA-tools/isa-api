@@ -1,17 +1,15 @@
 __author__ = 'agbeltran'
 
-import json, os
-from os import listdir
-from os.path import isfile, join
+import json
+import os
+import glob
 from jsonschema import Draft4Validator
 
 def validateSchemasInFolder(folder):
     path = os.path.abspath(folder)
-    files = [ f for f in listdir(path) if isfile(join(path,f)) ]
-
-    for schemaFile in files:
-        if (schemaFile.endswith('.json')):
-            print("Validating schema ", schemaFile, "...")
-            schema = json.load(open(join(path,schemaFile)))
+    for schemaFile in glob.iglob(os.path.join(path, '*.json')):
+        print("Validating schema ", os.path.basename(schemaFile), "...")
+        with open(schemaFile) as schema_fp:
+            schema = json.load(schema_fp)
             Draft4Validator.check_schema(schema)
             print("done.")

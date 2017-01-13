@@ -1,0 +1,15 @@
+[run]
+source = isatools
+omit =
+    /docs/*
+    /features/*
+    /tests/*
+    /isatools/io/isatab_configurator.py
+    /isatools/io/storage_adapter.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    raise NotImplementedError
+    except ImportError
+    if __name__ == .__main__.:

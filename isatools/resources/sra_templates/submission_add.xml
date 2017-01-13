@@ -1,8 +1,9 @@
 <SUBMISSION xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:noNamespaceSchemaLocation="ftp://ftp.sra.ebi.ac.uk/meta/xsd/sra_1_5/SRA.submission.xsd"
-            center_name="{{sra_center_name}}" accession="{{accession}}" alias="{{accession}}"
-            broker_name="{{sra_broker_name}}" submission_date="{{submission_date}}">
+            center_name="{{sra_center_name}}" alias="{{accession}}" broker_name="{{sra_broker_name}}"
+            submission_date="{{submission_date}}">
     <CONTACTS>
+        {% if sra_contact %}<CONTACT inform_on_status="{{sra_contact.inform_on_status}}" inform_on_error="{{sra_contact.inform_on_error}}" name="{{sra_contact.contact_name}}"/>{% endif %}
         {% for contact in contacts %}
         {% if contact.inform_on_status and contact.inform_on_error %}
         <CONTACT name="{{contact.first_name}} {{contact.last_name}}" inform_on_status="{{contact.email}}"
