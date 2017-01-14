@@ -113,6 +113,7 @@ def load(fp):
             fax=person_json["fax"],
             address=person_json["address"],
             affiliation=person_json["affiliation"],
+            roles=[]
         )
         for role_json in person_json["roles"]:
             role = OntologyAnnotation(
@@ -223,8 +224,8 @@ def load(fp):
                 version=protocol_json["version"],
                 protocol_type=OntologyAnnotation(
                     term=protocol_json["protocolType"]["annotationValue"],
-                    term_accession=protocol_json["protocolType"]["termAccession"],
-                    term_source=term_source_dict[protocol_json["protocolType"]["termSource"]]
+                    term_accession=protocol_json["protocolType"]["termAccession"] if "termAccession" in protocol_json["protocolType"].keys() else "",
+                    term_source=term_source_dict[protocol_json["protocolType"]["termSource"]] if "termSource" in protocol_json["protocolType"].keys() else None,
                 )
             )
             for parameter_json in protocol_json["parameters"]:
@@ -1646,7 +1647,7 @@ class ISAJSONEncoder(JSONEncoder):
                 elif isinstance(o, Material):
                     if o.type == 'Extract Name':
                         return '#material/extract-' + o_id
-                    elif o.type == 'Labled Extract Name':
+                    elif o.type == 'Labeled Extract Name':
                         return '#material/labledextract-' + o_id
                     else:
                         raise TypeError("Could not resolve data type labeled: " + o.type)

@@ -160,7 +160,9 @@ class StudyFactory:
                 protocol_map[protocol.name] = protocol
 
             study_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), study.filename))
-            so, sa, o, d, processes = ProcessSequenceFactory(investigation).create_from_df(study_tfile_df)
+            sources, samples, _, __, processes = ProcessSequenceFactory(investigation).create_from_df(study_tfile_df)
+            study.materials['sources'] = sources
+            study.materials['samples'] = samples
             study.process_sequence = list(processes.values())
 
             for process in study.process_sequence:
@@ -182,7 +184,10 @@ class StudyFactory:
                 assay.technology_platform = row['Study Assay Technology Platform']
 
                 assay_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), assay.filename))
-                so, sa, o, d, processes = ProcessSequenceFactory(investigation).create_from_df(assay_tfile_df)
+                _, samples, other, data, processes = ProcessSequenceFactory(investigation).create_from_df(assay_tfile_df)
+                assay.materials['samples'] = samples
+                assay.materials['other_material'] = other
+                assay.data_files = data
                 assay.process_sequence = list(processes.values())
 
                 for process in assay.process_sequence:

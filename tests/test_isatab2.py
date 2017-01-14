@@ -134,3 +134,24 @@ class TestIsaTab2(unittest.TestCase):
         self.assertEqual(len(processes), 18)  # expecting 18 processes
         # self.assertEqual(len(process_sequences), 6)  # expecting 6 process sequences
         #  TODO: Fix processes and sequences to combine repeated parts to build graph properly
+
+    def test_tab_load_bii_s_7(self):
+        # Load into ISA objects
+        ISA = isatab2.StudyFactory().create_from_fp(open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt')))
+
+        self.assertListEqual([s.filename for s in ISA.studies], ['s_BII-S-7.txt'])  # 1 studies in i_gilbert.txt
+
+        study_bii_s_7 = [s for s in ISA.studies if s.filename == 's_BII-S-7.txt'][0]
+        print(study_bii_s_7.process_sequence)
+        self.assertEqual(len(study_bii_s_7.materials['sources']), 29)  # 29 sources in s_BII-S-7.txt
+        self.assertEqual(len(study_bii_s_7.materials['samples']), 29)  # 29 study samples in s_BII-S-7.txt
+        self.assertEqual(len(study_bii_s_7.process_sequence), 29)  # 29 study processes in s_BII-S-7.txt
+
+        self.assertListEqual([a.filename for a in study_bii_s_7.assays], ['a_matteo-assay-Gx.txt'])  # 1 assays in s_BII-S-1.txt
+
+        assay_gx = [a for a in study_bii_s_7.assays if a.filename == 'a_matteo-assay-Gx.txt'][0]
+
+        self.assertEqual(len(assay_gx.materials['samples']), 29)  # 29 assay samples in a_matteo-assay-Gx.txt
+        self.assertEqual(len(assay_gx.materials['other_material']), 29)  # 29 other materials in a_matteo-assay-Gx.txt
+        self.assertEqual(len(assay_gx.data_files), 29)  # 29 data files  in a_matteo-assay-Gx.txt
+        self.assertEqual(len(assay_gx.process_sequence), 116)  # 116 processes in in a_matteo-assay-Gx.txt
