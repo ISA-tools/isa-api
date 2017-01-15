@@ -161,10 +161,12 @@ class StudyFactory:
                 protocol_map[protocol.name] = protocol
 
             study_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), study.filename))
-            sources, samples, _, __, processes = ProcessSequenceFactory(investigation).create_from_df(study_tfile_df)
-            study.materials['sources'] = sources.values()
-            study.materials['samples'] = samples.values()
-            study.process_sequence = processes.values()
+            sources, samples, _, __, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(investigation).create_from_df(study_tfile_df)
+            study.materials['sources'] = list(sources.values())
+            study.materials['samples'] = list(samples.values())
+            study.process_sequence = list(processes.values())
+            study.characteristic_categories = list(characteristic_categories.values())
+            study.units = list(unit_categories.values())
 
             for process in study.process_sequence:
                 process.executes_protocol = protocol_map[process.executes_protocol]
@@ -185,17 +187,19 @@ class StudyFactory:
                 assay.technology_platform = row['Study Assay Technology Platform']
 
                 assay_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), assay.filename))
-                _, samples, other, data, processes = ProcessSequenceFactory(investigation).create_from_df(assay_tfile_df)
-                assay.materials['samples'] = samples.values()
-                assay.materials['other_material'] = other.values()
-                assay.data_files = data.values()
-                assay.process_sequence = processes.values()
+                _, samples, other, data, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(investigation).create_from_df(assay_tfile_df)
+                assay.materials['samples'] = list(samples.values())
+                assay.materials['other_material'] = list(other.values())
+                assay.data_files = list(data.values())
+                assay.process_sequence = list(processes.values())
+                assay.characteristic_categories = list(characteristic_categories.values())
+                assay.units = list(unit_categories.values())
 
                 for process in assay.process_sequence:
                     try:
                         process.executes_protocol = protocol_map[process.executes_protocol]
                     except KeyError:
-                        process.executes_protocol = None
+                        process.executes_protocol = Protocol()  # assign to anonymous Protocol obj
 
                 study.assays.append(assay)
 
@@ -225,16 +229,17 @@ class ProcessSequenceFactory:
         processes = {}
         characteristic_categories = {}
         parameter_value_categories = {}
+        unit_categories = {}
 
         # TODO: Handle comment columns
 
         try:
-            sources = dict(map(lambda x: (x, Source(name=x)), DF['Source Name'].drop_duplicates()))
+            sources = dict(map(lambda x: ('Source Name:' + x, Source(name=x)), DF['Source Name'].drop_duplicates()))
         except KeyError:
             pass
 
         try:
-            samples = dict(map(lambda x: (x, Sample(name=x)), DF['Sample Name'].drop_duplicates()))
+            samples = dict(map(lambda x: ('Sample Name:' + x, Sample(name=x)), DF['Sample Name'].drop_duplicates()))
         except KeyError:
             pass
 
@@ -245,10 +250,15 @@ class ProcessSequenceFactory:
             pass
 
         try:
-            # TODO: Add label to LabeledExtract objects
-            labeled_extracts = dict(map(lambda x: ('Labeled Extract Name:' + x,  Material(name=x, type_='Labeled Extract Name')),
-                                        DF['Labeled Extract Name'].drop_duplicates()))
-            other_material.update(labeled_extracts)
+            for _, lextract_name in DF['Labeled Extract Name'].drop_duplicates().iteritems():
+                lextract = Material(name=lextract_name, type_='Labeled Extract Name')
+                lextract.characteristics = [
+                    Characteristic(
+                        category=OntologyAnnotation(term='Label'),
+                        value=OntologyAnnotation(term=DF.loc[_, 'Label'])
+                    )
+                ]
+                other_material['Labeled Extract Name:' + lextract_name] = lextract
         except KeyError:
             pass
 
@@ -353,12 +363,12 @@ class ProcessSequenceFactory:
                     material = None
 
                     try:
-                        material = sources[node_key]
+                        material = sources['Source Name:' + node_key]
                     except KeyError:
                         pass
 
                     try:
-                        material = samples[node_key]
+                        material = samples['Sample Name:' + node_key]
                     except KeyError:
                         pass
 
@@ -380,7 +390,7 @@ class ProcessSequenceFactory:
 
                             characteristic = Characteristic(category=category)
 
-                            v, u = get_value(charac_column, column_group, object_series, ontology_source_map)
+                            v, u = get_value(charac_column, column_group, object_series, ontology_source_map, unit_categories)
 
                             characteristic.value = v
                             characteristic.unit = u
@@ -405,10 +415,10 @@ class ProcessSequenceFactory:
                         node_key = output_node_value
 
                         if output_node_label == 'Sample Name':
-                            output_node = samples[node_key]
+                            output_node = samples['Sample Name:' + node_key]
                         elif output_node_label == 'Extract Name':
                             output_node = other_material['Extract Name:' + node_key]
-                        elif DF.columns[output_node_index] == 'Labeled Extract Name':
+                        elif output_node_label == 'Labeled Extract Name':
                             output_node = other_material['Labeled Extract Name:' + node_key]
                         elif output_node_label == 'Raw Data File':
                             output_node = data['Raw Data File:' + node_key]
@@ -441,9 +451,9 @@ class ProcessSequenceFactory:
                         node_key = input_node_value
 
                         if input_node_label == 'Source Name':
-                            input_node = sources[node_key]
+                            input_node = sources['Source Name:' + node_key]
                         elif input_node_label == 'Sample Name':
-                            input_node = samples[node_key]
+                            input_node = samples['Sample Name:' + node_key]
                         elif input_node_label == 'Extract Name':
                             input_node = other_material['Extract Name:' + node_key]
                         elif input_node_label == 'Labeled Extract Name':
@@ -480,7 +490,7 @@ class ProcessSequenceFactory:
                     name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
 
                     if len(name_column_hits) == 1:
-                        process.name = object_series[name_column_hits[0]]
+                        process.name = str(object_series[name_column_hits[0]])
 
                     for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
 
@@ -493,7 +503,7 @@ class ProcessSequenceFactory:
                             parameter_value_categories[category_key] = category
 
                         parameter_value = ParameterValue(category=category)
-                        v, u = get_value(pv_column, column_group, object_series, ontology_source_map)
+                        v, u = get_value(pv_column, column_group, object_series, ontology_source_map, unit_categories)
 
                         parameter_value.value = v
                         parameter_value.unit = u
@@ -537,7 +547,7 @@ class ProcessSequenceFactory:
                 l.next_process = r
                 r.prev_process = l
 
-        return sources, samples, other_material, data, processes
+        return sources, samples, other_material, data, processes, characteristic_categories, unit_categories
 
 
 def process_keygen(protocol_ref, column_group, cg_index, all_columns, series, series_index):
@@ -595,7 +605,7 @@ def process_keygen(protocol_ref, column_group, cg_index, all_columns, series, se
     return process_key
 
 
-def get_value(object_column, column_group, object_series, ontology_source_map):
+def get_value(object_column, column_group, object_series, ontology_source_map, unit_categories):
 
     cell_value = object_series[object_column]
 
@@ -638,21 +648,28 @@ def get_value(object_column, column_group, object_series, ontology_source_map):
     if offset_1r_col.startswith('Unit') and offset_2r_col.startswith('Term Source REF') \
             and offset_3r_col.startswith('Term Accession Number'):
 
-        unit_term_value = OntologyAnnotation(term=object_series[offset_1r_col])
+        category_key = object_series[offset_1r_col]
 
-        unit_term_source_value = object_series[offset_2r_col]
+        try:
+            unit_term_value = unit_categories[category_key]
+        except KeyError:
+            unit_term_value = OntologyAnnotation(term=category_key)
+            unit_categories[category_key] = unit_term_value
 
-        if unit_term_source_value is not '':
+            unit_term_source_value = object_series[offset_2r_col]
 
-            try:
-                unit_term_value.term_source = ontology_source_map[unit_term_source_value]
-            except KeyError:
-                print('term source: ', unit_term_source_value, ' not found')
+            if unit_term_source_value is not '':
 
-        term_accession_value = object_series[offset_3r_col]
+                try:
+                    unit_term_value.term_source = ontology_source_map[unit_term_source_value]
+                except KeyError:
+                    print('term source: ', unit_term_source_value, ' not found')
 
-        if term_accession_value is not '':
-            unit_term_value.term_accession = term_accession_value
+            term_accession_value = object_series[offset_3r_col]
+
+            if term_accession_value is not '':
+                unit_term_value.term_accession = term_accession_value
+
         return cell_value, unit_term_value
 
     else:

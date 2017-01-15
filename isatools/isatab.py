@@ -713,7 +713,7 @@ def write_assay_table_files(inv_obj, output_dir):
                             for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.term)):
                                 if isinstance(pv.value, int) or isinstance(pv.value, float):
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = pv.value
-                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit'] = pv.unit.name
+                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit'] = pv.unit.term
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termsource'] = pv.unit.term_source.name if pv.unit.term_source else ''
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termaccession'] = pv.unit.term_accession
                                 elif isinstance(pv.value, OntologyAnnotation):
