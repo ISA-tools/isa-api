@@ -271,7 +271,7 @@ def load(fp):
             for characteristic_json in source_json["characteristics"]:
                 value = characteristic_json["value"]
                 unit = None
-                characteristic = Characteristic(category=categories_dict[characteristic_json["category"]["@id"]],)
+                characteristic = Characteristic(category=categories_dict[characteristic_json["category"]["@id"]])
                 if isinstance(value, dict):
                     try:
                         term = characteristic_json["value"]["annotationValue"]
@@ -1490,7 +1490,7 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_comments(o):
-            return list(map(lambda x: get_comment(x), o))
+            return list(map(lambda x: get_comment(x), o if o else []))
 
         def get_ontology_source(o):
             return clean_nulls(
@@ -1654,16 +1654,30 @@ class ISAJSONEncoder(JSONEncoder):
                 elif isinstance(o, DataFile):  # TODO: Implement ID gen on other data file types
                     if o.label == 'Raw Data File':
                         return '#data/rawdatafile-' + o_id
+                    elif o.label == 'Array Data File':
+                        return '#data/arraydatafile-' + o_id
+                    elif o.label == 'Raw Spectral Data File':
+                        return '#data/rawspectraldatafile-' + o_id
                     elif o.label == 'Derived Data File':
                         return '#data/deriveddatafile-' + o_id
+                    elif o.label == 'Derived Array Data File':
+                        return '#data/derivedarraydatafile-' + o_id
+                    elif o.label == 'Derived Spectral Data File':
+                        return '#data/derivedspectraldatafile-' + o_id
                     elif o.label == 'Image File':
                         return '#data/imagefile-' + o_id
                     elif o.label == 'Acquisition Parameter Data File':
                         return '#data/acquisitionparameterdatafile-' + o_id
+                    elif o.label == 'Protein Assignment File':
+                        return '#data/proteinassignmentfile-' + o_id
+                    elif o.label == 'Peptide Assignment File':
+                        return '#data/peptideassignmentfile-' + o_id
+                    elif o.label == 'Post Translational Modification Assignment File':
+                        return '#data/posttranslationalmodificationassignmentfile-' + o_id
                     else:
                         raise TypeError("Could not resolve data type labeled: " + o.label)
                 elif isinstance(o, Process):
-                    return '#' + o_id  # TODO: Implement ID gen on different kinds of processes?
+                    return '#process/' + o_id  # TODO: Implement ID gen on different kinds of processes?
                 else:
                     return '#' + o_id
             else:
