@@ -16,13 +16,11 @@
                 "Image File",
                 "Acquisition Parameter Data File",
                 "Derived Spectral Data File",
-                "Post Translational Modification Assignment File",
                 "Protein Assignment File",
                 "Raw Spectral Data File",
                 "Peptide Assignment File",
                 "Array Data File",
                 "Derived Array Data File",
-                "Derived Spectral Data File",
                 "Post Translational Modification Assignment File"
             ]
         },
