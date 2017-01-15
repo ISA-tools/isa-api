@@ -15,6 +15,7 @@ _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name'
                        'Data Transformation Name', 'Normalization Name']
 
 
+# TODO: Refactor to read in objects as separate units
 class StudyFactory:
 
     def __init__(self):
@@ -161,9 +162,9 @@ class StudyFactory:
 
             study_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), study.filename))
             sources, samples, _, __, processes = ProcessSequenceFactory(investigation).create_from_df(study_tfile_df)
-            study.materials['sources'] = sources
-            study.materials['samples'] = samples
-            study.process_sequence = list(processes.values())
+            study.materials['sources'] = sources.values()
+            study.materials['samples'] = samples.values()
+            study.process_sequence = processes.values()
 
             for process in study.process_sequence:
                 process.executes_protocol = protocol_map[process.executes_protocol]
@@ -185,13 +186,16 @@ class StudyFactory:
 
                 assay_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), assay.filename))
                 _, samples, other, data, processes = ProcessSequenceFactory(investigation).create_from_df(assay_tfile_df)
-                assay.materials['samples'] = samples
-                assay.materials['other_material'] = other
-                assay.data_files = data
-                assay.process_sequence = list(processes.values())
+                assay.materials['samples'] = samples.values()
+                assay.materials['other_material'] = other.values()
+                assay.data_files = data.values()
+                assay.process_sequence = processes.values()
 
                 for process in assay.process_sequence:
-                    process.executes_protocol = protocol_map[process.executes_protocol]
+                    try:
+                        process.executes_protocol = protocol_map[process.executes_protocol]
+                    except KeyError:
+                        process.executes_protocol = None
 
                 study.assays.append(assay)
 
@@ -251,6 +255,12 @@ class ProcessSequenceFactory:
         try:
             raw_data_files = dict(map(lambda x: ('Raw Data File:' + x, DataFile(filename=x, label='Raw Data File')), DF['Raw Data File'].drop_duplicates()))
             data.update(raw_data_files)
+        except KeyError:
+            pass
+
+        try:
+            raw_spectral_data_files = dict(map(lambda x: ('Raw Spectral Data File:' + x, DataFile(filename=x, label='Raw Spectral Data File')), DF['Raw Spectral Data File'].drop_duplicates()))
+            data.update(raw_spectral_data_files)
         except KeyError:
             pass
 
@@ -402,6 +412,8 @@ class ProcessSequenceFactory:
                             output_node = other_material['Labeled Extract Name:' + node_key]
                         elif output_node_label == 'Raw Data File':
                             output_node = data['Raw Data File:' + node_key]
+                        elif output_node_label == 'Raw Spectral Data File':
+                            output_node = data['Raw Spectral Data File:' + node_key]
                         elif output_node_label == 'Derived Spectral Data File':
                             output_node = data['Derived Spectral Data File:' + node_key]
                         elif output_node_label == 'Derived Array Data File':
@@ -438,6 +450,8 @@ class ProcessSequenceFactory:
                             input_node = other_material['Labeled Extract Name:' + node_key]
                         elif input_node_label == 'Raw Data File':
                             input_node = data['Raw Data File:' + node_key]
+                        elif input_node_label == 'Raw Spectral Data File':
+                            input_node = data['Raw Spectral Data File:' + node_key]
                         elif input_node_label == 'Derived Spectral Data File':
                             input_node = data['Derived Spectral Data File:' + node_key]
                         elif input_node_label == 'Derived Array Data File':
@@ -464,8 +478,9 @@ class ProcessSequenceFactory:
                         processes.update(dict([(process_key, process)]))
 
                     name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
+
                     if len(name_column_hits) == 1:
-                        process.name = name_column_hits[0]
+                        process.name = object_series[name_column_hits[0]]
 
                     for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
 
@@ -696,20 +711,25 @@ def find_gt(a, x):
 def preprocess(DF):
     """Check headers, and insert Protocol REF if needed"""
 
-    headers = DF.columns
+    columns = DF.columns
 
-    process_node_name_indices = [x for x, y in enumerate(headers) if y in _LABELS_ASSAY_NODES]
-
-    process_cols = [i for i, c in enumerate(DF.columns) if c.startswith('Protocol REF')]
+    process_node_name_indices = [x for x, y in enumerate(columns) if y in _LABELS_ASSAY_NODES]
 
     missing_process_indices = list()
 
-    num_protocol_refs = len([x for x in headers if x.startswith('Protocol REF')])
+    protocol_ref_cols = [x for x in columns if x.startswith('Protocol REF')]
+
+    num_protocol_refs = len(protocol_ref_cols)
+
+    all_cols_indicies = [i for i, c in enumerate(columns) if c in
+                         _LABELS_MATERIAL_NODES +
+                         _LABELS_DATA_NODES +
+                         _LABELS_ASSAY_NODES +
+                         protocol_ref_cols]
 
     for i in process_node_name_indices:
-
-        if not headers[find_lt(process_cols, i)].startswith('Protocol REF'):
-            print('warning: Protocol REF missing before \'{}\', found \'{}\''.format(headers[i], headers[i - 1]))
+        if not columns[find_lt(all_cols_indicies, i)].startswith('Protocol REF'):
+            print('warning: Protocol REF missing before \'{}\', found \'{}\''.format(columns[i], columns[find_lt(all_cols_indicies, i)]))
             missing_process_indices.append(i)
 
     # insert Protocol REF columns
@@ -719,9 +739,8 @@ def preprocess(DF):
 
         DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown')
 
-        headers.insert(i, 'Protocol REF')
+        DF.isatab_header.insert(i, 'Protocol REF')
 
-        print('inserting Protocol REF.{}'.format(num_protocol_refs + offset), 'at position {}'.format(i))
         offset += 1
 
     return DF
