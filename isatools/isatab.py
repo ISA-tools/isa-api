@@ -2958,7 +2958,10 @@ def load(FP):  # from DF of investigation file
         study.units = list(unit_categories.values())
 
         for process in study.process_sequence:
-            process.executes_protocol = protocol_map[process.executes_protocol]
+            try:
+                process.executes_protocol = protocol_map[process.executes_protocol]
+            except KeyError:
+                process.executes_protocol = None
 
         for _, row in df_dict['s_assays'][i].iterrows():
             assay = Assay()
