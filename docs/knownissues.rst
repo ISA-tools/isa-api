@@ -5,6 +5,7 @@ Known issues
 isatools v0.5 package
 ---------------------
 - All issues inherited from v0.4 (see below)
+- Currently only Python 3.4 and 3.5 is supported. Python 2.7 support is present in the ``py2`` source branch on Github.
 
 isatools v0.4 package
 ---------------------
