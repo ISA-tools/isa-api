@@ -1540,7 +1540,7 @@ class ISAJSONEncoder(JSONEncoder):
                     "authorList": o.author_list,
                     "doi": o.doi,
                     "pubMedID": o.pubmed_id,
-                    "status": get_ontology_annotation(o.status) if o.status else None,
+                    "status": get_ontology_annotation(o.status) if o.status else {"@id": ''},
                     "title": o.title
                 }
             )

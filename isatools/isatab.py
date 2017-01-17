@@ -3415,9 +3415,9 @@ class ProcessSequenceFactory:
         node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
         # proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
 
-        for column_group in object_column_map:
+        for _cg, column_group in enumerate(object_column_map):
             # for each object, parse column group
-            # TODO: Deal with Factor Values
+
             object_label = column_group[0]
 
             if object_label in _LABELS_MATERIAL_NODES:  # characs
@@ -3508,7 +3508,7 @@ class ProcessSequenceFactory:
 
                     protocol_ref = object_series[column_group[0]]
 
-                    process_key = process_keygen(protocol_ref, column_group, object_label_index, DF.columns, object_series, _)
+                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _)
 
                     try:
                         process = processes[process_key]
@@ -3572,32 +3572,6 @@ class ProcessSequenceFactory:
                         parameter_value.unit = u
 
                         process.parameter_values.append(parameter_value)
-
-                    for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
-
-                        category_key = pv_column[16:-1]
-
-                        try:
-                            protocol = protocol_map[protocol_ref]
-                        except KeyError:
-                            print(protocol_map)
-                            raise ValueError("Could not find protocol matching ", protocol_ref)
-
-                        param_hits = [p for p in protocol.parameters if p.parameter_name.term == category_key]
-
-                        if len(param_hits) == 1:
-                            category = param_hits[0]
-                        else:
-                            raise ValueError("Could not resolve Protocol parameter from Parameter Value ", category_key)
-
-                        parameter_value = ParameterValue(category=category)
-                        v, u = get_value(pv_column, column_group, object_series, ontology_source_map, unit_categories)
-
-                        parameter_value.value = v
-                        parameter_value.unit = u
-
-                        process.parameter_values.append(parameter_value)
-
 
         # now go row by row pulling out processes and linking them accordingly
 
