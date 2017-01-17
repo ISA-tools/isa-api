@@ -30,7 +30,7 @@ def detect_isatab_process_pooling(tab_path):
     from io import StringIO
     import json
     report = list()
-    J = isatab2json.convert(tab_path, validate_first=False)
+    J = isatab2json.convert(tab_path, validate_first=False, use_new_parser=True)
     ISA = isajson.load(StringIO(json.dumps(J)))
     for study in ISA.studies:
         print("Checking {}".format(study.filename))

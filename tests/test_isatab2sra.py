@@ -46,7 +46,7 @@ class TestIsaTab2Sra(unittest.TestCase):
         shutil.rmtree(self._tmp_dir)
 
     def test_isatab2sra_zip_return(self):
-        b = isatab2sra.convert(self._biis3_dir, self._tmp_dir, validate_first=False)
+        b = isatab2sra.convert(self._biis3_dir, self._tmp_dir, validate_first=False)  # TODO: To use new parser, need dervives_from completed
         self.assertIsInstance(b, BytesIO)
         with ZipFile(b) as zip_file:
             self.assertEquals(len(zip_file.namelist()), 5)
