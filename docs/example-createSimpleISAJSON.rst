@@ -1,6 +1,6 @@
-#####################
+######################
 createSimpleISAjson.py
-#####################
+######################
 
 An example of using the ISA model classes to create an ISA-JSON file.
 
