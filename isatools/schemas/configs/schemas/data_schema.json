@@ -21,7 +21,8 @@
                 "Peptide Assignment File",
                 "Array Data File",
                 "Derived Array Data File",
-                "Post Translational Modification Assignment File"
+                "Post Translational Modification Assignment File",
+                "Derived Array Data Matrix File"
             ]
         },
         "comments" : {
