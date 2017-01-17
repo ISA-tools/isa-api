@@ -2,14 +2,18 @@
 Known issues
 ############
 
+isatools v0.5 package
+---------------------
+- All issues inherited from v0.4 (see below)
+
 isatools v0.4 package
 ---------------------
 - For certain of ISA-Tab table files, the ISA-Tab parser cannot disambiguate between process instances where a ``Name`` column is required to qualify a ``Protocol REF`` has been left blank. Utility functions have been written to detect these anomalies and to assist in correcting them, in the ``isatools.utils`` package. #146 (see detail after bullet points)
 - When converting to ISA JSON in using ``UUID`` or ``counter`` Identifier Types, some elements are not detected, such as ``Array_Design_REF`` #101
-- The ISA-Tab parser does not support reading ``Protein Assignment File``, ``Peptide Assignment File``, ``Post Translational Modification Assignment File`` columns, and therefore the ``isatab2*`` conveters also do not support these #174
+- The ISA-Tab parser does not support reading ``Protein Assignment File``, ``Peptide Assignment File``, ``Post Translational Modification Assignment File`` columns, and therefore the ``isatab2*`` converters also do not support these #174
 - The SRA/ENA importer in ``sra2isatab`` relies on XSLT2 processing functionality only available with SAXON, so you must provide the JAR file yourself to use this
 - ``sra2isatab`` converter does not support SRA pools #153
-- The legacy functionality (marked in the documentation) relies on Java 1.6+
+- The legacy functionality (marked in the documentation) relies on Java 1.6
 
 To check for possible erroneous pooling events in an ISA-Tab archive, you can try something like:
 
@@ -51,7 +55,7 @@ isatools v0.3 package
 - Chained processes (i.e. a process followed by another process without any intermediate inputs and outputs, in ISAtab a ``Protocol REF`` columns followed by another ``Protocol REF`` columns without any materials in between) are not currently supported. It is not recommended to attempt to use such patterns with this version of the ``isatools`` package #111
 - When converting to ISA JSON in using ``UUID`` or ``counter`` Identifier Types, some elements are not detected, such as ``Array_Design_REF`` #101
 - The SRA/ENA importer in ``sra2isatab`` relies on XSLT2 processing functionality only available with SAXON, so you must provide the JAR file yourself to use this
-- The legacy functionality (marked in the documentation) relies on Java 1.6+
+- The legacy functionality (marked in the documentation) relies on Java 1.6
 
 isatools v0.2 package
 ---------------------
