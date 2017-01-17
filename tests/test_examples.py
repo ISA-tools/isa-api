@@ -5,7 +5,7 @@ from tests import utils
 import os
 
 
-class TestSimpleExamples(unittest.TestCase):
+class TestSimpleIsaTabExample(unittest.TestCase):
 
     def setUp(self):
         pass
@@ -64,6 +64,31 @@ class TestSimpleExamples(unittest.TestCase):
         sys.stdout = old_stdout
         self.assertIn("Validated 1 ISA-Tab archives, 1 valid ISA-Tab archives, 0 invalid ISA-Tab archives", mystdout.getvalue())
         self.assertIn("Found 0 errors and 45 warnings in across all ISA-Tab archives", mystdout.getvalue())
+
+
+class TestSimpleIsaJsonExample(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_create_simple_ISAjson_example(self):
+        from isatools.examples import createSimpleISAJSON
+        sys.stdout = StringIO()
+        out = createSimpleISAJSON.create_descriptor()
+        # self.assertIn("i_investigation.txt", out)
+        self.assertIn("s_study.txt", out)
+        self.assertIn("a_assay.txt", out)
+        self.assertIn('"title": "Experiments with Elephants"', out)
+        self.assertIn('"name": "sample collection"', out)
+        self.assertIn('"name": "extraction"', out)
+        self.assertIn('"name": "sequencing"', out)
+        self.assertIn('"annotationValue": "sample collection"', out)
+        self.assertIn('"annotationValue": "material extraction"', out)
+        self.assertIn('"annotationValue": "material sequencing"', out)
+        self.assertIn('"name": "source_material"', out)
 
     def test_validate_ISAjson_example_wrong_args(self):
         from isatools.examples import validateISAjson

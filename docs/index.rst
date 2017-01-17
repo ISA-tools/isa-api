@@ -34,6 +34,7 @@ This code is licensed under the `CPAL License <https://raw.githubusercontent.com
    Creating objects <creation>
    Tutorial: describing a simple experiment with objects <creationtutorial>
    Examples/example-createSimpleISAtab
+   Examples/example-createSimpleISAJSON
    Examples/example-validateISAtab
    Examples/example-validateISAjson
    Converting between ISA formats <conversions>
