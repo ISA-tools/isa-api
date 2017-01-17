@@ -1465,7 +1465,7 @@ class ISAJSONEncoder(JSONEncoder):
     def default(self, o):
 
         def remove_nulls(d):
-            return {k: v for k, v in d.items() if v or isinstance(v, list) or v == ''}   # TODO: How best to deal with nulls? Fix reader?
+            return {k: v for k, v in d.items() if v or isinstance(v, list) or v == ''}
 
         def nulls_to_str(d):
             to_del = []
@@ -1478,8 +1478,9 @@ class ISAJSONEncoder(JSONEncoder):
                 del d[k]
             return d
 
-        clean_nulls = nulls_to_str  # creates verbose JSON
-        # clean_nulls = remove_nulls  # optimises by removing k-v's that are null or empty strings
+        # TODO: deal with non-verbose mode parsing; currently will break because of missing k-v's
+        clean_nulls = nulls_to_str  # creates verbose JSON if using nulls to str
+        # clean_nulls = remove_nulls  # optimises by removing k-v's that are null or empty strings but breaks reader
 
         def get_comment(o):
             return clean_nulls(
