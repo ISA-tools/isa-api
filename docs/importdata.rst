@@ -89,3 +89,14 @@ Importing SRA from Biocrates, to ISA-Tab
 Notice: this method depends on SAXON XSLT Processor
 
 See ``isa-api/isatools/convert/biocrates2isatab.py``
+
+-------------------------
+Importing mzML to ISA-Tab
+-------------------------
+To import metadata from mzML mass spectrometry files, the ISA API integrates with the ``mzml2isa``
+tool from https://github.com/ISA-tools/mzml2isa and can be run as follows:
+
+.. code-block:: python
+
+    from isatools.convert import mzml2isa
+    mzml2isa.convert('your/path/to/mzml/files/', 'tmp/', "My Study ID")
