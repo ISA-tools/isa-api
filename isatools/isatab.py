@@ -2820,16 +2820,21 @@ def load(FP):  # from DF of investigation file
         return os
 
     def get_oa(val, accession, ts_ref):
-        return OntologyAnnotation(
-            term=val,
-            term_accession=accession,
-            term_source=get_ontology_source(ts_ref)
-        )
+        if val == '' and accession == '':
+            return None
+        else:
+            return OntologyAnnotation(
+                term=val,
+                term_accession=accession,
+                term_source=get_ontology_source(ts_ref)
+            )
 
     def get_oa_list_from_semi_c_list(vals, accessions, ts_refs):
         oa_list = []
         for _, val in enumerate(vals.split(';')):
-            oa_list.append(get_oa(val, accessions.split(';')[_], ts_refs.split(';')[_]))
+            oa = get_oa(val, accessions.split(';')[_], ts_refs.split(';')[_])
+            if oa is not None:
+                oa_list.append(oa)
         return oa_list
 
     def get_publications(section_df):
@@ -2886,7 +2891,6 @@ def load(FP):  # from DF of investigation file
 
         return contacts
 
-    from isatools.isatab import read_investigation_file
     df_dict = read_investigation_file(FP)
 
     from isatools.model.v1 import Investigation, Study
@@ -2945,12 +2949,19 @@ def load(FP):  # from DF of investigation file
             protocol.protocol_type = get_oa(row['Study Protocol Type'],
                                             row['Study Protocol Type Term Accession Number'],
                                             row['Study Protocol Type Term Source REF'])
+            params = get_oa_list_from_semi_c_list(
+                row['Study Protocol Parameters Name'], row['Study Protocol Parameters Name Term Accession Number'],
+                row['Study Protocol Parameters Name Term Source REF'])
+            for param in params:
+                protocol_param = ProtocolParameter(parameter_name=param)
+                protocol.parameters.append(protocol_param)
             study.protocols.append(protocol)
             protocol_map[protocol.name] = protocol
         study.protocols = list(protocol_map.values())
         study_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), study.filename))
         sources, samples, _, __, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(
-            investigation).create_from_df(study_tfile_df)
+            investigation.ontology_source_references, study_protocols=study.protocols,
+            study_factors=study.factors).create_from_df(study_tfile_df)
         study.materials['sources'] = list(sources.values())
         study.materials['samples'] = list(samples.values())
         study.process_sequence = list(processes.values())
@@ -2961,7 +2972,15 @@ def load(FP):  # from DF of investigation file
             try:
                 process.executes_protocol = protocol_map[process.executes_protocol]
             except KeyError:
-                process.executes_protocol = None
+                try:
+                    unknown_protocol = protocol_map['unknown']
+                except KeyError:
+                    protocol_map['unknown'] = Protocol(
+                        name="unknown protocol",
+                        description="This protocol was auto-generated where a protocol could not be determined.")
+                    unknown_protocol = protocol_map['unknown']
+                    study.protocols.append(unknown_protocol)
+                process.executes_protocol = unknown_protocol
 
         for _, row in df_dict['s_assays'][i].iterrows():
             assay = Assay()
@@ -2980,7 +2999,10 @@ def load(FP):  # from DF of investigation file
 
             assay_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), assay.filename))
             _, samples, other, data, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(
-                investigation).create_from_df(assay_tfile_df)
+                investigation.ontology_source_references,
+                study.materials['samples'],
+                study.protocols,
+                study.factors).create_from_df(assay_tfile_df)
             assay.materials['samples'] = list(samples.values())
             assay.materials['other_material'] = list(other.values())
             assay.data_files = list(data.values())
@@ -2992,7 +3014,15 @@ def load(FP):  # from DF of investigation file
                 try:
                     process.executes_protocol = protocol_map[process.executes_protocol]
                 except KeyError:
-                    process.executes_protocol = Protocol()  # assign to anonymous Protocol obj
+                    try:
+                        unknown_protocol = protocol_map['unknown']
+                    except KeyError:
+                        protocol_map['unknown'] = Protocol(
+                            name="unknown protocol",
+                            description="This protocol was auto-generated where a protocol could not be determined.")
+                        unknown_protocol = protocol_map['unknown']
+                        study.protocols.append(unknown_protocol)
+                    process.executes_protocol = unknown_protocol
 
             study.assays.append(assay)
 
@@ -3000,7 +3030,8 @@ def load(FP):  # from DF of investigation file
 
     return investigation
 
-def process_keygen(protocol_ref, column_group, cg_index, all_columns, series, series_index):
+
+def process_keygen(protocol_ref, column_group, object_label_index, all_columns, series, series_index):
 
     process_key = protocol_ref
 
@@ -3008,7 +3039,7 @@ def process_keygen(protocol_ref, column_group, cg_index, all_columns, series, se
 
     node_cols = [i for i, c in enumerate(all_columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
 
-    output_node_index = find_gt(node_cols, cg_index)
+    output_node_index = find_gt(node_cols, object_label_index)
 
     if output_node_index > -1:
 
@@ -3017,7 +3048,7 @@ def process_keygen(protocol_ref, column_group, cg_index, all_columns, series, se
 
         node_key = output_node_value
 
-    input_node_index = find_lt(node_cols, cg_index)
+    input_node_index = find_lt(node_cols, object_label_index)
 
     if input_node_index > -1:
 
@@ -3215,25 +3246,31 @@ def preprocess(DF):
 
 class ProcessSequenceFactory:
 
-    def __init__(self, I=None):
-        self.I = I
+    def __init__(self, ontology_sources=None, study_samples=None, study_protocols=None, study_factors=None):
+        self.ontology_sources = ontology_sources
+        self.samples = study_samples
+        self.protocols = study_protocols
+        self.factors = study_factors
 
     def create_from_df(self, DF):  # from DF of a table file
 
         DF = preprocess(DF=DF)
 
-        if self.I is not None:
-            ontology_source_map = dict(map(lambda x: (x.name, x), self.I.ontology_source_references))
+        if self.ontology_sources is not None:
+            ontology_source_map = dict(map(lambda x: (x.name, x), self.ontology_sources))
         else:
             ontology_source_map = {}
 
+        if self.protocols is not None:
+            protocol_map = dict(map(lambda x: (x.name, x), self.protocols))
+        else:
+            protocol_map = {}
+
         sources = {}
-        samples = {}
         other_material = {}
         data = {}
         processes = {}
         characteristic_categories = {}
-        parameter_value_categories = {}
         unit_categories = {}
 
         # TODO: Handle comment columns
@@ -3243,8 +3280,15 @@ class ProcessSequenceFactory:
         except KeyError:
             pass
 
+        samples = {}
         try:
-            samples = dict(map(lambda x: ('Sample Name:' + x, Sample(name=x)), DF['Sample Name'].drop_duplicates()))
+            if self.samples is not None:
+                sample_map = dict(map(lambda x: ('Sample Name:' + x.name, x), self.samples))
+                sample_keys = list(map(lambda x: 'Sample Name:' + x, DF['Sample Name'].drop_duplicates()))
+                for k in sample_keys:
+                    samples[k] = sample_map[k]
+            else:
+                samples = dict(map(lambda x: ('Sample Name:' + x, Sample(name=x)), DF['Sample Name'].drop_duplicates()))
         except KeyError:
             pass
 
@@ -3255,15 +3299,21 @@ class ProcessSequenceFactory:
             pass
 
         try:
-            for _, lextract_name in DF['Labeled Extract Name'].drop_duplicates().iteritems():
-                lextract = Material(name=lextract_name, type_='Labeled Extract Name')
-                lextract.characteristics = [
-                    Characteristic(
-                        category=OntologyAnnotation(term='Label'),
-                        value=OntologyAnnotation(term=DF.loc[_, 'Label'])
-                    )
-                ]
-                other_material['Labeled Extract Name:' + lextract_name] = lextract
+            if 'Labeled Extract Name' in DF.columns:
+                try:
+                    category = characteristic_categories['Label']
+                except KeyError:
+                    category = OntologyAnnotation(term='Label')
+                    characteristic_categories['Label'] = category
+                for _, lextract_name in DF['Labeled Extract Name'].drop_duplicates().iteritems():
+                    lextract = Material(name=lextract_name, type_='Labeled Extract Name')
+                    lextract.characteristics = [
+                        Characteristic(
+                            category=category,
+                            value=OntologyAnnotation(term=DF.loc[_, 'Label'])
+                        )
+                    ]
+                    other_material['Labeled Extract Name:' + lextract_name] = lextract
         except KeyError:
             pass
 
@@ -3314,6 +3364,14 @@ class ProcessSequenceFactory:
             pass
 
         try:
+            derived_array_data__matrix_files = \
+                dict(map(lambda x: ('Derived Array Data Matrix File:' + x, DataFile(filename=x, label='Derived Array Data Matrix File')),
+                         DF['Derived Array Data Matrix File'].drop_duplicates()))
+            data.update(derived_array_data__matrix_files)
+        except KeyError:
+            pass
+
+        try:
             post_translational_modification_assignment_files = \
                 dict(map(lambda x: ('Post Translational Modification Assignment File:' + x, DataFile(filename=x, label='Post Translational Modification Assignment File')),
                          DF['Post Translational Modification Assignment File'].drop_duplicates()))
@@ -3322,8 +3380,8 @@ class ProcessSequenceFactory:
             pass
 
         try:
-            acquisition_parameter_data_files = dict(map(lambda x: ('Acquisiton Parameter Data File' + x, DataFile(filename=x, label='Acquisiton Parameter Data File')),
-                                                DF['Acquisiton Parameter Data File'].drop_duplicates()))
+            acquisition_parameter_data_files = dict(map(lambda x: ('Acquisition Parameter Data File:' + x, DataFile(filename=x, label='Acquisition Parameter Data File')),
+                                                DF['Acquisition Parameter Data File'].drop_duplicates()))
             data.update(acquisition_parameter_data_files)
         except KeyError:
             pass
@@ -3355,8 +3413,9 @@ class ProcessSequenceFactory:
         object_column_map.append(DF.columns[prev_i:])  # finally collect last object's columns
 
         node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
+        # proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
 
-        for _cg, column_group in enumerate(object_column_map):
+        for column_group in object_column_map:
             # for each object, parse column group
             # TODO: Deal with Factor Values
             object_label = column_group[0]
@@ -3365,6 +3424,7 @@ class ProcessSequenceFactory:
 
                 for _, object_series in DF[column_group].drop_duplicates().iterrows():
                     node_key = object_series[column_group[0]]
+
                     material = None
 
                     try:
@@ -3383,6 +3443,7 @@ class ProcessSequenceFactory:
                         pass
 
                     if material is not None:
+
                         for charac_column in [c for c in column_group if c.startswith('Characteristics[')]:
 
                             category_key = charac_column[16:-1]
@@ -3402,15 +3463,60 @@ class ProcessSequenceFactory:
 
                             material.characteristics.append(characteristic)
 
+                        if isinstance(material, Sample) and self.factors is not None:
+
+                            for fv_column in [c for c in column_group if c.startswith('Factor Value[')]:
+
+                                category_key = fv_column[13:-1]
+
+                                factor_hits = [f for f in self.factors if f.name == category_key]
+
+                                if len(factor_hits) == 1:
+                                    factor = factor_hits[0]
+                                else:
+                                    raise ValueError("Could not resolve Study Factor from Factor Value ",
+                                                     category_key)
+
+                                fv = FactorValue(factor_name=factor)
+
+                                v, u = get_value(fv_column, column_group, object_series, ontology_source_map,
+                                                 unit_categories)
+
+                                fv.value = v
+                                fv.unit = u
+
+                                material.factor_values.append(fv)
+
             elif object_label.startswith('Protocol REF'):
 
+                def get_node_by_label_and_key(l, k):
+                    n = None
+                    lk = l + ':' + k
+                    if l == 'Source Name':
+                        n = sources[lk]
+                    if l == 'Sample Name':
+                        n = samples[lk]
+                    elif l in ('Extract Name', 'Labeled Extract Name'):
+                        n = other_material[lk]
+                    elif l.endswith('File'):
+                        n = data[lk]
+                    return n
+
+                object_label_index = list(DF.columns).index(object_label)
+
                 for _, object_series in DF.iterrows():  # don't drop duplicates
+
                     protocol_ref = object_series[column_group[0]]
 
-                    input_node = None
-                    output_node = None
+                    process_key = process_keygen(protocol_ref, column_group, object_label_index, DF.columns, object_series, _)
 
-                    output_node_index = find_gt(node_cols, _cg)  # TODO: Fix how far right we look for outputs
+                    try:
+                        process = processes[process_key]
+                    except KeyError:
+                        process = Process(executes_protocol=object_series[object_label])
+                        processes.update(dict([(process_key, process)]))
+
+                    output_node_index = find_gt(node_cols, object_label_index)
 
                     if output_node_index > -1:
 
@@ -3419,34 +3525,12 @@ class ProcessSequenceFactory:
 
                         node_key = output_node_value
 
-                        if output_node_label == 'Sample Name':
-                            output_node = samples['Sample Name:' + node_key]
-                        elif output_node_label == 'Extract Name':
-                            output_node = other_material['Extract Name:' + node_key]
-                        elif output_node_label == 'Labeled Extract Name':
-                            output_node = other_material['Labeled Extract Name:' + node_key]
-                        elif output_node_label == 'Raw Data File':
-                            output_node = data['Raw Data File:' + node_key]
-                        elif output_node_label == 'Raw Spectral Data File':
-                            output_node = data['Raw Spectral Data File:' + node_key]
-                        elif output_node_label == 'Derived Spectral Data File':
-                            output_node = data['Derived Spectral Data File:' + node_key]
-                        elif output_node_label == 'Derived Array Data File':
-                            output_node = data['Derived Array Data File:' + node_key]
-                        elif output_node_label == 'Array Data File':
-                            output_node = data['Array Data File:' + node_key]
-                        elif output_node_label == 'Protein Assignment File':
-                            output_node = data['Protein Assignment File:' + node_key]
-                        elif output_node_label == 'Peptide Assignment File':
-                            output_node = data['Peptide Assignment File:' + node_key]
-                        elif output_node_label == 'Post Translational Modification Assignment File':
-                            output_node = data['Post Translational Modification Assignment File:' + node_key]
-                        elif output_node_label == 'Acquisition Parameter Data File':
-                            output_node = data['Acquisition Parameter Data File:' + node_key]
-                        elif output_node_label == 'Free Induction Decay Data File':
-                            output_node = data['Free Induction Decay Data File:' + node_key]
+                        output_node = get_node_by_label_and_key(output_node_label, node_key)
 
-                    input_node_index = find_lt(node_cols, _cg)  # TODO: Fix how far left we look for outputs
+                        if output_node is not None:
+                            process.outputs.append(output_node)
+
+                    input_node_index = find_lt(node_cols, object_label_index)
 
                     if input_node_index > -1:
 
@@ -3455,42 +3539,10 @@ class ProcessSequenceFactory:
 
                         node_key = input_node_value
 
-                        if input_node_label == 'Source Name':
-                            input_node = sources['Source Name:' + node_key]
-                        elif input_node_label == 'Sample Name':
-                            input_node = samples['Sample Name:' + node_key]
-                        elif input_node_label == 'Extract Name':
-                            input_node = other_material['Extract Name:' + node_key]
-                        elif input_node_label == 'Labeled Extract Name':
-                            input_node = other_material['Labeled Extract Name:' + node_key]
-                        elif input_node_label == 'Raw Data File':
-                            input_node = data['Raw Data File:' + node_key]
-                        elif input_node_label == 'Raw Spectral Data File':
-                            input_node = data['Raw Spectral Data File:' + node_key]
-                        elif input_node_label == 'Derived Spectral Data File':
-                            input_node = data['Derived Spectral Data File:' + node_key]
-                        elif input_node_label == 'Derived Array Data File':
-                            input_node = data['Derived Array Data File:' + node_key]
-                        elif input_node_label == 'Array Data File':
-                            input_node = data['Array Data File:' + node_key]
-                        elif input_node_label == 'Protein Assignment File':
-                            input_node = data['Protein Assignment File:' + node_key]
-                        elif input_node_label == 'Peptide Assignment File':
-                            input_node = data['Peptide Assignment File:' + node_key]
-                        elif input_node_label == 'Post Translational Modification Assignment File':
-                            input_node = data['Post Translational Modification Assignment File:' + node_key]
-                        elif input_node_label == 'Acquisition Parameter Data File':
-                            input_node = data['Acquisition Parameter Data File:' + node_key]
-                        elif input_node_label == 'Free Induction Decay Data File':
-                            input_node = data['Free Induction Decay Data File:' + node_key]
+                        input_node = get_node_by_label_and_key(input_node_label, node_key)
 
-                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _)
-
-                    try:
-                        process = processes[process_key]
-                    except KeyError:
-                        process = Process(executes_protocol=object_series[object_label])
-                        processes.update(dict([(process_key, process)]))
+                        if input_node is not None:
+                            process.inputs.append(input_node)
 
                     name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
 
@@ -3502,10 +3554,16 @@ class ProcessSequenceFactory:
                         category_key = pv_column[16:-1]
 
                         try:
-                            category = parameter_value_categories[category_key]
+                            protocol = protocol_map[protocol_ref]
                         except KeyError:
-                            category = ProtocolParameter(parameter_name=OntologyAnnotation(term=category_key))
-                            parameter_value_categories[category_key] = category
+                            raise ValueError("Could not find protocol matching ", protocol_ref)
+
+                        param_hits = [p for p in protocol.parameters if p.parameter_name.term == category_key]
+
+                        if len(param_hits) == 1:
+                            category = param_hits[0]
+                        else:
+                            raise ValueError("Could not resolve Protocol parameter from Parameter Value ", category_key)
 
                         parameter_value = ParameterValue(category=category)
                         v, u = get_value(pv_column, column_group, object_series, ontology_source_map, unit_categories)
@@ -3515,11 +3573,31 @@ class ProcessSequenceFactory:
 
                         process.parameter_values.append(parameter_value)
 
-                    if input_node is not None and input_node not in process.inputs:
-                        process.inputs.append(input_node)
+                    for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
 
-                    if output_node is not None and output_node not in process.outputs:
-                        process.outputs.append(output_node)
+                        category_key = pv_column[16:-1]
+
+                        try:
+                            protocol = protocol_map[protocol_ref]
+                        except KeyError:
+                            print(protocol_map)
+                            raise ValueError("Could not find protocol matching ", protocol_ref)
+
+                        param_hits = [p for p in protocol.parameters if p.parameter_name.term == category_key]
+
+                        if len(param_hits) == 1:
+                            category = param_hits[0]
+                        else:
+                            raise ValueError("Could not resolve Protocol parameter from Parameter Value ", category_key)
+
+                        parameter_value = ParameterValue(category=category)
+                        v, u = get_value(pv_column, column_group, object_series, ontology_source_map, unit_categories)
+
+                        parameter_value.value = v
+                        parameter_value.unit = u
+
+                        process.parameter_values.append(parameter_value)
+
 
         # now go row by row pulling out processes and linking them accordingly
 
@@ -3553,3 +3631,34 @@ class ProcessSequenceFactory:
                 r.prev_process = l
 
         return sources, samples, other_material, data, processes, characteristic_categories, unit_categories
+
+
+def find_in_between(a, x, y):
+    result = []
+    while True:
+        try:
+            element_gt = find_gt(a, x)
+        except ValueError:
+            return result
+
+        if (element_gt > x and y==-1) or (element_gt > x and element_gt < y):
+            result.append(element_gt)
+            x = element_gt
+        else:
+            break
+
+    while True:
+        try:
+            element_lt = find_lt(a, y)
+        except ValueError:
+            return result
+        if element_lt not in result:
+            if (element_lt < y and element_lt > x):
+                result.append(element_lt)
+                y = element_lt
+            else:
+                break
+        else:
+            break
+
+    return result

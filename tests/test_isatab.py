@@ -7,9 +7,6 @@ from tests import utils
 import tempfile
 from isatools import isatab
 
-#  Manually testing object model to write to isatab, study file-out only to check if model and writer function correctly
-#  Currently only tests source-split and sample pooling, at study level
-
 
 class TestIsaTabDump(unittest.TestCase):
 
@@ -186,7 +183,7 @@ class TestIsaTabLoad(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
 
-    def test_json_load_bii_i_1(self):
+    def test_isatab_load_bii_i_1(self):
         with open(os.path.join(self._tab_data_dir, 'BII-I-1', 'i_investigation.txt')) as fp:
             ISA = isatab.load(fp)
 
@@ -239,7 +236,7 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(assay_microarray.data_files), 15)  # 15 data files  in a_microarray.txt
             self.assertEqual(len(assay_microarray.process_sequence), 45)  # 45 processes in in a_microarray.txt
 
-    def test_json_load_bii_s_3(self):
+    def test_isatab_load_bii_s_3(self):
         with open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt')) as fp:
             ISA = isatab.load(fp)
 
@@ -267,7 +264,7 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(assay_tx.data_files), 24)  # 24 data files  in a_gilbert-assay-Tx.txt
             self.assertEqual(len(assay_tx.process_sequence), 36)  # 36 processes in in a_gilbert-assay-Tx.txt
 
-    def test_tab_load_bii_s_7(self):
+    def test_isatab_load_bii_s_7(self):
         with open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt')) as fp:
             ISA = isatab.load(fp)
 

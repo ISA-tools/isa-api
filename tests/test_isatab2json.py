@@ -2,9 +2,52 @@ import os
 import unittest
 from isatools.convert import isatab2json
 import json
-import shutil
 from tests import utils
+from isatools import isajson
 import tempfile
+import shutil
+
+
+class TestIsaTab2JsonNewParser(unittest.TestCase):
+
+    def setUp(self):
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._json_data_dir = utils.JSON_DATA_DIR
+        self.identifier_type = isatab2json.IdentifierType.name
+        self._tmp_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
+
+    def test_isatab2json_convert_bii_i_1(self):
+        test_case = 'BII-I-1'
+        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
+                                          validate_first=False,
+                                          use_new_parser=True)
+        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
+            report = isajson.validate(actual_json)
+            self.assertEqual(len(report['errors']), 0)
+
+    def test_isatab2json_convert_bii_s_3(self):
+        test_case = 'BII-S-3'
+        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
+                                          validate_first=False,
+                                          use_new_parser=True)
+        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
+            report = isajson.validate(actual_json)
+            self.assertEqual(len(report['errors']), 0)
+
+    def test_isatab2json_convert_bii_s_7(self):
+        test_case = 'BII-S-7'
+        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
+                                          validate_first=False,
+                                          use_new_parser=True)
+        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
+            report = isajson.validate(actual_json)
+            self.assertEqual(len(report['errors']), 0)
 
 
 class TestIsaTab2JsonIdentifierName(unittest.TestCase):
