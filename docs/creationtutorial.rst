@@ -186,23 +186,41 @@ feedback from a user on-the-fly.
 
         study.assays.append(assay)
 
+To write out the ISA-Tab, you can use the ``isatab.dumps()`` function:
+
+.. code-block:: python
+
         from isatools.isatab import dumps
         return dumps(investigation)  # dumps() writes out the ISA as a string representation of the ISA-Tab
 
 The function listed above is designed to return all three files as a single string output for ease of inspection.
 Alternatively you could do something like ``dump(isa_obj=investigation, output_path='./')`` to write the files to
-the file system. The final lines of code is a ``main`` routine to invoke the ``create_descriptor()`` function.
+the file system.
+
+Alternatively to write out the ISA JSON, you can use the ``ISAJSONEncoder`` class with the Python ``json`` package:
+
+.. code-block:: python
+
+        import json
+        from isatools.isajson import ISAJSONEncoder
+        # Note that the extra parameters sort_keys, indent and separators are to make the output more human-readable.
+        return json.dumps(investigation, cls=ISAJSONEncoder, sort_keys=True, indent=4, separators=(',', ': '))
+
+
+The final lines of code is a ``main`` routine to invoke the ``create_descriptor()`` function.
 
 .. code-block:: python
 
     if __name__ == '__main__':
         print(create_descriptor())
 
-To execute this script on the command line and view the output, you would run it with::
+If you save the file into something like ``createSimpleISA.py``, to execute this script on the command line and view
+the output, you would run it with::
 
     python createSimpleISA.py
 
 
 This example can be found in the ``isatools.examples`` package in
-`createSimpleISAtab.py <https://github.com/ISA-tools/isa-api/blob/master/isatools/examples/createSimpleISAtab.py>`_.
+`createSimpleISAtab.py <https://github.com/ISA-tools/isa-api/blob/master/isatools/examples/createSimpleISAtab.py>`_ and
+`createSimpleISAJSON.py <https://github.com/ISA-tools/isa-api/blob/master/isatools/examples/createSimpleISAJSON.py>`_
 
