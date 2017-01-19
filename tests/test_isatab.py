@@ -1,11 +1,27 @@
 import unittest
 import os
+from os import listdir
+from os.path import join
 import shutil
 from tests.utils import assert_tab_content_equal
 from isatools.model.v1 import *
 from tests import utils
 import tempfile
 from isatools import isatab
+from isatools.io.storage_adapter import IsaGitHubStorageAdapter
+
+_tmp_dir = tempfile.mkdtemp()
+
+
+def setUpModule():
+    adapter = IsaGitHubStorageAdapter()
+    test_studies = ['BII-I-1', 'BII-S-3', 'BII-S-7']
+    for studyid in test_studies:
+        adapter.retrieve(source=join('tab', studyid), destination=join(_tmp_dir), repository='ISAdatasets')
+
+
+def tearDownModule():
+    shutil.rmtree(_tmp_dir)
 
 
 class TestIsaTabDump(unittest.TestCase):
@@ -178,13 +194,22 @@ class TestIsaTabLoad(unittest.TestCase):
 
     def setUp(self):
         self._tab_data_dir = utils.TAB_DATA_DIR
-        self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
-        shutil.rmtree(self._tmp_dir)
+        pass
+
+    def find_ifile(self, filelist):
+        print(filelist)
+        filehits = [f for f in filelist if f.startswith('i_') and f.endswith('.txt')]
+        if len(filehits) == 1:
+            return filehits[0]
+        else:
+            raise FileNotFoundError("Could not find a file matching i_*.txt in {}".format(filelist))
 
     def test_isatab_load_bii_i_1(self):
-        with open(os.path.join(self._tab_data_dir, 'BII-I-1', 'i_investigation.txt')) as fp:
+        testdir = join(_tmp_dir, 'BII-I-1')
+        ifile = self.find_ifile(listdir(testdir))
+        with open(join(testdir, ifile)) as fp:
             ISA = isatab.load(fp)
 
             self.assertListEqual([s.filename for s in ISA.studies], ['s_BII-S-1.txt', 's_BII-S-2.txt'])  # 2 studies in i_investigation.txt
@@ -237,7 +262,9 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(assay_microarray.process_sequence), 45)  # 45 processes in in a_microarray.txt
 
     def test_isatab_load_bii_s_3(self):
-        with open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt')) as fp:
+        testdir = join(_tmp_dir, 'BII-S-3')
+        ifile = self.find_ifile(listdir(testdir))
+        with open(join(testdir, ifile)) as fp:
             ISA = isatab.load(fp)
 
             self.assertListEqual([s.filename for s in ISA.studies], ['s_BII-S-3.txt'])  # 1 studies in i_gilbert.txt
@@ -265,7 +292,9 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(assay_tx.process_sequence), 36)  # 36 processes in in a_gilbert-assay-Tx.txt
 
     def test_isatab_load_bii_s_7(self):
-        with open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt')) as fp:
+        testdir = join(_tmp_dir, 'BII-S-7')
+        ifile = self.find_ifile(listdir(testdir))
+        with open(join(testdir, ifile)) as fp:
             ISA = isatab.load(fp)
 
             self.assertListEqual([s.filename for s in ISA.studies], ['s_BII-S-7.txt'])  # 1 studies in i_gilbert.txt
