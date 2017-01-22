@@ -4,25 +4,25 @@ from isatools.isatab import read_investigation_file
 import os
 import re
 
-_data_dir = os.path.join(os.path.dirname(__file__), 'data')
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
 SAMPLE_DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'isatools', 'sampledata')
 
-JSON_DATA_DIR = os.path.join(_data_dir, 'json')
+JSON_DATA_DIR = os.path.join(DATA_DIR, 'json')
 UNIT_JSON_DATA_DIR = os.path.join(JSON_DATA_DIR, 'unit')
 
-SRA_DATA_DIR = os.path.join(_data_dir, 'sra')
+SRA_DATA_DIR = os.path.join(DATA_DIR, 'sra')
 
-TAB_DATA_DIR = os.path.join(_data_dir, 'tab')
+TAB_DATA_DIR = os.path.join(DATA_DIR, 'tab')
 
-MZML_DATA_DIR = os.path.join(_data_dir, 'mzml')
+MZML_DATA_DIR = os.path.join(DATA_DIR, 'mzml')
 
-CONFIGS_DATA_DIR = os.path.join(_data_dir, 'configs')
+CONFIGS_DATA_DIR = os.path.join(DATA_DIR, 'configs')
 XML_CONFIGS_DATA_DIR = os.path.join(CONFIGS_DATA_DIR, 'xml')
 DEFAULT2015_XML_CONFIGS_DATA_DIR = os.path.join(XML_CONFIGS_DATA_DIR, 'isaconfig-default_v2015-07-02')
 SRA2016_XML_CONFIGS_DATA_DIR = os.path.join(XML_CONFIGS_DATA_DIR, 'isaconfig-seq_v2016-08-30-SRA1.5-august2014mod')
-JSON_DEFAULT_CONFIGS_DATA_DIR = os.path.join(_data_dir, CONFIGS_DATA_DIR, 'json_default')
-JSON_SRA_CONFIGS_DATA_DIR = os.path.join(_data_dir, CONFIGS_DATA_DIR, 'json_sra')
+JSON_DEFAULT_CONFIGS_DATA_DIR = os.path.join(DATA_DIR, CONFIGS_DATA_DIR, 'json_default')
+JSON_SRA_CONFIGS_DATA_DIR = os.path.join(DATA_DIR, CONFIGS_DATA_DIR, 'json_sra')
 
 
 _RX_CHARACTERISTICS = re.compile('Characteristics\[(.*?)\]')

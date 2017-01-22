@@ -1,11 +1,20 @@
 import unittest
 import os
 import json
-from isatools import utils, isajson
-from tests import utils as test_utils
+from isatools import isajson
 from isatools.io import mtbls as MTBLS
 from io import StringIO
 from jsonschema.exceptions import ValidationError
+from tests import utils as test_utils
+from isatools import utils
+
+
+def setUpModule():
+    if not os.path.exists(test_utils.DATA_DIR):
+        raise FileNotFoundError("Could not fine test data directory in {0}. Ensure you have clone the ISAdatasets "
+                                "repository using "
+                                "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}"
+                                .format(test_utils.DATA_DIR))
 
 
 class TestIsaGraph(unittest.TestCase):

@@ -2,6 +2,9 @@ language: python
 python:
 - '3.4'
 - '3.5'
+before_install:
+- git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets tests/data
+- git checkout tests
 install:
 - pip install --upgrade pip && pip install -r requirements-tests.txt
 script:
