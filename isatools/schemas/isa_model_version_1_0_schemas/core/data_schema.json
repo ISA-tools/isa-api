@@ -22,7 +22,9 @@
                 "Array Data File",
                 "Derived Array Data File",
                 "Post Translational Modification Assignment File",
-                "Derived Array Data Matrix File"
+                "Derived Array Data Matrix File",
+                "Free Induction Decay Data File",
+                "Metabolite Assignment File"
             ]
         },
         "comments" : {
