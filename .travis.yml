@@ -8,7 +8,7 @@ before_install:
 install:
 - pip install --upgrade pip && pip install -r requirements-tests.txt
 script:
-- coverage run --source=isatools --omit=docs/*,features/*,tests/*,isatools/io/isatab_configurator.py,isatools/io/storage_adapter.py setup.py test
+- coverage run --source=isatools --omit=docs/*,features/*,tests/*,isatools/io/isatab_configurator.py setup.py test
 - behave --no-capture --no-capture-stderr --format=progress features/isa-file-handler.feature
 branches:
   except:

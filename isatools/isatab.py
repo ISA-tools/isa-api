@@ -3617,6 +3617,9 @@ def find_in_between(a, x, y):
 
 
 def merge_study_with_assay_tables(study_file_path, assay_file_path, target_file_path):
+    """
+    Usage: merge_study_with_assay_tables('/path/to/study.txt', '/path/to/assay.txt', '/path/to/merged.txt')
+    """
     study_DF = read_tfile(study_file_path)
     assay_DF = read_tfile(assay_file_path)
     merged_DF = pd.merge(study_DF, assay_DF, on='Sample Name')
