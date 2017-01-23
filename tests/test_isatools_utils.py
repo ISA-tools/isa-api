@@ -11,7 +11,7 @@ from isatools import utils
 
 def setUpModule():
     if not os.path.exists(test_utils.DATA_DIR):
-        raise FileNotFoundError("Could not fine test data directory in {0}. Ensure you have clone the ISAdatasets "
+        raise FileNotFoundError("Could not fine test data directory in {0}. Ensure you have cloned the ISAdatasets "
                                 "repository using "
                                 "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}"
                                 .format(test_utils.DATA_DIR))
