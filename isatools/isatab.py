@@ -3618,7 +3618,13 @@ def find_in_between(a, x, y):
 
 def merge_study_with_assay_tables(study_file_path, assay_file_path, target_file_path):
     """
-    Usage: merge_study_with_assay_tables('/path/to/study.txt', '/path/to/assay.txt', '/path/to/merged.txt')
+        Utility function to merge a study table file with an assay table file. The merge uses the Sample Name as the
+        key, so samples in the assay file must match those in the study file. If there are no matches, the function
+        will output the joined header and no additional rows.
+
+        Usage:
+
+        merge_study_with_assay_tables('/path/to/study.txt', '/path/to/assay.txt', '/path/to/merged.txt')
     """
     study_DF = read_tfile(study_file_path)
     assay_DF = read_tfile(assay_file_path)
