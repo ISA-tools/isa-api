@@ -16,6 +16,58 @@ def setUpModule():
                                 .format(utils.DATA_DIR))
 
 
+class TestIsaMerge(unittest.TestCase):
+
+    def setUp(self):
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
+
+    def test_merge_bii_s_1_with_a_proteome(self):
+        isatab.merge_study_with_assay_tables(os.path.join(self._tab_data_dir, 'BII-I-1', 's_BII-S-1.txt'),
+                                             os.path.join(self._tab_data_dir, 'BII-I-1', 'a_proteome.txt'),
+                                             os.path.join(self._tmp_dir, 'merged.txt'))
+        merged_DF = isatab.read_tfile(os.path.join(self._tmp_dir, 'merged.txt'))
+        # num rows expected is max of input DFs
+        self.assertEqual(merged_DF.shape[0], 18)
+        # num columns expected is sum of input DFs, minus index column
+        self.assertEqual(merged_DF.shape[1], 43)
+
+    def test_merge_bii_s_1_with_a_metabolome(self):
+        isatab.merge_study_with_assay_tables(os.path.join(self._tab_data_dir, 'BII-I-1', 's_BII-S-1.txt'),
+                                             os.path.join(self._tab_data_dir, 'BII-I-1', 'a_metabolome.txt'),
+                                             os.path.join(self._tmp_dir, 'merged.txt'))
+        merged_DF = isatab.read_tfile(os.path.join(self._tmp_dir, 'merged.txt'))
+        self.assertEqual(merged_DF.shape[0], 111)
+        self.assertEqual(merged_DF.shape[1], 41)
+
+    def test_merge_bii_s_1_with_a_transcriptome(self):
+        isatab.merge_study_with_assay_tables(os.path.join(self._tab_data_dir, 'BII-I-1', 's_BII-S-1.txt'),
+                                             os.path.join(self._tab_data_dir, 'BII-I-1', 'a_transcriptome.txt'),
+                                             os.path.join(self._tmp_dir, 'merged.txt'))
+        merged_DF = isatab.read_tfile(os.path.join(self._tmp_dir, 'merged.txt'))
+        self.assertEqual(merged_DF.shape[0], 48)
+        self.assertEqual(merged_DF.shape[1], 40)
+
+    def test_merge_bii_s_2_with_a_microarray(self):
+        isatab.merge_study_with_assay_tables(os.path.join(self._tab_data_dir, 'BII-I-1', 's_BII-S-2.txt'),
+                                             os.path.join(self._tab_data_dir, 'BII-I-1', 'a_microarray.txt'),
+                                             os.path.join(self._tmp_dir, 'merged.txt'))
+        merged_DF = isatab.read_tfile(os.path.join(self._tmp_dir, 'merged.txt'))
+        self.assertEqual(merged_DF.shape[0], 14)
+        self.assertEqual(merged_DF.shape[1], 43)
+
+    def test_merge_bii_s_1_with_a_microarray(self):
+        isatab.merge_study_with_assay_tables(os.path.join(self._tab_data_dir, 'BII-I-1', 's_BII-S-1.txt'),
+                                             os.path.join(self._tab_data_dir, 'BII-I-1', 'a_microarray.txt'),
+                                             os.path.join(self._tmp_dir, 'merged.txt'))
+        merged_DF = isatab.read_tfile(os.path.join(self._tmp_dir, 'merged.txt'))
+        self.assertEqual(merged_DF.shape[0], 0)  # tests no matching samples
+        self.assertEqual(merged_DF.shape[1], 47)  # still prints out joined header though
+
+
 class TestIsaTabDump(unittest.TestCase):
 
     def setUp(self):

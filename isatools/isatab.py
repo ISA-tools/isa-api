@@ -45,28 +45,6 @@ _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name'
                        'Data Transformation Name', 'Normalization Name']
 
 
-def validate(isatab_dir, config_dir):
-    """ Validate an ISA-Tab archive using the Java validator that is embedded in the Python ISA-API (deprecated)
-    :param isatab_dir: Path to ISA-Tab files
-    :param config_dir: Path to configuration XML files
-    """
-    if not os.path.exists(isatab_dir):
-        raise IOError("isatab_dir " + isatab_dir + " does not exist")
-    print("Using source ISA Tab folder: " + isatab_dir)
-    print("ISA configuration XML folder: " + config_dir)
-    convert_command = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                   "convert/isa_line_commands/bin/validate.sh -c " + config_dir + " " + isatab_dir)
-    from subprocess import call
-    try:
-        return_code = call([convert_command], shell=True)
-        if return_code < 0:
-            print(sys.stderr, "Terminated by signal", -return_code)
-        else:
-            print(sys.stderr, "Returned", return_code)
-    except OSError as e:
-        print(sys.stderr, "Execution failed:", e)
-
-
 def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
 
     def _build_roles_str(roles):
@@ -3636,3 +3614,11 @@ def find_in_between(a, x, y):
             break
 
     return result
+
+
+def merge_study_with_assay_tables(study_file_path, assay_file_path, target_file_path):
+    study_DF = read_tfile(study_file_path)
+    assay_DF = read_tfile(assay_file_path)
+    merged_DF = pd.merge(study_DF, assay_DF, on='Sample Name')
+    with open(target_file_path, 'w') as fp:
+        merged_DF.to_csv(fp, sep='\t', index=False, header=study_DF.isatab_header + assay_DF.isatab_header[1:])
