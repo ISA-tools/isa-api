@@ -45,9 +45,36 @@ class Comment(object):
         name (str): The name of the comment (as mapped to Comment[SomeName] in ISA-Tab) to give context to the comment field.
         value (str, int, float, NoneType): A value for the corresponding comment, as a string or number.
     """
-    def __init__(self, name="", value=""):
+    def __init__(self, name, value=None):
         self.name = name
         self.value = value
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise AttributeError("Comment.name must be a str")
+        elif name.strip() == '':
+            raise AttributeError("Comment.name must not be empty")
+        else:
+            self.__name = name
+
+    @property
+    def value(self):
+        if self.__value is '':
+            return None
+        else:
+            return self.__value
+
+    @value.setter
+    def value(self, value):
+        if value is not None and not isinstance(value, (str, int, float)):  # allow instance of str, int, float or None
+            raise AttributeError("Comment.value must be an instance of str, int, float, or None")
+        else:
+            self.__value = value
 
 
 class Commentable(object):
@@ -57,10 +84,18 @@ class Commentable(object):
         comments (list, NoneType): Comments associated with the implementing ISA class (all ISA classes).
     """
     def __init__(self, comments=None):
-        if comments is None:
-            self.comments = []
+        self.comments = comments
+
+    @property
+    def comments(self):
+        return self.__comments
+
+    @comments.setter
+    def comments(self, comments):
+        if comments is not None and not isinstance(comments, list):
+            raise AttributeError("comments must be an instance of list or None")
         else:
-            self.comments = comments
+            self.__comments = comments
 
 
 class Investigation(Commentable):
@@ -80,8 +115,8 @@ class Investigation(Commentable):
         comments (list, NoneType): Comments associated with instances of this class.
     """
 
-    def __init__(self, id_="", filename="", identifier="", title="", description="", submission_date="",
-                 public_release_date="", ontology_source_references=None, publications=None,
+    def __init__(self, id_='', filename='', identifier="", title="", description="", submission_date='',
+                 public_release_date='', ontology_source_references=None, publications=None,
                  contacts=None, studies=None, comments=None):
         super().__init__(comments)
         self.id = id_
@@ -117,17 +152,72 @@ class OntologySource(Commentable):
     Attributes:
         name (str): The name of the source of a term; i.e. the source controlled vocabulary or ontology.
         file (str, NoneType): A file name or a URI of an official resource.
-        version (str): The version number of the Term Source to support terms tracking.
-        description (str): A free text description of the resource.
-        comments (list): Comments associated with instances of this class.
+        version (str, NoneType): The version number of the Term Source to support terms tracking.
+        description (str, NoneType): A free text description of the resource.
+        comments (list, NoneType): Comments associated with instances of this class.
     """
 
-    def __init__(self, name="", file="", version="", description="", comments=None):
+    def __init__(self, name, file=None, version=None, description=None, comments=None):
         super().__init__(comments)
         self.name = name
         self.file = file
         self.version = version
         self.description = description
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise AttributeError("OntologySource.name must be a str")
+        elif name.strip() == '':
+            raise AttributeError("OntologySource.name must not be empty")
+        else:
+            self.__name = name
+
+    @property
+    def file(self):
+        if self.__file is '':
+            return None
+        else:
+            return self.__file
+
+    @file.setter
+    def file(self, file):
+        if file is not None and not isinstance(file, str):
+            raise AttributeError("OntologySource.file must be a str or None")
+        else:
+            self.__file = file
+
+    @property
+    def version(self):
+        if self.__version is '':
+            return None
+        else:
+            return self.__version
+
+    @version.setter
+    def version(self, version):
+        if version is not None and not isinstance(version, str):
+            raise AttributeError("OntologySource.version must be a str or None")
+        else:
+            self.__version = version
+
+    @property
+    def description(self):
+        if self.__description is '':
+            return None
+        else:
+            return self.__description
+
+    @description.setter
+    def description(self, description):
+        if description is not None and not isinstance(description, str):
+            raise AttributeError("OntologySource.description must be a str or None")
+        else:
+            self.__description = description
 
 
 class OntologyAnnotation(Commentable):
@@ -140,14 +230,53 @@ class OntologyAnnotation(Commentable):
         comments (list, NoneType): Comments associated with instances of this class.
     """
 
-    def __init__(self, term="", term_source="", term_accession="", comments=None, id_=""):
+    def __init__(self, term=None, term_source=None, term_accession=None, comments=None, id_=''):
         super().__init__(comments)
 
         self.term = term
         self.term_source = term_source
         self.term_accession = term_accession
         self.id = id_
-        
+
+    @property
+    def term(self):
+        if self.__term is '':
+            return None
+        else:
+            return self.__term
+
+    @term.setter
+    def term(self, term):
+        if term is not None and not isinstance(term, str):
+            raise AttributeError("OntologyAnnotation.term must be a str or None; got {}:{}".format(term, type(term)))
+        else:
+            self.__term = term
+
+    @property
+    def term_source(self):
+        return self.__term_source
+
+    @term_source.setter
+    def term_source(self, term_source):
+        if term_source is not None and not isinstance(term_source, OntologySource):
+            raise AttributeError("OntologyAnnotation.term_source must be a OntologySource or None; got {}:{}".format(term_source, type(term_source)))
+        else:
+            self.__term_source = term_source
+
+    @property
+    def term_accession(self):
+        if self.__term is '':
+            return None
+        else:
+            return self.__term_accession
+
+    @term_accession.setter
+    def term_accession(self, term_accession):
+        if term_accession is not None and not isinstance(term_accession, str):
+            raise AttributeError("OntologyAnnotation.term_accession must be a str or None")
+        else:
+            self.__term_accession = term_accession
+
 
 class Publication(Commentable):
     """A publication associated with an investigation or study.
@@ -171,7 +300,7 @@ class Publication(Commentable):
 
         @property
         def pubmed_id(self):
-            if self.__pubmed_id is "":
+            if self.__pubmed_id is '':
                 return None
             else:
                 return self.__pubmed_id
@@ -185,7 +314,7 @@ class Publication(Commentable):
 
         @property
         def doi(self):
-            if self.__doi is "":
+            if self.__doi is '':
                 return None
             else:
                 return self.__doi
@@ -199,7 +328,7 @@ class Publication(Commentable):
 
         @property
         def author_list(self):
-            if self.__author_list is "":
+            if self.__author_list is '':
                 return None
             else:
                 return self.__author_list
@@ -213,7 +342,7 @@ class Publication(Commentable):
 
         @property
         def status(self):
-            if self.__status is "":
+            if self.__status is '':
                 return None
             else:
                 return self.__status
@@ -245,7 +374,7 @@ class Person(Commentable):
     """
 
     def __init__(self, first_name=None, last_name=None, mid_initials=None, email=None, phone=None, fax=None,
-                 address=None, affiliation=None, roles=None, comments=None, id_=""):
+                 address=None, affiliation=None, roles=None, comments=None, id_=''):
         super().__init__(comments)
         self.id = id_
         self.last_name = last_name
@@ -284,8 +413,8 @@ class Study(Commentable, object):
         comments (list, NoneType): Comments associated with instances of this class.
     """
 
-    def __init__(self, id_="", filename="", identifier="",  title="", description="", submission_date="",
-                 public_release_date="", contacts=None, design_descriptors=None, publications=None,
+    def __init__(self, id_='', filename="", identifier="",  title="", description="", submission_date='',
+                 public_release_date='', contacts=None, design_descriptors=None, publications=None,
                  factors=None, protocols=None, assays=None, sources=None, samples=None,
                  process_sequence=None, other_material=None, characteristic_categories=None, comments=None, units=None):
         super().__init__(comments)
@@ -364,7 +493,7 @@ class Study(Commentable, object):
 
     @graph.setter
     def graph(self, graph):
-        raise AttributeError("Study.graph2 is not settable")
+        raise AttributeError("Study.graph is not settable")
 
 
 class StudyFactor(Commentable):
@@ -376,7 +505,7 @@ class StudyFactor(Commentable):
         factor_type (OntologyAnnotation): An ontology source reference of the study factor type
         comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, id_="", name="", factor_type=None, comments=None):
+    def __init__(self, id_='', name="", factor_type=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.name = name
@@ -478,7 +607,7 @@ class Protocol(Commentable):
         components (list, None): A list of OntologyAnnotation describing a protocol’s components; e.g. instrument names, software names, and reagents names.
         comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, id_="", name="", protocol_type=None, uri="", description="", version="", parameters=None,
+    def __init__(self, id_='', name="", protocol_type=None, uri="", description="", version="", parameters=None,
                  components=None, comments=None):
         super().__init__(comments)
         self.id = id_
@@ -508,7 +637,7 @@ class ProtocolParameter(Commentable):
         unit (OntologyAnnotation): A unit, if applicable
         comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, id_="", parameter_name=None, unit=None, comments=None):
+    def __init__(self, id_='', parameter_name=None, unit=None, comments=None):
         super().__init__(comments)
         self.id = id_
         if parameter_name is None:
@@ -547,7 +676,7 @@ class ProtocolComponent(Commentable):
         component_type (OntologyAnnotation): The classifier as a term for the component.
         comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, id_="", name="", component_type=None, comments=None):
+    def __init__(self, id_='', name='', component_type=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.name = name
@@ -565,7 +694,7 @@ class Source(Commentable):
         characteristics (list, NoneType): A list of Characteristics used to qualify the material properties.
         comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, id_="", name="", characteristics=None, comments=None):
+    def __init__(self, id_='', name="", characteristics=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.name = name
@@ -606,7 +735,7 @@ class Sample(Commentable):
         derives_from (Source): A link to the source material that the sample is derived from.
         comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, id_="", name="", factor_values=None, characteristics=None, derives_from=None, comments=None):
+    def __init__(self, id_='', name="", factor_values=None, characteristics=None, derives_from=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.name = name
@@ -630,7 +759,7 @@ class Material(Commentable):
         derives_from (Source): A link to the material that this material is derived from.
         comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, id_="", name="", type_="", characteristics=None, derives_from=None, comments=None):
+    def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.name = name
@@ -668,39 +797,36 @@ class Process(Commentable):
         date_ (str): A date formatted as an ISO8601 string corresponding to when the process event occurred.
         performer (str): The name of the person or organisation that carried out the process.
         parameter_values (list, NoneType): A list of ParameterValues relevant to the executing protocol.
-        inputs (list): A list of input materials, possibly Sources, Samples, Materials, DataFiles
-        outputs (list): A list of output materials, possibly Samples, Materials, DataFiles
-        comments (list): Comments associated with instances of this class.
+        inputs (list, NoneType): A list of input materials, possibly Sources, Samples, Materials, DataFiles
+        outputs (list, NoneType): A list of output materials, possibly Samples, Materials, DataFiles
+        comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, id_="", name="", executes_protocol=None, prev_process=None, next_process=None, date_="",
-                 performer="", parameter_values=None, inputs=None, outputs=None, comments=None):
+    def __init__(self, id_='', name="", executes_protocol=None, date_=None, performer=None,
+                 parameter_values=None, inputs=None, outputs=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.name = name
-        self.executes_protocol = executes_protocol
+        if executes_protocol is None:
+            self.executes_protocol = Protocol()
+        else:
+            self.executes_protocol = executes_protocol
         self.date = date_
         self.performer = performer
         if parameter_values is None:
-            self.parameter_values = []
+            self.parameter_values = list()
         else:
             self.parameter_values = parameter_values
         if inputs is None:
-            self.inputs = []
+            self.inputs = list()
         else:
             self.inputs = inputs
         if outputs is None:
-            self.outputs = []
+            self.outputs = list()
         else:
             self.outputs = outputs
-        if prev_process is None:
-            self.prev_process = []
-        else:
-            self.prev_process = prev_process
-        if next_process is None:
-            self.next_process = []
-        else:
-            self.next_process = next_process
         self.additional_properties = dict()
+        self.prev_process = None
+        self.next_process = None
 
 
 class DataFile(Commentable):
@@ -711,15 +837,11 @@ class DataFile(Commentable):
             label (str):
             comments (list, NoneType): Comments associated with instances of this class.
         """
-    def __init__(self, id_="", filename="", label="", derives_from=None, comments=None):
+    def __init__(self, id_='', filename='', label='', comments=None):
         super().__init__(comments)
         self.id = id_
         self.filename = filename
         self.label = label
-        if derives_from is None:
-            self.derives_from = []
-        else:
-            self.derives_from = derives_from
 
 
 def batch_create_materials(material=None, n=1):
@@ -868,13 +990,13 @@ class ISADocument:
 
     @property
     def valid_isatab(self):
-        if self._root.filename is None or self._root.filename == "":
+        if self._root.filename is None or self._root.filename == '':
             return False
         for study in self._root.studies:
-            if study.filename is None or study.filename == "":
+            if study.filename is None or study.filename == '':
                 return False
             for assay in study.assays:
-                if assay.filename is None or assay.filename == "":
+                if assay.filename is None or assay.filename == '':
                     return False
         return True
 

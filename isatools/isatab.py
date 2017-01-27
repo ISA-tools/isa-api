@@ -40,7 +40,7 @@ _LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name', 'Labeled
 _LABELS_DATA_NODES = ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
                       'Protein Assignment File', 'Peptide Assignment File',
                       'Post Translational Modification Assignment File', 'Acquisition Parameter Data File',
-                      'Free Induction Decay Data File', 'Derived Array Data Matrix File', 'Raw Spectral Data File']
+                      'Free Induction Decay Data File', 'Derived Array Data Matrix File']
 _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name', 'Scan Name',
                        'Data Transformation Name', 'Normalization Name']
 
@@ -663,8 +663,7 @@ def write_assay_table_files(inv_obj, output_dir):
                 df = pd.DataFrame(columns=cols)
                 i = 0
                 start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
-                paths = _all_end_to_end_paths(assay_obj.graph, start_nodes, end_nodes)
-                for path in paths:
+                for path in _all_end_to_end_paths(assay_obj.graph, start_nodes, end_nodes):
                     mcount = 0
                     compound_key = str()
                     for node in path:
@@ -858,8 +857,7 @@ def write_study_table_files(inv_obj, output_dir):
         i = 0
 
         start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
-        paths = _all_end_to_end_paths(study_obj.graph, start_nodes, end_nodes)
-        for path in paths:
+        for path in _all_end_to_end_paths(study_obj.graph, start_nodes, end_nodes):
             for node in path:
                 if isinstance(node, Source):
                     df.loc[i, 'source'] = node.name
@@ -1556,10 +1554,12 @@ def load_table_checks(fp):
         if _RX_INDEXED_COL.match(column):
             column = column[:column.rfind('.')]
         if (column not in ['Source Name', 'Sample Name', 'Term Source REF', 'Protocol REF', 'Term Accession Number',
-                           'Unit', 'Assay Name', 'Extract Name', 'Material Type', 'MS Assay Name',
-                           'Labeled Extract Name', 'Label', 'Hybridization Assay Name',
-                           'Array Design REF', 'Scan Name',
-                           'Data Transformation Name', 'Normalization Name'] + _LABELS_DATA_NODES) and not _RX_CHARACTERISTICS.match(column) and not _RX_PARAMETER_VALUE.match(column) and not _RX_FACTOR_VALUE.match(column) and not _RX_COMMENT.match(column):
+                           'Unit', 'Assay Name', 'Extract Name', 'Raw Data File', 'Material Type', 'MS Assay Name',
+                           'Raw Spectral Data File', 'Labeled Extract Name', 'Label', 'Hybridization Assay Name',
+                           'Array Design REF', 'Scan Name', 'Array Data File', 'Protein Assignment File',
+                           'Peptide Assignment File', 'Post Translational Modification Assignment File',
+                           'Data Transformation Name', 'Derived Spectral Data File', 'Normalization Name',
+                           'Derived Array Data File', 'Image File']) and not _RX_CHARACTERISTICS.match(column) and not _RX_PARAMETER_VALUE.match(column) and not _RX_FACTOR_VALUE.match(column) and not _RX_COMMENT.match(column):
             logger.error("Unrecognised column heading {} at column position {} in table file {}".format(column, x, os.path.basename(fp.name)))
         if _RX_COMMENT.match(column):
             if len(_RX_COMMENT.findall(column)) == 0:
@@ -1600,7 +1600,11 @@ def load_table_checks(fp):
         else:
             norm_columns.append(column)
     object_index = [i for i, x in enumerate(norm_columns) if x in ['Source Name', 'Sample Name', 'Protocol REF',
-                                                              'Extract Name', 'Labeled Extract Name'] + _LABELS_DATA_NODES
+                                                              'Extract Name', 'Labeled Extract Name', 'Raw Data File',
+                                                              'Raw Spectral Data File', 'Array Data File',
+                                                              'Protein Assignment File', 'Peptide Assignment File',
+                                                              'Post Translational Modification Assignment File',
+                                                              'Derived Spectral Data File', 'Derived Array Data File']
                     or _RX_FACTOR_VALUE.match(x)]
     # this bit strips out the postfix .n that DataFrames adds to multiples of column labels
     object_columns_list = list()
@@ -1636,7 +1640,9 @@ def load_table_checks(fp):
                     logger.error("(E) Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, object_columns[1:], 2))
             else:
                 logger.error("Expected Label column after Labeled Extract Name but none found")
-        elif prop_name in _LABELS_DATA_NODES:
+        elif prop_name in ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
+                           'Raw Spectral Data File', 'Protein Assignment File', 'Peptide Assignment File',
+                           'Post Translational Modification Assignment File']:
             for x, col in enumerate(object_columns[1:]):
                 if not _RX_COMMENT.match(col):
                     logger.error("(E) Expected only Comments following {} columns but found {} at offset {}".format(prop_name, col, x+1))
@@ -2074,7 +2080,12 @@ def check_study_table_against_config(s_df, protocols_declared, config):
     # First check column order is correct against the configuration
     columns = s_df.columns
     object_index = [(x, i) for x, i in enumerate(columns) if i in ['Source Name', 'Sample Name',
-                                                              'Extract Name', 'Labeled Extract Name'] + _LABELS_DATA_NODES or 'Protocol REF' in i or
+                                                              'Extract Name', 'Labeled Extract Name', 'Raw Data File',
+                                                              'Raw Spectral Data File', 'Array Data File',
+                                                              'Protein Assignment File', 'Peptide Assignment File',
+                                                              'Post Translational Modification Assignment File',
+                                                              'Derived Spectral Data File',
+                                                              'Derived Array Data File'] or 'Protocol REF' in i or
                     'Characteristics[' in i or 'Factor Value[' in i or 'Parameter Value[ in i']
     fields = [i.header for i in config.get_isatab_configuration()[0].get_field()]
     protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
@@ -2112,7 +2123,12 @@ def check_assay_table_against_config(s_df, config):
             norm_columns.append(column)
     norm_columns = [k for k, g in itertools.groupby(norm_columns)]  # remove adjacent dups - i.e. chained Protocol REFs
     object_index = [(x, i) for x, i in enumerate(norm_columns) if i in ['Source Name', 'Sample Name',
-                                                              'Extract Name', 'Labeled Extract Name', 'Assay Name'] + _LABELS_DATA_NODES or 'Protocol REF' in i or
+                                                              'Extract Name', 'Labeled Extract Name', 'Raw Data File',
+                                                              'Raw Spectral Data File', 'Array Data File',
+                                                              'Protein Assignment File', 'Peptide Assignment File',
+                                                              'Post Translational Modification Assignment File',
+                                                              'Derived Spectral Data File',
+                                                              'Derived Array Data File', 'Assay Name'] or 'Protocol REF' in i or
                     'Characteristics[' in i or 'Factor Value[' in i or 'Parameter Value[ in i' or 'Comment[' in i]
     fields = [i.header for i in config.get_isatab_configuration()[0].get_field()]
     protocols = [(i.pos, i.protocol_type) for i in config.get_isatab_configuration()[0].get_protocol_field()]
@@ -3206,16 +3222,6 @@ def preprocess(DF):
     return DF
 
 
-def read_material(DF, header, material_type):
-    materials = None
-    try:
-        materials = dict(map(lambda x: (':'.join([header, x]), material_type(name=x)), DF[header].drop_duplicates()))
-    except KeyError:
-        pass
-
-    return materials
-
-
 class ProcessSequenceFactory:
 
     def __init__(self, ontology_sources=None, study_samples=None, study_protocols=None, study_factors=None):
@@ -3367,7 +3373,6 @@ class ProcessSequenceFactory:
             pass
 
         isatab_header = DF.isatab_header
-
         object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
                         + ['Protocol REF']]
 
@@ -3387,19 +3392,6 @@ class ProcessSequenceFactory:
 
         node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
         # proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
-
-        def get_node_by_label_and_key(l, k):
-            n = None
-            lk = l + ':' + k
-            if l == 'Source Name':
-                n = sources[lk]
-            if l == 'Sample Name':
-                n = samples[lk]
-            elif l in ('Extract Name', 'Labeled Extract Name'):
-                n = other_material[lk]
-            elif l.endswith('File'):
-                n = data[lk]
-            return n
 
         for _cg, column_group in enumerate(object_column_map):
             # for each object, parse column group
@@ -3474,6 +3466,19 @@ class ProcessSequenceFactory:
                                 material.factor_values.append(fv)
 
             elif object_label.startswith('Protocol REF'):
+
+                def get_node_by_label_and_key(l, k):
+                    n = None
+                    lk = l + ':' + k
+                    if l == 'Source Name':
+                        n = sources[lk]
+                    if l == 'Sample Name':
+                        n = samples[lk]
+                    elif l in ('Extract Name', 'Labeled Extract Name'):
+                        n = other_material[lk]
+                    elif l.endswith('File'):
+                        n = data[lk]
+                    return n
 
                 object_label_index = list(DF.columns).index(object_label)
 
@@ -3552,8 +3557,6 @@ class ProcessSequenceFactory:
 
             process_key_sequence = list()
 
-            sample = None
-
             for _cg, column_group in enumerate(object_column_map):
 
                 # for each object, parse column group
@@ -3568,12 +3571,7 @@ class ProcessSequenceFactory:
 
                     process_key_sequence.append(process_key)
 
-                # this bit links data file back to a sample
-                if object_label == 'Sample Name':
-                    sample = get_node_by_label_and_key(object_label, object_series[column_group[0]])
-                if object_label.endswith('File'):
-                    datafile = get_node_by_label_and_key(object_label, object_series[column_group[0]])
-                    datafile.derives_from.append(sample.name)
+            # print('key sequence = ', process_key_sequence)
 
             # Link the processes in each sequence
             for pair in pairwise(process_key_sequence):  # TODO: Make split/pool model with multi prev/next_process
@@ -3581,11 +3579,8 @@ class ProcessSequenceFactory:
                 l = processes[pair[0]]  # get process on left of pair
                 r = processes[pair[1]]  # get process on right of pair
 
-                l.next_process.append(r)
-                r.prev_process.append(l)
-
-        for d in data.values():
-            print(d.filename, d.__dict__)
+                l.next_process = r
+                r.prev_process = l
 
         return sources, samples, other_material, data, processes, characteristic_categories, unit_categories
 
