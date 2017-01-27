@@ -7,7 +7,6 @@ from io import StringIO
 from jsonschema.exceptions import ValidationError
 from tests import utils as test_utils
 from isatools import utils
-from isatools.model.v1 import Publication, Comment
 
 
 def setUpModule():
@@ -51,32 +50,3 @@ class TestIsaGraph(unittest.TestCase):
                 print("AttributeError, skipping...")
             except ValidationError:
                 print("jsonschema ValidationError, skipping...")
-
-
-class TestPubMed(unittest.TestCase):
-
-    def test_get_pubmed_article(self):
-        pubmed_id = "17439666"
-        response = utils.get_pubmed_article(pubmed_id)
-        self.assertEqual(response['title'], "Growth control of the eukaryote cell: a systems biology study in yeast.")
-        self.assertEqual(response['doi'], "10.1186/jbiol54")
-        self.assertEqual(response['year'], "2007")
-        self.assertListEqual(response['authors'], ['Castrillo JI', 'Zeef LA', 'Hoyle DC', 'Zhang N', 'Hayes A',
-                                                   'Gardner DC', 'Cornell MJ', 'Petty J', 'Hakes L', 'Wardleworth L',
-                                                   'Rash B', 'Brown M', 'Dunn WB', 'Broadhurst D', "O'Donoghue K",
-                                                   'Hester SS', 'Dunkley TP', 'Hart SR', 'Swainston N', 'Li P',
-                                                   'Gaskell SJ', 'Paton NW', 'Lilley KS', 'Kell DB', 'Oliver SG'])
-        self.assertEqual(response['journal'], "J Biol")
-
-    def test_set_pubmed_article(self):
-        P = Publication(pubmed_id="17439666")
-        utils.set_pubmed_article(P)
-        self.assertEqual(P.title, "Growth control of the eukaryote cell: a systems biology study in yeast.")
-        self.assertEqual(P.doi, "10.1186/jbiol54")
-        self.assertEqual(P.author_list, "Castrillo JI, Zeef LA, Hoyle DC, Zhang N, Hayes A, Gardner DC, "
-                                        "Cornell MJ, Petty J, Hakes L, Wardleworth L, Rash B, Brown M, "
-                                        "Dunn WB, Broadhurst D, O'Donoghue K, Hester SS, Dunkley TP, Hart SR, "
-                                        "Swainston N, Li P, Gaskell SJ, Paton NW, Lilley KS, Kell DB, Oliver SG")
-        self.assertIsInstance(P.comments[0], Comment)
-        self.assertEqual(P.comments[0].name, "Journal")
-        self.assertEqual(P.comments[0].value, "J Biol")
