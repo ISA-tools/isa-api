@@ -8,3 +8,4 @@ chardet
 jinja2
 bs4
 mzml2isa
+biopython

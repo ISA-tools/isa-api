@@ -43,7 +43,8 @@ setup(
         'iso8601',
         'jinja2',
         'bs4',
-        'mzml2isa'
+        'mzml2isa',
+        'biopython'
     ],
     test_suite='tests'
 )
