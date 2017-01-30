@@ -1,10 +1,11 @@
-from isatools.model.v1 import Publication, Comment
+from isatools.model.v1 import Publication, Comment, OntologySource, OntologyAnnotation
 from Bio import Entrez, Medline
 from isatools.isatab import load_table
 import uuid
 import csv
 import json
 from urllib.request import urlopen
+from urllib.parse import urlencode
 
 
 def format_report_csv(report):
@@ -151,11 +152,11 @@ OLS_PAGINATION_SIZE = 500
 
 
 def get_ols_ontologies():
+    """Returns a list of OntologySource objects according to what's in OLS"""
     ontologiesUri = OLS_API_BASE_URI + "/ontologies?size=" + str(OLS_PAGINATION_SIZE)
     print(ontologiesUri)
     J = json.loads(urlopen(ontologiesUri).read().decode("utf-8"))
     print("Got {}".format([j["ontologyId"] for j in J["_embedded"]["ontologies"]]))
-    from isatools.model.v1 import OntologySource
     ontology_sources = []
     for ontology_source_json in J["_embedded"]["ontologies"]:
         ontology_sources.append(OntologySource(
@@ -166,3 +167,18 @@ def get_ols_ontologies():
             file=ontology_source_json["config"]["versionIri"]
         ))
     return ontology_sources
+
+
+def search_ols(term, ontology_source):
+    url = OLS_API_BASE_URI + "/search"
+    queryObj = {
+        "q": term,
+        "rows": OLS_PAGINATION_SIZE,
+        "start": 0,
+        "ontology": ontology_source.name if isinstance(ontology_source, OntologySource) else ontology_source
+    }
+    query_string = urlencode(queryObj)
+    url += '?q=' + query_string
+    print(url)
+    J = json.loads(urlopen(url).read().decode("utf-8"))
+    return J
