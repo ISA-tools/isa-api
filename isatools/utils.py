@@ -253,6 +253,8 @@ def create_isatab_archive(inv_fp, target_filename=None, filter_by_measurement=No
             for file in all_files_in_isatab:
                 zip_file.write(os.path.join(dirname, file), arcname=file)
             print(zip_file.namelist())
+            return zip_file.namelist()
     else:
         print("Not zipping")
         print("Missing: ", missing_files)
+        return None
