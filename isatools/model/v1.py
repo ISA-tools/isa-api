@@ -747,7 +747,10 @@ class Sample(Commentable):
             self.characteristics = list()
         else:
             self.characteristics = characteristics
-        self.derives_from = derives_from
+        if derives_from is None:
+            self.derives_from = []
+        else:
+            self.derives_from = derives_from
 
 
 class Material(Commentable):
@@ -768,7 +771,6 @@ class Material(Commentable):
             self.characteristics = list()
         else:
             self.characteristics = characteristics
-        self.derives_from = derives_from
 
 
 class FactorValue(Commentable):

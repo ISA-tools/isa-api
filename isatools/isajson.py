@@ -298,8 +298,7 @@ def load(fp):
         for sample_json in study_json["materials"]["samples"]:
             sample = Sample(
                 id_=sample_json["@id"],
-                name=sample_json["name"][7:],
-                derives_from=sample_json["derivesFrom"]
+                name=sample_json["name"][7:]
             )
             for characteristic_json in sample_json["characteristics"]:
                 value = characteristic_json["value"]
@@ -344,6 +343,11 @@ def load(fp):
                 sample.factor_values.append(factor_value)
             samples_dict[sample.id] = sample
             study.materials["samples"].append(sample)
+            try:
+                for source_id_ref_json in sample_json["derivesFrom"]:
+                    sample.derives_from.append(sources_dict[source_id_ref_json["@id"]])
+            except KeyError:
+                sample.derives_from = []
         for study_process_json in study_json["processSequence"]:
             process = Process(
                 id_=study_process_json["@id"],
@@ -458,6 +462,10 @@ def load(fp):
                 except KeyError:
                     pass
                 data_dict[data_file.id] = data_file
+                try:
+                    data_file.derives_from = samples_dict[data_json["derivesFrom"][0]["@id"]]
+                except KeyError:
+                    data_file.derives_from = None
                 assay.data_files.append(data_file)
             for sample_json in assay_json["materials"]["samples"]:
                 sample = samples_dict[sample_json["@id"]]
