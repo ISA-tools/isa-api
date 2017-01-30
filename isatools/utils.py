@@ -215,16 +215,26 @@ def search_ols(term, ontology_source):
     return ontology_annotations
 
 
-def create_isatab_archive(inv_fp, target_filename=None):
-    """Function to create an ISArchive"""
+def create_isatab_archive(inv_fp, target_filename=None, filter_by_measurement=None):
+    """Function to create an ISArchive; option to select by assay measurement type
+
+    Example usage:
+
+        >>> create_isatab_archive(open('/path/to/i_investigation.txt', target_filename='isatab.zip')
+        >>> create_isatab_archive(open('/path/to/i.txt', filter_by_measurement='transcription profiling')
+    """
     if target_filename is None:
         target_filename = os.path.join(os.path.dirname(inv_fp.name), "isatab.zip")
     ISA = load(inv_fp)
     all_files_in_isatab = []
     found_files = []
     for s in ISA.studies:
-        for a in s.assays:
-            print(a.measurement_type.term)
+        if filter_by_measurement is not None:
+            print("Selecting ", filter_by_measurement)
+            selected_assays = [a for a in s.assays if a.measurement_type.term == filter_by_measurement]
+        else:
+            selected_assays = s.assays
+        for a in selected_assays:
             all_files_in_isatab += [d.filename for d in a.data_files]
     dirname = os.path.dirname(inv_fp.name)
     for fname in all_files_in_isatab:
@@ -238,7 +248,7 @@ def create_isatab_archive(inv_fp, target_filename=None):
             zip_file.write(inv_fp.name, arcname=os.path.basename(inv_fp.name))
             for s in ISA.studies:
                 zip_file.write(os.path.join(dirname, s.filename), arcname=s.filename)
-                for a in s.assays:
+                for a in selected_assays:
                     zip_file.write(os.path.join(dirname, a.filename), arcname=a.filename)
             for file in all_files_in_isatab:
                 zip_file.write(os.path.join(dirname, file), arcname=file)
