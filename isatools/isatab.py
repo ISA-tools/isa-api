@@ -416,8 +416,17 @@ prev = ''  # used in rolling_group(val) in write_assay_table_files(inv_obj, outp
 
 
 def _all_end_to_end_paths(G, start_nodes, end_nodes):
-    paths = list()
-    for start, end in itertools.product(start_nodes, end_nodes):
+    paths = []
+    end_nodes_processed = []
+    for end_node in end_nodes:
+        if isinstance(end_node, Process):
+            for output in end_node.outputs:
+                if isinstance(output, DataFile) and output.derives_from:
+                    paths += list(nx.algorithms.all_simple_paths(G, output.derives_from, end_node))
+                    end_nodes_processed.append(end_node)
+    end_nodes_remaining = [item for item in end_nodes if item not in end_nodes_processed]
+    print("product len: " + str(len(start_nodes) * len(end_nodes_remaining)))  # this is how many loops happen in the for loop
+    for start, end in itertools.product(start_nodes, end_nodes_remaining):
         paths += list(nx.algorithms.all_simple_paths(G, start, end))
     return paths
 

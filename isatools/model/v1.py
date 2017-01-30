@@ -835,13 +835,15 @@ class DataFile(Commentable):
         Attributes:
             filename (str): A name/reference for the data file.
             label (str):
+            derives_from (Sample): The Sample the DataFile is derived from
             comments (list, NoneType): Comments associated with instances of this class.
         """
-    def __init__(self, id_='', filename='', label='', comments=None):
+    def __init__(self, id_='', filename='', label='', derives_from=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.filename = filename
         self.label = label
+        self.derives_from = derives_from
 
 
 def batch_create_materials(material=None, n=1):
