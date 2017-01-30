@@ -156,7 +156,6 @@ def get_ols_ontologies():
     ontologiesUri = OLS_API_BASE_URI + "/ontologies?size=" + str(OLS_PAGINATION_SIZE)
     print(ontologiesUri)
     J = json.loads(urlopen(ontologiesUri).read().decode("utf-8"))
-    print("Got {}".format([j["ontologyId"] for j in J["_embedded"]["ontologies"]]))
     ontology_sources = []
     for ontology_source_json in J["_embedded"]["ontologies"]:
         ontology_sources.append(OntologySource(
@@ -169,7 +168,29 @@ def get_ols_ontologies():
     return ontology_sources
 
 
+def get_ols_ontology(ontology_name):
+    """Returns a single OntologySource objects according to what's in OLS"""
+    ontologiesUri = OLS_API_BASE_URI + "/ontologies?size=" + str(OLS_PAGINATION_SIZE)
+    print(ontologiesUri)
+    J = json.loads(urlopen(ontologiesUri).read().decode("utf-8"))
+    ontology_sources = []
+    for ontology_source_json in J["_embedded"]["ontologies"]:
+        ontology_sources.append(OntologySource(
+            name=ontology_source_json["ontologyId"],
+            version=ontology_source_json["config"]["version"],
+            description=ontology_source_json["config"]["title"],
+
+            file=ontology_source_json["config"]["versionIri"]
+        ))
+    hits = [o for o in ontology_sources if o.name == ontology_name]
+    if len(hits) == 1:
+        return hits[0]
+    else:
+        return None
+
+
 def search_ols(term, ontology_source):
+    """Returns a list of OntologyAnnotation objects according to what's returned by OLS search"""
     url = OLS_API_BASE_URI + "/search"
     queryObj = {
         "q": term,
@@ -181,4 +202,12 @@ def search_ols(term, ontology_source):
     url += '?q=' + query_string
     print(url)
     J = json.loads(urlopen(url).read().decode("utf-8"))
-    return J
+    ontology_annotations = []
+    for search_result_json in J["response"]["docs"]:
+        ontology_annotations.append(
+            OntologyAnnotation(
+                term=search_result_json["label"],
+                term_accession=search_result_json["iri"],
+                term_source=ontology_source if isinstance(ontology_source, OntologySource) else None
+            ))
+    return ontology_annotations
