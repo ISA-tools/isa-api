@@ -1,11 +1,13 @@
 from isatools.model.v1 import Publication, Comment, OntologySource, OntologyAnnotation
 from Bio import Entrez, Medline
-from isatools.isatab import load_table
+from isatools.isatab import load_table, load
 import uuid
 import csv
 import json
 from urllib.request import urlopen
 from urllib.parse import urlencode
+import os
+from zipfile import ZipFile
 
 
 def format_report_csv(report):
@@ -211,3 +213,36 @@ def search_ols(term, ontology_source):
                 term_source=ontology_source if isinstance(ontology_source, OntologySource) else None
             ))
     return ontology_annotations
+
+
+def create_isatab_archive(inv_fp, target_filename=None):
+    """Function to create an ISArchive"""
+    if target_filename is None:
+        target_filename = os.path.join(os.path.dirname(inv_fp.name), "isatab.zip")
+    ISA = load(inv_fp)
+    all_files_in_isatab = []
+    found_files = []
+    for s in ISA.studies:
+        for a in s.assays:
+            print(a.measurement_type.term)
+            all_files_in_isatab += [d.filename for d in a.data_files]
+    dirname = os.path.dirname(inv_fp.name)
+    for fname in all_files_in_isatab:
+        if os.path.isfile(os.path.join(dirname, fname)):
+            found_files.append(fname)
+    missing_files = [f for f in all_files_in_isatab if f not in found_files]
+    if len(missing_files) == 0:
+        print("Do zip")
+        with ZipFile(target_filename, mode='w') as zip_file:
+            # use relative dir_name to avoid absolute path on file names
+            zip_file.write(inv_fp.name, arcname=os.path.basename(inv_fp.name))
+            for s in ISA.studies:
+                zip_file.write(os.path.join(dirname, s.filename), arcname=s.filename)
+                for a in s.assays:
+                    zip_file.write(os.path.join(dirname, a.filename), arcname=a.filename)
+            for file in all_files_in_isatab:
+                zip_file.write(os.path.join(dirname, file), arcname=file)
+            print(zip_file.namelist())
+    else:
+        print("Not zipping")
+        print("Missing: ", missing_files)
