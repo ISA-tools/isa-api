@@ -123,3 +123,25 @@ class TestISArchiveExport(unittest.TestCase):
                                          'EVHINN107.sff', 'EVUSNDQ03.sff', 'EVHINN103.sff', 'EVHINN112.sff',
                                          'EVUSNDQ04.sff', 'EVHINN115.sff', 'EVNG8PH02.sff', 'EVHINN114.sff',
                                          'EVHINN111.sff', 'EVNG8PH03.sff', 'EVHINN109.sff']))
+
+
+class TestPubMedIDUtil(unittest.TestCase):
+
+    def test_get_pubmed_article(self):
+        J = utils.get_pubmed_article("25520553")
+        self.assertEqual(J["doi"], "10.4137/CIN.S13895")
+        self.assertEqual(J["authors"], ['Johnson D', 'Connor AJ', 'McKeever S', 'Wang Z', 'Deisboeck TS', 'Quaiser T', 'Shochat E'])
+        self.assertEqual(J["year"], "2014")
+        self.assertEqual(J["journal"], "Cancer Inform")
+        self.assertEqual(J["title"], "Semantically linking in silico cancer models.")
+
+    def test_set_pubmed_article(self):
+        from isatools.model.v1 import Publication, Comment
+        p = Publication(pubmed_id="25520553")
+        utils.set_pubmed_article(p)
+        self.assertEqual(p.doi, "10.4137/CIN.S13895")
+        self.assertEqual(p.author_list, "Johnson D, Connor AJ, McKeever S, Wang Z, Deisboeck TS, Quaiser T, Shochat E")
+        self.assertEqual(p.title, "Semantically linking in silico cancer models.")
+        self.assertIsInstance(p.comments[0], Comment)
+        self.assertEqual(p.comments[0].name, "Journal")
+        self.assertEqual(p.comments[0].value, "Cancer Inform")
