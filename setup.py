@@ -44,7 +44,8 @@ setup(
         'jinja2',
         'bs4',
         'mzml2isa',
-        'biopython'
+        'biopython',
+        'progressbar2'
     ],
     test_suite='tests'
 )

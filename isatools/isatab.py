@@ -117,14 +117,25 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
                 pass
         publications_df = pd.DataFrame(columns=tuple(publications_df_cols))
         for i, publication in enumerate(publications):
+            if publication.status is not None:
+                status_term = publication.status.term
+                status_term_accession = publication.status.term_accession
+                if publication.status.term_source is not None:
+                    status_term_source_name = publication.status.term_source.name
+                else:
+                    status_term_source_name = ''
+            else:
+                status_term = ''
+                status_term_accession = ''
+                status_term_source_name = ''
             publications_df_row = [
                 publication.pubmed_id,
                 publication.doi,
                 publication.author_list,
                 publication.title,
-                publication.status.term,
-                publication.status.term_accession,
-                publication.status.term_source.name if publication.status.term_source else '',
+                status_term,
+                status_term_accession,
+                status_term_source_name,
             ]
             try:
                 for comment in publication.comments:
@@ -258,11 +269,22 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
                                                  )
                                         )
         for i, factor in enumerate(study.factors):
+            if factor.factor_type is not None:
+                factor_type_term = factor.factor_type.term
+                factor_type_term_accession = factor.factor_type.term_accession
+                if factor.factor_type.term_source is not None:
+                    factor_type_term_term_source_name = factor.factor_type.term_source.name
+                else:
+                    factor_type_term_term_source_name = ''
+            else:
+                factor_type_term = ''
+                factor_type_term_accession = ''
+                factor_type_term_term_source_name = ''
             study_factors_df.loc[i] = [
                 factor.name,
-                factor.factor_type.term,
-                factor.factor_type.term_accession,
-                factor.factor_type.term_source.name if factor.factor_type.term_source else ''
+                factor_type_term,
+                factor_type_term_accession,
+                factor_type_term_term_source_name
             ]
         study_factors_df = study_factors_df.set_index('Study Factor Name').T
         fp.write('STUDY FACTORS\n')
@@ -392,24 +414,22 @@ def _get_start_end_nodes(G):
 
 def _longest_path_and_attrs(G):
     start_nodes, end_nodes = _get_start_end_nodes(G)
-    from networkx.algorithms import all_simple_paths
     longest = (0, None)
-    for start_node, end_node in itertools.product(start_nodes, end_nodes):
-        for path in all_simple_paths(G, start_node, end_node):
-            length = len(path)
-            for n in path:
-                if isinstance(n, Source):
-                    length += len(n.characteristics)
-                elif isinstance(n, Sample):
-                    length += (len(n.characteristics) + len(n.factor_values))
-                elif isinstance(n, Material):
-                    length += (len(n.characteristics))
-                elif isinstance(n, Process):
-                    length += (len(n.additional_properties) + len([o for o in n.outputs if isinstance(o, DataFile)]))
-                if n.comments is not None:
-                    length += len(n.comments)
-            if length > longest[0]:
-                longest = (length, path)
+    for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
+        length = len(path)
+        for n in path:
+            if isinstance(n, Source):
+                length += len(n.characteristics)
+            elif isinstance(n, Sample):
+                length += (len(n.characteristics) + len(n.factor_values))
+            elif isinstance(n, Material):
+                length += (len(n.characteristics))
+            elif isinstance(n, Process):
+                length += len([o for o in n.outputs if isinstance(o, DataFile)])
+            if n.comments is not None:
+                length += len(n.comments)
+        if length > longest[0]:
+            longest = (length, path)
     return longest[1]
 
 prev = ''  # used in rolling_group(val) in write_assay_table_files(inv_obj, output_dir)
@@ -422,13 +442,14 @@ def _all_end_to_end_paths(G, start_nodes, end_nodes):
     for end_node in end_nodes:
         if isinstance(end_node, Process):
             for output in end_node.outputs:
-                if isinstance(output, (Sample, DataFile)) and output.derives_from:
-                    paths += list(nx.algorithms.all_simple_paths(G, output.derives_from, end_node))
+                if (isinstance(output, Sample) and output.derives_from) or (isinstance(output, DataFile) and output.generated_from):
+                    paths += list(nx.algorithms.all_simple_paths(G, output.derives_from if output.derives_from else output.generated_from, end_node))
                     end_nodes_processed.append(end_node)
         elif isinstance(end_node, Sample) and end_node.derives_from:
             for derives_from_node in end_node.derives_from:
                 paths += list(nx.algorithms.all_simple_paths(G, derives_from_node, end_node))
                 end_nodes_processed.append(end_node)
+
     end_nodes_remaining = [item for item in end_nodes if item not in end_nodes_processed]
     for start, end in itertools.product(start_nodes, end_nodes_remaining):
         paths += list(nx.algorithms.all_simple_paths(G, start, end))
@@ -554,9 +575,6 @@ def _set_protocol_cols(protrefcount, prottypes, process, cols, col_map):
         else:
             cols.append(obj_process_key + obj_process_pv_key)
             col_map[obj_process_key + obj_process_pv_key] = _parameter_value_label(pv.category.parameter_name.name)
-    for prop in reversed(sorted(process.additional_properties.keys())):
-        cols.append(obj_process_key + '_prop[' + prop + ']')
-        col_map[obj_process_key + '_prop[' + prop + ']'] = prop
     for output in [x for x in process.outputs if isinstance(x, DataFile)]:
         cols.append('data[' + output.label + ']')
         col_map['data[' + output.label + ']'] = output.label
@@ -640,10 +658,6 @@ def write_assay_table_files(inv_obj, output_dir):
                             else:
                                 cols.append('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']',)
                                 col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = 'Parameter Value[' + pv.category.parameter_name.term + ']'
-                        # TODO Check how model objects are used, do all additional_prop now go into .name?
-                        for prop in reversed(sorted(node.additional_properties.keys())):
-                            cols.append('protocol[' + str(protrefcount) + ']_prop[' + prop + ']')
-                            col_map['protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = prop
                         if node.executes_protocol.protocol_type.term == 'nucleic acid sequencing':
                             cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']')
                             col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']'] = 'Assay Name'
@@ -725,10 +739,6 @@ def write_assay_table_files(inv_obj, output_dir):
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termaccession'] = pv.value.term_accession
                                 else:
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = pv.value
-                            # TODO Check how model objects are used, do all additional_prop now go into .name?
-                            for prop in reversed(sorted(node.additional_properties.keys())):
-                                df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = node.additional_properties[prop]
-                                compound_key += str(protrefcount) + '/' + prop + '/' + node.additional_properties[prop]
                             if node.executes_protocol.protocol_type.term == 'nucleic acid sequencing':
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']'] = node.name
                                 compound_key += str(protrefcount) + '/' + 'Assay Name' + '/' + node.name
@@ -870,7 +880,11 @@ def write_study_table_files(inv_obj, output_dir):
         i = 0
 
         start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
-        for path in _all_end_to_end_paths(study_obj.graph, start_nodes, end_nodes):
+        paths = _all_end_to_end_paths(study_obj.graph, start_nodes, end_nodes)
+        from progressbar import ProgressBar, SimpleProgress, Bar, ETA
+        pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)), SimpleProgress(),
+                     Bar(left=" |", right="| "), ETA()]).start()
+        for path in pbar(paths):
             for node in path:
                 if isinstance(node, Source):
                     df.loc[i, 'source'] = node.name
@@ -905,6 +919,7 @@ def write_study_table_files(inv_obj, output_dir):
                     _set_charac_vals('sample', node.characteristics, df, i)
                     _set_factor_value_vals('sample', node.factor_values, df, i)
             i += 1
+        pbar.finish()
         # WARNING: don't just dump out col_map.values() as we need to put columns back in order
         df = df.drop_duplicates()
         df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0 (Sample name)
