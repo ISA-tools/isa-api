@@ -344,3 +344,5 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(assay_gx.materials['other_material']), 29)  # 29 other materials in a_matteo-assay-Gx.txt
             self.assertEqual(len(assay_gx.data_files), 29)  # 29 data files  in a_matteo-assay-Gx.txt
             self.assertEqual(len(assay_gx.process_sequence), 116)  # 116 processes in in a_matteo-assay-Gx.txt
+
+

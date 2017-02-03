@@ -15,6 +15,8 @@ import csv
 import numpy as np
 from bisect import bisect_left, bisect_right
 from itertools import tee
+import pandas as pd
+
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -832,21 +834,61 @@ def write_study_table_files(inv_obj, output_dir):
         protnames = dict()
         col_map = dict()
 
+        flatten = lambda l: [item for sublist in l for item in sublist]
+        jcolumns = []
+
         for node in _longest_path_and_attrs(study_obj.graph):
             if isinstance(node, Source):
                 cols.append('source')
                 col_map['source'] = 'Source Name'
                 _set_charac_cols('source', node.characteristics, cols, col_map)
+
+                jcolumns.append("Source Name")
+
+                def get_value_columns(x):
+                    if isinstance(x.value, (int, float)) and x.unit:
+                        if isinstance(x.unit, OntologyAnnotation):
+                            return ["Unit", "Term Source REF", "Term Accession"]
+                        else:
+                            return ["Unit"]
+                    elif isinstance(x.value, OntologyAnnotation):
+                        return ["Term Source REF", "Term Accession"]
+                    else:
+                        return []
+
+                def get_characteristic_columns(c):
+                    columns = ["Characteristic[{}]".format(c.category.term)]
+                    columns.extend(get_value_columns(c))
+                    return columns
+
+                jcolumns += flatten(map(lambda x: get_characteristic_columns(x), node.characteristics))
+
             elif isinstance(node, Process):
 
                 cols.append('protocol[' + str(protrefcount) + ']')
                 col_map['protocol[' + str(protrefcount) + ']'] = 'Protocol REF'
+
+                jcolumns.append("Protocol REF")
+
                 if node.date is not None:
                     cols.append('protocol[' + str(protrefcount) + ']_date')
                     col_map['protocol[' + str(protrefcount) + ']_date'] = 'Date'
+
+                    jcolumns.append("Date")
+
                 if node.performer is not None:
                     cols.append('protocol[' + str(protrefcount) + ']_performer')
                     col_map['protocol[' + str(protrefcount) + ']_performer'] = 'Performer'
+
+                    jcolumns.append("Performer")
+
+                def get_pv_columns(pv):
+                    columns = ["Parameter Value[{}]".format(pv.category.parameter_name.term)]
+                    columns.extend(get_value_columns(pv))
+                    return columns
+
+                jcolumns += flatten(map(lambda x: get_pv_columns(x), node.parameter_values))
+
                 for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.term)):
                     if isinstance(pv.value, int) or isinstance(pv.value, float):
                         cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']',
@@ -873,9 +915,32 @@ def write_study_table_files(inv_obj, output_dir):
             elif isinstance(node, Sample):
                 cols.append('sample')
                 col_map['sample'] = 'Sample Name'
+
+                jcolumns.append("Sample Name")
+                jcolumns += flatten(map(lambda x: get_characteristic_columns(x), node.characteristics))
+
+                def get_fv_columns(fv):
+                    columns = ["Factor Value[{}]".format(fv.factor_name.name)]
+                    columns.extend(get_value_columns(fv))
+                    return columns
+
+                jcolumns += flatten(map(lambda x: get_fv_columns(x), node.factor_values))
+
+                kcolumns = []
+                counter = {}
+                for col in jcolumns:
+                    if col in counter.keys():
+                        kcolumns.append("{}.{}".format(col, counter[col]))
+                        counter[col] += 1
+                    else:
+                        kcolumns.append(col)
+                        counter[col] = 0
+
+                df = pd.DataFrame(columns=kcolumns)  # TODO: Checkpoint here
+
                 _set_charac_cols('sample', node.characteristics, cols, col_map)
                 _set_factor_value_cols('sample', node.factor_values, cols, col_map)
-        import pandas as pd
+
         df = pd.DataFrame(columns=cols)
         i = 0
 
