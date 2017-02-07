@@ -9,6 +9,14 @@ from tests import utils
 import tempfile
 
 
+def setUpModule():
+    if not os.path.exists(utils.DATA_DIR):
+        raise FileNotFoundError("Could not fine test data directory in {0}. Ensure you have cloned the ISAdatasets "
+                                "repository using "
+                                "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}"
+                                .format(utils.DATA_DIR))
+
+
 class TestIsaTab2Sra(unittest.TestCase):
 
     def setUp(self):
@@ -46,7 +54,7 @@ class TestIsaTab2Sra(unittest.TestCase):
         shutil.rmtree(self._tmp_dir)
 
     def test_isatab2sra_zip_return(self):
-        b = isatab2sra.convert(self._biis3_dir, self._tmp_dir, validate_first=False)
+        b = isatab2sra.convert(self._biis3_dir, self._tmp_dir, validate_first=False)  # TODO: To use new parser, need dervives_from completed
         self.assertIsInstance(b, BytesIO)
         with ZipFile(b) as zip_file:
             self.assertEquals(len(zip_file.namelist()), 5)

@@ -113,6 +113,7 @@ def load(fp):
             fax=person_json["fax"],
             address=person_json["address"],
             affiliation=person_json["affiliation"],
+            roles=[]
         )
         for role_json in person_json["roles"]:
             role = OntologyAnnotation(
@@ -223,8 +224,8 @@ def load(fp):
                 version=protocol_json["version"],
                 protocol_type=OntologyAnnotation(
                     term=protocol_json["protocolType"]["annotationValue"],
-                    term_accession=protocol_json["protocolType"]["termAccession"],
-                    term_source=term_source_dict[protocol_json["protocolType"]["termSource"]]
+                    term_accession=protocol_json["protocolType"]["termAccession"] if "termAccession" in protocol_json["protocolType"].keys() else "",
+                    term_source=term_source_dict[protocol_json["protocolType"]["termSource"]] if "termSource" in protocol_json["protocolType"].keys() else None,
                 )
             )
             for parameter_json in protocol_json["parameters"]:
@@ -270,7 +271,7 @@ def load(fp):
             for characteristic_json in source_json["characteristics"]:
                 value = characteristic_json["value"]
                 unit = None
-                characteristic = Characteristic(category=categories_dict[characteristic_json["category"]["@id"]],)
+                characteristic = Characteristic(category=categories_dict[characteristic_json["category"]["@id"]])
                 if isinstance(value, dict):
                     try:
                         term = characteristic_json["value"]["annotationValue"]
@@ -297,8 +298,7 @@ def load(fp):
         for sample_json in study_json["materials"]["samples"]:
             sample = Sample(
                 id_=sample_json["@id"],
-                name=sample_json["name"][7:],
-                derives_from=sample_json["derivesFrom"]
+                name=sample_json["name"][7:]
             )
             for characteristic_json in sample_json["characteristics"]:
                 value = characteristic_json["value"]
@@ -343,6 +343,11 @@ def load(fp):
                 sample.factor_values.append(factor_value)
             samples_dict[sample.id] = sample
             study.materials["samples"].append(sample)
+            try:
+                for source_id_ref_json in sample_json["derivesFrom"]:
+                    sample.derives_from.append(sources_dict[source_id_ref_json["@id"]])
+            except KeyError:
+                sample.derives_from = []
         for study_process_json in study_json["processSequence"]:
             process = Process(
                 id_=study_process_json["@id"],
@@ -457,6 +462,10 @@ def load(fp):
                 except KeyError:
                     pass
                 data_dict[data_file.id] = data_file
+                try:
+                    data_file.derives_from = samples_dict[data_json["derivesFrom"][0]["@id"]]
+                except KeyError:
+                    data_file.derives_from = None
                 assay.data_files.append(data_file)
             for sample_json in assay_json["materials"]["samples"]:
                 sample = samples_dict[sample_json["@id"]]
@@ -1464,7 +1473,7 @@ class ISAJSONEncoder(JSONEncoder):
     def default(self, o):
 
         def remove_nulls(d):
-            return {k: v for k, v in d.items() if v or isinstance(v, list) or v == ''}   # TODO: How best to deal with nulls? Fix reader?
+            return {k: v for k, v in d.items() if v or isinstance(v, list) or v == ''}
 
         def nulls_to_str(d):
             to_del = []
@@ -1477,8 +1486,9 @@ class ISAJSONEncoder(JSONEncoder):
                 del d[k]
             return d
 
-        clean_nulls = nulls_to_str  # creates verbose JSON
-        # clean_nulls = remove_nulls  # optimises by removing k-v's that are null or empty strings
+        # TODO: deal with non-verbose mode parsing; currently will break because of missing k-v's
+        clean_nulls = nulls_to_str  # creates verbose JSON if using nulls to str
+        # clean_nulls = remove_nulls  # optimises by removing k-v's that are null or empty strings but breaks reader
 
         def get_comment(o):
             return clean_nulls(
@@ -1489,7 +1499,7 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_comments(o):
-            return list(map(lambda x: get_comment(x), o))
+            return list(map(lambda x: get_comment(x), o if o else []))
 
         def get_ontology_source(o):
             return clean_nulls(
@@ -1539,7 +1549,7 @@ class ISAJSONEncoder(JSONEncoder):
                     "authorList": o.author_list,
                     "doi": o.doi,
                     "pubMedID": o.pubmed_id,
-                    "status": get_ontology_annotation(o.status),
+                    "status": get_ontology_annotation(o.status) if o.status else {"@id": ''},
                     "title": o.title
                 }
             )
@@ -1555,7 +1565,7 @@ class ISAJSONEncoder(JSONEncoder):
                     "parameters": list(map(lambda x: {
                         "@id": id_gen(x),
                         "parameterName": get_ontology_annotation(x.parameter_name)
-                    }, o.parameters)),
+                    }, o.parameters)),  # TODO: Deal with Array Design REF
                     "name": o.name,
                     "protocolType": get_ontology_annotation(o.protocol_type),
                     "uri": o.uri,
@@ -1594,7 +1604,7 @@ class ISAJSONEncoder(JSONEncoder):
             else:
                 raise ValueError("Unexpected value type found: " + type(o))
 
-        def get_characteristic_category(o):
+        def get_characteristic_category(o):  # TODO: Deal with Material Type
             return clean_nulls(
                 {
                     "@id": id_gen(o),
@@ -1636,6 +1646,9 @@ class ISAJSONEncoder(JSONEncoder):
                 }
             )
 
+        def sqeezstr(s):
+            return s.replace(' ', '').lower()
+
         def id_gen(o):
             if o is not None:
                 o_id = str(id(o))
@@ -1646,23 +1659,14 @@ class ISAJSONEncoder(JSONEncoder):
                 elif isinstance(o, Material):
                     if o.type == 'Extract Name':
                         return '#material/extract-' + o_id
-                    elif o.type == 'Labled Extract Name':
+                    elif o.type == 'Labeled Extract Name':
                         return '#material/labledextract-' + o_id
                     else:
                         raise TypeError("Could not resolve data type labeled: " + o.type)
-                elif isinstance(o, DataFile):  # TODO: Implement ID gen on other data file types
-                    if o.label == 'Raw Data File':
-                        return '#data/rawdatafile-' + o_id
-                    elif o.label == 'Derived Data File':
-                        return '#data/deriveddatafile-' + o_id
-                    elif o.label == 'Image File':
-                        return '#data/imagefile-' + o_id
-                    elif o.label == 'Acquisition Parameter Data File':
-                        return '#data/acquisitionparameterdatafile-' + o_id
-                    else:
-                        raise TypeError("Could not resolve data type labeled: " + o.label)
+                elif isinstance(o, DataFile):
+                        return '#data/{}-'.format(sqeezstr(o.label)) + o_id
                 elif isinstance(o, Process):
-                    return '#' + o_id  # TODO: Implement ID gen on different kinds of processes?
+                    return '#process/' + o_id  # TODO: Implement ID gen on different kinds of processes?
                 else:
                     return '#' + o_id
             else:
@@ -1708,17 +1712,29 @@ class ISAJSONEncoder(JSONEncoder):
                 "protocols": list(map(lambda x: get_protocol(x), o.protocols)),
                 "materials": {
                     "sources": list(map(lambda x: get_source(x), o.materials['sources'])),
-                    "samples": list(map(lambda x: get_sample(x), o.materials['samples'])),
-                    "otherMaterials": list(map(lambda x: get_other_material(x), o.materials['other_material']))
+                    "samples": get_samples(o.materials['samples']),
+                    "otherMaterials": get_other_materials(o.materials['other_material'])
                 },
                 "processSequence": list(map(lambda x: get_process(x), o.process_sequence)),
                 "factors": list(map(lambda x: get_factor(x), o.factors)),
-                "characteristicCategories": list(map(lambda x: get_characteristic_category(x), o.characteristic_categories)),
+                "characteristicCategories": get_characteristic_categories(o.characteristic_categories),
                 "unitCategories": get_ontology_annotations(o.units),
                 "comments": get_comments(o.comments),
                 "assays": list(map(lambda x: get_assay(x), o.assays))
             }
         )
+
+        def get_characteristic_categories(o):
+            return list(map(lambda x: get_characteristic_category(x), o))
+
+        def get_samples(o):
+            return list(map(lambda x: get_sample(x), o))
+
+        def get_other_materials(o):
+            return list(map(lambda x: get_other_material(x), o))
+
+        def get_processes(o):
+            return list(map(lambda x: get_process(x), o))
 
         def get_assay(o):
             return clean_nulls(
@@ -1727,15 +1743,15 @@ class ISAJSONEncoder(JSONEncoder):
                     "technologyType": get_ontology_annotation(o.technology_type),
                     "technologyPlatform": o.technology_platform,
                     "filename": o.filename,
-                    "characteristicCategories": list(map(lambda x: get_characteristic_category(x), o.characteristic_categories)),  ## TODO: Refactor into get_characteristic_categories()
+                    "characteristicCategories": get_characteristic_categories(o.characteristic_categories),
                     "unitCategories": get_ontology_annotations(o.units),
                     "comments": get_comments(o.comments) if o.comments else [],
                     "materials": {
-                        "samples": list(map(lambda x: get_sample(x), o.materials['samples'])),  # TODO: Refactor into get_samples()
-                        "otherMaterials": list(map(lambda x: get_other_material(x), o.materials['other_material']))  # TODO: Refactor into get_other_materials()
+                        "samples": get_samples(o.materials['samples']),
+                        "otherMaterials": get_other_materials(o.materials['other_material'])
                     },
                     "dataFiles": list(map(lambda x: get_data_file(x), o.data_files)),
-                    "processSequence": list(map(lambda x: get_process(x), o.process_sequence))  # TODO: Refactor into get_processes()
+                    "processSequence": get_processes(o.process_sequence)
                 }
             )
 
@@ -1756,10 +1772,10 @@ class ISAJSONEncoder(JSONEncoder):
                     "description": o.description,
                     "comments": get_comments(o.comments),
                     "ontologySourceReferences": list(map(lambda x: get_ontology_source(x), o.ontology_source_references)),
-                    "people": list(map(lambda x: get_person(x), o.contacts)),
+                    "people": get_people(o.contacts),
                     "publicReleaseDate": o.public_release_date,
                     "submissionDate": o.submission_date,
-                    "publications": list(map(lambda x: get_publication(x), o.publications)),
+                    "publications": get_publications(o.publications),
                     "studies": list(map(lambda x: get_study(x), o.studies))
                 }
             )
@@ -1777,3 +1793,4 @@ class ISAJSONEncoder(JSONEncoder):
             return get_protocol(o)
         elif isinstance(o, Characteristic):
             return get_characteristic(o)
+        # TODO: enable dump of all objects and add some tests on them

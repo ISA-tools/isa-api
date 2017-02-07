@@ -81,7 +81,9 @@ def getj(mtbls_study_id):
     tmp_dir = get(mtbls_study_id)
     if tmp_dir is None:
         raise IOError("There was a problem retrieving the study ", mtbls_study_id)
-    isa_json = isatab2json.convert(tmp_dir, identifier_type=isatab2json.IdentifierType.name, validate_first=False)
+    isa_json = isatab2json.convert(tmp_dir, identifier_type=isatab2json.IdentifierType.name,
+                                   validate_first=False,
+                                   use_new_parser=True)
     shutil.rmtree(tmp_dir)
     return isa_json
 

@@ -1,5 +1,4 @@
 from .model.v1 import *
-from isatools.io import isatab_parser
 import os
 import sys
 import pandas as pd
@@ -12,6 +11,12 @@ import logging
 import re
 import math
 import iso8601
+import csv
+import numpy as np
+from bisect import bisect_left, bisect_right
+from itertools import tee
+import pandas as pd
+
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -32,27 +37,14 @@ _RX_PARAMETER_VALUE = re.compile('Parameter Value\[(.*?)\]')
 _RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
 _RX_INDEXED_COL = re.compile('(.*?)\.\d+')
 
-
-def validate(isatab_dir, config_dir):
-    """ Validate an ISA-Tab archive using the Java validator that is embedded in the Python ISA-API (deprecated)
-    :param isatab_dir: Path to ISA-Tab files
-    :param config_dir: Path to configuration XML files
-    """
-    if not os.path.exists(isatab_dir):
-        raise IOError("isatab_dir " + isatab_dir + " does not exist")
-    print("Using source ISA Tab folder: " + isatab_dir)
-    print("ISA configuration XML folder: " + config_dir)
-    convert_command = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                   "convert/isa_line_commands/bin/validate.sh -c " + config_dir + " " + isatab_dir)
-    from subprocess import call
-    try:
-        return_code = call([convert_command], shell=True)
-        if return_code < 0:
-            print(sys.stderr, "Terminated by signal", -return_code)
-        else:
-            print(sys.stderr, "Returned", return_code)
-    except OSError as e:
-        print(sys.stderr, "Execution failed:", e)
+# column labels
+_LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name', 'Labeled Extract Name']
+_LABELS_DATA_NODES = ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
+                      'Protein Assignment File', 'Peptide Assignment File',
+                      'Post Translational Modification Assignment File', 'Acquisition Parameter Data File',
+                      'Free Induction Decay Data File', 'Derived Array Data Matrix File']
+_LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name', 'Scan Name',
+                       'Data Transformation Name', 'Normalization Name']
 
 
 def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
@@ -127,14 +119,25 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
                 pass
         publications_df = pd.DataFrame(columns=tuple(publications_df_cols))
         for i, publication in enumerate(publications):
+            if publication.status is not None:
+                status_term = publication.status.term
+                status_term_accession = publication.status.term_accession
+                if publication.status.term_source is not None:
+                    status_term_source_name = publication.status.term_source.name
+                else:
+                    status_term_source_name = ''
+            else:
+                status_term = ''
+                status_term_accession = ''
+                status_term_source_name = ''
             publications_df_row = [
                 publication.pubmed_id,
                 publication.doi,
                 publication.author_list,
                 publication.title,
-                publication.status.term,
-                publication.status.term_accession,
-                publication.status.term_source.name if publication.status.term_source else '',
+                status_term,
+                status_term_accession,
+                status_term_source_name,
             ]
             try:
                 for comment in publication.comments:
@@ -268,11 +271,22 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt'):
                                                  )
                                         )
         for i, factor in enumerate(study.factors):
+            if factor.factor_type is not None:
+                factor_type_term = factor.factor_type.term
+                factor_type_term_accession = factor.factor_type.term_accession
+                if factor.factor_type.term_source is not None:
+                    factor_type_term_term_source_name = factor.factor_type.term_source.name
+                else:
+                    factor_type_term_term_source_name = ''
+            else:
+                factor_type_term = ''
+                factor_type_term_accession = ''
+                factor_type_term_term_source_name = ''
             study_factors_df.loc[i] = [
                 factor.name,
-                factor.factor_type.term,
-                factor.factor_type.term_accession,
-                factor.factor_type.term_source.name if factor.factor_type.term_source else ''
+                factor_type_term,
+                factor_type_term_accession,
+                factor_type_term_term_source_name
             ]
         study_factors_df = study_factors_df.set_index('Study Factor Name').T
         fp.write('STUDY FACTORS\n')
@@ -402,32 +416,44 @@ def _get_start_end_nodes(G):
 
 def _longest_path_and_attrs(G):
     start_nodes, end_nodes = _get_start_end_nodes(G)
-    from networkx.algorithms import all_simple_paths
     longest = (0, None)
-    for start_node, end_node in itertools.product(start_nodes, end_nodes):
-        for path in all_simple_paths(G, start_node, end_node):
-            length = len(path)
-            for n in path:
-                if isinstance(n, Source):
-                    length += len(n.characteristics)
-                elif isinstance(n, Sample):
-                    length += (len(n.characteristics) + len(n.factor_values))
-                elif isinstance(n, Material):
-                    length += (len(n.characteristics))
-                elif isinstance(n, Process):
-                    length += (len(n.additional_properties) + len([o for o in n.outputs if isinstance(o, DataFile)]))
-                if n.comments is not None:
-                    length += len(n.comments)
-            if length > longest[0]:
-                longest = (length, path)
+    for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
+        length = len(path)
+        for n in path:
+            if isinstance(n, Source):
+                length += len(n.characteristics)
+            elif isinstance(n, Sample):
+                length += (len(n.characteristics) + len(n.factor_values))
+            elif isinstance(n, Material):
+                length += (len(n.characteristics))
+            elif isinstance(n, Process):
+                length += len([o for o in n.outputs if isinstance(o, DataFile)])
+            if n.comments is not None:
+                length += len(n.comments)
+        if length > longest[0]:
+            longest = (length, path)
     return longest[1]
 
 prev = ''  # used in rolling_group(val) in write_assay_table_files(inv_obj, output_dir)
 
 
 def _all_end_to_end_paths(G, start_nodes, end_nodes):
-    paths = list()
-    for start, end in itertools.product(start_nodes, end_nodes):
+    paths = []
+    end_nodes_processed = []
+    # if we can calculate the correct start node from the .derives_from end node, get paths now and skip product loop
+    for end_node in end_nodes:
+        if isinstance(end_node, Process):
+            for output in end_node.outputs:
+                if (isinstance(output, Sample) and output.derives_from) or (isinstance(output, DataFile) and output.generated_from):
+                    paths += list(nx.algorithms.all_simple_paths(G, output.derives_from if output.derives_from else output.generated_from, end_node))
+                    end_nodes_processed.append(end_node)
+        elif isinstance(end_node, Sample) and end_node.derives_from:
+            for derives_from_node in end_node.derives_from:
+                paths += list(nx.algorithms.all_simple_paths(G, derives_from_node, end_node))
+                end_nodes_processed.append(end_node)
+
+    end_nodes_remaining = [item for item in end_nodes if item not in end_nodes_processed]
+    for start, end in itertools.product(start_nodes, end_nodes_remaining):
         paths += list(nx.algorithms.all_simple_paths(G, start, end))
     return paths
 
@@ -551,9 +577,6 @@ def _set_protocol_cols(protrefcount, prottypes, process, cols, col_map):
         else:
             cols.append(obj_process_key + obj_process_pv_key)
             col_map[obj_process_key + obj_process_pv_key] = _parameter_value_label(pv.category.parameter_name.name)
-    for prop in reversed(sorted(process.additional_properties.keys())):
-        cols.append(obj_process_key + '_prop[' + prop + ']')
-        col_map[obj_process_key + '_prop[' + prop + ']'] = prop
     for output in [x for x in process.outputs if isinstance(x, DataFile)]:
         cols.append('data[' + output.label + ']')
         col_map['data[' + output.label + ']'] = output.label
@@ -637,10 +660,6 @@ def write_assay_table_files(inv_obj, output_dir):
                             else:
                                 cols.append('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']',)
                                 col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = 'Parameter Value[' + pv.category.parameter_name.term + ']'
-                        # TODO Check how model objects are used, do all additional_prop now go into .name?
-                        for prop in reversed(sorted(node.additional_properties.keys())):
-                            cols.append('protocol[' + str(protrefcount) + ']_prop[' + prop + ']')
-                            col_map['protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = prop
                         if node.executes_protocol.protocol_type.term == 'nucleic acid sequencing':
                             cols.append('protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']')
                             col_map['protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']'] = 'Assay Name'
@@ -713,7 +732,7 @@ def write_assay_table_files(inv_obj, output_dir):
                             for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.term)):
                                 if isinstance(pv.value, int) or isinstance(pv.value, float):
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = pv.value
-                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit'] = pv.unit.name
+                                    df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit'] = pv.unit.term
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termsource'] = pv.unit.term_source.name if pv.unit.term_source else ''
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termaccession'] = pv.unit.term_accession
                                 elif isinstance(pv.value, OntologyAnnotation):
@@ -722,10 +741,6 @@ def write_assay_table_files(inv_obj, output_dir):
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termaccession'] = pv.value.term_accession
                                 else:
                                     df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = pv.value
-                            # TODO Check how model objects are used, do all additional_prop now go into .name?
-                            for prop in reversed(sorted(node.additional_properties.keys())):
-                                df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + prop + ']'] = node.additional_properties[prop]
-                                compound_key += str(protrefcount) + '/' + prop + '/' + node.additional_properties[prop]
                             if node.executes_protocol.protocol_type.term == 'nucleic acid sequencing':
                                 df.loc[i, 'protocol[' + str(protrefcount) + ']_prop[' + 'Assay Name' + ']'] = node.name
                                 compound_key += str(protrefcount) + '/' + 'Assay Name' + '/' + node.name
@@ -819,21 +834,61 @@ def write_study_table_files(inv_obj, output_dir):
         protnames = dict()
         col_map = dict()
 
+        flatten = lambda l: [item for sublist in l for item in sublist]
+        jcolumns = []
+
         for node in _longest_path_and_attrs(study_obj.graph):
             if isinstance(node, Source):
                 cols.append('source')
                 col_map['source'] = 'Source Name'
                 _set_charac_cols('source', node.characteristics, cols, col_map)
+
+                jcolumns.append("Source Name")
+
+                def get_value_columns(x):
+                    if isinstance(x.value, (int, float)) and x.unit:
+                        if isinstance(x.unit, OntologyAnnotation):
+                            return ["Unit", "Term Source REF", "Term Accession"]
+                        else:
+                            return ["Unit"]
+                    elif isinstance(x.value, OntologyAnnotation):
+                        return ["Term Source REF", "Term Accession"]
+                    else:
+                        return []
+
+                def get_characteristic_columns(c):
+                    columns = ["Characteristic[{}]".format(c.category.term)]
+                    columns.extend(get_value_columns(c))
+                    return columns
+
+                jcolumns += flatten(map(lambda x: get_characteristic_columns(x), node.characteristics))
+
             elif isinstance(node, Process):
 
                 cols.append('protocol[' + str(protrefcount) + ']')
                 col_map['protocol[' + str(protrefcount) + ']'] = 'Protocol REF'
+
+                jcolumns.append("Protocol REF")
+
                 if node.date is not None:
                     cols.append('protocol[' + str(protrefcount) + ']_date')
                     col_map['protocol[' + str(protrefcount) + ']_date'] = 'Date'
+
+                    jcolumns.append("Date")
+
                 if node.performer is not None:
                     cols.append('protocol[' + str(protrefcount) + ']_performer')
                     col_map['protocol[' + str(protrefcount) + ']_performer'] = 'Performer'
+
+                    jcolumns.append("Performer")
+
+                def get_pv_columns(pv):
+                    columns = ["Parameter Value[{}]".format(pv.category.parameter_name.term)]
+                    columns.extend(get_value_columns(pv))
+                    return columns
+
+                jcolumns += flatten(map(lambda x: get_pv_columns(x), node.parameter_values))
+
                 for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.term)):
                     if isinstance(pv.value, int) or isinstance(pv.value, float):
                         cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']',
@@ -860,14 +915,41 @@ def write_study_table_files(inv_obj, output_dir):
             elif isinstance(node, Sample):
                 cols.append('sample')
                 col_map['sample'] = 'Sample Name'
+
+                jcolumns.append("Sample Name")
+                jcolumns += flatten(map(lambda x: get_characteristic_columns(x), node.characteristics))
+
+                def get_fv_columns(fv):
+                    columns = ["Factor Value[{}]".format(fv.factor_name.name)]
+                    columns.extend(get_value_columns(fv))
+                    return columns
+
+                jcolumns += flatten(map(lambda x: get_fv_columns(x), node.factor_values))
+
+                kcolumns = []
+                counter = {}
+                for col in jcolumns:
+                    if col in counter.keys():
+                        kcolumns.append("{}.{}".format(col, counter[col]))
+                        counter[col] += 1
+                    else:
+                        kcolumns.append(col)
+                        counter[col] = 0
+
+                df = pd.DataFrame(columns=kcolumns)  # TODO: Checkpoint here
+
                 _set_charac_cols('sample', node.characteristics, cols, col_map)
                 _set_factor_value_cols('sample', node.factor_values, cols, col_map)
-        import pandas as pd
+
         df = pd.DataFrame(columns=cols)
         i = 0
 
         start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
-        for path in _all_end_to_end_paths(study_obj.graph, start_nodes, end_nodes):
+        paths = _all_end_to_end_paths(study_obj.graph, start_nodes, end_nodes)
+        from progressbar import ProgressBar, SimpleProgress, Bar, ETA
+        pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)), SimpleProgress(),
+                     Bar(left=" |", right="| "), ETA()]).start()
+        for path in pbar(paths):
             for node in path:
                 if isinstance(node, Source):
                     df.loc[i, 'source'] = node.name
@@ -902,6 +984,7 @@ def write_study_table_files(inv_obj, output_dir):
                     _set_charac_vals('sample', node.characteristics, df, i)
                     _set_factor_value_vals('sample', node.factor_values, df, i)
             i += 1
+        pbar.finish()
         # WARNING: don't just dump out col_map.values() as we need to put columns back in order
         df = df.drop_duplicates()
         df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0 (Sample name)
@@ -1042,7 +1125,7 @@ def check_utf8(fp):
             raise SystemError()
 
 
-def load2(fp):
+def load_investigation(fp):
     """Used for rules 0005"""
     def _read_investigation_file(fp):
 
@@ -2579,7 +2662,7 @@ def validate2(fp, config_dir=default_config_dir, log_level=logging.INFO):
     try:
         # check_utf8(fp)  # skip as does not correctly report right now
         logger.info("Loading... {}".format(fp.name))
-        i_df = load2(fp=fp)
+        i_df = load_investigation(fp=fp)
         logger.info("Running prechecks...")
         check_filenames_present(i_df)  # Rule 3005
         check_table_files_read(i_df, os.path.dirname(fp.name))  # Rules 0006 and 0008
@@ -2796,3 +2879,848 @@ def dumps(isa_obj):
         if tmp is not None:
             shutil.rmtree(tmp)
     return output
+
+
+def load(FP):  # from DF of investigation file
+
+    def get_ontology_source(term_source_ref):
+        try:
+            os = ontology_source_map[term_source_ref]
+        except KeyError:
+            os = None
+        return os
+
+    def get_oa(val, accession, ts_ref):
+        if val == '' and accession == '':
+            return None
+        else:
+            return OntologyAnnotation(
+                term=val,
+                term_accession=accession,
+                term_source=get_ontology_source(ts_ref)
+            )
+
+    def get_oa_list_from_semi_c_list(vals, accessions, ts_refs):
+        oa_list = []
+        for _, val in enumerate(vals.split(';')):
+            oa = get_oa(val, accessions.split(';')[_], ts_refs.split(';')[_])
+            if oa is not None:
+                oa_list.append(oa)
+        return oa_list
+
+    def get_publications(section_df):
+
+        if 'Investigation PubMed ID' in section_df.columns:
+            prefix = 'Investigation '
+        elif 'Study PubMed ID' in section_df.columns:
+            prefix = 'Study '
+        else:
+            raise KeyError
+
+        publications = []
+
+        for _, row in section_df.iterrows():
+            publication = Publication(pubmed_id=row[prefix + 'PubMed ID'],
+                                      doi=row[prefix + 'Publication DOI'],
+                                      author_list=row[prefix + 'Publication Author List'],
+                                      title=row[prefix + 'Publication Title'])
+
+            publication.status = get_oa(row[prefix + 'Publication Status'],
+                                        row[prefix + 'Publication Status Term Accession Number'],
+                                        row[prefix + 'Publication Status Term Source REF'])
+
+            publications.append(publication)
+
+        return publications
+
+    def get_contacts(section_df):
+
+        if 'Investigation Person Last Name' in section_df.columns:
+            prefix = 'Investigation '
+        elif 'Study Person Last Name' in section_df.columns:
+            prefix = 'Study '
+        else:
+            raise KeyError
+
+        contacts = []
+
+        for _, row in section_df.iterrows():
+            person = Person(last_name=row[prefix + 'Person Last Name'],
+                            first_name=row[prefix + 'Person First Name'],
+                            mid_initials=row[prefix + 'Person Mid Initials'],
+                            email=row[prefix + 'Person Email'],
+                            phone=row[prefix + 'Person Phone'],
+                            fax=row[prefix + 'Person Fax'],
+                            address=row[prefix + 'Person Address'],
+                            affiliation=row[prefix + 'Person Affiliation'])
+
+            person.roles = get_oa_list_from_semi_c_list(row[prefix + 'Person Roles'],
+                                                        row[prefix + 'Person Roles Term Accession Number'],
+                                                        row[prefix + 'Person Roles Term Source REF'])
+
+            contacts.append(person)
+
+        return contacts
+
+    df_dict = read_investigation_file(FP)
+
+    from isatools.model.v1 import Investigation, Study
+    investigation = Investigation()
+
+    for _, row in df_dict['ontology_sources'].iterrows():
+        ontology_source = OntologySource(name=row['Term Source Name'],
+                                         file=row['Term Source File'],
+                                         version=row['Term Source File'],
+                                         description=row['Term Source Description'])
+        investigation.ontology_source_references.append(ontology_source)
+
+    ontology_source_map = dict(map(lambda x: (x.name, x), investigation.ontology_source_references))
+
+    row = df_dict['investigation'].iloc[0]
+    investigation.identifier = row['Investigation Identifier']
+    investigation.title = row['Investigation Title']
+    investigation.description = row['Investigation Description']
+    investigation.submission_date = row['Investigation Submission Date']
+    investigation.public_release_date = row['Investigation Public Release Date']
+    investigation.publications = get_publications(df_dict['i_publications'])
+    investigation.contacts = get_contacts(df_dict['i_contacts'])
+
+    for i in range(0, len(df_dict['studies'])):
+        row = df_dict['studies'][i].iloc[0]
+        study = Study()
+        study.identifier = row['Study Identifier']
+        study.title = row['Study Title']
+        study.description = row['Study Description']
+        study.submission_date = row['Study Submission Date']
+        study.public_release_date = row['Study Public Release Date']
+        study.filename = row['Study File Name']
+        study.publications = get_publications(df_dict['s_publications'][i])
+        study.contacts = get_contacts(df_dict['s_contacts'][i])
+
+        for _, row in df_dict['s_design_descriptors'][i].iterrows():
+            design_descriptor = get_oa(row['Study Design Type'],
+                                       row['Study Design Type Term Accession Number'],
+                                       row['Study Design Type Term Source REF'])
+            study.design_descriptors.append(design_descriptor)
+
+        for _, row in df_dict['s_factors'][i].iterrows():
+            factor = StudyFactor(name=row['Study Factor Name'])
+            factor.factor_type = get_oa(row['Study Factor Type'],
+                                        row['Study Factor Type Term Accession Number'],
+                                        row['Study Factor Type Term Source REF'])
+            study.factors.append(factor)
+
+        protocol_map = {}
+        for _, row in df_dict['s_protocols'][i].iterrows():
+            protocol = Protocol()
+            protocol.name = row['Study Protocol Name']
+            protocol.description = row['Study Protocol Description']
+            protocol.uri = row['Study Protocol URI']
+            protocol.version = row['Study Protocol Version']
+            protocol.protocol_type = get_oa(row['Study Protocol Type'],
+                                            row['Study Protocol Type Term Accession Number'],
+                                            row['Study Protocol Type Term Source REF'])
+            params = get_oa_list_from_semi_c_list(
+                row['Study Protocol Parameters Name'], row['Study Protocol Parameters Name Term Accession Number'],
+                row['Study Protocol Parameters Name Term Source REF'])
+            for param in params:
+                protocol_param = ProtocolParameter(parameter_name=param)
+                protocol.parameters.append(protocol_param)
+            study.protocols.append(protocol)
+            protocol_map[protocol.name] = protocol
+        study.protocols = list(protocol_map.values())
+        study_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), study.filename))
+        sources, samples, _, __, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(
+            investigation.ontology_source_references, study_protocols=study.protocols,
+            study_factors=study.factors).create_from_df(study_tfile_df)
+        study.materials['sources'] = list(sources.values())
+        study.materials['samples'] = list(samples.values())
+        study.process_sequence = list(processes.values())
+        study.characteristic_categories = list(characteristic_categories.values())
+        study.units = list(unit_categories.values())
+
+        for process in study.process_sequence:
+            try:
+                process.executes_protocol = protocol_map[process.executes_protocol]
+            except KeyError:
+                try:
+                    unknown_protocol = protocol_map['unknown']
+                except KeyError:
+                    protocol_map['unknown'] = Protocol(
+                        name="unknown protocol",
+                        description="This protocol was auto-generated where a protocol could not be determined.")
+                    unknown_protocol = protocol_map['unknown']
+                    study.protocols.append(unknown_protocol)
+                process.executes_protocol = unknown_protocol
+
+        for _, row in df_dict['s_assays'][i].iterrows():
+            assay = Assay()
+            assay.filename = row['Study Assay File Name']
+            assay.measurement_type = get_oa(
+                row['Study Assay Measurement Type'],
+                row['Study Assay Measurement Type Term Accession Number'],
+                row['Study Assay Measurement Type Term Source REF']
+            )
+            assay.technology_type = get_oa(
+                row['Study Assay Technology Type'],
+                row['Study Assay Technology Type Term Accession Number'],
+                row['Study Assay Technology Type Term Source REF']
+            )
+            assay.technology_platform = row['Study Assay Technology Platform']
+
+            assay_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), assay.filename))
+            _, samples, other, data, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(
+                investigation.ontology_source_references,
+                study.materials['samples'],
+                study.protocols,
+                study.factors).create_from_df(assay_tfile_df)
+            assay.materials['samples'] = list(samples.values())
+            assay.materials['other_material'] = list(other.values())
+            assay.data_files = list(data.values())
+            assay.process_sequence = list(processes.values())
+            assay.characteristic_categories = list(characteristic_categories.values())
+            assay.units = list(unit_categories.values())
+
+            for process in assay.process_sequence:
+                try:
+                    process.executes_protocol = protocol_map[process.executes_protocol]
+                except KeyError:
+                    try:
+                        unknown_protocol = protocol_map['unknown']
+                    except KeyError:
+                        protocol_map['unknown'] = Protocol(
+                            name="unknown protocol",
+                            description="This protocol was auto-generated where a protocol could not be determined.")
+                        unknown_protocol = protocol_map['unknown']
+                        study.protocols.append(unknown_protocol)
+                    process.executes_protocol = unknown_protocol
+
+            study.assays.append(assay)
+
+        investigation.studies.append(study)
+
+    return investigation
+
+
+def process_keygen(protocol_ref, column_group, object_label_index, all_columns, series, series_index):
+
+    process_key = protocol_ref
+
+    node_key = None
+
+    node_cols = [i for i, c in enumerate(all_columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
+
+    output_node_index = find_gt(node_cols, object_label_index)
+
+    if output_node_index > -1:
+
+        output_node_label = all_columns[output_node_index]
+        output_node_value = series[output_node_label]
+
+        node_key = output_node_value
+
+    input_node_index = find_lt(node_cols, object_label_index)
+
+    if input_node_index > -1:
+
+        input_node_label = all_columns[input_node_index]
+        input_node_value = series[input_node_label]
+
+        node_key = input_node_value
+
+    if process_key == protocol_ref:
+
+        process_key += '-' + str(series_index)
+
+    name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
+
+    if len(name_column_hits) == 1:
+        process_key = series[name_column_hits[0]]
+    else:
+        pv_cols = [c for c in column_group if c.startswith('Parameter Value[')]
+
+        if len(pv_cols) > 0:
+            # 2. else try use protocol REF + Parameter Values as key
+            if node_key is not None:
+                process_key = node_key + \
+                              ':' + protocol_ref + \
+                              ':' + '/'.join([str(v) for v in series[pv_cols]])
+            else:
+                process_key = protocol_ref + \
+                              ':' + '/'.join([str(v) for v in series[pv_cols]])
+        else:
+            # 3. else try use input + protocol REF as key
+            # 4. else try use output + protocol REF as key
+            if node_key is not None:
+                process_key = node_key + '/' + protocol_ref
+
+    return process_key
+
+
+def get_value(object_column, column_group, object_series, ontology_source_map, unit_categories):
+
+    cell_value = object_series[object_column]
+
+    if cell_value == '':
+        return cell_value, None
+
+    column_index = list(column_group).index(object_column)
+
+    try:
+        offset_1r_col = column_group[column_index + 1]
+        offset_2r_col = column_group[column_index + 2]
+    except IndexError:
+        return cell_value, None
+
+    if offset_1r_col.startswith('Term Source REF') and offset_2r_col.startswith('Term Accession Number'):
+
+        value = OntologyAnnotation(term=str(cell_value))
+
+        term_source_value = object_series[offset_1r_col]
+
+        if term_source_value is not '':
+
+            try:
+                value.term_source = ontology_source_map[term_source_value]
+            except KeyError:
+                print('term source: ', term_source_value, ' not found')
+
+        term_accession_value = object_series[offset_2r_col]
+
+        if term_accession_value is not '':
+            value.term_accession = term_accession_value
+
+        return value, None
+
+    try:
+        offset_3r_col = column_group[column_index + 3]
+    except IndexError:
+        return cell_value, None
+
+    if offset_1r_col.startswith('Unit') and offset_2r_col.startswith('Term Source REF') \
+            and offset_3r_col.startswith('Term Accession Number'):
+
+        category_key = object_series[offset_1r_col]
+
+        try:
+            unit_term_value = unit_categories[category_key]
+        except KeyError:
+            unit_term_value = OntologyAnnotation(term=category_key)
+            unit_categories[category_key] = unit_term_value
+
+            unit_term_source_value = object_series[offset_2r_col]
+
+            if unit_term_source_value is not '':
+
+                try:
+                    unit_term_value.term_source = ontology_source_map[unit_term_source_value]
+                except KeyError:
+                    print('term source: ', unit_term_source_value, ' not found')
+
+            term_accession_value = object_series[offset_3r_col]
+
+            if term_accession_value is not '':
+                unit_term_value.term_accession = term_accession_value
+
+        return cell_value, unit_term_value
+
+    else:
+        return cell_value, None
+
+
+def pairwise(iterable):
+    """Pairwise iterator"""
+    a, b = tee(iterable)
+
+    next(b, None)
+
+    return zip(a, b)
+
+
+def read_tfile(tfile_path, index_col=None):
+
+    with open(tfile_path) as tfile_fp:
+
+        reader = csv.reader(tfile_fp, delimiter='\t')
+
+        header = list(next(reader))
+
+        tfile_fp.seek(0)
+
+        tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col).fillna('')
+        tfile_df.isatab_header = header
+
+    return tfile_df
+
+
+def get_multiple_index(file_index, key):
+    return np.where(np.array(file_index) in key)[0]
+
+
+def find_lt(a, x):
+
+    i = bisect_left(a, x)
+
+    if i:
+        return a[i - 1]
+    else:
+        return -1
+
+
+def find_gt(a, x):
+
+    i = bisect_right(a, x)
+
+    if i != len(a):
+        return a[i]
+    else:
+        return -1
+
+
+def preprocess(DF):
+    """Check headers, and insert Protocol REF if needed"""
+
+    columns = DF.columns
+
+    process_node_name_indices = [x for x, y in enumerate(columns) if y in _LABELS_ASSAY_NODES]
+
+    missing_process_indices = list()
+
+    protocol_ref_cols = [x for x in columns if x.startswith('Protocol REF')]
+
+    num_protocol_refs = len(protocol_ref_cols)
+
+    all_cols_indicies = [i for i, c in enumerate(columns) if c in
+                         _LABELS_MATERIAL_NODES +
+                         _LABELS_DATA_NODES +
+                         _LABELS_ASSAY_NODES +
+                         protocol_ref_cols]
+
+    for i in process_node_name_indices:
+        if not columns[find_lt(all_cols_indicies, i)].startswith('Protocol REF'):
+            print('warning: Protocol REF missing before \'{}\', found \'{}\''.format(columns[i], columns[find_lt(all_cols_indicies, i)]))
+            missing_process_indices.append(i)
+
+    # insert Protocol REF columns
+    offset = 0
+
+    for i in reversed(missing_process_indices):
+
+        DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown')
+
+        DF.isatab_header.insert(i, 'Protocol REF')
+
+        offset += 1
+
+    return DF
+
+
+class ProcessSequenceFactory:
+
+    def __init__(self, ontology_sources=None, study_samples=None, study_protocols=None, study_factors=None):
+        self.ontology_sources = ontology_sources
+        self.samples = study_samples
+        self.protocols = study_protocols
+        self.factors = study_factors
+
+    def create_from_df(self, DF):  # from DF of a table file
+
+        DF = preprocess(DF=DF)
+
+        if self.ontology_sources is not None:
+            ontology_source_map = dict(map(lambda x: (x.name, x), self.ontology_sources))
+        else:
+            ontology_source_map = {}
+
+        if self.protocols is not None:
+            protocol_map = dict(map(lambda x: (x.name, x), self.protocols))
+        else:
+            protocol_map = {}
+
+        sources = {}
+        other_material = {}
+        data = {}
+        processes = {}
+        characteristic_categories = {}
+        unit_categories = {}
+
+        # TODO: Handle comment columns
+
+        try:
+            sources = dict(map(lambda x: ('Source Name:' + x, Source(name=x)), DF['Source Name'].drop_duplicates()))
+        except KeyError:
+            pass
+
+        samples = {}
+        try:
+            if self.samples is not None:
+                sample_map = dict(map(lambda x: ('Sample Name:' + x.name, x), self.samples))
+                sample_keys = list(map(lambda x: 'Sample Name:' + x, DF['Sample Name'].drop_duplicates()))
+                for k in sample_keys:
+                    samples[k] = sample_map[k]
+            else:
+                samples = dict(map(lambda x: ('Sample Name:' + x, Sample(name=x)), DF['Sample Name'].drop_duplicates()))
+        except KeyError:
+            pass
+
+        try:
+            extracts = dict(map(lambda x: ('Extract Name:' + x, Material(name=x, type_='Extract Name')), DF['Extract Name'].drop_duplicates()))
+            other_material.update(extracts)
+        except KeyError:
+            pass
+
+        try:
+            if 'Labeled Extract Name' in DF.columns:
+                try:
+                    category = characteristic_categories['Label']
+                except KeyError:
+                    category = OntologyAnnotation(term='Label')
+                    characteristic_categories['Label'] = category
+                for _, lextract_name in DF['Labeled Extract Name'].drop_duplicates().iteritems():
+                    lextract = Material(name=lextract_name, type_='Labeled Extract Name')
+                    lextract.characteristics = [
+                        Characteristic(
+                            category=category,
+                            value=OntologyAnnotation(term=DF.loc[_, 'Label'])
+                        )
+                    ]
+                    other_material['Labeled Extract Name:' + lextract_name] = lextract
+        except KeyError:
+            pass
+
+        try:
+            raw_data_files = dict(map(lambda x: ('Raw Data File:' + x, DataFile(filename=x, label='Raw Data File')), DF['Raw Data File'].drop_duplicates()))
+            data.update(raw_data_files)
+        except KeyError:
+            pass
+
+        try:
+            raw_spectral_data_files = dict(map(lambda x: ('Raw Spectral Data File:' + x, DataFile(filename=x, label='Raw Spectral Data File')), DF['Raw Spectral Data File'].drop_duplicates()))
+            data.update(raw_spectral_data_files)
+        except KeyError:
+            pass
+
+        try:
+            derived_spectral_data_files = dict(map(lambda x: ('Derived Spectral Data File:' + x, DataFile(filename=x, label='Derived Spectral Data File')),
+                                                  DF['Derived Spectral Data File'].drop_duplicates()))
+            data.update(derived_spectral_data_files)
+        except KeyError:
+            pass
+
+        try:
+            derived_array_data_files = dict(map(lambda x: ('Derived Array Data File:' + x, DataFile(filename=x, label='Derived Array Data File')),
+                                                DF['Derived Array Data File'].drop_duplicates()))
+            data.update(derived_array_data_files)
+        except KeyError:
+            pass
+
+        try:
+            array_data_files = dict(map(lambda x: ('Array Data File:' + x, DataFile(filename=x, label='Array Data File')), DF['Array Data File'].drop_duplicates()))
+            data.update(array_data_files)
+        except KeyError:
+            pass
+
+        try:
+            protein_assignment_files = dict(map(lambda x: ('Protein Assignment File:' + x, DataFile(filename=x, label='Protein Assignment File')),
+                                                DF['Protein Assignment File'].drop_duplicates()))
+            data.update(protein_assignment_files)
+        except KeyError:
+            pass
+
+        try:
+            peptide_assignment_files = dict(map(lambda x: ('Peptide Assignment File:' + x, DataFile(filename=x, label='Peptide Assignment File')),
+                                                DF['Peptide Assignment File'].drop_duplicates()))
+            data.update(peptide_assignment_files)
+        except KeyError:
+            pass
+
+        try:
+            derived_array_data__matrix_files = \
+                dict(map(lambda x: ('Derived Array Data Matrix File:' + x, DataFile(filename=x, label='Derived Array Data Matrix File')),
+                         DF['Derived Array Data Matrix File'].drop_duplicates()))
+            data.update(derived_array_data__matrix_files)
+        except KeyError:
+            pass
+
+        try:
+            post_translational_modification_assignment_files = \
+                dict(map(lambda x: ('Post Translational Modification Assignment File:' + x, DataFile(filename=x, label='Post Translational Modification Assignment File')),
+                         DF['Post Translational Modification Assignment File'].drop_duplicates()))
+            data.update(post_translational_modification_assignment_files)
+        except KeyError:
+            pass
+
+        try:
+            acquisition_parameter_data_files = dict(map(lambda x: ('Acquisition Parameter Data File:' + x, DataFile(filename=x, label='Acquisition Parameter Data File')),
+                                                DF['Acquisition Parameter Data File'].drop_duplicates()))
+            data.update(acquisition_parameter_data_files)
+        except KeyError:
+            pass
+
+        try:
+            post_translational_modification_assignment_files = \
+                dict(map(lambda x: ('Free Induction Decay Data File:' + x, DataFile(filename=x, label='Free Induction Decay Data File')),
+                         DF['Free Induction Decay Data File'].drop_duplicates()))
+            data.update(post_translational_modification_assignment_files)
+        except KeyError:
+            pass
+
+        isatab_header = DF.isatab_header
+        object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
+                        + ['Protocol REF']]
+
+        # group headers regarding objects delimited by object_index by slicing up the header list
+        object_column_map = list()
+        prev_i = object_index[0]
+
+        for curr_i in object_index:  # collect each object's columns
+
+            if prev_i == curr_i:
+                pass  # skip if there's no diff, i.e. first one
+            else:
+                object_column_map.append(DF.columns[prev_i:curr_i])
+            prev_i = curr_i
+
+        object_column_map.append(DF.columns[prev_i:])  # finally collect last object's columns
+
+        node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
+        # proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
+
+        for _cg, column_group in enumerate(object_column_map):
+            # for each object, parse column group
+
+            object_label = column_group[0]
+
+            if object_label in _LABELS_MATERIAL_NODES:  # characs
+
+                for _, object_series in DF[column_group].drop_duplicates().iterrows():
+                    node_key = object_series[column_group[0]]
+
+                    material = None
+
+                    try:
+                        material = sources['Source Name:' + node_key]
+                    except KeyError:
+                        pass
+
+                    try:
+                        material = samples['Sample Name:' + node_key]
+                    except KeyError:
+                        pass
+
+                    try:
+                        material = other_material[column_group[0] + ':' + node_key]
+                    except KeyError:
+                        pass
+
+                    if material is not None:
+
+                        for charac_column in [c for c in column_group if c.startswith('Characteristics[')]:
+
+                            category_key = charac_column[16:-1]
+
+                            try:
+                                category = characteristic_categories[category_key]
+                            except KeyError:
+                                category = OntologyAnnotation(term=category_key)
+                                characteristic_categories[category_key] = category
+
+                            characteristic = Characteristic(category=category)
+
+                            v, u = get_value(charac_column, column_group, object_series, ontology_source_map, unit_categories)
+
+                            characteristic.value = v
+                            characteristic.unit = u
+
+                            material.characteristics.append(characteristic)
+
+                        if isinstance(material, Sample) and self.factors is not None:
+
+                            for fv_column in [c for c in column_group if c.startswith('Factor Value[')]:
+
+                                category_key = fv_column[13:-1]
+
+                                factor_hits = [f for f in self.factors if f.name == category_key]
+
+                                if len(factor_hits) == 1:
+                                    factor = factor_hits[0]
+                                else:
+                                    raise ValueError("Could not resolve Study Factor from Factor Value ",
+                                                     category_key)
+
+                                fv = FactorValue(factor_name=factor)
+
+                                v, u = get_value(fv_column, column_group, object_series, ontology_source_map,
+                                                 unit_categories)
+
+                                fv.value = v
+                                fv.unit = u
+
+                                material.factor_values.append(fv)
+
+            elif object_label.startswith('Protocol REF'):
+
+                def get_node_by_label_and_key(l, k):
+                    n = None
+                    lk = l + ':' + k
+                    if l == 'Source Name':
+                        n = sources[lk]
+                    if l == 'Sample Name':
+                        n = samples[lk]
+                    elif l in ('Extract Name', 'Labeled Extract Name'):
+                        n = other_material[lk]
+                    elif l.endswith('File'):
+                        n = data[lk]
+                    return n
+
+                object_label_index = list(DF.columns).index(object_label)
+
+                for _, object_series in DF.iterrows():  # don't drop duplicates
+
+                    protocol_ref = object_series[column_group[0]]
+
+                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _)
+
+                    try:
+                        process = processes[process_key]
+                    except KeyError:
+                        process = Process(executes_protocol=object_series[object_label])
+                        processes.update(dict([(process_key, process)]))
+
+                    output_node_index = find_gt(node_cols, object_label_index)
+
+                    if output_node_index > -1:
+
+                        output_node_label = DF.columns[output_node_index]
+                        output_node_value = object_series[output_node_label]
+
+                        node_key = output_node_value
+
+                        output_node = get_node_by_label_and_key(output_node_label, node_key)
+
+                        if output_node is not None:
+                            process.outputs.append(output_node)
+
+                    input_node_index = find_lt(node_cols, object_label_index)
+
+                    if input_node_index > -1:
+
+                        input_node_label = DF.columns[input_node_index]
+                        input_node_value = object_series[input_node_label]
+
+                        node_key = input_node_value
+
+                        input_node = get_node_by_label_and_key(input_node_label, node_key)
+
+                        if input_node is not None:
+                            process.inputs.append(input_node)
+
+                    name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
+
+                    if len(name_column_hits) == 1:
+                        process.name = str(object_series[name_column_hits[0]])
+
+                    for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
+
+                        category_key = pv_column[16:-1]
+
+                        try:
+                            protocol = protocol_map[protocol_ref]
+                        except KeyError:
+                            raise ValueError("Could not find protocol matching ", protocol_ref)
+
+                        param_hits = [p for p in protocol.parameters if p.parameter_name.term == category_key]
+
+                        if len(param_hits) == 1:
+                            category = param_hits[0]
+                        else:
+                            raise ValueError("Could not resolve Protocol parameter from Parameter Value ", category_key)
+
+                        parameter_value = ParameterValue(category=category)
+                        v, u = get_value(pv_column, column_group, object_series, ontology_source_map, unit_categories)
+
+                        parameter_value.value = v
+                        parameter_value.unit = u
+
+                        process.parameter_values.append(parameter_value)
+
+        # now go row by row pulling out processes and linking them accordingly
+
+        for _, object_series in DF.iterrows():  # don't drop duplicates
+
+            process_key_sequence = list()
+
+            for _cg, column_group in enumerate(object_column_map):
+
+                # for each object, parse column group
+
+                object_label = column_group[0]
+
+                if object_label.startswith('Protocol REF'):
+
+                    protocol_ref = object_series[column_group[0]]
+
+                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _)
+
+                    process_key_sequence.append(process_key)
+
+            # print('key sequence = ', process_key_sequence)
+
+            # Link the processes in each sequence
+            for pair in pairwise(process_key_sequence):  # TODO: Make split/pool model with multi prev/next_process
+
+                l = processes[pair[0]]  # get process on left of pair
+                r = processes[pair[1]]  # get process on right of pair
+
+                l.next_process = r
+                r.prev_process = l
+
+        return sources, samples, other_material, data, processes, characteristic_categories, unit_categories
+
+
+def find_in_between(a, x, y):
+    result = []
+    while True:
+        try:
+            element_gt = find_gt(a, x)
+        except ValueError:
+            return result
+
+        if (element_gt > x and y==-1) or (element_gt > x and element_gt < y):
+            result.append(element_gt)
+            x = element_gt
+        else:
+            break
+
+    while True:
+        try:
+            element_lt = find_lt(a, y)
+        except ValueError:
+            return result
+        if element_lt not in result:
+            if (element_lt < y and element_lt > x):
+                result.append(element_lt)
+                y = element_lt
+            else:
+                break
+        else:
+            break
+
+    return result
+
+
+def merge_study_with_assay_tables(study_file_path, assay_file_path, target_file_path):
+    """
+        Utility function to merge a study table file with an assay table file. The merge uses the Sample Name as the
+        key, so samples in the assay file must match those in the study file. If there are no matches, the function
+        will output the joined header and no additional rows.
+
+        Usage:
+
+        merge_study_with_assay_tables('/path/to/study.txt', '/path/to/assay.txt', '/path/to/merged.txt')
+    """
+    study_DF = read_tfile(study_file_path)
+    assay_DF = read_tfile(assay_file_path)
+    merged_DF = pd.merge(study_DF, assay_DF, on='Sample Name')
+    with open(target_file_path, 'w') as fp:
+        merged_DF.to_csv(fp, sep='\t', index=False, header=study_DF.isatab_header + assay_DF.isatab_header[1:])

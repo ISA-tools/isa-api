@@ -1,27 +1,18 @@
-########################################
-Tutorial: describing a simple experiment
-########################################
+######################
+createSimpleISAjson.py
+######################
 
-In this section, we provide a basic example of creating a complete experiment descriptor using the ISA API's model
-classes. The descriptor is not complete and realistic, but it demonstrates the range of component classes that you can use to
-create ISA content, including things like sample characteristics, ontology annotations and units.
-
-.. Important:: As a pre-requisite to using ISA model please make sure you have read and understood the :doc:`ISA Abstract Model </isamodel>` that the ISA formats are based on.
-
-Firstly, we need to import the ISA API's model classes from the ``isatools`` PyPI package.
+An example of using the ISA model classes to create an ISA-JSON file.
 
 .. code-block:: python
+
+    #!/usr/bin/env python
 
     from isatools.model.v1 import *
 
-Next, we build our descriptor encapsulated in a single Python function to simplify the example code. In a real
-application or script, you might decompose the functionality and hook it up to interactive components to solicit
-feedback from a user on-the-fly.
-
-.. code-block:: python
 
     def create_descriptor():
-        """Returns a simple but complete ISA-Tab 1.0 descriptor for illustration."""
+        """Returns a simple but complete ISA-JSON 1.0 descriptor for illustration."""
 
         # Create an empty Investigation object and set some values to the instance variables.
 
@@ -186,41 +177,13 @@ feedback from a user on-the-fly.
 
         study.assays.append(assay)
 
-To write out the ISA-Tab, you can use the ``isatab.dumps()`` function:
-
-.. code-block:: python
-
-        from isatools.isatab import dumps
-        return dumps(investigation)  # dumps() writes out the ISA as a string representation of the ISA-Tab
-
-The function listed above is designed to return all three files as a single string output for ease of inspection.
-Alternatively you could do something like ``dump(isa_obj=investigation, output_path='./')`` to write the files to
-the file system.
-
-Alternatively to write out the ISA JSON, you can use the ``ISAJSONEncoder`` class with the Python ``json`` package:
-
-.. code-block:: python
-
         import json
         from isatools.isajson import ISAJSONEncoder
+
+        # To write JSON out, use the ISAJSONEncoder class with the json package and use dump() or dumps()
         # Note that the extra parameters sort_keys, indent and separators are to make the output more human-readable.
+
         return json.dumps(investigation, cls=ISAJSONEncoder, sort_keys=True, indent=4, separators=(',', ': '))
 
-
-The final lines of code is a ``main`` routine to invoke the ``create_descriptor()`` function.
-
-.. code-block:: python
-
     if __name__ == '__main__':
-        print(create_descriptor())
-
-If you save the file into something like ``createSimpleISA.py``, to execute this script on the command line and view
-the output, you would run it with::
-
-    python createSimpleISA.py
-
-
-This example can be found in the ``isatools.examples`` package in
-`createSimpleISAtab.py <https://github.com/ISA-tools/isa-api/blob/master/isatools/examples/createSimpleISAtab.py>`_ and
-`createSimpleISAJSON.py <https://github.com/ISA-tools/isa-api/blob/master/isatools/examples/createSimpleISAJSON.py>`_
-
+        print(create_descriptor())  # print the result to stdout

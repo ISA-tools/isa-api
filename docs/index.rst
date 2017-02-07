@@ -33,9 +33,10 @@ This code is licensed under the `CPAL License <https://raw.githubusercontent.com
    ISA model <isamodel>
    Creating objects <creation>
    Tutorial: describing a simple experiment with objects <creationtutorial>
-   Examples/example-createSimpleISAtab
-   Examples/example-validateISAtab
-   Examples/example-validateISAjson
+   Example: createSimpleISAtab.py <example-createSimpleISAtab>
+   Example: createSimpleISAJSON.py <example-createSimpleISAJSON>
+   Example: validateISAtab.py <example-validateISAtab>
+   Example: validateISAjson.py <example-validateISAjson>
    Converting between ISA formats <conversions>
    Contributing your work <contributing>
    Importing and exporting SRA formatted datasets <sraconversion>

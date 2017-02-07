@@ -747,7 +747,10 @@ class Sample(Commentable):
             self.characteristics = list()
         else:
             self.characteristics = characteristics
-        self.derives_from = derives_from
+        if derives_from is None:
+            self.derives_from = []
+        else:
+            self.derives_from = derives_from
 
 
 class Material(Commentable):
@@ -768,7 +771,6 @@ class Material(Commentable):
             self.characteristics = list()
         else:
             self.characteristics = characteristics
-        self.derives_from = derives_from
 
 
 class FactorValue(Commentable):
@@ -835,13 +837,15 @@ class DataFile(Commentable):
         Attributes:
             filename (str): A name/reference for the data file.
             label (str):
+            generated_from (Sample): The Sample the DataFile is generated from
             comments (list, NoneType): Comments associated with instances of this class.
         """
-    def __init__(self, id_='', filename='', label='', comments=None):
+    def __init__(self, id_='', filename='', label='', generated_from=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.filename = filename
         self.label = label
+        self.generated_from = generated_from
 
 
 def batch_create_materials(material=None, n=1):

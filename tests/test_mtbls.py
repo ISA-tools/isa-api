@@ -8,7 +8,7 @@ import os
 class TestMtblsIO(unittest.TestCase):
 
     def setUp(self):
-        pass
+        pass  # detect if MTBLS is reachable. If so, run test of real server, otherwise run Mocks only?
 
     def tearDown(self):
         pass

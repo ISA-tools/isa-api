@@ -4,7 +4,7 @@ from isatools.model.v1 import *
 
 
 def create_descriptor():
-    """Returns a simple but complete ISA-Tab 1.0 descriptor for illustration."""
+    """Returns a simple but complete ISA-JSON 1.0 descriptor for illustration."""
 
     # Create an empty Investigation object and set some values to the instance variables.
 
@@ -73,7 +73,7 @@ def create_descriptor():
     # an index to the material name. In this case, three samples will be created, with the names
     # 'sample_material-0', 'sample_material-1' and 'sample_material-2'.
 
-    prototype_sample = Sample(name='sample_material', derives_from=[source])
+    prototype_sample = Sample(name='sample_material', derives_from=source)
     ncbitaxon = OntologySource(name='NCBITaxon', description="NCBI Taxonomy")
     characteristic_organism = Characteristic(category=OntologyAnnotation(term="Organism"),
                                      value=OntologyAnnotation(term="Homo Sapiens", term_source=ncbitaxon,
@@ -169,8 +169,13 @@ def create_descriptor():
 
     study.assays.append(assay)
 
-    from isatools.isatab import dumps
-    return dumps(investigation)  # dumps() writes out the ISA as a string representation of the ISA-Tab
+    import json
+    from isatools.isajson import ISAJSONEncoder
+
+    # To write JSON out, use the ISAJSONEncoder class with the json package and use dump() or dumps()
+    # Note that the extra parameters sort_keys, indent and separators are to make the output more human-readable.
+
+    return json.dumps(investigation, cls=ISAJSONEncoder, sort_keys=True, indent=4, separators=(',', ': '))
 
 if __name__ == '__main__':
     print(create_descriptor())  # print the result to stdout

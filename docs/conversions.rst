@@ -16,9 +16,9 @@ and ``a_...txt`` files):
    from isatools.convert import isatab2json
    isa_json = isatab2json.convert('./tabdir/')
 
-.. hint:: The conversions by default run the ISA validator to check for correctness of the input content. To skup the
-validation step, set the ``validate_first`` parameter to ``False`` by doing something like
-``converter.convert('./my/path/', validate_first=False)``.
+.. hint:: The conversions by default run the ISA validator to check for correctness of the input content. To skip the validation step, set the ``validate_first`` parameter to ``False`` by doing something like ``converter.convert('./my/path/', validate_first=False)``.
+
+.. hint:: The conversions by default use a legacy ISA-Tab parser, which has now been replaced with a faster version. To specify using the new parser, set the ``use_new_parser`` parameter to ``True`` by doing something like ``converter.convert('./my/path/', use_new_parser=True)``.
 
 Converting from ISA JSON to ISA-Tab
 -----------------------------------

@@ -26,20 +26,27 @@ class IdentifierType(Enum):
     name = 3
 
 
-def convert(work_dir, identifier_type=IdentifierType.name, validate_first=True):
+def convert(work_dir, identifier_type=IdentifierType.name, validate_first=True, use_new_parser=False):
+    i_files = glob.glob(os.path.join(work_dir, 'i_*.txt'))
     if validate_first:
         logger.info("Validating input ISA tab before conversion")
-        i_files = glob.glob(os.path.join(work_dir, 'i_*.txt'))
         if len(i_files) != 1:
-            logging.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
+            logger.fatal("Could not resolves input investigation file, please check input ISA tab directory.")
             return
         report = isatab.validate2(fp=open(i_files[0]), log_level=logging.ERROR)
         if len(report['errors']) > 0:
-            logging.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
+            logger.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
             return
-    converter = ISATab2ISAjson_v1(identifier_type)
-    logger.info("Converting ISA-Tab to ISA JSON...")
-    return converter.convert(work_dir)
+    if use_new_parser:
+        logger.info("Using new parser to load...")
+        ISA = isatab.load(open(i_files[0]))
+        from isatools.isajson import ISAJSONEncoder
+        logger.info("Using new ISA JSON encoder to dump...")
+        return json.loads(json.dumps(ISA, cls=ISAJSONEncoder))
+    else:
+        converter = ISATab2ISAjson_v1(identifier_type)
+        logger.info("Converting ISA-Tab to ISA JSON...")
+        return converter.convert(work_dir)
 
 
 class ISATab2ISAjson_v1:

@@ -14,7 +14,17 @@
                 "Raw Data File",
                 "Derived Data File",
                 "Image File",
-                "Acquisition Parameter Data File"
+                "Acquisition Parameter Data File",
+                "Derived Spectral Data File",
+                "Protein Assignment File",
+                "Raw Spectral Data File",
+                "Peptide Assignment File",
+                "Array Data File",
+                "Derived Array Data File",
+                "Post Translational Modification Assignment File",
+                "Derived Array Data Matrix File",
+                "Free Induction Decay Data File",
+                "Metabolite Assignment File"
             ]
         },
         "comments" : {

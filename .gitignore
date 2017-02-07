@@ -118,3 +118,6 @@ features/test_outputs
 
 # jenv local file (for Java Versions)
 .java-version
+
+# never commit test data directory, as it comes from ISA-tools/ISAdatasets!
+tests/data

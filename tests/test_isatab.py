@@ -7,11 +7,68 @@ from tests import utils
 import tempfile
 from isatools import isatab
 
-#  Manually testing object model to write to isatab, study file-out only to check if model and writer function correctly
-#  Currently only tests source-split and sample pooling, at study level
+
+def setUpModule():
+    if not os.path.exists(utils.DATA_DIR):
+        raise FileNotFoundError("Could not fine test data directory in {0}. Ensure you have cloned the ISAdatasets "
+                                "repository using "
+                                "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}"
+                                .format(utils.DATA_DIR))
 
 
-class TestIsaTab(unittest.TestCase):
+class TestIsaMerge(unittest.TestCase):
+
+    def setUp(self):
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
+
+    def test_merge_bii_s_1_with_a_proteome(self):
+        isatab.merge_study_with_assay_tables(os.path.join(self._tab_data_dir, 'BII-I-1', 's_BII-S-1.txt'),
+                                             os.path.join(self._tab_data_dir, 'BII-I-1', 'a_proteome.txt'),
+                                             os.path.join(self._tmp_dir, 'merged.txt'))
+        merged_DF = isatab.read_tfile(os.path.join(self._tmp_dir, 'merged.txt'))
+        # num rows expected is max of input DFs
+        self.assertEqual(merged_DF.shape[0], 18)
+        # num columns expected is sum of input DFs, minus index column
+        self.assertEqual(merged_DF.shape[1], 43)
+
+    def test_merge_bii_s_1_with_a_metabolome(self):
+        isatab.merge_study_with_assay_tables(os.path.join(self._tab_data_dir, 'BII-I-1', 's_BII-S-1.txt'),
+                                             os.path.join(self._tab_data_dir, 'BII-I-1', 'a_metabolome.txt'),
+                                             os.path.join(self._tmp_dir, 'merged.txt'))
+        merged_DF = isatab.read_tfile(os.path.join(self._tmp_dir, 'merged.txt'))
+        self.assertEqual(merged_DF.shape[0], 111)
+        self.assertEqual(merged_DF.shape[1], 41)
+
+    def test_merge_bii_s_1_with_a_transcriptome(self):
+        isatab.merge_study_with_assay_tables(os.path.join(self._tab_data_dir, 'BII-I-1', 's_BII-S-1.txt'),
+                                             os.path.join(self._tab_data_dir, 'BII-I-1', 'a_transcriptome.txt'),
+                                             os.path.join(self._tmp_dir, 'merged.txt'))
+        merged_DF = isatab.read_tfile(os.path.join(self._tmp_dir, 'merged.txt'))
+        self.assertEqual(merged_DF.shape[0], 48)
+        self.assertEqual(merged_DF.shape[1], 40)
+
+    def test_merge_bii_s_2_with_a_microarray(self):
+        isatab.merge_study_with_assay_tables(os.path.join(self._tab_data_dir, 'BII-I-1', 's_BII-S-2.txt'),
+                                             os.path.join(self._tab_data_dir, 'BII-I-1', 'a_microarray.txt'),
+                                             os.path.join(self._tmp_dir, 'merged.txt'))
+        merged_DF = isatab.read_tfile(os.path.join(self._tmp_dir, 'merged.txt'))
+        self.assertEqual(merged_DF.shape[0], 14)
+        self.assertEqual(merged_DF.shape[1], 43)
+
+    def test_merge_bii_s_1_with_a_microarray(self):
+        isatab.merge_study_with_assay_tables(os.path.join(self._tab_data_dir, 'BII-I-1', 's_BII-S-1.txt'),
+                                             os.path.join(self._tab_data_dir, 'BII-I-1', 'a_microarray.txt'),
+                                             os.path.join(self._tmp_dir, 'merged.txt'))
+        merged_DF = isatab.read_tfile(os.path.join(self._tmp_dir, 'merged.txt'))
+        self.assertEqual(merged_DF.shape[0], 0)  # tests no matching samples
+        self.assertEqual(merged_DF.shape[1], 47)  # still prints out joined header though
+
+
+class TestIsaTabDump(unittest.TestCase):
 
     def setUp(self):
         self._tab_data_dir = utils.TAB_DATA_DIR
@@ -176,13 +233,116 @@ class TestIsaTab(unittest.TestCase):
             self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
             self.assertIsInstance(isatab.dumps(i), str)
 
-    def test_batch_create_materials(self):
-        source = Source(name='source_material')
-        prototype_sample = Sample(name='sample_material', derives_from=source)
-        batch = batch_create_materials(prototype_sample, n=3)
-        self.assertEqual(len(batch), 3)
-        for material in batch:
-            self.assertIsInstance(material, Sample)
-            self.assertEqual(material.derives_from, source)
-        self.assertSetEqual(set([m.name for m in batch]), {'sample_material-0', 'sample_material-1',
-                                                           'sample_material-2'})
+
+class TestIsaTabLoad(unittest.TestCase):
+
+    def setUp(self):
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
+
+    def test_isatab_load_bii_i_1(self):
+        with open(os.path.join(self._tab_data_dir, 'BII-I-1', 'i_investigation.txt')) as fp:
+            ISA = isatab.load(fp)
+
+            self.assertListEqual([s.filename for s in ISA.studies], ['s_BII-S-1.txt', 's_BII-S-2.txt'])  # 2 studies in i_investigation.txt
+
+            study_bii_s_1 = [s for s in ISA.studies if s.filename == 's_BII-S-1.txt'][0]
+
+            self.assertEqual(len(study_bii_s_1.materials['sources']), 18)  # 18 sources in s_BII-S-1.txt
+            self.assertEqual(len(study_bii_s_1.materials['samples']), 164)  # 164 study samples in s_BII-S-1.txt
+            self.assertEqual(len(study_bii_s_1.process_sequence), 18)  # 18 study processes in s_BII-S-1.txt
+
+            self.assertListEqual([a.filename for a in study_bii_s_1.assays], ['a_proteome.txt', 'a_metabolome.txt', 'a_transcriptome.txt'])  # 2 assays in s_BII-S-1.txt
+
+            assay_proteome = [a for a in study_bii_s_1.assays if a.filename == 'a_proteome.txt'][0]
+
+            self.assertEqual(len(assay_proteome.materials['samples']), 8)  # 8 assay samples in a_proteome.txt
+            self.assertEqual(len(assay_proteome.materials['other_material']), 19)  # 19 other materials in a_proteome.txt
+
+            self.assertEqual(len(assay_proteome.data_files), 7)  # 7 data files  in a_proteome.txt
+
+            self.assertEqual(len(assay_proteome.process_sequence), 25)  # 25 processes in in a_proteome.txt
+
+            assay_metabolome = [a for a in study_bii_s_1.assays if a.filename == 'a_metabolome.txt'][0]
+
+            self.assertEqual(len(assay_metabolome.materials['samples']), 92)  # 92 assay samples in a_metabolome.txt
+            self.assertEqual(len(assay_metabolome.materials['other_material']), 92)  # 92 other materials in a_metabolome.txt
+            self.assertEqual(len(assay_metabolome.data_files), 111)  # 111 data files  in a_metabolome.txt
+            self.assertEqual(len(assay_metabolome.process_sequence), 203)  # 203 processes in in a_metabolome.txt
+
+            assay_transcriptome = [a for a in study_bii_s_1.assays if a.filename == 'a_transcriptome.txt'][0]
+
+            self.assertEqual(len(assay_transcriptome.materials['samples']), 48)  # 48 assay samples in a_transcriptome.txt
+            self.assertEqual(len(assay_transcriptome.materials['other_material']), 96)  # 96 other materials in a_transcriptome.txt
+            self.assertEqual(len(assay_transcriptome.data_files), 49)  # 49 data files  in a_transcriptome.txt
+            self.assertEqual(len(assay_transcriptome.process_sequence), 193)  # 193 processes in in a_transcriptome.txt
+
+            study_bii_s_2 = [s for s in ISA.studies if s.filename == 's_BII-S-2.txt'][0]
+
+            self.assertEqual(len(study_bii_s_2.materials['sources']), 1)  # 1 sources in s_BII-S-2.txt
+            self.assertEqual(len(study_bii_s_2.materials['samples']), 2)  # 2 study samples in s_BII-S-2.txt
+            self.assertEqual(len(study_bii_s_2.process_sequence), 1)  # 1 study processes in s_BII-S-2.txt
+
+            self.assertEqual(len(study_bii_s_2.assays), 1)  # 1 assays in s_BII-S-2.txt
+            self.assertListEqual([a.filename for a in study_bii_s_2.assays], ['a_microarray.txt'])  # 1 assays in s_BII-S-2.txt
+
+            assay_microarray = [a for a in study_bii_s_2.assays if a.filename == 'a_microarray.txt'][0]
+
+            self.assertEqual(len(assay_microarray.materials['samples']), 2)  # 2 assay samples in a_microarray.txt
+            self.assertEqual(len(assay_microarray.materials['other_material']), 28)  # 28 other materials in a_microarray.txt
+            self.assertEqual(len(assay_microarray.data_files), 15)  # 15 data files  in a_microarray.txt
+            self.assertEqual(len(assay_microarray.process_sequence), 45)  # 45 processes in in a_microarray.txt
+
+    def test_isatab_load_bii_s_3(self):
+        with open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt')) as fp:
+            ISA = isatab.load(fp)
+
+            self.assertListEqual([s.filename for s in ISA.studies], ['s_BII-S-3.txt'])  # 1 studies in i_gilbert.txt
+
+            study_bii_s_3 = [s for s in ISA.studies if s.filename == 's_BII-S-3.txt'][0]
+
+            self.assertEqual(len(study_bii_s_3.materials['sources']), 4)  # 4 sources in s_BII-S-1.txt
+            self.assertEqual(len(study_bii_s_3.materials['samples']), 4)  # 4 study samples in s_BII-S-1.txt
+            self.assertEqual(len(study_bii_s_3.process_sequence), 4)  # 4 study processes in s_BII-S-1.txt
+
+            self.assertListEqual([a.filename for a in study_bii_s_3.assays], ['a_gilbert-assay-Gx.txt', 'a_gilbert-assay-Tx.txt'])  # 2 assays in s_BII-S-1.txt
+
+            assay_gx = [a for a in study_bii_s_3.assays if a.filename == 'a_gilbert-assay-Gx.txt'][0]
+
+            self.assertEqual(len(assay_gx.materials['samples']), 4)  # 4 assay samples in a_gilbert-assay-Gx.txt
+            self.assertEqual(len(assay_gx.materials['other_material']), 4)  # 4 other materials in a_gilbert-assay-Gx.txt
+            self.assertEqual(len(assay_gx.data_files), 6)  # 6 data files  in a_gilbert-assay-Gx.txt
+            self.assertEqual(len(assay_gx.process_sequence), 18)  # 18 processes in in a_gilbert-assay-Gx.txt
+
+            assay_tx = [a for a in study_bii_s_3.assays if a.filename == 'a_gilbert-assay-Tx.txt'][0]
+
+            self.assertEqual(len(assay_tx.materials['samples']), 4)  # 4 assay samples in a_gilbert-assay-Tx.txt
+            self.assertEqual(len(assay_tx.materials['other_material']), 4)  # 4 other materials in a_gilbert-assay-Tx.txt
+            self.assertEqual(len(assay_tx.data_files), 24)  # 24 data files  in a_gilbert-assay-Tx.txt
+            self.assertEqual(len(assay_tx.process_sequence), 36)  # 36 processes in in a_gilbert-assay-Tx.txt
+
+    def test_isatab_load_bii_s_7(self):
+        with open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt')) as fp:
+            ISA = isatab.load(fp)
+
+            self.assertListEqual([s.filename for s in ISA.studies], ['s_BII-S-7.txt'])  # 1 studies in i_gilbert.txt
+
+            study_bii_s_7 = [s for s in ISA.studies if s.filename == 's_BII-S-7.txt'][0]
+
+            self.assertEqual(len(study_bii_s_7.materials['sources']), 29)  # 29 sources in s_BII-S-7.txt
+            self.assertEqual(len(study_bii_s_7.materials['samples']), 29)  # 29 study samples in s_BII-S-7.txt
+            self.assertEqual(len(study_bii_s_7.process_sequence), 29)  # 29 study processes in s_BII-S-7.txt
+
+            self.assertListEqual([a.filename for a in study_bii_s_7.assays], ['a_matteo-assay-Gx.txt'])  # 1 assays in s_BII-S-1.txt
+
+            assay_gx = [a for a in study_bii_s_7.assays if a.filename == 'a_matteo-assay-Gx.txt'][0]
+
+            self.assertEqual(len(assay_gx.materials['samples']), 29)  # 29 assay samples in a_matteo-assay-Gx.txt
+            self.assertEqual(len(assay_gx.materials['other_material']), 29)  # 29 other materials in a_matteo-assay-Gx.txt
+            self.assertEqual(len(assay_gx.data_files), 29)  # 29 data files  in a_matteo-assay-Gx.txt
+            self.assertEqual(len(assay_gx.process_sequence), 116)  # 116 processes in in a_matteo-assay-Gx.txt
+
+
