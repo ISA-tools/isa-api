@@ -444,8 +444,11 @@ def _all_end_to_end_paths(G, start_nodes, end_nodes):
     for end_node in end_nodes:
         if isinstance(end_node, Process):
             for output in end_node.outputs:
-                if (isinstance(output, Sample) and output.derives_from) or (isinstance(output, DataFile) and output.generated_from):
-                    paths += list(nx.algorithms.all_simple_paths(G, output.derives_from if output.derives_from else output.generated_from, end_node))
+                if isinstance(output, Sample) and output.derives_from:
+                    paths += list(nx.algorithms.all_simple_paths(G, output.derives_from if output.derives_from else output.derives_from, end_node))
+                    end_nodes_processed.append(end_node)
+                elif isinstance(output, DataFile) and output.generated_from:
+                    paths += list(nx.algorithms.all_simple_paths(G, output.generated_from if output.generated_from else output.generated_from, end_node))
                     end_nodes_processed.append(end_node)
         elif isinstance(end_node, Sample) and end_node.derives_from:
             for derives_from_node in end_node.derives_from:
@@ -453,8 +456,9 @@ def _all_end_to_end_paths(G, start_nodes, end_nodes):
                 end_nodes_processed.append(end_node)
 
     end_nodes_remaining = [item for item in end_nodes if item not in end_nodes_processed]
+    # print("ignoring {} end nodes with missing data file->sample link".format(len(end_nodes_remaining)))
     for start, end in itertools.product(start_nodes, end_nodes_remaining):
-        paths += list(nx.algorithms.all_simple_paths(G, start, end))
+        paths += list(nx.algorithms.all_simple_paths(G, start, end))  # TODO: Find another way to make this bit fast or comment this loop out and uncomment the print line above to skip it
     return paths
 
 KEY_POSTFIX_UNIT = '_unit'
@@ -829,177 +833,170 @@ def write_study_table_files(inv_obj, output_dir):
         raise NotImplementedError
     for study_obj in inv_obj.studies:
         if study_obj.graph is None: break
-        cols = list()
         protrefcount = 0
         protnames = dict()
-        col_map = dict()
 
         flatten = lambda l: [item for sublist in l for item in sublist]
         jcolumns = []
 
+        def get_value_columns(label, x):
+            if isinstance(x.value, (int, float)) and x.unit:
+                if isinstance(x.unit, OntologyAnnotation):
+                    return map(lambda x: "{0}.{1}".format(label, x),
+                               ["Unit", "Unit.Term Source REF", "Unit.Term Accession Number"])
+                else:
+                    return ["{0}.Unit".format(label)]
+            elif isinstance(x.value, OntologyAnnotation):
+                return map(lambda x: "{0}.{1}".format(label, x), ["Term Source REF", "Term Accession Number"])
+            else:
+                return []
+
+        def get_characteristic_columns(label, c):
+            columns = ["{0}.Characteristics[{1}]".format(label, c.category.term)]
+            columns.extend(get_value_columns(columns[0], c))
+            return columns
+
+        def get_fv_columns(label, fv):
+            columns = ["{0}.Factor Value[{1}]".format(label, fv.factor_name.name)]
+            columns.extend(get_value_columns(columns[0], fv))
+            return columns
+
+        def write_value_columns(df_dict, label, x):
+            if isinstance(x.value, (int, float)) and x.unit:
+                if isinstance(x.unit, OntologyAnnotation):
+                    df_dict[label][-1] = x.value
+                    df_dict[label + ".Unit"][-1] = x.unit.term
+                    df_dict[label + ".Unit.Term Source REF"][-1] = x.unit.term_source.name if x.unit.term_source else ""
+                    df_dict[label + ".Unit.Term Accession Number"][-1] = x.unit.term_accession
+                else:
+                    df_dict[label][-1] = x.value
+                    df_dict[label + ".Unit"][-1] = x.unit
+            elif isinstance(x.value, OntologyAnnotation):
+                df_dict[label][-1] = x.value.term
+                df_dict[label + ".Term Source REF"][-1] = x.value.term_source.name if x.value.term_source else ""
+                df_dict[label + ".Term Accession Number"][-1] = x.value.term_accession
+            else:
+                df_dict[label][-1] = x.value
+
         for node in _longest_path_and_attrs(study_obj.graph):
             if isinstance(node, Source):
-                cols.append('source')
-                col_map['source'] = 'Source Name'
-                _set_charac_cols('source', node.characteristics, cols, col_map)
+                olabel = "Source Name"
+                jcolumns.append(olabel)
 
-                jcolumns.append("Source Name")
-
-                def get_value_columns(x):
-                    if isinstance(x.value, (int, float)) and x.unit:
-                        if isinstance(x.unit, OntologyAnnotation):
-                            return ["Unit", "Term Source REF", "Term Accession"]
-                        else:
-                            return ["Unit"]
-                    elif isinstance(x.value, OntologyAnnotation):
-                        return ["Term Source REF", "Term Accession"]
-                    else:
-                        return []
-
-                def get_characteristic_columns(c):
-                    columns = ["Characteristic[{}]".format(c.category.term)]
-                    columns.extend(get_value_columns(c))
-                    return columns
-
-                jcolumns += flatten(map(lambda x: get_characteristic_columns(x), node.characteristics))
+                jcolumns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
 
             elif isinstance(node, Process):
-
-                cols.append('protocol[' + str(protrefcount) + ']')
-                col_map['protocol[' + str(protrefcount) + ']'] = 'Protocol REF'
-
-                jcolumns.append("Protocol REF")
+                olabel = "Protocol REF.{}".format(node.executes_protocol.name)
+                jcolumns.append(olabel)
 
                 if node.date is not None:
-                    cols.append('protocol[' + str(protrefcount) + ']_date')
-                    col_map['protocol[' + str(protrefcount) + ']_date'] = 'Date'
-
-                    jcolumns.append("Date")
-
+                    jcolumns.append(olabel + ".Date")
                 if node.performer is not None:
-                    cols.append('protocol[' + str(protrefcount) + ']_performer')
-                    col_map['protocol[' + str(protrefcount) + ']_performer'] = 'Performer'
+                    jcolumns.append(olabel + ".Performer")
 
-                    jcolumns.append("Performer")
-
-                def get_pv_columns(pv):
-                    columns = ["Parameter Value[{}]".format(pv.category.parameter_name.term)]
-                    columns.extend(get_value_columns(pv))
+                def get_pv_columns(label, pv):
+                    columns = ["{0}.Parameter Value[{1}]".format(label, pv.category.parameter_name.term)]
+                    columns.extend(get_value_columns(columns[0], pv))
                     return columns
 
-                jcolumns += flatten(map(lambda x: get_pv_columns(x), node.parameter_values))
+                jcolumns += flatten(map(lambda x: get_pv_columns(olabel, x), node.parameter_values))
 
-                for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.term)):
-                    if isinstance(pv.value, int) or isinstance(pv.value, float):
-                        cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']',
-                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit',
-                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termsource',
-                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termaccession'))
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = 'Parameter Value[' + pv.category.parameter_name.term + ']'
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit'] = 'Unit'
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termsource'] = 'Term Source REF'
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termaccession'] = 'Term Accession Number'
-                    elif isinstance(pv.value, OntologyAnnotation):
-                        cols.extend(('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']',
-                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termsource',
-                                     'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termaccession',))
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = 'Parameter Value[' + pv.category.parameter_name.term + ']'
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termsource'] = 'Term Source REF'
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termaccession'] = 'Term Accession Number'
-                    else:
-                        cols.append('protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']')
-                        col_map['protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = 'Parameter Value[' + pv.category.parameter_name.term + ']'
                 if node.executes_protocol.name not in protnames.keys():
                     protnames[node.executes_protocol.name] = protrefcount
                     protrefcount += 1
+
             elif isinstance(node, Sample):
-                cols.append('sample')
-                col_map['sample'] = 'Sample Name'
+                olabel = "Sample Name"
+                jcolumns.append(olabel)
 
-                jcolumns.append("Sample Name")
-                jcolumns += flatten(map(lambda x: get_characteristic_columns(x), node.characteristics))
+                jcolumns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
+                jcolumns += flatten(map(lambda x: get_fv_columns(olabel, x), node.factor_values))
 
-                def get_fv_columns(fv):
-                    columns = ["Factor Value[{}]".format(fv.factor_name.name)]
-                    columns.extend(get_value_columns(fv))
-                    return columns
+        omap = get_object_column_map(jcolumns, jcolumns)
 
-                jcolumns += flatten(map(lambda x: get_fv_columns(x), node.factor_values))
-
-                kcolumns = []
-                counter = {}
-                for col in jcolumns:
-                    if col in counter.keys():
-                        kcolumns.append("{}.{}".format(col, counter[col]))
-                        counter[col] += 1
-                    else:
-                        kcolumns.append(col)
-                        counter[col] = 0
-
-                df = pd.DataFrame(columns=kcolumns)  # TODO: Checkpoint here
-
-                _set_charac_cols('sample', node.characteristics, cols, col_map)
-                _set_factor_value_cols('sample', node.factor_values, cols, col_map)
-
-        df = pd.DataFrame(columns=cols)
-        i = 0
+        # load into dictionary
+        df_dict = dict(map(lambda k: (k, []), flatten(omap)))
 
         start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
         paths = _all_end_to_end_paths(study_obj.graph, start_nodes, end_nodes)
+        
         from progressbar import ProgressBar, SimpleProgress, Bar, ETA
-        pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)), SimpleProgress(),
-                     Bar(left=" |", right="| "), ETA()]).start()
+        pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)),
+                                                                       SimpleProgress(),
+                                                                       Bar(left=" |", right="| "), ETA()]).start()
+
         for path in pbar(paths):
+            for k in df_dict.keys():  # add a row per path
+                df_dict[k].extend([""])
+
             for node in path:
+
                 if isinstance(node, Source):
-                    df.loc[i, 'source'] = node.name
-                    _set_charac_vals('source', node.characteristics, df, i)
+                    olabel = "Source Name"
+                    df_dict[olabel][-1] = node.name
+
+                    for c in node.characteristics:
+                        clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
+                        write_value_columns(df_dict, clabel, c)
+
                 elif isinstance(node, Process):
-                    def find(n):
-                        v = 0
-                        for k, v in protnames.items():
-                            if k == n.executes_protocol.name:
-                                return v
-                        return v
-                    protrefcount = find(node)
-                    df.loc[i, 'protocol[' + str(protrefcount) + ']'] = node.executes_protocol.name
+                    olabel = "Protocol REF.{}".format(node.executes_protocol.name)
+                    df_dict[olabel][-1] = node.executes_protocol.name
+
                     if node.date is not None:
-                        df.loc[i, 'protocol[' + str(protrefcount) + ']_date'] = node.date
+                        df_dict[olabel + ".Date"][-1] = node.date
                     if node.performer is not None:
-                        df.loc[i, 'protocol[' + str(protrefcount) + ']_performer'] = node.performer
-                    for pv in reversed(sorted(node.parameter_values, key=lambda x: x.category.parameter_name.term)):
-                        if isinstance(pv.value, int) or isinstance(pv.value, float):
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = pv.value
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit'] = pv.unit.term
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termsource'] = pv.unit.term_source.name if pv.unit.term_source else ''
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_unit_termaccession'] = pv.unit.term_accession
-                        elif isinstance(pv.value, OntologyAnnotation):
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']'] = pv.value.term
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termsource'] = pv.value.term_source
-                            df.loc[i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.parameter_name.term + ']_termaccession'] = pv.value.term_accession
-                        else:
-                            df.loc[i, i, 'protocol[' + str(protrefcount) + ']_pv[' + pv.category.characteristic_type.name + ']'] = pv.value
+                        df_dict[olabel + ".Performer"][-1] = node.performer
+
+                    for pv in node.parameter_values:
+                        pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
+                        write_value_columns(df_dict, pvlabel, pv)
+
                 elif isinstance(node, Sample):
-                    df.loc[i, 'sample'] = node.name
-                    _set_charac_vals('sample', node.characteristics, df, i)
-                    _set_factor_value_vals('sample', node.factor_values, df, i)
-            i += 1
+                    olabel = "Sample Name"
+                    df_dict[olabel][-1] = node.name
+
+                    for c in node.characteristics:
+                        clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
+                        write_value_columns(df_dict, clabel, c)
+                    for fv in node.factor_values:
+                        fvlabel = "{0}.Factor Value[{1}]".format(olabel, fv.factor_name.name)
+                        write_value_columns(df_dict, fvlabel, fv)
         pbar.finish()
-        # WARNING: don't just dump out col_map.values() as we need to put columns back in order
-        df = df.drop_duplicates()
-        df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0 (Sample name)
-        for i, col in enumerate(df.columns):
-            if col_map[col] in ['Characteristics[Material Type]', 'Characteristics[material type]']:
-                cols[i] = 'Material Type'
-            else:
-                cols[i] = col_map[col]
-        df.columns = cols  # reset column headers
-        import numpy as np
-        df = df.replace('', np.nan)
-        df = df.dropna(axis=1, how='all')
-        df = df.sort_values(by=df.columns[0], ascending=True)  # arbitrary sort on column 0
+
+        DF = pd.DataFrame(columns=jcolumns)
+        DF = DF.from_dict(data=df_dict)
+        DF = DF[jcolumns]  # reorder columns
+        DF = DF.sort_values(by=DF.columns[0], ascending=True)  # arbitrary sort on column 0
+
+        for i, col in enumerate(jcolumns):
+            if col.endswith("Term Source REF"):
+                jcolumns[i] = "Term Source REF"
+            elif col.endswith("Term Accession Number"):
+                jcolumns[i] = "Term Accession Number"
+            elif col.endswith("Unit"):
+                jcolumns[i] = "Unit"
+            elif "Characteristics[" in col:
+                if "material type" in col.lower():
+                    jcolumns[i] = "Material Type"
+                else:
+                    jcolumns[i] = col[col.rindex(".")+1:]
+            elif "Factor Value[" in col:
+                jcolumns[i] = col[col.rindex(".")+1:]
+            elif "Parameter Value[" in col:
+                jcolumns[i] = col[col.rindex(".")+1:]
+            elif "Protocol REF" in col:
+                jcolumns[i] = "Protocol REF"
+            elif col.endswith("Date"):
+                jcolumns[i] = "Date"
+            elif col.endswith("Performer"):
+                jcolumns[i] = "Performer"
+
+        DF.columns = jcolumns
+        DF = DF.replace('', np.nan)
+        DF = DF.dropna(axis=1, how='all')
         with open(os.path.join(output_dir, study_obj.filename), 'w') as out_fp:
-            df.to_csv(path_or_buf=out_fp, index=False, sep='\t', encoding='utf-8')
+            DF.to_csv(path_or_buf=out_fp, index=False, sep='\t', encoding='utf-8')
 
 
 def read_investigation_file(fp):
@@ -3315,6 +3312,26 @@ def preprocess(DF):
     return DF
 
 
+def get_object_column_map(isatab_header, df_columns):
+    object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
+                    + ['Protocol REF']]
+
+    # group headers regarding objects delimited by object_index by slicing up the header list
+    object_column_map = []
+    prev_i = object_index[0]
+
+    for curr_i in object_index:  # collect each object's columns
+
+        if prev_i == curr_i:
+            pass  # skip if there's no diff, i.e. first one
+        else:
+            object_column_map.append(df_columns[prev_i:curr_i])
+        prev_i = curr_i
+
+    object_column_map.append(df_columns[prev_i:])  # finally collect last object's columns
+    return object_column_map
+
+
 class ProcessSequenceFactory:
 
     def __init__(self, ontology_sources=None, study_samples=None, study_protocols=None, study_factors=None):
@@ -3465,26 +3482,10 @@ class ProcessSequenceFactory:
         except KeyError:
             pass
 
-        isatab_header = DF.isatab_header
-        object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
-                        + ['Protocol REF']]
-
-        # group headers regarding objects delimited by object_index by slicing up the header list
-        object_column_map = list()
-        prev_i = object_index[0]
-
-        for curr_i in object_index:  # collect each object's columns
-
-            if prev_i == curr_i:
-                pass  # skip if there's no diff, i.e. first one
-            else:
-                object_column_map.append(DF.columns[prev_i:curr_i])
-            prev_i = curr_i
-
-        object_column_map.append(DF.columns[prev_i:])  # finally collect last object's columns
-
         node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
         # proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
+
+        object_column_map = get_object_column_map(DF.isatab_header, DF.columns)
 
         for _cg, column_group in enumerate(object_column_map):
             # for each object, parse column group
