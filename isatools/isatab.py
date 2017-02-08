@@ -414,10 +414,9 @@ def _get_start_end_nodes(G):
     return start_nodes, end_nodes
 
 
-def _longest_path_and_attrs(G):
-    start_nodes, end_nodes = _get_start_end_nodes(G)
+def _longest_path_and_attrs(paths):
     longest = (0, None)
-    for path in _all_end_to_end_paths(G, start_nodes, end_nodes):
+    for path in paths:
         length = len(path)
         for n in path:
             if isinstance(n, Source):
@@ -439,26 +438,64 @@ prev = ''  # used in rolling_group(val) in write_assay_table_files(inv_obj, outp
 
 def _all_end_to_end_paths(G, start_nodes, end_nodes):
     paths = []
+    start_nodes_processed = []
     end_nodes_processed = []
     # if we can calculate the correct start node from the .derives_from end node, get paths now and skip product loop
     for end_node in end_nodes:
         if isinstance(end_node, Process):
             for output in end_node.outputs:
                 if isinstance(output, Sample) and output.derives_from:
-                    paths += list(nx.algorithms.all_simple_paths(G, output.derives_from if output.derives_from else output.derives_from, end_node))
+                    paths += list(nx.algorithms.all_simple_paths(G, output.derives_from, end_node))
+                    start_nodes_processed.append(output.derives_from)
                     end_nodes_processed.append(end_node)
                 elif isinstance(output, DataFile) and output.generated_from:
-                    paths += list(nx.algorithms.all_simple_paths(G, output.generated_from if output.generated_from else output.generated_from, end_node))
+                    paths += list(nx.algorithms.all_simple_paths(G, output.generated_from, end_node))
+                    start_nodes_processed.append(output.generated_from)
                     end_nodes_processed.append(end_node)
         elif isinstance(end_node, Sample) and end_node.derives_from:
             for derives_from_node in end_node.derives_from:
                 paths += list(nx.algorithms.all_simple_paths(G, derives_from_node, end_node))
+                start_nodes_processed.append(derives_from_node)
                 end_nodes_processed.append(end_node)
 
+    start_nodes_remaining = [item for item in start_nodes if item not in start_nodes_processed]
     end_nodes_remaining = [item for item in end_nodes if item not in end_nodes_processed]
-    # print("ignoring {} end nodes with missing data file->sample link".format(len(end_nodes_remaining)))
-    for start, end in itertools.product(start_nodes, end_nodes_remaining):
-        paths += list(nx.algorithms.all_simple_paths(G, start, end))  # TODO: Find another way to make this bit fast or comment this loop out and uncomment the print line above to skip it
+    print("{} start nodes and {} end nodes not processed, trying reverse traversal...".format(len(start_nodes_remaining), len(end_nodes_remaining)))
+    for end_node in end_nodes_remaining:
+        if isinstance(end_node, Process):
+            cur_node = end_node
+            while cur_node.prev_process:
+                cur_node = cur_node.prev_process
+            if len(cur_node.inputs) > 0:
+                for input_node in cur_node.inputs:
+                    paths += list(nx.algorithms.all_simple_paths(G, input_node, end_node))
+                    start_nodes_processed.append(input_node)
+                    end_nodes_processed.append(end_node)
+            else:
+                paths += list(nx.algorithms.all_simple_paths(G, cur_node, end_node))
+                start_nodes_processed.append(cur_node)
+                end_nodes_processed.append(end_node)
+        elif isinstance(end_node, Sample):
+            processes_linked_to_sample = [p for p in G.nodes() if isinstance(p, Process) and end_node in p.outputs]
+            for process in processes_linked_to_sample:
+                cur_node = process
+                while cur_node.prev_process:
+                    cur_node = cur_node.prev_process
+                if len(cur_node.inputs) > 0:
+                    for input_node in cur_node.inputs:
+                        paths += list(nx.algorithms.all_simple_paths(G, input_node, end_node))
+                        start_nodes_processed.append(input_node)
+                        end_nodes_processed.append(end_node)
+                else:
+                    paths += list(nx.algorithms.all_simple_paths(G, cur_node, end_node))
+                    start_nodes_processed.append(cur_node)
+                    end_nodes_processed.append(end_node)
+
+    start_nodes_remaining = [item for item in start_nodes if item not in start_nodes_processed]
+    end_nodes_remaining = [item for item in end_nodes if item not in end_nodes_processed]
+    print("{} start nodes and {} end nodes not processed, trying brute force...".format(len(start_nodes_remaining), len(end_nodes_remaining)))
+    for start, end in itertools.product(start_nodes_remaining, end_nodes_remaining):
+        paths += list(nx.algorithms.all_simple_paths(G, start, end))
     return paths
 
 KEY_POSTFIX_UNIT = '_unit'
@@ -612,7 +649,9 @@ def write_assay_table_files(inv_obj, output_dir):
                 protrefcount = 0
                 protnames = dict()
                 col_map = dict()
-                for node in _longest_path_and_attrs(assay_obj.graph):
+                start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
+                paths = _all_end_to_end_paths(assay_obj.graph, start_nodes, end_nodes)
+                for node in _longest_path_and_attrs(paths):
                     if isinstance(node, Sample):
                         cols.append('sample')
                         col_map['sample'] = 'Sample Name'
@@ -695,8 +734,7 @@ def write_assay_table_files(inv_obj, output_dir):
                 import pandas as pd
                 df = pd.DataFrame(columns=cols)
                 i = 0
-                start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
-                for path in _all_end_to_end_paths(assay_obj.graph, start_nodes, end_nodes):
+                for path in paths:
                     mcount = 0
                     compound_key = str()
                     for node in path:
@@ -872,13 +910,19 @@ def write_study_table_files(inv_obj, output_dir):
                     df_dict[label][-1] = x.value
                     df_dict[label + ".Unit"][-1] = x.unit
             elif isinstance(x.value, OntologyAnnotation):
-                df_dict[label][-1] = x.value.term
+                try:
+                    df_dict[label][-1] = x.value.term
+                except KeyError:
+                    print(df_dict.keys())
+                    raise KeyError
                 df_dict[label + ".Term Source REF"][-1] = x.value.term_source.name if x.value.term_source else ""
                 df_dict[label + ".Term Accession Number"][-1] = x.value.term_accession
             else:
                 df_dict[label][-1] = x.value
 
-        for node in _longest_path_and_attrs(study_obj.graph):
+        start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
+        paths = _all_end_to_end_paths(study_obj.graph, start_nodes, end_nodes)
+        for node in _longest_path_and_attrs(paths):
             if isinstance(node, Source):
                 olabel = "Source Name"
                 jcolumns.append(olabel)
@@ -916,9 +960,6 @@ def write_study_table_files(inv_obj, output_dir):
 
         # load into dictionary
         df_dict = dict(map(lambda k: (k, []), flatten(omap)))
-
-        start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
-        paths = _all_end_to_end_paths(study_obj.graph, start_nodes, end_nodes)
         
         from progressbar import ProgressBar, SimpleProgress, Bar, ETA
         pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)),
@@ -937,7 +978,11 @@ def write_study_table_files(inv_obj, output_dir):
 
                     for c in node.characteristics:
                         clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
-                        write_value_columns(df_dict, clabel, c)
+                        try:
+                            write_value_columns(df_dict, clabel, c)
+                        except KeyError:
+                            print(node.__dict__)
+                            raise KeyError
 
                 elif isinstance(node, Process):
                     olabel = "Protocol REF.{}".format(node.executes_protocol.name)
@@ -992,9 +1037,18 @@ def write_study_table_files(inv_obj, output_dir):
             elif col.endswith("Performer"):
                 jcolumns[i] = "Performer"
 
+        print("Rendered {} paths".format(len(DF.index)))
+        DF_no_dups = DF.drop_duplicates()
+        if len(DF.index) > len(DF_no_dups.index):
+            print("Dropping duplicates...")
+            DF = DF_no_dups
+
+        print("Writing {} rows".format(len(DF.index)))
+        # reset columns, replace nan with empty string, drop empty columns
         DF.columns = jcolumns
         DF = DF.replace('', np.nan)
         DF = DF.dropna(axis=1, how='all')
+
         with open(os.path.join(output_dir, study_obj.filename), 'w') as out_fp:
             DF.to_csv(path_or_buf=out_fp, index=False, sep='\t', encoding='utf-8')
 
@@ -3492,27 +3546,17 @@ class ProcessSequenceFactory:
 
             object_label = column_group[0]
 
-            if object_label in _LABELS_MATERIAL_NODES:  # characs
+            if object_label in _LABELS_MATERIAL_NODES:
 
                 for _, object_series in DF[column_group].drop_duplicates().iterrows():
-                    node_key = object_series[column_group[0]]
-
-                    material = None
-
-                    try:
-                        material = sources['Source Name:' + node_key]
-                    except KeyError:
-                        pass
-
-                    try:
-                        material = samples['Sample Name:' + node_key]
-                    except KeyError:
-                        pass
-
-                    try:
-                        material = other_material[column_group[0] + ':' + node_key]
-                    except KeyError:
-                        pass
+                    node_name = object_series[object_label]
+                    node_key = ":".join([object_label, node_name])
+                    if object_label == "Source Name":
+                        material = sources[node_key]
+                    elif object_label == "Sample Name":
+                        material = samples[node_key]
+                    else:
+                        material = other_material[node_key]
 
                     if material is not None:
 
