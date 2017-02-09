@@ -68,172 +68,6 @@ class TestIsaMerge(unittest.TestCase):
         self.assertEqual(merged_DF.shape[1], 47)  # still prints out joined header though
 
 
-class TestIsaTabDump(unittest.TestCase):
-
-    def setUp(self):
-        self._tab_data_dir = utils.TAB_DATA_DIR
-        self._tmp_dir = tempfile.mkdtemp()
-
-    def tearDown(self):
-        shutil.rmtree(self._tmp_dir)
-
-    def test_isatab_bad_i_file_name(self):
-        with self.assertRaises(NameError):
-            isatab.dump(Investigation(), self._tmp_dir, i_file_name='investigation.txt')
-
-    def test_isatab_dump_source_sample_split(self):
-        i = Investigation()
-        uberon = OntologySource(name='UBERON',
-                                description="Uber Anatomy Ontology",
-                                version='216',
-                                file='http://data.bioontology.org/ontologies/UBERON')
-        ncbitaxon = OntologySource(name='NCBITAXON',
-                                   description="National Center for Biotechnology Information (NCBI) Organismal Classification",
-                                   version='2',
-                                   file='http://data.bioontology.org/ontologies/NCBITAXON')
-        i.ontology_source_references.append(uberon)
-        i.ontology_source_references.append(ncbitaxon)
-
-        s = Study(filename='s_pool.txt')
-
-        sample_collection_protocol = Protocol(
-            name='sample collection',
-            protocol_type=OntologyAnnotation(term='sample collection')
-        )
-        s.protocols.append(sample_collection_protocol)
-
-        reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
-        material_type_category = OntologyAnnotation(term='material type')
-        organism_category = OntologyAnnotation(term='organism')
-
-        source1 = Source(name='source1')
-        source1.characteristics = [
-            Characteristic(category=reference_descriptor_category, value='not applicable'),
-            Characteristic(category=material_type_category, value='specimen'),
-            Characteristic(category=organism_category,
-                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
-                                                    term_accession='http://purl.bioontology.org/ontology/STY/T016')),
-        ]
-
-        sample1 = Sample(name='sample1')
-        organism_part = OntologyAnnotation(term='organism part')
-        sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
-            term='liver',
-            term_source=uberon,
-            term_accession='http://purl.obolibrary.org/obo/UBERON_0002107',
-        )))
-
-        sample2 = Sample(name='sample2')
-        sample2.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
-            term='heart',
-            term_source=uberon,
-            term_accession='http://purl.obolibrary.org/obo/UBERON_0000948',
-        )))
-
-        sample3 = Sample(name='sample3')
-        sample3.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
-            term='blood',
-            term_source=uberon,
-            term_accession='http://purl.obolibrary.org/obo/UBERON_0000178',
-        )))
-
-        sample4 = Sample(name='sample4')
-        sample4.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
-            term='blood',
-            term_source=uberon,
-            term_accession='http://purl.obolibrary.org/obo/UBERON_0000178',
-        )))
-
-        sample_collection_process = Process(executes_protocol=sample_collection_protocol)
-
-        sample_collection_process.inputs = [source1]
-        sample_collection_process.outputs = [sample1, sample2, sample3, sample4]
-        s.process_sequence = [sample_collection_process]
-        # from isatools.model.v1 import _build_assay_graph
-        # s.graph = _build_assay_graph(s.process_sequence)
-        i.studies = [s]
-        isatab.dump(i, self._tmp_dir)
-        with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
-                open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split',
-                                  's_TEST-Template1-Splitting.txt')) as expected_file:
-            self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
-
-    def test_isatab_dump_source_sample_pool(self):
-        i = Investigation()
-        uberon = OntologySource(name='UBERON')
-        ncbitaxon = OntologySource(name='NCBITAXON')
-        i.ontology_source_references.append(uberon)
-        i.ontology_source_references.append(ncbitaxon)
-
-        s = Study(filename='s_pool.txt')
-        sample_collection_protocol = Protocol(
-            name='sample collection',
-            protocol_type=OntologyAnnotation(term='sample collection')
-        )
-        s.protocols.append(sample_collection_protocol)
-
-        reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
-        material_type_category = OntologyAnnotation(term='material type')
-        organism_category = OntologyAnnotation(term='organism')
-
-        source1 = Source(name='source1')
-        source1.characteristics = [
-            Characteristic(category=reference_descriptor_category, value='not applicable'),
-            Characteristic(category=material_type_category, value='specimen'),
-            Characteristic(category=organism_category,
-                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
-                                                    term_accession='http://purl.bioontology.org/ontology/STY/T016')),
-        ]
-
-        source2 = Source(name='source2')
-        source2.characteristics = [
-            Characteristic(category=reference_descriptor_category, value='not applicable'),
-            Characteristic(category=material_type_category, value='specimen'),
-            Characteristic(category=organism_category,
-                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
-                                                    term_accession='http://purl.bioontology.org/ontology/STY/T016')),
-        ]
-
-        source3 = Source(name='source3')
-        source3.characteristics = [
-            Characteristic(category=reference_descriptor_category, value='not applicable'),
-            Characteristic(category=material_type_category, value='specimen'),
-            Characteristic(category=organism_category,
-                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
-                                                    term_accession='http://purl.bioontology.org/ontology/STY/T016')),
-        ]
-
-        source4 = Source(name='source4')
-        source4.characteristics = [
-            Characteristic(category=reference_descriptor_category, value='not applicable'),
-            Characteristic(category=material_type_category, value='specimen'),
-            Characteristic(category=organism_category,
-                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
-                                                    term_accession='http://purl.bioontology.org/ontology/STY/T016')),
-        ]
-
-        sample1 = Sample(name='sample1')
-        organism_part = OntologyAnnotation(term='organism part')
-        sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
-            term='liver',
-            term_source=uberon,
-            term_accession='http://purl.obolibrary.org/obo/UBERON_0002107',
-        )))
-
-        sample_collection_process = Process(executes_protocol=sample_collection_protocol)
-
-        sample_collection_process.inputs = [source1, source2, source3, source4]
-        sample_collection_process.outputs = [sample1]
-        s.process_sequence = [sample_collection_process]
-        i.studies = [s]
-        isatab.dump(i, self._tmp_dir)
-        with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
-                open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',
-                                  's_TEST-Template3-Splitting.txt')) as expected_file:
-            self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
-            self.assertIsInstance(isatab.dumps(i), str)
-
-
 class TestIsaTabLoad(unittest.TestCase):
 
     def setUp(self):
@@ -348,8 +182,564 @@ class TestIsaTabLoad(unittest.TestCase):
     # def test_isatab_load_flower(self):
     #     with open(os.path.join(self._tab_data_dir, 'Flower_Study', 'i_Investigation.txt')) as fp:
     #         ISA = isatab.load(fp)
-    #         for s in ISA.studies[0].materials['samples']:
-    #             s.derives_from = [so for so in ISA.studies[0].materials['sources'] if so.name == s.name]
-    #         ISA.studies[0].assays = []
-    #         print(isatab.dumps(ISA))
+    #         isatab.dump(ISA, "/Users/dj/PycharmProjects/isa-api/tests/data/tmp")
 
+
+class TestIsaTabDump(unittest.TestCase):
+
+    def setUp(self):
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
+
+    def test_isatab_bad_i_file_name(self):
+        with self.assertRaises(NameError):
+            isatab.dump(Investigation(), self._tmp_dir, i_file_name='investigation.txt')
+
+    def test_isatab_dump_source_sample_split(self):
+        i = Investigation()
+        uberon = OntologySource(name='UBERON',
+                                description="Uber Anatomy Ontology",
+                                version='216',
+                                file='http://data.bioontology.org/ontologies/UBERON')
+        ncbitaxon = OntologySource(name='NCBITAXON',
+                                   description="National Center for Biotechnology Information (NCBI) Organismal Classification",
+                                   version='2',
+                                   file='http://data.bioontology.org/ontologies/NCBITAXON')
+        i.ontology_source_references.append(uberon)
+        i.ontology_source_references.append(ncbitaxon)
+
+        s = Study(filename='s_pool.txt')
+
+        sample_collection_protocol = Protocol(
+            name='sample collection',
+            protocol_type=OntologyAnnotation(term='sample collection')
+        )
+        s.protocols.append(sample_collection_protocol)
+
+        reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
+        material_type_category = OntologyAnnotation(term='material type')
+        organism_category = OntologyAnnotation(term='organism')
+
+        source1 = Source(name='source1')
+        source1.characteristics = [
+            Characteristic(category=reference_descriptor_category, value='not applicable'),
+            Characteristic(category=material_type_category, value='specimen'),
+            Characteristic(category=organism_category,
+                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
+                                                    term_accession='http://purl.bioontology.org/ontology/STY/T016')),
+        ]
+
+        sample1 = Sample(name='sample1')
+        organism_part = OntologyAnnotation(term='organism part')
+        sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
+            term='liver',
+            term_source=uberon,
+            term_accession='http://purl.obolibrary.org/obo/UBERON_0002107',
+        )))
+
+        sample2 = Sample(name='sample2')
+        sample2.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
+            term='heart',
+            term_source=uberon,
+            term_accession='http://purl.obolibrary.org/obo/UBERON_0000948',
+        )))
+
+        sample3 = Sample(name='sample3')
+        sample3.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
+            term='blood',
+            term_source=uberon,
+            term_accession='http://purl.obolibrary.org/obo/UBERON_0000178',
+        )))
+
+        sample4 = Sample(name='sample4')
+        sample4.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
+            term='blood',
+            term_source=uberon,
+            term_accession='http://purl.obolibrary.org/obo/UBERON_0000178',
+        )))
+
+        sample_collection_process = Process(executes_protocol=sample_collection_protocol)
+
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1, sample2, sample3, sample4]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        isatab.dump(i, self._tmp_dir)
+        with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
+                open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split',
+                                  's_TEST-Template1-Splitting.txt')) as expected_file:
+            self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
+
+    def test_isatab_dump_source_sample_pool(self):
+        i = Investigation()
+        uberon = OntologySource(name='UBERON')
+        ncbitaxon = OntologySource(name='NCBITAXON')
+        i.ontology_source_references.append(uberon)
+        i.ontology_source_references.append(ncbitaxon)
+
+        s = Study(filename='s_pool.txt')
+        sample_collection_protocol = Protocol(
+            name='sample collection',
+            protocol_type=OntologyAnnotation(term='sample collection')
+        )
+        s.protocols.append(sample_collection_protocol)
+
+        reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
+        material_type_category = OntologyAnnotation(term='material type')
+        organism_category = OntologyAnnotation(term='organism')
+
+        source1 = Source(name='source1')
+        source1.characteristics = [
+            Characteristic(category=reference_descriptor_category, value='not applicable'),
+            Characteristic(category=material_type_category, value='specimen'),
+            Characteristic(category=organism_category,
+                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
+                                                    term_accession='http://purl.bioontology.org/ontology/STY/T016')),
+        ]
+
+        source2 = Source(name='source2')
+        source2.characteristics = [
+            Characteristic(category=reference_descriptor_category, value='not applicable'),
+            Characteristic(category=material_type_category, value='specimen'),
+            Characteristic(category=organism_category,
+                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
+                                                    term_accession='http://purl.bioontology.org/ontology/STY/T016')),
+        ]
+
+        source3 = Source(name='source3')
+        source3.characteristics = [
+            Characteristic(category=reference_descriptor_category, value='not applicable'),
+            Characteristic(category=material_type_category, value='specimen'),
+            Characteristic(category=organism_category,
+                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
+                                                    term_accession='http://purl.bioontology.org/ontology/STY/T016')),
+        ]
+
+        source4 = Source(name='source4')
+        source4.characteristics = [
+            Characteristic(category=reference_descriptor_category, value='not applicable'),
+            Characteristic(category=material_type_category, value='specimen'),
+            Characteristic(category=organism_category,
+                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
+                                                    term_accession='http://purl.bioontology.org/ontology/STY/T016')),
+        ]
+
+        sample1 = Sample(name='sample1')
+        organism_part = OntologyAnnotation(term='organism part')
+        sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
+            term='liver',
+            term_source=uberon,
+            term_accession='http://purl.obolibrary.org/obo/UBERON_0002107',
+        )))
+
+        sample_collection_process = Process(executes_protocol=sample_collection_protocol)
+
+        sample_collection_process.inputs = [source1, source2, source3, source4]
+        sample_collection_process.outputs = [sample1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        isatab.dump(i, self._tmp_dir)
+        with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
+                open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',
+                                  's_TEST-Template3-Splitting.txt')) as expected_file:
+            self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
+            self.assertIsInstance(isatab.dumps(i), str)
+
+    def test_source_protocol_ref_sample(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection')]
+        )
+        source1 = Source(name='source1')
+        sample1 = Sample(name='sample1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Sample Name
+source1	sample collection	sample1"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_sample_x2(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection')]
+        )
+        source1 = Source(name='source1')
+        sample1 = Sample(name='sample1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1]
+        source2 = Source(name='source2')
+        sample2 = Sample(name='sample2')
+        sample_collection_process2 = Process(executes_protocol=s.protocols[0])
+        sample_collection_process2.inputs = [source2]
+        sample_collection_process2.outputs = [sample2]
+        s.process_sequence = [sample_collection_process, sample_collection_process2]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Sample Name
+source1	sample collection	sample1
+source2	sample collection	sample2"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_sample_split(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection')]
+        )
+        source1 = Source(name='source1')
+        sample1 = Sample(name='sample1')
+        sample2 = Sample(name='sample2')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1, sample2]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Sample Name
+source1	sample collection	sample1
+source1	sample collection	sample2"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_sample_pool(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection')]
+        )
+        source1 = Source(name='source1')
+        source2 = Source(name='source2')
+        sample1 = Sample(name='sample1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.inputs = [source1, source2]
+        sample_collection_process.outputs = [sample1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Sample Name
+source1	sample collection	sample1
+source2	sample collection	sample1"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_sample_with_characteristics(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection')]
+        )
+        reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
+        organism_part_category = OntologyAnnotation(term='organism part')
+        source1 = Source(name='source1')
+        source1.characteristics = [Characteristic(category=reference_descriptor_category, value='not applicable')]
+        sample1 = Sample(name='sample1')
+        sample1.characteristics = [Characteristic(category=organism_part_category, value=OntologyAnnotation(term='liver'))]
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Source Name	Characteristics[reference descriptor]	Protocol REF	Sample Name	Characteristics[organism part]
+source1	not applicable	sample collection	sample1	liver"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_sample_with_parameter_values(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[
+                Protocol(name='sample collection',
+                         parameters=[ProtocolParameter(parameter_name=OntologyAnnotation(term='temperature'))])
+            ]
+        )
+        source1 = Source(name='source1')
+        sample1 = Sample(name='sample1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.parameter_values = [ParameterValue(category=s.protocols[0].parameters[0], value=10)]
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Parameter Value[temperature]	Sample Name
+source1	sample collection	10	sample1"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_sample_with_factor_values(self):
+        i = Investigation()
+        s = Study(filename='s_test.txt',
+                  protocols=[Protocol(name='sample collection')],
+                  factors=[StudyFactor(name='study group')])
+        source1 = Source(name='source1')
+        sample1 = Sample(name='sample1')
+        sample1.factor_values = [FactorValue(factor_name=s.factors[0], value="Study group 1")]
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Sample Name	Factor Value[study group]
+source1	sample collection	sample1	Study group 1"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref(self):
+        i = Investigation()
+        s = Study(filename='s_test.txt',
+                  protocols=[Protocol(name='sample collection')])
+        source1 = Source(name='source1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.inputs = [source1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF
+source1	sample collection"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_protocol_ref_sample(self):  # FIXME
+        i = Investigation()
+        s = Study(filename='s_test.txt',
+                  protocols=[Protocol(name='sample collection')])
+        sample1 = Sample(name='sample1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.outputs = [sample1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Protocol REF	Sample Name
+sample collection	sample1"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_protocol_ref_sample(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection'), Protocol(name='aliquoting')]
+        )
+        source1 = Source(name='source1')
+        aliquot1 = Sample(name='aliquot1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        aliquoting_process = Process(executes_protocol=s.protocols[1])
+        sample_collection_process.inputs = [source1]
+        aliquoting_process.outputs = [aliquot1]
+        aliquoting_process.prev_process = sample_collection_process  # TODO: Check if we only need prev_process links
+        s.process_sequence = [sample_collection_process, aliquoting_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Protocol REF	Sample Name
+source1	sample collection	aliquoting	aliquot1"""
+        print(isatab.dumps(i))
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_sample_protocol_ref_sample(self):  # FIXME
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection'), Protocol(name='aliquoting')]
+        )
+        source1 = Source(name='source1')
+        sample1 = Sample(name='sample1')
+        aliquot1 = Sample(name='aliquot1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        aliquoting_process = Process(executes_protocol=s.protocols[1])
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1]
+        aliquoting_process.inputs = [sample1]
+        aliquoting_process.outputs = [aliquot1]
+        aliquoting_process.prev_process = sample_collection_process
+        s.process_sequence = [sample_collection_process, aliquoting_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Sample Name Protocol REF	Sample Name
+source1	sample collection   sample1	aliquoting	aliquot1"""
+        print(isatab.dumps(i))
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_protocol_ref_material_protocol_ref_data(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+        )
+        sample1 = Sample(name='sample1')
+        extract1 = Material(name='extract1', type_='Extract Name')
+        data1 = DataFile(filename='datafile.raw', label='Raw Data File')
+        extraction_process = Process(executes_protocol=s.protocols[0])
+        scanning_process = Process(executes_protocol=s.protocols[1])
+        extraction_process.inputs = [sample1]
+        extraction_process.outputs = [extract1]
+        scanning_process.inputs = [extract1]
+        scanning_process.outputs = [data1]
+        scanning_process.prev_process = extraction_process
+        a = Assay(filename='a_test.txt')
+        a.process_sequence = [scanning_process, extraction_process]
+        s.assays = [a]
+        i.studies = [s]
+        expected = """Sample Name	Protocol REF	Extract Name	Protocol REF	Raw Data File
+sample1	extraction	extract1	scanning	datafile.raw"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_protocol_ref_material_protocol_ref_data_x2(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+        )
+        sample1 = Sample(name='sample1')
+        extract1 = Material(name='extract1', type_='Extract Name')
+        data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
+        extraction_process1 = Process(executes_protocol=s.protocols[0])
+        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        extraction_process1.inputs = [sample1]
+        extraction_process1.outputs = [extract1]
+        scanning_process1.inputs = [extract1]
+        scanning_process1.outputs = [data1]
+        scanning_process1.prev_process = extraction_process1
+        
+        sample2 = Sample(name='sample2')
+        extract2 = Material(name='extract2', type_='Extract Name')
+        data2 = DataFile(filename='datafile2.raw', label='Raw Data File')
+        extraction_process2 = Process(executes_protocol=s.protocols[0])
+        scanning_process2 = Process(executes_protocol=s.protocols[1])
+        extraction_process2.inputs = [sample2]
+        extraction_process2.outputs = [extract2]
+        scanning_process2.inputs = [extract2]
+        scanning_process2.outputs = [data2]
+        scanning_process2.prev_process = extraction_process2
+        
+        a = Assay(filename='a_test.txt')
+        a.process_sequence = [scanning_process1, extraction_process1, scanning_process2, extraction_process2]
+        s.assays = [a]
+        i.studies = [s]
+        expected = """Sample Name	Protocol REF	Extract Name	Protocol REF	Raw Data File
+sample1	extraction	extract1	scanning	datafile1.raw
+sample2	extraction	extract2	scanning	datafile2.raw"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_split_protocol_ref_material_protocol_ref_data(self):  # FIXME
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+        )
+        sample1 = Sample(name='sample1')
+        extract1 = Material(name='extract1', type_='Extract Name')
+        extract2 = Material(name='extract2', type_='Extract Name')
+        data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
+        data2 = DataFile(filename='datafile2.raw', label='Raw Data File')
+
+        extraction_process1 = Process(executes_protocol=s.protocols[0])
+        extraction_process1.inputs = [sample1]
+        extraction_process1.outputs = [extract1]
+
+        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        scanning_process1.inputs = [extract1]
+        scanning_process1.outputs = [data1]
+        scanning_process1.prev_process = extraction_process1
+
+        scanning_process2 = Process(executes_protocol=s.protocols[1])
+        scanning_process2.inputs = [extract2]
+        scanning_process2.outputs = [data2]
+        scanning_process2.prev_process = extraction_process1
+
+        a = Assay(filename='a_test.txt')
+        a.process_sequence = [scanning_process1, extraction_process1, scanning_process2]
+        s.assays = [a]
+        i.studies = [s]
+        expected = """Sample Name	Protocol REF	Extract Name	Protocol REF	Raw Data File
+sample1	extraction	extract1	scanning	datafile1.raw
+sample1	extraction	extract2	scanning	datafile2.raw"""
+        print(isatab.dumps(i))
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_protocol_ref_material_protocol_split_ref_data(self):  # FIXME
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+        )
+        sample1 = Sample(name='sample1')
+        extract1 = Material(name='extract1', type_='Extract Name')
+        data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
+        data2 = DataFile(filename='datafile2.raw', label='Raw Data File')
+
+        extraction_process1 = Process(executes_protocol=s.protocols[0])
+        extraction_process1.inputs = [sample1]
+        extraction_process1.outputs = [extract1]
+
+        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        scanning_process1.inputs = [extract1]
+        scanning_process1.outputs = [data1, data2]
+        scanning_process1.prev_process = extraction_process1
+
+        a = Assay(filename='a_test.txt')
+        a.process_sequence = [extraction_process1, scanning_process1]
+        s.assays = [a]
+        i.studies = [s]
+        expected = """Sample Name	Protocol REF	Extract Name	Protocol REF	Raw Data File
+sample1	extraction	extract1	scanning	datafile1.raw
+sample1	extraction	extract1	scanning	datafile2.raw"""
+        print(isatab.dumps(i))
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_pool_protocol_ref_material_protocol_ref_data(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+        )
+        sample1 = Sample(name='sample1')
+        sample2 = Sample(name='sample2')
+        extract1 = Material(name='extract1', type_='Extract Name')
+        data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
+        extraction_process1 = Process(executes_protocol=s.protocols[0])
+        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        extraction_process1.inputs = [sample1, sample2]
+        extraction_process1.outputs = [extract1]
+
+        scanning_process1.inputs = [extract1]
+        scanning_process1.outputs = [data1]
+        scanning_process1.prev_process = extraction_process1
+
+        a = Assay(filename='a_test.txt')
+        a.process_sequence = [extraction_process1, scanning_process1]
+        s.assays = [a]
+        i.studies = [s]
+        expected = """Sample Name	Protocol REF	Extract Name	Protocol REF	Raw Data File
+sample1	extraction	extract1	scanning	datafile1.raw
+sample2	extraction	extract1	scanning	datafile1.raw"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_protocol_ref_material_pool_protocol_ref_data(self):  # FIXME
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+        )
+        sample1 = Sample(name='sample1')
+        sample2 = Sample(name='sample2')
+        extract1 = Material(name='extract1', type_='Extract Name')
+        extract2 = Material(name='extract2', type_='Extract Name')
+        data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
+
+        extraction_process1 = Process(executes_protocol=s.protocols[0])
+        extraction_process1.inputs = [sample1]
+        extraction_process1.outputs = [extract1]
+
+        extraction_process2 = Process(executes_protocol=s.protocols[0])
+        extraction_process2.inputs = [sample2]
+        extraction_process2.outputs = [extract2]
+
+        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        scanning_process1.inputs = [extract1, extract1]
+        scanning_process1.outputs = [data1]
+        scanning_process1.prev_process = [extraction_process1, extraction_process2]  # FIXME: Need to deal with multiple prev_process
+
+        a = Assay(filename='a_test.txt')
+        a.process_sequence = [extraction_process1, extraction_process2, scanning_process1]
+        s.assays = [a]
+        i.studies = [s]
+        expected = """Sample Name	Protocol REF	Extract Name	Protocol REF	Raw Data File
+sample1	extraction	extract1	scanning	datafile1.raw
+sample2	extraction	extract1	scanning	datafile1.raw"""
+        print(isatab.dumps(i))
+        self.assertIn(expected, isatab.dumps(i))
