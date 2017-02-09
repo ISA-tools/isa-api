@@ -75,7 +75,7 @@ one Study section structured as defined by the
 `ISA-Tab Specification <http://isa-specs.readthedocs.io/en/latest/isatab.html>`_.
 
 .. hint:: Remember that when you ``dump()`` ISA content, you do it on the ``Investigation`` object. This means any
-``Study`` and ``Assay`` objects and content must be attached to the ``Investigation`` for it to be serialized out.
+   ``Study`` and ``Assay`` objects and content must be attached to the ``Investigation`` for it to be serialized out.
 
 Different classes in ``isatools.model.v1`` have class constructors and instance variables that roughly map to the
 ISA Abstract Model. For full details of how to instantiate model classes, access and manipulate ISA data as objects,
