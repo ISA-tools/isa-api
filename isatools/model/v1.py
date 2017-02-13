@@ -84,18 +84,10 @@ class Commentable(object):
         comments (list, NoneType): Comments associated with the implementing ISA class (all ISA classes).
     """
     def __init__(self, comments=None):
-        self.comments = comments
-
-    @property
-    def comments(self):
-        return self.__comments
-
-    @comments.setter
-    def comments(self, comments):
-        if comments is not None and not isinstance(comments, list):
-            raise AttributeError("comments must be an instance of list or None")
+        if comments is None:
+            self.comments = []
         else:
-            self.__comments = comments
+            self.comments = comments
 
 
 class Investigation(Commentable):
@@ -694,7 +686,7 @@ class Source(Commentable):
         characteristics (list, NoneType): A list of Characteristics used to qualify the material properties.
         comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, id_='', name="", characteristics=None, comments=None):
+    def __init__(self, name="", id_='', characteristics=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.name = name
@@ -735,7 +727,7 @@ class Sample(Commentable):
         derives_from (Source): A link to the source material that the sample is derived from.
         comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, id_='', name="", factor_values=None, characteristics=None, derives_from=None, comments=None):
+    def __init__(self, name="", id_='', factor_values=None, characteristics=None, derives_from=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.name = name
@@ -762,7 +754,7 @@ class Material(Commentable):
         derives_from (Source): A link to the material that this material is derived from.
         comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None):
+    def __init__(self, name="", id_='', type_='', characteristics=None, derives_from=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.name = name
@@ -771,6 +763,22 @@ class Material(Commentable):
             self.characteristics = list()
         else:
             self.characteristics = characteristics
+
+
+class Extract(Material):
+
+    def __init__(self, name="", id_='', characteristics=None, derives_from=None, comments=None):
+        super().__init__(name=name, id_=id_, characteristics=characteristics, derives_from=derives_from,
+                         comments=comments)
+        self.type = "Extract Name"
+
+
+class LabeledExtract(Material):
+
+    def __init__(self, name="", id_='', characteristics=None, derives_from=None, comments=None):
+        super().__init__(name=name, id_=id_, characteristics=characteristics, derives_from=derives_from,
+                         comments=comments)
+        self.type = "Labeled Extract Name"
 
 
 class FactorValue(Commentable):
@@ -840,12 +848,80 @@ class DataFile(Commentable):
             generated_from (Sample): The Sample the DataFile is generated from
             comments (list, NoneType): Comments associated with instances of this class.
         """
-    def __init__(self, id_='', filename='', label='', generated_from=None, comments=None):
+    def __init__(self, filename='', id_='', label='', generated_from=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.filename = filename
         self.label = label
         self.generated_from = generated_from
+
+
+class RawDataFile(DataFile):
+
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Raw Data File"
+
+
+class RawSpectralDataFile(DataFile):
+
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Raw Spectral Data File"
+
+
+class DerivedArrayDataFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Derived Array Data File"
+
+
+class ArrayDataFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Array Data File"
+
+
+class DerivedSpectralDataFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Derived Spectral Data File"
+
+
+class ProteinAssignmentFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Protein Assignment File"
+
+
+class PeptideAssignmentFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Peptide Assignment File"
+
+
+class DerivedArrayDataMatrixFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Derived Array Data Matrix File"
+
+
+class PostTranslationalModificationAssignmentFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Post Translational Modification Assignment File"
+
+
+class AcquisitionParameterDataFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Acquisition Parameter Data File"
+
+
+class FreeInductionDecayDataFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Free Induction Decay Data File"
 
 
 def batch_create_materials(material=None, n=1):
