@@ -3153,43 +3153,37 @@ def load(FP):  # from DF of investigation file
     return investigation
 
 
-def process_keygen(protocol_ref, column_group, object_label_index, all_columns, series, series_index):
-
+def process_keygen(protocol_ref, column_group, object_label_index, all_columns, series, series_index, DF):
     process_key = protocol_ref
-
-    node_key = None
-
     node_cols = [i for i, c in enumerate(all_columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
-
+    input_node_value = ''
+    output_node_value = ''
     output_node_index = find_gt(node_cols, object_label_index)
-
     if output_node_index > -1:
-
         output_node_label = all_columns[output_node_index]
         output_node_value = series[output_node_label]
 
-        node_key = output_node_value
-
     input_node_index = find_lt(node_cols, object_label_index)
-
     if input_node_index > -1:
-
         input_node_label = all_columns[input_node_index]
         input_node_value = series[input_node_label]
 
+    input_nodes_with_prot_keys = DF[[all_columns[object_label_index], all_columns[input_node_index]]].drop_duplicates()
+    output_nodes_with_prot_keys = DF[[all_columns[object_label_index], all_columns[output_node_index]]].drop_duplicates()
+
+    if len(input_nodes_with_prot_keys) > len(output_nodes_with_prot_keys):
+        node_key = output_node_value
+    else:
         node_key = input_node_value
 
     if process_key == protocol_ref:
-
         process_key += '-' + str(series_index)
 
     name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
-
     if len(name_column_hits) == 1:
         process_key = series[name_column_hits[0]]
     else:
         pv_cols = [c for c in column_group if c.startswith('Parameter Value[')]
-
         if len(pv_cols) > 0:
             # 2. else try use protocol REF + Parameter Values as key
             if node_key is not None:
@@ -3624,7 +3618,7 @@ class ProcessSequenceFactory:
 
                     protocol_ref = object_series[column_group[0]]
 
-                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _)
+                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
 
                     try:
                         process = processes[process_key]
@@ -3705,7 +3699,7 @@ class ProcessSequenceFactory:
 
                     protocol_ref = object_series[column_group[0]]
 
-                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _)
+                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
 
                     process_key_sequence.append(process_key)
 
