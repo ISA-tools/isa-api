@@ -1,7 +1,5 @@
 from .model.v1 import *
 import os
-import sys
-import pandas as pd
 from pandas.parser import CParserError
 import io
 import glob
@@ -956,7 +954,7 @@ def write_study_table_files(inv_obj, output_dir):
                 jcolumns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
                 jcolumns += flatten(map(lambda x: get_fv_columns(olabel, x), node.factor_values))
 
-        omap = get_object_column_map(jcolumns, jcolumns)
+        omap = get_object_column_map(jcolumns)
 
         # load into dictionary
         df_dict = dict(map(lambda k: (k, []), flatten(omap)))
@@ -3153,43 +3151,43 @@ def load(FP):  # from DF of investigation file
     return investigation
 
 
-def process_keygen(protocol_ref, column_group, object_label_index, all_columns, series, series_index):
-
+def process_keygen(protocol_ref, column_group, object_label_index, all_columns, series, series_index, DF):
     process_key = protocol_ref
-
-    node_key = None
-
     node_cols = [i for i, c in enumerate(all_columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
-
+    protocol_ref_cols = [i for i, c in enumerate(all_columns) if c.startswith("Protocol REF")]
+    input_node_value = ''
+    output_node_value = ''
     output_node_index = find_gt(node_cols, object_label_index)
-
     if output_node_index > -1:
-
         output_node_label = all_columns[output_node_index]
         output_node_value = series[output_node_label]
 
-        node_key = output_node_value
-
     input_node_index = find_lt(node_cols, object_label_index)
-
     if input_node_index > -1:
-
         input_node_label = all_columns[input_node_index]
         input_node_value = series[input_node_label]
 
+    input_nodes_with_prot_keys = DF[[all_columns[object_label_index], all_columns[input_node_index]]].drop_duplicates()
+    output_nodes_with_prot_keys = DF[[all_columns[object_label_index], all_columns[output_node_index]]].drop_duplicates()
+
+    if len(input_nodes_with_prot_keys) > len(output_nodes_with_prot_keys):
+        node_key = output_node_value
+    else:
         node_key = input_node_value
 
-    if process_key == protocol_ref:
+    if input_node_index < find_lt(protocol_ref_cols, object_label_index):
+        node_key = input_node_value
+    if output_node_index < find_gt(protocol_ref_cols, object_label_index):
+        node_key = output_node_value
 
+    if process_key == protocol_ref:
         process_key += '-' + str(series_index)
 
-    name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
-
+    name_column_hits = [n for n in column_group if n.endswith(" Name")]
     if len(name_column_hits) == 1:
         process_key = series[name_column_hits[0]]
     else:
         pv_cols = [c for c in column_group if c.startswith('Parameter Value[')]
-
         if len(pv_cols) > 0:
             # 2. else try use protocol REF + Parameter Values as key
             if node_key is not None:
@@ -3366,22 +3364,26 @@ def preprocess(DF):
     return DF
 
 
-def get_object_column_map(isatab_header, df_columns):
-    object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
-                    + ['Protocol REF']]
+def get_object_column_map(df_columns):
 
+    def drop_suffix(x):
+        try:
+            x.rindex('.')
+        except ValueError:
+            return x
+        return x[:x.rindex('.')]
+
+    object_index = [i for i, x in enumerate(df_columns) if drop_suffix(x) in _LABELS_MATERIAL_NODES +
+                    _LABELS_DATA_NODES + ['Protocol REF']]
     # group headers regarding objects delimited by object_index by slicing up the header list
     object_column_map = []
     prev_i = object_index[0]
-
     for curr_i in object_index:  # collect each object's columns
-
         if prev_i == curr_i:
             pass  # skip if there's no diff, i.e. first one
         else:
             object_column_map.append(df_columns[prev_i:curr_i])
         prev_i = curr_i
-
     object_column_map.append(df_columns[prev_i:])  # finally collect last object's columns
     return object_column_map
 
@@ -3395,330 +3397,243 @@ class ProcessSequenceFactory:
         self.factors = study_factors
 
     def create_from_df(self, DF):  # from DF of a table file
-
-        DF = preprocess(DF=DF)
-
+        # DF = preprocess(DF=DF)
         if self.ontology_sources is not None:
             ontology_source_map = dict(map(lambda x: (x.name, x), self.ontology_sources))
         else:
             ontology_source_map = {}
-
         if self.protocols is not None:
             protocol_map = dict(map(lambda x: (x.name, x), self.protocols))
         else:
             protocol_map = {}
+        if self.factors is not None:
+            factor_map = dict(map(lambda x: (x.name, x), self.factors))
+        else:
+            factor_map = {}
 
+        # stuff to return
         sources = {}
+        samples = {}
         other_material = {}
         data = {}
         processes = {}
         characteristic_categories = {}
         unit_categories = {}
 
-        # TODO: Handle comment columns
+        df_columns = list(DF.columns)
+        column_map = get_object_column_map(df_columns)
 
-        try:
-            sources = dict(map(lambda x: ('Source Name:' + x, Source(name=x)), DF['Source Name'].drop_duplicates()))
-        except KeyError:
-            pass
+        def build_node_objects(DF, targetClass):  # used to build Source, Sample, Extract, LabeledExtract
 
-        samples = {}
-        try:
-            if self.samples is not None:
-                sample_map = dict(map(lambda x: ('Sample Name:' + x.name, x), self.samples))
-                sample_keys = list(map(lambda x: 'Sample Name:' + x, DF['Sample Name'].drop_duplicates()))
-                for k in sample_keys:
-                    samples[k] = sample_map[k]
+            def get_qualifiers(cols, row):
+                qualifiers = []
+                qindex = [_ for _, i in enumerate(cols) if i.startswith("Characteristics")
+                          or i.startswith("Factor Value") or i.startswith("Comment")]
+                for qi in qindex:
+                    val = row[qi]
+                    unit = None
+                    term_source = None
+                    term_access = None
+                    offset1 = qi+1
+                    offset2 = qi+2
+                    offset3 = qi+3
+                    if isinstance(val, str):
+                        if offset1 < len(cols) and offset2 < len(cols) and offset1 not in qindex and offset2 not in qindex:
+                            term_source = row[offset1]
+                            term_access = row[offset2]
+                        if term_source or term_access:
+                            val = OntologyAnnotation(term=val, term_source=ontology_source_map[str(term_source)], term_accession=str(term_access))
+                    elif isinstance(val, (int, float)) and offset1 < len(cols) and offset1 not in qindex:
+                        unit = row[offset1]
+                        if offset2 < len(cols) and offset3 < len(cols) and offset2 not in qindex and offset3 not in qindex:
+                            term_source = row[offset2]
+                            term_access = row[offset3]
+                        if unit and term_source or term_access:
+                            unit = OntologyAnnotation(term=unit, term_source=ontology_source_map[str(term_source)], term_accession=str(term_access))
+                    qcol = cols[qi]
+                    if qcol.startswith("Characteristics"):
+                        qualifiers.append(Characteristic(value=val, category=cols[qi][16:-1], unit=unit))
+                    elif qcol.startswith("Factor Value"):
+                        qualifiers.append(FactorValue(value=val, factor_name=cols[qi][16:-1], unit=unit))
+                    elif qcol.startswith("Comment"):
+                        qualifiers.append(Comment(value=val, name=cols[qi][8:-1]))
+                return qualifiers
+
+            cols = list(DF.columns)
+            objects = []
+            for _, row in DF.iterrows():
+                o = targetClass(row[cols[0]])
+                for qualifier in get_qualifiers(cols, row):
+                    if isinstance(qualifier, Characteristic):
+                        o.characteristics.append(qualifier)
+                    elif isinstance(qualifier, FactorValue):
+                        o.factor_values.append(qualifier)
+                    elif isinstance(qualifier, Comment):
+                        o.comments.append(qualifier)
+                objects.append(o)
+            return objects
+
+        # Build the Source objects using the column group beginning with Source Name
+        source_object_columns_hits = [item for item in column_map if item[0] == "Source Name"]
+        if len(source_object_columns_hits) == 1:  # Should only ever be 1 in a s_ file, otherwise skip
+            source_object_columms = source_object_columns_hits[0]
+            source_list = build_node_objects(DF[source_object_columms].drop_duplicates(), Source)
+            sources = dict(map(lambda x: (':'.join([source_object_columms[0], x.name]), x), source_list))
+
+        sample_object_columns_hits = [item for item in column_map if item[0].startswith("Sample Name")]
+        sample_list = []
+        for sample_object_columns in sample_object_columns_hits:  # Deal with multiple Sample Name columns
+            sample_list += build_node_objects(DF[sample_object_columns].drop_duplicates(), Sample)
+        if self.samples is not None:
+            sample_map = dict(map(lambda x: ('Sample Name:' + x.name, x), self.samples))
+            sample_keys = list(map(lambda x: 'Sample Name:' + x.name, sample_list))
+            for k in sample_keys:
+                samples[k] = sample_map[k]
+        else:
+            samples = dict(map(lambda x: ('Sample Name:' + x.name, x), sample_list))
+
+        extract_object_columns_hits = [item for item in column_map if item[0] == "Extract Name"]
+        if len(extract_object_columns_hits) == 1:  # Should only ever be 1 in an a_ file, otherwise skip
+            extract_object_columns = extract_object_columns_hits[0]
+            extract_list = build_node_objects(DF[extract_object_columns].drop_duplicates(), Extract)
+            other_material.update(dict(map(lambda x: (':'.join([extract_object_columns[0], x.name]), x), extract_list)))
+
+        lextract_object_columns_hits = [item for item in column_map if item[0] == "Labeled Extract Name"]
+        if len(lextract_object_columns_hits) == 1:  # Should only ever be 1 in an a_ file, otherwise skip
+            lextract_object_columns = lextract_object_columns_hits[0]
+            lextract_list = build_node_objects(DF[lextract_object_columns].drop_duplicates(), LabeledExtract)
+            other_material.update(dict(map(lambda x: (':'.join([lextract_object_columns[0], x.name]), x), lextract_list)))
+
+        data_object_columns_hits = [item for item in column_map if " File" in item[0]]
+        data_list = []
+        for data_object_columns in data_object_columns_hits:  # There may be many File columns
+            file_column_object_label = data_object_columns[0]
+            dataFileClass = None
+            if file_column_object_label == 'Raw Data File':
+                dataFileClass = RawDataFile
+            elif file_column_object_label == 'Raw Spectral Data File':
+                dataFileClass = RawSpectralDataFile
+            elif file_column_object_label == 'Derived Array Data File':
+                dataFileClass = DerivedArrayDataFile
+            elif file_column_object_label == 'Array Data File':
+                dataFileClass = ArrayDataFile
+            elif file_column_object_label == 'Derived Spectral Data File':
+                dataFileClass = DerivedSpectralDataFile
+            elif file_column_object_label == 'Protein Assignment File':
+                dataFileClass = ProteinAssignmentFile
+            elif file_column_object_label == 'Peptide Assignment File':
+                dataFileClass = PeptideAssignmentFile
+            elif file_column_object_label == 'Derived Array Data Matrix File':
+                dataFileClass = DerivedArrayDataMatrixFile
+            if dataFileClass:
+                data_list += build_node_objects(DF[data_object_columns].drop_duplicates(), dataFileClass)
             else:
-                samples = dict(map(lambda x: ('Sample Name:' + x, Sample(name=x)), DF['Sample Name'].drop_duplicates()))
-        except KeyError:
-            pass
-
-        try:
-            extracts = dict(map(lambda x: ('Extract Name:' + x, Material(name=x, type_='Extract Name')), DF['Extract Name'].drop_duplicates()))
-            other_material.update(extracts)
-        except KeyError:
-            pass
-
-        try:
-            if 'Labeled Extract Name' in DF.columns:
-                try:
-                    category = characteristic_categories['Label']
-                except KeyError:
-                    category = OntologyAnnotation(term='Label')
-                    characteristic_categories['Label'] = category
-                for _, lextract_name in DF['Labeled Extract Name'].drop_duplicates().iteritems():
-                    lextract = Material(name=lextract_name, type_='Labeled Extract Name')
-                    lextract.characteristics = [
-                        Characteristic(
-                            category=category,
-                            value=OntologyAnnotation(term=DF.loc[_, 'Label'])
-                        )
-                    ]
-                    other_material['Labeled Extract Name:' + lextract_name] = lextract
-        except KeyError:
-            pass
-
-        try:
-            raw_data_files = dict(map(lambda x: ('Raw Data File:' + x, DataFile(filename=x, label='Raw Data File')), DF['Raw Data File'].drop_duplicates()))
-            data.update(raw_data_files)
-        except KeyError:
-            pass
-
-        try:
-            raw_spectral_data_files = dict(map(lambda x: ('Raw Spectral Data File:' + x, DataFile(filename=x, label='Raw Spectral Data File')), DF['Raw Spectral Data File'].drop_duplicates()))
-            data.update(raw_spectral_data_files)
-        except KeyError:
-            pass
-
-        try:
-            derived_spectral_data_files = dict(map(lambda x: ('Derived Spectral Data File:' + x, DataFile(filename=x, label='Derived Spectral Data File')),
-                                                  DF['Derived Spectral Data File'].drop_duplicates()))
-            data.update(derived_spectral_data_files)
-        except KeyError:
-            pass
-
-        try:
-            derived_array_data_files = dict(map(lambda x: ('Derived Array Data File:' + x, DataFile(filename=x, label='Derived Array Data File')),
-                                                DF['Derived Array Data File'].drop_duplicates()))
-            data.update(derived_array_data_files)
-        except KeyError:
-            pass
-
-        try:
-            array_data_files = dict(map(lambda x: ('Array Data File:' + x, DataFile(filename=x, label='Array Data File')), DF['Array Data File'].drop_duplicates()))
-            data.update(array_data_files)
-        except KeyError:
-            pass
-
-        try:
-            protein_assignment_files = dict(map(lambda x: ('Protein Assignment File:' + x, DataFile(filename=x, label='Protein Assignment File')),
-                                                DF['Protein Assignment File'].drop_duplicates()))
-            data.update(protein_assignment_files)
-        except KeyError:
-            pass
-
-        try:
-            peptide_assignment_files = dict(map(lambda x: ('Peptide Assignment File:' + x, DataFile(filename=x, label='Peptide Assignment File')),
-                                                DF['Peptide Assignment File'].drop_duplicates()))
-            data.update(peptide_assignment_files)
-        except KeyError:
-            pass
-
-        try:
-            derived_array_data__matrix_files = \
-                dict(map(lambda x: ('Derived Array Data Matrix File:' + x, DataFile(filename=x, label='Derived Array Data Matrix File')),
-                         DF['Derived Array Data Matrix File'].drop_duplicates()))
-            data.update(derived_array_data__matrix_files)
-        except KeyError:
-            pass
-
-        try:
-            post_translational_modification_assignment_files = \
-                dict(map(lambda x: ('Post Translational Modification Assignment File:' + x, DataFile(filename=x, label='Post Translational Modification Assignment File')),
-                         DF['Post Translational Modification Assignment File'].drop_duplicates()))
-            data.update(post_translational_modification_assignment_files)
-        except KeyError:
-            pass
-
-        try:
-            acquisition_parameter_data_files = dict(map(lambda x: ('Acquisition Parameter Data File:' + x, DataFile(filename=x, label='Acquisition Parameter Data File')),
-                                                DF['Acquisition Parameter Data File'].drop_duplicates()))
-            data.update(acquisition_parameter_data_files)
-        except KeyError:
-            pass
-
-        try:
-            post_translational_modification_assignment_files = \
-                dict(map(lambda x: ('Free Induction Decay Data File:' + x, DataFile(filename=x, label='Free Induction Decay Data File')),
-                         DF['Free Induction Decay Data File'].drop_duplicates()))
-            data.update(post_translational_modification_assignment_files)
-        except KeyError:
-            pass
-
-        node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
-        # proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
-
-        object_column_map = get_object_column_map(DF.isatab_header, DF.columns)
-
-        for _cg, column_group in enumerate(object_column_map):
-            # for each object, parse column group
-
-            object_label = column_group[0]
-
-            if object_label in _LABELS_MATERIAL_NODES:
-
-                for _, object_series in DF[column_group].drop_duplicates().iterrows():
-                    node_name = object_series[object_label]
-                    node_key = ":".join([object_label, node_name])
-                    if object_label == "Source Name":
-                        material = sources[node_key]
-                    elif object_label == "Sample Name":
-                        material = samples[node_key]
-                    else:
-                        material = other_material[node_key]
-
-                    if material is not None:
-
-                        for charac_column in [c for c in column_group if c.startswith('Characteristics[')]:
-
-                            category_key = charac_column[16:-1]
-
-                            try:
-                                category = characteristic_categories[category_key]
-                            except KeyError:
-                                category = OntologyAnnotation(term=category_key)
-                                characteristic_categories[category_key] = category
-
-                            characteristic = Characteristic(category=category)
-
-                            v, u = get_value(charac_column, column_group, object_series, ontology_source_map, unit_categories)
-
-                            characteristic.value = v
-                            characteristic.unit = u
-
-                            material.characteristics.append(characteristic)
-
-                        if isinstance(material, Sample) and self.factors is not None:
-
-                            for fv_column in [c for c in column_group if c.startswith('Factor Value[')]:
-
-                                category_key = fv_column[13:-1]
-
-                                factor_hits = [f for f in self.factors if f.name == category_key]
-
-                                if len(factor_hits) == 1:
-                                    factor = factor_hits[0]
-                                else:
-                                    raise ValueError("Could not resolve Study Factor from Factor Value ",
-                                                     category_key)
-
-                                fv = FactorValue(factor_name=factor)
-
-                                v, u = get_value(fv_column, column_group, object_series, ontology_source_map,
-                                                 unit_categories)
-
-                                fv.value = v
-                                fv.unit = u
-
-                                material.factor_values.append(fv)
-
-            elif object_label.startswith('Protocol REF'):
-
-                def get_node_by_label_and_key(l, k):
-                    n = None
-                    lk = l + ':' + k
-                    if l == 'Source Name':
-                        n = sources[lk]
-                    if l == 'Sample Name':
-                        n = samples[lk]
-                    elif l in ('Extract Name', 'Labeled Extract Name'):
-                        n = other_material[lk]
-                    elif l.endswith('File'):
-                        n = data[lk]
-                    return n
-
-                object_label_index = list(DF.columns).index(object_label)
-
-                for _, object_series in DF.iterrows():  # don't drop duplicates
-
-                    protocol_ref = object_series[column_group[0]]
-
-                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _)
-
-                    try:
-                        process = processes[process_key]
-                    except KeyError:
-                        process = Process(executes_protocol=object_series[object_label])
-                        processes.update(dict([(process_key, process)]))
-
-                    output_node_index = find_gt(node_cols, object_label_index)
-
-                    if output_node_index > -1:
-
-                        output_node_label = DF.columns[output_node_index]
-                        output_node_value = object_series[output_node_label]
-
-                        node_key = output_node_value
-
-                        output_node = get_node_by_label_and_key(output_node_label, node_key)
-
-                        if output_node is not None:
-                            process.outputs.append(output_node)
-
-                    input_node_index = find_lt(node_cols, object_label_index)
-
-                    if input_node_index > -1:
-
-                        input_node_label = DF.columns[input_node_index]
-                        input_node_value = object_series[input_node_label]
-
-                        node_key = input_node_value
-
-                        input_node = get_node_by_label_and_key(input_node_label, node_key)
-
-                        if input_node is not None:
-                            process.inputs.append(input_node)
-
-                    name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
-
-                    if len(name_column_hits) == 1:
-                        process.name = str(object_series[name_column_hits[0]])
-
-                    for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
-
-                        category_key = pv_column[16:-1]
-
-                        try:
-                            protocol = protocol_map[protocol_ref]
-                        except KeyError:
-                            raise ValueError("Could not find protocol matching ", protocol_ref)
-
-                        param_hits = [p for p in protocol.parameters if p.parameter_name.term == category_key]
-
-                        if len(param_hits) == 1:
-                            category = param_hits[0]
-                        else:
-                            raise ValueError("Could not resolve Protocol parameter from Parameter Value ", category_key)
-
-                        parameter_value = ParameterValue(category=category)
-                        v, u = get_value(pv_column, column_group, object_series, ontology_source_map, unit_categories)
-
-                        parameter_value.value = v
-                        parameter_value.unit = u
-
-                        process.parameter_values.append(parameter_value)
-
-        # now go row by row pulling out processes and linking them accordingly
+                raise NotImplementedError  # if column heading not recognized with current File heading types
+
+        for datafile in data_list:
+            data[':'.join([datafile.label, datafile.filename])] = datafile
+
+        def build_process_object(cols, row, protocol_ref):
+
+            def get_process_qualifiers(cols, row):
+                qualifiers = []
+                qindex = [_ for _, i in enumerate(cols) if i.endswith(" Name") or i.startswith("Parameter Value") or
+                          i.startswith("Comment")]
+                nindex = [_ for _, i in enumerate(cols) if i.endswith(" File") or i.startswith("Protocol REF") or
+                          i.endswith(" Name")]
+                ignore_index = nindex + qindex
+                for qi in qindex:
+                    val = row[qi]
+                    unit = None
+                    term_source = None
+                    term_access = None
+                    offset1 = qi + 1
+                    offset2 = qi + 2
+                    offset3 = qi + 3
+                    if isinstance(val, str):
+                        if offset1 < len(cols) and offset2 < len(cols) and offset1 not in ignore_index and offset2 not in ignore_index:
+                            term_source = row[offset1]
+                            term_access = row[offset2]
+                        if term_source or term_access:
+                            val = OntologyAnnotation(term=val, term_source=ontology_source_map[str(term_source)],
+                                                     term_accession=str(term_access))
+                    elif isinstance(val, (int, float)) and offset1 < len(cols) and offset1 not in qindex:
+                        unit = row[offset1]
+                        if offset2 < len(cols) and offset3 < len(cols) and offset2 not in ignore_index and offset3 not in ignore_index:
+                            term_source = row[offset2]
+                            term_access = row[offset3]
+                        if unit and term_source or term_access:
+                            unit = OntologyAnnotation(term=unit, term_source=ontology_source_map[str(term_source)],
+                                                      term_accession=str(term_access))
+                    qcol = cols[qi]
+                    if qcol.startswith(" Name"):
+                        qualifiers.append(Characteristic(value=val, category=cols[qi][16:-1], unit=unit))
+                    elif qcol.startswith("Parameter Value"):
+                        qualifiers.append(FactorValue(value=val, factor_name=cols[qi][16:-1], unit=unit))
+                    elif qcol.startswith("Comment"):
+                        qualifiers.append(Comment(value=val, name=cols[qi][8:-1]))
+                return qualifiers
+
+            o = Process(executes_protocol=protocol_map[protocol_ref])
+            for qualifier in get_process_qualifiers(cols, row):
+                if isinstance(qualifier, ParameterValue):
+                    o.parameter_values.append(qualifier)
+                elif isinstance(qualifier, Comment):
+                    o.comments.append(qualifier)
+            return o
 
         for _, object_series in DF.iterrows():  # don't drop duplicates
-
-            process_key_sequence = list()
-
-            for _cg, column_group in enumerate(object_column_map):
-
+            process_key_sequence = []
+            node_key_sequence = []
+            for _cg, column_group in enumerate(column_map):
                 # for each object, parse column group
-
                 object_label = column_group[0]
-
                 if object_label.startswith('Protocol REF'):
-
-                    protocol_ref = object_series[column_group[0]]
-
-                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _)
-
+                    protocol_ref = object_series[object_label]
+                    o = build_process_object(DF.columns, object_series, protocol_ref)
+                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
+                    processes[process_key] = o
                     process_key_sequence.append(process_key)
-
-            # print('key sequence = ', process_key_sequence)
-
+                    node_key_sequence.append(process_key)
+                else:
+                    node_key_sequence.append(':'.join([object_label, object_series[object_label]]))
             # Link the processes in each sequence
             for pair in pairwise(process_key_sequence):  # TODO: Make split/pool model with multi prev/next_process
-
                 l = processes[pair[0]]  # get process on left of pair
                 r = processes[pair[1]]  # get process on right of pair
-
                 l.next_process = r
                 r.prev_process = l
+
+            for pair in pairwise(node_key_sequence):
+                lkey = pair[0]
+                rkey = pair[1]
+                # add all inputs
+                process_keys = processes.keys()
+                if rkey in process_keys:
+                    if 'Source' in lkey:
+                        processes[rkey].inputs.append(sources[lkey])
+                    elif 'Sample' in lkey:
+                        processes[rkey].inputs.append(samples[lkey])
+                    elif 'Extract' in lkey:
+                        processes[rkey].inputs.append(other_material[lkey])
+                    elif ' File' in lkey:
+                        processes[rkey].inputs.append(data[lkey])
+                # add all outputs
+                elif lkey in process_keys:
+                    if 'Source' in rkey:
+                        processes[lkey].outputs.append(sources[rkey])
+                    elif 'Sample' in rkey:
+                        processes[lkey].outputs.append(samples[rkey])
+                    elif 'Extract' in rkey:
+                        processes[lkey].outputs.append(other_material[rkey])
+                    elif ' File' in rkey:
+                        processes[lkey].outputs.append(data[rkey])
+
+            print(sources)
+            print(samples)
+            print(other_material)
+            print(data)
+            print(processes)
 
         return sources, samples, other_material, data, processes, characteristic_categories, unit_categories
 

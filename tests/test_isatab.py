@@ -6,7 +6,7 @@ from isatools.model.v1 import *
 from tests import utils
 import tempfile
 from isatools import isatab
-from isatools.isatab2 import ProcessSequenceFactory
+from isatools.isatab import ProcessSequenceFactory
 from io import StringIO
 import pandas as pd
 
@@ -766,98 +766,7 @@ class UnitTestIsaTabLoad(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
 
-    i_content = """ONTOLOGY SOURCE REFERENCE
-Term Source Name
-Term Source File
-Term Source Version
-Term Source Description
-INVESTIGATION
-Investigation Identifier
-Investigation Title
-Investigation Description
-Investigation Submission Date
-Investigation Public Release Date
-INVESTIGATION PUBLICATIONS
-Investigation PubMed ID
-Investigation Publication DOI
-Investigation Publication Author List
-Investigation Publication Title
-Investigation Publication Status
-Investigation Publication Status Term Accession Number
-Investigation Publication Status Term Source REF
-INVESTIGATION CONTACTS
-Investigation Person Last Name
-Investigation Person First Name
-Investigation Person Mid Initials
-Investigation Person Email
-Investigation Person Phone
-Investigation Person Fax
-Investigation Person Address
-Investigation Person Affiliation
-Investigation Person Roles
-Investigation Person Roles Term Accession Number
-Investigation Person Roles Term Source REF
-STUDY
-Study Identifier
-Study Title
-Study Description
-Study Submission Date
-Study Public Release Date
-Study File Name	s_test.txt
-STUDY DESIGN DESCRIPTORS
-Study Design Type
-Study Design Type Term Accession Number
-Study Design Type Term Source REF
-STUDY PUBLICATIONS
-Study PubMed ID
-Study Publication DOI
-Study Publication Author List
-Study Publication Title
-Study Publication Status
-Study Publication Status Term Accession Number
-Study Publication Status Term Source REF
-STUDY FACTORS
-Study Factor Name
-Study Factor Type
-Study Factor Type Term Accession Number
-Study Factor Type Term Source REF
-STUDY ASSAYS
-Study Assay File Name	a_test.txt
-Study Assay Measurement Type
-Study Assay Measurement Type Term Accession Number
-Study Assay Measurement Type Term Source REF
-Study Assay Technology Type
-Study Assay Technology Type Term Accession Number
-Study Assay Technology Type Term Source REF
-Study Assay Technology Platform
-STUDY PROTOCOLS
-Study Protocol Name	sample collection
-Study Protocol Type
-Study Protocol Type Term Accession Number
-Study Protocol Type Term Source REF
-Study Protocol Description
-Study Protocol URI
-Study Protocol Version
-Study Protocol Parameters Name
-Study Protocol Parameters Name Term Accession Number
-Study Protocol Parameters Name Term Source REF
-Study Protocol Components Name
-Study Protocol Components Type
-Study Protocol Components Type Term Accession Number
-Study Protocol Components Type Term Source REF
-STUDY CONTACTS
-Study Person Last Name
-Study Person First Name
-Study Person Mid Initials
-Study Person Email
-Study Person Phone
-Study Person Fax
-Study Person Address
-Study Person Affiliation
-Study Person Roles
-Study Person Roles Term Accession Number
-Study Person Roles Term Source REF"""
-
+    #  Source1 -> Process1 -> Sample1
     def test_source_protocol_ref_sample(self):
         factory = ProcessSequenceFactory(study_protocols=[Protocol(name="sample collection")])
         table_to_load = """Source Name	Protocol REF	Sample Name
@@ -870,6 +779,8 @@ source1	sample collection	sample1"""
         self.assertEqual(len(d), 0)
         self.assertEqual(len(pr), 1)
 
+    #  Source1 -> Process1 -> Sample1
+    #  Source2 -> Process2 -> Sample2
     def test_source_protocol_ref_sample_x2(self):
         factory = ProcessSequenceFactory(study_protocols=[Protocol(name="sample collection")])
         table_to_load = """Source Name	Protocol REF	Sample Name
@@ -883,6 +794,8 @@ source2	sample collection	sample2"""
         self.assertEqual(len(d), 0)
         self.assertEqual(len(pr), 2)
 
+    #  Source1 -> Process1 -> Sample1
+    #                      -> Sample2
     def test_source_protocol_ref_split_sample(self):
         factory = ProcessSequenceFactory(study_protocols=[Protocol(name="sample collection")])
         table_to_load = """Source Name	Protocol REF	Sample Name
@@ -896,6 +809,8 @@ source1	sample collection	sample2"""
         self.assertEqual(len(d), 0)
         self.assertEqual(len(pr), 1)
 
+    #  Source1 -> Process1 -> Sample1
+    #  Source2 ->
     def test_source_protocol_ref_pool_sample(self):
         factory = ProcessSequenceFactory(study_protocols=[Protocol(name="sample collection")])
         table_to_load = """Source Name	Protocol REF	Sample Name
@@ -909,6 +824,8 @@ source2	sample collection	sample1"""
         self.assertEqual(len(d), 0)
         self.assertEqual(len(pr), 1)
 
+    #  Sample1 -> Process1 -> Extract1 -> Process2 -> DataFile1
+    #                      -> Extract2 -> Process3 -> DataFile2
     def test_sample_protocol_ref_split_extract_protocol_ref_data(self):
         factory = ProcessSequenceFactory(
             study_samples=[Sample(name="sample1")],
@@ -923,3 +840,20 @@ sample1	extraction	e2	scanning	d2"""
         self.assertEqual(len(om), 2)
         self.assertEqual(len(d), 2)
         self.assertEqual(len(pr), 3)
+
+    #  Sample1 -> Process1 -> Process3 -> DataFile1
+    #  Sample2 -> Process2 -> Process4 ->
+    def test_sample_protocol_ref_protocol_ref_data(self):
+        factory = ProcessSequenceFactory(
+            study_samples=[Sample(name="sample1"), Sample(name="sample2")],
+            study_protocols=[Protocol(name="extraction"), Protocol(name="scanning")])
+        table_to_load = """Sample Name	Protocol REF	Protocol REF	Assay Name	Raw Data File
+sample1	extraction	scanning	a1	d1
+sample2	extraction	scanning	a2	d1"""
+        DF = pd.read_csv(StringIO(table_to_load), sep='\t')
+        so, sa, om, d, pr, _, __ = factory.create_from_df(DF)
+        self.assertEqual(len(so), 0)
+        self.assertEqual(len(sa), 2)
+        self.assertEqual(len(om), 0)
+        self.assertEqual(len(d), 1)
+        self.assertEqual(len(pr), 4)

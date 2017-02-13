@@ -361,6 +361,7 @@ def load(FP):  # from DF of investigation file
 def process_keygen(protocol_ref, column_group, object_label_index, all_columns, series, series_index, DF):
     process_key = protocol_ref
     node_cols = [i for i, c in enumerate(all_columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
+    protocol_ref_cols = [i for i, c in enumerate(all_columns) if c.startswith("Protocol REF")]
     input_node_value = ''
     output_node_value = ''
     output_node_index = find_gt(node_cols, object_label_index)
@@ -381,10 +382,15 @@ def process_keygen(protocol_ref, column_group, object_label_index, all_columns, 
     else:
         node_key = input_node_value
 
+    if input_node_index > find_lt(protocol_ref_cols, object_label_index):
+        node_key = input_node_value
+    if output_node_index < find_gt(protocol_ref_cols, object_label_index):
+        node_key = output_node_value
+
     if process_key == protocol_ref:
         process_key += '-' + str(series_index)
 
-    name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
+    name_column_hits = [n for n in column_group if n.endswith(" Name")]
     if len(name_column_hits) == 1:
         process_key = series[name_column_hits[0]]
     else:
@@ -581,7 +587,7 @@ class ProcessSequenceFactory:
         else:
             protocol_map = {}
         if self.factors is not None:
-            protocol_map = dict(map(lambda x: (x.name, x), self.factors))
+            factor_map = dict(map(lambda x: (x.name, x), self.factors))
         else:
             factor_map = {}
 
