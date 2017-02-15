@@ -2752,14 +2752,14 @@ def batch_validate(tab_dir_list):
     return batch_report
 
 
-def dumps(isa_obj):
+def dumps(isa_obj, skip_dump_tables=False):
     import tempfile
     import shutil
     tmp = None
     output = str()
     try:
         tmp = tempfile.mkdtemp()
-        dump(isa_obj=isa_obj, output_path=tmp)
+        dump(isa_obj=isa_obj, output_path=tmp, skip_dump_tables=skip_dump_tables)
         with open(os.path.join(tmp, 'i_investigation.txt'), 'r') as i_fp:
             output += os.path.join(tmp, 'i_investigation.txt') + '\n'
             output += i_fp.read()
