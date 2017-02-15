@@ -36,14 +36,10 @@ def detect_graph_process_pooling(G):
     return report
 
 
-def detect_isatab_process_pooling(tab_path):
-    from isatools.convert import isatab2json
-    from isatools import isajson
-    from io import StringIO
-    import json
-    report = list()
-    J = isatab2json.convert(tab_path, validate_first=False, use_new_parser=True)
-    ISA = isajson.load(StringIO(json.dumps(J)))
+def detect_isatab_process_pooling(fp):
+    from isatools import isatab
+    report = []
+    ISA = isatab.load(fp)
     for study in ISA.studies:
         print("Checking {}".format(study.filename))
         pooling_list = detect_graph_process_pooling(study.graph)

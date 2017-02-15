@@ -161,56 +161,56 @@ class TestIsaTab2JsonIdentifierName(unittest.TestCase):
 
     def test_isatab2json_convert_charac_param_factor(self):
         test_case = 'TEST-ISA-charac-param-factor'
-        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), self.identifier_type, validate_first=False)
+        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), validate_first=False)
         with open(os.path.join(self._json_data_dir, test_case + '.json')) as expected_file:
             expected_json = json.load(expected_file)
             self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2json_convert_repeated_measure(self):
         test_case = 'TEST-ISA-repeated-measure'
-        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), self.identifier_type, validate_first=False)
+        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), validate_first=False)
         with open(os.path.join(self._json_data_dir, test_case + '.json')) as expected_file:
             expected_json = json.load(expected_file)
             self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2json_convert_sample_pool(self):
         test_case = 'TEST-ISA-sample-pool'
-        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), self.identifier_type, validate_first=False)
+        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), validate_first=False)
         with open(os.path.join(self._json_data_dir, test_case + '.json')) as expected_file:
             expected_json = json.load(expected_file)
             self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2json_convert_sample_pool_with_error(self):
         test_case = 'TEST-ISA-sample-pool-with-error'
-        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), self.identifier_type, validate_first=False)
+        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), validate_first=False)
         with open(os.path.join(self._json_data_dir, test_case + '.json')) as expected_file:
             expected_json = json.load(expected_file)
             self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2json_convert_source_split(self):
         test_case = 'TEST-ISA-source-split'
-        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), self.identifier_type, validate_first=False)
+        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), validate_first=False)
         with open(os.path.join(self._json_data_dir, test_case + '.json')) as expected_file:
             expected_json = json.load(expected_file)
             self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2json_convert_source_split_with_error(self):
         test_case = 'TEST-ISA-source-split-with-error'
-        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), self.identifier_type, validate_first=False)
+        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), validate_first=False)
         with open(os.path.join(self._json_data_dir, test_case + '.json')) as expected_file:
             expected_json = json.load(expected_file)
             self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2json_convert_bii_s_3(self):
         test_case = 'BII-S-3'
-        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), self.identifier_type, validate_first=False)
+        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), validate_first=False)
         with open(os.path.join(self._json_data_dir, test_case, test_case + '.json')) as expected_file:
             expected_json = json.load(expected_file)
             self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
 
     def test_isatab2json_convert_bii_s_7(self):
         test_case = 'BII-S-7'
-        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), self.identifier_type, validate_first=False)
+        actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case), validate_first=False)
         with open(os.path.join(self._json_data_dir, test_case, test_case + '.json')) as expected_file:
             expected_json = json.load(expected_file)
             self.assertTrue(utils.assert_json_equal(expected_json, actual_json))
