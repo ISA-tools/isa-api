@@ -36,6 +36,22 @@ class TestSimpleIsaTabExample(unittest.TestCase):
         self.assertIn("Sample Name	Protocol REF	Extract Name	Protocol REF", out)
         self.assertIn("sample_material-0	extraction	extract-0	sequencing	sequenced-data-0", out)
 
+    def test_modify_i_file_example(self):
+        from isatools.examples import modifyInvestigationOnly
+        sys.stdout = StringIO()
+        with open(os.path.join(utils.TAB_DATA_DIR, 'empty', 'i_investigation.txt')) as fp:
+            out = modifyInvestigationOnly.modify_investigation(fp)
+            self.assertIn("i_investigation.txt", out)
+            self.assertIn("s_study.txt", out)
+            self.assertIn("a_assay.txt", out)
+            self.assertIn("Investigation Title	My Simple ISA Investigation", out)
+            self.assertIn("Study Protocol Name	sample collection	extraction	sequencing", out)
+            self.assertIn("Study Protocol Type	sample collection	material extraction	material sequencing", out)
+            self.assertNotIn("Source Name	Protocol REF	Sample Name", out)
+            self.assertNotIn("source_material	sample collection	sample_material-0", out)
+            self.assertNotIn("Sample Name	Protocol REF	Extract Name	Protocol REF", out)
+            self.assertNotIn("sample_material-0	extraction	extract-0	sequencing	sequenced-data-0", out)
+
     def test_validate_ISAtab_example_wrong_args(self):
         from isatools.examples import validateISAtab
         with self.assertRaises(SystemExit) as cm:
