@@ -84,18 +84,10 @@ class Commentable(object):
         comments (list, NoneType): Comments associated with the implementing ISA class (all ISA classes).
     """
     def __init__(self, comments=None):
-        self.comments = comments
-
-    @property
-    def comments(self):
-        return self.__comments
-
-    @comments.setter
-    def comments(self, comments):
-        if comments is not None and not isinstance(comments, list):
-            raise AttributeError("comments must be an instance of list or None")
+        if comments is None:
+            self.comments = []
         else:
-            self.__comments = comments
+            self.comments = comments
 
 
 class Investigation(Commentable):
