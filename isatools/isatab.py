@@ -413,15 +413,15 @@ def _get_start_end_nodes(G):
     end_nodes = list()
     for process in [n for n in G.nodes() if isinstance(n, Process)]:
         if process.prev_process is None:
-            for material in [m for m in process.inputs if not isinstance(m, DataFile)]:
-                start_nodes.append(material)
-        outputs_no_data = [m for m in process.outputs if not isinstance(m, DataFile)]
-        if process.next_process is None:
-            if len(outputs_no_data) == 0:
-                end_nodes.append(process)
+            if len(process.inputs) > 0:
+                start_nodes.extend(process.inputs)
             else:
-                for material in outputs_no_data:
-                    end_nodes.append(material)
+                start_nodes.append(process)
+        if process.next_process is None:
+            if len(process.outputs) > 0:
+                end_nodes.extend(process.outputs)
+            else:
+                end_nodes.append(process)
     return start_nodes, end_nodes
 
 
@@ -534,6 +534,7 @@ def write_study_table_files(inv_obj, output_dir):
 
         start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
         paths = _all_end_to_end_paths(study_obj.graph, start_nodes, end_nodes)
+        sample_in_path_count = 0
         for node in _longest_path_and_attrs(paths):
             if isinstance(node, Source):
                 olabel = "Source Name"
@@ -553,13 +554,13 @@ def write_study_table_files(inv_obj, output_dir):
                     protrefcount += 1
 
             elif isinstance(node, Sample):
-                olabel = "Sample Name"
+                olabel = "Sample Name.{}".format(sample_in_path_count)
                 columns.append(olabel)
+                sample_in_path_count += 1
                 columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
                 columns += flatten(map(lambda x: get_fv_columns(olabel, x), node.factor_values))
 
         omap = get_object_column_map(columns, columns)
-
         # load into dictionary
         df_dict = dict(map(lambda k: (k, []), flatten(omap)))
 
@@ -572,8 +573,8 @@ def write_study_table_files(inv_obj, output_dir):
             for k in df_dict.keys():  # add a row per path
                 df_dict[k].extend([""])
 
+            sample_in_path_count = 0
             for node in path:
-
                 if isinstance(node, Source):
                     olabel = "Source Name"
                     df_dict[olabel][-1] = node.name
@@ -593,7 +594,8 @@ def write_study_table_files(inv_obj, output_dir):
                         write_value_columns(df_dict, pvlabel, pv)
 
                 elif isinstance(node, Sample):
-                    olabel = "Sample Name"
+                    olabel = "Sample Name.{}".format(sample_in_path_count)
+                    sample_in_path_count += 1
                     df_dict[olabel][-1] = node.name
                     for c in node.characteristics:
                         clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
@@ -602,7 +604,6 @@ def write_study_table_files(inv_obj, output_dir):
                         fvlabel = "{0}.Factor Value[{1}]".format(olabel, fv.factor_name.name)
                         write_value_columns(df_dict, fvlabel, fv)
         pbar.finish()
-
         DF = pd.DataFrame(columns=columns)
         DF = DF.from_dict(data=df_dict)
         DF = DF[columns]  # reorder columns
@@ -630,6 +631,8 @@ def write_study_table_files(inv_obj, output_dir):
                 columns[i] = "Date"
             elif col.endswith("Performer"):
                 columns[i] = "Performer"
+            elif col.startswith("Sample Name."):
+                columns[i] = "Sample Name"
 
         print("Rendered {} paths".format(len(DF.index)))
         DF_no_dups = DF.drop_duplicates()
@@ -703,17 +706,14 @@ def write_assay_table_files(inv_obj, output_dir):
                         protnames[node.executes_protocol.name] = protrefcount
                         protrefcount += 1
 
-                    for output in [x for x in node.outputs if isinstance(x, DataFile)]:
-                        columns.append(output.label)
-                        columns += flatten(map(lambda x: get_comment_column(output.label, x), output.comments))
-
                 elif isinstance(node, Material):
                     olabel = node.type
                     columns.append(olabel)
                     columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
 
                 elif isinstance(node, DataFile):
-                    pass  # handled in process
+                    columns.append(node.label)
+                    columns += flatten(map(lambda x: get_comment_column(node.label, x), node.comments))
 
             omap = get_object_column_map(columns, columns)
 
@@ -764,12 +764,6 @@ def write_assay_table_files(inv_obj, output_dir):
                         elif node.executes_protocol.protocol_type.term == "nucleic acid hybridization":
                             df_dict["Hybridization Assay Name"][-1] = node.name
                             df_dict["Array Design REF"][-1] = node.array_design_ref
-                        for output in [x for x in node.outputs if isinstance(x, DataFile)]:
-                            olabel = output.label
-                            df_dict[olabel][-1] = output.filename
-                            for co in output.comments:
-                                colabel = "{0}.Comment[{1}]".format(olabel, co.name)
-                                df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
@@ -789,7 +783,11 @@ def write_assay_table_files(inv_obj, output_dir):
                             write_value_columns(df_dict, clabel, c)
 
                     elif isinstance(node, DataFile):
-                        pass  # handled in process
+                        olabel = node.label
+                        df_dict[olabel][-1] = node.filename
+                        for co in node.comments:
+                            colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                            df_dict[colabel][-1] = co.value
 
             pbar.finish()
 
@@ -3174,17 +3172,11 @@ def find_gt(a, x):
 
 def preprocess(DF):
     """Check headers, and insert Protocol REF if needed"""
-
     columns = DF.columns
-
     process_node_name_indices = [x for x, y in enumerate(columns) if y in _LABELS_ASSAY_NODES]
-
     missing_process_indices = list()
-
     protocol_ref_cols = [x for x in columns if x.startswith('Protocol REF')]
-
     num_protocol_refs = len(protocol_ref_cols)
-
     all_cols_indicies = [i for i, c in enumerate(columns) if c in
                          _LABELS_MATERIAL_NODES +
                          _LABELS_DATA_NODES +
@@ -3200,19 +3192,20 @@ def preprocess(DF):
     offset = 0
 
     for i in reversed(missing_process_indices):
-
         DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown')
-
         DF.isatab_header.insert(i, 'Protocol REF')
-
         offset += 1
 
     return DF
 
 
 def get_object_column_map(isatab_header, df_columns):
-    object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
-                    + ['Protocol REF']]
+    if set(isatab_header) == set(df_columns):
+        object_index = [i for i, x in enumerate(df_columns) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
+                        or 'Protocol REF' in x]
+    else:
+        object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
+                        + ['Protocol REF']]
 
     # group headers regarding objects delimited by object_index by slicing up the header list
     object_column_map = []
@@ -3383,7 +3376,10 @@ class ProcessSequenceFactory:
         node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
         # proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
 
-        object_column_map = get_object_column_map(DF.isatab_header, DF.columns)
+        try:
+            object_column_map = get_object_column_map(DF.isatab_header, DF.columns)
+        except AttributeError:
+            object_column_map = get_object_column_map(DF.columns, DF.columns)
 
         for _cg, column_group in enumerate(object_column_map):
             # for each object, parse column group

@@ -1929,7 +1929,7 @@ def mw2isa_convert(**kwargs):
             # else:
             #  print("doh, something went wrong while writing investigation but don't know why!: from main method")
 
-            # ATTEMTPING TO DOWNLOAD THE CORRESPONDING DATA ARCHIVE FROM MW ANONYMOUS FTP:
+            # ATTEMPTING TO DOWNLOAD THE CORRESPONDING DATA ARCHIVE FROM MW ANONYMOUS FTP:
             if dl_option == 'yes':
                 get_archived_file(studyid)
             elif dl_option == 'no':

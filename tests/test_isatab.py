@@ -6,6 +6,9 @@ from isatools.model.v1 import *
 from tests import utils
 import tempfile
 from isatools import isatab
+from isatools.isatab import ProcessSequenceFactory
+from io import StringIO
+import pandas as pd
 
 
 def setUpModule():
@@ -350,3 +353,487 @@ class TestIsaTabLoad(unittest.TestCase):
     #         ISA = isatab.load(fp)
     #         print(isatab.dumps(ISA))
 
+
+class UnitTestIsaTabDump(unittest.TestCase):
+    def setUp(self):
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
+
+    def test_source_protocol_ref_sample(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection')]
+        )
+        source1 = Source(name='source1')
+        sample1 = Sample(name='sample1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Sample Name
+source1	sample collection	sample1"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_sample_x2(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection')]
+        )
+        source1 = Source(name='source1')
+        sample1 = Sample(name='sample1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1]
+        source2 = Source(name='source2')
+        sample2 = Sample(name='sample2')
+        sample_collection_process2 = Process(executes_protocol=s.protocols[0])
+        sample_collection_process2.inputs = [source2]
+        sample_collection_process2.outputs = [sample2]
+        s.process_sequence = [sample_collection_process, sample_collection_process2]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Sample Name
+source1	sample collection	sample1
+source2	sample collection	sample2"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_sample_split(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection')]
+        )
+        source1 = Source(name='source1')
+        sample1 = Sample(name='sample1')
+        sample2 = Sample(name='sample2')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1, sample2]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Sample Name
+source1	sample collection	sample1
+source1	sample collection	sample2"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_sample_pool(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection')]
+        )
+        source1 = Source(name='source1')
+        source2 = Source(name='source2')
+        sample1 = Sample(name='sample1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.inputs = [source1, source2]
+        sample_collection_process.outputs = [sample1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Sample Name
+source1	sample collection	sample1
+source2	sample collection	sample1"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_sample_with_characteristics(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection')]
+        )
+        reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
+        organism_part_category = OntologyAnnotation(term='organism part')
+        source1 = Source(name='source1')
+        source1.characteristics = [Characteristic(category=reference_descriptor_category, value='not applicable')]
+        sample1 = Sample(name='sample1')
+        sample1.characteristics = [
+            Characteristic(category=organism_part_category, value=OntologyAnnotation(term='liver'))]
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Source Name	Characteristics[reference descriptor]	Protocol REF	Sample Name	Characteristics[organism part]
+source1	not applicable	sample collection	sample1	liver"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_sample_with_parameter_values(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[
+                Protocol(name='sample collection',
+                         parameters=[ProtocolParameter(parameter_name=OntologyAnnotation(term='temperature'))])
+            ]
+        )
+        source1 = Source(name='source1')
+        sample1 = Sample(name='sample1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.parameter_values = [ParameterValue(category=s.protocols[0].parameters[0], value=10)]
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Parameter Value[temperature]	Sample Name
+source1	sample collection	10	sample1"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_sample_with_factor_values(self):
+        i = Investigation()
+        s = Study(filename='s_test.txt',
+                  protocols=[Protocol(name='sample collection')],
+                  factors=[StudyFactor(name='study group')])
+        source1 = Source(name='source1')
+        sample1 = Sample(name='sample1')
+        sample1.factor_values = [FactorValue(factor_name=s.factors[0], value="Study group 1")]
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Sample Name	Factor Value[study group]
+source1	sample collection	sample1	Study group 1"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref(self):
+        i = Investigation()
+        s = Study(filename='s_test.txt',
+                  protocols=[Protocol(name='sample collection')])
+        source1 = Source(name='source1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.inputs = [source1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF
+source1	sample collection"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_protocol_ref_sample(self):
+        i = Investigation()
+        s = Study(filename='s_test.txt',
+                  protocols=[Protocol(name='sample collection')])
+        sample1 = Sample(name='sample1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        sample_collection_process.outputs = [sample1]
+        s.process_sequence = [sample_collection_process]
+        i.studies = [s]
+        expected = """Protocol REF	Sample Name
+sample collection	sample1"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_protocol_ref_sample(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection'), Protocol(name='aliquoting')]
+        )
+        source1 = Source(name='source1')
+        aliquot1 = Sample(name='aliquot1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        aliquoting_process = Process(executes_protocol=s.protocols[1])
+        sample_collection_process.inputs = [source1]
+        aliquoting_process.outputs = [aliquot1]
+        plink(sample_collection_process, aliquoting_process)
+        s.process_sequence = [sample_collection_process, aliquoting_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Protocol REF	Sample Name
+source1	sample collection	aliquoting	aliquot1"""
+        print(isatab.dumps(i))
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_source_protocol_ref_sample_protocol_ref_sample(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection'), Protocol(name='aliquoting')]
+        )
+        source1 = Source(name='source1')
+        sample1 = Sample(name='sample1')
+        aliquot1 = Sample(name='aliquot1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        aliquoting_process = Process(executes_protocol=s.protocols[1])
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1]
+        aliquoting_process.inputs = [sample1]
+        aliquoting_process.outputs = [aliquot1]
+        plink(sample_collection_process, aliquoting_process)
+        s.process_sequence = [sample_collection_process, aliquoting_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Sample Name	Protocol REF	Sample Name
+source1	sample collection	sample1	aliquoting	aliquot1"""
+        print(isatab.dumps(i))
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_protocol_ref_material_protocol_ref_data(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+        )
+        sample1 = Sample(name='sample1')
+        extract1 = Material(name='extract1', type_='Extract Name')
+        data1 = DataFile(filename='datafile.raw', label='Raw Data File')
+        extraction_process = Process(executes_protocol=s.protocols[0])
+        scanning_process = Process(executes_protocol=s.protocols[1])
+        extraction_process.inputs = [sample1]
+        extraction_process.outputs = [extract1]
+        scanning_process.inputs = [extract1]
+        scanning_process.outputs = [data1]
+        plink(extraction_process, scanning_process)
+        a = Assay(filename='a_test.txt')
+        a.process_sequence = [extraction_process, scanning_process]
+        s.assays = [a]
+        i.studies = [s]
+        expected = """Sample Name	Protocol REF	Extract Name	Protocol REF	Raw Data File
+sample1	extraction	extract1	scanning	datafile.raw"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_protocol_ref_material_protocol_ref_data_x2(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+        )
+        sample1 = Sample(name='sample1')
+        extract1 = Material(name='extract1', type_='Extract Name')
+        data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
+        extraction_process1 = Process(executes_protocol=s.protocols[0])
+        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        extraction_process1.inputs = [sample1]
+        extraction_process1.outputs = [extract1]
+        scanning_process1.inputs = [extract1]
+        scanning_process1.outputs = [data1]
+        plink(extraction_process1, scanning_process1)
+
+        sample2 = Sample(name='sample2')
+        extract2 = Material(name='extract2', type_='Extract Name')
+        data2 = DataFile(filename='datafile2.raw', label='Raw Data File')
+        extraction_process2 = Process(executes_protocol=s.protocols[0])
+        scanning_process2 = Process(executes_protocol=s.protocols[1])
+        extraction_process2.inputs = [sample2]
+        extraction_process2.outputs = [extract2]
+        scanning_process2.inputs = [extract2]
+        scanning_process2.outputs = [data2]
+        plink(extraction_process2, scanning_process2)
+
+        a = Assay(filename='a_test.txt')
+        a.process_sequence = [scanning_process1, extraction_process1, scanning_process2, extraction_process2]
+        s.assays = [a]
+        i.studies = [s]
+        expected = """Sample Name	Protocol REF	Extract Name	Protocol REF	Raw Data File
+sample1	extraction	extract1	scanning	datafile1.raw
+sample2	extraction	extract2	scanning	datafile2.raw"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_split_protocol_ref_material_protocol_ref_data(self):  # FIXME
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+        )
+        sample1 = Sample(name='sample1')
+        extract1 = Material(name='extract1', type_='Extract Name')
+        extract2 = Material(name='extract2', type_='Extract Name')
+        data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
+        data2 = DataFile(filename='datafile2.raw', label='Raw Data File')
+
+        extraction_process1 = Process(executes_protocol=s.protocols[0])
+        extraction_process1.inputs = [sample1]
+        extraction_process1.outputs = [extract1]
+
+        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        scanning_process1.inputs = [extract1]
+        scanning_process1.outputs = [data1]
+        scanning_process1.prev_process = extraction_process1
+
+        scanning_process2 = Process(executes_protocol=s.protocols[1])
+        scanning_process2.inputs = [extract2]
+        scanning_process2.outputs = [data2]
+        plink(extraction_process1, scanning_process1)   # FIXME: Need to deal with multiple prev_process
+        plink(extraction_process1, scanning_process2)
+
+        a = Assay(filename='a_test.txt')
+        a.process_sequence = [scanning_process1, extraction_process1, scanning_process2]
+        s.assays = [a]
+        i.studies = [s]
+        expected = """Sample Name	Protocol REF	Extract Name	Protocol REF	Raw Data File
+sample1	extraction	extract1	scanning	datafile1.raw
+sample1	extraction	extract2	scanning	datafile2.raw"""
+        print(isatab.dumps(i))
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_protocol_ref_material_protocol_split_ref_data(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+        )
+        sample1 = Sample(name='sample1')
+        extract1 = Material(name='extract1', type_='Extract Name')
+        data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
+        data2 = DataFile(filename='datafile2.raw', label='Raw Data File')
+
+        extraction_process1 = Process(executes_protocol=s.protocols[0])
+        extraction_process1.inputs = [sample1]
+        extraction_process1.outputs = [extract1]
+
+        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        scanning_process1.inputs = [extract1]
+        scanning_process1.outputs = [data1, data2]
+
+        plink(extraction_process1, scanning_process1)
+
+        a = Assay(filename='a_test.txt')
+        a.process_sequence = [extraction_process1, scanning_process1]
+        s.assays = [a]
+        i.studies = [s]
+        expected = """Sample Name	Protocol REF	Extract Name	Protocol REF	Raw Data File
+sample1	extraction	extract1	scanning	datafile1.raw
+sample1	extraction	extract1	scanning	datafile2.raw"""
+        print(isatab.dumps(i))
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_pool_protocol_ref_material_protocol_ref_data(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+        )
+        sample1 = Sample(name='sample1')
+        sample2 = Sample(name='sample2')
+        extract1 = Material(name='extract1', type_='Extract Name')
+        data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
+        extraction_process1 = Process(executes_protocol=s.protocols[0])
+        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        extraction_process1.inputs = [sample1, sample2]
+        extraction_process1.outputs = [extract1]
+
+        scanning_process1.inputs = [extract1]
+        scanning_process1.outputs = [data1]
+        plink(extraction_process1, scanning_process1)
+
+        a = Assay(filename='a_test.txt')
+        a.process_sequence = [extraction_process1, scanning_process1]
+        s.assays = [a]
+        i.studies = [s]
+        expected = """Sample Name	Protocol REF	Extract Name	Protocol REF	Raw Data File
+sample1	extraction	extract1	scanning	datafile1.raw
+sample2	extraction	extract1	scanning	datafile1.raw"""
+        self.assertIn(expected, isatab.dumps(i))
+
+    def test_sample_protocol_ref_material_pool_protocol_ref_data(self):  # FIXME
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='extraction'), Protocol(name='scanning')]
+        )
+        sample1 = Sample(name='sample1')
+        sample2 = Sample(name='sample2')
+        extract1 = Material(name='extract1', type_='Extract Name')
+        extract2 = Material(name='extract2', type_='Extract Name')
+        data1 = DataFile(filename='datafile1.raw', label='Raw Data File')
+
+        extraction_process1 = Process(executes_protocol=s.protocols[0])
+        extraction_process1.inputs = [sample1]
+        extraction_process1.outputs = [extract1]
+
+        extraction_process2 = Process(executes_protocol=s.protocols[0])
+        extraction_process2.inputs = [sample2]
+        extraction_process2.outputs = [extract2]
+
+        scanning_process1 = Process(executes_protocol=s.protocols[1])
+        scanning_process1.inputs = [extract1, extract1]
+        scanning_process1.outputs = [data1]
+        plink(extraction_process1, scanning_process1)  # FIXME: Need to deal with multiple prev_process
+        plink(extraction_process2, scanning_process1)
+
+        a = Assay(filename='a_test.txt')
+        a.process_sequence = [extraction_process1, extraction_process2, scanning_process1]
+        s.assays = [a]
+        i.studies = [s]
+        expected = """Sample Name	Protocol REF	Extract Name	Protocol REF	Raw Data File
+sample1	extraction	extract1	scanning	datafile1.raw
+sample2	extraction	extract1	scanning	datafile1.raw"""
+        print(isatab.dumps(i))
+        self.assertIn(expected, isatab.dumps(i))
+
+
+class UnitTestIsaTabLoad(unittest.TestCase):
+
+    def setUp(self):
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self._tmp_dir)
+
+    def test_source_protocol_ref_sample(self):
+        factory = ProcessSequenceFactory(study_protocols=[Protocol(name="sample collection")])
+        table_to_load = """Source Name	Protocol REF	Sample Name
+source1	sample collection	sample1"""
+        DF = pd.read_csv(StringIO(table_to_load), sep='\t')
+        so, sa, om, d, pr, _, __ = factory.create_from_df(DF)
+        self.assertEqual(len(so), 1)
+        self.assertEqual(len(sa), 1)
+        self.assertEqual(len(om), 0)
+        self.assertEqual(len(d), 0)
+        self.assertEqual(len(pr), 1)
+
+    def test_source_protocol_ref_sample_x2(self):
+        factory = ProcessSequenceFactory(study_protocols=[Protocol(name="sample collection")])
+        table_to_load = """Source Name	Protocol REF	Sample Name
+source1	sample collection	sample1
+source2	sample collection	sample2"""
+        DF = pd.read_csv(StringIO(table_to_load), sep='\t')
+        so, sa, om, d, pr, _, __ = factory.create_from_df(DF)
+        self.assertEqual(len(so), 2)
+        self.assertEqual(len(sa), 2)
+        self.assertEqual(len(om), 0)
+        self.assertEqual(len(d), 0)
+        self.assertEqual(len(pr), 2)
+
+    def test_source_protocol_ref_split_sample(self):
+        factory = ProcessSequenceFactory(study_protocols=[Protocol(name="sample collection")])
+        table_to_load = """Source Name	Protocol REF	Sample Name
+source1	sample collection	sample1
+source1	sample collection	sample2"""
+        DF = pd.read_csv(StringIO(table_to_load), sep='\t')
+        so, sa, om, d, pr, _, __ = factory.create_from_df(DF)
+        self.assertEqual(len(so), 1)
+        self.assertEqual(len(sa), 2)
+        self.assertEqual(len(om), 0)
+        self.assertEqual(len(d), 0)
+        self.assertEqual(len(pr), 1)
+
+    def test_source_protocol_ref_pool_sample(self):
+        factory = ProcessSequenceFactory(study_protocols=[Protocol(name="sample collection")])
+        table_to_load = """Source Name	Protocol REF	Sample Name
+source1	sample collection	sample1
+source2	sample collection	sample1"""
+        DF = pd.read_csv(StringIO(table_to_load), sep='\t')
+        so, sa, om, d, pr, _, __ = factory.create_from_df(DF)
+        self.assertEqual(len(so), 2)
+        self.assertEqual(len(sa), 1)
+        self.assertEqual(len(om), 0)
+        self.assertEqual(len(d), 0)
+        self.assertEqual(len(pr), 1)
+
+    def test_sample_protocol_ref_split_extract_protocol_ref_data(self):
+        factory = ProcessSequenceFactory(
+            study_samples=[Sample(name="sample1")],
+            study_protocols=[Protocol(name="extraction"), Protocol(name="scanning")])
+        table_to_load = """Sample Name	Protocol REF	Extract Name	Protocol REF	Raw Data File
+sample1	extraction	e1	scanning	d1
+sample1	extraction	e2	scanning	d2"""
+        DF = pd.read_csv(StringIO(table_to_load), sep='\t')
+        so, sa, om, d, pr, _, __ = factory.create_from_df(DF)
+        self.assertEqual(len(so), 0)
+        self.assertEqual(len(sa), 1)
+        self.assertEqual(len(om), 2)
+        self.assertEqual(len(d), 2)
+        self.assertEqual(len(pr), 3)
