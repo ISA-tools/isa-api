@@ -42,7 +42,7 @@ _LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name', 'Labeled
 _LABELS_DATA_NODES = ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
                       'Protein Assignment File', 'Peptide Assignment File',
                       'Post Translational Modification Assignment File', 'Acquisition Parameter Data File',
-                      'Free Induction Decay Data File', 'Derived Array Data Matrix File']
+                      'Free Induction Decay Data File', 'Derived Array Data Matrix File', 'Image File']
 _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name', 'Scan Name',
                        'Data Transformation Name', 'Normalization Name']
 
@@ -418,10 +418,11 @@ def _get_start_end_nodes(G):
             else:
                 start_nodes.append(process)
         if process.next_process is None:
-            if len(process.outputs) > 0:
-                end_nodes.extend(process.outputs)
-            else:
-                end_nodes.append(process)
+            # if len(process.outputs) > 0:
+            #     pass
+                # end_nodes.extend(process.outputs)
+            # else:
+            end_nodes.append(process)
     return start_nodes, end_nodes
 
 
@@ -446,66 +447,69 @@ def _longest_path_and_attrs(paths):
 
 
 def _all_end_to_end_paths(G, start_nodes, end_nodes):
+    # paths = []
+    # start_nodes_processed = []
+    # end_nodes_processed = []
+    # # if we can calculate the correct start node from the .derives_from end node, get paths now and skip product loop
+    # for end_node in end_nodes:
+    #     if isinstance(end_node, Process):
+    #         for output in end_node.outputs:
+    #             if isinstance(output, Sample) and output.derives_from:
+    #                 paths += list(nx.algorithms.all_simple_paths(G, output.derives_from, end_node))
+    #                 start_nodes_processed.append(output.derives_from)
+    #                 end_nodes_processed.append(end_node)
+    #             elif isinstance(output, DataFile) and output.generated_from:
+    #                 paths += list(nx.algorithms.all_simple_paths(G, output.generated_from, end_node))
+    #                 start_nodes_processed.append(output.generated_from)
+    #                 end_nodes_processed.append(end_node)
+    #     elif isinstance(end_node, Sample) and end_node.derives_from:
+    #         for derives_from_node in end_node.derives_from:
+    #             paths += list(nx.algorithms.all_simple_paths(G, derives_from_node, end_node))
+    #             start_nodes_processed.append(derives_from_node)
+    #             end_nodes_processed.append(end_node)
+    # start_nodes_remaining = [item for item in start_nodes if item not in start_nodes_processed]
+    # end_nodes_remaining = [item for item in end_nodes if item not in end_nodes_processed]
+    # if len(start_nodes_remaining) + len(end_nodes_remaining) > 0:
+    #     print("{} start nodes and {} end nodes not processed, trying reverse traversal...".format(len(start_nodes_remaining), len(end_nodes_remaining)))
+    #     for end_node in end_nodes_remaining:
+    #         if isinstance(end_node, Process):
+    #             cur_node = end_node
+    #             while cur_node.prev_process:
+    #                 cur_node = cur_node.prev_process
+    #             if len(cur_node.inputs) > 0:
+    #                 for input_node in cur_node.inputs:
+    #                     paths += list(nx.algorithms.all_simple_paths(G, input_node, end_node))
+    #                     start_nodes_processed.append(input_node)
+    #                     end_nodes_processed.append(end_node)
+    #             else:
+    #                 paths += list(nx.algorithms.all_simple_paths(G, cur_node, end_node))
+    #                 start_nodes_processed.append(cur_node)
+    #                 end_nodes_processed.append(end_node)
+    #         elif isinstance(end_node, Sample):
+    #             processes_linked_to_sample = [p for p in G.nodes() if isinstance(p, Process) and end_node in p.outputs]
+    #             for process in processes_linked_to_sample:
+    #                 cur_node = process
+    #                 while cur_node.prev_process:
+    #                     cur_node = cur_node.prev_process
+    #                 if len(cur_node.inputs) > 0:
+    #                     for input_node in cur_node.inputs:
+    #                         paths += list(nx.algorithms.all_simple_paths(G, input_node, end_node))
+    #                         start_nodes_processed.append(input_node)
+    #                         end_nodes_processed.append(end_node)
+    #                 else:
+    #                     paths += list(nx.algorithms.all_simple_paths(G, cur_node, end_node))
+    #                     start_nodes_processed.append(cur_node)
+    #                     end_nodes_processed.append(end_node)
+    #
+    # start_nodes_remaining = [item for item in start_nodes if item not in start_nodes_processed]
+    # end_nodes_remaining = [item for item in end_nodes if item not in end_nodes_processed]
+    # if len(start_nodes_remaining) + len(end_nodes_remaining) > 0:
+    #     print("{} start nodes and {} end nodes not processed, trying brute force...".format(len(start_nodes_remaining), len(end_nodes_remaining)))
+    #     for start, end in itertools.product(start_nodes_remaining, end_nodes_remaining):
+    #         paths += list(nx.algorithms.all_simple_paths(G, start, end))
     paths = []
-    start_nodes_processed = []
-    end_nodes_processed = []
-    # if we can calculate the correct start node from the .derives_from end node, get paths now and skip product loop
-    for end_node in end_nodes:
-        if isinstance(end_node, Process):
-            for output in end_node.outputs:
-                if isinstance(output, Sample) and output.derives_from:
-                    paths += list(nx.algorithms.all_simple_paths(G, output.derives_from, end_node))
-                    start_nodes_processed.append(output.derives_from)
-                    end_nodes_processed.append(end_node)
-                elif isinstance(output, DataFile) and output.generated_from:
-                    paths += list(nx.algorithms.all_simple_paths(G, output.generated_from, end_node))
-                    start_nodes_processed.append(output.generated_from)
-                    end_nodes_processed.append(end_node)
-        elif isinstance(end_node, Sample) and end_node.derives_from:
-            for derives_from_node in end_node.derives_from:
-                paths += list(nx.algorithms.all_simple_paths(G, derives_from_node, end_node))
-                start_nodes_processed.append(derives_from_node)
-                end_nodes_processed.append(end_node)
-    start_nodes_remaining = [item for item in start_nodes if item not in start_nodes_processed]
-    end_nodes_remaining = [item for item in end_nodes if item not in end_nodes_processed]
-    if len(start_nodes_remaining) + len(end_nodes_remaining) > 0:
-        print("{} start nodes and {} end nodes not processed, trying reverse traversal...".format(len(start_nodes_remaining), len(end_nodes_remaining)))
-        for end_node in end_nodes_remaining:
-            if isinstance(end_node, Process):
-                cur_node = end_node
-                while cur_node.prev_process:
-                    cur_node = cur_node.prev_process
-                if len(cur_node.inputs) > 0:
-                    for input_node in cur_node.inputs:
-                        paths += list(nx.algorithms.all_simple_paths(G, input_node, end_node))
-                        start_nodes_processed.append(input_node)
-                        end_nodes_processed.append(end_node)
-                else:
-                    paths += list(nx.algorithms.all_simple_paths(G, cur_node, end_node))
-                    start_nodes_processed.append(cur_node)
-                    end_nodes_processed.append(end_node)
-            elif isinstance(end_node, Sample):
-                processes_linked_to_sample = [p for p in G.nodes() if isinstance(p, Process) and end_node in p.outputs]
-                for process in processes_linked_to_sample:
-                    cur_node = process
-                    while cur_node.prev_process:
-                        cur_node = cur_node.prev_process
-                    if len(cur_node.inputs) > 0:
-                        for input_node in cur_node.inputs:
-                            paths += list(nx.algorithms.all_simple_paths(G, input_node, end_node))
-                            start_nodes_processed.append(input_node)
-                            end_nodes_processed.append(end_node)
-                    else:
-                        paths += list(nx.algorithms.all_simple_paths(G, cur_node, end_node))
-                        start_nodes_processed.append(cur_node)
-                        end_nodes_processed.append(end_node)
-
-    start_nodes_remaining = [item for item in start_nodes if item not in start_nodes_processed]
-    end_nodes_remaining = [item for item in end_nodes if item not in end_nodes_processed]
-    if len(start_nodes_remaining) + len(end_nodes_remaining) > 0:
-        print("{} start nodes and {} end nodes not processed, trying brute force...".format(len(start_nodes_remaining), len(end_nodes_remaining)))
-        for start, end in itertools.product(start_nodes_remaining, end_nodes_remaining):
-            paths += list(nx.algorithms.all_simple_paths(G, start, end))
+    for start, end in itertools.product(start_nodes, end_nodes):
+        paths += list(nx.algorithms.all_simple_paths(G, start, end))
     return paths
 
 
@@ -553,6 +557,14 @@ def write_study_table_files(inv_obj, output_dir):
                     protnames[node.executes_protocol.name] = protrefcount
                     protrefcount += 1
 
+                if node.next_process is None:
+                    for output in node.outputs:
+                        olabel = "Sample Name.{}".format(sample_in_path_count)
+                        columns.append(olabel)
+                        sample_in_path_count += 1
+                        columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), output.characteristics))
+                        columns += flatten(map(lambda x: get_fv_columns(olabel, x), output.factor_values))
+
             elif isinstance(node, Sample):
                 olabel = "Sample Name.{}".format(sample_in_path_count)
                 columns.append(olabel)
@@ -592,6 +604,18 @@ def write_study_table_files(inv_obj, output_dir):
                     for pv in node.parameter_values:
                         pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
                         write_value_columns(df_dict, pvlabel, pv)
+
+                    if node.next_process is None:
+                        for output in node.outputs:
+                            olabel = "Sample Name.{}".format(sample_in_path_count)
+                            sample_in_path_count += 1
+                            df_dict[olabel][-1] = output.name
+                            for c in output.characteristics:
+                                clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
+                                write_value_columns(df_dict, clabel, c)
+                            for fv in output.factor_values:
+                                fvlabel = "{0}.Factor Value[{1}]".format(olabel, fv.factor_name.name)
+                                write_value_columns(df_dict, fvlabel, fv)
 
                 elif isinstance(node, Sample):
                     olabel = "Sample Name.{}".format(sample_in_path_count)
@@ -675,12 +699,13 @@ def write_assay_table_files(inv_obj, output_dir):
 
             start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
             paths = _all_end_to_end_paths(assay_obj.graph, start_nodes, end_nodes)
-            for node in _longest_path_and_attrs(paths):
+
+            longest_path = _longest_path_and_attrs(paths)
+
+            for node in longest_path:
                 if isinstance(node, Sample):
                     olabel = "Sample Name"
                     columns.append(olabel)
-                    # columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
-                    # columns += flatten(map(lambda x: get_fv_columns(olabel, x), node.factor_values))
 
                 elif isinstance(node, Process):
                     olabel = "Protocol REF.{}".format(node.executes_protocol.name)
@@ -705,6 +730,12 @@ def write_assay_table_files(inv_obj, output_dir):
                     if node.executes_protocol.name not in protnames.keys():
                         protnames[node.executes_protocol.name] = protrefcount
                         protrefcount += 1
+
+                    if node.next_process is None:
+                        for output in node.outputs:
+                            if isinstance(output, DataFile):
+                                columns.append(output.label)
+                                columns += flatten(map(lambda x: get_comment_column(output.label, x), output.comments))
 
                 elif isinstance(node, Material):
                     olabel = node.type
@@ -764,6 +795,15 @@ def write_assay_table_files(inv_obj, output_dir):
                         elif node.executes_protocol.protocol_type.term == "nucleic acid hybridization":
                             df_dict["Hybridization Assay Name"][-1] = node.name
                             df_dict["Array Design REF"][-1] = node.array_design_ref
+
+                        if node.next_process is None:
+                            for output in node.outputs:
+                                if isinstance(output, DataFile):
+                                    olabel = output.label
+                                    df_dict[olabel][-1] = output.filename
+                                    for co in output.comments:
+                                        colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                                        df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
@@ -3201,10 +3241,10 @@ def preprocess(DF):
 
 def get_object_column_map(isatab_header, df_columns):
     if set(isatab_header) == set(df_columns):
-        object_index = [i for i, x in enumerate(df_columns) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
+        object_index = [i for i, x in enumerate(df_columns) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES + _LABELS_DATA_NODES
                         or 'Protocol REF' in x]
     else:
-        object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
+        object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES + _LABELS_DATA_NODES
                         + ['Protocol REF']]
 
     # group headers regarding objects delimited by object_index by slicing up the header list
@@ -3297,46 +3337,46 @@ class ProcessSequenceFactory:
             pass
 
         try:
-            raw_data_files = dict(map(lambda x: ('Raw Data File:' + x, DataFile(filename=x, label='Raw Data File')), DF['Raw Data File'].drop_duplicates()))
+            raw_data_files = dict(map(lambda x: ('Raw Data File:' + x, RawDataFile(filename=x)), DF['Raw Data File'].drop_duplicates()))
             data.update(raw_data_files)
         except KeyError:
             pass
 
         try:
-            raw_spectral_data_files = dict(map(lambda x: ('Raw Spectral Data File:' + x, DataFile(filename=x, label='Raw Spectral Data File')), DF['Raw Spectral Data File'].drop_duplicates()))
+            raw_spectral_data_files = dict(map(lambda x: ('Raw Spectral Data File:' + x, RawSpectralDataFile(filename=x)), DF['Raw Spectral Data File'].drop_duplicates()))
             data.update(raw_spectral_data_files)
         except KeyError:
             pass
 
         try:
-            derived_spectral_data_files = dict(map(lambda x: ('Derived Spectral Data File:' + x, DataFile(filename=x, label='Derived Spectral Data File')),
+            derived_spectral_data_files = dict(map(lambda x: ('Derived Spectral Data File:' + x, DerivedSpectralDataFile(filename=x)),
                                                   DF['Derived Spectral Data File'].drop_duplicates()))
             data.update(derived_spectral_data_files)
         except KeyError:
             pass
 
         try:
-            derived_array_data_files = dict(map(lambda x: ('Derived Array Data File:' + x, DataFile(filename=x, label='Derived Array Data File')),
+            derived_array_data_files = dict(map(lambda x: ('Derived Array Data File:' + x, DerivedArrayDataFile(filename=x)),
                                                 DF['Derived Array Data File'].drop_duplicates()))
             data.update(derived_array_data_files)
         except KeyError:
             pass
 
         try:
-            array_data_files = dict(map(lambda x: ('Array Data File:' + x, DataFile(filename=x, label='Array Data File')), DF['Array Data File'].drop_duplicates()))
+            array_data_files = dict(map(lambda x: ('Array Data File:' + x, ArrayDataFile(filename=x)), DF['Array Data File'].drop_duplicates()))
             data.update(array_data_files)
         except KeyError:
             pass
 
         try:
-            protein_assignment_files = dict(map(lambda x: ('Protein Assignment File:' + x, DataFile(filename=x, label='Protein Assignment File')),
+            protein_assignment_files = dict(map(lambda x: ('Protein Assignment File:' + x, ProteinAssignmentFile(filename=x)),
                                                 DF['Protein Assignment File'].drop_duplicates()))
             data.update(protein_assignment_files)
         except KeyError:
             pass
 
         try:
-            peptide_assignment_files = dict(map(lambda x: ('Peptide Assignment File:' + x, DataFile(filename=x, label='Peptide Assignment File')),
+            peptide_assignment_files = dict(map(lambda x: ('Peptide Assignment File:' + x, PeptideAssignmentFile(filename=x)),
                                                 DF['Peptide Assignment File'].drop_duplicates()))
             data.update(peptide_assignment_files)
         except KeyError:
@@ -3344,7 +3384,7 @@ class ProcessSequenceFactory:
 
         try:
             derived_array_data__matrix_files = \
-                dict(map(lambda x: ('Derived Array Data Matrix File:' + x, DataFile(filename=x, label='Derived Array Data Matrix File')),
+                dict(map(lambda x: ('Derived Array Data Matrix File:' + x, DerivedArrayDataMatrixFile(filename=x)),
                          DF['Derived Array Data Matrix File'].drop_duplicates()))
             data.update(derived_array_data__matrix_files)
         except KeyError:
@@ -3352,14 +3392,14 @@ class ProcessSequenceFactory:
 
         try:
             post_translational_modification_assignment_files = \
-                dict(map(lambda x: ('Post Translational Modification Assignment File:' + x, DataFile(filename=x, label='Post Translational Modification Assignment File')),
+                dict(map(lambda x: ('Post Translational Modification Assignment File:' + x, PostTranslationalModificationAssignmentFile(filename=x)),
                          DF['Post Translational Modification Assignment File'].drop_duplicates()))
             data.update(post_translational_modification_assignment_files)
         except KeyError:
             pass
 
         try:
-            acquisition_parameter_data_files = dict(map(lambda x: ('Acquisition Parameter Data File:' + x, DataFile(filename=x, label='Acquisition Parameter Data File')),
+            acquisition_parameter_data_files = dict(map(lambda x: ('Acquisition Parameter Data File:' + x, AcquisitionParameterDataFile(filename=x)),
                                                 DF['Acquisition Parameter Data File'].drop_duplicates()))
             data.update(acquisition_parameter_data_files)
         except KeyError:
@@ -3367,7 +3407,7 @@ class ProcessSequenceFactory:
 
         try:
             post_translational_modification_assignment_files = \
-                dict(map(lambda x: ('Free Induction Decay Data File:' + x, DataFile(filename=x, label='Free Induction Decay Data File')),
+                dict(map(lambda x: ('Free Induction Decay Data File:' + x, FreeInductionDecayDataFile(filename=x)),
                          DF['Free Induction Decay Data File'].drop_duplicates()))
             data.update(post_translational_modification_assignment_files)
         except KeyError:
