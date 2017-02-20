@@ -151,10 +151,8 @@ def create_descriptor():
         datafile = DataFile(filename="sequenced-data-{}".format(i), label="Raw Data File")
         sequencing_process.outputs.append(datafile)
 
-        # ensure Processes are linked forward and backward
-
-        extraction_process.next_process = sequencing_process
-        sequencing_process.prev_process = extraction_process
+        # ensure Processes are linked
+        plink(sequencing_process, extraction_process)
 
         # make sure the extract, data file, and the processes are attached to the assay
 

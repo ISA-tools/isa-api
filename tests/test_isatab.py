@@ -153,6 +153,7 @@ class TestIsaTabDump(unittest.TestCase):
         sample_collection_process.outputs = [sample1, sample2, sample3, sample4]
         s.process_sequence = [sample_collection_process]
         i.studies = [s]
+        print(isatab.dumps(i))
         isatab.dump(i, self._tmp_dir)
         with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
                 open(os.path.join(self._tab_data_dir, 'TEST-ISA-source-split',
@@ -628,7 +629,7 @@ sample1	extraction	extract1	scanning	datafile1.raw
 sample2	extraction	extract2	scanning	datafile2.raw"""
         self.assertIn(expected, isatab.dumps(i))
 
-    def test_sample_split_protocol_ref_material_protocol_ref_data(self):  # FIXME
+    def test_sample_split_protocol_ref_material_protocol_ref_data(self):
         i = Investigation()
         s = Study(
             filename='s_test.txt',
@@ -642,17 +643,16 @@ sample2	extraction	extract2	scanning	datafile2.raw"""
 
         extraction_process1 = Process(executes_protocol=s.protocols[0])
         extraction_process1.inputs = [sample1]
-        extraction_process1.outputs = [extract1]
+        extraction_process1.outputs = [extract1, extract2]
 
         scanning_process1 = Process(executes_protocol=s.protocols[1])
         scanning_process1.inputs = [extract1]
         scanning_process1.outputs = [data1]
-        scanning_process1.prev_process = extraction_process1
 
         scanning_process2 = Process(executes_protocol=s.protocols[1])
         scanning_process2.inputs = [extract2]
         scanning_process2.outputs = [data2]
-        plink(extraction_process1, scanning_process1)   # FIXME: Need to deal with multiple prev_process
+        plink(extraction_process1, scanning_process1)
         plink(extraction_process1, scanning_process2)
 
         a = Assay(filename='a_test.txt')
@@ -724,7 +724,7 @@ sample1	extraction	extract1	scanning	datafile1.raw
 sample2	extraction	extract1	scanning	datafile1.raw"""
         self.assertIn(expected, isatab.dumps(i))
 
-    def test_sample_protocol_ref_material_pool_protocol_ref_data(self):  # FIXME
+    def test_sample_protocol_ref_material_pool_protocol_ref_data(self):
         i = Investigation()
         s = Study(
             filename='s_test.txt',
@@ -745,9 +745,9 @@ sample2	extraction	extract1	scanning	datafile1.raw"""
         extraction_process2.outputs = [extract2]
 
         scanning_process1 = Process(executes_protocol=s.protocols[1])
-        scanning_process1.inputs = [extract1, extract1]
+        scanning_process1.inputs = [extract1, extract2]
         scanning_process1.outputs = [data1]
-        plink(extraction_process1, scanning_process1)  # FIXME: Need to deal with multiple prev_process
+        plink(extraction_process1, scanning_process1)
         plink(extraction_process2, scanning_process1)
 
         a = Assay(filename='a_test.txt')
@@ -756,7 +756,7 @@ sample2	extraction	extract1	scanning	datafile1.raw"""
         i.studies = [s]
         expected = """Sample Name	Protocol REF	Extract Name	Protocol REF	Raw Data File
 sample1	extraction	extract1	scanning	datafile1.raw
-sample2	extraction	extract1	scanning	datafile1.raw"""
+sample2	extraction	extract2	scanning	datafile1.raw"""
         print(isatab.dumps(i))
         self.assertIn(expected, isatab.dumps(i))
 

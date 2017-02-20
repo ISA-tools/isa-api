@@ -19,20 +19,17 @@ import networkx as nx
 
 def _build_assay_graph(process_sequence=list()):
     G = nx.DiGraph()
+
     for process in process_sequence:
-        if process.next_process is not None or len(
-                process.outputs) > 0:  # first check if there's some valid outputs to connect
-            if len(process.outputs) > 0:
-                for output in process.outputs:
-                    G.add_edge(process, output)
-            else:  # otherwise just connect the process to the next one
-                G.add_edge(process, process.next_process)
-        if process.prev_process is not None or len(process.inputs) > 0:
-            if len(process.inputs) > 0:
-                for input_ in process.inputs:
-                    G.add_edge(input_, process)
-            else:
-                G.add_edge(process.prev_process, process)
+        for input_ in process.inputs:
+            G.add_edge(input_, process)
+        for output in process.outputs:
+            G.add_edge(process, output)
+        for np in process.next_process:
+            G.add_edge(process, np)
+        for pp in process.prev_process:
+            G.add_edge(pp, process)
+
     return G
 
 
@@ -835,8 +832,8 @@ class Process(Commentable):
         else:
             self.outputs = outputs
         self.additional_properties = dict()
-        self.prev_process = None
-        self.next_process = None
+        self.prev_process = []
+        self.next_process = []
 
 
 class DataFile(Commentable):
@@ -1087,5 +1084,5 @@ class ISADocument:
 
 def plink(p1, p2):
     if isinstance(p1, Process) and isinstance(p2, Process):
-        p1.next_process = p2
-        p2.prev_process = p1
+        p1.next_process.append(p2)
+        p2.prev_process.append(p1)

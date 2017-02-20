@@ -16,6 +16,7 @@ import numpy as np
 from bisect import bisect_left, bisect_right
 from itertools import tee
 import pandas as pd
+from networkx import NetworkXNoPath
 
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
@@ -412,17 +413,16 @@ def _get_start_end_nodes(G):
     start_nodes = list()
     end_nodes = list()
     for process in [n for n in G.nodes() if isinstance(n, Process)]:
-        if process.prev_process is None:
+        if len(process.prev_process) == 0:
             if len(process.inputs) > 0:
                 start_nodes.extend(process.inputs)
             else:
                 start_nodes.append(process)
-        if process.next_process is None:
-            # if len(process.outputs) > 0:
-            #     pass
-                # end_nodes.extend(process.outputs)
-            # else:
-            end_nodes.append(process)
+        if len(process.next_process) == 0:
+            if len(process.outputs) > 0:
+                end_nodes.extend(process.outputs)
+            else:
+                end_nodes.append(process)
     return start_nodes, end_nodes
 
 
@@ -509,7 +509,10 @@ def _all_end_to_end_paths(G, start_nodes, end_nodes):
     #         paths += list(nx.algorithms.all_simple_paths(G, start, end))
     paths = []
     for start, end in itertools.product(start_nodes, end_nodes):
-        paths += list(nx.algorithms.all_simple_paths(G, start, end))
+        try:
+            paths += [list(nx.algorithms.shortest_simple_paths(G, start, end))[-1]]  # gets longest path between start and end
+        except NetworkXNoPath:
+            pass
     return paths
 
 
@@ -557,14 +560,6 @@ def write_study_table_files(inv_obj, output_dir):
                     protnames[node.executes_protocol.name] = protrefcount
                     protrefcount += 1
 
-                if node.next_process is None:
-                    for output in node.outputs:
-                        olabel = "Sample Name.{}".format(sample_in_path_count)
-                        columns.append(olabel)
-                        sample_in_path_count += 1
-                        columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), output.characteristics))
-                        columns += flatten(map(lambda x: get_fv_columns(olabel, x), output.factor_values))
-
             elif isinstance(node, Sample):
                 olabel = "Sample Name.{}".format(sample_in_path_count)
                 columns.append(olabel)
@@ -604,18 +599,6 @@ def write_study_table_files(inv_obj, output_dir):
                     for pv in node.parameter_values:
                         pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
                         write_value_columns(df_dict, pvlabel, pv)
-
-                    if node.next_process is None:
-                        for output in node.outputs:
-                            olabel = "Sample Name.{}".format(sample_in_path_count)
-                            sample_in_path_count += 1
-                            df_dict[olabel][-1] = output.name
-                            for c in output.characteristics:
-                                clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
-                                write_value_columns(df_dict, clabel, c)
-                            for fv in output.factor_values:
-                                fvlabel = "{0}.Factor Value[{1}]".format(olabel, fv.factor_name.name)
-                                write_value_columns(df_dict, fvlabel, fv)
 
                 elif isinstance(node, Sample):
                     olabel = "Sample Name.{}".format(sample_in_path_count)
@@ -698,8 +681,10 @@ def write_assay_table_files(inv_obj, output_dir):
             columns = []
 
             start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
+            print(start_nodes, end_nodes)
             paths = _all_end_to_end_paths(assay_obj.graph, start_nodes, end_nodes)
-
+            print(paths)
+            print(assay_obj.graph.edges())
             longest_path = _longest_path_and_attrs(paths)
 
             for node in longest_path:
@@ -730,12 +715,6 @@ def write_assay_table_files(inv_obj, output_dir):
                     if node.executes_protocol.name not in protnames.keys():
                         protnames[node.executes_protocol.name] = protrefcount
                         protrefcount += 1
-
-                    if node.next_process is None:
-                        for output in node.outputs:
-                            if isinstance(output, DataFile):
-                                columns.append(output.label)
-                                columns += flatten(map(lambda x: get_comment_column(output.label, x), output.comments))
 
                 elif isinstance(node, Material):
                     olabel = node.type
@@ -795,15 +774,6 @@ def write_assay_table_files(inv_obj, output_dir):
                         elif node.executes_protocol.protocol_type.term == "nucleic acid hybridization":
                             df_dict["Hybridization Assay Name"][-1] = node.name
                             df_dict["Array Design REF"][-1] = node.array_design_ref
-
-                        if node.next_process is None:
-                            for output in node.outputs:
-                                if isinstance(output, DataFile):
-                                    olabel = output.label
-                                    df_dict[olabel][-1] = output.filename
-                                    for co in output.comments:
-                                        colabel = "{0}.Comment[{1}]".format(olabel, co.name)
-                                        df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
@@ -3343,6 +3313,12 @@ class ProcessSequenceFactory:
             pass
 
         try:
+            image_data_files = dict(map(lambda x: ('Image File:' + x, RawDataFile(filename=x)), DF['Image File'].drop_duplicates()))
+            data.update(image_data_files)
+        except KeyError:
+            pass
+
+        try:
             raw_spectral_data_files = dict(map(lambda x: ('Raw Spectral Data File:' + x, RawSpectralDataFile(filename=x)), DF['Raw Spectral Data File'].drop_duplicates()))
             data.update(raw_spectral_data_files)
         except KeyError:
@@ -3586,12 +3562,10 @@ class ProcessSequenceFactory:
             # print('key sequence = ', process_key_sequence)
 
             # Link the processes in each sequence
-            for pair in pairwise(process_key_sequence):  # TODO: Make split/pool model with multi prev/next_process
+            for pair in pairwise(process_key_sequence):
                 l = processes[pair[0]]  # get process on left of pair
                 r = processes[pair[1]]  # get process on right of pair
-
-                l.next_process = r
-                r.prev_process = l
+                plink(l, r)
 
         return sources, samples, other_material, data, processes, characteristic_categories, unit_categories
 
