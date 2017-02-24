@@ -399,20 +399,18 @@ def load(fp):
             study.process_sequence.append(process)
             process_dict[process.id] = process
         for study_process_json in study_json["processSequence"]:  # 2nd pass
-            for prev_proc_json in study_process_json["previousProcess"]:
-                try:
-                    prev_proc = prev_proc_json["@id"]
-                    process_dict[study_process_json["@id"]].prev_process.append(process_dict[prev_proc])
-                except KeyError:
-                    pass
+            try:
+                prev_proc = study_process_json["previousProcess"]["@id"]
+                process_dict[study_process_json["@id"]].prev_process = process_dict[prev_proc]
+            except KeyError:
+                pass
 
-            for next_proc_json in study_process_json["nextProcess"]:
-                try:
-                    next_proc = next_proc_json["@id"]
-                    process_dict[study_process_json["@id"]].next_process.append(process_dict[next_proc])
-                except KeyError:
-                    pass
-        # study.graph = _build_assay_graph(study.process_sequence)
+            try:
+                next_proc = study_process_json["nextProcess"]["@id"]
+                process_dict[study_process_json["@id"]].next_process = process_dict[next_proc]
+            except KeyError:
+                pass
+
         for assay_json in study_json["assays"]:
             process_dict = dict()
             assay = Assay(
@@ -578,19 +576,20 @@ def load(fp):
                         print("warning: parameter category not found for instance {}".format(parameter_json))
                 assay.process_sequence.append(process)
                 process_dict[process.id] = process
+
                 for assay_process_json in assay_json["processSequence"]:  # 2nd pass
-                    for prev_proc_json in assay_process_json["previousProcess"]:
-                        try:
-                            prev_proc = prev_proc_json["@id"]
-                            process_dict[assay_process_json["@id"]].prev_process = process_dict[prev_proc]
-                        except KeyError:
-                            pass
-                    for next_proc_json in assay_process_json["nextProcess"]:
-                        try:
-                            next_proc = next_proc_json["@id"]
-                            process_dict[assay_process_json["@id"]].next_process = process_dict[next_proc]
-                        except KeyError:
-                            pass
+                    try:
+                        prev_proc = assay_process_json["previousProcess"]["@id"]
+                        process_dict[assay_process_json["@id"]].prev_process = process_dict[prev_proc]
+                    except KeyError:
+                        pass
+
+                    try:
+                        next_proc = assay_process_json["nextProcess"]["@id"]
+                        process_dict[assay_process_json["@id"]].next_process = process_dict[next_proc]
+                    except KeyError:
+                        pass
+
             study.assays.append(assay)
         investigation.studies.append(study)
     return investigation
@@ -1669,8 +1668,8 @@ class ISAJSONEncoder(JSONEncoder):
                     "parameterValues": list(map(lambda x: get_parameter_value(x), o.parameter_values)),
                     "performer": o.performer,
                     "date": o.date,
-                    "previousProcess": list(map(lambda x: {"@id": id_gen(x)}, o.prev_process)),
-                    "nextProcess": list(map(lambda x: {"@id": id_gen(x)}, o.next_process)),
+                    "previousProcess": {"@id": id_gen(o.prev_process)} if o.prev_process else None,
+                    "nextProcess": {"@id": id_gen(o.next_process)} if o.next_process else None,
                     "inputs": list(map(lambda x: {"@id": id_gen(x)}, o.inputs)),
                     "outputs": list(map(lambda x: {"@id": id_gen(x)}, o.outputs)),
                     "comments": get_comments(o.comments)
