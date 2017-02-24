@@ -152,8 +152,6 @@ class TestIsaTabDump(unittest.TestCase):
         sample_collection_process.inputs = [source1]
         sample_collection_process.outputs = [sample1, sample2, sample3, sample4]
         s.process_sequence = [sample_collection_process]
-        # from isatools.model.v1 import _build_assay_graph
-        # s.graph = _build_assay_graph(s.process_sequence)
         i.studies = [s]
         isatab.dump(i, self._tmp_dir)
         with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
