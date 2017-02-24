@@ -68,7 +68,7 @@ class TestOlsSearch(unittest.TestCase):
         self.assertIsInstance(ontology_source, OntologySource)
         self.assertEqual(ontology_source.name, "efo")
         self.assertEqual(ontology_source.file, None)
-        self.assertEqual(ontology_source.version, "2.80")
+        self.assertIsInstance(ontology_source.version, str)
         self.assertEqual(ontology_source.description, "Experimental Factor Ontology")
 
     def test_search_for_term(self):

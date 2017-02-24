@@ -1,7 +1,5 @@
 from .model.v1 import *
 import os
-import sys
-import pandas as pd
 from pandas.parser import CParserError
 import io
 import glob
@@ -16,6 +14,7 @@ import numpy as np
 from bisect import bisect_left, bisect_right
 from itertools import tee
 import pandas as pd
+from progressbar import ProgressBar, SimpleProgress, Bar, ETA
 
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
@@ -446,66 +445,120 @@ def _longest_path_and_attrs(paths):
 
 
 def _all_end_to_end_paths(G, start_nodes, end_nodes):
+    print("Calculating paths for {0} start and {1} end nodes ".format(len(start_nodes), len(end_nodes)))
     paths = []
-    start_nodes_processed = []
-    end_nodes_processed = []
-    # if we can calculate the correct start node from the .derives_from end node, get paths now and skip product loop
-    for end_node in end_nodes:
-        if isinstance(end_node, Process):
-            for output in end_node.outputs:
-                if isinstance(output, Sample) and output.derives_from:
-                    paths += list(nx.algorithms.all_simple_paths(G, output.derives_from, end_node))
-                    start_nodes_processed.append(output.derives_from)
-                    end_nodes_processed.append(end_node)
-                elif isinstance(output, DataFile) and output.generated_from:
-                    paths += list(nx.algorithms.all_simple_paths(G, output.generated_from, end_node))
-                    start_nodes_processed.append(output.generated_from)
-                    end_nodes_processed.append(end_node)
-        elif isinstance(end_node, Sample) and end_node.derives_from:
-            for derives_from_node in end_node.derives_from:
-                paths += list(nx.algorithms.all_simple_paths(G, derives_from_node, end_node))
-                start_nodes_processed.append(derives_from_node)
-                end_nodes_processed.append(end_node)
-    start_nodes_remaining = [item for item in start_nodes if item not in start_nodes_processed]
-    end_nodes_remaining = [item for item in end_nodes if item not in end_nodes_processed]
-    if len(start_nodes_remaining) + len(end_nodes_remaining) > 0:
-        print("{} start nodes and {} end nodes not processed, trying reverse traversal...".format(len(start_nodes_remaining), len(end_nodes_remaining)))
-        for end_node in end_nodes_remaining:
-            if isinstance(end_node, Process):
-                cur_node = end_node
+    nodes_processed = []
+    # check for from-link
+    pbar = ProgressBar(min_value=0, max_value=len(end_nodes), widgets=['Looking for -from links: ',
+                                                                   SimpleProgress(),
+                                                                   Bar(left=" |", right="| "), ETA()]).start()
+    for end in pbar(end_nodes):
+
+        if isinstance(end, Sample):
+            if end.derives_from:
+                for derives_from in end.derives_from:
+                    paths += [list(nx.algorithms.shortest_simple_paths(G, derives_from, end))[-1]]
+                    nodes_processed.extend([end.derives_from, end])
+        elif isinstance(end, DataFile):
+            if end.generated_from:
+                for generated_from in end.generated_from:
+                    paths += [list(nx.algorithms.shortest_simple_paths(G, generated_from, end))[-1]]
+                    nodes_processed.extend([end.generated_from, end])
+
+    end_nodes_remaining = [x for x in end_nodes if x not in nodes_processed]
+    print("{0} end nodes remaining".format(len(end_nodes_remaining)))
+    if len(end_nodes_remaining) > 0:
+        pbar = ProgressBar(min_value=0, max_value=len(end_nodes_remaining),
+                           widgets=['Trying reverse traversal: ',
+                                    SimpleProgress(),
+                                    Bar(left=" |", right="| "), ETA()]).start()
+        for end in pbar(end_nodes_remaining):
+            processes_linked_to_node = [p for p in G.nodes() if isinstance(p, Process) and end in p.outputs]
+            for process in processes_linked_to_node:
+                cur_node = process
                 while cur_node.prev_process:
                     cur_node = cur_node.prev_process
                 if len(cur_node.inputs) > 0:
-                    for input_node in cur_node.inputs:
-                        paths += list(nx.algorithms.all_simple_paths(G, input_node, end_node))
-                        start_nodes_processed.append(input_node)
-                        end_nodes_processed.append(end_node)
+                    for input in cur_node.inputs:
+                        paths += [list(nx.algorithms.shortest_simple_paths(G, input, end))[-1]]
+                        nodes_processed.extend([input, end])
                 else:
-                    paths += list(nx.algorithms.all_simple_paths(G, cur_node, end_node))
-                    start_nodes_processed.append(cur_node)
-                    end_nodes_processed.append(end_node)
-            elif isinstance(end_node, Sample):
-                processes_linked_to_sample = [p for p in G.nodes() if isinstance(p, Process) and end_node in p.outputs]
-                for process in processes_linked_to_sample:
-                    cur_node = process
-                    while cur_node.prev_process:
-                        cur_node = cur_node.prev_process
-                    if len(cur_node.inputs) > 0:
-                        for input_node in cur_node.inputs:
-                            paths += list(nx.algorithms.all_simple_paths(G, input_node, end_node))
-                            start_nodes_processed.append(input_node)
-                            end_nodes_processed.append(end_node)
-                    else:
-                        paths += list(nx.algorithms.all_simple_paths(G, cur_node, end_node))
-                        start_nodes_processed.append(cur_node)
-                        end_nodes_processed.append(end_node)
+                    paths += list(nx.algorithms.shortest_simple_paths(G, cur_node, end))
+                    nodes_processed.extend([cur_node, end])
 
-    start_nodes_remaining = [item for item in start_nodes if item not in start_nodes_processed]
-    end_nodes_remaining = [item for item in end_nodes if item not in end_nodes_processed]
+    start_nodes_remaining = [x for x in start_nodes if x not in nodes_processed]
+    print("{0} start nodes remaining".format(len(start_nodes_remaining)))
+    if len(start_nodes_remaining) > 0:
+        pbar = ProgressBar(min_value=0, max_value=len(start_nodes_remaining),
+                           widgets=['Trying forward traversal: ',
+                                    SimpleProgress(),
+                                    Bar(left=" |", right="| "), ETA()]).start()
+        for start in pbar(start_nodes_remaining):
+            processes_linked_to_node = [p for p in G.nodes() if isinstance(p, Process) and start in p.inputs]
+            for process in processes_linked_to_node:
+                cur_node = process
+                while cur_node.next_process:
+                    cur_node = cur_node.next_process
+                if len(cur_node.outputs) > 0:
+                    pass  # because we consider last process as end node, not the outputs
+                    # for output in cur_node.outputs:
+                    #     paths += [list(nx.algorithms.shortest_simple_paths(G, start, output))[-1]]
+                    #     nodes_processed.extend([start, output])
+                else:
+                    paths += list(nx.algorithms.shortest_simple_paths(G, start, cur_node))
+                    nodes_processed.extend([start, cur_node])
+
+    start_nodes_remaining = [x for x in start_nodes if x not in nodes_processed]
+    end_nodes_remaining = [x for x in end_nodes if x not in nodes_processed]
     if len(start_nodes_remaining) + len(end_nodes_remaining) > 0:
-        print("{} start nodes and {} end nodes not processed, trying brute force...".format(len(start_nodes_remaining), len(end_nodes_remaining)))
-        for start, end in itertools.product(start_nodes_remaining, end_nodes_remaining):
-            paths += list(nx.algorithms.all_simple_paths(G, start, end))
+        print("{0} start nodes and {1} end nodes remaining".format(len(start_nodes_remaining), len(end_nodes_remaining)))
+        # default
+        if len(start_nodes_remaining) * len(end_nodes_remaining) > 0:
+            pbar = ProgressBar(min_value=0, max_value=len(start_nodes_remaining) * len(end_nodes_remaining),
+                               widgets=['Trying brute force: ',
+                                        SimpleProgress(),
+                                        Bar(left=" |", right="| "), ETA()]).start()
+            i = 0
+            for start, end in itertools.product(start_nodes_remaining, end_nodes_remaining):
+                pbar.update(i)
+                i += 1
+                if nx.algorithms.has_path(G, start, end):
+                    paths += [list(nx.algorithms.shortest_simple_paths(G, start, end))[-1]]
+                    nodes_processed.extend([start, end])
+
+        start_nodes_remaining = [x for x in start_nodes if x not in nodes_processed]
+        end_nodes_remaining = [x for x in end_nodes if x not in nodes_processed]
+
+        if len(start_nodes_remaining) > 0 and len(end_nodes_remaining) == 0:
+            print("Last resort trying to build paths for remaining {} start nodes".format(len(start_nodes_remaining)))
+            pbar = ProgressBar(min_value=0, max_value=len(start_nodes_remaining) * len(end_nodes),
+                               widgets=['Trying brute force: ',
+                                        SimpleProgress(),
+                                        Bar(left=" |", right="| "), ETA()]).start()
+            i = 0
+            for start, end in itertools.product(start_nodes_remaining, end_nodes):
+                pbar.update(i)
+                i += 1
+                if nx.algorithms.has_path(G, start, end):
+                    paths += [list(nx.algorithms.shortest_simple_paths(G, start, end))[-1]]
+                    nodes_processed.extend([start, end])
+
+        start_nodes_remaining = [x for x in start_nodes if x not in nodes_processed]
+        end_nodes_remaining = [x for x in end_nodes if x not in nodes_processed]
+
+        if len(start_nodes_remaining) == 0 and len(end_nodes_remaining) > 0:
+            print("Last resort trying to build paths for remaining {} start nodes".format(len(end_nodes_remaining)))
+            pbar = ProgressBar(min_value=0, max_value=len(start_nodes) * len(end_nodes_remaining),
+                               widgets=['Trying brute force: ',
+                                        SimpleProgress(),
+                                        Bar(left=" |", right="| "), ETA()]).start()
+            i = 0
+            for start, end in itertools.product(start_nodes, end_nodes_remaining):
+                pbar.update(i)
+                i += 1
+                if nx.algorithms.has_path(G, start, end):
+                    paths += [list(nx.algorithms.shortest_simple_paths(G, start, end))[-1]]
+                    nodes_processed.extend([start, end])
     return paths
 
 
@@ -563,7 +616,6 @@ def write_study_table_files(inv_obj, output_dir):
         # load into dictionary
         df_dict = dict(map(lambda k: (k, []), flatten(omap)))
 
-        from progressbar import ProgressBar, SimpleProgress, Bar, ETA
         pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)),
                                                                        SimpleProgress(),
                                                                        Bar(left=" |", right="| "), ETA()]).start()
@@ -720,12 +772,13 @@ def write_assay_table_files(inv_obj, output_dir):
             # load into dictionary
             df_dict = dict(map(lambda k: (k, []), flatten(omap)))
 
-            from progressbar import ProgressBar, SimpleProgress, Bar, ETA
             pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)),
                                                                            SimpleProgress(),
                                                                            Bar(left=" |", right="| "), ETA()]).start()
+            for i, path in enumerate(paths):
 
-            for path in pbar(paths):
+                pbar.update(i)
+
                 for k in df_dict.keys():  # add a row per path
                     df_dict[k].extend([""])
 
@@ -736,11 +789,7 @@ def write_assay_table_files(inv_obj, output_dir):
                         df_dict[olabel][-1] = node.name
                         for c in node.characteristics:
                             clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
-                            try:
-                                write_value_columns(df_dict, clabel, c)
-                            except KeyError:
-                                print(node.__dict__)
-                                raise KeyError
+                            write_value_columns(df_dict, clabel, c)
 
                     elif isinstance(node, Process):
                         olabel = "Protocol REF.{}".format(node.executes_protocol.name)
@@ -827,9 +876,10 @@ def write_assay_table_files(inv_obj, output_dir):
 
             print("Rendered {} paths".format(len(DF.index)))
             if len(DF.index) > 1:
-                if len(DF.index) > len(DF.drop_duplicates().index):
+                DF_dropped = DF.drop_duplicates()
+                if len(DF.index) > len(DF_dropped.index):
                     print("Dropping duplicates...")
-                    DF = DF.drop_duplicates()
+                    DF = DF_dropped
 
             print("Writing {} rows".format(len(DF.index)))
             # reset columns, replace nan with empty string, drop empty columns
@@ -3078,7 +3128,8 @@ def get_value(object_column, column_group, object_series, ontology_source_map, u
             try:
                 value.term_source = ontology_source_map[term_source_value]
             except KeyError:
-                print('term source: ', term_source_value, ' not found')
+                value.term_source = None
+                # print('term source: ', term_source_value, ' not found')
 
         term_accession_value = object_series[offset_2r_col]
 
@@ -3392,7 +3443,12 @@ class ProcessSequenceFactory:
 
             if object_label in _LABELS_MATERIAL_NODES:
 
-                for _, object_series in DF[column_group].drop_duplicates().iterrows():
+                pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Setting material objects: ',
+                                                                                  SimpleProgress(),
+                                                                                  Bar(left=" |", right="| "),
+                                                                                  ETA()]).start()
+
+                for _, object_series in pbar(DF[column_group].drop_duplicates().iterrows()):
                     node_name = object_series[object_label]
                     node_key = ":".join([object_label, node_name])
                     if object_label == "Source Name":
@@ -3464,10 +3520,13 @@ class ProcessSequenceFactory:
 
                 object_label_index = list(DF.columns).index(object_label)
 
-                for _, object_series in DF.iterrows():  # don't drop duplicates
+                pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Generating process objects: ',
+                                                                                   SimpleProgress(),
+                                                                                   Bar(left=" |", right="| "),
+                                                                                   ETA()]).start()
 
+                for _, object_series in pbar(DF.iterrows()):  # don't drop duplicates
                     protocol_ref = object_series[column_group[0]]
-
                     process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
 
                     try:
@@ -3535,7 +3594,11 @@ class ProcessSequenceFactory:
 
         # now go row by row pulling out processes and linking them accordingly
 
-        for _, object_series in DF.iterrows():  # don't drop duplicates
+        pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Linking process objects: ',
+                                                                          SimpleProgress(),
+                                                                          Bar(left=" |", right="| "),
+                                                                          ETA()]).start()
+        for _, object_series in pbar(DF.iterrows()):  # don't drop duplicates
             process_key_sequence = list()
 
             for _cg, column_group in enumerate(object_column_map):
