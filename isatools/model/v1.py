@@ -1083,3 +1083,8 @@ class ISADocument:
     @property
     def valid_isajson(self):
         return True
+
+def plink(p1, p2):
+    if isinstance(p1, Process) and isinstance(p2, Process):
+        p1.next_process = p2
+        p2.prev_process = p1
