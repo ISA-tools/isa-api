@@ -445,7 +445,7 @@ def _longest_path_and_attrs(paths):
 
 
 def _all_end_to_end_paths(G, start_nodes, end_nodes):
-    print("Calculating paths for {0} start and {1} end nodes ".format(len(start_nodes), len(end_nodes)))
+    print("Calculating paths to write for {0} start and {1} end nodes ".format(len(start_nodes), len(end_nodes)))
     paths = []
     nodes_processed = []
     # check for from-link
@@ -455,15 +455,13 @@ def _all_end_to_end_paths(G, start_nodes, end_nodes):
     for end in pbar(end_nodes):
 
         if isinstance(end, Sample):
-            if end.derives_from:
-                for derives_from in end.derives_from:
-                    paths += [list(nx.algorithms.shortest_simple_paths(G, derives_from, end))[-1]]
-                    nodes_processed.extend([end.derives_from, end])
+            for derives_from in end.derives_from:
+                paths += list(nx.algorithms.all_simple_paths(G, derives_from, end))
+                nodes_processed.extend([derives_from, end])
         elif isinstance(end, DataFile):
-            if end.generated_from:
-                for generated_from in end.generated_from:
-                    paths += [list(nx.algorithms.shortest_simple_paths(G, generated_from, end))[-1]]
-                    nodes_processed.extend([end.generated_from, end])
+            for generated_from in end.generated_from:
+                paths += list(nx.algorithms.all_simple_paths(G, generated_from, end))
+                nodes_processed.extend([generated_from, end])
 
     end_nodes_remaining = [x for x in end_nodes if x not in nodes_processed]
     print("{0} end nodes remaining".format(len(end_nodes_remaining)))
@@ -480,10 +478,10 @@ def _all_end_to_end_paths(G, start_nodes, end_nodes):
                     cur_node = cur_node.prev_process
                 if len(cur_node.inputs) > 0:
                     for input in cur_node.inputs:
-                        paths += [list(nx.algorithms.shortest_simple_paths(G, input, end))[-1]]
+                        paths += list(nx.algorithms.all_simple_paths(G, input, end))
                         nodes_processed.extend([input, end])
                 else:
-                    paths += list(nx.algorithms.shortest_simple_paths(G, cur_node, end))
+                    paths += list(nx.algorithms.all_simple_paths(G, cur_node, end))
                     nodes_processed.extend([cur_node, end])
 
     start_nodes_remaining = [x for x in start_nodes if x not in nodes_processed]
@@ -505,7 +503,7 @@ def _all_end_to_end_paths(G, start_nodes, end_nodes):
                     #     paths += [list(nx.algorithms.shortest_simple_paths(G, start, output))[-1]]
                     #     nodes_processed.extend([start, output])
                 else:
-                    paths += list(nx.algorithms.shortest_simple_paths(G, start, cur_node))
+                    paths += list(nx.algorithms.all_simple_paths(G, start, cur_node))
                     nodes_processed.extend([start, cur_node])
 
     start_nodes_remaining = [x for x in start_nodes if x not in nodes_processed]
@@ -523,7 +521,7 @@ def _all_end_to_end_paths(G, start_nodes, end_nodes):
                 pbar.update(i)
                 i += 1
                 if nx.algorithms.has_path(G, start, end):
-                    paths += [list(nx.algorithms.shortest_simple_paths(G, start, end))[-1]]
+                    paths += list(nx.algorithms.all_simple_paths(G, start, end))
                     nodes_processed.extend([start, end])
 
         start_nodes_remaining = [x for x in start_nodes if x not in nodes_processed]
@@ -540,7 +538,7 @@ def _all_end_to_end_paths(G, start_nodes, end_nodes):
                 pbar.update(i)
                 i += 1
                 if nx.algorithms.has_path(G, start, end):
-                    paths += [list(nx.algorithms.shortest_simple_paths(G, start, end))[-1]]
+                    paths += list(nx.algorithms.all_simple_paths(G, start, end))
                     nodes_processed.extend([start, end])
 
         start_nodes_remaining = [x for x in start_nodes if x not in nodes_processed]
@@ -557,7 +555,7 @@ def _all_end_to_end_paths(G, start_nodes, end_nodes):
                 pbar.update(i)
                 i += 1
                 if nx.algorithms.has_path(G, start, end):
-                    paths += [list(nx.algorithms.shortest_simple_paths(G, start, end))[-1]]
+                    paths += list(nx.algorithms.all_simple_paths(G, start, end))
                     nodes_processed.extend([start, end])
     return paths
 
@@ -3438,6 +3436,19 @@ class ProcessSequenceFactory:
         except AttributeError:
             object_column_map = get_object_column_map(DF.columns, DF.columns)
 
+        def get_node_by_label_and_key(l, k):
+            n = None
+            lk = l + ':' + k
+            if l == 'Source Name':
+                n = sources[lk]
+            if l == 'Sample Name':
+                n = samples[lk]
+            elif l in ('Extract Name', 'Labeled Extract Name'):
+                n = other_material[lk]
+            elif l.endswith('File'):
+                n = data[lk]
+            return n
+
         for _cg, column_group in enumerate(object_column_map):
             # for each object, parse column group
 
@@ -3506,19 +3517,6 @@ class ProcessSequenceFactory:
                                 material.factor_values.append(fv)
 
             elif object_label.startswith('Protocol REF'):
-
-                def get_node_by_label_and_key(l, k):
-                    n = None
-                    lk = l + ':' + k
-                    if l == 'Source Name':
-                        n = sources[lk]
-                    if l == 'Sample Name':
-                        n = samples[lk]
-                    elif l in ('Extract Name', 'Labeled Extract Name'):
-                        n = other_material[lk]
-                    elif l.endswith('File'):
-                        n = data[lk]
-                    return n
 
                 object_label_index = list(DF.columns).index(object_label)
 
@@ -3596,21 +3594,37 @@ class ProcessSequenceFactory:
 
         # now go row by row pulling out processes and linking them accordingly
 
-        pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Linking process objects: ',
+        pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Linking processes and other nodes in paths: ',
                                                                           SimpleProgress(),
                                                                           Bar(left=" |", right="| "),
                                                                           ETA()]).start()
         for _, object_series in pbar(DF.iterrows()):  # don't drop duplicates
             process_key_sequence = list()
-
+            source_node_context = None
+            sample_node_context = None
             for _cg, column_group in enumerate(object_column_map):
                 # for each object, parse column group
                 object_label = column_group[0]
 
+                if object_label.startswith('Source Name'):
+                    source_node_context = get_node_by_label_and_key(object_label, object_series[object_label])
+
+                if object_label.startswith('Sample Name'):
+                    sample_node_context = get_node_by_label_and_key(object_label, object_series[object_label])
+                    if source_node_context is not None:
+                        if source_node_context not in sample_node_context.derives_from:
+                            sample_node_context.derives_from.append(source_node_context)
+
                 if object_label.startswith('Protocol REF'):
-                    protocol_ref = object_series[column_group[0]]
+                    protocol_ref = object_series[object_label]
                     process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
                     process_key_sequence.append(process_key)
+
+                if object_label.endswith(' File'):
+                    data_node = get_node_by_label_and_key(object_label, object_series[object_label])
+                    if sample_node_context is not None:
+                        if sample_node_context not in data_node.generated_from:
+                            data_node.generated_from.append(sample_node_context)
 
             # print('key sequence = ', process_key_sequence)
 

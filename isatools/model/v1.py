@@ -853,7 +853,10 @@ class DataFile(Commentable):
         self.id = id_
         self.filename = filename
         self.label = label
-        self.generated_from = generated_from
+        if generated_from is None:
+            self.generated_from = []
+        else:
+            self.generated_from = generated_from
 
 
 class RawDataFile(DataFile):

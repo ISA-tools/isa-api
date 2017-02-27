@@ -39,10 +39,11 @@ def convert(work_dir, identifier_type=IdentifierType.name, validate_first=True, 
             return
     if use_new_parser:
         logger.info("Using new parser to load...")
-        ISA = isatab.load(open(i_files[0]))
-        from isatools.isajson import ISAJSONEncoder
-        logger.info("Using new ISA JSON encoder to dump...")
-        return json.loads(json.dumps(ISA, cls=ISAJSONEncoder))
+        with open(i_files[0]) as fp:
+            ISA = isatab.load(fp)
+            from isatools.isajson import ISAJSONEncoder
+            logger.info("Using new ISA JSON encoder to dump...")
+            return json.loads(json.dumps(ISA, cls=ISAJSONEncoder))
     else:
         converter = ISATab2ISAjson_v1(identifier_type)
         logger.info("Converting ISA-Tab to ISA JSON...")
