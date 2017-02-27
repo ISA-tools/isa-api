@@ -19,7 +19,7 @@
             </recommended-ontologies>
         </field>
         <protocol-field protocol-type="sample collection"/>
-        <field header="Sample Name" data-type="String" is-file-field="false" is-multiple-value="false"
+        <field header="Sample Name" data-type="String" is-file-field="false" is-multiple-value="true"
                is-required="true" is-hidden="false" is-forced-ontology="false">
             <description>
                 <![CDATA[Samples represent major outputs resulting from a protocol application other than the special case outputs of Extract or a Labeled Extract.]]></description>
