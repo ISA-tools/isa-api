@@ -346,7 +346,7 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(assay_gx.data_files), 29)  # 29 data files  in a_matteo-assay-Gx.txt
             self.assertEqual(len(assay_gx.process_sequence), 116)  # 116 processes in in a_matteo-assay-Gx.txt
 
-    # def test_isatab_load_flower(self):  # don't commit this as it takes 10 minutes to run on local machine
+    # def test_isatab_load_flower(self):  # don't commit this as it takes 3 minutes to run on local machine
     #     with open(os.path.join(self._tab_data_dir, 'Flower_Study', 'i_Investigation.txt')) as fp:
     #         ISA = isatab.load(fp)
     #         print(isatab.dumps(ISA))
@@ -513,32 +513,6 @@ source1	sample collection	10	sample1"""
 source1	sample collection	sample1	Study group 1"""
         self.assertIn(expected, isatab.dumps(i))
 
-    def test_source_protocol_ref(self):
-        i = Investigation()
-        s = Study(filename='s_test.txt',
-                  protocols=[Protocol(name='sample collection')])
-        source1 = Source(name='source1')
-        sample_collection_process = Process(executes_protocol=s.protocols[0])
-        sample_collection_process.inputs = [source1]
-        s.process_sequence = [sample_collection_process]
-        i.studies = [s]
-        expected = """Source Name	Protocol REF
-source1	sample collection"""
-        self.assertIn(expected, isatab.dumps(i))
-
-#     def test_protocol_ref_sample(self): # FIXME: Broken test
-#         i = Investigation()
-#         s = Study(filename='s_test.txt',
-#                   protocols=[Protocol(name='sample collection')])
-#         sample1 = Sample(name='sample1')
-#         sample_collection_process = Process(executes_protocol=s.protocols[0])
-#         sample_collection_process.outputs = [sample1]
-#         s.process_sequence = [sample_collection_process]
-#         i.studies = [s]
-#         expected = """Protocol REF	Sample Name
-# sample collection	sample1"""
-#         self.assertIn(expected, isatab.dumps(i))
-
     def test_source_protocol_ref_protocol_ref_sample(self):
         i = Investigation()
         s = Study(
@@ -558,27 +532,27 @@ source1	sample collection"""
 source1	sample collection	aliquoting	aliquot1"""
         self.assertIn(expected, isatab.dumps(i))
 
-#     def test_source_protocol_ref_sample_protocol_ref_sample(self):  # FIXME: Broken test
-#         i = Investigation()
-#         s = Study(
-#             filename='s_test.txt',
-#             protocols=[Protocol(name='sample collection'), Protocol(name='aliquoting')]
-#         )
-#         source1 = Source(name='source1')
-#         sample1 = Sample(name='sample1')
-#         aliquot1 = Sample(name='aliquot1')
-#         sample_collection_process = Process(executes_protocol=s.protocols[0])
-#         aliquoting_process = Process(executes_protocol=s.protocols[1])
-#         sample_collection_process.inputs = [source1]
-#         sample_collection_process.outputs = [sample1]
-#         aliquoting_process.inputs = [sample1]
-#         aliquoting_process.outputs = [aliquot1]
-#         plink(sample_collection_process, aliquoting_process)
-#         s.process_sequence = [sample_collection_process, aliquoting_process]
-#         i.studies = [s]
-#         expected = """Source Name	Protocol REF	Sample Name	Protocol REF	Sample Name
-# source1	sample collection	sample1	aliquoting	aliquot1"""
-#         self.assertIn(expected, isatab.dumps(i))
+    def test_source_protocol_ref_sample_protocol_ref_sample(self):
+        i = Investigation()
+        s = Study(
+            filename='s_test.txt',
+            protocols=[Protocol(name='sample collection'), Protocol(name='aliquoting')]
+        )
+        source1 = Source(name='source1')
+        sample1 = Sample(name='sample1')
+        aliquot1 = Sample(name='aliquot1')
+        sample_collection_process = Process(executes_protocol=s.protocols[0])
+        aliquoting_process = Process(executes_protocol=s.protocols[1])
+        sample_collection_process.inputs = [source1]
+        sample_collection_process.outputs = [sample1]
+        aliquoting_process.inputs = [sample1]
+        aliquoting_process.outputs = [aliquot1]
+        plink(sample_collection_process, aliquoting_process)
+        s.process_sequence = [sample_collection_process, aliquoting_process]
+        i.studies = [s]
+        expected = """Source Name	Protocol REF	Sample Name	Protocol REF	Sample Name
+source1	sample collection	sample1	aliquoting	aliquot1"""
+        self.assertIn(expected, isatab.dumps(i))
 
     def test_sample_protocol_ref_material_protocol_ref_data(self):
         i = Investigation()

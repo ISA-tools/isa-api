@@ -444,119 +444,28 @@ def _longest_path_and_attrs(paths):
     return longest[1]
 
 
-def _all_end_to_end_paths(G, start_nodes, end_nodes):
-    print("Calculating paths to write for {0} start and {1} end nodes ".format(len(start_nodes), len(end_nodes)))
+def _all_end_to_end_paths(G, start_nodes):  # we know graphs start with Source or Sample and end with Process
     paths = []
-    nodes_processed = []
-    # check for from-link
-    pbar = ProgressBar(min_value=0, max_value=len(end_nodes), widgets=['Looking for -from links: ',
-                                                                   SimpleProgress(),
-                                                                   Bar(left=" |", right="| "), ETA()]).start()
-    for end in pbar(end_nodes):
-
-        if isinstance(end, Sample):
-            for derives_from in end.derives_from:
-                paths += list(nx.algorithms.all_simple_paths(G, derives_from, end))
-                nodes_processed.extend([derives_from, end])
-        elif isinstance(end, DataFile):
-            for generated_from in end.generated_from:
-                paths += list(nx.algorithms.all_simple_paths(G, generated_from, end))
-                nodes_processed.extend([generated_from, end])
-
-    end_nodes_remaining = [x for x in end_nodes if x not in nodes_processed]
-    print("{0} end nodes remaining".format(len(end_nodes_remaining)))
-    if len(end_nodes_remaining) > 0:
-        pbar = ProgressBar(min_value=0, max_value=len(end_nodes_remaining),
-                           widgets=['Trying reverse traversal: ',
-                                    SimpleProgress(),
-                                    Bar(left=" |", right="| "), ETA()]).start()
-        for end in pbar(end_nodes_remaining):
-            processes_linked_to_node = [p for p in G.nodes() if isinstance(p, Process) and end in p.outputs]
-            for process in processes_linked_to_node:
-                cur_node = process
-                while cur_node.prev_process:
-                    cur_node = cur_node.prev_process
-                if len(cur_node.inputs) > 0:
-                    for input in cur_node.inputs:
-                        paths += list(nx.algorithms.all_simple_paths(G, input, end))
-                        nodes_processed.extend([input, end])
-                else:
-                    paths += list(nx.algorithms.all_simple_paths(G, cur_node, end))
-                    nodes_processed.extend([cur_node, end])
-
-    start_nodes_remaining = [x for x in start_nodes if x not in nodes_processed]
-    print("{0} start nodes remaining".format(len(start_nodes_remaining)))
-    if len(start_nodes_remaining) > 0:
-        pbar = ProgressBar(min_value=0, max_value=len(start_nodes_remaining),
-                           widgets=['Trying forward traversal: ',
-                                    SimpleProgress(),
-                                    Bar(left=" |", right="| "), ETA()]).start()
-        for start in pbar(start_nodes_remaining):
-            processes_linked_to_node = [p for p in G.nodes() if isinstance(p, Process) and start in p.inputs]
-            for process in processes_linked_to_node:
-                cur_node = process
-                while cur_node.next_process:
-                    cur_node = cur_node.next_process
-                if len(cur_node.outputs) > 0:
-                    pass  # because we consider last process as end node, not the outputs
-                    # for output in cur_node.outputs:
-                    #     paths += [list(nx.algorithms.shortest_simple_paths(G, start, output))[-1]]
-                    #     nodes_processed.extend([start, output])
-                else:
-                    paths += list(nx.algorithms.all_simple_paths(G, start, cur_node))
-                    nodes_processed.extend([start, cur_node])
-
-    start_nodes_remaining = [x for x in start_nodes if x not in nodes_processed]
-    end_nodes_remaining = [x for x in end_nodes if x not in nodes_processed]
-    if len(start_nodes_remaining) + len(end_nodes_remaining) > 0:
-        print("{0} start nodes and {1} end nodes remaining".format(len(start_nodes_remaining), len(end_nodes_remaining)))
-        # default
-        if len(start_nodes_remaining) * len(end_nodes_remaining) > 0:
-            pbar = ProgressBar(min_value=0, max_value=len(start_nodes_remaining) * len(end_nodes_remaining),
-                               widgets=['Trying brute force: ',
-                                        SimpleProgress(),
-                                        Bar(left=" |", right="| "), ETA()]).start()
-            i = 0
-            for start, end in itertools.product(start_nodes_remaining, end_nodes_remaining):
-                pbar.update(i)
-                i += 1
-                if nx.algorithms.has_path(G, start, end):
-                    paths += list(nx.algorithms.all_simple_paths(G, start, end))
-                    nodes_processed.extend([start, end])
-
-        start_nodes_remaining = [x for x in start_nodes if x not in nodes_processed]
-        end_nodes_remaining = [x for x in end_nodes if x not in nodes_processed]
-
-        if len(start_nodes_remaining) > 0 and len(end_nodes_remaining) == 0:
-            print("Last resort trying to build paths for remaining {} start nodes".format(len(start_nodes_remaining)))
-            pbar = ProgressBar(min_value=0, max_value=len(start_nodes_remaining) * len(end_nodes),
-                               widgets=['Trying brute force: ',
-                                        SimpleProgress(),
-                                        Bar(left=" |", right="| "), ETA()]).start()
-            i = 0
-            for start, end in itertools.product(start_nodes_remaining, end_nodes):
-                pbar.update(i)
-                i += 1
-                if nx.algorithms.has_path(G, start, end):
-                    paths += list(nx.algorithms.all_simple_paths(G, start, end))
-                    nodes_processed.extend([start, end])
-
-        start_nodes_remaining = [x for x in start_nodes if x not in nodes_processed]
-        end_nodes_remaining = [x for x in end_nodes if x not in nodes_processed]
-
-        if len(start_nodes_remaining) == 0 and len(end_nodes_remaining) > 0:
-            print("Last resort trying to build paths for remaining {} start nodes".format(len(end_nodes_remaining)))
-            pbar = ProgressBar(min_value=0, max_value=len(start_nodes) * len(end_nodes_remaining),
-                               widgets=['Trying brute force: ',
-                                        SimpleProgress(),
-                                        Bar(left=" |", right="| "), ETA()]).start()
-            i = 0
-            for start, end in itertools.product(start_nodes, end_nodes_remaining):
-                pbar.update(i)
-                i += 1
-                if nx.algorithms.has_path(G, start, end):
-                    paths += list(nx.algorithms.all_simple_paths(G, start, end))
-                    nodes_processed.extend([start, end])
+    num_start_nodes = len(start_nodes)
+    message = 'Calculating for paths for {} start nodes: '.format(num_start_nodes)
+    if isinstance(start_nodes[0], Source):
+        message = 'Calculating for paths for {} sources: '.format(num_start_nodes)
+    elif isinstance(start_nodes[0], Sample):
+        message = 'Calculating for paths for {} samples: '.format(num_start_nodes)
+    pbar = ProgressBar(min_value=0, max_value=num_start_nodes, widgets=[message,
+                                                                       SimpleProgress(),
+                                                                       Bar(left=" |", right="| "), ETA()]).start()
+    for start in pbar(start_nodes):
+        # Find ends
+        if isinstance(start, Source):  # only look for Sample ends if start is a Source
+            for end in [x for x in nx.algorithms.descendants(G, start) if
+                        isinstance(x, Sample) and len(G.out_edges(x)) == 0]:
+                paths += list(nx.algorithms.all_simple_paths(G, start, end))
+        elif isinstance(start, Sample):  # only look for Process ends if start is a Sample
+            for end in [x for x in nx.algorithms.descendants(G, start) if
+                        isinstance(x, Process) and x.next_process is None]:
+                paths += list(nx.algorithms.all_simple_paths(G, start, end))
+    print("Found {} paths!".format(len(paths)))
     return paths
 
 
@@ -583,8 +492,8 @@ def write_study_table_files(inv_obj, output_dir):
         flatten = lambda l: [item for sublist in l for item in sublist]
         columns = []
 
-        start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
-        paths = _all_end_to_end_paths(study_obj.graph, start_nodes, end_nodes)
+        # start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
+        paths = _all_end_to_end_paths(study_obj.graph, [x for x in study_obj.graph.nodes() if isinstance(x, Source)])
         sample_in_path_count = 0
         for node in _longest_path_and_attrs(paths):
             if isinstance(node, Source):
@@ -723,8 +632,8 @@ def write_assay_table_files(inv_obj, output_dir):
             flatten = lambda l: [item for sublist in l for item in sublist]
             columns = []
 
-            start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
-            paths = _all_end_to_end_paths(assay_obj.graph, start_nodes, end_nodes)
+            # start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
+            paths = _all_end_to_end_paths(assay_obj.graph, [x for x in assay_obj.graph.nodes() if isinstance(x, Sample)])
             for node in _longest_path_and_attrs(paths):
                 if isinstance(node, Sample):
                     olabel = "Sample Name"
