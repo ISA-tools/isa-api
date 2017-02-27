@@ -68,9 +68,9 @@ provide an ENA accession number and your path to the SAXON JAR file:
 
 This method returns the ISA-Tab files as a byte stream (``io.BytesIO``).
 
-----------------------------------------------------
-Importing SRA from MetabolomicsWorkbench, to ISA-Tab
-----------------------------------------------------
+------------------------------------------------
+Importing from MetabolomicsWorkbench, to ISA-Tab
+------------------------------------------------
 To import a study from the `Metabolomics Workbench <http://www.metabolomicsworkbench.org/>`_ as ISA-Tab files,
 provide an accession number and your local path to write your files to:
 
@@ -82,9 +82,9 @@ provide an accession number and your local path to write your files to:
 
 See ``isa-api/isatools/convert/mw2isa.py``
 
-----------------------------------------
-Importing SRA from Biocrates, to ISA-Tab
-----------------------------------------
+------------------------------------
+Importing from Biocrates, to ISA-Tab
+------------------------------------
 
 Notice: this method depends on SAXON XSLT Processor
 

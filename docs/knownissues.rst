@@ -2,6 +2,11 @@
 Known issues
 ############
 
+isatools v0.6 package
+---------------------
+- Issues #146, #101, #153 as per below
+- SRA/ENA importer and Biocrates importer relies on XSLT2 processing only available with SAXON and requires .jar file to run
+
 isatools v0.5 package
 ---------------------
 - All issues inherited from v0.4 (see below)

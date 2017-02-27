@@ -9,5 +9,6 @@ We provide the code listings linked in this documentation, and you can also view
 Simple Example Programs
 -----------------------
 - `createSimpleISAtab.py <example-createSimpleISAtab>`: Uses the ISA model classes to construct ISA content and write it out as an ISA-Tab.
+- `createSimpleISAJSON.py <example-createSimpleISAJSON>`: Uses the ISA model classes to construct ISA content and write it out as an ISA-JSON.
 - `validateISAtab.py <example-validateISAtab>`: Validates one or more ISA-Tab archives.
 - `validateISAjson.py <example-validateISAjson>`: Validates one or more ISA-JSON files.
