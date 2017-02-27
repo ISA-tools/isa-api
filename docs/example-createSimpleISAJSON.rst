@@ -159,10 +159,10 @@ An example of using the ISA model classes to create an ISA-JSON file.
             datafile = DataFile(filename="sequenced-data-{}".format(i), label="Raw Data File")
             sequencing_process.outputs.append(datafile)
 
-            # ensure Processes are linked forward and backward
+            # Ensure Processes are linked forward and backward. plink(from_process, to_process) is a function to set
+            # these links for you. It is found in the isatools.model.v1 package
 
-            extraction_process.next_process = sequencing_process
-            sequencing_process.prev_process = extraction_process
+            plink(extraction_process, sequencing_process)
 
             # make sure the extract, data file, and the processes are attached to the assay
 

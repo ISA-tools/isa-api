@@ -4,8 +4,9 @@ Known issues
 
 isatools v0.6 package
 ---------------------
-- Issues #146, #101, #153 as per below
+- Issues #146, #101, #153 are still outstanding, as per below
 - SRA/ENA importer and Biocrates importer relies on XSLT2 processing only available with SAXON and requires .jar file to run
+- We are aware that there may be some performance issues when loading and writing ISA-Tab documents with several thousand samples. This has been worked on and there is ongoing efforts to improve on the current performance of ISA-Tab I/O
 
 isatools v0.5 package
 ---------------------
