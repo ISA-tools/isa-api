@@ -583,12 +583,12 @@ def write_study_table_files(inv_obj, output_dir):
                 columns[i] = col[col.rindex(".") + 1:]
             elif "Parameter Value[" in col:
                 columns[i] = col[col.rindex(".") + 1:]
-            elif "Protocol REF" in col:
-                columns[i] = "Protocol REF"
             elif col.endswith("Date"):
                 columns[i] = "Date"
             elif col.endswith("Performer"):
                 columns[i] = "Performer"
+            elif "Protocol REF" in col:
+                columns[i] = "Protocol REF"
             elif col.startswith("Sample Name."):
                 columns[i] = "Sample Name"
 
