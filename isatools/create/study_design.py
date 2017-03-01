@@ -475,7 +475,7 @@ def create_study_subjects(group_size, this_study, group_uuid, group_factor_combo
                     for specimen_number in range(int(number_of_collections)):
 
                         sample_name = source_name + "_" + "sample#" + str(specimen_number) + "_" + tissue
-                        sample_template = Sample(name=sample_name, derives_from=source)
+                        sample_template = Sample(name=sample_name, derives_from=[source])
                         characteristic_op = Characteristic(category=OntologyAnnotation(term="organism part"),
                                                            value=OntologyAnnotation(term=tissue))
                         sample_template.characteristics.append(characteristic_op)
@@ -487,7 +487,7 @@ def create_study_subjects(group_size, this_study, group_uuid, group_factor_combo
                         # this_study.studies[0].materials['samples'] = batch_create_materials(prototype_sample, n=2)
                         # for sam in this_study.studies[0].materials['samples']:
                         # sample_name = source_name + "_" + "sample#" + str(i)
-                        # sample = Sample(name=sample_name, derives_from=source)
+                        # sample = Sample(name=sample_name, derives_from=[source])
 
                         combo = group_factor_combo
                         # print("this study group from create_study_subject: ", combo)
