@@ -2822,7 +2822,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
     for _, row in df_dict['ontology_sources'].iterrows():
         ontology_source = OntologySource(name=row['Term Source Name'],
                                          file=row['Term Source File'],
-                                         version=row['Term Source File'],
+                                         version=row['Term Source Version'],
                                          description=row['Term Source Description'])
         investigation.ontology_source_references.append(ontology_source)
 

@@ -143,73 +143,18 @@ class OntologySource(Commentable):
 
     Attributes:
         name (str): The name of the source of a term; i.e. the source controlled vocabulary or ontology.
-        file (str, NoneType): A file name or a URI of an official resource.
-        version (str, NoneType): The version number of the Term Source to support terms tracking.
-        description (str, NoneType): A free text description of the resource.
-        comments (list, NoneType): Comments associated with instances of this class.
+        file (str): A file name or a URI of an official resource.
+        version (str): The version number of the Term Source to support terms tracking.
+        description (str): A free text description of the resource.
+        comments (list,): Comments associated with instances of this class.
     """
 
-    def __init__(self, name, file=None, version=None, description=None, comments=None):
+    def __init__(self, name, file='', version='', description='', comments=''):
         super().__init__(comments)
         self.name = name
         self.file = file
         self.version = version
         self.description = description
-
-    @property
-    def name(self):
-        return self.__name
-
-    @name.setter
-    def name(self, name):
-        if not isinstance(name, str):
-            raise AttributeError("OntologySource.name must be a str")
-        elif name.strip() == '':
-            raise AttributeError("OntologySource.name must not be empty")
-        else:
-            self.__name = name
-
-    @property
-    def file(self):
-        if self.__file is '':
-            return None
-        else:
-            return self.__file
-
-    @file.setter
-    def file(self, file):
-        if file is not None and not isinstance(file, str):
-            raise AttributeError("OntologySource.file must be a str or None")
-        else:
-            self.__file = file
-
-    @property
-    def version(self):
-        if self.__version is '':
-            return None
-        else:
-            return self.__version
-
-    @version.setter
-    def version(self, version):
-        if version is not None and not isinstance(version, str):
-            raise AttributeError("OntologySource.version must be a str or None")
-        else:
-            self.__version = version
-
-    @property
-    def description(self):
-        if self.__description is '':
-            return None
-        else:
-            return self.__description
-
-    @description.setter
-    def description(self, description):
-        if description is not None and not isinstance(description, str):
-            raise AttributeError("OntologySource.description must be a str or None")
-        else:
-            self.__description = description
 
 
 class OntologyAnnotation(Commentable):
