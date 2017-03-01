@@ -4,7 +4,6 @@ from pandas.parser import CParserError
 import io
 import glob
 import networkx as nx
-import itertools
 import logging
 import re
 import math
@@ -2818,7 +2817,6 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
 
     df_dict = read_investigation_file(FP)
 
-    from isatools.model.v1 import Investigation, Study
     investigation = Investigation()
 
     for _, row in df_dict['ontology_sources'].iterrows():
@@ -2888,7 +2886,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
         else:
             study_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), study.filename))
             sources, samples, _, __, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(
-                investigation.ontology_source_references, study_protocols=study.protocols,
+                ontology_sources=investigation.ontology_source_references, study_protocols=study.protocols,
                 study_factors=study.factors).create_from_df(study_tfile_df)
             study.materials['sources'] = list(sources.values())
             study.materials['samples'] = list(samples.values())
@@ -2929,10 +2927,10 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
             else:
                 assay_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), assay.filename))
                 _, samples, other, data, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(
-                    investigation.ontology_source_references,
-                    study.materials['samples'],
-                    study.protocols,
-                    study.factors).create_from_df(assay_tfile_df)
+                    ontology_sources=investigation.ontology_source_references,
+                    study_samples=study.materials['samples'],
+                    study_protocols=study.protocols,
+                    study_factors=study.factors).create_from_df(assay_tfile_df)
                 assay.materials['samples'] = list(samples.values())
                 assay.materials['other_material'] = list(other.values())
                 assay.data_files = list(data.values())
@@ -2960,6 +2958,10 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
 
 
 def process_keygen(protocol_ref, column_group, object_label_index, all_columns, series, series_index, DF):
+    name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
+    if len(name_column_hits) == 1:
+        return series[name_column_hits[0]]
+
     process_key = protocol_ref
     node_cols = [i for i, c in enumerate(all_columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
     input_node_value = ''
@@ -2985,25 +2987,29 @@ def process_keygen(protocol_ref, column_group, object_label_index, all_columns, 
     if process_key == protocol_ref:
         process_key += '-' + str(series_index)
 
-    name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
-    if len(name_column_hits) == 1:
-        process_key = series[name_column_hits[0]]
-    else:
-        pv_cols = [c for c in column_group if c.startswith('Parameter Value[')]
-        if len(pv_cols) > 0:
-            # 2. else try use protocol REF + Parameter Values as key
-            if node_key is not None:
-                process_key = node_key + \
-                              ':' + protocol_ref + \
-                              ':' + '/'.join([str(v) for v in series[pv_cols]])
-            else:
-                process_key = protocol_ref + \
-                              ':' + '/'.join([str(v) for v in series[pv_cols]])
+    pv_cols = [c for c in column_group if c.startswith('Parameter Value[')]
+    if len(pv_cols) > 0:
+        # 2. else try use protocol REF + Parameter Values as key
+        if node_key is not None:
+            process_key = node_key + \
+                          ':' + protocol_ref + \
+                          ':' + '/'.join([str(v) for v in series[pv_cols]])
         else:
-            # 3. else try use input + protocol REF as key
-            # 4. else try use output + protocol REF as key
-            if node_key is not None:
-                process_key = node_key + '/' + protocol_ref
+            process_key = protocol_ref + \
+                          ':' + '/'.join([str(v) for v in series[pv_cols]])
+    else:
+        # 3. else try use input + protocol REF as key
+        # 4. else try use output + protocol REF as key
+        if node_key is not None:
+            process_key = node_key + '/' + protocol_ref
+
+    date_col_hits = [c for c in column_group if c.startswith('Date')]
+    if len(date_col_hits) == 1:
+        process_key = ':'.join([process_key, series[date_col_hits[0]]])
+
+    performer_col_hits = [c for c in column_group if c.startswith('Performer')]
+    if len(performer_col_hits) == 1:
+        process_key = ':'.join([process_key, series[performer_col_hits[0]]])
 
     return process_key
 
@@ -3159,10 +3165,10 @@ def preprocess(DF):
 
 def get_object_column_map(isatab_header, df_columns):
     if set(isatab_header) == set(df_columns):
-        object_index = [i for i, x in enumerate(df_columns) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES + _LABELS_DATA_NODES
+        object_index = [i for i, x in enumerate(df_columns) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
                         or 'Protocol REF' in x]
     else:
-        object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES + _LABELS_DATA_NODES
+        object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
                         + ['Protocol REF']]
 
     # group headers regarding objects delimited by object_index by slicing up the header list
@@ -3223,7 +3229,10 @@ class ProcessSequenceFactory:
                 sample_map = dict(map(lambda x: ('Sample Name:' + x.name, x), self.samples))
                 sample_keys = list(map(lambda x: 'Sample Name:' + x, DF['Sample Name'].drop_duplicates()))
                 for k in sample_keys:
-                    samples[k] = sample_map[k]
+                    try:
+                        samples[k] = sample_map[k]
+                    except KeyError:
+                        print('warning! Did not find sample referenced at assay level in study samples')
             else:
                 samples = dict(map(lambda x: ('Sample Name:' + x, Sample(name=x)), DF['Sample Name'].drop_duplicates()))
         except KeyError:
@@ -3437,6 +3446,7 @@ class ProcessSequenceFactory:
                 for _, object_series in pbar(DF.iterrows()):  # don't drop duplicates
                     protocol_ref = object_series[column_group[0]]
                     process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
+                    # TODO: Keep process key sequence here to reduce number of passes on Protocol REF columns?
 
                     try:
                         process = processes[process_key]
