@@ -394,11 +394,11 @@ class Study(Commentable, object):
             'other_material': list()
         }
         if not (sources is None):
-            self.materials['sources'].append(sources)
+            self.materials['sources'] = sources
         if not (samples is None):
-            self.materials['samples'].append(samples)
+            self.materials['samples'] = samples
         if not (other_material is None):
-            self.materials['other_material'].append(other_material)
+            self.materials['other_material'] = other_material
 
         if process_sequence is None:
             self.process_sequence = list()
