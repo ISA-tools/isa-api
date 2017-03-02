@@ -290,7 +290,7 @@ def load(FP):
             samples[sample.name] = sample
 
     study.materials['sources'] = list(sources.values())
-    study.materials['samples'] = [x for x in list(samples.values()) if x not in list(sources.values())]
+    study.materials['samples'] = [x for x in set(samples.values()) if x.name not in [y.name for y in list(sources.values())]]
     study.process_sequence = list(processes.values())
 
     return investigation
