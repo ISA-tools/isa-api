@@ -14,6 +14,7 @@ from bisect import bisect_left, bisect_right
 from itertools import tee
 import pandas as pd
 from progressbar import ProgressBar, SimpleProgress, Bar, ETA
+import io
 
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
@@ -771,14 +772,14 @@ def write_assay_table_files(inv_obj, output_dir):
                     columns[i] = col[col.rindex(".") + 1:]
                 elif "Parameter Value[" in col:
                     columns[i] = col[col.rindex(".") + 1:]
-                elif "Protocol REF" in col:
-                    columns[i] = "Protocol REF"
                 elif col.endswith("Date"):
                     columns[i] = "Date"
                 elif col.endswith("Performer"):
                     columns[i] = "Performer"
                 elif "Comment[" in col:
                     columns[i] = col[col.rindex(".") + 1:]
+                elif "Protocol REF" in col:
+                    columns[i] = "Protocol REF"
 
             print("Rendered {} paths".format(len(DF.index)))
             if len(DF.index) > 1:
@@ -886,28 +887,37 @@ def read_investigation_file(fp):
         df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
         return df
 
+    memf = io.StringIO()
+    while True:
+        line = fp.readline()
+        if not line:
+            break
+        if not line.lstrip().startswith('#'):
+            memf.write(line)
+    memf.seek(0)
+
     df_dict = dict()
 
     # Read in investigation file into DataFrames first
     df_dict['ontology_sources'] = _build_section_df(_read_tab_section(
-        f=fp,
+        f=memf,
         sec_key='ONTOLOGY SOURCE REFERENCE',
         next_sec_key='INVESTIGATION'
     ))
     # assert({'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
     #        .issubset(set(ontology_sources_df.columns.values)))  # Check required labels are present
-    df_dict['investigation']  = _build_section_df(_read_tab_section(
-        f=fp,
+    df_dict['investigation'] = _build_section_df(_read_tab_section(
+        f=memf,
         sec_key='INVESTIGATION',
         next_sec_key='INVESTIGATION PUBLICATIONS'
     ))
-    df_dict['i_publications']  = _build_section_df(_read_tab_section(
-        f=fp,
+    df_dict['i_publications'] = _build_section_df(_read_tab_section(
+        f=memf,
         sec_key='INVESTIGATION PUBLICATIONS',
         next_sec_key='INVESTIGATION CONTACTS'
     ))
-    df_dict['i_contacts']  = _build_section_df(_read_tab_section(
-        f=fp,
+    df_dict['i_contacts'] = _build_section_df(_read_tab_section(
+        f=memf,
         sec_key='INVESTIGATION CONTACTS',
         next_sec_key='STUDY'
     ))
@@ -918,39 +928,39 @@ def read_investigation_file(fp):
     df_dict['s_assays'] = list()
     df_dict['s_protocols'] = list()
     df_dict['s_contacts'] = list()
-    while _peek(fp):  # Iterate through STUDY blocks until end of file
+    while _peek(memf):  # Iterate through STUDY blocks until end of file
         df_dict['studies'].append(_build_section_df(_read_tab_section(
-            f=fp,
+            f=memf,
             sec_key='STUDY',
             next_sec_key='STUDY DESIGN DESCRIPTORS'
         )))
         df_dict['s_design_descriptors'] .append(_build_section_df(_read_tab_section(
-            f=fp,
+            f=memf,
             sec_key='STUDY DESIGN DESCRIPTORS',
             next_sec_key='STUDY PUBLICATIONS'
         )))
         df_dict['s_publications'].append(_build_section_df(_read_tab_section(
-            f=fp,
+            f=memf,
             sec_key='STUDY PUBLICATIONS',
             next_sec_key='STUDY FACTORS'
         )))
         df_dict['s_factors'].append(_build_section_df(_read_tab_section(
-            f=fp,
+            f=memf,
             sec_key='STUDY FACTORS',
             next_sec_key='STUDY ASSAYS'
         )))
         df_dict['s_assays'].append(_build_section_df(_read_tab_section(
-            f=fp,
+            f=memf,
             sec_key='STUDY ASSAYS',
             next_sec_key='STUDY PROTOCOLS'
         )))
         df_dict['s_protocols'].append(_build_section_df(_read_tab_section(
-            f=fp,
+            f=memf,
             sec_key='STUDY PROTOCOLS',
             next_sec_key='STUDY CONTACTS'
         )))
         df_dict['s_contacts'].append(_build_section_df(_read_tab_section(
-            f=fp,
+            f=memf,
             sec_key='STUDY CONTACTS',
             next_sec_key='STUDY'
         )))
@@ -2824,14 +2834,15 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
 
     ontology_source_map = dict(map(lambda x: (x.name, x), investigation.ontology_source_references))
 
-    row = df_dict['investigation'].iloc[0]
-    investigation.identifier = row['Investigation Identifier']
-    investigation.title = row['Investigation Title']
-    investigation.description = row['Investigation Description']
-    investigation.submission_date = row['Investigation Submission Date']
-    investigation.public_release_date = row['Investigation Public Release Date']
-    investigation.publications = get_publications(df_dict['i_publications'])
-    investigation.contacts = get_contacts(df_dict['i_contacts'])
+    if len(df_dict['investigation'].index) > 0:
+        row = df_dict['investigation'].iloc[0]
+        investigation.identifier = row['Investigation Identifier']
+        investigation.title = row['Investigation Title']
+        investigation.description = row['Investigation Description']
+        investigation.submission_date = row['Investigation Submission Date']
+        investigation.public_release_date = row['Investigation Public Release Date']
+        investigation.publications = get_publications(df_dict['i_publications'])
+        investigation.contacts = get_contacts(df_dict['i_contacts'])
 
     for i in range(0, len(df_dict['studies'])):
         row = df_dict['studies'][i].iloc[0]
