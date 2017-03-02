@@ -46,3 +46,18 @@ if you want to upgrade the requirements already installed.
 Now you're ready to get started!
 
 For full instructions on installing and using ``virtualenv`` see `their documentation <https://virtualenv.readthedocs.org>`_.
+
+Running tests
+-------------
+
+The tests in the ISA-API rely on datasets available in the test branch of the `ISAdatasets repository <http://github.com/ISA-tools/ISAdatasets>`_.
+
+Thus, the first step for running the tests is to clone that branch under the /tests/data folder:
+
+``git clone -b tests --single-branch http://github.com/ISA-tools/ISAdatasets tests/data``
+
+After that, you can run the test with the usual command:
+
+``python setup.py test``
+
+
