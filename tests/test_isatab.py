@@ -244,6 +244,12 @@ class TestIsaTabLoad(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
 
+    def test_isatab_load_sdata201414_isa1(self):
+        with open(os.path.join(self._tab_data_dir, 'sdata201414-isa1', 'i_Investigation.txt')) as fp:
+            ISA = isatab.load(fp)
+            self.assertListEqual([s.filename for s in ISA.studies], ['s_chambers.txt'])  # 1 study in i_investigation.txt
+            self.assertListEqual([a.filename for a in ISA.studies[0].assays], ['a_chambers.txt'])  # 1 assays in s_chambers.txt
+
     def test_isatab_load_bii_i_1(self):
         with open(os.path.join(self._tab_data_dir, 'BII-I-1', 'i_investigation.txt')) as fp:
             ISA = isatab.load(fp)
