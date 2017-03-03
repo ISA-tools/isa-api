@@ -177,7 +177,7 @@ def load(FP):
         sec_key='[SCD]'
     ), sep='\t').fillna('')
 
-    study = Study()
+    study = Study(filename="s_{}.txt".format(ISA.identifier))
     study.protocols = [Protocol(name='sample collection', protocol_type=OntologyAnnotation(term='sample collection'))]
     protocol_map = {
         "sample collection": Protocol(name="sample collection",

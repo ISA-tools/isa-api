@@ -2853,6 +2853,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
         study.submission_date = row['Study Submission Date']
         study.public_release_date = row['Study Public Release Date']
         study.filename = row['Study File Name']
+
         study.publications = get_publications(df_dict['s_publications'][i])
         study.contacts = get_contacts(df_dict['s_contacts'][i])
 
