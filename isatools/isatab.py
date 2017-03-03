@@ -2875,6 +2875,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
             design_descriptor = get_oa(row['Study Design Type'],
                                        row['Study Design Type Term Accession Number'],
                                        row['Study Design Type Term Source REF'])
+            design_descriptor.comments = get_comments_row(df_dict['s_design_descriptors'][i].columns, row)
             study.design_descriptors.append(design_descriptor)
 
         for _, row in df_dict['s_factors'][i].iterrows():
@@ -2882,6 +2883,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
             factor.factor_type = get_oa(row['Study Factor Type'],
                                         row['Study Factor Type Term Accession Number'],
                                         row['Study Factor Type Term Source REF'])
+            factor.comments = get_comments_row(df_dict['s_factors'][i].columns, row)
             study.factors.append(factor)
 
         protocol_map = {}
@@ -2900,6 +2902,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
             for param in params:
                 protocol_param = ProtocolParameter(parameter_name=param)
                 protocol.parameters.append(protocol_param)
+            protocol.comments = get_comments_row(df_dict['s_protocols'][i].columns, row)
             study.protocols.append(protocol)
             protocol_map[protocol.name] = protocol
         study.protocols = list(protocol_map.values())
