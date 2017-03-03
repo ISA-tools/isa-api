@@ -126,7 +126,7 @@ def load(FP):
 
     msi_df = read_sampletab_msi(FP)
 
-    investigation = Investigation()
+    ISA = Investigation()
 
     for _, row in msi_df[["Term Source Name", "Term Source URI", "Term Source Version"]]\
             .replace('', np.nan).dropna(axis=0, how='all').iterrows():
@@ -134,17 +134,17 @@ def load(FP):
                                          file=row["Term Source URI"],
                                          version=row["Term Source Version"],
                                          description=row["Term Source Name"])
-        investigation.ontology_source_references.append(ontology_source)
+        ISA.ontology_source_references.append(ontology_source)
 
-    ontology_source_map = dict(map(lambda x: (x.name, x), investigation.ontology_source_references))
+    ontology_source_map = dict(map(lambda x: (x.name, x), ISA.ontology_source_references))
 
     row = msi_df[["Submission Title", "Submission Identifier", "Submission Description", "Submission Version",
                   "Submission Reference Layer", "Submission Release Date", "Submission Update Date"]].iloc[0]
-    investigation.identifier = row["Submission Identifier"]
-    investigation.title = row["Submission Title"]
-    investigation.description = row["Submission Description"]
-    investigation.submission_date = row["Submission Release Date"]
-    investigation.comments = [
+    ISA.identifier = row["Submission Identifier"]
+    ISA.title = row["Submission Title"]
+    ISA.description = row["Submission Description"]
+    ISA.submission_date = row["Submission Release Date"]
+    ISA.comments = [
         Comment(name="Submission Version", value=row["Submission Version"]),
         Comment(name="Submission Reference Layer", value=row["Submission Reference Layer"]),
         Comment(name="Submission Update Date", value=row["Submission Update Date"]),
@@ -158,12 +158,12 @@ def load(FP):
                         mid_initials=row['Person Initials'],
                         email=row['Person Email'],
                         roles=[OntologyAnnotation(row['Person Role'])])
-        investigation.contacts.append(person)
+        ISA.contacts.append(person)
 
     for i, row in msi_df[
         ["Organization Name", "Organization Address", "Organization URI", "Organization Email",
          "Organization Role"]].replace('', np.nan).dropna(axis=0, how='all').iterrows():
-        investigation.comments.extend([
+        ISA.comments.extend([
             Comment(name="Organization Name.{}".format(i), value=row["Organization Name"]),
             Comment(name="Organization Address.{}".format(i), value=row["Organization Address"]),
             Comment(name="Organization URI.{}".format(i), value=row["Organization URI"]),
@@ -177,120 +177,154 @@ def load(FP):
         sec_key='[SCD]'
     ), sep='\t').fillna('')
 
-    sources = {}
-    samples = {}
-    characteristic_categories = {}
-    unit_categories = {}
-    processes = {}
-
-    try:
-        samples = dict(map(lambda x: (x, Sample(comments=[Comment(name="Sample Accession", value=x)])),
-                           scd_df["Sample Accession"].drop_duplicates()))
-    except KeyError:
-        pass
-
-    study = Study(filename='s_{}.txt'.format(investigation.identifier), samples=list(samples.values()))
+    study = Study()
     study.protocols = [Protocol(name='sample collection', protocol_type=OntologyAnnotation(term='sample collection'))]
-    investigation.studies = [study]
-
-    for _, object_series in scd_df.drop_duplicates().iterrows():
-
-        node_key = object_series["Sample Accession"]
-        sample = samples[node_key]
-
-        if sample is not None:
-
-            sample.name = object_series["Sample Name"]
-            sample.comments.append(Comment(name="Sample Description", value=object_series['Sample Description']))
-            sample.comments.append(Comment(name="Child Of", value=object_series['Child Of']))
-
-            # create Material to Characteristic Material Type
-            if len(object_series["Material"]) > 0:
-                category_key = "Material Type"
-                try:
-                    category = characteristic_categories[category_key]
-                except KeyError:
-                    category = OntologyAnnotation(term=category_key)
-                    characteristic_categories[category_key] = category
-                characteristic = Characteristic(category=category)
-                v, u = get_value("Material", scd_df.columns, object_series, ontology_source_map,
-                                 unit_categories)
-                characteristic.value = v
-                characteristic.unit = u
-                sample.characteristics.append(characteristic)
-
-            if len(object_series["Organism"]) > 0:
-                category_key = "Organism"
-                try:
-                    category = characteristic_categories[category_key]
-                except KeyError:
-                    category = OntologyAnnotation(term=category_key)
-                    characteristic_categories[category_key] = category
-                characteristic = Characteristic(category=category)
-                v, u = get_value("Organism", scd_df.columns, object_series, ontology_source_map,
-                                 unit_categories)
-                characteristic.value = v
-                characteristic.unit = u
-                sample.characteristics.append(characteristic)
-
-            if len(object_series["Sex"]) > 0:
-                category_key = "Sex"
-                try:
-                    category = characteristic_categories[category_key]
-                except KeyError:
-                    category = OntologyAnnotation(term=category_key)
-                    characteristic_categories[category_key] = category
-                characteristic = Characteristic(category=category)
-                v, u = get_value("Sex", scd_df.columns, object_series, ontology_source_map,
-                                 unit_categories)
-                characteristic.value = v
-                characteristic.unit = u
-                sample.characteristics.append(characteristic)
-
-            for charac_column in [c for c in scd_df.columns if c.startswith('Characteristic[')]:
-                category_key = charac_column[15:-1]
-
-                try:
-                    category = characteristic_categories[category_key]
-                except KeyError:
-                    category = OntologyAnnotation(term=category_key)
-                    characteristic_categories[category_key] = category
-
-                characteristic = Characteristic(category=category)
-
-                v, u = get_value(charac_column, scd_df.columns, object_series, ontology_source_map,
-                                 unit_categories)
-
-                characteristic.value = v
-                characteristic.unit = u
-
-                sample.characteristics.append(characteristic)
-
-            if len(object_series["Derived From"]) > 0:
-                try:
-                    source = sources[object_series["Derived From"]]
-                except KeyError:
-                    source_sample = samples[object_series["Derived From"]]
-                    source = Source(name=source_sample.name,
-                                    characteristics=source_sample.characteristics,
-                                    comments=source_sample.comments)
-                    sources[source.name] = source
-                sample.derives_from.append(source)
-                process_key = ":".join([source.name, 'sample collection'])
-                try:
-                    process = processes[process_key]
-                except KeyError:
-                    process = Process(executes_protocol=study.protocols[0])
-                    processes.update(dict([(process_key, process)]))
-                if source.name not in [x.name for x in process.inputs]:
-                    process.inputs.append(source)
-                if sample.name not in [x.name for x in process.outputs]:
-                    process.outputs.append(sample)
-
-            samples[sample.name] = sample
-
+    protocol_map = {
+        "sample collection": Protocol(name="sample collection",
+                                      protocol_type=OntologyAnnotation(term="sample collection"))
+    }
+    study.protocols = list(protocol_map.values())
+    sources, samples, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(
+        ontology_sources=ISA.ontology_source_references, study_factors=study.factors).create_from_df(scd_df)
     study.materials['sources'] = list(sources.values())
-    study.materials['samples'] = [x for x in set(samples.values()) if x.name not in [y.name for y in list(sources.values())]]
+    study.materials['samples'] = list(samples.values())
     study.process_sequence = list(processes.values())
+    study.characteristic_categories = list(characteristic_categories.values())
+    study.units = list(unit_categories.values())
+    for process in study.process_sequence:
+        try:
+            process.executes_protocol = protocol_map[process.executes_protocol]
+        except KeyError:
+            try:
+                unknown_protocol = protocol_map['unknown']
+            except KeyError:
+                protocol_map['unknown'] = Protocol(
+                    name="unknown protocol",
+                    description="This protocol was auto-generated where a protocol could not be determined.")
+                unknown_protocol = protocol_map['unknown']
+                study.protocols.append(unknown_protocol)
+            process.executes_protocol = unknown_protocol
+    ISA.studies =[study]
+    return ISA
 
-    return investigation
+
+class ProcessSequenceFactory:
+
+    def __init__(self, ontology_sources=None, study_factors=None):
+        self.ontology_sources = ontology_sources
+        self.factors = study_factors
+
+    def create_from_df(self, DF):
+
+        if self.ontology_sources is not None:
+            ontology_source_map = dict(map(lambda x: (x.name, x), self.ontology_sources))
+        else:
+            ontology_source_map = {}
+
+        sources = {}
+        samples = {}
+        characteristic_categories = {}
+        unit_categories = {}
+        processes = {}
+
+        try:
+            samples = dict(map(lambda x: (x, Sample(comments=[Comment(name="Sample Accession", value=x)])),
+                               DF["Sample Accession"].drop_duplicates()))
+        except KeyError:
+            pass
+
+        for _, object_series in DF.drop_duplicates().iterrows():
+
+            node_key = object_series["Sample Accession"]
+            sample = samples[node_key]
+
+            if sample is not None:
+
+                sample.name = object_series["Sample Name"]
+                sample.comments.append(Comment(name="Sample Description", value=object_series['Sample Description']))
+                sample.comments.append(Comment(name="Child Of", value=object_series['Child Of']))
+
+                # create Material to Characteristic Material Type
+                if len(object_series["Material"]) > 0:
+                    category_key = "Material Type"
+                    try:
+                        category = characteristic_categories[category_key]
+                    except KeyError:
+                        category = OntologyAnnotation(term=category_key)
+                        characteristic_categories[category_key] = category
+                    characteristic = Characteristic(category=category)
+                    v, u = get_value("Material", DF.columns, object_series, ontology_source_map,
+                                     unit_categories)
+                    characteristic.value = v
+                    characteristic.unit = u
+                    sample.characteristics.append(characteristic)
+
+                if len(object_series["Organism"]) > 0:
+                    category_key = "Organism"
+                    try:
+                        category = characteristic_categories[category_key]
+                    except KeyError:
+                        category = OntologyAnnotation(term=category_key)
+                        characteristic_categories[category_key] = category
+                    characteristic = Characteristic(category=category)
+                    v, u = get_value("Organism", DF.columns, object_series, ontology_source_map,
+                                     unit_categories)
+                    characteristic.value = v
+                    characteristic.unit = u
+                    sample.characteristics.append(characteristic)
+
+                if len(object_series["Sex"]) > 0:
+                    category_key = "Sex"
+                    try:
+                        category = characteristic_categories[category_key]
+                    except KeyError:
+                        category = OntologyAnnotation(term=category_key)
+                        characteristic_categories[category_key] = category
+                    characteristic = Characteristic(category=category)
+                    v, u = get_value("Sex", DF.columns, object_series, ontology_source_map,
+                                     unit_categories)
+                    characteristic.value = v
+                    characteristic.unit = u
+                    sample.characteristics.append(characteristic)
+
+                for charac_column in [c for c in DF.columns if c.startswith('Characteristic[')]:
+                    category_key = charac_column[15:-1]
+
+                    try:
+                        category = characteristic_categories[category_key]
+                    except KeyError:
+                        category = OntologyAnnotation(term=category_key)
+                        characteristic_categories[category_key] = category
+
+                    characteristic = Characteristic(category=category)
+
+                    v, u = get_value(charac_column, DF.columns, object_series, ontology_source_map, unit_categories)
+
+                    characteristic.value = v
+                    characteristic.unit = u
+
+                    sample.characteristics.append(characteristic)
+
+                if len(object_series["Derived From"]) > 0:
+                    try:
+                        source = sources[object_series["Derived From"]]
+                    except KeyError:
+                        source_sample = samples[object_series["Derived From"]]
+                        source = Source(name=source_sample.name,
+                                        characteristics=source_sample.characteristics,
+                                        comments=source_sample.comments)
+                        sources[source.name] = source
+                        del samples[object_series["Derived From"]]
+                    sample.derives_from.append(source)
+                    process_key = ":".join([source.name, 'sample collection'])
+                    try:
+                        process = processes[process_key]
+                    except KeyError:
+                        process = Process(executes_protocol="sample collection")
+                        processes.update(dict([(process_key, process)]))
+                    if source.name not in [x.name for x in process.inputs]:
+                        process.inputs.append(source)
+                    if sample.name not in [x.name for x in process.outputs]:
+                        process.outputs.append(sample)
+
+        return sources, samples, processes, characteristic_categories, unit_categories
