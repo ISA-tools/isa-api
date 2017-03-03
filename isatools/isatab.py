@@ -3223,8 +3223,6 @@ class ProcessSequenceFactory:
         characteristic_categories = {}
         unit_categories = {}
 
-        # TODO: Handle comment columns
-
         try:
             sources = dict(map(lambda x: ('Source Name:' + x, Source(name=x)), DF['Source Name'].drop_duplicates()))
         except KeyError:
@@ -3441,6 +3439,21 @@ class ProcessSequenceFactory:
 
                                 material.factor_values.append(fv)
 
+                        for comment_column in [c for c in column_group if c.startswith('Comment[')]:
+                            material.comments.append(Comment(name=comment_column[7:-1],
+                                                     value=str(object_series[comment_column])))
+
+            elif object_label in _LABELS_DATA_NODES:
+                pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Setting data objects: ',
+                                                                                  SimpleProgress(),
+                                                                                  Bar(left=" |", right="| "),
+                                                                                  ETA()]).start()
+
+                for _, object_series in pbar(DF[column_group].drop_duplicates().iterrows()):
+                    data_file = get_node_by_label_and_key(object_label, object_series[object_label])
+                    for comment_column in [c for c in column_group if c.startswith('Comment[')]:
+                        data_file.comments.append(Comment(name=comment_column[7:-1], value=str(object_series[comment_column])))
+
             elif object_label.startswith('Protocol REF'):
 
                 object_label_index = list(DF.columns).index(object_label)
@@ -3517,6 +3530,10 @@ class ProcessSequenceFactory:
                         parameter_value.unit = u
 
                         process.parameter_values.append(parameter_value)
+
+                    for comment_column in [c for c in column_group if c.startswith('Comment[')]:
+                        process.comments.append(Comment(name=comment_column[7:-1],
+                                                value=str(object_series[comment_column])))
 
         # now go row by row pulling out processes and linking them accordingly
 
