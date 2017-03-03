@@ -45,36 +45,9 @@ class Comment(object):
         name (str): The name of the comment (as mapped to Comment[SomeName] in ISA-Tab) to give context to the comment field.
         value (str, int, float, NoneType): A value for the corresponding comment, as a string or number.
     """
-    def __init__(self, name, value=None):
+    def __init__(self, name, value=''):
         self.name = name
         self.value = value
-
-    @property
-    def name(self):
-        return self.__name
-
-    @name.setter
-    def name(self, name):
-        if not isinstance(name, str):
-            raise AttributeError("Comment.name must be a str")
-        elif name.strip() == '':
-            raise AttributeError("Comment.name must not be empty")
-        else:
-            self.__name = name
-
-    @property
-    def value(self):
-        if self.__value is '':
-            return None
-        else:
-            return self.__value
-
-    @value.setter
-    def value(self, value):
-        if value is not None and not isinstance(value, (str, int, float)):  # allow instance of str, int, float or None
-            raise AttributeError("Comment.value must be an instance of str, int, float, or None")
-        else:
-            self.__value = value
 
 
 class Commentable(object):
