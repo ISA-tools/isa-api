@@ -3504,7 +3504,7 @@ class ProcessSequenceFactory:
 
                         output_node = get_node_by_label_and_key(output_node_label, node_key)
 
-                        if output_node is not None:
+                        if output_node is not None and output_node not in process.outputs:
                             process.outputs.append(output_node)
 
                     input_node_index = find_lt(node_cols, object_label_index)
@@ -3518,7 +3518,7 @@ class ProcessSequenceFactory:
 
                         input_node = get_node_by_label_and_key(input_node_label, node_key)
 
-                        if input_node is not None:
+                        if input_node is not None and input_node not in process.inputs:
                             process.inputs.append(input_node)
 
                     name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
