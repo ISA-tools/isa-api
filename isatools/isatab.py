@@ -691,14 +691,7 @@ def write_assay_table_files(inv_obj, output_dir):
 
                 for node in path:
 
-                    if isinstance(node, Source):
-                        olabel = "Source Name"
-                        df_dict[olabel][-1] = node.name
-                        for c in node.characteristics:
-                            clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
-                            write_value_columns(df_dict, clabel, c)
-
-                    elif isinstance(node, Process):
+                    if isinstance(node, Process):
                         olabel = "Protocol REF.{}".format(node.executes_protocol.name)
                         df_dict[olabel][-1] = node.executes_protocol.name
                         if node.date is not None:
@@ -730,12 +723,6 @@ def write_assay_table_files(inv_obj, output_dir):
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
                         df_dict[olabel][-1] = node.name
-                        # for c in node.characteristics:
-                        #     clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
-                        #     write_value_columns(df_dict, clabel, c)
-                        # for fv in node.factor_values:
-                        #     fvlabel = "{0}.Factor Value[{1}]".format(olabel, fv.factor_name.name)
-                        #     write_value_columns(df_dict, fvlabel, fv)
 
                     elif isinstance(node, Material):
                         olabel = node.type
@@ -782,10 +769,10 @@ def write_assay_table_files(inv_obj, output_dir):
                     columns[i] = "Protocol REF"
 
             print("Rendered {} paths".format(len(DF.index)))
-            if len(DF.index) > 1:
-                if len(DF.index) > len(DF.drop_duplicates().index):
-                    print("Dropping duplicates...")
-                    DF = DF.drop_duplicates()
+            # if len(DF.index) > 1:
+            #     if len(DF.index) > len(DF.drop_duplicates().index):
+            #         print("Dropping duplicates...")
+            #         DF = DF.drop_duplicates()
 
             print("Writing {} rows".format(len(DF.index)))
             # reset columns, replace nan with empty string, drop empty columns
