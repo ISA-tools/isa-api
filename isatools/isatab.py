@@ -657,7 +657,7 @@ def write_assay_table_files(inv_obj, output_dir):
                         columns.append(oname_label)
                     elif node.executes_protocol.protocol_type.term == "nucleic acid hybridization":
                         columns.extend(["Hybridization Assay Name", "Array Design REF"])
-                    
+
                     columns += flatten(map(lambda x: get_pv_columns(olabel, x), node.parameter_values))
                     if node.executes_protocol.name not in protnames.keys():
                         protnames[node.executes_protocol.name] = protrefcount
@@ -2768,7 +2768,6 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
         return oa_list
 
     def get_publications(section_df):
-
         if 'Investigation PubMed ID' in section_df.columns:
             prefix = 'Investigation '
         elif 'Study PubMed ID' in section_df.columns:
@@ -2787,13 +2786,12 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
             publication.status = get_oa(row[prefix + 'Publication Status'],
                                         row[prefix + 'Publication Status Term Accession Number'],
                                         row[prefix + 'Publication Status Term Source REF'])
-
+            publication.comments = get_comments_row(section_df.columns, row)
             publications.append(publication)
 
         return publications
 
     def get_contacts(section_df):
-
         if 'Investigation Person Last Name' in section_df.columns:
             prefix = 'Investigation '
         elif 'Study Person Last Name' in section_df.columns:
@@ -2816,10 +2814,25 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
             person.roles = get_oa_list_from_semi_c_list(row[prefix + 'Person Roles'],
                                                         row[prefix + 'Person Roles Term Accession Number'],
                                                         row[prefix + 'Person Roles Term Source REF'])
-
+            person.comments = get_comments_row(section_df.columns, row)
             contacts.append(person)
 
         return contacts
+
+    def get_comments(section_df):
+        comments = []
+        for col in [x for x in section_df.columns if x.startswith("Comment[")]:
+            for _, row in section_df.iterrows():
+                comment = Comment(name=col[8:-1], value=row[col])
+                comments.append(comment)
+        return comments
+
+    def get_comments_row(cols, row):
+        comments = []
+        for col in [x for x in cols if x.startswith("Comment[")]:
+            comment = Comment(name=col[8:-1], value=row[col])
+            comments.append(comment)
+        return comments
 
     df_dict = read_investigation_file(FP)
 
@@ -2843,6 +2856,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
         investigation.public_release_date = row['Investigation Public Release Date']
         investigation.publications = get_publications(df_dict['i_publications'])
         investigation.contacts = get_contacts(df_dict['i_contacts'])
+        investigation.comments = get_comments(df_dict['investigation'])
 
     for i in range(0, len(df_dict['studies'])):
         row = df_dict['studies'][i].iloc[0]
@@ -2856,11 +2870,13 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
 
         study.publications = get_publications(df_dict['s_publications'][i])
         study.contacts = get_contacts(df_dict['s_contacts'][i])
+        study.comments = get_comments(df_dict['studies'][i])
 
         for _, row in df_dict['s_design_descriptors'][i].iterrows():
             design_descriptor = get_oa(row['Study Design Type'],
                                        row['Study Design Type Term Accession Number'],
                                        row['Study Design Type Term Source REF'])
+            design_descriptor.comments = get_comments_row(df_dict['s_design_descriptors'][i].columns, row)
             study.design_descriptors.append(design_descriptor)
 
         for _, row in df_dict['s_factors'][i].iterrows():
@@ -2868,6 +2884,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
             factor.factor_type = get_oa(row['Study Factor Type'],
                                         row['Study Factor Type Term Accession Number'],
                                         row['Study Factor Type Term Source REF'])
+            factor.comments = get_comments_row(df_dict['s_factors'][i].columns, row)
             study.factors.append(factor)
 
         protocol_map = {}
@@ -2886,6 +2903,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
             for param in params:
                 protocol_param = ProtocolParameter(parameter_name=param)
                 protocol.parameters.append(protocol_param)
+            protocol.comments = get_comments_row(df_dict['s_protocols'][i].columns, row)
             study.protocols.append(protocol)
             protocol_map[protocol.name] = protocol
         study.protocols = list(protocol_map.values())
@@ -2901,7 +2919,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
             study.process_sequence = list(processes.values())
             study.characteristic_categories = list(characteristic_categories.values())
             study.units = list(unit_categories.values())
-    
+
             for process in study.process_sequence:
                 try:
                     process.executes_protocol = protocol_map[process.executes_protocol]
@@ -2915,7 +2933,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
                         unknown_protocol = protocol_map['unknown']
                         study.protocols.append(unknown_protocol)
                     process.executes_protocol = unknown_protocol
-    
+
         for _, row in df_dict['s_assays'][i].iterrows():
             assay = Assay()
             assay.filename = row['Study Assay File Name']
@@ -2945,7 +2963,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
                 assay.process_sequence = list(processes.values())
                 assay.characteristic_categories = list(characteristic_categories.values())
                 assay.units = list(unit_categories.values())
-    
+
                 for process in assay.process_sequence:
                     try:
                         process.executes_protocol = protocol_map[process.executes_protocol]
@@ -2959,7 +2977,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
                             unknown_protocol = protocol_map['unknown']
                             study.protocols.append(unknown_protocol)
                         process.executes_protocol = unknown_protocol
-                        
+
             study.assays.append(assay)
         investigation.studies.append(study)
     return investigation
@@ -3224,8 +3242,6 @@ class ProcessSequenceFactory:
         characteristic_categories = {}
         unit_categories = {}
 
-        # TODO: Handle comment columns
-
         try:
             sources = dict(map(lambda x: ('Source Name:' + x, Source(name=x)), DF['Source Name'].drop_duplicates()))
         except KeyError:
@@ -3442,6 +3458,21 @@ class ProcessSequenceFactory:
 
                                 material.factor_values.append(fv)
 
+                        for comment_column in [c for c in column_group if c.startswith('Comment[')]:
+                            material.comments.append(Comment(name=comment_column[8:-1],
+                                                     value=str(object_series[comment_column])))
+
+            elif object_label in _LABELS_DATA_NODES:
+                pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Setting data objects: ',
+                                                                                  SimpleProgress(),
+                                                                                  Bar(left=" |", right="| "),
+                                                                                  ETA()]).start()
+
+                for _, object_series in pbar(DF[column_group].drop_duplicates().iterrows()):
+                    data_file = get_node_by_label_and_key(object_label, object_series[object_label])
+                    for comment_column in [c for c in column_group if c.startswith('Comment[')]:
+                        data_file.comments.append(Comment(name=comment_column[8:-1], value=str(object_series[comment_column])))
+
             elif object_label.startswith('Protocol REF'):
 
                 object_label_index = list(DF.columns).index(object_label)
@@ -3518,6 +3549,10 @@ class ProcessSequenceFactory:
                         parameter_value.unit = u
 
                         process.parameter_values.append(parameter_value)
+
+                    for comment_column in [c for c in column_group if c.startswith('Comment[')]:
+                        process.comments.append(Comment(name=comment_column[8:-1],
+                                                value=str(object_series[comment_column])))
 
         # now go row by row pulling out processes and linking them accordingly
 

@@ -247,7 +247,16 @@ class TestIsaTabLoad(unittest.TestCase):
     def test_isatab_load_sdata201414_isa1(self):
         with open(os.path.join(self._tab_data_dir, 'sdata201414-isa1', 'i_Investigation.txt')) as fp:
             ISA = isatab.load(fp)
+            self.assertEqual(len(ISA.ontology_source_references), 5)  # 5 ontology sources in investigation
             self.assertListEqual([s.filename for s in ISA.studies], ['s_chambers.txt'])  # 1 study in i_investigation.txt
+            self.assertEqual(len(ISA.studies[0].comments), 9)  # 9 comments in study
+            self.assertEqual(len(ISA.studies[0].design_descriptors), 3)  # 3 design descriptors in study
+            self.assertEqual(len(ISA.studies[0].publications), 0)  # 0 publications in study
+            self.assertEqual(len(ISA.studies[0].factors), 2)  # 2 factors in study
+            self.assertEqual(len(ISA.studies[0].protocols), 5)  # 5 protocols in study
+            self.assertEqual(len(ISA.studies[0].contacts), 2)  # 2 contacts in study
+            self.assertEqual(len(ISA.studies[0].contacts[0].comments), 5)  # 5 comments in contact
+            self.assertEqual(len(ISA.studies[0].contacts[1].comments), 5)  # 5 comments in contact
             self.assertListEqual([a.filename for a in ISA.studies[0].assays], ['a_chambers.txt'])  # 1 assays in s_chambers.txt
 
     def test_isatab_load_bii_i_1(self):
