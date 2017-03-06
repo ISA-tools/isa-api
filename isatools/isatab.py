@@ -3294,6 +3294,13 @@ class ProcessSequenceFactory:
             pass
 
         try:
+            derived_data_files = dict(map(lambda x: ('Derived Data File:' + x, DerivedDataFile(filename=x)),
+                                                  DF['Derived Data File'].drop_duplicates()))
+            data.update(derived_data_files)
+        except KeyError:
+            pass
+
+        try:
             image_data_files = dict(map(lambda x: ('Image File:' + x, RawDataFile(filename=x)), DF['Image File'].drop_duplicates()))
             data.update(image_data_files)
         except KeyError:
