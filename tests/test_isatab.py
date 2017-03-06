@@ -251,6 +251,11 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(ISA.studies[0].assays[0].materials['other_material']), 7)
             self.assertEqual(len(ISA.studies[0].assays[0].data_files), 2)
             self.assertEqual(len(ISA.studies[0].assays[0].process_sequence), 11)
+            # print(isatab.dumps(ISA))
+
+    # def test_isatab_load_issue201(self):
+    #     with open(os.path.join(self._tab_data_dir, 'sdata201411-isa1', 'i_Investigation.txt')) as fp:
+    #         ISA = isatab.load(fp)
 
     def test_isatab_load_sdata201414_isa1(self):
         with open(os.path.join(self._tab_data_dir, 'sdata201414-isa1', 'i_Investigation.txt')) as fp:

@@ -3130,7 +3130,16 @@ def read_tfile(tfile_path, index_col=None):
 
         tfile_fp.seek(0)
 
-        tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col).fillna('')
+        memf = io.StringIO()
+        while True:
+            line = tfile_fp.readline()
+            if not line:
+                break
+            if not line.lstrip().startswith('#'):
+                memf.write(line)
+        memf.seek(0)
+
+        tfile_df = pd.read_csv(memf, sep='\t', index_col=index_col).fillna('')
         tfile_df.isatab_header = header
 
     return tfile_df
@@ -3295,7 +3304,7 @@ class ProcessSequenceFactory:
 
         try:
             derived_data_files = dict(map(lambda x: ('Derived Data File:' + x, DerivedDataFile(filename=x)),
-                                                  DF['Derived Data File'].drop_duplicates()))
+                                          DF['Derived Data File'].drop_duplicates()))
             data.update(derived_data_files)
         except KeyError:
             pass
@@ -3378,7 +3387,7 @@ class ProcessSequenceFactory:
             pass
 
         node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
-        # proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
+        proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
 
         try:
             object_column_map = get_object_column_map(DF.isatab_header, DF.columns)
@@ -3500,7 +3509,7 @@ class ProcessSequenceFactory:
                         process = Process(executes_protocol=object_series[object_label])
                         processes.update(dict([(process_key, process)]))
 
-                    output_node_index = find_gt(node_cols, object_label_index)
+                    output_node_index = find_gt(node_cols + proc_cols, object_label_index)
 
                     if output_node_index > -1:
 
@@ -3514,7 +3523,7 @@ class ProcessSequenceFactory:
                         if output_node is not None and output_node not in process.outputs:
                             process.outputs.append(output_node)
 
-                    input_node_index = find_lt(node_cols, object_label_index)
+                    input_node_index = find_lt(node_cols + proc_cols, object_label_index)
 
                     if input_node_index > -1:
 
