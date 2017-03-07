@@ -279,21 +279,22 @@ class TestValidateIsaTab(unittest.TestCase):
         pass
 
     def test_validate_isatab_bii_i_1(self):
-        report = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-I-1', 'i_investigation.txt')))
-        if not report['validation_finished']:
-            self.fail("Validation did not complete successfully when it should have!")
-        if len(report['errors'] + report['warnings']) == 0:
-            self.fail("Validation error and warnings are missing when should report some with BII-I-1")
+        with open(os.path.join(self._tab_data_dir, 'BII-I-1', 'i_investigation.txt')) as fp:
+            report = isatab.validate(fp)
+            if not report['validation_finished']:
+                self.fail("Validation did not complete successfully when it should have!")
+            if len(report['errors'] + report['warnings']) == 0:
+                self.fail("Validation error and warnings are missing when should report some with BII-I-1")
 
     def test_validate_isatab_bii_s_3(self):
-        report = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt')))
+        report = isatab.validate(open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt')))
         if not report['validation_finished']:
             self.fail("Validation did not complete successfully when it should have!")
         elif len(report['errors'] + report['warnings']) == 0:
             self.fail("Validation error and warnings are missing when should report some with BII-S-3")
 
     def test_validate_isatab_bii_s_7(self):
-        report = isatab.validate2(open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt')))
+        report = isatab.validate(open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt')))
         if not report['validation_finished']:
             self.fail("Validation did not complete successfully when it should have!")
         elif len(report['errors'] + report['warnings']) == 0:

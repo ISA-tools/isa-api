@@ -24,7 +24,7 @@ class mw2ISATest(unittest.TestCase):
         if success and validate:
             print("conversion successful, invoking the validator for " + study_id)
             with open(os.path.join(self._tmp_dir, study_id, 'i_investigation.txt')) as fp:
-                report = isatab.validate2(fp)
+                report = isatab.validate(fp)
                 if len(report['errors']) > 0:
                     self.fail("conversion successful but validation failed")
         else:
