@@ -41,7 +41,7 @@ _LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name', 'Labeled
 _LABELS_DATA_NODES = ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
                       'Protein Assignment File', 'Peptide Assignment File',
                       'Post Translational Modification Assignment File', 'Acquisition Parameter Data File',
-                      'Free Induction Decay Data File', 'Derived Array Data Matrix File', 'Image File']
+                      'Free Induction Decay Data File', 'Derived Array Data Matrix File', 'Image File', 'Derived Data File']
 _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name', 'Scan Name',
                        'Data Transformation Name', 'Normalization Name']
 
@@ -500,7 +500,6 @@ def write_study_table_files(inv_obj, output_dir):
                 olabel = "Source Name"
                 columns.append(olabel)
                 columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
-
             elif isinstance(node, Process):
                 olabel = "Protocol REF.{}".format(node.executes_protocol.name)
                 columns.append(olabel)
@@ -567,7 +566,7 @@ def write_study_table_files(inv_obj, output_dir):
         DF = DF.from_dict(data=df_dict)
         DF = DF[columns]  # reorder columns
         DF = DF.sort_values(by=DF.columns[0], ascending=True)  # arbitrary sort on column 0
-
+        print(columns)
         for i, col in enumerate(columns):
             if col.endswith("Term Source REF"):
                 columns[i] = "Term Source REF"
@@ -634,6 +633,8 @@ def write_assay_table_files(inv_obj, output_dir):
 
             # start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
             paths = _all_end_to_end_paths(assay_obj.graph, [x for x in assay_obj.graph.nodes() if isinstance(x, Sample)])
+            if _longest_path_and_attrs(paths) is None:
+                raise IOError("Could not find any valid end-to-end paths in assay graph")
             for node in _longest_path_and_attrs(paths):
                 if isinstance(node, Sample):
                     olabel = "Sample Name"
@@ -655,9 +656,11 @@ def write_assay_table_files(inv_obj, output_dir):
                         oname_label = "MS Assay Name"
                     elif node.executes_protocol.protocol_type.term == "data transformation":
                         oname_label = "Data Transformation Name"
+                    elif node.executes_protocol.protocol_type.term == "sequence analysis data transformation":
+                        oname_label = "Normalization Name"
                     elif node.executes_protocol.protocol_type.term == "normalization":
                         oname_label = "Normalization Name"
-                    if node.executes_protocol.protocol_type.term == "unknown":
+                    if node.executes_protocol.protocol_type.term == "unknown protocol":
                         oname_label = "Unknown Protocol Name"
                     if oname_label is not None:
                         columns.append(oname_label)
@@ -716,9 +719,11 @@ def write_assay_table_files(inv_obj, output_dir):
                             oname_label = "MS Assay Name"
                         elif node.executes_protocol.protocol_type.term == "data transformation":
                             oname_label = "Data Transformation Name"
+                        elif node.executes_protocol.protocol_type.term == "sequence analysis data transformation":
+                            oname_label = "Normalization Name"
                         elif node.executes_protocol.protocol_type.term == "normalization":
                             oname_label = "Normalization Name"
-                        if node.executes_protocol.protocol_type.term == "unknown":
+                        if node.executes_protocol.protocol_type.term == "unknown protocol":
                             oname_label = "Unknown Protocol Name"
                         if oname_label is not None:
                             df_dict[oname_label][-1] = node.name
@@ -3029,23 +3034,10 @@ def pairwise(iterable):
 def read_tfile(tfile_path, index_col=None):
 
     with open(tfile_path) as tfile_fp:
-
         reader = csv.reader(tfile_fp, delimiter='\t')
-
         header = list(next(reader))
-
         tfile_fp.seek(0)
-
-        memf = io.StringIO()
-        while True:
-            line = tfile_fp.readline()
-            if not line:
-                break
-            if not line.lstrip().startswith('#'):
-                memf.write(line)
-        memf.seek(0)
-
-        tfile_df = pd.read_csv(memf, sep='\t', index_col=index_col).fillna('')
+        tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col, memory_map=True, comment='#').fillna('')
         tfile_df.isatab_header = header
 
     return tfile_df
@@ -3099,12 +3091,12 @@ def preprocess(DF):
     for i in reversed(missing_process_indices):
         inferred_protocol_type = ""
         if columns[i] == "Data Transformation Name":
-            inferred_protocol_type = "unknown (data transformation?)"
+            inferred_protocol_type = "unknown.data transformation"
         elif columns[i] == "Normalization Name":
-            inferred_protocol_type = "unknown (normalization?)"
+            inferred_protocol_type = "unknown.normalization"
         elif columns[i] == "Assay Name":
-            inferred_protocol_type = "unknown (data collection?)"
-        DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown' if inferred_protocol_type == '' else inferred_protocol_type)
+            inferred_protocol_type = "unknown.data collection"
+        DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown' if inferred_protocol_type == "" else inferred_protocol_type)
         DF.isatab_header.insert(i, 'Protocol REF')
         offset += 1
 
@@ -3209,95 +3201,98 @@ class ProcessSequenceFactory:
         except KeyError:
             pass
 
-        try:
-            raw_data_files = dict(map(lambda x: ('Raw Data File:' + x, RawDataFile(filename=x)), DF['Raw Data File'].drop_duplicates()))
-            data.update(raw_data_files)
-        except KeyError:
-            pass
+        for data_col in [x for x in DF.columns if x.endswith(" File")]:
+            data.update(dict(map(lambda x: (':'.join([data_col, x]), DataFile(filename=x, label=data_col)), DF[data_col].drop_duplicates())))
 
-        try:
-            derived_data_files = dict(map(lambda x: ('Derived Data File:' + x, DerivedDataFile(filename=x)),
-                                          DF['Derived Data File'].drop_duplicates()))
-            data.update(derived_data_files)
-        except KeyError:
-            pass
-
-        try:
-            image_data_files = dict(map(lambda x: ('Image File:' + x, RawDataFile(filename=x)), DF['Image File'].drop_duplicates()))
-            data.update(image_data_files)
-        except KeyError:
-            pass
-
-        try:
-            raw_spectral_data_files = dict(map(lambda x: ('Raw Spectral Data File:' + x, RawSpectralDataFile(filename=x)), DF['Raw Spectral Data File'].drop_duplicates()))
-            data.update(raw_spectral_data_files)
-        except KeyError:
-            pass
-
-        try:
-            derived_spectral_data_files = dict(map(lambda x: ('Derived Spectral Data File:' + x, DerivedSpectralDataFile(filename=x)),
-                                                  DF['Derived Spectral Data File'].drop_duplicates()))
-            data.update(derived_spectral_data_files)
-        except KeyError:
-            pass
-
-        try:
-            derived_array_data_files = dict(map(lambda x: ('Derived Array Data File:' + x, DerivedArrayDataFile(filename=x)),
-                                                DF['Derived Array Data File'].drop_duplicates()))
-            data.update(derived_array_data_files)
-        except KeyError:
-            pass
-
-        try:
-            array_data_files = dict(map(lambda x: ('Array Data File:' + x, ArrayDataFile(filename=x)), DF['Array Data File'].drop_duplicates()))
-            data.update(array_data_files)
-        except KeyError:
-            pass
-
-        try:
-            protein_assignment_files = dict(map(lambda x: ('Protein Assignment File:' + x, ProteinAssignmentFile(filename=x)),
-                                                DF['Protein Assignment File'].drop_duplicates()))
-            data.update(protein_assignment_files)
-        except KeyError:
-            pass
-
-        try:
-            peptide_assignment_files = dict(map(lambda x: ('Peptide Assignment File:' + x, PeptideAssignmentFile(filename=x)),
-                                                DF['Peptide Assignment File'].drop_duplicates()))
-            data.update(peptide_assignment_files)
-        except KeyError:
-            pass
-
-        try:
-            derived_array_data__matrix_files = \
-                dict(map(lambda x: ('Derived Array Data Matrix File:' + x, DerivedArrayDataMatrixFile(filename=x)),
-                         DF['Derived Array Data Matrix File'].drop_duplicates()))
-            data.update(derived_array_data__matrix_files)
-        except KeyError:
-            pass
-
-        try:
-            post_translational_modification_assignment_files = \
-                dict(map(lambda x: ('Post Translational Modification Assignment File:' + x, PostTranslationalModificationAssignmentFile(filename=x)),
-                         DF['Post Translational Modification Assignment File'].drop_duplicates()))
-            data.update(post_translational_modification_assignment_files)
-        except KeyError:
-            pass
-
-        try:
-            acquisition_parameter_data_files = dict(map(lambda x: ('Acquisition Parameter Data File:' + x, AcquisitionParameterDataFile(filename=x)),
-                                                DF['Acquisition Parameter Data File'].drop_duplicates()))
-            data.update(acquisition_parameter_data_files)
-        except KeyError:
-            pass
-
-        try:
-            post_translational_modification_assignment_files = \
-                dict(map(lambda x: ('Free Induction Decay Data File:' + x, FreeInductionDecayDataFile(filename=x)),
-                         DF['Free Induction Decay Data File'].drop_duplicates()))
-            data.update(post_translational_modification_assignment_files)
-        except KeyError:
-            pass
+        # try:
+        #     raw_data_files = dict(map(lambda x: ('Raw Data File:' + x, RawDataFile(filename=x)), DF['Raw Data File'].drop_duplicates()))
+        #     data.update(raw_data_files)
+        # except KeyError:
+        #     pass
+        #
+        # try:
+        #     derived_data_files = dict(map(lambda x: ('Derived Data File:' + x, DerivedDataFile(filename=x)),
+        #                                   DF['Derived Data File'].drop_duplicates()))
+        #     data.update(derived_data_files)
+        # except KeyError:
+        #     pass
+        #
+        # try:
+        #     image_data_files = dict(map(lambda x: ('Image File:' + x, RawDataFile(filename=x)), DF['Image File'].drop_duplicates()))
+        #     data.update(image_data_files)
+        # except KeyError:
+        #     pass
+        #
+        # try:
+        #     raw_spectral_data_files = dict(map(lambda x: ('Raw Spectral Data File:' + x, RawSpectralDataFile(filename=x)), DF['Raw Spectral Data File'].drop_duplicates()))
+        #     data.update(raw_spectral_data_files)
+        # except KeyError:
+        #     pass
+        #
+        # try:
+        #     derived_spectral_data_files = dict(map(lambda x: ('Derived Spectral Data File:' + x, DerivedSpectralDataFile(filename=x)),
+        #                                           DF['Derived Spectral Data File'].drop_duplicates()))
+        #     data.update(derived_spectral_data_files)
+        # except KeyError:
+        #     pass
+        #
+        # try:
+        #     derived_array_data_files = dict(map(lambda x: ('Derived Array Data File:' + x, DerivedArrayDataFile(filename=x)),
+        #                                         DF['Derived Array Data File'].drop_duplicates()))
+        #     data.update(derived_array_data_files)
+        # except KeyError:
+        #     pass
+        #
+        # try:
+        #     array_data_files = dict(map(lambda x: ('Array Data File:' + x, ArrayDataFile(filename=x)), DF['Array Data File'].drop_duplicates()))
+        #     data.update(array_data_files)
+        # except KeyError:
+        #     pass
+        #
+        # try:
+        #     protein_assignment_files = dict(map(lambda x: ('Protein Assignment File:' + x, ProteinAssignmentFile(filename=x)),
+        #                                         DF['Protein Assignment File'].drop_duplicates()))
+        #     data.update(protein_assignment_files)
+        # except KeyError:
+        #     pass
+        #
+        # try:
+        #     peptide_assignment_files = dict(map(lambda x: ('Peptide Assignment File:' + x, PeptideAssignmentFile(filename=x)),
+        #                                         DF['Peptide Assignment File'].drop_duplicates()))
+        #     data.update(peptide_assignment_files)
+        # except KeyError:
+        #     pass
+        #
+        # try:
+        #     derived_array_data__matrix_files = \
+        #         dict(map(lambda x: ('Derived Array Data Matrix File:' + x, DerivedArrayDataMatrixFile(filename=x)),
+        #                  DF['Derived Array Data Matrix File'].drop_duplicates()))
+        #     data.update(derived_array_data__matrix_files)
+        # except KeyError:
+        #     pass
+        #
+        # try:
+        #     post_translational_modification_assignment_files = \
+        #         dict(map(lambda x: ('Post Translational Modification Assignment File:' + x, PostTranslationalModificationAssignmentFile(filename=x)),
+        #                  DF['Post Translational Modification Assignment File'].drop_duplicates()))
+        #     data.update(post_translational_modification_assignment_files)
+        # except KeyError:
+        #     pass
+        #
+        # try:
+        #     acquisition_parameter_data_files = dict(map(lambda x: ('Acquisition Parameter Data File:' + x, AcquisitionParameterDataFile(filename=x)),
+        #                                         DF['Acquisition Parameter Data File'].drop_duplicates()))
+        #     data.update(acquisition_parameter_data_files)
+        # except KeyError:
+        #     pass
+        #
+        # try:
+        #     post_translational_modification_assignment_files = \
+        #         dict(map(lambda x: ('Free Induction Decay Data File:' + x, FreeInductionDecayDataFile(filename=x)),
+        #                  DF['Free Induction Decay Data File'].drop_duplicates()))
+        #     data.update(post_translational_modification_assignment_files)
+        # except KeyError:
+        #     pass
 
         node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
         proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
@@ -3388,8 +3383,9 @@ class ProcessSequenceFactory:
                                 material.factor_values.append(fv)
 
                         for comment_column in [c for c in column_group if c.startswith('Comment[')]:
-                            material.comments.append(Comment(name=comment_column[8:-1],
-                                                     value=str(object_series[comment_column])))
+                            if comment_column[8:-1] not in [x.name for x in material.comments]:
+                                material.comments.append(Comment(name=comment_column[8:-1],
+                                                         value=str(object_series[comment_column])))
 
             elif object_label in _LABELS_DATA_NODES:
                 pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Setting data objects: ',
@@ -3400,10 +3396,10 @@ class ProcessSequenceFactory:
                 for _, object_series in pbar(DF[column_group].drop_duplicates().iterrows()):
                     data_file = get_node_by_label_and_key(object_label, object_series[object_label])
                     for comment_column in [c for c in column_group if c.startswith('Comment[')]:
-                        data_file.comments.append(Comment(name=comment_column[8:-1], value=str(object_series[comment_column])))
+                        if comment_column[8:-1] not in [x.name for x in data_file.comments]:
+                            data_file.comments.append(Comment(name=comment_column[8:-1], value=str(object_series[comment_column])))
 
             elif object_label.startswith('Protocol REF'):
-
                 object_label_index = list(DF.columns).index(object_label)
 
                 pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Generating process objects: ',
@@ -3412,19 +3408,23 @@ class ProcessSequenceFactory:
                                                                                    ETA()]).start()
 
                 for _, object_series in pbar(DF.iterrows()):  # don't drop duplicates
-                    protocol_ref = object_series[column_group[0]]
+                    # if _ == 0:
+                    #     print('processing: ', object_series[object_label])
+                    protocol_ref = object_series[object_label]
                     process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
+
                     # TODO: Keep process key sequence here to reduce number of passes on Protocol REF columns?
 
                     try:
                         process = processes[process_key]
                     except KeyError:
-                        process = Process(executes_protocol=object_series[object_label])
+                        process = Process(executes_protocol=protocol_ref)
                         processes.update(dict([(process_key, process)]))
 
-                    output_node_index = find_gt(node_cols + proc_cols, object_label_index)
+                    output_node_index = find_gt(node_cols, object_label_index)
+                    output_proc_index = find_gt(proc_cols, object_label_index)
 
-                    if output_node_index > -1:
+                    if output_proc_index < output_node_index > -1:
 
                         output_node_label = DF.columns[output_node_index]
                         output_node_value = object_series[output_node_label]
@@ -3434,11 +3434,13 @@ class ProcessSequenceFactory:
                         output_node = get_node_by_label_and_key(output_node_label, node_key)
 
                         if output_node is not None and output_node not in process.outputs:
+                            # print(process_key, 'output', output_node_label, node_key)
                             process.outputs.append(output_node)
 
-                    input_node_index = find_lt(node_cols + proc_cols, object_label_index)
+                    input_node_index = find_lt(node_cols, object_label_index)
+                    input_proc_index = find_lt(proc_cols, object_label_index)
 
-                    if input_node_index > -1:
+                    if input_proc_index < input_node_index > -1:
 
                         input_node_label = DF.columns[input_node_index]
                         input_node_value = object_series[input_node_label]
@@ -3448,6 +3450,7 @@ class ProcessSequenceFactory:
                         input_node = get_node_by_label_and_key(input_node_label, node_key)
 
                         if input_node is not None and input_node not in process.inputs:
+                            # print(process_key, 'input', input_node_label, node_key)
                             process.inputs.append(input_node)
 
                     name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
@@ -3483,8 +3486,9 @@ class ProcessSequenceFactory:
                             process.parameter_values.append(parameter_value)
 
                     for comment_column in [c for c in column_group if c.startswith('Comment[')]:
-                        process.comments.append(Comment(name=comment_column[8:-1],
-                                                value=str(object_series[comment_column])))
+                        if comment_column[8:-1] not in [x.name for x in process.comments]:
+                            process.comments.append(Comment(name=comment_column[8:-1],
+                                                    value=str(object_series[comment_column])))
 
         # now go row by row pulling out processes and linking them accordingly
 
