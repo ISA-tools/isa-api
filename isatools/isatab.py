@@ -566,7 +566,7 @@ def write_study_table_files(inv_obj, output_dir):
         DF = DF.from_dict(data=df_dict)
         DF = DF[columns]  # reorder columns
         DF = DF.sort_values(by=DF.columns[0], ascending=True)  # arbitrary sort on column 0
-        print(columns)
+
         for i, col in enumerate(columns):
             if col.endswith("Term Source REF"):
                 columns[i] = "Term Source REF"
@@ -633,6 +633,9 @@ def write_assay_table_files(inv_obj, output_dir):
 
             # start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
             paths = _all_end_to_end_paths(assay_obj.graph, [x for x in assay_obj.graph.nodes() if isinstance(x, Sample)])
+            if len(paths) == 0:
+                print("No paths found, skipping writing assay file")
+                continue
             if _longest_path_and_attrs(paths) is None:
                 raise IOError("Could not find any valid end-to-end paths in assay graph")
             for node in _longest_path_and_attrs(paths):
@@ -2422,7 +2425,7 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
     errors = list()
     warnings = list()
     logger.setLevel(log_level)
-    logger.info("ISA tab Validator from ISA tools API v0.3")
+    logger.info("ISA tab Validator from ISA tools API v0.6")
     from io import StringIO
     stream = StringIO()
     handler = logging.StreamHandler(stream)
