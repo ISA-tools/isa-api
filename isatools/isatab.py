@@ -1,7 +1,6 @@
 from .model.v1 import *
 import os
 from pandas.parser import CParserError
-import io
 import glob
 import networkx as nx
 import logging
@@ -886,8 +885,11 @@ def read_investigation_file(fp):
         return memf
 
     def _build_section_df(f):
-        import numpy as np
-        df = pd.read_csv(f, sep='\t').T  # Load and transpose ISA file section
+        try:
+            df = pd.read_csv(f, sep='\t').T  # Load and transpose ISA file section
+        except CParserError:
+            f.seek(0)
+            raise IOError("There was a problem parsing the investigation section:\n\n{}".format(f.read()))
         df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
         df.reset_index(inplace=True)  # Reset index so it is accessible as column
         df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers

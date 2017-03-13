@@ -254,9 +254,13 @@ class TestIsaTabLoad(unittest.TestCase):
             print(isatab.dumps(ISA))
             # isatab.dump(ISA, '/Users/dj/PycharmProjects/isa-api/tests/data/tmp')
 
-    # def test_isatab_load_issue201(self):
-    #     with open(os.path.join(self._tab_data_dir, 'sdata201411-isa1', 'i_Investigation.txt')) as fp:
-    #         ISA = isatab.load(fp)
+    def test_isatab_load_issue201(self):
+        with open(os.path.join(self._tab_data_dir, 'sdata201411-isa1', 'i_Investigation.txt')) as fp:
+            try:
+                isatab.load(fp, skip_load_tables=True)
+            except Exception as ex:
+                self.assertIsInstance(ex, IOError)
+                self.assertIn("There was a problem parsing the investigation section:", str(ex))
 
     def test_isatab_load_sdata201414_isa1(self):
         with open(os.path.join(self._tab_data_dir, 'sdata201414-isa1', 'i_Investigation.txt')) as fp:
