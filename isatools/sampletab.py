@@ -221,110 +221,86 @@ class ProcessSequenceFactory:
         else:
             ontology_source_map = {}
 
-        sources = {}
         samples = {}
         characteristic_categories = {}
         unit_categories = {}
         processes = {}
 
         try:
-            samples = dict(map(lambda x: (x, Sample(comments=[Comment(name="Sample Accession", value=x)])),
-                               DF["Sample Accession"].drop_duplicates()))
+            cproject = DF["Characteristic[project]"].drop_duplicates()
+            if len(cproject.index) == 1:
+                print("{} project type".format(cproject.iloc[0]))
+        except KeyError:
+            print("Assuming default project type")
+
+        try:
+            samples.update(dict(map(lambda x: (x, Source(comments=[Comment(name="Sample Accession", value=x)])),
+                                    DF["Sample Accession"].loc[DF["Derived From"] == ""].drop_duplicates())))
         except KeyError:
             pass
 
-        for _, object_series in DF.drop_duplicates().iterrows():
+        try:
+            samples.update(dict(map(lambda x: (x, Sample(comments=[Comment(name="Sample Accession", value=x)])),
+                                    DF["Sample Accession"].loc[DF["Derived From"] != ""].drop_duplicates())))
+        except KeyError:
+            pass
 
-            node_key = object_series["Sample Accession"]
-            sample = samples[node_key]
+        BASE_COLS = ["Sample Name", "Sample Accession", "Derived From", "Child Of"]
 
-            if sample is not None:
+        for sample_key in samples.keys():
+            sample = samples[sample_key]
 
-                sample.name = object_series["Sample Name"]
-                sample.comments.append(Comment(name="Sample Description", value=object_series['Sample Description']))
-                sample.comments.append(Comment(name="Child Of", value=object_series['Child Of']))
+            row = DF[DF["Sample Accession"] == sample_key].iloc[0] # there should only be one row with accession
+            sample.name = row["Sample Name"]
 
-                # create Material to Characteristic Material Type
-                if len(object_series["Material"]) > 0:
-                    category_key = "Material Type"
-                    try:
-                        category = characteristic_categories[category_key]
-                    except KeyError:
-                        category = OntologyAnnotation(term=category_key)
-                        characteristic_categories[category_key] = category
-                    characteristic = Characteristic(category=category)
-                    v, u = get_value("Material", DF.columns, object_series, ontology_source_map,
-                                     unit_categories)
-                    characteristic.value = v
-                    characteristic.unit = u
-                    sample.characteristics.append(characteristic)
+            for col in [x for x in DF.columns if x not in BASE_COLS]:
+                if col.startswith("Characteristic["):
+                    category_key = col[15:-1]
+                else:
+                    category_key = col
 
-                if len(object_series["Organism"]) > 0:
-                    category_key = "Organism"
-                    try:
-                        category = characteristic_categories[category_key]
-                    except KeyError:
-                        category = OntologyAnnotation(term=category_key)
-                        characteristic_categories[category_key] = category
-                    characteristic = Characteristic(category=category)
-                    v, u = get_value("Organism", DF.columns, object_series, ontology_source_map,
-                                     unit_categories)
-                    characteristic.value = v
-                    characteristic.unit = u
-                    sample.characteristics.append(characteristic)
+                try:
+                    category = characteristic_categories[category_key]
+                except KeyError:
+                    category = OntologyAnnotation(term=category_key)
+                    characteristic_categories[category_key] = category
 
-                if len(object_series["Sex"]) > 0:
-                    category_key = "Sex"
-                    try:
-                        category = characteristic_categories[category_key]
-                    except KeyError:
-                        category = OntologyAnnotation(term=category_key)
-                        characteristic_categories[category_key] = category
-                    characteristic = Characteristic(category=category)
-                    v, u = get_value("Sex", DF.columns, object_series, ontology_source_map,
-                                     unit_categories)
-                    characteristic.value = v
-                    characteristic.unit = u
-                    sample.characteristics.append(characteristic)
+                characteristic = Characteristic(category=category)
 
-                for charac_column in [c for c in DF.columns if c.startswith('Characteristic[')]:
-                    category_key = charac_column[15:-1]
+                v, u = get_value(col, DF.columns, row, ontology_source_map, unit_categories)
 
-                    try:
-                        category = characteristic_categories[category_key]
-                    except KeyError:
-                        category = OntologyAnnotation(term=category_key)
-                        characteristic_categories[category_key] = category
+                characteristic.value = v
+                characteristic.unit = u
 
-                    characteristic = Characteristic(category=category)
+                sample.characteristics.append(characteristic)
 
-                    v, u = get_value(charac_column, DF.columns, object_series, ontology_source_map, unit_categories)
+            if row["Derived From"] != "":
+                sample_accession = row["Derived From"]
 
-                    characteristic.value = v
-                    characteristic.unit = u
+                try:
+                    source = samples[sample_accession]
+                except KeyError:
+                    pass
 
-                    sample.characteristics.append(characteristic)
+                sample_collection_protocol = "sample collection"
 
-                if len(object_series["Derived From"]) > 0:
-                    try:
-                        source = sources[object_series["Derived From"]]
-                    except KeyError:
-                        source_sample = samples[object_series["Derived From"]]
-                        source = Source(name=source_sample.name,
-                                        characteristics=source_sample.characteristics,
-                                        comments=source_sample.comments)
-                        sources[source.name] = source
-                        del samples[object_series["Derived From"]]
-                    sample.derives_from.append(source)
-                    process_key = ":".join([source.name, 'sample collection'])
-                    try:
-                        process = processes[process_key]
-                    except KeyError:
-                        process = Process(executes_protocol="sample collection")
-                        processes.update(dict([(process_key, process)]))
-                    if source.name not in [x.name for x in process.inputs]:
-                        process.inputs.append(source)
-                    if sample.name not in [x.name for x in process.outputs]:
-                        process.outputs.append(sample)
+                if isinstance(source, Sample):
+                    sample_collection_protocol = "sample collection 2"
 
-        return sources, samples, processes, characteristic_categories, unit_categories
+                sample.derives_from.append(source)
+                process_key = ":".join([source.name, sample_collection_protocol])
+
+                try:
+                    process = processes[process_key]
+                except KeyError:
+                    process = Process(executes_protocol=sample_collection_protocol)
+                    processes.update(dict([(process_key, process)]))
+
+                if source.name not in [x.name for x in process.inputs]:
+                    process.inputs.append(source)
+                if sample.name not in [x.name for x in process.outputs]:
+                    process.outputs.append(sample)
+
+        sources = dict([x for x in samples.items() if isinstance(x[1], Source)])
+        study_samples = dict([x for x in samples.items() if isinstance(x[1], Sample)])
+        return sources, study_samples, processes, characteristic_categories, unit_categories
