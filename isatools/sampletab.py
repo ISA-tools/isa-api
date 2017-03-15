@@ -184,7 +184,7 @@ def load(FP):
                                       protocol_type=OntologyAnnotation(term="sample collection"))
     }
     study.protocols = list(protocol_map.values())
-    sources, samples, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(
+    sources, samples, processes, characteristic_categories, unit_categories = GenericSampleTabProcessSequenceFactory(
         ontology_sources=ISA.ontology_source_references, study_factors=study.factors).create_from_df(scd_df)
     study.materials['sources'] = list(sources.values())
     study.materials['samples'] = list(samples.values())
@@ -208,7 +208,7 @@ def load(FP):
     return ISA
 
 
-class ProcessSequenceFactory:
+class GenericSampleTabProcessSequenceFactory:
 
     def __init__(self, ontology_sources=None, study_factors=None):
         self.ontology_sources = ontology_sources
@@ -245,19 +245,38 @@ class ProcessSequenceFactory:
         except KeyError:
             pass
 
-        BASE_COLS = ["Sample Name", "Sample Accession", "Derived From", "Child Of"]
-
         for sample_key in samples.keys():
             sample = samples[sample_key]
 
             row = DF[DF["Sample Accession"] == sample_key].iloc[0] # there should only be one row with accession
             sample.name = row["Sample Name"]
 
-            for col in [x for x in DF.columns if x not in BASE_COLS]:
-                if col.startswith("Characteristic["):
-                    category_key = col[15:-1]
-                else:
-                    category_key = col
+            if row["Sample Accession"] != "":
+                try:
+                    category = characteristic_categories["Sample Accession"]
+                except KeyError:
+                    category = OntologyAnnotation(term="Sample Accession")
+                    characteristic_categories["Sample Accession"] = category
+                sample.characteristics.append(Characteristic(category=category, value=row["Sample Accession"]))
+
+            if row["Derived From"] != "":
+                try:
+                    category = characteristic_categories["Derived From"]
+                except KeyError:
+                    category = OntologyAnnotation(term="Derived From")
+                    characteristic_categories["Derived From"] = category
+                sample.characteristics.append(Characteristic(category=category, value=row["Derived From"]))
+
+            if row["Child Of"] != "":
+                try:
+                    category = characteristic_categories["Child Of"]
+                except KeyError:
+                    category = OntologyAnnotation(term="Child Of")
+                    characteristic_categories["Child Of"] = category
+                sample.characteristics.append(Characteristic(category=category, value=row["Child Of"]))
+
+            for col in [x for x in DF.columns if x.startswith("Characteristic[")]:  # build object map
+                category_key = col[15:col.rfind("]")]
 
                 try:
                     category = characteristic_categories[category_key]
@@ -274,32 +293,34 @@ class ProcessSequenceFactory:
 
                 sample.characteristics.append(characteristic)
 
-            if row["Derived From"] != "":
-                sample_accession = row["Derived From"]
+            sample_accession = row["Derived From"]
 
-                try:
-                    source = samples[sample_accession]
-                except KeyError:
-                    pass
-
-                sample_collection_protocol = "sample collection"
-
-                if isinstance(source, Sample):
-                    sample_collection_protocol = "sample collection 2"
-
+            try:
+                source = samples[sample_accession]
                 sample.derives_from.append(source)
-                process_key = ":".join([source.name, sample_collection_protocol])
+            except KeyError:
+                pass
 
-                try:
-                    process = processes[process_key]
-                except KeyError:
-                    process = Process(executes_protocol=sample_collection_protocol)
-                    processes.update(dict([(process_key, process)]))
+        sample_collection_protocol = "sample collection"
 
-                if source.name not in [x.name for x in process.inputs]:
-                    process.inputs.append(source)
-                if sample.name not in [x.name for x in process.outputs]:
-                    process.outputs.append(sample)
+        for _, row in DF[["Sample Accession", "Derived From"]].iterrows():
+            sample_accession = row["Sample Accession"]
+            sample = samples[sample_accession]
+            derived_from_accession = row["Derived From"]
+            if derived_from_accession == "":
+                continue
+            derived_from_sample = samples[derived_from_accession]
+            sample.derived_from = derived_from_sample
+            process_key = ":".join([derived_from_accession, sample_collection_protocol])
+            try:
+                process = processes[process_key]
+            except KeyError:
+                process = Process(executes_protocol=sample_collection_protocol)
+                processes[process_key] = process
+            if derived_from_sample not in process.inputs:
+                process.inputs.append(derived_from_sample)
+            if sample not in process.outputs:
+                process.outputs.append(sample)
 
         sources = dict([x for x in samples.items() if isinstance(x[1], Source)])
         study_samples = dict([x for x in samples.items() if isinstance(x[1], Sample)])

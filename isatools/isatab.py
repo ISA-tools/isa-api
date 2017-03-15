@@ -561,10 +561,17 @@ def write_study_table_files(inv_obj, output_dir):
                         fvlabel = "{0}.Factor Value[{1}]".format(olabel, fv.factor_name.name)
                         write_value_columns(df_dict, fvlabel, fv)
         pbar.finish()
+
         DF = pd.DataFrame(columns=columns)
         DF = DF.from_dict(data=df_dict)
         DF = DF[columns]  # reorder columns
         DF = DF.sort_values(by=DF.columns[0], ascending=True)  # arbitrary sort on column 0
+
+        for dup_item in set([x for x in columns if columns.count(x) > 1]):
+            for j, each in enumerate([i for i, x in enumerate(columns) if x == dup_item]):
+                columns[each] = dup_item + str(j)
+
+        DF.columns = columns  # reset columns after checking for dups
 
         for i, col in enumerate(columns):
             if col.endswith("Term Source REF"):
@@ -761,6 +768,12 @@ def write_assay_table_files(inv_obj, output_dir):
             DF = DF[columns]  # reorder columns
             DF = DF.sort_values(by=DF.columns[0], ascending=True)  # arbitrary sort on column 0
 
+            for dup_item in set([x for x in columns if columns.count(x) > 1]):
+                for j, each in enumerate([i for i, x in enumerate(columns) if x == dup_item]):
+                    columns[each] = dup_item + str(j)
+
+            DF.columns = columns
+
             for i, col in enumerate(columns):
                 if col.endswith("Term Source REF"):
                     columns[i] = "Term Source REF"
@@ -789,10 +802,11 @@ def write_assay_table_files(inv_obj, output_dir):
                     columns[i] = "Protocol REF"
 
             print("Rendered {} paths".format(len(DF.index)))
-            # if len(DF.index) > 1:
-            #     if len(DF.index) > len(DF.drop_duplicates().index):
-            #         print("Dropping duplicates...")
-            #         DF = DF.drop_duplicates()
+            if len(DF.index) > 1:
+                print(DF.columns)
+                if len(DF.index) > len(DF.drop_duplicates().index):
+                    print("Dropping duplicates...")
+                    DF = DF.drop_duplicates()
 
             print("Writing {} rows".format(len(DF.index)))
             # reset columns, replace nan with empty string, drop empty columns
