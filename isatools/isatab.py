@@ -770,7 +770,7 @@ def write_assay_table_files(inv_obj, output_dir):
 
             for dup_item in set([x for x in columns if columns.count(x) > 1]):
                 for j, each in enumerate([i for i, x in enumerate(columns) if x == dup_item]):
-                    columns[each] = dup_item + str(j)
+                    columns[each] = ".".join([dup_item, str(j)])
 
             DF.columns = columns
 
@@ -800,6 +800,8 @@ def write_assay_table_files(inv_obj, output_dir):
                     columns[i] = col[col.rindex(".") + 1:]
                 elif "Protocol REF" in col:
                     columns[i] = "Protocol REF"
+                elif "." in col:
+                        columns[i] = col[:col.rindex(".")]
 
             print("Rendered {} paths".format(len(DF.index)))
             if len(DF.index) > 1:
