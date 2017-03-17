@@ -325,3 +325,99 @@ class GenericSampleTabProcessSequenceFactory:
         sources = dict([x for x in samples.items() if isinstance(x[1], Source)])
         study_samples = dict([x for x in samples.items() if isinstance(x[1], Sample)])
         return sources, study_samples, processes, characteristic_categories, unit_categories
+
+
+def dump(investigation):
+
+    # build MSI section
+
+    metadata_DF = pd.DataFrame(columns=("Submission Title", "Submission Identifier", "Submission Description",
+                               "Submission Version", "Submission Reference Layer", "Submission Release Date",
+                                        "Submission Update Date"))
+    iversion_hits = [x for x in investigation.comments if x.name == "Submission Version"]
+    if len(iversion_hits) == 1:
+        investigation_version = iversion_hits[0].value
+    else:
+        investigation_version = ""
+    ireference_layer_hits = [x for x in investigation.comments if x.name == "Submission Reference Layer"]
+    if len(ireference_layer_hits) == 1:
+        investigation_reference_layer = ireference_layer_hits[0].value
+    else:
+        investigation_reference_layer = ""
+    iversion_update_date = [x for x in investigation.comments if x.name == "Submission Update Date"]
+    if len(iversion_update_date) == 1:
+        investigation_update_date = iversion_update_date[0].value
+    else:
+        investigation_update_date = ""
+    metadata_DF.loc[0] = [
+        investigation.title,
+        investigation.identifier,
+        investigation.description,
+        investigation_version,
+        investigation_reference_layer,
+        investigation.submission_date,
+        investigation_update_date
+    ]
+
+    org_DF = pd.DataFrame(columns=("Organization Name", "Organization Address", "Organization URI",
+                                   "Organization Email", "Organization Role"))
+    org_name_hits = [x for x in investigation.comments if x.name.startswith("Organization Name")]
+    org_address_hits = [x for x in investigation.comments if x.name.startswith("Organization Address")]
+    org_uri_hits = [x for x in investigation.comments if x.name.startswith("Organization URI")]
+    org_email_hits = [x for x in investigation.comments if x.name.startswith("Organization Email")]
+    org_role_hits = [x for x in investigation.comments if x.name.startswith("Organization Role")]
+    for i, org_name in enumerate(org_name_hits):
+        try:
+            org_name = org_name_hits[i].value
+        except IndexError:
+            org_name = ""
+        try:
+            org_address = org_address_hits[i].value
+        except IndexError:
+            org_address = ""
+        try:
+            org_uri = org_uri_hits[i].value
+        except IndexError:
+            org_uri = ""
+        try:
+            org_email = org_email_hits[i].value
+        except IndexError:
+            org_email = ""
+        try:
+            org_role = org_role_hits[i].value
+        except IndexError:
+            org_role = ""
+        org_DF.loc[i] = [
+            org_name,
+            org_address,
+            org_uri,
+            org_email,
+            org_role
+        ]
+
+    people_DF = pd.DataFrame(columns=("Person Last Name", "Person Initials", "Person First Name", "Person Email",
+                                      "Person Role"))
+    for i, contact in enumerate(investigation.contacts):
+        if len(contact.roles) == 1:
+            role = contact.roles[0].term
+        else:
+            role = ""
+        people_DF.loc[i] = [
+            contact.last_name,
+            contact.mid_initials,
+            contact.first_name,
+            contact.email,
+            role
+        ]
+
+    term_sources_DF = pd.DataFrame(columns=("Term Source Name", "Term Source URI", "Term Source Version"))
+    for i, term_source in enumerate(investigation.ontology_source_references):
+        term_sources_DF.loc[i] = [
+            term_source.name,
+            term_source.file,
+            term_source.version
+        ]
+    msi_DF = pd.concat([metadata_DF, org_DF, people_DF, term_sources_DF], axis=1)
+    msi_DF = msi_DF.set_index("Submission Title").T
+
+    return None  # return as a big String or file buffer?
