@@ -40,7 +40,8 @@ _LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name', 'Labeled
 _LABELS_DATA_NODES = ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
                       'Protein Assignment File', 'Peptide Assignment File',
                       'Post Translational Modification Assignment File', 'Acquisition Parameter Data File',
-                      'Free Induction Decay Data File', 'Derived Array Data Matrix File', 'Image File', 'Derived Data File']
+                      'Free Induction Decay Data File', 'Derived Array Data Matrix File', 'Image File',
+                      'Derived Data File', 'Metabolite Assignment File']
 _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name', 'Scan Name',
                        'Data Transformation Name', 'Normalization Name']
 
@@ -1443,7 +1444,8 @@ def load_table_checks(fp):
                            'Array Design REF', 'Scan Name', 'Array Data File', 'Protein Assignment File',
                            'Peptide Assignment File', 'Post Translational Modification Assignment File',
                            'Data Transformation Name', 'Derived Spectral Data File', 'Normalization Name',
-                           'Derived Array Data File', 'Image File']) and not _RX_CHARACTERISTICS.match(column) and not _RX_PARAMETER_VALUE.match(column) and not _RX_FACTOR_VALUE.match(column) and not _RX_COMMENT.match(column):
+                           'Derived Array Data File', 'Image File', 'Metabolite Assignment File',
+                           'Free Induction Decay File', 'Acquisition Parameter Data File']) and not _RX_CHARACTERISTICS.match(column) and not _RX_PARAMETER_VALUE.match(column) and not _RX_FACTOR_VALUE.match(column) and not _RX_COMMENT.match(column):
             logger.error("Unrecognised column heading {} at column position {} in table file {}".format(column, x, os.path.basename(fp.name)))
         if _RX_COMMENT.match(column):
             if len(_RX_COMMENT.findall(column)) == 0:
@@ -2849,6 +2851,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
                 study_factors=study.factors).create_from_df(study_tfile_df)
             study.materials['sources'] = list(sources.values())
             study.materials['samples'] = list(samples.values())
+            study.materials['samples'] = list(samples.values())
             study.process_sequence = list(processes.values())
             study.characteristic_categories = list(characteristic_categories.values())
             study.units = list(unit_categories.values())
@@ -3225,96 +3228,6 @@ class ProcessSequenceFactory:
 
         for data_col in [x for x in DF.columns if x.endswith(" File")]:
             data.update(dict(map(lambda x: (':'.join([data_col, x]), DataFile(filename=x, label=data_col)), DF[data_col].drop_duplicates())))
-
-        # try:
-        #     raw_data_files = dict(map(lambda x: ('Raw Data File:' + x, RawDataFile(filename=x)), DF['Raw Data File'].drop_duplicates()))
-        #     data.update(raw_data_files)
-        # except KeyError:
-        #     pass
-        #
-        # try:
-        #     derived_data_files = dict(map(lambda x: ('Derived Data File:' + x, DerivedDataFile(filename=x)),
-        #                                   DF['Derived Data File'].drop_duplicates()))
-        #     data.update(derived_data_files)
-        # except KeyError:
-        #     pass
-        #
-        # try:
-        #     image_data_files = dict(map(lambda x: ('Image File:' + x, RawDataFile(filename=x)), DF['Image File'].drop_duplicates()))
-        #     data.update(image_data_files)
-        # except KeyError:
-        #     pass
-        #
-        # try:
-        #     raw_spectral_data_files = dict(map(lambda x: ('Raw Spectral Data File:' + x, RawSpectralDataFile(filename=x)), DF['Raw Spectral Data File'].drop_duplicates()))
-        #     data.update(raw_spectral_data_files)
-        # except KeyError:
-        #     pass
-        #
-        # try:
-        #     derived_spectral_data_files = dict(map(lambda x: ('Derived Spectral Data File:' + x, DerivedSpectralDataFile(filename=x)),
-        #                                           DF['Derived Spectral Data File'].drop_duplicates()))
-        #     data.update(derived_spectral_data_files)
-        # except KeyError:
-        #     pass
-        #
-        # try:
-        #     derived_array_data_files = dict(map(lambda x: ('Derived Array Data File:' + x, DerivedArrayDataFile(filename=x)),
-        #                                         DF['Derived Array Data File'].drop_duplicates()))
-        #     data.update(derived_array_data_files)
-        # except KeyError:
-        #     pass
-        #
-        # try:
-        #     array_data_files = dict(map(lambda x: ('Array Data File:' + x, ArrayDataFile(filename=x)), DF['Array Data File'].drop_duplicates()))
-        #     data.update(array_data_files)
-        # except KeyError:
-        #     pass
-        #
-        # try:
-        #     protein_assignment_files = dict(map(lambda x: ('Protein Assignment File:' + x, ProteinAssignmentFile(filename=x)),
-        #                                         DF['Protein Assignment File'].drop_duplicates()))
-        #     data.update(protein_assignment_files)
-        # except KeyError:
-        #     pass
-        #
-        # try:
-        #     peptide_assignment_files = dict(map(lambda x: ('Peptide Assignment File:' + x, PeptideAssignmentFile(filename=x)),
-        #                                         DF['Peptide Assignment File'].drop_duplicates()))
-        #     data.update(peptide_assignment_files)
-        # except KeyError:
-        #     pass
-        #
-        # try:
-        #     derived_array_data__matrix_files = \
-        #         dict(map(lambda x: ('Derived Array Data Matrix File:' + x, DerivedArrayDataMatrixFile(filename=x)),
-        #                  DF['Derived Array Data Matrix File'].drop_duplicates()))
-        #     data.update(derived_array_data__matrix_files)
-        # except KeyError:
-        #     pass
-        #
-        # try:
-        #     post_translational_modification_assignment_files = \
-        #         dict(map(lambda x: ('Post Translational Modification Assignment File:' + x, PostTranslationalModificationAssignmentFile(filename=x)),
-        #                  DF['Post Translational Modification Assignment File'].drop_duplicates()))
-        #     data.update(post_translational_modification_assignment_files)
-        # except KeyError:
-        #     pass
-        #
-        # try:
-        #     acquisition_parameter_data_files = dict(map(lambda x: ('Acquisition Parameter Data File:' + x, AcquisitionParameterDataFile(filename=x)),
-        #                                         DF['Acquisition Parameter Data File'].drop_duplicates()))
-        #     data.update(acquisition_parameter_data_files)
-        # except KeyError:
-        #     pass
-        #
-        # try:
-        #     post_translational_modification_assignment_files = \
-        #         dict(map(lambda x: ('Free Induction Decay Data File:' + x, FreeInductionDecayDataFile(filename=x)),
-        #                  DF['Free Induction Decay Data File'].drop_duplicates()))
-        #     data.update(post_translational_modification_assignment_files)
-        # except KeyError:
-        #     pass
 
         node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
         proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
