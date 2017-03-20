@@ -338,7 +338,7 @@ class GenericSampleTabProcessSequenceFactory:
         return sources, study_samples, processes, characteristic_categories, unit_categories
 
 
-def dump(investigation, output_dir):
+def dumps(investigation):
 
     # build MSI section
 
@@ -430,6 +430,7 @@ def dump(investigation, output_dir):
         ]
     msi_DF = pd.concat([metadata_DF, org_DF, people_DF, term_sources_DF], axis=1)
     msi_DF = msi_DF.set_index("Submission Title").T
+    msi_DF = msi_DF.replace('', np.nan)
     msi_memf = StringIO()
     msi_DF.to_csv(path_or_buf=msi_memf, index=True, sep='\t', encoding='utf-8', index_label="Submission Title")
     msi_memf.seek(0)
@@ -515,7 +516,6 @@ def dump(investigation, output_dir):
                     else:
                         scd_DF.loc[i, characteristic_label] = characteristic.value
 
-    msi_DF = msi_DF.replace('', np.nan)
     scd_DF = scd_DF.replace('', np.nan)
     columns = list(scd_DF.columns)
     for i, col in enumerate(columns):
@@ -529,11 +529,15 @@ def dump(investigation, output_dir):
     scd_memf = StringIO()
     scd_DF.to_csv(path_or_buf=scd_memf, index=False, sep='\t', encoding='utf-8')
     scd_memf.seek(0)
-    with open(os.path.join(output_dir, 'sampletab.txt'), 'w') as out_fp:
-        out_fp.write("[MSI]\n")
-        out_fp.write(msi_memf.read())
-        out_fp.write("[SCD]\n")
-        out_fp.write(scd_memf.read())
+    sampletab_memf = StringIO()
+    sampletab_memf.write("[MSI]\n")
+    for line in msi_memf:
+        sampletab_memf.write(line.rstrip() + '\n')
+    sampletab_memf.write("[SCD]\n")
+    for line in scd_memf:
+        sampletab_memf.write(line.rstrip() + '\n')
+    sampletab_memf.seek(0)
+    return sampletab_memf.read()
 
 
 def get_value_columns(label, x):

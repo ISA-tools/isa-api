@@ -1,8 +1,8 @@
 import unittest
 from tests import utils
 from isatools import sampletab
-from isatools import isatab
 import os
+from isatools.model.v1 import *
 
 
 class UnitSampleTabLoad(unittest.TestCase):
@@ -17,28 +17,30 @@ class UnitSampleTabLoad(unittest.TestCase):
         with open(os.path.join(self._sampletab_data_dir, 'test1.txt')) as fp:
             ISA = sampletab.load(fp)
             self.assertEqual(len(ISA.studies), 1)
-            self.assertEqual(len(ISA.studies[0].materials['sources']), 1)
-            self.assertEqual(len(ISA.studies[0].materials['samples']), 1)
-            # print(isatab.dumps(ISA))
+            sources = ISA.studies[0].materials['sources']
+            samples = ISA.studies[0].materials['samples']
+            self.assertEqual(len(sources), 1)
+            self.assertEqual(len(samples), 1)
+            process = ISA.studies[0].process_sequence[0]
+            for source in sources:
+                self.assertIn(source, process.inputs)
+            for sample in samples:
+                self.assertIn(sample, process.outputs)
 
     def test_sampletab_load_test2(self):
         with open(os.path.join(self._sampletab_data_dir, 'test2.txt')) as fp:
             ISA = sampletab.load(fp)
             self.assertEqual(len(ISA.studies), 1)
-            self.assertEqual(len(ISA.studies[0].materials['sources']), 1)
-            self.assertEqual(len(ISA.studies[0].materials['samples']), 2)
+            sources = ISA.studies[0].materials['sources']
+            samples = ISA.studies[0].materials['samples']
+            self.assertEqual(len(sources), 1)
+            self.assertEqual(len(samples), 2)
             self.assertEqual(len(ISA.studies[0].process_sequence), 1)
-            # print(isatab.dumps(ISA))
-
-    # def test_sampletab_load_gsb_718(self):
-    #     with open(os.path.join(self._sampletab_data_dir, 'GSB-718.txt')) as fp:
-    #         ISA = sampletab.load(fp)
-    #         self.assertEqual(len(ISA.studies), 1)
-    #         self.assertEqual(len(ISA.studies[0].materials['sources']), 51)  # 51 organism
-    #         self.assertEqual(len(ISA.studies[0].materials['samples']), 2409) # 2337 specimen from org + 72 cell specimen
-    #         self.assertEqual(len(ISA.studies[0].process_sequence), 109)
-            # print(isatab.dumps(ISA))  # looking for 2351 paths
-            # isatab.dump(ISA, "/Users/dj/PycharmProjects/isa-api/tests/data/tmp")
+            process = ISA.studies[0].process_sequence[0]
+            for source in sources:
+                self.assertIn(source, process.inputs)
+            for sample in samples:
+                self.assertIn(sample, process.outputs)
 
 
 class UnitSampleTabDump(unittest.TestCase):
@@ -50,10 +52,145 @@ class UnitSampleTabDump(unittest.TestCase):
         pass
 
     def test_sampletab_dump_test1(self):
-        pass
+        ISA = Investigation()
+        ISA.title = "Test SampleTab"
+        ISA.identifier = "TEST-888"
+        ISA.submission_date = "02/03/2017"
+        ISA.ontology_source_references = [
+            OntologySource(name="NCBI Taxonomy", description="NCBI Taxonomy", file="http://www.ncbi.nlm.nih.gov/taxonomy/"),
+            OntologySource(name="EFO", description="EFO", file="http://www.ebi.ac.uk/efo/"),
+            OntologySource(name="LBO", description="LBO", file="https://www.ebi.ac.uk/ols/ontologies/lbo/"),
+            OntologySource(name="PATO", description="PATO", file="https://www.ebi.ac.uk/ols/ontologies/pato"),
+            OntologySource(name="UBERON", description="UBERON", file="https://www.ebi.ac.uk/ols/ontologies/uberon"),
+            OntologySource(name="CL", description="CL", file="https://www.ebi.ac.uk/ols/ontologies/cl"),
+            OntologySource(name="BTO", description="BTO", file="https://www.ebi.ac.uk/ols/ontologies/bto")
+        ]
+        ISA.comments = [
+            Comment(name="Organization Address", value="Oxford e-Research Centre, 7 Keble Road, Oxford OX1 3QG"),
+            Comment(name="Organization Email", value=""),
+            Comment(name="Organization Name", value="University of Oxford"),
+            Comment(name="Organization Role", value="institution"),
+            Comment(name="Organization URI", value="http://www.oerc.ox.ac.uk"),
+
+            Comment(name="Organization Address", value="Wellcome Genome Campus, Hinxton, Cambridge, CB10 1SD, United Kingdom"),
+            Comment(name="Organization Email", value=""),
+            Comment(name="Organization Name", value="EMBL-EBI"),
+            Comment(name="Organization Role", value="curator"),
+            Comment(name="Organization URI", value="http://www.ebi.ac.uk/"),
+        ]
+        study = Study(filename="s_TEST-888.txt")
+        study.protocols = [Protocol(name="sample collection", protocol_type=OntologyAnnotation(term="sample collection"))]
+        sample_accession_charac = OntologyAnnotation("Sample Accession")
+        sample_description_charac = OntologyAnnotation("Sample Description")
+        derived_from_charac = OntologyAnnotation("Derived From")
+        study.characteristic_categories = [
+            sample_accession_charac,
+            sample_description_charac,
+            derived_from_charac
+        ]
+        study.materials['sources'] = [Source(name="sample1", characteristics=[
+            Characteristic(category=sample_accession_charac, value="S1"),
+            Characteristic(category=sample_description_charac, value="A sample"),
+        ])]
+        study.materials['samples'] = [Sample(name="sample2", characteristics=[
+            Characteristic(category=sample_accession_charac, value="S2"),
+            Characteristic(category=sample_description_charac, value="Another sample"),
+            Characteristic(category=derived_from_charac, value="S1")],
+                                             derives_from=[study.materials['sources'][0]])]
+        process = Process(executes_protocol=study.protocols[0])
+        process.inputs = [study.materials['sources'][0]]
+        process.outputs = [study.materials['samples'][0]]
+        study.process_sequence = [process]
+        ISA.studies = [study]
+        self.assertIn("""[MSI]
+Submission Title	Test SampleTab
+Submission Identifier	TEST-888
+Submission Description
+Submission Version
+Submission Reference Layer
+Submission Release Date	02/03/2017
+Submission Update Date
+Organization Name	University of Oxford	EMBL-EBI
+Organization Address	Oxford e-Research Centre, 7 Keble Road, Oxford OX1 3QG	Wellcome Genome Campus, Hinxton, Cambridge, CB10 1SD, United Kingdom
+Organization URI	http://www.oerc.ox.ac.uk	http://www.ebi.ac.uk/
+Organization Email
+Organization Role	institution	curator
+Person Last Name
+Person Initials
+Person First Name
+Person Email
+Person Role
+Term Source Name	NCBI Taxonomy	EFO	LBO	PATO	UBERON	CL	BTO
+Term Source URI	http://www.ncbi.nlm.nih.gov/taxonomy/	http://www.ebi.ac.uk/efo/	https://www.ebi.ac.uk/ols/ontologies/lbo/	https://www.ebi.ac.uk/ols/ontologies/pato	https://www.ebi.ac.uk/ols/ontologies/uberon	https://www.ebi.ac.uk/ols/ontologies/cl	https://www.ebi.ac.uk/ols/ontologies/bto
+Term Source Version
+[SCD]
+Sample Name	Sample Accession	Sample Description	Derived From	Group Name	Group Accession
+sample1	S1	A sample
+sample2	S2	Another sample	S1""",
+            sampletab.dumps(ISA))
 
     def test_sampletab_dump_test2(self):
-        pass
+        ISA = Investigation()
+        ISA.title = "Test SampleTab"
+        ISA.identifier = "TEST-888"
+        ISA.submission_date = "02/03/2017"
+        ISA.ontology_source_references = [
+            OntologySource(name="NCBI Taxonomy", description="NCBI Taxonomy",
+                           file="http://www.ncbi.nlm.nih.gov/taxonomy/"),
+            OntologySource(name="EFO", description="EFO", file="http://www.ebi.ac.uk/efo/"),
+            OntologySource(name="LBO", description="LBO", file="https://www.ebi.ac.uk/ols/ontologies/lbo/"),
+            OntologySource(name="PATO", description="PATO", file="https://www.ebi.ac.uk/ols/ontologies/pato"),
+            OntologySource(name="UBERON", description="UBERON", file="https://www.ebi.ac.uk/ols/ontologies/uberon"),
+            OntologySource(name="CL", description="CL", file="https://www.ebi.ac.uk/ols/ontologies/cl"),
+            OntologySource(name="BTO", description="BTO", file="https://www.ebi.ac.uk/ols/ontologies/bto")
+        ]
+        ISA.comments = [
+            Comment(name="Organization Address", value="Oxford e-Research Centre, 7 Keble Road, Oxford OX1 3QG"),
+            Comment(name="Organization Email", value=""),
+            Comment(name="Organization Name", value="University of Oxford"),
+            Comment(name="Organization Role", value="institution"),
+            Comment(name="Organization URI", value="http://www.oerc.ox.ac.uk"),
 
-    def test_sampletab_dump_gsb_718(self):
-        pass
+            Comment(name="Organization Address",
+                    value="Wellcome Genome Campus, Hinxton, Cambridge, CB10 1SD, United Kingdom"),
+            Comment(name="Organization Email", value=""),
+            Comment(name="Organization Name", value="EMBL-EBI"),
+            Comment(name="Organization Role", value="curator"),
+            Comment(name="Organization URI", value="http://www.ebi.ac.uk/"),
+        ]
+        study = Study(filename="s_TEST-888.txt")
+        study.protocols = [
+            Protocol(name="sample collection", protocol_type=OntologyAnnotation(term="sample collection"))]
+        sample_accession_charac = OntologyAnnotation("Sample Accession")
+        sample_description_charac = OntologyAnnotation("Sample Description")
+        derived_from_charac = OntologyAnnotation("Derived From")
+        study.characteristic_categories = [
+            sample_accession_charac,
+            sample_description_charac,
+            derived_from_charac
+        ]
+        study.materials['sources'] = [Source(name="sample1", characteristics=[
+            Characteristic(category=sample_accession_charac, value="S1"),
+            Characteristic(category=sample_description_charac, value="A sample"),
+        ])]
+        study.materials['samples'] = [Sample(name="sample2", characteristics=[
+            Characteristic(category=sample_accession_charac, value="S2"),
+            Characteristic(category=sample_description_charac, value="Another sample"),
+            Characteristic(category=derived_from_charac, value="S1")],
+                                             derives_from=[study.materials['sources'][0]]),
+            Sample(name="sample3", characteristics=[
+                Characteristic(category=sample_accession_charac, value="S3"),
+                Characteristic(category=sample_description_charac, value="Another sample"),
+                Characteristic(category=derived_from_charac, value="S1")],
+                derives_from=[study.materials['sources'][0]])
+                                      ]
+        process = Process(executes_protocol=study.protocols[0])
+        process.inputs = [study.materials['sources'][0]]
+        process.outputs = [study.materials['samples'][0]]
+        study.process_sequence = [process]
+        ISA.studies = [study]
+        self.assertIn("""Sample Name	Sample Accession	Sample Description	Derived From	Group Name	Group Accession
+sample1	S1	A sample
+sample2	S2	Another sample	S1
+sample3	S3	Another sample	S1""",
+              sampletab.dumps(ISA))
