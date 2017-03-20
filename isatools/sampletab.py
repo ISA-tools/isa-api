@@ -2,6 +2,9 @@ import io
 import pandas as pd
 import numpy as np
 from isatools.model.v1 import *
+from progressbar import ProgressBar, SimpleProgress, Bar, ETA
+from io import StringIO
+import os
 
 
 def _peek(f):
@@ -142,7 +145,7 @@ def load(FP):
                   "Submission Reference Layer", "Submission Release Date", "Submission Update Date"]].iloc[0]
     ISA.identifier = row["Submission Identifier"]
     ISA.title = row["Submission Title"]
-    ISA.description = row["Submission Description"]
+    ISA.descriptiondescription = row["Submission Description"]
     ISA.submission_date = row["Submission Release Date"]
     ISA.comments = [
         Comment(name="Submission Version", value=row["Submission Version"]),
@@ -259,6 +262,14 @@ class GenericSampleTabProcessSequenceFactory:
                     characteristic_categories["Sample Accession"] = category
                 sample.characteristics.append(Characteristic(category=category, value=row["Sample Accession"]))
 
+            if row["Sample Description"] != "":
+                try:
+                    category = characteristic_categories["Sample Description"]
+                except KeyError:
+                    category = OntologyAnnotation(term="Sample Description")
+                    characteristic_categories["Sample Description"] = category
+                sample.characteristics.append(Characteristic(category=category, value=row["Sample Description"]))
+
             if row["Derived From"] != "":
                 try:
                     category = characteristic_categories["Derived From"]
@@ -327,7 +338,7 @@ class GenericSampleTabProcessSequenceFactory:
         return sources, study_samples, processes, characteristic_categories, unit_categories
 
 
-def dump(investigation):
+def dump(investigation, output_dir):
 
     # build MSI section
 
@@ -419,5 +430,120 @@ def dump(investigation):
         ]
     msi_DF = pd.concat([metadata_DF, org_DF, people_DF, term_sources_DF], axis=1)
     msi_DF = msi_DF.set_index("Submission Title").T
+    msi_memf = StringIO()
+    msi_DF.to_csv(path_or_buf=msi_memf, index=True, sep='\t', encoding='utf-8', index_label="Submission Title")
+    msi_memf.seek(0)
 
-    return None  # return as a big String or file buffer?
+    scd_DF = pd.DataFrame(columns=("Sample Name", "Sample Accession", "Sample Description", "Derived From",
+                                   "Group Name", "Group Accession"))
+    study = investigation.studies[0]
+    if isinstance(study, Study):
+        sources = study.materials['sources']
+        samples = study.materials['samples']
+        pbar = ProgressBar(min_value=0, max_value=len(sources + samples),
+                           widgets=['Writing {} samples: '.format(len(sources + samples)), SimpleProgress(),
+                                    Bar(left=" |", right="| "), ETA()]).start()
+        for i, s in pbar(enumerate(sources + samples)):
+            if isinstance(s, (Source, Sample)):
+                derived_from = ""
+                group_name = ""
+                group_accession = ""
+                if isinstance(s, Sample) and s.derives_from is not None:
+                    if len(s.derives_from) == 1:
+                        derived_from_obj = s.derives_from[0]
+                        derives_from_accession_hits = [x for x in derived_from_obj.characteristics
+                                                       if x.category.term == "Sample Accession"]
+                        if len(derives_from_accession_hits) == 1:
+                            derived_from = derives_from_accession_hits[0].value
+                sample_accession_hits = [x for x in s.characteristics if x.category.term == "Sample Accession"]
+                if len(sample_accession_hits) == 1:
+                    sample_accession = sample_accession_hits[0].value
+                else:
+                    sample_accession = ""
+                sample_description_hits = [x for x in s.characteristics if x.category.term == "Sample Description"]
+                if len(sample_description_hits) == 1:
+                    sample_description = sample_description_hits[0].value
+                else:
+                    sample_description = ""
+
+                if isinstance(s, Sample):
+                    group_name_hits = [x for x in s.factor_values if x.category.term == "Group Name"]
+                    if len(group_name_hits) == 1:
+                        group_name = group_name_hits[0].value
+                    else:
+                        group_name = ""
+                    group_accession_hits = [x for x in s.factor_values if x.category.term == "Group Accession"]
+                    if len(group_accession_hits) == 1:
+                        group_accession = group_accession_hits[0].value
+                    else:
+                        group_accession = ""
+
+                scd_DF.loc[i, "Sample Name"] = s.name
+                scd_DF.loc[i, "Sample Accession"] = sample_accession
+                scd_DF.loc[i, "Sample Description"] = sample_description
+                scd_DF.loc[i, "Derived From"] = derived_from
+                scd_DF.loc[i, "Group Name"] = group_name
+                scd_DF.loc[i, "Group Accession"] = group_accession
+
+                characteristics = [x for x in s.characteristics if x.category.term not in ["Sample Description",
+                                                                                           "Derived From",
+                                                                                           "Sample Accession"]]
+                for characteristic in characteristics:
+                    characteristic_label = "Characteristic[" + characteristic.category.term + "]"
+                    if characteristic.category.term not in scd_DF.columns:
+                        scd_DF[characteristic_label] = ""
+                        for val_col in get_value_columns(characteristic_label, characteristic):
+                            scd_DF[val_col] = ""
+                    scd_DF.loc[i, characteristic_label] = characteristic.value
+                    if isinstance(characteristic.value, (int, float)) and characteristic.unit:
+                        if isinstance(characteristic.unit, OntologyAnnotation):
+                            scd_DF.loc[i, characteristic_label] = characteristic.value
+                            scd_DF.loc[i, characteristic_label + ".Unit"] = characteristic.unit.term
+                            scd_DF.loc[i, characteristic_label + ".Unit.Term Source REF"]\
+                                = characteristic.unit.term_source.name if characteristic.unit.term_source else ""
+                            scd_DF.loc[i, characteristic_label + ".Unit.Term Accession Number"] = \
+                                characteristic.unit.term_accession
+                        else:
+                            scd_DF.loc[i, characteristic_label] = characteristic.value
+                            scd_DF.loc[i, characteristic_label + ".Unit"] = characteristic.unit
+                    elif isinstance(characteristic.value, OntologyAnnotation):
+                        scd_DF.loc[i, characteristic_label] = characteristic.value.term
+                        scd_DF.loc[i, characteristic_label + ".Term Source REF"] = \
+                            characteristic.value.term_source.name if characteristic.value.term_source else ""
+                        scd_DF.loc[i, characteristic_label + ".Term Accession Number"] = \
+                            characteristic.value.term_accession
+                    else:
+                        scd_DF.loc[i, characteristic_label] = characteristic.value
+
+    msi_DF = msi_DF.replace('', np.nan)
+    scd_DF = scd_DF.replace('', np.nan)
+    columns = list(scd_DF.columns)
+    for i, col in enumerate(columns):
+        if col.endswith("Term Source REF"):
+            columns[i] = "Term Source REF"
+        elif col.endswith("Term Accession Number"):
+            columns[i] = "Term Accession Number"
+        elif col.endswith("Unit"):
+            columns[i] = "Unit"
+    scd_DF.columns = columns
+    scd_memf = StringIO()
+    scd_DF.to_csv(path_or_buf=scd_memf, index=False, sep='\t', encoding='utf-8')
+    scd_memf.seek(0)
+    with open(os.path.join(output_dir, 'sampletab.txt'), 'w') as out_fp:
+        out_fp.write("[MSI]\n")
+        out_fp.write(msi_memf.read())
+        out_fp.write("[SCD]\n")
+        out_fp.write(scd_memf.read())
+
+
+def get_value_columns(label, x):
+    if isinstance(x.value, (int, float)) and x.unit:
+        if isinstance(x.unit, OntologyAnnotation):
+            return map(lambda x: "{0}.{1}".format(label, x),
+                       ["Unit", "Unit.Term Source REF", "Unit.Term Accession Number"])
+        else:
+            return ["{0}.Unit".format(label)]
+    elif isinstance(x.value, OntologyAnnotation):
+        return map(lambda x: "{0}.{1}".format(label, x), ["Term Source REF", "Term Accession Number"])
+    else:
+        return []
