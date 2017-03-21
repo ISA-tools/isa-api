@@ -157,6 +157,7 @@ class UnitSampleTabDump(unittest.TestCase):
         process.outputs = [study.materials['samples'][0]]
         study.process_sequence = [process]
         ISA.studies = [study]
+        sampletab_dump = sampletab.dumps(ISA)
         self.assertIn("""[MSI]
 Submission Title	Test SampleTab
 Submission Identifier	TEST-888
@@ -179,10 +180,9 @@ Term Source Name	NCBI Taxonomy	EFO	LBO	PATO	UBERON	CL	BTO
 Term Source URI	http://www.ncbi.nlm.nih.gov/taxonomy/	http://www.ebi.ac.uk/efo/	https://www.ebi.ac.uk/ols/ontologies/lbo/	https://www.ebi.ac.uk/ols/ontologies/pato	https://www.ebi.ac.uk/ols/ontologies/uberon	https://www.ebi.ac.uk/ols/ontologies/cl	https://www.ebi.ac.uk/ols/ontologies/bto
 Term Source Version
 [SCD]
-Sample Name	Sample Accession	Sample Description	Derived From	Group Name	Group Accession
-sample1	S1	A sample
-sample2	S2	Another sample	S1""",
-            sampletab.dumps(ISA))
+Sample Name	Sample Accession	Sample Description	Derived From	Group Name	Group Accession""", sampletab_dump)
+        self.assertIn("""sample1	S1	A sample""", sampletab_dump)
+        self.assertIn("""sample2	S2	Another sample	S1""", sampletab_dump)
 
     def test_sampletab_dump_test2(self):
         ISA = Investigation()
