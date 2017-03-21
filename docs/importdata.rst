@@ -100,3 +100,33 @@ tool from https://github.com/ISA-tools/mzml2isa and can be run as follows:
 
     from isatools.convert import mzml2isa
     mzml2isa.convert('your/path/to/mzml/files/', 'tmp/', "My Study ID")
+
+
+--------------------------
+Importing SampleTab to ISA
+--------------------------
+To import metadata from SampleTab files (e.g. from EBI BioSamples database), you can do the following to import a
+SampleTab to ISA-Tab:
+
+.. code-block:: python
+
+    from isatools.convert import sampletab2isatab
+    with open('your/path/to/sampletab.txt', 'r') as input_sampletab:
+        sampletab2isatab.convert(input_sampletab, 'tmp/')
+
+To import a SampleTab to ISA JSON, you can do:
+
+.. code-block:: python
+
+    from isatools.convert import sampletab2json
+    with open('your/path/to/sampletab.txt', 'r') as input_sampletab:
+        with open('your/path/to/myjson.json', 'w') as output_json:'
+            sampletab2json.convert(input_sampletab, output_json)
+
+You can also load SampleTab content directly into ISA Python objects:
+
+.. code-block:: python
+
+    from isatools import sampletab
+    with open('your/path/to/sampletab.txt', 'r') as input_sampletab:
+        ISA = sampletab.load(input_sampletab)

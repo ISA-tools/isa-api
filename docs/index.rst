@@ -19,6 +19,7 @@ flexible way to build and use ISA content, as well as provide utility functions 
 #. :doc:`Downloading files stored in Github </github>`
 #. :doc:`Validating ISA-Tab and ISA JSON </validation>`
 #. :doc:`Importing data in ISA formats </importdata>`
+#. :doc:`Exporting data in ISA formats </exportdata>`
 #. :doc:`Known Issues </knownissues>`
 
 License
@@ -43,4 +44,5 @@ This code is licensed under the `CPAL License <https://raw.githubusercontent.com
    Downloading files stored in Github <github>
    Validating ISA-Tab and ISA JSON <validation>
    Importing data in ISA formats <importdata>
+   Exporting data from ISA formats <exportdata>
    Known Issues <knownissues>
