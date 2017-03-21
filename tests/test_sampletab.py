@@ -244,8 +244,8 @@ sample2	S2	Another sample	S1""",
         process.outputs = [study.materials['samples'][0]]
         study.process_sequence = [process]
         ISA.studies = [study]
-        self.assertIn("""Sample Name	Sample Accession	Sample Description	Derived From	Group Name	Group Accession
-sample1	S1	A sample
-sample2	S2	Another sample	S1
-sample3	S3	Another sample	S1""",
-              sampletab.dumps(ISA))
+        sampletab_dump = sampletab.dumps(ISA)
+        self.assertIn("""Sample Name	Sample Accession	Sample Description	Derived From	Group Name	Group Accession""", sampletab_dump)
+        self.assertIn("""sample1	S1	A sample""", sampletab_dump)
+        self.assertIn("""sample2	S2	Another sample	S1""", sampletab_dump)
+        self.assertIn("""sample3	S3	Another sample	S1""", sampletab_dump)
