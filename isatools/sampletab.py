@@ -2,6 +2,9 @@ import io
 import pandas as pd
 import numpy as np
 from isatools.model.v1 import *
+from progressbar import ProgressBar, SimpleProgress, Bar, ETA
+from io import StringIO
+import os
 
 
 def _peek(f):
@@ -33,8 +36,7 @@ def _read_tab_section(f, sec_key, next_sec_key=None):
 def read_sampletab_msi(fp):
 
     def _build_msi_df(f):
-        import numpy as np
-        df = pd.read_csv(f, names=range(0, 64), sep='\t').dropna(axis=1, how='all') # load MSI section
+        df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python').dropna(axis=1, how='all')  # load MSI section
         df = df.T  # transpose MSI section
         df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
         df.reset_index(inplace=True)  # Reset index so it is accessible as column
@@ -42,7 +44,7 @@ def read_sampletab_msi(fp):
         df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
         return df
 
-    # Read in investigation file into DataFrames first
+    # Read in MSI section into DataFrames first
     msi_df = _build_msi_df(_read_tab_section(
         f=fp,
         sec_key='[MSI]',
@@ -54,9 +56,6 @@ def read_sampletab_msi(fp):
 def get_value(object_column, column_group, object_series, ontology_source_map, unit_categories):
 
     cell_value = object_series[object_column]
-
-    # if cell_value == '':
-    #     return cell_value, None
 
     column_index = list(column_group).index(object_column)
 
@@ -136,13 +135,11 @@ def load(FP):
                                          description=row["Term Source Name"])
         ISA.ontology_source_references.append(ontology_source)
 
-    ontology_source_map = dict(map(lambda x: (x.name, x), ISA.ontology_source_references))
-
     row = msi_df[["Submission Title", "Submission Identifier", "Submission Description", "Submission Version",
                   "Submission Reference Layer", "Submission Release Date", "Submission Update Date"]].iloc[0]
     ISA.identifier = row["Submission Identifier"]
     ISA.title = row["Submission Title"]
-    ISA.description = row["Submission Description"]
+    ISA.descriptiondescription = row["Submission Description"]
     ISA.submission_date = row["Submission Release Date"]
     ISA.comments = [
         Comment(name="Submission Version", value=row["Submission Version"]),
@@ -150,15 +147,16 @@ def load(FP):
         Comment(name="Submission Update Date", value=row["Submission Update Date"]),
     ]
 
-    for _, row in msi_df[
-        ["Person Last Name", "Person First Name", "Person Initials", "Person Email", "Person Role"]]\
-            .replace('', np.nan).dropna(axis=0, how='all').iterrows():
-        person = Person(last_name=row['Person Last Name'],
-                        first_name=row['Person First Name'],
-                        mid_initials=row['Person Initials'],
-                        email=row['Person Email'],
-                        roles=[OntologyAnnotation(row['Person Role'])])
-        ISA.contacts.append(person)
+    try:
+        for _, row in msi_df[["Person Last Name", "Person First Name", "Person Initials", "Person Email", "Person Role"]].replace('', np.nan).dropna(axis=0, how='all').iterrows():
+            person = Person(last_name=row['Person Last Name'],
+                            first_name=row['Person First Name'],
+                            mid_initials=row['Person Initials'],
+                            email=row['Person Email'],
+                            roles=[OntologyAnnotation(row['Person Role'])])
+            ISA.contacts.append(person)
+    except KeyError:
+        pass  # skip if no person part of MSI section is present, as in GSB-3.txt
 
     for i, row in msi_df[
         ["Organization Name", "Organization Address", "Organization URI", "Organization Email",
@@ -184,7 +182,11 @@ def load(FP):
                                       protocol_type=OntologyAnnotation(term="sample collection"))
     }
     study.protocols = list(protocol_map.values())
-    sources, samples, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(
+    study.factors = [
+        StudyFactor(name="Group Name"),
+        StudyFactor(name="Group Accession")
+    ]
+    sources, samples, processes, characteristic_categories, unit_categories = GenericSampleTabProcessSequenceFactory(
         ontology_sources=ISA.ontology_source_references, study_factors=study.factors).create_from_df(scd_df)
     study.materials['sources'] = list(sources.values())
     study.materials['samples'] = list(samples.values())
@@ -204,11 +206,11 @@ def load(FP):
                 unknown_protocol = protocol_map['unknown']
                 study.protocols.append(unknown_protocol)
             process.executes_protocol = unknown_protocol
-    ISA.studies =[study]
+    ISA.studies = [study]
     return ISA
 
 
-class ProcessSequenceFactory:
+class GenericSampleTabProcessSequenceFactory:
 
     def __init__(self, ontology_sources=None, study_factors=None):
         self.ontology_sources = ontology_sources
@@ -221,110 +223,399 @@ class ProcessSequenceFactory:
         else:
             ontology_source_map = {}
 
-        sources = {}
         samples = {}
         characteristic_categories = {}
         unit_categories = {}
         processes = {}
 
         try:
-            samples = dict(map(lambda x: (x, Sample(comments=[Comment(name="Sample Accession", value=x)])),
-                               DF["Sample Accession"].drop_duplicates()))
+            cproject = DF["Characteristic[project]"].drop_duplicates()
+            if len(cproject.index) == 1:
+                print("{} project type".format(cproject.iloc[0]))
+        except KeyError:
+            print("Assuming default project type")
+
+        try:
+            samples.update(dict(map(lambda x: (x, Source(comments=[Comment(name="Sample Accession", value=x)])),
+                                    DF["Sample Accession"].loc[DF["Derived From"] == ""].drop_duplicates())))
         except KeyError:
             pass
 
-        for _, object_series in DF.drop_duplicates().iterrows():
+        try:
+            samples.update(dict(map(lambda x: (x, Sample(comments=[Comment(name="Sample Accession", value=x)])),
+                                    DF["Sample Accession"].loc[DF["Derived From"] != ""].drop_duplicates())))
+        except KeyError:
+            pass
 
-            node_key = object_series["Sample Accession"]
-            sample = samples[node_key]
+        for sample_key in samples.keys():
+            sample = samples[sample_key]
 
-            if sample is not None:
+            row = DF[DF["Sample Accession"] == sample_key].iloc[0] # there should only be one row with accession
+            sample.name = row["Sample Name"]
 
-                sample.name = object_series["Sample Name"]
-                sample.comments.append(Comment(name="Sample Description", value=object_series['Sample Description']))
-                sample.comments.append(Comment(name="Child Of", value=object_series['Child Of']))
+            if row["Sample Accession"] != "":
 
-                # create Material to Characteristic Material Type
-                if len(object_series["Material"]) > 0:
-                    category_key = "Material Type"
+                try:
+                    category = characteristic_categories["Sample Accession"]
+                except KeyError:
+                    category = OntologyAnnotation(term="Sample Accession")
+                    characteristic_categories["Sample Accession"] = category
+                sample.characteristics.append(Characteristic(category=category, value=row["Sample Accession"]))
+
+            if row["Sample Description"] != "":
+                try:
+                    category = characteristic_categories["Sample Description"]
+                except KeyError:
+                    category = OntologyAnnotation(term="Sample Description")
+                    characteristic_categories["Sample Description"] = category
+                sample.characteristics.append(Characteristic(category=category, value=row["Sample Description"]))
+
+            if row["Derived From"] != "":
+                try:
+                    category = characteristic_categories["Derived From"]
+                except KeyError:
+                    category = OntologyAnnotation(term="Derived From")
+                    characteristic_categories["Derived From"] = category
+                sample.characteristics.append(Characteristic(category=category, value=row["Derived From"]))
+
+            try:
+                if row["Child Of"] != "":
+                    try:
+                        category = characteristic_categories["Child Of"]
+                    except KeyError:
+                        category = OntologyAnnotation(term="Child Of")
+                        characteristic_categories["Child Of"] = category
+                    sample.characteristics.append(Characteristic(category=category, value=row["Child Of"]))
+            except KeyError:
+                pass  # skip if Child Of is not present in sample table
+
+            if row["Group Name"] != "":
+                if isinstance(sample, Sample):
+                    factor_hits = [f for f in self.factors if f.name == "Group Name"]
+                    if len(factor_hits) == 1:
+                        factor = factor_hits[0]
+                    else:
+                        raise ValueError("Could not resolve Study Factor from Group Name")
+                    fv = FactorValue(factor_name=factor)
+                    v = row["Group Name"]
+                    fv.value = v
+                    sample.factor_values.append(fv)
+                else:
+                    category_key = "Group Name"
                     try:
                         category = characteristic_categories[category_key]
                     except KeyError:
                         category = OntologyAnnotation(term=category_key)
                         characteristic_categories[category_key] = category
                     characteristic = Characteristic(category=category)
-                    v, u = get_value("Material", DF.columns, object_series, ontology_source_map,
-                                     unit_categories)
+                    v = row["Group Name"]
                     characteristic.value = v
-                    characteristic.unit = u
-                    sample.characteristics.append(characteristic)
 
-                if len(object_series["Organism"]) > 0:
-                    category_key = "Organism"
+            if row["Group Accession"] != "":
+                if isinstance(sample, Sample):
+                    factor_hits = [f for f in self.factors if f.name == "Group Accession"]
+                    if len(factor_hits) == 1:
+                        factor = factor_hits[0]
+                    else:
+                        raise ValueError("Could not resolve Study Factor from Group Accession")
+                    fv = FactorValue(factor_name=factor)
+                    v = row["Group Accession"]
+                    fv.value = v
+                    sample.factor_values.append(fv)
+                else:
+                    category_key = "Group Accession"
                     try:
                         category = characteristic_categories[category_key]
                     except KeyError:
                         category = OntologyAnnotation(term=category_key)
                         characteristic_categories[category_key] = category
                     characteristic = Characteristic(category=category)
-                    v, u = get_value("Organism", DF.columns, object_series, ontology_source_map,
-                                     unit_categories)
+                    v = row["Group Accession"]
                     characteristic.value = v
-                    characteristic.unit = u
-                    sample.characteristics.append(characteristic)
 
-                if len(object_series["Sex"]) > 0:
-                    category_key = "Sex"
-                    try:
-                        category = characteristic_categories[category_key]
-                    except KeyError:
-                        category = OntologyAnnotation(term=category_key)
-                        characteristic_categories[category_key] = category
-                    characteristic = Characteristic(category=category)
-                    v, u = get_value("Sex", DF.columns, object_series, ontology_source_map,
-                                     unit_categories)
-                    characteristic.value = v
-                    characteristic.unit = u
-                    sample.characteristics.append(characteristic)
+            for col in [x for x in DF.columns if x.startswith("Characteristic[")]:  # build object map
+                category_key = col[15:col.rfind("]")]
+                try:
+                    category = characteristic_categories[category_key]
+                except KeyError:
+                    category = OntologyAnnotation(term=category_key)
+                    characteristic_categories[category_key] = category
 
-                for charac_column in [c for c in DF.columns if c.startswith('Characteristic[')]:
-                    category_key = charac_column[15:-1]
+                characteristic = Characteristic(category=category)
 
-                    try:
-                        category = characteristic_categories[category_key]
-                    except KeyError:
-                        category = OntologyAnnotation(term=category_key)
-                        characteristic_categories[category_key] = category
+                v, u = get_value(col, DF.columns, row, ontology_source_map, unit_categories)
 
-                    characteristic = Characteristic(category=category)
+                characteristic.value = v
+                characteristic.unit = u
 
-                    v, u = get_value(charac_column, DF.columns, object_series, ontology_source_map, unit_categories)
+                sample.characteristics.append(characteristic)
 
-                    characteristic.value = v
-                    characteristic.unit = u
+            sample_accession = row["Derived From"]
 
-                    sample.characteristics.append(characteristic)
+            try:
+                source = samples[sample_accession]
+                sample.derives_from.append(source)
+            except KeyError:
+                pass
 
-                if len(object_series["Derived From"]) > 0:
-                    try:
-                        source = sources[object_series["Derived From"]]
-                    except KeyError:
-                        source_sample = samples[object_series["Derived From"]]
-                        source = Source(name=source_sample.name,
-                                        characteristics=source_sample.characteristics,
-                                        comments=source_sample.comments)
-                        sources[source.name] = source
-                        del samples[object_series["Derived From"]]
-                    sample.derives_from.append(source)
-                    process_key = ":".join([source.name, 'sample collection'])
-                    try:
-                        process = processes[process_key]
-                    except KeyError:
-                        process = Process(executes_protocol="sample collection")
-                        processes.update(dict([(process_key, process)]))
-                    if source.name not in [x.name for x in process.inputs]:
-                        process.inputs.append(source)
-                    if sample.name not in [x.name for x in process.outputs]:
-                        process.outputs.append(sample)
+        sample_collection_protocol = "sample collection"
 
-        return sources, samples, processes, characteristic_categories, unit_categories
+        for _, row in DF[["Sample Accession", "Derived From"]].iterrows():
+            sample_accession = row["Sample Accession"]
+            sample = samples[sample_accession]
+            derived_from_accession = row["Derived From"]
+            if derived_from_accession == "":
+                continue
+            derived_from_sample = samples[derived_from_accession]
+            sample.derived_from = derived_from_sample
+            process_key = ":".join([derived_from_accession, sample_collection_protocol])
+            try:
+                process = processes[process_key]
+            except KeyError:
+                process = Process(executes_protocol=sample_collection_protocol)
+                processes[process_key] = process
+            if derived_from_sample not in process.inputs:
+                process.inputs.append(derived_from_sample)
+            if sample not in process.outputs:
+                process.outputs.append(sample)
+
+        sources = dict([x for x in samples.items() if isinstance(x[1], Source)])
+        study_samples = dict([x for x in samples.items() if isinstance(x[1], Sample)])
+        return sources, study_samples, processes, characteristic_categories, unit_categories
+
+
+def dumps(investigation):
+
+    # build MSI section
+
+    metadata_DF = pd.DataFrame(columns=("Submission Title", "Submission Identifier", "Submission Description",
+                               "Submission Version", "Submission Reference Layer", "Submission Release Date",
+                                        "Submission Update Date"))
+    iversion_hits = [x for x in investigation.comments if x.name == "Submission Version"]
+    if len(iversion_hits) == 1:
+        investigation_version = iversion_hits[0].value
+    else:
+        investigation_version = ""
+    ireference_layer_hits = [x for x in investigation.comments if x.name == "Submission Reference Layer"]
+    if len(ireference_layer_hits) == 1:
+        investigation_reference_layer = ireference_layer_hits[0].value
+    else:
+        investigation_reference_layer = ""
+    iversion_update_date = [x for x in investigation.comments if x.name == "Submission Update Date"]
+    if len(iversion_update_date) == 1:
+        investigation_update_date = iversion_update_date[0].value
+    else:
+        investigation_update_date = ""
+    metadata_DF.loc[0] = [
+        investigation.title,
+        investigation.identifier,
+        investigation.description,
+        investigation_version,
+        investigation_reference_layer,
+        investigation.submission_date,
+        investigation_update_date
+    ]
+
+    org_DF = pd.DataFrame(columns=("Organization Name", "Organization Address", "Organization URI",
+                                   "Organization Email", "Organization Role"))
+    org_name_hits = [x for x in investigation.comments if x.name.startswith("Organization Name")]
+    org_address_hits = [x for x in investigation.comments if x.name.startswith("Organization Address")]
+    org_uri_hits = [x for x in investigation.comments if x.name.startswith("Organization URI")]
+    org_email_hits = [x for x in investigation.comments if x.name.startswith("Organization Email")]
+    org_role_hits = [x for x in investigation.comments if x.name.startswith("Organization Role")]
+    for i, org_name in enumerate(org_name_hits):
+        try:
+            org_name = org_name_hits[i].value
+        except IndexError:
+            org_name = ""
+        try:
+            org_address = org_address_hits[i].value
+        except IndexError:
+            org_address = ""
+        try:
+            org_uri = org_uri_hits[i].value
+        except IndexError:
+            org_uri = ""
+        try:
+            org_email = org_email_hits[i].value
+        except IndexError:
+            org_email = ""
+        try:
+            org_role = org_role_hits[i].value
+        except IndexError:
+            org_role = ""
+        org_DF.loc[i] = [
+            org_name,
+            org_address,
+            org_uri,
+            org_email,
+            org_role
+        ]
+
+    people_DF = pd.DataFrame(columns=("Person Last Name", "Person Initials", "Person First Name", "Person Email",
+                                      "Person Role"))
+    for i, contact in enumerate(investigation.contacts):
+        if len(contact.roles) == 1:
+            role = contact.roles[0].term
+        else:
+            role = ""
+        people_DF.loc[i] = [
+            contact.last_name,
+            contact.mid_initials,
+            contact.first_name,
+            contact.email,
+            role
+        ]
+
+    term_sources_DF = pd.DataFrame(columns=("Term Source Name", "Term Source URI", "Term Source Version"))
+    for i, term_source in enumerate(investigation.ontology_source_references):
+        term_sources_DF.loc[i] = [
+            term_source.name,
+            term_source.file,
+            term_source.version
+        ]
+    msi_DF = pd.concat([metadata_DF, org_DF, people_DF, term_sources_DF], axis=1)
+    msi_DF = msi_DF.set_index("Submission Title").T
+    msi_DF = msi_DF.replace('', np.nan)
+    msi_memf = StringIO()
+    msi_DF.to_csv(path_or_buf=msi_memf, index=True, sep='\t', encoding='utf-8', index_label="Submission Title")
+    msi_memf.seek(0)
+
+    scd_DF = pd.DataFrame(columns=("Sample Name", "Sample Accession", "Sample Description", "Derived From",
+                                   "Group Name", "Group Accession"))
+
+    all_samples = []
+    for study in investigation.studies:
+        all_samples += study.materials['sources']
+        all_samples += study.materials['samples']
+
+    all_samples = list(set(all_samples))
+
+    pbar = ProgressBar(min_value=0, max_value=len(all_samples),
+                       widgets=['Writing {} samples: '.format(len(all_samples)), SimpleProgress(),
+                                Bar(left=" |", right="| "), ETA()]).start()
+
+    for i, s in pbar(enumerate(all_samples)):
+        derived_from = ""
+        if isinstance(s, Sample) and s.derives_from is not None:
+            if len(s.derives_from) == 1:
+                derived_from_obj = s.derives_from[0]
+                derives_from_accession_hits = [x for x in derived_from_obj.characteristics
+                                               if x.category.term == "Sample Accession"]
+                if len(derives_from_accession_hits) == 1:
+                    derived_from = derives_from_accession_hits[0].value
+                else:
+                    print("WARNING! No Sample Accession available so referencing Derived From relation using Sample Name \"{}\" instead".format(derived_from_obj.name))
+                    derived_from = derived_from_obj.name
+        sample_accession_hits = [x for x in s.characteristics if x.category.term == "Sample Accession"]
+        if len(sample_accession_hits) == 1:
+            sample_accession = sample_accession_hits[0].value
+        else:
+            sample_accession = ""
+        sample_description_hits = [x for x in s.characteristics if x.category.term == "Sample Description"]
+        if len(sample_description_hits) == 1:
+            sample_description = sample_description_hits[0].value
+        else:
+            sample_description = ""
+
+        if isinstance(s, Sample):
+            group_name_hits = [x for x in s.factor_values if x.factor_name.name == "Group Name"]
+            if len(group_name_hits) == 1:
+                group_name = group_name_hits[0].value
+            else:
+                group_name = ""
+            group_accession_hits = [x for x in s.factor_values if x.factor_name.name == "Group Accession"]
+            if len(group_accession_hits) == 1:
+                group_accession = group_accession_hits[0].value
+            else:
+                group_accession = ""
+        else:
+            group_name_hits = [x for x in s.characteristics if x.category.term == "Group Name"]
+            if len(group_name_hits) == 1:
+                group_name = group_name_hits[0].value
+            else:
+                group_name = ""
+            group_accession_hits = [x for x in s.characteristics if x.category.term == "Group Accession"]
+            if len(group_accession_hits) == 1:
+                group_accession = group_accession_hits[0].value
+            else:
+                group_accession = ""
+
+        scd_DF.loc[i, "Sample Name"] = s.name
+        scd_DF.loc[i, "Sample Accession"] = sample_accession
+        scd_DF.loc[i, "Sample Description"] = sample_description
+        scd_DF.loc[i, "Derived From"] = derived_from
+        scd_DF.loc[i, "Group Name"] = group_name
+        scd_DF.loc[i, "Group Accession"] = group_accession
+
+        characteristics = [x for x in s.characteristics if x.category.term not in ["Sample Description",
+                                                                                   "Derived From",
+                                                                                   "Sample Accession"]]
+        for characteristic in characteristics:
+            characteristic_label = "Characteristic[{}]".format(characteristic.category.term)
+            if characteristic_label not in scd_DF.columns:
+                scd_DF[characteristic_label] = ""
+                for val_col in get_value_columns(characteristic_label, characteristic):
+                    scd_DF[val_col] = ""
+            if isinstance(characteristic.value, (int, float)) and characteristic.unit:
+                if isinstance(characteristic.unit, OntologyAnnotation):
+                    scd_DF.loc[i, characteristic_label] = characteristic.value
+                    scd_DF.loc[i, characteristic_label + ".Unit"] = characteristic.unit.term
+                    scd_DF.loc[i, characteristic_label + ".Unit.Term Source REF"]\
+                        = characteristic.unit.term_source.name if characteristic.unit.term_source else ""
+                    scd_DF.loc[i, characteristic_label + ".Unit.Term Accession Number"] = \
+                        characteristic.unit.term_accession
+                else:
+                    scd_DF.loc[i, characteristic_label] = characteristic.value
+                    scd_DF.loc[i, characteristic_label + ".Unit"] = characteristic.unit
+            elif isinstance(characteristic.value, OntologyAnnotation):
+                scd_DF.loc[i, characteristic_label] = characteristic.value.term
+                scd_DF.loc[i, characteristic_label + ".Term Source REF"] = \
+                    characteristic.value.term_source.name if characteristic.value.term_source else ""
+                scd_DF.loc[i, characteristic_label + ".Term Accession Number"] = \
+                    characteristic.value.term_accession
+            else:
+                scd_DF.loc[i, characteristic_label] = characteristic.value
+
+    scd_DF = scd_DF.replace('', np.nan)
+    columns = list(scd_DF.columns)
+    for i, col in enumerate(columns):
+        if col.endswith("Term Source REF"):
+            columns[i] = "Term Source REF"
+        elif col.endswith("Term Accession Number"):
+            columns[i] = "Term Source ID"
+        elif col.endswith("Unit"):
+            columns[i] = "Unit"
+    scd_DF.columns = columns
+    scd_memf = StringIO()
+    scd_DF.to_csv(path_or_buf=scd_memf, index=False, sep='\t', encoding='utf-8')
+    scd_memf.seek(0)
+
+    sampletab_memf = StringIO()
+    sampletab_memf.write("[MSI]\n")
+    for line in msi_memf:
+        sampletab_memf.write(line.rstrip() + '\n')
+    sampletab_memf.write("[SCD]\n")
+    for line in scd_memf:
+        sampletab_memf.write(line.rstrip() + '\n')
+    sampletab_memf.seek(0)
+
+    return sampletab_memf.read()
+
+
+def dump(investigation, out_fp):
+    sampletab_str = dumps(investigation)
+    out_fp.write(sampletab_str)
+
+
+def get_value_columns(label, x):
+    if isinstance(x.value, (int, float)) and x.unit:
+        if isinstance(x.unit, OntologyAnnotation):
+            return map(lambda x: "{0}.{1}".format(label, x),
+                       ["Unit", "Unit.Term Source REF", "Unit.Term Accession Number"])
+        else:
+            return ["{0}.Unit".format(label)]
+    elif isinstance(x.value, OntologyAnnotation):
+        return map(lambda x: "{0}.{1}".format(label, x), ["Term Source REF", "Term Accession Number"])
+    else:
+        return []

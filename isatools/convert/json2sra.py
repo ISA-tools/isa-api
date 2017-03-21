@@ -1,27 +1,11 @@
 from isatools import isajson, sra
-
-import glob
-import os
 import logging
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def convert(json_fp, path, config_dir=None):
-    """ Converter for ISA JSON to SRA.
-    :param json_fp: File pointer to ISA JSON input
-    :param path: Directory for output to be written
-    :param config_dir: path to JSON configuration
-    """
-    from isatools.convert import json2isatab, isatab2sra
-    json2isatab.convert(json_fp=json_fp, path=path, config_dir=config_dir)
-    isatab2sra.create_sra(path, path)
-    for f in glob.iglob(os.path.join(path, '*.txt')):  # remove generated isatab files
-        os.remove(f)
-
-
-def convert2(json_fp, path, config_dir=None, sra_settings=None, datafilehashes=None, validate_first=True):
+def convert(json_fp, path, config_dir=None, sra_settings=None, datafilehashes=None, validate_first=True):
     """ (New) Converter for ISA JSON to SRA.
     :param json_fp: File pointer to ISA JSON input
     :param path: Directory for output to be written
@@ -53,5 +37,5 @@ json2sra.convert(json_fp, path, sra_settings=sra_settings, filehashes=datafileha
 
 If files in filehashes dict don't map 1:1 to files found in ISA JSON content, raise Exception
 
-json2sra.convert2(json_fp=open('/Users/dj/PycharmProjects/isa-api/copo.json'), path='/Users/dj/PycharmProjects/isa-api/tmp', sra_settings=)
+json2sra.convert(json_fp=open('/Users/dj/PycharmProjects/isa-api/copo.json'), path='/Users/dj/PycharmProjects/isa-api/tmp', sra_settings=)
 """

@@ -18,17 +18,18 @@ def main(argv=None):
                                 )
 
     p.add_argument('-c', dest='cmd', help='isatools API command to run', required=True,
-                   choices=['isatab2json', 'json2isatab', 'isatab2sra', 'json2sra', 'zipisatab'])
-    p.add_argument('-i', dest='in_path', help='in folder (files will be read from here)', required=True)
-    p.add_argument('-o', dest='out_path', help='out folder (a new directory will be created here)', required=True)
-    p.add_argument('--version', action='version', version='isatools {}'.format("0.6"))
+                   choices=['isatab2json', 'json2isatab', 'sampletab2isatab', 'sampletab2json'])
+    p.add_argument('-i', dest='in_path', help='in  (files or directory will be read from here)', required=True)
+    p.add_argument('-o', dest='out_path', help='out (file will be written out here or written to directory if ISA-Tab '
+                                               'archive out)', required=True)
+    p.add_argument('--version', action='version', version='isatools {}'.format("0.7"))
     p.add_argument('-v', dest='verbose', help="show more output", action='store_true', default=False)
 
     args = p.parse_args(argv or sys.argv[1:])
 
     if args.verbose:
-        print("{} input path: {}".format(os.linesep, args.in_path))
-        print("output path: {}".format(args.out_path))
+        print("{} input: {}".format(os.linesep, args.in_path))
+        print("output: {}".format(args.out_path))
 
     if args.cmd == 'isatab2json':
         from isatools.convert import isatab2json
@@ -41,14 +42,16 @@ def main(argv=None):
         with open(args.in_path) as in_fp:
             json2isatab.convert(in_fp, args.out_path)
 
-    elif args.cmd == 'isatab2sra':
-        raise NotImplementedError  # TODO: Finish this
+    elif args.cmd == 'sampletab2isatab':
+        from isatools.convert import sampletab2isatab
+        with open(args.in_path) as in_fp:
+            sampletab2isatab.convert(in_fp, args.out_path)
 
-    elif args.cmd == 'json2sra':
-        raise NotImplementedError  # TODO: Finish this
-
-    elif args.cmd == 'zipisatab':
-        raise NotImplementedError  # TODO: Finish this
+    elif args.cmd == 'sampletab2json':
+        from isatools.convert import sampletab2json
+        with open(args.in_path) as in_fp:
+            with open(args.out_path) as out_fp:
+                sampletab2json.convert(in_fp, out_fp)
 
 if __name__ == '__main__':
     main()

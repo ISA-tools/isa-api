@@ -129,49 +129,51 @@ def slice_data_files(dir, factor_selection=None):
     # first collect matching samples
     for table_file in glob.iglob(os.path.join(dir, '[a|s]_*')):
         logger.info("Loading {}".format(table_file))
-        df = isatab.load_table(table_file)
-        if factor_selection is None:
-            matches = df['Sample Name'].items()
-            for indx, match in matches:
-                sample_name = match
-                if len([r for r in results if r['sample'] == sample_name]) == 1:
-                    continue
-                else:
-                    results.append(
-                        {
-                            "sample": sample_name,
-                            "data_files": []
-                        }
-                    )
-        else:
-            for factor_name, factor_value in factor_selection.items():
-                if 'Factor Value[{}]'.format(factor_name) in list(df.columns.values):
-                    matches = df.loc[df['Factor Value[{}]'.format(factor_name)] == factor_value]['Sample Name'].items()
-                    for indx, match in matches:
-                        sample_name = match
-                        if len([r for r in results if r['sample'] == sample_name]) == 1:
-                            continue
-                        else:
-                            results.append(
-                                {
-                                    "sample": sample_name,
-                                    "data_files": [],
-                                    "query_used": factor_selection
-                                }
-                            )
+        with open(table_file) as fp:
+            df = isatab.load_table(fp)
+            if factor_selection is None:
+                matches = df['Sample Name'].items()
+                for indx, match in matches:
+                    sample_name = match
+                    if len([r for r in results if r['sample'] == sample_name]) == 1:
+                        continue
+                    else:
+                        results.append(
+                            {
+                                "sample": sample_name,
+                                "data_files": []
+                            }
+                        )
+            else:
+                for factor_name, factor_value in factor_selection.items():
+                    if 'Factor Value[{}]'.format(factor_name) in list(df.columns.values):
+                        matches = df.loc[df['Factor Value[{}]'.format(factor_name)] == factor_value]['Sample Name'].items()
+                        for indx, match in matches:
+                            sample_name = match
+                            if len([r for r in results if r['sample'] == sample_name]) == 1:
+                                continue
+                            else:
+                                results.append(
+                                    {
+                                        "sample": sample_name,
+                                        "data_files": [],
+                                        "query_used": factor_selection
+                                    }
+                                )
     # now collect the data files relating to the samples
     for result in results:
         sample_name = result['sample']
         for table_file in glob.iglob(os.path.join(dir, 'a_*')):
-            df = isatab.load_table(table_file)
-            data_files = list()
-            table_headers = list(df.columns.values)
-            sample_rows = df.loc[df['Sample Name'] == sample_name]
-            if 'Raw Spectral Data File' in table_headers:
-                data_files = sample_rows['Raw Spectral Data File']
-            elif 'Free Induction Decay Data File' in table_headers:
-                data_files = sample_rows['Free Induction Decay Data File']
-            result['data_files'] = [i for i in list(data_files) if str(i) != 'nan']
+            with open(table_file) as fp:
+                df = isatab.load_table(fp)
+                data_files = list()
+                table_headers = list(df.columns.values)
+                sample_rows = df.loc[df['Sample Name'] == sample_name]
+                if 'Raw Spectral Data File' in table_headers:
+                    data_files = sample_rows['Raw Spectral Data File']
+                elif 'Free Induction Decay Data File' in table_headers:
+                    data_files = sample_rows['Free Induction Decay Data File']
+                result['data_files'] = [i for i in list(data_files) if str(i) != 'nan']
     return results
 
 
@@ -189,10 +191,11 @@ def get_factor_names(mtbls_study_id):
     from isatools import isatab
     factors = set()
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
-        df = isatab.load_table(os.path.join(tmp_dir, table_file))
-        factors_headers = [header for header in list(df.columns.values) if _RX_FACTOR_VALUE.match(header)]
-        for header in factors_headers:
-            factors.add(header[13:-1])
+        with open(os.path.join(tmp_dir, table_file)) as fp:
+            df = isatab.load_table(fp)
+            factors_headers = [header for header in list(df.columns.values) if _RX_FACTOR_VALUE.match(header)]
+            for header in factors_headers:
+                factors.add(header[13:-1])
     return factors
 
 
@@ -211,11 +214,12 @@ def get_factor_values(mtbls_study_id, factor_name):
     from isatools import isatab
     fvs = set()
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
-        df = isatab.load_table(os.path.join(tmp_dir, table_file))
-        if 'Factor Value[{}]'.format(factor_name) in list(df.columns.values):
-            for indx, match in df['Factor Value[{}]'.format(factor_name)].items():
-                if isinstance(match, (str, int, float)):
-                    if str(match) != 'nan':
-                        fvs.add(match)
+        with open(os.path.join(tmp_dir, table_file)) as fp:
+            df = isatab.load_table(fp)
+            if 'Factor Value[{}]'.format(factor_name) in list(df.columns.values):
+                for indx, match in df['Factor Value[{}]'.format(factor_name)].items():
+                    if isinstance(match, (str, int, float)):
+                        if str(match) != 'nan':
+                            fvs.add(match)
     shutil.rmtree(tmp_dir)
     return fvs
