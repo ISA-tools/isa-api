@@ -3,15 +3,26 @@ from tests import utils
 from isatools import sampletab
 import os
 from isatools.model.v1 import *
+import tempfile
+import shutil
+
+
+def setUpModule():
+    if not os.path.exists(utils.DATA_DIR):
+        raise FileNotFoundError("Could not fine test data directory in {0}. Ensure you have cloned the ISAdatasets "
+                                "repository using "
+                                "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}"
+                                .format(utils.DATA_DIR))
 
 
 class UnitSampleTabLoad(unittest.TestCase):
 
     def setUp(self):
         self._sampletab_data_dir = utils.SAMPLETAB_DATA_DIR
+        self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
-        pass
+        shutil.rmtree(self._tmp_dir)
 
     def test_sampletab_load_test1(self):
         with open(os.path.join(self._sampletab_data_dir, 'test1.txt')) as fp:
@@ -41,6 +52,50 @@ class UnitSampleTabLoad(unittest.TestCase):
                 self.assertIn(source, process.inputs)
             for sample in samples:
                 self.assertIn(sample, process.outputs)
+
+    def test_sampletab_load_GSB_3(self):
+        with open(os.path.join(self._sampletab_data_dir, 'GSB-3.txt')) as fp:
+            ISA = sampletab.load(fp)
+            self.assertEqual(len(ISA.studies), 1)
+            sources = ISA.studies[0].materials['sources']
+            samples = ISA.studies[0].materials['samples']
+            self.assertEqual(len(sources), 1157)
+            self.assertEqual(len(samples), 3858)
+            self.assertEqual(len(ISA.studies[0].process_sequence), 1747)
+
+    def test_sampletab_load_GSB_537(self):
+        with open(os.path.join(self._sampletab_data_dir, 'GSB-537.txt')) as fp:
+            ISA = sampletab.load(fp)
+            self.assertEqual(len(ISA.studies), 1)
+            sources = ISA.studies[0].materials['sources']
+            samples = ISA.studies[0].materials['samples']
+            self.assertEqual(len(sources), 4)
+            self.assertEqual(len(samples), 80)
+            self.assertEqual(len(ISA.studies[0].process_sequence), 8)
+
+    def test_sampletab_load_dump_round_trip_GSB_537(self):
+        with open(os.path.join(self._sampletab_data_dir, 'GSB-537.txt')) as fp:
+            ISA = sampletab.load(fp)  # load into ISA objects
+            with open(os.path.join(self._tmp_dir, "out.txt"), "w") as out_fp:
+                sampletab.dump(ISA, out_fp)  # dump out to SampleTab from ISA objects
+            with open(os.path.join(self._tmp_dir, "out.txt"), "r") as in_fp:
+                ISA = sampletab.load(in_fp)  # load into ISA objects again from dumped SampleTab and check contents
+                self.assertEqual(len(ISA.studies), 1)
+                sources = ISA.studies[0].materials['sources']
+                samples = ISA.studies[0].materials['samples']
+                self.assertEqual(len(sources), 4)
+                self.assertEqual(len(samples), 80)
+                self.assertEqual(len(ISA.studies[0].process_sequence), 8)
+
+    def test_sampletab_load_GSB_718(self):
+        with open(os.path.join(self._sampletab_data_dir, 'GSB-718.txt')) as fp:
+            ISA = sampletab.load(fp)
+            self.assertEqual(len(ISA.studies), 1)
+            sources = ISA.studies[0].materials['sources']
+            samples = ISA.studies[0].materials['samples']
+            self.assertEqual(len(sources), 51)
+            self.assertEqual(len(samples), 2409)
+            self.assertEqual(len(ISA.studies[0].process_sequence), 109)
 
 
 class UnitSampleTabDump(unittest.TestCase):
