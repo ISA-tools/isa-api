@@ -50,7 +50,7 @@ def main(argv=None):
     elif args.cmd == 'sampletab2json':
         from isatools.convert import sampletab2json
         with open(args.in_path) as in_fp:
-            with open(args.out_path) as out_fp:
+            with open(args.out_path, 'w') as out_fp:
                 sampletab2json.convert(in_fp, out_fp)
 
 if __name__ == '__main__':
