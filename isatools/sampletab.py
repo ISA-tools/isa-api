@@ -254,6 +254,7 @@ class GenericSampleTabProcessSequenceFactory:
             sample.name = row["Sample Name"]
 
             if row["Sample Accession"] != "":
+
                 try:
                     category = characteristic_categories["Sample Accession"]
                 except KeyError:
@@ -482,97 +483,99 @@ def dumps(investigation):
 
     scd_DF = pd.DataFrame(columns=("Sample Name", "Sample Accession", "Sample Description", "Derived From",
                                    "Group Name", "Group Accession"))
-    study = investigation.studies[0]
-    if isinstance(study, Study):
-        sources = study.materials['sources']
-        samples = study.materials['samples']
 
-        all_samples = sources + samples
+    all_samples = []
+    for study in investigation.studies:
+        all_samples += study.materials['sources']
+        all_samples += study.materials['samples']
 
-        pbar = ProgressBar(min_value=0, max_value=len(sources + samples),
-                           widgets=['Writing {} samples: '.format(len(all_samples)), SimpleProgress(),
-                                    Bar(left=" |", right="| "), ETA()]).start()
+    all_samples = list(set(all_samples))
 
-        for i, s in pbar(enumerate(all_samples)):
-            derived_from = ""
-            group_name = ""
-            group_accession = ""
-            if isinstance(s, Sample) and s.derives_from is not None:
-                if len(s.derives_from) == 1:
-                    derived_from_obj = s.derives_from[0]
-                    derives_from_accession_hits = [x for x in derived_from_obj.characteristics
-                                                   if x.category.term == "Sample Accession"]
-                    if len(derives_from_accession_hits) == 1:
-                        derived_from = derives_from_accession_hits[0].value
-            sample_accession_hits = [x for x in s.characteristics if x.category.term == "Sample Accession"]
-            if len(sample_accession_hits) == 1:
-                sample_accession = sample_accession_hits[0].value
+    pbar = ProgressBar(min_value=0, max_value=len(all_samples),
+                       widgets=['Writing {} samples: '.format(len(all_samples)), SimpleProgress(),
+                                Bar(left=" |", right="| "), ETA()]).start()
+
+    for i, s in pbar(enumerate(all_samples)):
+        derived_from = ""
+        if isinstance(s, Sample) and s.derives_from is not None:
+            if len(s.derives_from) == 1:
+                derived_from_obj = s.derives_from[0]
+                derives_from_accession_hits = [x for x in derived_from_obj.characteristics
+                                               if x.category.term == "Sample Accession"]
+                if len(derives_from_accession_hits) == 1:
+                    derived_from = derives_from_accession_hits[0].value
+                else:
+                    print("WARNING! No Sample Accession available so referencing Derived From relation using Sample Name \"{}\" instead".format(derived_from_obj.name))
+                    derived_from = derived_from_obj.name
+        sample_accession_hits = [x for x in s.characteristics if x.category.term == "Sample Accession"]
+        if len(sample_accession_hits) == 1:
+            sample_accession = sample_accession_hits[0].value
+        else:
+            sample_accession = ""
+        sample_description_hits = [x for x in s.characteristics if x.category.term == "Sample Description"]
+        if len(sample_description_hits) == 1:
+            sample_description = sample_description_hits[0].value
+        else:
+            sample_description = ""
+
+        if isinstance(s, Sample):
+            group_name_hits = [x for x in s.factor_values if x.factor_name.name == "Group Name"]
+            if len(group_name_hits) == 1:
+                group_name = group_name_hits[0].value
             else:
-                sample_accession = ""
-            sample_description_hits = [x for x in s.characteristics if x.category.term == "Sample Description"]
-            if len(sample_description_hits) == 1:
-                sample_description = sample_description_hits[0].value
+                group_name = ""
+            group_accession_hits = [x for x in s.factor_values if x.factor_name.name == "Group Accession"]
+            if len(group_accession_hits) == 1:
+                group_accession = group_accession_hits[0].value
             else:
-                sample_description = ""
-
-            if isinstance(s, Sample):
-                group_name_hits = [x for x in s.factor_values if x.factor_name.name == "Group Name"]
-                if len(group_name_hits) == 1:
-                    group_name = group_name_hits[0].value
-                else:
-                    group_name = ""
-                group_accession_hits = [x for x in s.factor_values if x.factor_name.name == "Group Accession"]
-                if len(group_accession_hits) == 1:
-                    group_accession = group_accession_hits[0].value
-                else:
-                    group_accession = ""
+                group_accession = ""
+        else:
+            group_name_hits = [x for x in s.characteristics if x.category.term == "Group Name"]
+            if len(group_name_hits) == 1:
+                group_name = group_name_hits[0].value
             else:
-                group_name_hits = [x for x in s.characteristics if x.category.term == "Group Name"]
-                if len(group_name_hits) == 1:
-                    group_name = group_name_hits[0].value
-                else:
-                    group_name = ""
-                group_accession_hits = [x for x in s.characteristics if x.category.term == "Group Accession"]
-                if len(group_accession_hits) == 1:
-                    group_accession = group_accession_hits[0].value
-                else:
-                    group_accession = ""
+                group_name = ""
+            group_accession_hits = [x for x in s.characteristics if x.category.term == "Group Accession"]
+            if len(group_accession_hits) == 1:
+                group_accession = group_accession_hits[0].value
+            else:
+                group_accession = ""
 
-            scd_DF.loc[i, "Sample Name"] = s.name
-            scd_DF.loc[i, "Sample Accession"] = sample_accession
-            scd_DF.loc[i, "Sample Description"] = sample_description
-            scd_DF.loc[i, "Derived From"] = derived_from
-            scd_DF.loc[i, "Group Name"] = group_name
-            scd_DF.loc[i, "Group Accession"] = group_accession
+        scd_DF.loc[i, "Sample Name"] = s.name
+        scd_DF.loc[i, "Sample Accession"] = sample_accession
+        scd_DF.loc[i, "Sample Description"] = sample_description
+        scd_DF.loc[i, "Derived From"] = derived_from
+        scd_DF.loc[i, "Group Name"] = group_name
+        scd_DF.loc[i, "Group Accession"] = group_accession
 
-            characteristics = [x for x in s.characteristics if x.category.term not in ["Sample Description",
-                                                                                       "Derived From",
-                                                                                       "Sample Accession"]]
-            for characteristic in characteristics:
-                characteristic_label = "Characteristic[{}]".format(characteristic.category.term)
-                if characteristic_label not in scd_DF.columns:
-                    scd_DF[characteristic_label] = ""
-                    for val_col in get_value_columns(characteristic_label, characteristic):
-                        scd_DF[val_col] = ""
-                if isinstance(characteristic.value, (int, float)) and characteristic.unit:
-                    if isinstance(characteristic.unit, OntologyAnnotation):
-                        scd_DF.loc[i, characteristic_label] = characteristic.value
-                        scd_DF.loc[i, characteristic_label + ".Unit"] = characteristic.unit.term
-                        scd_DF.loc[i, characteristic_label + ".Unit.Term Source REF"]\
-                            = characteristic.unit.term_source.name if characteristic.unit.term_source else ""
-                        scd_DF.loc[i, characteristic_label + ".Unit.Term Accession Number"] = \
-                            characteristic.unit.term_accession
-                    else:
-                        scd_DF.loc[i, characteristic_label] = characteristic.value
-                        scd_DF.loc[i, characteristic_label + ".Unit"] = characteristic.unit
-                elif isinstance(characteristic.value, OntologyAnnotation):
-                    scd_DF.loc[i, characteristic_label] = characteristic.value.term
-                    scd_DF.loc[i, characteristic_label + ".Term Source REF"] = \
-                        characteristic.value.term_source.name if characteristic.value.term_source else ""
-                    scd_DF.loc[i, characteristic_label + ".Term Accession Number"] = \
-                        characteristic.value.term_accession
+        characteristics = [x for x in s.characteristics if x.category.term not in ["Sample Description",
+                                                                                   "Derived From",
+                                                                                   "Sample Accession"]]
+        for characteristic in characteristics:
+            characteristic_label = "Characteristic[{}]".format(characteristic.category.term)
+            if characteristic_label not in scd_DF.columns:
+                scd_DF[characteristic_label] = ""
+                for val_col in get_value_columns(characteristic_label, characteristic):
+                    scd_DF[val_col] = ""
+            if isinstance(characteristic.value, (int, float)) and characteristic.unit:
+                if isinstance(characteristic.unit, OntologyAnnotation):
+                    scd_DF.loc[i, characteristic_label] = characteristic.value
+                    scd_DF.loc[i, characteristic_label + ".Unit"] = characteristic.unit.term
+                    scd_DF.loc[i, characteristic_label + ".Unit.Term Source REF"]\
+                        = characteristic.unit.term_source.name if characteristic.unit.term_source else ""
+                    scd_DF.loc[i, characteristic_label + ".Unit.Term Accession Number"] = \
+                        characteristic.unit.term_accession
                 else:
                     scd_DF.loc[i, characteristic_label] = characteristic.value
+                    scd_DF.loc[i, characteristic_label + ".Unit"] = characteristic.unit
+            elif isinstance(characteristic.value, OntologyAnnotation):
+                scd_DF.loc[i, characteristic_label] = characteristic.value.term
+                scd_DF.loc[i, characteristic_label + ".Term Source REF"] = \
+                    characteristic.value.term_source.name if characteristic.value.term_source else ""
+                scd_DF.loc[i, characteristic_label + ".Term Accession Number"] = \
+                    characteristic.value.term_accession
+            else:
+                scd_DF.loc[i, characteristic_label] = characteristic.value
 
     scd_DF = scd_DF.replace('', np.nan)
     columns = list(scd_DF.columns)
