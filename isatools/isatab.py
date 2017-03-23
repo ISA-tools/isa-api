@@ -806,7 +806,6 @@ def write_assay_table_files(inv_obj, output_dir):
 
             print("Rendered {} paths".format(len(DF.index)))
             if len(DF.index) > 1:
-                print(DF.columns)
                 if len(DF.index) > len(DF.drop_duplicates().index):
                     print("Dropping duplicates...")
                     DF = DF.drop_duplicates()
