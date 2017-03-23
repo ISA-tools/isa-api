@@ -295,9 +295,14 @@ def write_sdrf_table_file(inv_obj, output_path):
     tmp = tempfile.mkdtemp()
     isatab.write_study_table_files(inv_obj=inv_obj, output_dir=tmp)
     isatab.write_assay_table_files(inv_obj=inv_obj, output_dir=tmp)
-    isatab.merge_study_with_assay_tables(os.path.join(tmp, inv_obj.studies[0].filename),
-                                         os.path.join(tmp, inv_obj.studies[0].assays[0].filename),
-                                         os.path.join(output_path, "sdrf.txt"))
+    for study in inv_obj.studies:
+        for assay in [x for x in study.assays if x.technology_type.term == "DNA microarray"]:
+            sdrf_filename = assay.filename[:assay.filename.rindex('.')]
+            print("Writing {}".format(sdrf_filename))
+            isatab.merge_study_with_assay_tables(os.path.join(tmp, study.filename),
+                                                 os.path.join(tmp, assay.filename),
+                                                 os.path.join(output_path, "{}.sdrf.txt"
+                                                              .format(sdrf_filename)))
 
 
 def dump(inv_obj, output_path):
