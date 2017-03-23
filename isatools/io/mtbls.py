@@ -129,7 +129,7 @@ def slice_data_files(dir, factor_selection=None):
     # first collect matching samples
     for table_file in glob.iglob(os.path.join(dir, '[a|s]_*')):
         logger.info("Loading {}".format(table_file))
-        with open(table_file) as fp:
+        with open(table_file, encoding='utf-8') as fp:
             df = isatab.load_table(fp)
             if factor_selection is None:
                 matches = df['Sample Name'].items()
@@ -164,7 +164,7 @@ def slice_data_files(dir, factor_selection=None):
     for result in results:
         sample_name = result['sample']
         for table_file in glob.iglob(os.path.join(dir, 'a_*')):
-            with open(table_file) as fp:
+            with open(table_file, encoding='utf-8') as fp:
                 df = isatab.load_table(fp)
                 data_files = list()
                 table_headers = list(df.columns.values)
@@ -191,7 +191,7 @@ def get_factor_names(mtbls_study_id):
     from isatools import isatab
     factors = set()
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
-        with open(os.path.join(tmp_dir, table_file)) as fp:
+        with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
             df = isatab.load_table(fp)
             factors_headers = [header for header in list(df.columns.values) if _RX_FACTOR_VALUE.match(header)]
             for header in factors_headers:
@@ -214,7 +214,7 @@ def get_factor_values(mtbls_study_id, factor_name):
     from isatools import isatab
     fvs = set()
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
-        with open(os.path.join(tmp_dir, table_file)) as fp:
+        with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
             df = isatab.load_table(fp)
             if 'Factor Value[{}]'.format(factor_name) in list(df.columns.values):
                 for indx, match in df['Factor Value[{}]'.format(factor_name)].items():

@@ -3057,7 +3057,7 @@ def pairwise(iterable):
 
 def read_tfile(tfile_path, index_col=None):
 
-    with open(tfile_path) as tfile_fp:
+    with open(tfile_path, encoding='utf-8') as tfile_fp:
         reader = csv.reader(tfile_fp, delimiter='\t')
         header = list(next(reader))
         tfile_fp.seek(0)
