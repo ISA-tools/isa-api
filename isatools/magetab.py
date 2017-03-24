@@ -309,3 +309,18 @@ def dump(inv_obj, output_path):
     write_idf_file(inv_obj, output_path=output_path)
     write_sdrf_table_file(inv_obj=inv_obj, output_path=output_path)
     return inv_obj
+
+
+def load(FP):
+    # Load and write the investigation section somewhere
+    study_df, assay_df = split_tables(sdrf_path=sdrf_path)
+    study_df.to_csv(study_fp, sep='\t', index=False, header=study_df.isatab_header)
+    assay_df.to_csv(assay_fp, sep='\t', index=False, header=assay_df.isatab_header)
+
+
+def split_tables(sdrf_path):
+    sdrf_df = isatab.read_tfile(sdrf_path)
+    sample_name_index = list(sdrf_df.columns).index("Sample Name")
+    study_df = sdrf_df[sdrf_df.columns[0:sample_name_index]].drop_duplicates()
+    assay_df = sdrf_df[sdrf_df.columns[sample_name_index:]]
+    return study_df, assay_df
