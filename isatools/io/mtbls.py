@@ -6,6 +6,8 @@ import shutil
 import re
 import glob
 from isatools.convert import isatab2json
+from isatools import isatab
+from isatools.model.v1 import OntologyAnnotation
 
 MTBLS_FTP_SERVER = 'ftp.ebi.ac.uk'
 MTBLS_BASE_DIR = '/pub/databases/metabolights/studies/public'
@@ -208,7 +210,7 @@ def get_factor_values(mtbls_study_id, factor_name):
     :return: A set of factor values associated with the factor and study
 
     Example usage:
-        factor_values = get_factor_values('MTBLS1', 'genotype)
+        factor_values = get_factor_values('MTBLS1', 'genotype')
     """
     tmp_dir = get(mtbls_study_id)
     from isatools import isatab
@@ -217,9 +219,67 @@ def get_factor_values(mtbls_study_id, factor_name):
         with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
             df = isatab.load_table(fp)
             if 'Factor Value[{}]'.format(factor_name) in list(df.columns.values):
-                for indx, match in df['Factor Value[{}]'.format(factor_name)].items():
+                for _, match in df['Factor Value[{}]'.format(factor_name)].iteritems():
+                    try:
+                        match = match.item()
+                    except AttributeError:
+                        pass
                     if isinstance(match, (str, int, float)):
                         if str(match) != 'nan':
                             fvs.add(match)
     shutil.rmtree(tmp_dir)
     return fvs
+
+
+def load(mtbls_study_id):
+    tmp_dir = get(mtbls_study_id)
+    if tmp_dir is None:
+        raise IOError("There was a problem retrieving the study ", mtbls_study_id)
+    with open(glob.glob(os.path.join(tmp_dir, 'i_*.txt'))[0]) as f:
+        ISA = isatab.load(f)
+        shutil.rmtree(tmp_dir)
+        return ISA
+
+
+def get_factors_summary(mtbls_study_id):
+    """
+    This function generates a factors summary for a MetaboLights study
+
+    :param mtbls_study_id: Accession number of the MetaboLights study
+    :return: A list of dicts summarising the set of factor names associated with each data file
+
+    Example usage:
+        factor_summary = get_factors_summary('MTBLS1')
+        [
+            {
+                "name": "ADG19007u_357", 
+                "Metabolic syndrome": "Control Group", 
+                "Gender": "Female"
+            }, 
+            {
+                "name": "ADG10003u_162", 
+                "Metabolic syndrome": 
+                "diabetes mellitus", 
+                "Gender": "Female"
+            }, 
+        ]
+
+
+    """
+    ISA = load(mtbls_study_id=mtbls_study_id)
+    all_samples = []
+    for study in ISA.studies:
+        all_samples.extend(study.materials['samples'])
+    samples_and_fvs = []
+    for sample in all_samples:
+        sample_and_fvs = {
+                "name": sample.name
+            }
+        for fv in sample.factor_values:
+            if isinstance(fv.value, (str, int, float)):
+                fv_value = fv.value
+            elif isinstance(fv.value, OntologyAnnotation):
+                fv_value = fv.value.term
+            sample_and_fvs[fv.factor_name.name] = fv_value
+        samples_and_fvs.append(sample_and_fvs)
+    return samples_and_fvs
