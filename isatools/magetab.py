@@ -17,6 +17,7 @@ from itertools import tee
 import pandas as pd
 from progressbar import ProgressBar, SimpleProgress, Bar, ETA
 from io import StringIO
+import shutil
 
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
@@ -312,15 +313,33 @@ def dump(inv_obj, output_path):
 
 
 def load(FP):
+    # export to ISA-TAb, then isatab.load()?
+    pass
+
+
+def export_to_isatab(FP, output_dir):
     # Load and write the investigation section somewhere
+    df = pd.read_csv(FP, names=range(0, 128), sep='\t', engine='python').dropna(axis=1, how='all')  # load MSI section
+    df = df.T  # transpose MSI section
+    df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
+    df.reset_index(inplace=True)  # Reset index so it is accessible as column
+    df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
+    df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
+    sdrf_filename = df.iloc[0]['SDRF File']
+    sdrf_path = os.path.join(os.path.dirname(FP.name), sdrf_filename)
     study_df, assay_df = split_tables(sdrf_path=sdrf_path)
-    study_df.to_csv(study_fp, sep='\t', index=False, header=study_df.isatab_header)
-    assay_df.to_csv(assay_fp, sep='\t', index=False, header=assay_df.isatab_header)
+    with open(os.path.join(output_dir, "s_" + os.path.basename(sdrf_path)), 'w') as study_fp:
+        study_df.to_csv(study_fp, sep='\t', index=False, header=study_df.isatab_header)
+    with open(os.path.join(output_dir, "a_" + os.path.basename(sdrf_path)), 'w') as assay_fp:
+        assay_df.to_csv(assay_fp, sep='\t', index=False, header=assay_df.isatab_header)
 
 
 def split_tables(sdrf_path):
     sdrf_df = isatab.read_tfile(sdrf_path)
+    sdrf_df_isatab_header = sdrf_df.isatab_header
     sample_name_index = list(sdrf_df.columns).index("Sample Name")
-    study_df = sdrf_df[sdrf_df.columns[0:sample_name_index]].drop_duplicates()
+    study_df = sdrf_df[sdrf_df.columns[0:sample_name_index+1]].drop_duplicates()
+    study_df.isatab_header = sdrf_df_isatab_header[0:sample_name_index+1]
     assay_df = sdrf_df[sdrf_df.columns[sample_name_index:]]
+    assay_df.isatab_header = sdrf_df_isatab_header[sample_name_index:]
     return study_df, assay_df
