@@ -13,6 +13,8 @@ SRA_DATA_DIR = os.path.join(DATA_DIR, 'sra')
 
 TAB_DATA_DIR = os.path.join(DATA_DIR, 'tab')
 
+MAGETAB_DATA_DIR = os.path.join(DATA_DIR, 'magetab')
+
 MZML_DATA_DIR = os.path.join(DATA_DIR, 'mzml')
 
 SAMPLETAB_DATA_DIR = os.path.join(DATA_DIR, 'sampletab')

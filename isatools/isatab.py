@@ -3006,7 +3006,7 @@ def get_value(object_column, column_group, object_series, ontology_source_map, u
         term_accession_value = object_series[offset_2r_col]
 
         if term_accession_value is not '':
-            value.term_accession = term_accession_value
+            value.term_accession = str(term_accession_value)
 
         return value, None
 
