@@ -297,7 +297,6 @@ class TestIsaTabDump(unittest.TestCase):
             term_accession='http://purl.obolibrary.org/obo/UBERON_0002107',
         )))
 
-
         sample_collection_process = Process(executes_protocol=sample_collection_protocol)
 
         sample_collection_process2 = Process(executes_protocol=sample_collection_protocol)
@@ -309,13 +308,12 @@ class TestIsaTabDump(unittest.TestCase):
         sample_collection_process2.outputs = [sample2]
         s.process_sequence = [sample_collection_process, sample_collection_process2]
         i.studies = [s]
-        print(isatab.dumps(i))
-        # isatab.dump(i, self._tmp_dir)
-        # with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
-        #         open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',
-        #                           's_TEST-Template3-Splitting.txt')) as expected_file:
-        #     self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
-        #     self.assertIsInstance(isatab.dumps(i), str)
+        isatab.dump(i, self._tmp_dir)
+        with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
+                open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool-sample-chain',
+                                  's_TEST-Template3-Splitting.txt')) as expected_file:
+            self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
+            self.assertIsInstance(isatab.dumps(i), str)
 
 
 class TestIsaTabLoad(unittest.TestCase):
