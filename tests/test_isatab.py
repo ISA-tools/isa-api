@@ -234,6 +234,89 @@ class TestIsaTabDump(unittest.TestCase):
             self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
             self.assertIsInstance(isatab.dumps(i), str)
 
+    def test_isatab_dump_source_sample_sample(self):
+        # Validates issue fix for #191
+        i = Investigation()
+        uberon = OntologySource(name='UBERON')
+        ncbitaxon = OntologySource(name='NCBITAXON')
+        i.ontology_source_references.append(uberon)
+        i.ontology_source_references.append(ncbitaxon)
+
+        s = Study(filename='s_pool.txt')
+        sample_collection_protocol = Protocol(
+            name='sample collection',
+            protocol_type=OntologyAnnotation(term='sample collection')
+        )
+        s.protocols.append(sample_collection_protocol)
+
+        reference_descriptor_category = OntologyAnnotation(term='reference descriptor')
+        material_type_category = OntologyAnnotation(term='material type')
+        organism_category = OntologyAnnotation(term='organism')
+
+        source1 = Source(name='source1')
+        source1.characteristics = [
+            Characteristic(category=reference_descriptor_category, value='not applicable'),
+            Characteristic(category=material_type_category, value='specimen'),
+            Characteristic(category=organism_category,
+                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
+                                                    term_accession='http://purl.bioontology.org/ontology/STY/T016')),
+        ]
+
+        source2 = Source(name='source2')
+        source2.characteristics = [
+            Characteristic(category=reference_descriptor_category, value='not applicable'),
+            Characteristic(category=material_type_category, value='specimen'),
+            Characteristic(category=organism_category,
+                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
+                                                    term_accession='http://purl.bioontology.org/ontology/STY/T016')),
+        ]
+
+        source3 = Source(name='source3')
+        source3.characteristics = [
+            Characteristic(category=reference_descriptor_category, value='not applicable'),
+            Characteristic(category=material_type_category, value='specimen'),
+            Characteristic(category=organism_category,
+                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
+                                                    term_accession='http://purl.bioontology.org/ontology/STY/T016')),
+        ]
+
+        source4 = Source(name='source4')
+        source4.characteristics = [
+            Characteristic(category=reference_descriptor_category, value='not applicable'),
+            Characteristic(category=material_type_category, value='specimen'),
+            Characteristic(category=organism_category,
+                           value=OntologyAnnotation(term='Human', term_source=ncbitaxon,
+                                                    term_accession='http://purl.bioontology.org/ontology/STY/T016')),
+        ]
+
+        sample1 = Sample(name='sample1')
+        organism_part = OntologyAnnotation(term='organism part')
+        sample1.characteristics.append(Characteristic(category=organism_part, value=OntologyAnnotation(
+            term='liver',
+            term_source=uberon,
+            term_accession='http://purl.obolibrary.org/obo/UBERON_0002107',
+        )))
+
+
+        sample_collection_process = Process(executes_protocol=sample_collection_protocol)
+
+        sample_collection_process2 = Process(executes_protocol=sample_collection_protocol)
+        sample2 = Sample(name='sample2')
+
+        sample_collection_process.inputs = [source1, source2, source3, source4]
+        sample_collection_process.outputs = [sample1]
+        sample_collection_process2.inputs = [sample1]
+        sample_collection_process2.outputs = [sample2]
+        s.process_sequence = [sample_collection_process, sample_collection_process2]
+        i.studies = [s]
+        print(isatab.dumps(i))
+        # isatab.dump(i, self._tmp_dir)
+        # with open(os.path.join(self._tmp_dir, 's_pool.txt')) as actual_file, \
+        #         open(os.path.join(self._tab_data_dir, 'TEST-ISA-sample-pool',
+        #                           's_TEST-Template3-Splitting.txt')) as expected_file:
+        #     self.assertTrue(assert_tab_content_equal(actual_file, expected_file))
+        #     self.assertIsInstance(isatab.dumps(i), str)
+
 
 class TestIsaTabLoad(unittest.TestCase):
 
