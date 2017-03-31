@@ -466,6 +466,8 @@ def _all_end_to_end_paths(G, start_nodes):  # we know graphs start with Source o
                         isinstance(x, Process) and x.next_process is None]:
                 paths += list(nx.algorithms.all_simple_paths(G, start, end))
     print("Found {} paths!".format(len(paths)))
+    if len(paths) == 0:
+        print([x.name for x in start_nodes])  # TODO: Find out why no paths in BII-I-1
     return paths
 
 
@@ -659,24 +661,25 @@ def write_assay_table_files(inv_obj, output_dir):
                     if node.performer is not None:
                         columns.append(olabel + ".Performer")
                     oname_label = None
-                    if node.executes_protocol.protocol_type.term == "nucleic acid sequencing":
-                        oname_label = "Assay Name"
-                    elif node.executes_protocol.protocol_type.term == "data collection":
-                        oname_label = "Scan Name"
-                    elif node.executes_protocol.protocol_type.term == "mass spectrometry":
-                        oname_label = "MS Assay Name"
-                    elif node.executes_protocol.protocol_type.term == "data transformation":
-                        oname_label = "Data Transformation Name"
-                    elif node.executes_protocol.protocol_type.term == "sequence analysis data transformation":
-                        oname_label = "Normalization Name"
-                    elif node.executes_protocol.protocol_type.term == "normalization":
-                        oname_label = "Normalization Name"
-                    if node.executes_protocol.protocol_type.term == "unknown protocol":
-                        oname_label = "Unknown Protocol Name"
-                    if oname_label is not None:
-                        columns.append(oname_label)
-                    elif node.executes_protocol.protocol_type.term == "nucleic acid hybridization":
-                        columns.extend(["Hybridization Assay Name", "Array Design REF"])
+                    if node.executes_protocol.protocol_type:
+                        if node.executes_protocol.protocol_type.term == "nucleic acid sequencing":
+                            oname_label = "Assay Name"
+                        elif node.executes_protocol.protocol_type.term == "data collection":
+                            oname_label = "Scan Name"
+                        elif node.executes_protocol.protocol_type.term == "mass spectrometry":
+                            oname_label = "MS Assay Name"
+                        elif node.executes_protocol.protocol_type.term == "data transformation":
+                            oname_label = "Data Transformation Name"
+                        elif node.executes_protocol.protocol_type.term == "sequence analysis data transformation":
+                            oname_label = "Normalization Name"
+                        elif node.executes_protocol.protocol_type.term == "normalization":
+                            oname_label = "Normalization Name"
+                        if node.executes_protocol.protocol_type.term == "unknown protocol":
+                            oname_label = "Unknown Protocol Name"
+                        if oname_label is not None:
+                            columns.append(oname_label)
+                        elif node.executes_protocol.protocol_type.term == "nucleic acid hybridization":
+                            columns.extend(["Hybridization Assay Name", "Array Design REF"])
 
                     columns += flatten(map(lambda x: get_pv_columns(olabel, x), node.parameter_values))
                     if node.executes_protocol.name not in protnames.keys():
@@ -722,25 +725,26 @@ def write_assay_table_files(inv_obj, output_dir):
                             pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
                             write_value_columns(df_dict, pvlabel, pv)
                         oname_label = None
-                        if node.executes_protocol.protocol_type.term == "nucleic acid sequencing":
-                            oname_label = "Assay Name"
-                        elif node.executes_protocol.protocol_type.term == "data collection":
-                            oname_label = "Scan Name"
-                        elif node.executes_protocol.protocol_type.term == "mass spectrometry":
-                            oname_label = "MS Assay Name"
-                        elif node.executes_protocol.protocol_type.term == "data transformation":
-                            oname_label = "Data Transformation Name"
-                        elif node.executes_protocol.protocol_type.term == "sequence analysis data transformation":
-                            oname_label = "Normalization Name"
-                        elif node.executes_protocol.protocol_type.term == "normalization":
-                            oname_label = "Normalization Name"
-                        if node.executes_protocol.protocol_type.term == "unknown protocol":
-                            oname_label = "Unknown Protocol Name"
-                        if oname_label is not None:
-                            df_dict[oname_label][-1] = node.name
-                        elif node.executes_protocol.protocol_type.term == "nucleic acid hybridization":
-                            df_dict["Hybridization Assay Name"][-1] = node.name
-                            df_dict["Array Design REF"][-1] = node.array_design_ref
+                        if node.executes_protocol.protocol_type:
+                            if node.executes_protocol.protocol_type.term == "nucleic acid sequencing":
+                                oname_label = "Assay Name"
+                            elif node.executes_protocol.protocol_type.term == "data collection":
+                                oname_label = "Scan Name"
+                            elif node.executes_protocol.protocol_type.term == "mass spectrometry":
+                                oname_label = "MS Assay Name"
+                            elif node.executes_protocol.protocol_type.term == "data transformation":
+                                oname_label = "Data Transformation Name"
+                            elif node.executes_protocol.protocol_type.term == "sequence analysis data transformation":
+                                oname_label = "Normalization Name"
+                            elif node.executes_protocol.protocol_type.term == "normalization":
+                                oname_label = "Normalization Name"
+                            if node.executes_protocol.protocol_type.term == "unknown protocol":
+                                oname_label = "Unknown Protocol Name"
+                            if oname_label is not None:
+                                df_dict[oname_label][-1] = node.name
+                            elif node.executes_protocol.protocol_type.term == "nucleic acid hybridization":
+                                df_dict["Hybridization Assay Name"][-1] = node.name
+                                df_dict["Array Design REF"][-1] = node.array_design_ref
                         for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                             olabel = output.label
                             df_dict[olabel][-1] = output.filename
@@ -3006,7 +3010,7 @@ def get_value(object_column, column_group, object_series, ontology_source_map, u
         term_accession_value = object_series[offset_2r_col]
 
         if term_accession_value is not '':
-            value.term_accession = term_accession_value
+            value.term_accession = str(term_accession_value)
 
         return value, None
 
@@ -3115,15 +3119,14 @@ def preprocess(DF):
     for i in reversed(missing_process_indices):
         inferred_protocol_type = ""
         if columns[i] == "Data Transformation Name":
-            inferred_protocol_type = "unknown.data transformation"
+            inferred_protocol_type = "data transformation"
         elif columns[i] == "Normalization Name":
-            inferred_protocol_type = "unknown.normalization"
-        elif columns[i] == "Assay Name":
-            inferred_protocol_type = "unknown.data collection"
+            inferred_protocol_type = "normalization"
+        elif columns[i] in ("Scan Name", "MS Assay Name"):
+            inferred_protocol_type = "data collection"
         DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown' if inferred_protocol_type == "" else inferred_protocol_type)
         DF.isatab_header.insert(i, 'Protocol REF')
         offset += 1
-
     return DF
 
 

@@ -31,7 +31,7 @@ class TestIsaGraph(unittest.TestCase):
                 print("Checking {}".format(assay.filename))
                 pooling_list = utils.detect_graph_process_pooling(assay.graph)
                 self.assertListEqual(sorted(pooling_list),
-                                     sorted(['#process/Extraction1']))
+                                     sorted(['#process/Extraction1', '#process/NMR_assay1']))
 
     def test_detect_graph_process_pooling_batch_on_mtbls(self):
         for i in range(1, 1):

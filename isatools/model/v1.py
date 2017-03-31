@@ -22,7 +22,7 @@ def _build_assay_graph(process_sequence=list()):
     for process in process_sequence:
         if process.next_process is not None or len(
                 process.outputs) > 0:  # first check if there's some valid outputs to connect
-            if len(process.outputs) > 0:
+            if len([n for n in process.outputs if not isinstance(n, DataFile)]) > 0:
                 for output in [n for n in process.outputs if not isinstance(n, DataFile)]:
                     G.add_edge(process, output)
             else:  # otherwise just connect the process to the next one
