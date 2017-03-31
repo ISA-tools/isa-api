@@ -331,10 +331,12 @@ def write_sdrf_table_files(i, output_path):
         for assay in [x for x in study.assays if x.technology_type.term.lower() == "dna microarray"]:
             sdrf_filename = study.filename[2:-3] + assay.filename[2:-3] + "sdrf.txt"
             print("Writing {}".format(sdrf_filename))
-            isatab.merge_study_with_assay_tables(os.path.join(tmp, study.filename),
-                                                 os.path.join(tmp, assay.filename),
-                                                 os.path.join(output_path, "{}.sdrf.txt"
-                                                              .format(sdrf_filename)))
+            try:
+                isatab.merge_study_with_assay_tables(os.path.join(tmp, study.filename),
+                                                     os.path.join(tmp, assay.filename),
+                                                     os.path.join(output_path, sdrf_filename))
+            except FileNotFoundError:
+                raise IOError("There was a problem merging intermediate ISA-Tab files into SDRF")
 
 
 def dump(inv_obj, output_path):
@@ -352,9 +354,19 @@ def dump(inv_obj, output_path):
 
 def load(FP):
     # first cast to IDF
-    idf_FP = cast_inv_to_idf(FP)
-    # second set output SDRF file
-    pass
+    idf_FP = cast_idf_to_inv(FP)
+    df = pd.read_csv(idf_FP, names=range(0, 128), sep='\t', engine='python').dropna(axis=1, how='all')
+    df = df.T  # transpose
+    df.reset_index(inplace=True)  # Reset index so it is accessible as column
+    df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
+    # second set output s_ and a_ files
+    sdrf_file = df["Comment[SDRF File]"].iloc[1]
+    study_df, assay_df = split_tables(sdrf_path=os.path.join(os.path.dirname(FP.name), sdrf_file))
+    study_df.columns = study_df.isatab_header
+    print("s_" + os.path.basename(sdrf_file))
+    assay_df.columns = assay_df.isatab_header
+    print("a_" + os.path.basename(sdrf_file))
+
 
 inv_to_idf_map = {
             "Study Title": "Investigation Title",
@@ -427,8 +439,8 @@ def cast_idf_to_inv(FP):
 
 def export_to_isatab(FP, output_dir):
     # Load and write the investigation section somewhere
-    df = pd.read_csv(FP, names=range(0, 128), sep='\t', engine='python').dropna(axis=1, how='all')  # load MSI section
-    df = df.T  # transpose MSI section
+    df = pd.read_csv(FP, names=range(0, 128), sep='\t', engine='python').dropna(axis=1, how='all')
+    df = df.T  # transpose
     df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
     df.reset_index(inplace=True)  # Reset index so it is accessible as column
     df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers

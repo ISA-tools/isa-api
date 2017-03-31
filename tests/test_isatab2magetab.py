@@ -28,9 +28,10 @@ class TestIsaTab2MageTab(unittest.TestCase):
     def test_isatab2magetab_convert_bii_i_1(self):
         with open(os.path.join(self._tab_data_dir, 'BII-I-1', 'i_investigation.txt')) as inv_fp:
             isatab2magetab.convert(inv_fp, self._tmp_dir)
+            print(os.listdir(self._tmp_dir))
             self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'BII-I-1.idf.txt')))
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'BII-S-1.transcriptome.sdrf.txt.sdrf.txt')))
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'BII-S-2.microarray.sdrf.txt.sdrf.txt')))
+            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'BII-S-1.transcriptome.sdrf.txt')))
+            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'BII-S-2.microarray.sdrf.txt')))
 
     def test_isatab2magetab_convert_bii_s_3(self):
         with open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt')) as inv_fp:
