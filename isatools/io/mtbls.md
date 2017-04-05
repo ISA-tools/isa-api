@@ -35,4 +35,4 @@ The slicer produces:
 - The list of URLs for Raw data files/study files to be downloaded by another tool.
 
 The slicer needs to produce:
-- A reduced ISA file after the slicing.
+- A collection of data files that match the query.
