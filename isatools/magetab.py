@@ -352,10 +352,10 @@ def dump(inv_obj, output_path):
     return inv_obj
 
 
-def load(FP):
+def load(FP):  # loads IDF file
     # first cast to IDF
-    idf_FP = cast_idf_to_inv(FP)
-    df = pd.read_csv(idf_FP, names=range(0, 128), sep='\t', engine='python').dropna(axis=1, how='all')
+    inv_fp = cast_idf_to_inv(FP)
+    df = pd.read_csv(inv_fp, names=range(0, 128), sep='\t', engine='python').dropna(axis=1, how='all')
     df = df.T  # transpose
     df.reset_index(inplace=True)  # Reset index so it is accessible as column
     df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
@@ -363,9 +363,20 @@ def load(FP):
     sdrf_file = df["Comment[SDRF File]"].iloc[1]
     study_df, assay_df = split_tables(sdrf_path=os.path.join(os.path.dirname(FP.name), sdrf_file))
     study_df.columns = study_df.isatab_header
-    print("s_" + os.path.basename(sdrf_file))
     assay_df.columns = assay_df.isatab_header
-    print("a_" + os.path.basename(sdrf_file))
+    # write out ISA files
+    tmp = "/Users/dj/PycharmProjects/isa-api/tests/data/tmp"
+    inv_fp.seek(0)
+    # print("Writing i_investigation.txt to {}".format(tmp))
+    print("Writing s_{0} to {1}".format(tmp, os.path.basename(sdrf_file)))
+    with open(os.path.join(tmp, "s_" + os.path.basename(sdrf_file)), "w") as s_fp:
+        study_df.to_csv(path_or_buf=s_fp, mode='a', sep='\t', encoding='utf-8', index=False,)
+    print("Writing a_{0} to {1}".format(tmp, os.path.basename(sdrf_file)))
+    with open(os.path.join(tmp, "a_" + os.path.basename(sdrf_file)), "w") as a_fp:
+        assay_df.to_csv(path_or_buf=a_fp, mode='a', sep='\t', encoding='utf-8', index=False,)
+    with open(os.path.join(tmp, "i_investigation.txt")) as tmp_inv_fp:
+        ISA = isatab.load(inv_fp)
+        return ISA
 
 
 inv_to_idf_map = {
@@ -424,6 +435,7 @@ def cast_idf_to_inv(FP):
     # Cast relevant sections from IDF file into comments
     # insert Additional Investigation file labels
     idf_FP = StringIO()
+    idf_dict = {}
     for line in FP:
         if line.startswith(tuple(inv_to_idf_map.values())) or line.startswith("Comment["):
             for k, v in inv_to_idf_map.items():
@@ -431,9 +443,23 @@ def cast_idf_to_inv(FP):
         else:
             first_token = line[:line.index('\t')]
             line = line.replace(first_token, "Comment[{}]".format(first_token))
-        idf_FP.write(line)
-    idf_FP.seek(0)
+        # idf_FP.write(line)
+        idf_dict[line[:line.index('\t')]] = line
+    # idf_FP.seek(0)
     idf_FP.name = FP.name
+    with open(os.path.join(os.path.dirname(__file__), 'resources', 'tab_templates', 'i_template.txt')) as i_template_FP:
+        for line in i_template_FP:
+            try:
+                try:
+                    line = idf_dict[line[:line.index('\t')]]
+                except ValueError:
+                    line = idf_dict[line[:line.index('\n')]]
+            except KeyError:
+                pass
+            idf_FP.write(line)
+    for key in [x for x in idf_dict.keys() if x.startswith("Comment[")]:
+        idf_FP.write(idf_dict[key])
+    idf_FP.seek(0)
     return idf_FP
 
 

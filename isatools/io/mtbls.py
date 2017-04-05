@@ -7,7 +7,9 @@ import re
 import glob
 from isatools.convert import isatab2json
 from isatools import isatab
-from isatools.model.v1 import OntologyAnnotation
+from isatools.model.v1 import OntologyAnnotation, Process, ParameterValue
+import networkx as nx
+import pandas as pd
 
 MTBLS_FTP_SERVER = 'ftp.ebi.ac.uk'
 MTBLS_BASE_DIR = '/pub/databases/metabolights/studies/public'
@@ -126,7 +128,6 @@ def slice_data_files(dir, factor_selection=None):
             }
         }
     """
-    from isatools import isatab
     results = list()
     # first collect matching samples
     for table_file in glob.iglob(os.path.join(dir, '[a|s]_*')):
@@ -246,7 +247,9 @@ def get_factors_summary(mtbls_study_id):
     This function generates a factors summary for a MetaboLights study
 
     :param mtbls_study_id: Accession number of the MetaboLights study
-    :return: A list of dicts summarising the set of factor names associated with each data file
+    :return: A list of dicts summarising the set of factor names and values associated with each sample
+
+    Note: it only returns a summary of factors with variable values.
 
     Example usage:
         factor_summary = get_factors_summary('MTBLS1')
@@ -258,10 +261,9 @@ def get_factors_summary(mtbls_study_id):
             }, 
             {
                 "name": "ADG10003u_162", 
-                "Metabolic syndrome": 
-                "diabetes mellitus", 
+                "Metabolic syndrome": "diabetes mellitus",
                 "Gender": "Female"
-            }, 
+            },
         ]
 
 
@@ -282,4 +284,162 @@ def get_factors_summary(mtbls_study_id):
                 fv_value = fv.value.term
             sample_and_fvs[fv.factor_name.name] = fv_value
         samples_and_fvs.append(sample_and_fvs)
-    return samples_and_fvs
+    df = pd.DataFrame(samples_and_fvs)
+    nunique = df.apply(pd.Series.nunique)
+    cols_to_drop = nunique[nunique == 1].index
+    df = df.drop(cols_to_drop, axis=1)
+    return df.to_dict(orient='records')
+
+
+def get_characteristics_summary(mtbls_study_id):
+    """
+        This function generates a characteristics summary for a MetaboLights study
+
+        :param mtbls_study_id: Accession number of the MetaboLights study
+        :return: A list of dicts summarising the set of characteristic names and values associated with each sample
+
+        Note: it only returns a summary of characteristics with variable values.
+
+        Example usage:
+            characteristics_summary = get_characteristics_summary('MTBLS5')
+            [
+                {
+                    "name": "6089if_9",
+                    "Variant": "Synechocystis sp. PCC 6803.sll0171.ko"
+                },
+                {
+                    "name": "6089if_43",
+                    "Variant": "Synechocystis sp. PCC 6803.WT.none"
+                },
+            ]
+
+
+        """
+    ISA = load(mtbls_study_id=mtbls_study_id)
+    all_samples = []
+    for study in ISA.studies:
+        all_samples.extend(study.materials['samples'])
+    samples_and_characs = []
+    for sample in all_samples:
+        sample_and_characs = {
+                "name": sample.name
+            }
+        for source in sample.derives_from:
+            for c in source.characteristics:
+                if isinstance(c.value, (str, int, float)):
+                    c_value = c.value
+                elif isinstance(c.value, OntologyAnnotation):
+                    c_value = c.value.term
+                sample_and_characs[c.category.term] = c_value
+        samples_and_characs.append(sample_and_characs)
+    df = pd.DataFrame(samples_and_characs)
+    nunique = df.apply(pd.Series.nunique)
+    cols_to_drop = nunique[nunique == 1].index
+    df = df.drop(cols_to_drop, axis=1)
+    return df.to_dict(orient='records')
+
+
+# PVs don't seem to vary in MTBLS, so maybe skip this function
+# def get_parameter_value_summary(mtbls_study_id):
+#     """
+#         This function generates a parameter values summary for a MetaboLights study
+#
+#         :param mtbls_study_id: Accession number of the MetaboLights study
+#         :return: A list of dicts summarising the set of parameters and values associated with each sample
+#
+#         Note: it only returns a summary of parameter values with variable values.
+#
+#         """
+#     ISA = load(mtbls_study_id=mtbls_study_id)
+#     all_samples = []
+#     for study in ISA.studies:
+#         all_samples.extend(study.materials['samples'])
+#     samples_and_pvs = []
+#     for sample in all_samples:
+#         sample_and_pvs = {
+#             "name": sample.name
+#         }
+#         for study in ISA.studies:
+#             s_processes_linked_to_sample = [x for x in nx.algorithms.ancestors(study.graph, sample) if
+#                                             isinstance(x, Process)]
+#             for process in s_processes_linked_to_sample:
+#                 for pv in process.parameter_values:
+#                     if isinstance(pv, ParameterValue):
+#                         if isinstance(pv.value, (str, int, float)):
+#                             pv_value = pv.value
+#                         elif isinstance(pv.value, OntologyAnnotation):
+#                             pv_value = pv.value.term
+#                         sample_and_pvs[pv.category.parameter_name.term] = pv_value
+#             for assay in study.assays:
+#                 for sample in assay.materials['samples']:
+#                     a_processes_linked_to_sample = [x for x in nx.algorithms.descendants(assay.graph, sample) if
+#                                                     isinstance(x, Process)]
+#                     for process in a_processes_linked_to_sample:
+#                         for pv in process.parameter_values:
+#                             if isinstance(pv, ParameterValue):
+#                                 if isinstance(pv.value, (str, int, float)):
+#                                     pv_value = pv.value
+#                                 elif isinstance(pv.value, OntologyAnnotation):
+#                                     pv_value = pv.value.term
+#                                 sample_and_pvs[pv.category.parameter_name.term] = pv_value
+#         samples_and_pvs.append(sample_and_pvs)
+#     df = pd.DataFrame(samples_and_pvs)
+#     nunique = df.apply(pd.Series.nunique)
+#     cols_to_drop = nunique[nunique == 1].index
+#     df = df.drop(cols_to_drop, axis=1)
+#     return df.to_dict(orient='records')
+
+
+def get_study_variable_summary(mtbls_study_id):
+    ISA = load(mtbls_study_id=mtbls_study_id)
+    all_samples = []
+    for study in ISA.studies:
+        all_samples.extend(study.materials['samples'])
+    samples_and_variables = []
+    for sample in all_samples:
+        sample_and_vars = {
+            "name": sample.name
+        }
+        for fv in sample.factor_values:
+            if isinstance(fv.value, (str, int, float)):
+                fv_value = fv.value
+            elif isinstance(fv.value, OntologyAnnotation):
+                fv_value = fv.value.term
+            sample_and_vars[fv.factor_name.name] = fv_value
+        for source in sample.derives_from:
+            for c in source.characteristics:
+                if isinstance(c.value, (str, int, float)):
+                    c_value = c.value
+                elif isinstance(c.value, OntologyAnnotation):
+                    c_value = c.value.term
+                sample_and_vars[c.category.term] = c_value
+        # Don't think pvs vary, so maybe skip this section
+        # for study in ISA.studies:
+        #     s_processes_linked_to_sample = [x for x in nx.algorithms.ancestors(study.graph, sample) if
+        #                                     isinstance(x, Process)]
+        #     for process in s_processes_linked_to_sample:
+        #         for pv in process.parameter_values:
+        #             if isinstance(pv, ParameterValue):
+        #                 if isinstance(pv.value, (str, int, float)):
+        #                     pv_value = pv.value
+        #                 elif isinstance(pv.value, OntologyAnnotation):
+        #                     pv_value = pv.value.term
+        #                 sample_and_vars[pv.category.parameter_name.term] = pv_value
+        #     for assay in study.assays:
+        #         for sample in assay.materials['samples']:
+        #             a_processes_linked_to_sample = [x for x in nx.algorithms.descendants(assay.graph, sample) if
+        #                                             isinstance(x, Process)]
+        #             for process in a_processes_linked_to_sample:
+        #                 for pv in process.parameter_values:
+        #                     if isinstance(pv, ParameterValue):
+        #                         if isinstance(pv.value, (str, int, float)):
+        #                             pv_value = pv.value
+        #                         elif isinstance(pv.value, OntologyAnnotation):
+        #                             pv_value = pv.value.term
+        #                         sample_and_vars[pv.category.parameter_name.term] = pv_value
+        samples_and_variables.append(sample_and_vars)
+    df = pd.DataFrame(samples_and_variables)
+    nunique = df.apply(pd.Series.nunique)
+    cols_to_drop = nunique[nunique == 1].index
+    df = df.drop(cols_to_drop, axis=1)
+    return df.to_dict(orient='records')

@@ -906,6 +906,9 @@ def read_investigation_file(fp):
         return memf
 
     def _build_section_df(f):
+        # find tab dimension
+        print('Max width = {}'.format(max([len(line.split('\t')) for line in f])))
+        f.seek(0)
         try:
             df = pd.read_csv(f, sep='\t').T  # Load and transpose ISA file section
         except CParserError:
@@ -3059,7 +3062,7 @@ def pairwise(iterable):
     return zip(a, b)
 
 
-def read_tfile(tfile_path, index_col=None):
+def read_tfile(tfile_path, index_col=None, factor_filter=None):
 
     with open(tfile_path, encoding='utf-8') as tfile_fp:
         reader = csv.reader(tfile_fp, delimiter='\t')
@@ -3067,8 +3070,10 @@ def read_tfile(tfile_path, index_col=None):
         tfile_fp.seek(0)
         tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col, memory_map=True, comment='#').fillna('')
         tfile_df.isatab_header = header
-
-    return tfile_df
+    if factor_filter:
+        return tfile_df[tfile_df['Factor Value[{}]'.format(factor_filter[0])] == factor_filter[1]]
+    else:
+        return tfile_df
 
 
 def get_multiple_index(file_index, key):
