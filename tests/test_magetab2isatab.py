@@ -25,12 +25,12 @@ class TestMageTab2IsaTab(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
 
-    # def test_magetab2isatab_convert_bii_i_1(self):
-    #     with open(os.path.join(self._magetab_data_dir, 'BII-I-1', 'BII-I-1.idf.txt')) as idf_fp:
-    #         magetab2isatab.convert(idf_fp, self._tmp_dir)
-    #         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
-    #         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_BII-S-1.txt')))
-    #         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_transcriptome.txt')))
-    #         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_BII-S-2.txt')))
-    #         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_microarray.txt')))
+    def test_magetab2isatab_convert_bii_i_1(self):
+        with open(os.path.join(self._magetab_data_dir, 'BII-I-1', 'BII-I-1.idf.txt')) as idf_fp:
+            magetab2isatab.convert(idf_fp, self._tmp_dir)
+            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
+            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_BII-S-1.txt')))
+            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_transcriptome.txt')))
+            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_BII-S-2.txt')))
+            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_microarray.txt')))
 
