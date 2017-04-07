@@ -433,7 +433,7 @@ class StudyAssayParser:
             in_handle.seek(0)
             import pandas as pd
             num_protocol_refs = headers.count('Protocol REF')
-            df = pd.read_csv(in_handle, dtype=str, sep='\t')
+            df = pd.read_csv(in_handle, dtype=str, sep='\t', encoding='utf-8', comment='#')
             offset = 0
             for i in reversed(missing_process_indices):
                 df.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown')
