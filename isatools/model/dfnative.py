@@ -179,7 +179,7 @@ def read_ifile(ifile_path):
         reader = csv.reader(ifile_fp, delimiter='\t')
         maxwidth = len(max(reader, key=len))
         ifile_fp.seek(0)
-        ifile_df = pd.read_csv(ifile_fp, sep='\t', header=None, names=list(range(0, maxwidth)), index_col=0)
+        ifile_df = pd.read_csv(ifile_fp, sep='\t', header=None, names=list(range(0, maxwidth)), index_col=0, encoding='utf-8', comment='#')
     return ifile_df
 
 
@@ -188,7 +188,7 @@ def read_tfile(tfile_path, index_col):
         reader = csv.reader(tfile_fp, delimiter='\t')
         header = list(next(reader))
         tfile_fp.seek(0)
-        tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col)
+        tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col, encoding='utf-8', comment='#')
         tfile_df.isatab_header = header
     return tfile_df
 

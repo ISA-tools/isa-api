@@ -910,7 +910,7 @@ def read_investigation_file(fp):
         print('Max width = {}'.format(max([len(line.split('\t')) for line in f])))
         f.seek(0)
         try:
-            df = pd.read_csv(f, sep='\t').T  # Load and transpose ISA file section
+            df = pd.read_csv(f, sep='\t', encoding='utf-8', comment='#').T  # Load and transpose ISA file section
         except CParserError:
             f.seek(0)
             raise IOError("There was a problem parsing the investigation section:\n\n{}".format(f.read()))
@@ -1421,19 +1421,11 @@ def check_protocol_usage(i_df, dir_context):
 
 
 def load_table(fp):
-    memf = io.StringIO()
-    while True:
-        line = fp.readline()
-        if not line:
-            break
-        if not line.lstrip().startswith('#'):
-            memf.write(line)
-    memf.seek(0)
     try:
-        df = pd.read_csv(memf, sep='\t', encoding='utf-8')
+        df = pd.read_csv(fp, sep='\t', encoding='utf-8', comment='#')
     except UnicodeDecodeError:
         logger.warning("Could not load file with UTF-8, trying ISO-8859-1")
-        df = pd.read_csv(memf, sep='\t', encoding='latin1')
+        df = pd.read_csv(fp, sep='\t', encoding='latin1', comment='#')
     return df
 
 
@@ -2497,7 +2489,7 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
                 protocol_names_and_types = dict(zip(protocol_names, protocol_types))
                 try:
                     logger.info("Loading... {}".format(study_filename))
-                    with open(os.path.join(os.path.dirname(fp.name), study_filename)) as s_fp:
+                    with open(os.path.join(os.path.dirname(fp.name), study_filename), encoding='utf-8') as s_fp:
                         study_sample_table = load_table(s_fp)
                         study_sample_table.filename = study_filename
                         config = configs[('[Sample]', '')]
@@ -2533,7 +2525,7 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
                     if assay_filename is not '':
                         try:
                             logger.info("Loading... {}".format(assay_filename))
-                            with open(os.path.join(os.path.dirname(fp.name), assay_filename)) as a_fp:
+                            with open(os.path.join(os.path.dirname(fp.name), assay_filename), encoding='utf-8') as a_fp:
                                 assay_table = load_table(a_fp)
                                 assay_table.filename = assay_filename
                                 assay_tables.append(assay_table)
@@ -2644,7 +2636,7 @@ def batch_validate(tab_dir_list):
         if len(i_files) != 1:
             logger.warn("Could not find an investigation file, skipping {}".format(tab_dir))
         else:
-            with open(i_files[0]) as fp:
+            with open(i_files[0], encoding='utf-8') as fp:
                 batch_report['batch_report'].append(
                     {
                         "filename": fp.name,
@@ -2662,16 +2654,16 @@ def dumps(isa_obj, skip_dump_tables=False):
     try:
         tmp = tempfile.mkdtemp()
         dump(isa_obj=isa_obj, output_path=tmp, skip_dump_tables=skip_dump_tables)
-        with open(os.path.join(tmp, 'i_investigation.txt'), 'r') as i_fp:
+        with open(os.path.join(tmp, 'i_investigation.txt'), encoding='utf-8') as i_fp:
             output += os.path.join(tmp, 'i_investigation.txt') + '\n'
             output += i_fp.read()
         for s_file in glob.iglob(os.path.join(tmp, 's_*')):
-            with open(s_file, 'r') as s_fp:
+            with open(s_file, encoding='utf-8') as s_fp:
                 output += "--------\n"
                 output += s_file + '\n'
                 output += s_fp.read()
         for a_file in glob.iglob(os.path.join(tmp, 'a_*')):
-            with open(a_file, 'r') as a_fp:
+            with open(a_file, encoding='utf-8') as a_fp:
                 output += "--------\n"
                 output += a_file + '\n'
                 output += a_fp.read()
@@ -3068,7 +3060,7 @@ def read_tfile(tfile_path, index_col=None, factor_filter=None):
         reader = csv.reader(tfile_fp, delimiter='\t')
         header = list(next(reader))
         tfile_fp.seek(0)
-        tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col, memory_map=True, comment='#').fillna('')
+        tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col, memory_map=True, comment='#', encoding='utf-8').fillna('')
         tfile_df.isatab_header = header
     if factor_filter:
         return tfile_df[tfile_df['Factor Value[{}]'.format(factor_filter[0])] == factor_filter[1]]

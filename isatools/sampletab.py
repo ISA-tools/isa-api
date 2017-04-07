@@ -36,7 +36,7 @@ def _read_tab_section(f, sec_key, next_sec_key=None):
 def read_sampletab_msi(fp):
 
     def _build_msi_df(f):
-        df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python').dropna(axis=1, how='all')  # load MSI section
+        df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python', encoding='utf-8', comment='#').dropna(axis=1, how='all')  # load MSI section
         df = df.T  # transpose MSI section
         df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
         df.reset_index(inplace=True)  # Reset index so it is accessible as column
@@ -173,7 +173,7 @@ def load(FP):
     scd_df = pd.read_csv(_read_tab_section(
         f=FP,
         sec_key='[SCD]'
-    ), sep='\t').fillna('')
+    ), sep='\t', encoding='utf-8', comment='#').fillna('')
 
     study = Study(filename="s_{}.txt".format(ISA.identifier))
     study.protocols = [Protocol(name='sample collection', protocol_type=OntologyAnnotation(term='sample collection'))]

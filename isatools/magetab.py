@@ -355,7 +355,7 @@ def dump(inv_obj, output_path):
 def load(FP):  # loads IDF file
     # first cast to IDF
     inv_fp = cast_idf_to_inv(FP)
-    df = pd.read_csv(inv_fp, names=range(0, 128), sep='\t', engine='python').dropna(axis=1, how='all')
+    df = pd.read_csv(inv_fp, names=range(0, 128), sep='\t', engine='python', encoding='utf-8', comment='#').dropna(axis=1, how='all')
     df = df.T  # transpose
     df.reset_index(inplace=True)  # Reset index so it is accessible as column
     df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
@@ -465,7 +465,7 @@ def cast_idf_to_inv(FP):
 
 def export_to_isatab(FP, output_dir):
     # Load and write the investigation section somewhere
-    df = pd.read_csv(FP, names=range(0, 128), sep='\t', engine='python').dropna(axis=1, how='all')
+    df = pd.read_csv(FP, names=range(0, 128), sep='\t', engine='python', encoding='utf-8', comment='#').dropna(axis=1, how='all')
     df = df.T  # transpose
     df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
     df.reset_index(inplace=True)  # Reset index so it is accessible as column

@@ -236,7 +236,7 @@ def load(mtbls_study_id):
     tmp_dir = get(mtbls_study_id)
     if tmp_dir is None:
         raise IOError("There was a problem retrieving the study ", mtbls_study_id)
-    with open(glob.glob(os.path.join(tmp_dir, 'i_*.txt'))[0]) as f:
+    with open(glob.glob(os.path.join(tmp_dir, 'i_*.txt'))[0], encoding='utf-8') as f:
         ISA = isatab.load(f)
         shutil.rmtree(tmp_dir)
         return ISA
