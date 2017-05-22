@@ -10,7 +10,7 @@ An example program using the ISA-Tab validator to validate one or more ISA-Tab a
 
     # Inspired by validateSBML.py example from libSBML Python API
 
-    from isatools.isatab import validate2
+    from isatools.isatab import validate
     import sys
     import os
 
@@ -37,7 +37,7 @@ An example program using the ISA-Tab validator to validate one or more ISA-Tab a
                 numfiles += 1
             else:
                 with open(args[i]) as fp:
-                    report = validate2(fp)
+                    report = validate(fp)
                     numerrors = len(report['errors'])
                     numwarnings = len(report['warnings'])
                     if numerrors > 0:
