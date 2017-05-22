@@ -907,10 +907,13 @@ def read_investigation_file(fp):
 
     def _build_section_df(f):
         # find tab dimension
-        print('Max width = {}'.format(max([len(line.split('\t')) for line in f])))
+        # print('Max width = {}'.format(max([len(line.split('\t')) for line in f])))
         f.seek(0)
         try:
-            df = pd.read_csv(f, sep='\t', encoding='utf-8', comment='#').T  # Load and transpose ISA file section
+            # df = pd.read_csv(f, sep='\t', encoding='utf-8', comment='#').T  # Load and transpose ISA file section
+            df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python', encoding='utf-8',
+                             comment='#', converters={'Term Source Name': str}).dropna(axis=1, how='all')
+            df = df.T
         except CParserError:
             f.seek(0)
             raise IOError("There was a problem parsing the investigation section:\n\n{}".format(f.read()))
@@ -937,6 +940,7 @@ def read_investigation_file(fp):
         sec_key='ONTOLOGY SOURCE REFERENCE',
         next_sec_key='INVESTIGATION'
     ))
+    print(df_dict['ontology_sources'].columns)
     # assert({'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
     #        .issubset(set(ontology_sources_df.columns.values)))  # Check required labels are present
     df_dict['investigation'] = _build_section_df(_read_tab_section(
@@ -2754,7 +2758,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
 
     def get_comments(section_df):
         comments = []
-        for col in [x for x in section_df.columns if x.startswith("Comment[")]:
+        for col in [x for x in section_df.columns if str(x).startswith("Comment[")]:
             for _, row in section_df.iterrows():
                 comment = Comment(name=col[8:-1], value=row[col])
                 comments.append(comment)
@@ -2762,7 +2766,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
 
     def get_comments_row(cols, row):
         comments = []
-        for col in [x for x in cols if x.startswith("Comment[")]:
+        for col in [x for x in cols if str(x).startswith("Comment[")]:
             comment = Comment(name=col[8:-1], value=row[col])
             comments.append(comment)
         return comments

@@ -60,7 +60,7 @@ Study Assay Measurement Type Term Accession Number
 Study Assay Measurement Type Term Source REF
 Study Assay Technology Type
 Study Assay Technology Type Term Accession Number
-Study Assay Technology Type Term Source REF	"OBI"
+Study Assay Technology Type Term Source REF
 Study Assay Technology Platform
 STUDY PROTOCOLS
 Study Protocol Name

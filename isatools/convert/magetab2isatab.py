@@ -11,4 +11,4 @@ def convert(source_idf_fp, output_path):
     :param output_dir: Path to directory to write output ISA-Tab files to
     """
     ISA = magetab.load(source_idf_fp)
-    isatab.dump(ISA, output_path)
+    isatab.dump(ISA, output_path, skip_dump_tables=True)

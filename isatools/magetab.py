@@ -360,7 +360,7 @@ def load(FP):  # loads IDF file
     df.reset_index(inplace=True)  # Reset index so it is accessible as column
     df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
     # second set output s_ and a_ files
-    sdrf_file = df["Comment[SDRF File]"].iloc[1]
+    sdrf_file = df["Study File Name"].iloc[1]
     study_df, assay_df = split_tables(sdrf_path=os.path.join(os.path.dirname(FP.name), sdrf_file))
     study_df.columns = study_df.isatab_header
     assay_df.columns = assay_df.isatab_header
@@ -374,12 +374,15 @@ def load(FP):  # loads IDF file
     print("Writing a_{0} to {1}".format(tmp, os.path.basename(sdrf_file)))
     with open(os.path.join(tmp, "a_" + os.path.basename(sdrf_file)), "w") as a_fp:
         assay_df.to_csv(path_or_buf=a_fp, mode='a', sep='\t', encoding='utf-8', index=False,)
-    with open(os.path.join(tmp, "i_investigation.txt")) as tmp_inv_fp:
-        ISA = isatab.load(inv_fp)
-        return ISA
+    # with open(os.path.join(tmp, "i_investigation.txt")) as tmp_inv_fp:
+    ISA = isatab.load(inv_fp)
+    ISA.studies[0].filename = "s_" + os.path.basename(sdrf_file)
+    ISA.studies[0].assays = [Assay(filename="a_" + os.path.basename(sdrf_file))]
+    return ISA
 
 
 inv_to_idf_map = {
+            "Study File Name": "SDRF File",
             "Study Title": "Investigation Title",
             "Study Description": "Experiment Description",
             "Study Design Type": "Experimental Design",
@@ -414,7 +417,8 @@ inv_to_idf_map = {
             "Study Protocol Type Source REF": "Protocol Term Source REF",
             "Term Source Name": "Term Source Name",
             "Term Source File": "Term Source File",
-            "Term Source Version": "Term Source Version"
+            "Term Source Version": "Term Source Version",
+            "Term Source Description": "Term Source Description"
         }  # Relabel these, ignore all other lines
 
 
