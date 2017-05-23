@@ -910,10 +910,10 @@ def read_investigation_file(fp):
         # print('Max width = {}'.format(max([len(line.split('\t')) for line in f])))
         f.seek(0)
         try:
-            # df = pd.read_csv(f, sep='\t', encoding='utf-8', comment='#').T  # Load and transpose ISA file section
-            df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python', encoding='utf-8',
-                             comment='#', converters={'Term Source Name': str}).dropna(axis=1, how='all')
-            df = df.T
+            df = pd.read_csv(f, sep='\t', encoding='utf-8', comment='#').T  # Load and transpose ISA file section
+            # df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python', encoding='utf-8',
+            #                  comment='#', converters={'Term Source Name': str}).dropna(axis=1, how='all')
+            # df = df.T
         except CParserError:
             f.seek(0)
             raise IOError("There was a problem parsing the investigation section:\n\n{}".format(f.read()))
@@ -940,7 +940,6 @@ def read_investigation_file(fp):
         sec_key='ONTOLOGY SOURCE REFERENCE',
         next_sec_key='INVESTIGATION'
     ))
-    print(df_dict['ontology_sources'].columns)
     # assert({'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
     #        .issubset(set(ontology_sources_df.columns.values)))  # Check required labels are present
     df_dict['investigation'] = _build_section_df(_read_tab_section(
