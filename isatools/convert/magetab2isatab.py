@@ -2,6 +2,7 @@ import pandas as pd
 from isatools import isatab
 import os
 import logging
+from isatools import magetab
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -32,6 +33,11 @@ def convert(source_idf_fp, output_path):
             with open(os.path.join(output_path, "a_" + os.path.basename(sdrf_file)), "w") as a_fp:
                 assay_df.to_csv(path_or_buf=a_fp, mode='a', sep='\t', encoding='utf-8', index=False)
     # TODO: convert idf to investigation
+    print("Writing {0} to {1}".format("i_investigation.txt", output_path))
+    source_idf_fp.seek(0)
+    target_inv_fp = magetab.cast_idf_to_inv(source_idf_fp)
+    with open(os.path.join(output_path, "i_investigation.txt"), "w") as out_fp:
+        out_fp.write(target_inv_fp.read())
 
 
 def split_tables(sdrf_path):
