@@ -3229,7 +3229,8 @@ class ProcessSequenceFactory:
             pass
 
         for data_col in [x for x in DF.columns if x.endswith(" File")]:
-            data.update(dict(map(lambda x: (':'.join([data_col, x]), DataFile(filename=x, label=data_col)), DF[data_col].drop_duplicates())))
+            filenames = [x for x in DF[data_col].drop_duplicates() if x != '']
+            data.update(dict(map(lambda x: (':'.join([data_col, x]), DataFile(filename=x, label=data_col)), filenames)))
 
         node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
         proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
@@ -3249,7 +3250,10 @@ class ProcessSequenceFactory:
             elif l in ('Extract Name', 'Labeled Extract Name'):
                 n = other_material[lk]
             elif l.endswith('File'):
-                n = data[lk]
+                try:
+                    n = data[lk]
+                except KeyError:
+                    pass  # if column not found; possibly skipped due to empty values
             return n
 
         for _cg, column_group in enumerate(object_column_map):
@@ -3457,7 +3461,7 @@ class ProcessSequenceFactory:
 
                 if object_label.endswith(' File'):
                     data_node = get_node_by_label_and_key(object_label, object_series[object_label])
-                    if sample_node_context is not None:
+                    if sample_node_context is not None and data_node is not None:
                         if sample_node_context not in data_node.generated_from:
                             data_node.generated_from.append(sample_node_context)
 
