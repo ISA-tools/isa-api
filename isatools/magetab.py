@@ -385,6 +385,13 @@ inv_to_idf_map = {
             "Study File Name": "SDRF File",
             "Study Title": "Investigation Title",
             "Study Description": "Experiment Description",
+            "Study Public Release Date": "Public Release Date",
+            "Comment[MAGETAB TimeStamp_Version]": "MAGETAB TimeStamp_Version",
+            "Comment[ArrayExpressReleaseDate]": "ArrayExpressReleaseDate",
+            "Comment[Date of Experiment]": "Date of Experiment",
+            "Comment[AEMIAMESCORE]": "AEMIAMESCORE",
+            "Comment[Submitted Name]": "Submitted Name",
+            "Comment[ArrayExpressAccession]": "ArrayExpressAccession",
             "Study Design Type": "Experimental Design",
             "Study Design Type Term Accession Number": "Experimental Design Term Accession Number",
             "Study Design Type Ter Source REF": "Experimental Design Term Source REF",
@@ -404,6 +411,7 @@ inv_to_idf_map = {
             "Study Person Mid Initials": "Person Mid Initials",
             "Study Person Email": "Person Email",
             "Study Person Phone": "Person Phone",
+            "Study Person Fax": "Person Fax",
             "Study Person Address": "Person Address",
             "Study Person Affiliation": "Person Affiliation",
             "Study Person Roles": "Person Role",
@@ -415,6 +423,9 @@ inv_to_idf_map = {
             "Study Protocol Type": "Protocol Type",
             "Study Protocol Type Accession Number": "Protocol Term Accession Number",
             "Study Protocol Type Source REF": "Protocol Term Source REF",
+            "Comment[Protocol Software]": "Protocol Software",
+            "Comment[Protocol Hardware]": "Protocol Hardware",
+            "Comment[Protocol Contact]": "Protocol Contact",
             "Term Source Name": "Term Source Name",
             "Term Source File": "Term Source File",
             "Term Source Version": "Term Source Version",
@@ -451,7 +462,7 @@ def cast_idf_to_inv(FP):
         idf_dict[line[:line.index('\t')]] = line
     # idf_FP.seek(0)
     idf_FP.name = FP.name
-    with open(os.path.join(os.path.dirname(__file__), 'resources', 'tab_templates', 'i_template.txt')) as i_template_FP:
+    with open(os.path.join(os.path.dirname(__file__), 'resources', 'tab_templates', 'i_mage_template.txt')) as i_template_FP:
         for line in i_template_FP:
             try:
                 try:
@@ -461,8 +472,8 @@ def cast_idf_to_inv(FP):
             except KeyError:
                 pass
             idf_FP.write(line)
-    for key in [x for x in idf_dict.keys() if x.startswith("Comment[")]:
-        idf_FP.write(idf_dict[key])
+    # for key in [x for x in idf_dict.keys() if x.startswith("Comment[")]:
+    #     idf_FP.write(idf_dict[key])
     idf_FP.seek(0)
     return idf_FP
 

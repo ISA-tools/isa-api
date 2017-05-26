@@ -40,6 +40,13 @@ def convert(source_idf_fp, output_path):
         out_fp.write(target_inv_fp.read())
 
 
+def get_investigation_title(line, ISA):
+    split_line = [x for x in line.split('\t') if x != '']
+    if len(split_line) > 1:
+        value = split_line[1]
+        ISA.title = value
+
+
 def split_tables(sdrf_path):
     sdrf_df = isatab.read_tfile(sdrf_path)
     sdrf_df_isatab_header = sdrf_df.isatab_header
