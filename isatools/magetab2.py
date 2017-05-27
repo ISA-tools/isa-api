@@ -127,7 +127,10 @@ def parse(magetab_idf_path):
                 p.last_name = v[i]
                 p.first_name = idf_dict['person_first_name'][i]
                 p.last_name = idf_dict['person_last_name'][i]
-                p.mid_initials = idf_dict['person_mid_initials'][i]
+                try:
+                    p.mid_initials = idf_dict['person_mid_initials'][i]
+                except IndexError:
+                    pass
                 p.email = idf_dict['person_email'][i]
                 p.phone = idf_dict['person_phone'][i]
                 p.fax = idf_dict['person_fax'][i]
