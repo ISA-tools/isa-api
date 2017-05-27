@@ -81,7 +81,7 @@ def parse(magetab_idf_path):
                 except KeyError:
                     pass
 
-    ISA = Investigation()
+    ISA = Investigation(identifier="Investigation")
 
     ontology_source_dict = {}
 
@@ -93,16 +93,19 @@ def parse(magetab_idf_path):
         ISA.ontology_source_references.append(ontology_source)
         ontology_source_dict[ontology_source.name] = ontology_source
 
+    S = Study(identifier="Study")
+
     for k, v in idf_dict.items():
         if k == 'investigation_title' and len([x for x in v if x != '']) == 1:
             ISA.title = v[0]
+            S.title = v[0]
         if k == 'experimental_description' and len([x for x in v if x != '']) == 1:
             ISA.description = v[0]
         elif k in ('investigation_accession',
                    'investigation_accession_term_source_ref',
                    'date_of_experiment',
                    'magetab_version') and len([x for x in v if x != '']) == 1:
-            ISA.comments.append(Comment(name=k, value=v[0]))
+            S.comments.append(Comment(name=k, value=v[0]))
         elif k == 'experimental_design':
             experimental_design_comment = Comment(name="Experimental Design")
             experimental_design_term_source_ref_comment = Comment(name="Experimental Design Term Source REF")
@@ -111,12 +114,13 @@ def parse(magetab_idf_path):
             experimental_design_term_source_ref_comment.value = ';'.join(idf_dict['experimental_design_term_source_ref'])
             if 'experimental_design_term_accession_number' in idf_dict.keys():
                 experimental_factor_term_accession_number_comment.value = ';'.join(idf_dict['experimental_design_term_accession_number'])
-            ISA.comments.append(experimental_design_comment)
-            ISA.comments.append(experimental_design_term_source_ref_comment)
-            ISA.comments.append(experimental_factor_term_accession_number_comment)
+            S.comments.append(experimental_design_comment)
+            S.comments.append(experimental_design_term_source_ref_comment)
+            S.comments.append(experimental_factor_term_accession_number_comment)
 
         elif k == 'public_release_date':
             ISA.public_release_date = v[0]
+            S.public_release_date = v[0]
         elif k == 'person_last_name' and len(v) > 0:
             for i in range(0, len(v)):
                 p = Person()
@@ -141,7 +145,7 @@ def parse(magetab_idf_path):
                     if 'person_roles_term_accession_number' in idf_dict.keys():
                         role.term_accession = roles_term_accession_number_list[j]
                     p.roles.append(role)
-                ISA.contacts.append(p)
+                S.contacts.append(p)
         elif k == 'publication_pubmed_id' and len(v) > 0:
             for i in range(0, len(v)):
                 p = Publication()
@@ -152,9 +156,40 @@ def parse(magetab_idf_path):
                 p.doi = idf_dict['publication_doi'][i]
                 status = OntologyAnnotation(term=idf_dict['publication_status'][i])
                 if 'publication_status_term_source_ref' in idf_dict.keys():
-                    status.term_source = ontology_source_dict[idf_dict['publication_status_term_source_ref'][i]]
+                    try:
+                        status.term_source = ontology_source_dict[idf_dict['publication_status_term_source_ref'][i]]
+                    except IndexError:
+                        pass
+                    except KeyError:
+                        pass
                 if 'publication_status_term_accession_number' in idf_dict.keys():
                     status.term_accession = idf_dict['publication_status_term_accession_number'][i]
                 p.status = status
-                ISA.publications.append(p)
+                S.publications.append(p)
+        elif k == 'protocol_name' and len(v) > 0:
+            for i in range(0, len(v)):
+                p = Protocol()
+                p.name = v[i]
+                protocol_type = OntologyAnnotation(term=idf_dict['protocol_type'][i])
+                if 'publication_status_term_source_ref' in idf_dict.keys():
+                    try:
+                        protocol_type.term_source = ontology_source_dict[idf_dict['protocol_term_source_ref'][i]]
+                    except IndexError:
+                        pass
+                    except KeyError:
+                        pass
+                if 'publication_status_term_accession_number' in idf_dict.keys():
+                    protocol_type.term_accession = idf_dict['protocol_term_accession_number'][i]
+                p.protocol_type = protocol_type
+                p.description = idf_dict['protocol_description'][i]
+                # TODO: parse Protocol Parameters
+                S.protocols.append(p)
+        elif k == 'sdrf_file':
+            S.filename = 's_{}'.format(v[0])
+            S.assays = [
+                Assay(filename='a_{}'.format(v[0]),
+                      technology_type=OntologyAnnotation(term='DNA microarray'),
+                      measurement_type=OntologyAnnotation(term='protein expression profiling'))
+            ]
+        ISA.studies = [S]
     return ISA

@@ -2,7 +2,6 @@ import pandas as pd
 from isatools import isatab
 import os
 import logging
-from isatools import magetab
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -35,9 +34,9 @@ def convert(source_idf_fp, output_path):
     # TODO: convert idf to investigation
     print("Writing {0} to {1}".format("i_investigation.txt", output_path))
     source_idf_fp.seek(0)
-    target_inv_fp = magetab.cast_idf_to_inv(source_idf_fp)
-    with open(os.path.join(output_path, "i_investigation.txt"), "w") as out_fp:
-        out_fp.write(target_inv_fp.read())
+    from isatools import magetab2
+    ISA = magetab2.parse(source_idf_fp.name)
+    isatab.dump(ISA, output_path=output_path, skip_dump_tables=True)
 
 
 def get_investigation_title(line, ISA):
