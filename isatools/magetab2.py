@@ -38,8 +38,8 @@ idf_map = {
     "Date of Experiment": "date_of_experiment",
     "Public Release Date": "public_release_date",
 
-    "PubMed ID": "pubmed_id",
-    "Publication DOI": "publicatoin_doi",
+    "PubMed ID": "publication_pubmed_id",
+    "Publication DOI": "publication_doi",
     "Publication Author List": "publication_author_list",
     "Publication Title": "publication_title",
     "Publication Status": "publication_status",
@@ -83,6 +83,16 @@ def parse(magetab_idf_path):
 
     ISA = Investigation()
 
+    ontology_source_dict = {}
+
+    v = idf_dict['term_source_name']
+    for i in range(0, len(v)):
+        ontology_source = OntologySource(name=v[i])
+        ontology_source.file = idf_dict['term_source_file'][i]
+        ontology_source.version = idf_dict['term_source_version'][i]
+        ISA.ontology_source_references.append(ontology_source)
+        ontology_source_dict[ontology_source.name] = ontology_source
+
     for k, v in idf_dict.items():
         if k == 'investigation_title' and len([x for x in v if x != '']) == 1:
             ISA.title = v[0]
@@ -99,7 +109,8 @@ def parse(magetab_idf_path):
             experimental_factor_term_accession_number_comment = Comment(name="Experimental Design Term Accession Number")
             experimental_design_comment.value += ';'.join(idf_dict['experimental_design'])
             experimental_design_term_source_ref_comment.value = ';'.join(idf_dict['experimental_design_term_source_ref'])
-            experimental_factor_term_accession_number_comment.value = ';'.join(idf_dict['experimental_design_term_accession_number'])
+            if 'experimental_design_term_accession_number' in idf_dict.keys():
+                experimental_factor_term_accession_number_comment.value = ';'.join(idf_dict['experimental_design_term_accession_number'])
             ISA.comments.append(experimental_design_comment)
             ISA.comments.append(experimental_design_term_source_ref_comment)
             ISA.comments.append(experimental_factor_term_accession_number_comment)
@@ -107,8 +118,9 @@ def parse(magetab_idf_path):
         elif k == 'public_release_date':
             ISA.public_release_date = v[0]
         elif k == 'person_last_name' and len(v) > 0:
-            for i in range(0, max([len(x) for x in v])):
-                p = Person(last_name=v[i])
+            for i in range(0, len(v)):
+                p = Person()
+                p.last_name = v[i]
                 p.first_name = idf_dict['person_first_name'][i]
                 p.last_name = idf_dict['person_last_name'][i]
                 p.mid_initials = idf_dict['person_mid_initials'][i]
@@ -117,19 +129,32 @@ def parse(magetab_idf_path):
                 p.fax = idf_dict['person_fax'][i]
                 p.address = idf_dict['person_address'][i]
                 p.affiliation = idf_dict['person_affiliation'][i]
-                roles = idf_dict['person_roles'][i]
-                roles_list = roles.split(';')
-                roles_term_source_ref_list = idf_dict['person_roles_term_source_ref'][i]
-                roles_term_accession_number_list = idf_dict['person_roles_term_accession_number'][i]
-                for i, term in enumerate(roles_list):
+                roles_list = idf_dict['person_roles'][i].split(';')
+                roles_term_source_ref_list = idf_dict['person_roles_term_source_ref'][i].split(';')
+                if 'person_roles_term_accession_number' in idf_dict.keys():
+                    roles_term_accession_number_list = idf_dict['person_roles_term_accession_number'][i].split(';')
+                for j, term in enumerate(roles_list):
                     role = OntologyAnnotation(term=term)
-                    role_term_source_ref = roles_term_source_ref_list[i]
+                    role_term_source_ref = roles_term_source_ref_list[j]
                     if role_term_source_ref != '':
-                        role.term_source = role_term_source_ref
-                    role_term_accession_number = roles_term_accession_number_list[i]
-                    if role_term_accession_number != '':
-                        role.term_accession = role_term_accession_number
+                        role.term_source = ontology_source_dict[role_term_source_ref]
+                    if 'person_roles_term_accession_number' in idf_dict.keys():
+                        role.term_accession = roles_term_accession_number_list[j]
                     p.roles.append(role)
                 ISA.contacts.append(p)
-
+        elif k == 'publication_pubmed_id' and len(v) > 0:
+            for i in range(0, len(v)):
+                p = Publication()
+                p.pubmed_id = v[i]
+                p.doi = idf_dict['publication_doi'][i]
+                p.author_list = idf_dict['publication_author_list'][i]
+                p.title = idf_dict['publication_title'][i]
+                p.doi = idf_dict['publication_doi'][i]
+                status = OntologyAnnotation(term=idf_dict['publication_status'][i])
+                if 'publication_status_term_source_ref' in idf_dict.keys():
+                    status.term_source = ontology_source_dict[idf_dict['publication_status_term_source_ref'][i]]
+                if 'publication_status_term_accession_number' in idf_dict.keys():
+                    status.term_accession = idf_dict['publication_status_term_accession_number'][i]
+                p.status = status
+                ISA.publications.append(p)
     return ISA
