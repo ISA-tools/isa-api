@@ -36,6 +36,11 @@ Study Description
 Study Submission Date
 Study Public Release Date
 Study File Name
+Comment[MAGETAB TimeStamp_Version]
+Comment[ArrayExpressReleaseDate]
+Comment[Date of Experiment]
+Comment[AEMIAMESCORE]
+Comment[ArrayExpressAccession]
 STUDY DESIGN DESCRIPTORS
 Study Design Type
 Study Design Type Term Accession Number
@@ -77,6 +82,9 @@ Study Protocol Components Name
 Study Protocol Components Type
 Study Protocol Components Type Term Accession Number
 Study Protocol Components Type Term Source REF
+Comment[Protocol Software]
+Comment[Protocol Hardware]
+Comment[Protocol Contact]
 STUDY CONTACTS
 Study Person Last Name
 Study Person First Name

@@ -1,9 +1,11 @@
 import unittest
 import os
-import shutil
-from isatools.convert import magetab2isatab
+from isatools.convert import magetab2json
 from tests import utils
+import json
+from isatools import isajson
 import tempfile
+import shutil
 
 
 def setUpModule():
@@ -14,7 +16,7 @@ def setUpModule():
                                 .format(utils.DATA_DIR))
 
 
-class TestMageTab2IsaTab(unittest.TestCase):
+class TestMageTab2IsaJson(unittest.TestCase):
 
     def setUp(self):
         self._json_data_dir = utils.JSON_DATA_DIR
@@ -25,13 +27,10 @@ class TestMageTab2IsaTab(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
 
-    def test_magetab2isatab_convert_e_mexp_31(self):
+    def test_magetab2json_convert_e_mexp_31(self):
         with open(os.path.join(self._magetab_data_dir, 'E-MEXP-31.idf.txt')) as idf_fp:
-            magetab2isatab.convert(idf_fp, self._tmp_dir, 'protein microarray', 'protein expression profiling')
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-MEXP-31.sdrf.txt')))
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-MEXP-31.sdrf.txt')))
-            from isatools import isatab
-            with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-                isatab.validate(i_fp)
-
+            actual_json = magetab2json.convert(idf_fp, 'protein microarray', 'protein expression profiling')
+            json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+            with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
+                report = isajson.validate(actual_json)
+                self.assertEqual(len(report['errors']), 0)

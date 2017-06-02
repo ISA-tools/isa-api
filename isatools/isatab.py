@@ -907,10 +907,13 @@ def read_investigation_file(fp):
 
     def _build_section_df(f):
         # find tab dimension
-        print('Max width = {}'.format(max([len(line.split('\t')) for line in f])))
+        # print('Max width = {}'.format(max([len(line.split('\t')) for line in f])))
         f.seek(0)
         try:
             df = pd.read_csv(f, sep='\t', encoding='utf-8', comment='#').T  # Load and transpose ISA file section
+            # df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python', encoding='utf-8',
+            #                  comment='#', converters={'Term Source Name': str}).dropna(axis=1, how='all')
+            # df = df.T
         except CParserError:
             f.seek(0)
             raise IOError("There was a problem parsing the investigation section:\n\n{}".format(f.read()))
@@ -2754,7 +2757,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
 
     def get_comments(section_df):
         comments = []
-        for col in [x for x in section_df.columns if x.startswith("Comment[")]:
+        for col in [x for x in section_df.columns if str(x).startswith("Comment[")]:
             for _, row in section_df.iterrows():
                 comment = Comment(name=col[8:-1], value=row[col])
                 comments.append(comment)
@@ -2762,7 +2765,7 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
 
     def get_comments_row(cols, row):
         comments = []
-        for col in [x for x in cols if x.startswith("Comment[")]:
+        for col in [x for x in cols if str(x).startswith("Comment[")]:
             comment = Comment(name=col[8:-1], value=row[col])
             comments.append(comment)
         return comments
@@ -3226,7 +3229,8 @@ class ProcessSequenceFactory:
             pass
 
         for data_col in [x for x in DF.columns if x.endswith(" File")]:
-            data.update(dict(map(lambda x: (':'.join([data_col, x]), DataFile(filename=x, label=data_col)), DF[data_col].drop_duplicates())))
+            filenames = [x for x in DF[data_col].drop_duplicates() if x != '']
+            data.update(dict(map(lambda x: (':'.join([data_col, x]), DataFile(filename=x, label=data_col)), filenames)))
 
         node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
         proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
@@ -3246,7 +3250,10 @@ class ProcessSequenceFactory:
             elif l in ('Extract Name', 'Labeled Extract Name'):
                 n = other_material[lk]
             elif l.endswith('File'):
-                n = data[lk]
+                try:
+                    n = data[lk]
+                except KeyError:
+                    pass  # if column not found; possibly skipped due to empty values
             return n
 
         for _cg, column_group in enumerate(object_column_map):
@@ -3454,7 +3461,7 @@ class ProcessSequenceFactory:
 
                 if object_label.endswith(' File'):
                     data_node = get_node_by_label_and_key(object_label, object_series[object_label])
-                    if sample_node_context is not None:
+                    if sample_node_context is not None and data_node is not None:
                         if sample_node_context not in data_node.generated_from:
                             data_node.generated_from.append(sample_node_context)
 

@@ -283,8 +283,8 @@ class Person(Commentable):
         comments (list, NoneType): Comments associated with instances of this class.
     """
 
-    def __init__(self, first_name=None, last_name=None, mid_initials=None, email=None, phone=None, fax=None,
-                 address=None, affiliation=None, roles=None, comments=None, id_=''):
+    def __init__(self, first_name='', last_name='', mid_initials='', email='', phone='', fax='',
+                 address='', affiliation='', roles=[], comments=[], id_=''):
         super().__init__(comments)
         self.id = id_
         self.last_name = last_name

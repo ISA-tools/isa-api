@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='isatools',
-    version='0.7.5',
+    version='0.8.0',
     packages=['isatools', 'isatools.convert', 'isatools.io', 'isatools.model'],
     package_data={'isatools': ['schemas/cedar/*.json',
                                'schemas/isa_model_version_1_0_schemas/core/*.json',
@@ -19,7 +19,8 @@ setup(
                                'config/json/sra/schemas/*.json',
                                'config/xml/*.xml',
                                'resources/sra_schemas/*.xsd',
-                               'resources/sra_templates/*.xml'],
+                               'resources/sra_templates/*.xml',
+                               'resources/tab_templates/*.txt'],
                   '': ['LICENSE.txt', 'README.md']},
     description='ISA-API',
     author='ISA Infrastructure Team',
