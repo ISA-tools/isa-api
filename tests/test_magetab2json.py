@@ -4,6 +4,8 @@ from isatools.convert import magetab2json
 from tests import utils
 import json
 from isatools import isajson
+import tempfile
+import shutil
 
 
 def setUpModule():
@@ -14,18 +16,16 @@ def setUpModule():
                                 .format(utils.DATA_DIR))
 
 
-class TestMageTab2IsaTab(unittest.TestCase):
+class TestMageTab2IsaJson(unittest.TestCase):
 
     def setUp(self):
         self._json_data_dir = utils.JSON_DATA_DIR
         self._tab_data_dir = utils.TAB_DATA_DIR
         self._magetab_data_dir = utils.MAGETAB_DATA_DIR
-        # self._tmp_dir = tempfile.mkdtemp()
-        self._tmp_dir = "/Users/dj/PycharmProjects/isa-api/tests/data/tmp"
+        self._tmp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
-        # shutil.rmtree(self._tmp_dir)
-        pass
+        shutil.rmtree(self._tmp_dir)
 
     def test_magetab2json_convert_e_mexp_31(self):
         with open(os.path.join(self._magetab_data_dir, 'E-MEXP-31.idf.txt')) as idf_fp:
