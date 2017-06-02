@@ -27,7 +27,7 @@ class TestMageTab2IsaTab(unittest.TestCase):
         # shutil.rmtree(self._tmp_dir)
         pass
 
-    def test_magetab2isatab_convert_e_mexp_31(self):  # TODO: Check validity of output ISA-Tabs
+    def test_magetab2isatab_convert_e_mexp_31(self):
         with open(os.path.join(self._magetab_data_dir, 'E-MEXP-31.idf.txt')) as idf_fp:
             magetab2isatab.convert(idf_fp, self._tmp_dir, 'protein microarray', 'protein expression profiling')
             self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
