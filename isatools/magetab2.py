@@ -67,7 +67,7 @@ idf_map = {
 }
 
 
-def parse(magetab_idf_path):
+def parse(magetab_idf_path, technology_type, measurement_type):
 
     idf_dict = {}
 
@@ -140,7 +140,7 @@ def parse(magetab_idf_path):
                 roles_term_source_ref_list = idf_dict['person_roles_term_source_ref'][i].split(';')
                 if 'person_roles_term_accession_number' in idf_dict.keys():
                     roles_term_accession_number_list = idf_dict['person_roles_term_accession_number'][i].split(';')
-                for j, term in enumerate(roles_list):
+                for j, term in enumerate([x for x in roles_list if x != '']):
                     role = OntologyAnnotation(term=term)
                     role_term_source_ref = roles_term_source_ref_list[j]
                     if role_term_source_ref != '':
@@ -191,8 +191,8 @@ def parse(magetab_idf_path):
             S.filename = 's_{}'.format(v[0])
             S.assays = [
                 Assay(filename='a_{}'.format(v[0]),
-                      technology_type=OntologyAnnotation(term='DNA microarray'),
-                      measurement_type=OntologyAnnotation(term='protein expression profiling'))
+                      technology_type=OntologyAnnotation(term=technology_type),
+                      measurement_type=OntologyAnnotation(term=measurement_type))
             ]
         ISA.studies = [S]
     return ISA

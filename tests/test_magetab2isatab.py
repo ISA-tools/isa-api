@@ -20,24 +20,20 @@ class TestMageTab2IsaTab(unittest.TestCase):
         self._json_data_dir = utils.JSON_DATA_DIR
         self._tab_data_dir = utils.TAB_DATA_DIR
         self._magetab_data_dir = utils.MAGETAB_DATA_DIR
-        self._tmp_dir = tempfile.mkdtemp()
+        # self._tmp_dir = tempfile.mkdtemp()
+        self._tmp_dir = "/Users/dj/PycharmProjects/isa-api/tests/data/tmp"
 
     def tearDown(self):
-        shutil.rmtree(self._tmp_dir)
+        # shutil.rmtree(self._tmp_dir)
+        pass
 
-    def test_magetab2isatab_convert_bii_i_1(self):
-        with open(os.path.join(self._magetab_data_dir, 'BII-I-1', 'BII-I-1.idf.txt')) as idf_fp:
-            magetab2isatab.convert(idf_fp, self._tmp_dir)
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_BII-S-1.transcriptome.sdrf.txt')))
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_BII-S-1.transcriptome.sdrf.txt')))
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_BII-S-2.microarray.sdrf.txt')))
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_BII-S-2.microarray.sdrf.txt')))
-
-    def test_magetab2isatab_convert_e_mexp_31(self):
+    def test_magetab2isatab_convert_e_mexp_31(self):  # TODO: Check validity of output ISA-Tabs
         with open(os.path.join(self._magetab_data_dir, 'E-MEXP-31.idf.txt')) as idf_fp:
-            magetab2isatab.convert(idf_fp, self._tmp_dir)
+            magetab2isatab.convert(idf_fp, self._tmp_dir, 'protein microarray', 'protein expression profiling')
             self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
             self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-MEXP-31.sdrf.txt')))
             self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-MEXP-31.sdrf.txt')))
+            from isatools import isatab
+            with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+                isatab.validate(i_fp)
 

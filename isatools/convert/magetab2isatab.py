@@ -8,7 +8,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=loggi
 logger = logging.getLogger(__name__)
 
 
-def convert(source_idf_fp, output_path):
+def convert(source_idf_fp, output_path, technology_type, measurement_type):
     """ Converter for MAGE-TAB to ISA-Tab
     :param source_idf_fp: File descriptor of input IDF file
     :param output_dir: Path to directory to write output ISA-Tab files to
@@ -35,7 +35,7 @@ def convert(source_idf_fp, output_path):
     # TODO: convert idf to investigation
     print("Writing {0} to {1}".format("i_investigation.txt", output_path))
     source_idf_fp.seek(0)
-    ISA = magetab2.parse(source_idf_fp.name)
+    ISA = magetab2.parse(source_idf_fp.name, technology_type=technology_type, measurement_type=measurement_type)
     isatab.dump(ISA, output_path=output_path, skip_dump_tables=True)
 
 
