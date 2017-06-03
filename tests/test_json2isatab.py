@@ -109,36 +109,36 @@ class TestJson2IsaTab(unittest.TestCase):
         self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'i_investigation.txt')),
                                                  open(os.path.join(self._tab_data_dir, 'BII-I-1', 'i_investigation.txt'))))
 
-    # def test_json2isatab_convert_bii_i_1_study_table(self):
-    #     json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')), self._tmp_dir)
-    #     self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_BII-S-1.txt')),
-    #                                              open(os.path.join(self._tab_data_dir, 'BII-I-1', 's_BII-S-1.txt'))))
-    #
-    # def test_json2isatab_convert_bii_i_1_study2_table(self):
-    #     json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')), self._tmp_dir)
-    #     self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_BII-S-2.txt')),
-    #                                              open(os.path.join(self._tab_data_dir, 'BII-I-1', 's_BII-S-2.txt'))))
-    #
-    # def test_json2isatab_convert_bii_i_1_assay_table_metabolome(self):
-    #     json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')), self._tmp_dir)
-    #     self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'a_metabolome.txt')),
-    #                                              open(os.path.join(self._tab_data_dir, 'BII-I-1',
-    #                                                                'a_metabolome.txt'))))
-    #
-    # def test_json2isatab_convert_bii_i_1_assay_table_microarray(self):
-    #     json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')), self._tmp_dir)
-    #     self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'a_microarray.txt')),
-    #                                              open(os.path.join(self._tab_data_dir, 'BII-I-1',
-    #                                                                'a_microarray.txt'))))
-    #
-    # def test_json2isatab_convert_bii_i_1_assay_table_proteome(self):
-    #     json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')), self._tmp_dir)
-    #     self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'a_proteome.txt')),
-    #                                              open(os.path.join(self._tab_data_dir, 'BII-I-1',
-    #                                                                'a_proteome.txt'))))
-    #
-    # def test_json2isatab_convert_bii_i_1_assay_table_transcriptome(self):
-    #     json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')), self._tmp_dir)
-    #     self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'a_transcriptome.txt')),
-    #                                              open(os.path.join(self._tab_data_dir, 'BII-I-1',
-    #                                                                'a_transcriptome.txt'))))
+    def test_json2isatab_convert_bii_i_1_study_table(self):
+        json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')), self._tmp_dir)
+        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_BII-S-1.txt')),
+                                                 open(os.path.join(self._tab_data_dir, 'BII-I-1', 's_BII-S-1.txt'))))
+
+    def test_json2isatab_convert_bii_i_1_study2_table(self):
+        json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')), self._tmp_dir)
+        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 's_BII-S-2.txt')),
+                                                 open(os.path.join(self._tab_data_dir, 'BII-I-1', 's_BII-S-2.txt'))))
+
+    def test_json2isatab_convert_bii_i_1_assay_table_metabolome(self):
+        json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')), self._tmp_dir)
+        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'a_metabolome.txt')),
+                                                 open(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                                                   'a_metabolome.txt'))))
+
+    def test_json2isatab_convert_bii_i_1_assay_table_microarray(self):
+        json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')), self._tmp_dir)
+        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'a_microarray.txt')),
+                                                 open(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                                                   'a_microarray.txt'))))
+
+    def test_json2isatab_convert_bii_i_1_assay_table_proteome(self):
+        json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')), self._tmp_dir)
+        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'a_proteome.txt')),
+                                                 open(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                                                   'a_proteome.txt'))))
+
+    def test_json2isatab_convert_bii_i_1_assay_table_transcriptome(self):
+        json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-I-1', 'BII-I-1.json')), self._tmp_dir)
+        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, 'a_transcriptome.txt')),
+                                                 open(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                                                   'a_transcriptome.txt'))))
