@@ -1,0 +1,87 @@
+{
+  "assay_type": {
+    "name": "mass spectrometry",
+    "abbreviation": "MS",
+    "uri" : "",
+    "sample_injection_type": {
+        "name": "direct infusion assay",
+        "abbreviation" : "DIA",
+        "polarity_mode": ["positive_mode","negative mode"],
+        "number_of_injection": ""
+      },
+    "sample_injection_type": {
+        "name": "liquid chromatography assay",
+        "abbreviation" : "LC",
+        "polarity_mode": ["positive_mode","negative mode"],
+        "number_of_injection": ""
+      },
+    "sample_injection_type": {
+        "name": "gas chromatography assay",
+        "abbreviation" : "GC",
+        "polarity_mode": ["positive_mode","negative mode"],
+        "number_of_injection": ""
+      }
+    },
+  "name": "nmr spectroscopy",
+    "abbreviation": "NMR",
+    "uri" : "",
+    "sample_injection_type": {
+        "name": "liquid chromatography assay",
+        "abbreviation" : "LC",
+        "acquisition": {
+            "dimension": {
+              "name": "1 dimension NMR",
+              "abbreviation" : "1D",
+              "nucleus": ["1H","13C"],
+              "pulse_sequence" : ["CPMG","NOESY","J-RES"]
+            }
+          },
+      "number_of_injection": ""
+      },
+      "sample_injection_type": {
+        "name": "liquid chromatography assay",
+        "abbreviation" : "LC",
+        "acquisition": {
+            "dimension": {
+              "name": "2 dimension NMR",
+              "abbreviation" : "2D",
+              "nucleus": ["1H-1H","1H-13C","13C-13C"],
+              "pulse_sequence" : ["HSQC","TOCSY","TOESY","other"]
+            }
+          },
+      "number_of_injection": ""
+      },
+    "sample_injection_type": {
+      "name": "gas chromatography assay",
+      "abbreviation": "GC",
+      "acquisition": {
+        "dimension": {
+          "name": "1 dimension NMR",
+          "abbreviation": "1D",
+          "nucleus": [
+            "1H",
+            "13C"
+          ],
+          "pulse_sequence": [
+            "CPMG",
+            "NOESY",
+            "J-RES"
+          ]
+        }
+      },
+      "number_of_injection": ""
+    },
+    "sample_injection_type": {
+        "name": "gas chromatography assay",
+        "abbreviation" : "GC",
+        "acquisition": {
+            "dimension": {
+              "name": "2 dimension NMR",
+              "abbreviation" : "2D",
+              "nucleus": ["1H-1H","1H-13C","13C-13C"],
+              "pulse_sequence" : ["HSQC","TOCSY","TOESY","other"]
+            }
+          },
+      "number_of_injection": ""
+      }
+}
