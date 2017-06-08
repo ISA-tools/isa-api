@@ -77,11 +77,11 @@ An example of using the ISA model classes to create an ISA-JSON file.
         study.materials['sources'].append(source)
 
         # Then we create three Sample objects, with organism as Homo Sapiens, and attach them to the study. We use the utility function
-        # batch_create_material() to clone a prototype material object. The function automatiaclly appends
+        # batch_create_material() to clone a prototype material object. The function automatically appends
         # an index to the material name. In this case, three samples will be created, with the names
         # 'sample_material-0', 'sample_material-1' and 'sample_material-2'.
 
-        prototype_sample = Sample(name='sample_material', derives_from=source)
+        prototype_sample = Sample(name='sample_material', derives_from=[source])
         ncbitaxon = OntologySource(name='NCBITaxon', description="NCBI Taxonomy")
         characteristic_organism = Characteristic(category=OntologyAnnotation(term="Organism"),
                                          value=OntologyAnnotation(term="Homo Sapiens", term_source=ncbitaxon,
@@ -156,13 +156,13 @@ An example of using the ISA model classes to create an ISA-JSON file.
 
             # Sequencing process usually has an output data file
 
-            datafile = DataFile(filename="sequenced-data-{}".format(i), label="Raw Data File")
+            datafile = DataFile(filename="sequenced-data-{}".format(i), label="Raw Data File", generated_from=[sample])
             sequencing_process.outputs.append(datafile)
 
-            # ensure Processes are linked forward and backward
+            # Ensure Processes are linked forward and backward. plink(from_process, to_process) is a function to set
+            # these links for you. It is found in the isatools.model.v1 package
 
-            extraction_process.next_process = sequencing_process
-            sequencing_process.prev_process = extraction_process
+            plink(extraction_process, sequencing_process)
 
             # make sure the extract, data file, and the processes are attached to the assay
 

@@ -227,25 +227,20 @@ class StudyAssayParser:
                                          "Comment", "Label", "Material Type", "Factor Value"),
                            "node": ("Sample Name", "Source Name", "Image File",
                                     "Raw Data File", "Derived Data File", "Acquisition Parameter Data File",
-                                    "Extract Name", "Labeled Extract Name"),
+                                    "Extract Name", "Labeled Extract Name", "Array Data File",
+                                    "Raw Spectral Data File", "Protein Assignment File", "Peptide Assignment File",
+                                    "Post Translational Modification Assignment File", "Derived Spectral Data File",
+                                    "Derived Array Data File"),
                            "node_assay": ("Assay Name", "Data Transformation Name",
                                           "Normalization Name"),
                            "processing": "Protocol REF",
                            "parameter": ("Parameter Value", "Array Design REF")
                            }
-        self._synonyms = {"Array Data File": "Raw Data File",
-                          "Free Induction Decay Data File": "Raw Data File",
-                          "Derived Array Data File" : "Derived Data File",
+        self._synonyms = {
                           "Hybridization Assay Name": "Assay Name",
                           "Scan Name": "Assay Name",
-                          "Array Data Matrix File": "Derived Data File",
-                          "Derived Array Data Matrix File": "Derived Data File",
-                          "Raw Spectral Data File": "Raw Data File",
-                          "Derived Spectral Data File": "Derived Data File",
-                          "MS Assay Name": "Assay Name",
-                          "Protein Assignment File": "Derived Data File",
-                          "Peptide Assignment File": "Derived Data File",
-                          "Post Translational Modification Assignment File": "Derived Data File"}
+                          "MS Assay Name": "Assay Name"
+        }
 
     def parse(self, rec):
         """Retrieve row data from files associated with the ISATabRecord.
@@ -438,7 +433,7 @@ class StudyAssayParser:
             in_handle.seek(0)
             import pandas as pd
             num_protocol_refs = headers.count('Protocol REF')
-            df = pd.read_csv(in_handle, dtype=str, sep='\t')
+            df = pd.read_csv(in_handle, dtype=str, sep='\t', encoding='utf-8', comment='#')
             offset = 0
             for i in reversed(missing_process_indices):
                 df.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown')
@@ -620,30 +615,45 @@ class StudyAssayParser:
     def _build_node_index(self, type, name):
         if type=="Source Name":
             return "source-"+name
+        elif type == "Sample Name":
+            return "sample-"+name
+        elif type == "Extract Name":
+            return "extract-"+name
+        elif type == "Labeled Extract Name":
+            return "labeledextract-"+name
+        elif type == "Raw Data File":
+            return "rawdatafile-"+name
+        elif type=="Derived Data File":
+            return "deriveddatafile-"+name
+        elif type=="Acquisition Parameter Data File":
+            return "acquisitionparameterfile-"+name
+        elif type=="Image File":
+            return "imagefile-"+name
+        elif type == "Array Data File":
+            return "arraydatafile-" + name
+        elif type == "Array Data Matrix File":
+            return "arraydatamatrixfile-" + name
+        elif type == "Derived Array Data Matrix File":
+            return "derivedarraydatamatrixfile-" + name
+        elif type == "Raw Spectral Data File":
+            return "rawspectraldatafile-" + name
+        elif type == "Derived Array Data Matrix File":
+            return "derivedarraydatamatrixfile-" + name
+        elif type == "Protein Assignment File":
+            return "proteinassignmentfile-" + name
+        elif type == "Peptide Assignment File":
+            return "peptideassignmentfile-" + name
+        elif type == "Post Translational Modification Assignment File":
+            return "posttranslationalmodificationassignmentfile-" + name
+        elif type == "Free Induction Decay Data File":
+            return "freeinductiondecaydatafile-" + name
+        elif type == "Derived Array Data File":
+            return "derivedarraydatafile-" + name
+        elif type == "Derived Spectral Data File":
+            return "derivedspectraldatafile-" + name
         else:
-            if type == "Sample Name":
-                return "sample-"+name
-            else:
-                if type == "Extract Name":
-                    return "extract-"+name
-                else:
-                    if type == "Labeled Extract Name":
-                        return "labeledextract-"+name
-                    else:
-                        if type == "Raw Data File":
-                            return "rawdatafile-"+name
-                        else:
-                            if type=="Derived Data File":
-                                return "deriveddatafile-"+name
-                            else:
-                                if type=="Acquisition Parameter Data File":
-                                    return "acquisitionparameterfile-"+name
-                                else:
-                                     if type=="Image File":
-                                        return "imagefile-"+name
-                                     else:
-                                        "ERROR - Type not being considered! ", type
-                                        return name
+            print("ERROR - Type not being considered! ", type)
+            return name
 
 
 _record_str = \

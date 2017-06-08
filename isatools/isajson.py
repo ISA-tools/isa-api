@@ -44,23 +44,6 @@ def load(fp):
                 roles.append(role)
         return roles
 
-    def _build_assay_graph(process_sequence=list()):
-        G = nx.DiGraph()
-        for process in process_sequence:
-            if process.next_process is not None or len(process.outputs) > 0:  # first check if there"s some valid outputs to connect
-                if len(process.outputs) > 0:
-                    for output in [n for n in process.outputs if not isinstance(n, DataFile)]:
-                        G.add_edge(process, output)
-                else:  # otherwise just connect the process to the next one
-                    G.add_edge(process, process.next_process)
-            if process.prev_process is not None or len(process.inputs) > 0:
-                if len(process.inputs) > 0:
-                    for input_ in process.inputs:
-                        G.add_edge(input_, process)
-                else:
-                    G.add_edge(process.prev_process, process)
-        return G
-
     def get_jvalue(dict, key):
         if key in dict.keys():
             return dict[key]
@@ -421,12 +404,13 @@ def load(fp):
                 process_dict[study_process_json["@id"]].prev_process = process_dict[prev_proc]
             except KeyError:
                 pass
+
             try:
                 next_proc = study_process_json["nextProcess"]["@id"]
                 process_dict[study_process_json["@id"]].next_process = process_dict[next_proc]
             except KeyError:
                 pass
-        # study.graph = _build_assay_graph(study.process_sequence)
+
         for assay_json in study_json["assays"]:
             process_dict = dict()
             assay = Assay(
@@ -592,17 +576,20 @@ def load(fp):
                         print("warning: parameter category not found for instance {}".format(parameter_json))
                 assay.process_sequence.append(process)
                 process_dict[process.id] = process
+
                 for assay_process_json in assay_json["processSequence"]:  # 2nd pass
                     try:
                         prev_proc = assay_process_json["previousProcess"]["@id"]
                         process_dict[assay_process_json["@id"]].prev_process = process_dict[prev_proc]
                     except KeyError:
                         pass
+
                     try:
                         next_proc = assay_process_json["nextProcess"]["@id"]
                         process_dict[assay_process_json["@id"]].next_process = process_dict[next_proc]
                     except KeyError:
                         pass
+
             study.assays.append(assay)
         investigation.studies.append(study)
     return investigation
@@ -1315,7 +1302,7 @@ BASE_DIR = os.path.dirname(__file__)
 default_config_dir = os.path.join(BASE_DIR, "config", "json", "default")
 
 
-def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
+def validate(fp, config_dir=default_config_dir, log_level=logging.INFO, base_schemas_dir="isa_model_version_1_0_schemas"):
     if config_dir is None:
         config_dir = default_config_dir
     logger.setLevel(log_level)
@@ -1335,7 +1322,7 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
         isa_json = json.load(fp=fp)  # Rule 0002
         logger.info("Validating JSON against schemas using Draft4Validator")
         check_isa_schemas(isa_json=isa_json,
-                          investigation_schema_path=os.path.join(BASE_DIR, "schemas", "isa_model_version_1_0_schemas",
+                          investigation_schema_path=os.path.join(BASE_DIR, "schemas", base_schemas_dir,
                                                                  "core", "investigation_schema.json"))  # Rule 0003
         logger.info("Checking if material IDs used are declared...")
         for study_json in isa_json["studies"]:
@@ -1760,7 +1747,8 @@ class ISAJSONEncoder(JSONEncoder):
                 {
                     "@id": id_gen(o),
                     "name": o.filename,
-                    "type": o.label
+                    "type": o.label,
+                    "comments": get_comments(o.comments)
                 }
             )
 

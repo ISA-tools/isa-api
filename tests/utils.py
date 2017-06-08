@@ -6,8 +6,6 @@ import re
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
-SAMPLE_DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'isatools', 'sampledata')
-
 JSON_DATA_DIR = os.path.join(DATA_DIR, 'json')
 UNIT_JSON_DATA_DIR = os.path.join(JSON_DATA_DIR, 'unit')
 
@@ -15,7 +13,11 @@ SRA_DATA_DIR = os.path.join(DATA_DIR, 'sra')
 
 TAB_DATA_DIR = os.path.join(DATA_DIR, 'tab')
 
+MAGETAB_DATA_DIR = os.path.join(DATA_DIR, 'magetab')
+
 MZML_DATA_DIR = os.path.join(DATA_DIR, 'mzml')
+
+SAMPLETAB_DATA_DIR = os.path.join(DATA_DIR, 'sampletab')
 
 CONFIGS_DATA_DIR = os.path.join(DATA_DIR, 'configs')
 XML_CONFIGS_DATA_DIR = os.path.join(CONFIGS_DATA_DIR, 'xml')

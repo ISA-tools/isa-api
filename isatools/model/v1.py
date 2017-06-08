@@ -22,7 +22,7 @@ def _build_assay_graph(process_sequence=list()):
     for process in process_sequence:
         if process.next_process is not None or len(
                 process.outputs) > 0:  # first check if there's some valid outputs to connect
-            if len(process.outputs) > 0:
+            if len([n for n in process.outputs if not isinstance(n, DataFile)]) > 0:
                 for output in [n for n in process.outputs if not isinstance(n, DataFile)]:
                     G.add_edge(process, output)
             else:  # otherwise just connect the process to the next one
@@ -45,36 +45,9 @@ class Comment(object):
         name (str): The name of the comment (as mapped to Comment[SomeName] in ISA-Tab) to give context to the comment field.
         value (str, int, float, NoneType): A value for the corresponding comment, as a string or number.
     """
-    def __init__(self, name, value=None):
+    def __init__(self, name, value=''):
         self.name = name
         self.value = value
-
-    @property
-    def name(self):
-        return self.__name
-
-    @name.setter
-    def name(self, name):
-        if not isinstance(name, str):
-            raise AttributeError("Comment.name must be a str")
-        elif name.strip() == '':
-            raise AttributeError("Comment.name must not be empty")
-        else:
-            self.__name = name
-
-    @property
-    def value(self):
-        if self.__value is '':
-            return None
-        else:
-            return self.__value
-
-    @value.setter
-    def value(self, value):
-        if value is not None and not isinstance(value, (str, int, float)):  # allow instance of str, int, float or None
-            raise AttributeError("Comment.value must be an instance of str, int, float, or None")
-        else:
-            self.__value = value
 
 
 class Commentable(object):
@@ -84,18 +57,10 @@ class Commentable(object):
         comments (list, NoneType): Comments associated with the implementing ISA class (all ISA classes).
     """
     def __init__(self, comments=None):
-        self.comments = comments
-
-    @property
-    def comments(self):
-        return self.__comments
-
-    @comments.setter
-    def comments(self, comments):
-        if comments is not None and not isinstance(comments, list):
-            raise AttributeError("comments must be an instance of list or None")
+        if comments is None:
+            self.comments = []
         else:
-            self.__comments = comments
+            self.comments = comments
 
 
 class Investigation(Commentable):
@@ -151,73 +116,18 @@ class OntologySource(Commentable):
 
     Attributes:
         name (str): The name of the source of a term; i.e. the source controlled vocabulary or ontology.
-        file (str, NoneType): A file name or a URI of an official resource.
-        version (str, NoneType): The version number of the Term Source to support terms tracking.
-        description (str, NoneType): A free text description of the resource.
-        comments (list, NoneType): Comments associated with instances of this class.
+        file (str): A file name or a URI of an official resource.
+        version (str): The version number of the Term Source to support terms tracking.
+        description (str): A free text description of the resource.
+        comments (list,): Comments associated with instances of this class.
     """
 
-    def __init__(self, name, file=None, version=None, description=None, comments=None):
+    def __init__(self, name, file='', version='', description='', comments=''):
         super().__init__(comments)
         self.name = name
         self.file = file
         self.version = version
         self.description = description
-
-    @property
-    def name(self):
-        return self.__name
-
-    @name.setter
-    def name(self, name):
-        if not isinstance(name, str):
-            raise AttributeError("OntologySource.name must be a str")
-        elif name.strip() == '':
-            raise AttributeError("OntologySource.name must not be empty")
-        else:
-            self.__name = name
-
-    @property
-    def file(self):
-        if self.__file is '':
-            return None
-        else:
-            return self.__file
-
-    @file.setter
-    def file(self, file):
-        if file is not None and not isinstance(file, str):
-            raise AttributeError("OntologySource.file must be a str or None")
-        else:
-            self.__file = file
-
-    @property
-    def version(self):
-        if self.__version is '':
-            return None
-        else:
-            return self.__version
-
-    @version.setter
-    def version(self, version):
-        if version is not None and not isinstance(version, str):
-            raise AttributeError("OntologySource.version must be a str or None")
-        else:
-            self.__version = version
-
-    @property
-    def description(self):
-        if self.__description is '':
-            return None
-        else:
-            return self.__description
-
-    @description.setter
-    def description(self, description):
-        if description is not None and not isinstance(description, str):
-            raise AttributeError("OntologySource.description must be a str or None")
-        else:
-            self.__description = description
 
 
 class OntologyAnnotation(Commentable):
@@ -373,8 +283,8 @@ class Person(Commentable):
         comments (list, NoneType): Comments associated with instances of this class.
     """
 
-    def __init__(self, first_name=None, last_name=None, mid_initials=None, email=None, phone=None, fax=None,
-                 address=None, affiliation=None, roles=None, comments=None, id_=''):
+    def __init__(self, first_name='', last_name='', mid_initials='', email='', phone='', fax='',
+                 address='', affiliation='', roles=[], comments=[], id_=''):
         super().__init__(comments)
         self.id = id_
         self.last_name = last_name
@@ -457,11 +367,11 @@ class Study(Commentable, object):
             'other_material': list()
         }
         if not (sources is None):
-            self.materials['sources'].append(sources)
+            self.materials['sources'] = sources
         if not (samples is None):
-            self.materials['samples'].append(samples)
+            self.materials['samples'] = samples
         if not (other_material is None):
-            self.materials['other_material'].append(other_material)
+            self.materials['other_material'] = other_material
 
         if process_sequence is None:
             self.process_sequence = list()
@@ -694,7 +604,7 @@ class Source(Commentable):
         characteristics (list, NoneType): A list of Characteristics used to qualify the material properties.
         comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, id_='', name="", characteristics=None, comments=None):
+    def __init__(self, name="", id_='', characteristics=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.name = name
@@ -735,7 +645,7 @@ class Sample(Commentable):
         derives_from (Source): A link to the source material that the sample is derived from.
         comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, id_='', name="", factor_values=None, characteristics=None, derives_from=None, comments=None):
+    def __init__(self, name="", id_='', factor_values=None, characteristics=None, derives_from=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.name = name
@@ -762,7 +672,7 @@ class Material(Commentable):
         derives_from (Source): A link to the material that this material is derived from.
         comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, id_='', name="", type_='', characteristics=None, derives_from=None, comments=None):
+    def __init__(self, name="", id_='', type_='', characteristics=None, derives_from=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.name = name
@@ -771,6 +681,22 @@ class Material(Commentable):
             self.characteristics = list()
         else:
             self.characteristics = characteristics
+
+
+class Extract(Material):
+
+    def __init__(self, name="", id_='', characteristics=None, derives_from=None, comments=None):
+        super().__init__(name=name, id_=id_, characteristics=characteristics, derives_from=derives_from,
+                         comments=comments)
+        self.type = "Extract Name"
+
+
+class LabeledExtract(Material):
+
+    def __init__(self, name="", id_='', characteristics=None, derives_from=None, comments=None):
+        super().__init__(name=name, id_=id_, characteristics=characteristics, derives_from=derives_from,
+                         comments=comments)
+        self.type = "Labeled Extract Name"
 
 
 class FactorValue(Commentable):
@@ -840,12 +766,90 @@ class DataFile(Commentable):
             generated_from (Sample): The Sample the DataFile is generated from
             comments (list, NoneType): Comments associated with instances of this class.
         """
-    def __init__(self, id_='', filename='', label='', generated_from=None, comments=None):
+    def __init__(self, filename='', id_='', label='', generated_from=None, comments=None):
         super().__init__(comments)
         self.id = id_
         self.filename = filename
         self.label = label
-        self.generated_from = generated_from
+        if generated_from is None:
+            self.generated_from = []
+        else:
+            self.generated_from = generated_from
+
+
+class RawDataFile(DataFile):
+
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Raw Data File"
+
+
+class DerivedDataFile(DataFile):
+
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Derived Data File"
+
+
+class RawSpectralDataFile(DataFile):
+
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Raw Spectral Data File"
+
+
+class DerivedArrayDataFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Derived Array Data File"
+
+
+class ArrayDataFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Array Data File"
+
+
+class DerivedSpectralDataFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Derived Spectral Data File"
+
+
+class ProteinAssignmentFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Protein Assignment File"
+
+
+class PeptideAssignmentFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Peptide Assignment File"
+
+
+class DerivedArrayDataMatrixFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Derived Array Data Matrix File"
+
+
+class PostTranslationalModificationAssignmentFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Post Translational Modification Assignment File"
+
+
+class AcquisitionParameterDataFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Acquisition Parameter Data File"
+
+
+class FreeInductionDecayDataFile(DataFile):
+    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
+        self.label = "Free Induction Decay Data File"
 
 
 def batch_create_materials(material=None, n=1):
@@ -1007,3 +1011,8 @@ class ISADocument:
     @property
     def valid_isajson(self):
         return True
+
+def plink(p1, p2):
+    if isinstance(p1, Process) and isinstance(p2, Process):
+        p1.next_process = p2
+        p2.prev_process = p1

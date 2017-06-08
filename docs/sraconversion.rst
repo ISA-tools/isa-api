@@ -2,22 +2,9 @@
 ISA-SRA Conversions
 ###################
 
-----------------------------------------------------------------
-Converting from ISA-Tab to SRA XML (using legacy Java converter)
-----------------------------------------------------------------
-
-To convert from a directory ``./tabdir/`` containing valid ISA-Tab files to a write the SRA XML files to a target directory ``./outdir/``, validating against a given configuration in ``./isaconfig-default_v2015-07-02/``:
-
-.. code-block:: python
-
-   from isatools.convert import isatab2sra
-   isatab2sra.create_sra('./tabdir/', './outdir/', './isaconfig-default_v2015-07-02/')
-
-This method writes the SRA files out to ``./outdir/sra/``.
-
-------------------------------------------------------------
-Converting from ISA-Tab to SRA XML (native Python converter)
-------------------------------------------------------------
+----------------------------------
+Converting from ISA-Tab to SRA XML
+----------------------------------
 
 To convert from a directory ``./tabdir/`` containing valid ISA-Tab files to a write the SRA XML files to a target directory ``./outdir/``, validating against a given configuration in ``./isaconfig-default_v2015-07-02/``:
 

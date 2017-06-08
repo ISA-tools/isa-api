@@ -31,7 +31,7 @@ class TestIsaGraph(unittest.TestCase):
                 print("Checking {}".format(assay.filename))
                 pooling_list = utils.detect_graph_process_pooling(assay.graph)
                 self.assertListEqual(sorted(pooling_list),
-                                     sorted(['#process/Extraction1', '#process/ADG_normalized_data.xlsx']))
+                                     sorted(['#process/Extraction1', '#process/NMR_assay1']))
 
     def test_detect_graph_process_pooling_batch_on_mtbls(self):
         for i in range(1, 1):
@@ -68,7 +68,7 @@ class TestOlsSearch(unittest.TestCase):
         self.assertIsInstance(ontology_source, OntologySource)
         self.assertEqual(ontology_source.name, "efo")
         self.assertEqual(ontology_source.file, None)
-        self.assertEqual(ontology_source.version, "2.80")
+        self.assertIsInstance(ontology_source.version, str)
         self.assertEqual(ontology_source.description, "Experimental Factor Ontology")
 
     def test_search_for_term(self):

@@ -1099,7 +1099,7 @@ def mw2isa_convert(**kwargs):
                 each_record.insert(1, taxonid)
 
             # Building the Investigation Object and its elements:
-            investigation = Investigation()
+            investigation = Investigation(identifier=studyid)
             investigation.comments.append(Comment(name="Primary Database", value="NIH Metabolomics Workbench"))
             investigation.comments.append(Comment(name="conversion date", value=str(date.today())))
             investigation.comments.append(Comment(name="conversion software", value="MW2ISA version 1.0"))
@@ -1923,13 +1923,14 @@ def mw2isa_convert(**kwargs):
             # ATTEMPTING TO WRITE INVESTIGATION FILE:
             try:
                 print("writing 'investigation information' to file...")
+                print(isatab.dumps(investigation))
                 isatab.dump(investigation, outputpath)
             except IOError:
                 print("Error: in main() method can\'t open file or write data")
             # else:
             #  print("doh, something went wrong while writing investigation but don't know why!: from main method")
 
-            # ATTEMTPING TO DOWNLOAD THE CORRESPONDING DATA ARCHIVE FROM MW ANONYMOUS FTP:
+            # ATTEMPTING TO DOWNLOAD THE CORRESPONDING DATA ARCHIVE FROM MW ANONYMOUS FTP:
             if dl_option == 'yes':
                 get_archived_file(studyid)
             elif dl_option == 'no':

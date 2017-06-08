@@ -24,7 +24,8 @@
                 "Post Translational Modification Assignment File",
                 "Derived Array Data Matrix File",
                 "Free Induction Decay Data File",
-                "Metabolite Assignment File"
+                "Metabolite Assignment File",
+                "Array Data Matrix File"
             ]
         },
         "comments" : {

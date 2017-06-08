@@ -63,7 +63,7 @@ target/
 
 
 .DS_Store
-reated by https://www.gitignore.io
+## Created by https://www.gitignore.io
 
 ### PyCharm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm

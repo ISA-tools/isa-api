@@ -475,7 +475,7 @@ def create_study_subjects(group_size, this_study, group_uuid, group_factor_combo
                     for specimen_number in range(int(number_of_collections)):
 
                         sample_name = source_name + "_" + "sample#" + str(specimen_number) + "_" + tissue
-                        sample_template = Sample(name=sample_name, derives_from=source)
+                        sample_template = Sample(name=sample_name, derives_from=[source])
                         characteristic_op = Characteristic(category=OntologyAnnotation(term="organism part"),
                                                            value=OntologyAnnotation(term=tissue))
                         sample_template.characteristics.append(characteristic_op)
@@ -487,7 +487,7 @@ def create_study_subjects(group_size, this_study, group_uuid, group_factor_combo
                         # this_study.studies[0].materials['samples'] = batch_create_materials(prototype_sample, n=2)
                         # for sam in this_study.studies[0].materials['samples']:
                         # sample_name = source_name + "_" + "sample#" + str(i)
-                        # sample = Sample(name=sample_name, derives_from=source)
+                        # sample = Sample(name=sample_name, derives_from=[source])
 
                         combo = group_factor_combo
                         # print("this study group from create_study_subject: ", combo)
@@ -536,7 +536,8 @@ def set_study_arms(list_of_study_group_dictionaries, this_investigation, this_re
                 if size > 0:
 
                     study_group_size = size
-
+                    stato = OntologySource(name="STATO", description="Ontology for Statistical Methods")
+                    this_investigation.ontology_source_references.append(stato)
                     design_term = OntologyAnnotation(term_source=stato)
                     design_term.term = "balanced design"
                     design_term.term_accession = "http://purl.obolibrary.org/obo/STATO_0000003"
@@ -575,7 +576,8 @@ def set_study_arms(list_of_study_group_dictionaries, this_investigation, this_re
                 size = int(size)
                 if int(size) > 0:
                     study_group_size = size
-
+                    stato = OntologySource(name="STATO", description="Ontology for Statistical Methods")
+                    this_investigation.ontology_source_references.append(stato)
                     design_term = OntologyAnnotation(term_source=stato)
                     design_term.term = "unbalanced design"
                     design_term.term_accession = "http://purl.obolibrary.org/obo/STATO_000000X"
@@ -1013,861 +1015,866 @@ def set_assay_type_topology_modifiers(this_sample_type, this_sampling_event, thi
 
 # MAIN METHOD:
 
-intervention_list = []
+def main():
 
-intervention_check = intervention_or_observation()
+    intervention_list = []
 
-if intervention_check is True:
+    intervention_check = intervention_or_observation()
 
-    try:
-        new_inv = use_default_inv()
-        repeats = single_or_repeated_treatment()
-        free_or_restricted_design = free_or_restricted_randomization()
-        assay_plan = []
+    if intervention_check is True:
 
-        if repeats is False and "factorial" in free_or_restricted_design:
-
-            obi = OntologySource(name="OBI", description="Ontology for Biomedical Investigations")
-            new_inv.ontology_source_references.append(obi)
-            stato = OntologySource(name="STATO", description="Ontology for Statistical Methods")
-            new_inv.ontology_source_references.append(stato)
-            design1 = OntologyAnnotation(term_source=obi)
-            design1.term = "intervention design"
-            design1.term_accession = "http://purl.obolibrary.org/obo/OBI_0000115"
-            new_inv.studies[0].design_descriptors.append(design1)
-            design2 = OntologyAnnotation(term_source=stato)
-            design2.term = "full factorial design"
-            design2.term_accession = "http://purl.obolibrary.org/obo/STATO_0000270"
-            new_inv.studies[0].design_descriptors.append(design2)
-
-            intervention_list, new_inv = get_list_of_interventions(new_inv)
-
+        try:
+            new_inv = use_default_inv()
+            repeats = single_or_repeated_treatment()
+            free_or_restricted_design = free_or_restricted_randomization()
             assay_plan = []
-            for intervention_type in intervention_list.keys():
-                # print("type of intervention: ", intervention_type)
-                for factor in intervention_list[intervention_type].keys():
-                    # print("factor :", factor)
-                    set_factor_values(factor, intervention_list[intervention_type])
-                    # print("associated factor values:", intervention_list[intervention_type][factor])
-
-            # study_factor_combo = compute_study_groups(my_factors)
-            study_group_dictionaries = compute_study_groups(intervention_list[intervention_type])
-            # print("study groups:", study_group_dictionaries)
-            new_inv, sampling_plan = set_study_arms(study_group_dictionaries, new_inv, repeats)
-            # print("is this correct?" , new_inv.studies[0].materials["sources"][0].name)
-
-            new_inv, assay_plan = define_assay_plan(new_inv, sampling_plan)
-
-            print("number of assay plans in Main: ", len(assay_plan))
-
-            for l in range(len(assay_plan)):
-                assay_plan[l] = set_assay_type_topology_modifiers(assay_plan[l]["sample_type"],
-                                                                  assay_plan[l]["sample_number"],
-                                                                  assay_plan[l]["assay_type"])
-
-                # applies_to_all_plan_of_that_assay_type = input("Apply this parameter selection to all plans using this assay type? [1]Yes/2[No]")
-
-                # if applies_to_all_plan_of_that_assay_type == 1:
-
-
-                print(assay_plan[l])
-
-                # assay_definitions.append(set_assay_type_topology_modifiers(assay_plan[l]["sample_type"],
-                #                                                             assay_plan[l]["assay_type"]))
-                # print("assay plan: ", assay_plan[l]["sample_type"], "|", assay_plan[l]["assay_type"])
-
-            # for m in range(len(assay_plan[l]["assay_types"])):
-
-            print("number of assay full definitions", len(assay_plan))
-            # print(assay_definitions[0]["sample type"])
-
-            for item in range(len(assay_plan)):
-                # print("assay definitions are: ", assay_definitions[item])
-                print("dealing with the first assay plan, for the specimen of sample type :", assay_plan[item]["sample type"], "for collection event:", assay_plan[item]["collection event"])
-                # print("sample type:", assay_definitions[item]["sample type"],
-                #       "| assay type: ", assay_definitions[item]["assay type"],
-                #       "| assay params: ", assay_definitions[item]["params"])
-
-                if assay_plan[item]["assay type"] == 1:
-                    # TODO: implement get_or_create method and refactor
-                    ngs = [a for a in new_inv.studies[0].assays if a.measurement_type.term == "transcription profiling" and a.technology_type.term == "nucleic acid sequencing" and a.filename == "a_tp_ngs.txt"]
-                    if len(ngs) > 0:
-                        print("yes, exists in 1", ngs)
-                        # if such an assay table already exists, we retrieve it
-                        this_assay = ngs[0]
-                    else:
-                        # or print('nothing found, creating a new object)...')
-                        this_assay = Assay(measurement_type=OntologyAnnotation(term="transcription profiling"),
-                                           technology_type=OntologyAnnotation(term="nucleic acid sequencing"),
-                                           filename="a_tp_ngs.txt")
-                        # the object is attached to the relevant study
-                        new_inv.studies[0].assays.append(this_assay)
-
-                        extraction_protocol = Protocol(name='RNA extraction',
-                                                       protocol_type=OntologyAnnotation(term="material separation"))
-                        new_inv.studies[0].protocols.append(extraction_protocol)
-
-                        labeling_protocol = Protocol(name="nucleic acid library preparation",
-                                                     protocol_type=OntologyAnnotation(term="material labeling"))
-                        new_inv.studies[0].protocols.append(labeling_protocol)
-
-                        sequencing_protocol = Protocol(name='nucleic acid sequencing',
-                                                       protocol_type=OntologyAnnotation(term="data collection"))
-                        new_inv.studies[0].protocols.append(sequencing_protocol)
-
-                    i = 0
-                    j = 0
-                    k = 0
-                    # for i, sample in enumerate(new_inv.studies[0].materials['samples']):
-                    samplelist=[sample for sample in new_inv.studies[0].materials['samples'] if
-                     sample.characteristics[0].value.term == assay_plan[item]["sample type"] and sample.characteristics[1].value.term == assay_plan[item]["collection event"]]
-                    # print("number of samples: ", len(samplelist))
-                    extractlist_before = [ext for ext in new_inv.studies[0].assays[0].materials['other_material'] if ext.type == "Extract Name"]
-                    # print("number of extracts", len(extractlist_before))
-
-                    for i, sample in enumerate([sample for sample in new_inv.studies[0].materials['samples'] if
-                                                sample.characteristics[0].value.term == assay_plan[item][
-                                                        "sample type"]]):
-                        # print("i: ", i, "sample: ", sample.characteristics[1].value.term)
-                        # print("current collection event", assay_plan[item]["collection event"])
-                        if str(sample.characteristics[1].value.term) == str(assay_plan[item]["collection event"]):
-                            # create an extraction process that executes the extraction protocol
-                            extraction_process = Process(executes_protocol=[prtcl for prtcl in new_inv.studies[0].protocols
-                                                                            if prtcl.name == "RNA extraction"][0],
-                                                         performer="amy",
-                                                         date_=datetime.datetime.now())
-
-                            # extraction process takes as input a sample, and produces an extract material as output
-                            # we make sure only the right kind of samples get assayed so we check against the sample type
-                            # if sample.characteristics[0].value.term == assay_plan[item]["sample type"]:
-                            # print("sample characteristics: ", sample.characteristics[0].value.term)
-
-                            extraction_process.inputs.append(sample)
-                            extract = Material(name=sample.name+"extract-{}".format(i))
-                            extract.type = "Extract Name"
-                            extraction_process.outputs.append(extract)
-
-                            # TODO: support multiplex identifiers in a future release
-                            labeling_process = Process(
-                                executes_protocol=[prtcl for prtcl in new_inv.studies[0].protocols
-                                                   if prtcl.name == "nucleic acid library preparation"][0],
-                                performer="xua",
-                                date_=datetime.datetime.now()
-                                )
-                            # extraction process takes as input a sample, and produces an extract material as output
-                            labeling_process.inputs.append(extract)
-                            le = Material(name= extract.name +"labeled-extract-{}".format(i))
-                            le.type = "Labeled Extract Name"
-                            dye = Characteristic(category=OntologyAnnotation(term="label"),
-                                                 value=OntologyAnnotation(term="none"))
-                            le.characteristics.append(dye)
-                            labeling_process.outputs.append(le)
-
-                            # this loop is meant to handle the case where several libraries are produced from a sample
-                            # TODO: include a function to obtain the relevant parameters used for library creation
-                            for j in range(int(assay_plan[item]["params"]["distinct libraries"])):
-                                # this inner is for handling multiple runs of the same library, ie tech replicates
-                                for k in range(
-                                        int(assay_plan[item]["params"]["number of technical replicates"])):
-                                    prtcl_name = [prtcl for prtcl in new_inv.studies[0].protocols
-                                                  if prtcl.name == "nucleic acid sequencing"][0]
-
-                                    data_acq_process = Process(executes_protocol=prtcl_name,
-                                                               performer="louis",
-                                                               date_=datetime.datetime.now())
-
-                                    library_name = "library-{}".format(j)
-                                    data_acq_process.name = "assay-name-{}".format(i) + "_" + library_name + \
-                                                            "_run-{}".format(k)
-                                    data_acq_process.inputs.append(labeling_process.outputs[0])
-
-                                    # data acquisition process usually has an output data file
-                                    datafile = DataFile(
-                                        filename="sequence-data-{}".format(i) + "_" + library_name +
-                                                 "_run-{}".format(k) + ".fastq.gz",
-                                        label="Raw Data File")
-                                    data_acq_process.outputs.append(datafile)
-
-                                    # ensure Processes are linked forward and backward
-                                    extraction_process.next_process = labeling_process
-                                    labeling_process.prev_process = extraction_process
-                                    labeling_process.next_process = data_acq_process
-                                    data_acq_process.prev_process = labeling_process
-
-                                    # make sure extract(library), data file, and the processes are attached to the assay
-                                    this_assay.data_files.append(datafile)
-                                    this_assay.materials['other_material'].append(extract)
-                                    this_assay.materials['other_material'].append(le)
-                                    this_assay.process_sequence.append(extraction_process)
-                                    this_assay.process_sequence.append(labeling_process)
-                                    this_assay.process_sequence.append(data_acq_process)
-
-                    extractlist_after = [ext for ext in new_inv.studies[0].assays[0].materials['other_material'] if
-                                          ext.type == "Extract Name"]
-                    print("number of extracts", len(extractlist_after))
-
-                elif assay_plan[item]["assay type"] == 2:
-                    # TODO: refactor to rely on a specific function handling assay create (create_assays() method)
-                    tx = [a for a in new_inv.studies[0].assays if a.measurement_type.term == "transcription profiling" and a.technology_type.term == "DNA microarray"]
-                    if len(tx) > 0:
-                        print("yes, exists in 2", tx)
-                        this_assay = tx[0]
-                    else:
-                        this_assay = Assay(measurement_type=OntologyAnnotation(term="transcription profiling"),
-                                           technology_type=OntologyAnnotation(term="DNA microarray"),
-                                           filename="a_tp_microarray.txt")
-                        # attach the assay to the study
-                        new_inv.studies[0].assays.append(this_assay)
-
-                        extraction_protocol = Protocol(name='RNA extraction',
-                                                       protocol_type=OntologyAnnotation(term="material separation"))
-                        new_inv.studies[0].protocols.append(extraction_protocol)
-
-                        labeling_protocol = Protocol(name="nucleic acid labeling",
-                                                     protocol_type=OntologyAnnotation(term="material labeling"))
-                        new_inv.studies[0].protocols.append(labeling_protocol)
-
-                        hyb_protocol = Protocol(name='nucleic acid hybridization',
-                                                protocol_type=OntologyAnnotation(term="nucleic acid hybridization"))
-
-                        new_inv.studies[0].protocols.append(hyb_protocol)
-
-                    i = 0
-                    j = 0
-                    k = 0
-                    # for i, sample in enumerate(new_inv.studies[0].materials['samples']):
-                    for i, sample in enumerate([sample for sample in new_inv.studies[0].materials['samples'] if
-                                               sample.characteristics[0].value.term == assay_plan[item]["sample type"]]):
-
-                        if str(sample.characteristics[1].value.term) == str(assay_plan[item]["collection event"]):
-                            # print("i: ", i, "sample: ", sample.characteristics[0].value.term)
-
-                            # create an extraction process that executes the extraction protocol
-                            # [prtcl for prtcl in inv.studies[0].protocols if prtcl.name == "RNA extraction"][0]
-
-                            extraction_process = Process(executes_protocol=[prtcl for prtcl in new_inv.studies[0].protocols
-                                                                            if prtcl.name == "RNA extraction"][0],
-                                                         performer="amy",
-                                                         date_=datetime.datetime.now())
-
-                            # extraction process takes as input a sample, and produces an extract material as output
-                            # if sample.characteristics[0].value.term == assay_plan[item]["sample type"]:
-
-                            extraction_process.inputs.append(sample)
-                            extract = Material(name="extract-{}".format(i))
-                            extract.type = "Extract Name"
-                            extraction_process.outputs.append(extract)
-
-                            labeling_process = Process(executes_protocol=[prtcl for prtcl in new_inv.studies[0].protocols
-                                                                          if prtcl.name == "nucleic acid labeling"][0],
-                                                       performer="xua",
-                                                       date_=datetime.datetime.now()
-                                                       )
-
-                            # extraction process takes as input a sample, and produces an extract material as output
-                            labeling_process.inputs.append(extract)
-                            le = Material(name="labeled-extract-{}".format(i))
-                            le.type = "Labeled Extract Name"
-                            dye = Characteristic(category=OntologyAnnotation(term="label"),
-                                                 value=OntologyAnnotation(term="biotin"))
-                            le.characteristics.append(dye)
-                            labeling_process.outputs.append(le)
-
-                            # create a data acquisition process that executes a data acquisition protocol
-                            # print('number of array-design: ',
-                            #       assay_definitions[item][0]["params"]["distinct array designs"])
-                                    #assay_modifier1)
-                            # print('number of technical replicates:',
-                            #       assay_definitions[item][0]["params"]["number of technical replicates"])
-                                  # assay_modifier3)
-
-                            for j in range(int(assay_plan[item]["params"]["distinct array designs"])):
-
-                                for k in range(int(assay_plan[item]["params"]["number of technical replicates"])):
-
-                                    prtcl_name = [prtcl for prtcl in new_inv.studies[0].protocols
-                                                  if prtcl.name == "nucleic acid hybridization"][0]
-
-                                    data_acq_process = Process(executes_protocol=prtcl_name,
-                                                               performer="louis",
-                                                               date_=datetime.datetime.now())
-
-                                    array_design_name = "arraydesign-{}".format(j)
-                                    data_acq_process.array_design_ref = OntologyAnnotation(term=array_design_name)
-                                    # print("with array_design: ", array_design_name)
-                                    array_design_as_pv = ParameterValue(
-                                                                   category=ProtocolParameter(parameter_name=OntologyAnnotation(term="array_design_ref")),
-                                                                   value=OntologyAnnotation(term=array_design_name))
-                                    data_acq_process.parameter_values.append(array_design_as_pv)
-
-                                    # print("data acquisition protocol name:", prtcl_name.name)
-                                    # print("replicate: ", k)
-                                    data_acq_process.name = "assay-name-{}".format(i) + "_" + array_design_name +\
-                                                            "_run-{}".format(k)
-                                    data_acq_process.array_design_ref = array_design_name
-                                    # print(data_acq_process.name)
-                                    data_acq_process.inputs.append(labeling_process.outputs[0])
-
-                                    # process usually has an output data file
-                                    datafile = DataFile(filename="microarray-data-{}".format(i) + "_" + array_design_name +
-                                                                 "_run-{}".format(k),
-                                                        label="Array Data File")
-                                    data_acq_process.outputs.append(datafile)
-
-                                    # ensure Processes are linked forward and backward
-                                    extraction_process.next_process = labeling_process
-                                    labeling_process.prev_process = extraction_process
-                                    labeling_process.next_process = data_acq_process
-                                    data_acq_process.prev_process = labeling_process
-
-                                    # make sure the extract, data file, and the processes are attached to the assay
-                                    this_assay.data_files.append(datafile)
-                                    this_assay.materials['other_material'].append(extract)
-                                    this_assay.materials['other_material'].append(le)
-                                    this_assay.process_sequence.append(extraction_process)
-                                    this_assay.process_sequence.append(labeling_process)
-                                    this_assay.process_sequence.append(data_acq_process)
-
-                elif assay_plan[item]["assay type"] == 3:
-                    # TODO: implement get_or_create method and refactor
-
-                    if len(assay_plan[item]["params"]["injection modes"]) > 0:
-                        inj_mode = ""
-                        acq_mode = ""
-                        for inj_mode_code in range(len(assay_plan[item]["params"]["injection modes"])):
-                            if inj_mode_code == 0:
-                                print("YAY, this is FIA")
-                                inj_mode = "FIA"
-                            elif inj_mode_code == 1:
-                                inj_mode = "LC"
-                            elif inj_mode_code == 2:
-                                inj_mode = "GC"
-                            else:
-                                print("error, injection method not recognized)")
-
-                            for acq_mode_code in range(len(assay_plan[item]["params"]["number of channels"])):
-                              if acq_mode_code == 0:
-                                acq_mode = "positive"
-                              elif acq_mode_code == 1:
-                                acq_mode = "negative"
-                              else:
-                                    print("error, injection method not recognized)")
-
-                              techname = inj_mode + "-" + acq_mode + " mass spectrometry"
-
-                              ms_filename = "a_mp_" + inj_mode + "_" + acq_mode + "_ms.txt"
-
-                              ms = [a for a in new_inv.studies[0].assays if
-                                    a.measurement_type.term == "metabolite profiling"
-                                    and a.technology_type.term == techname and a.filename == ms_filename]
-                              if len(ms) > 0:
-                                  print("yes, exists in :", ms)
-                                  # if such an assay table already exists, we retrieve it
-                                  this_assay = ms[0]
-                              else:
-                                  # or print('nothing found, creating a new object)...')
-                                  this_assay = Assay(measurement_type=OntologyAnnotation(term="metabolite profiling"),
-                                                   technology_type=OntologyAnnotation(term=techname),
-                                                   filename=ms_filename)
-
-                                  new_inv.studies[0].assays.append(this_assay)
-
-                                  extraction_protocol = Protocol(name='metabolite extraction',
-                                                               protocol_type=OntologyAnnotation(term="material separation"))
-                                  new_inv.studies[0].protocols.append(extraction_protocol)
-
-                                # lc_protocol = Protocol(name="liquid chromatography",
-                                #                              protocol_type=OntologyAnnotation(term="material separation"))
-                                # new_inv.studies[0].protocols.append(labeling_protocol)
-
-                                  ms_protocol = Protocol(name=inj_mode + "-" + acq_mode +' mass spectrometry',
-                                                               protocol_type=OntologyAnnotation(term="mass spectrometry"))
-
-                                  randomized_run_order = ProtocolParameter(parameter_name=OntologyAnnotation(term="randomized run order"))
-                                  inj_param = ProtocolParameter(parameter_name=OntologyAnnotation(term="injection mode"))
-
-                                  if inj_mode == 1 or inj_mode == 2:
-                                    ch_instr = ProtocolParameter(parameter_name=OntologyAnnotation(term="chromatography instrument"))
-                                    ch_column = ProtocolParameter(parameter_name=OntologyAnnotation(term="chromatography column"))
-                                    ch_elu_p = ProtocolParameter(parameter_name=OntologyAnnotation(term="elution program"))
-                                    ms_protocol.parameters.append(ch_instr)
-                                    ms_protocol.parameters.append(ch_column)
-                                    ms_protocol.parameters.append(ch_elu_p)
-                                  ms_instr = ProtocolParameter(parameter_name=OntologyAnnotation(term="mass spectrometry instrument"))
-                                  acq_param = ProtocolParameter(parameter_name=OntologyAnnotation(term="scan polarity"))
-
-                                  ms_protocol.parameters.append(randomized_run_order)
-                                  ms_protocol.parameters.append(inj_param)
-                                  ms_protocol.parameters.append(ms_instr)
-                                  ms_protocol.parameters.append(acq_param)
-
-                                  new_inv.studies[0].protocols.append(ms_protocol)
-
-                              index_i = 0
-                              index_j = 0
-                              index_k = 0
-                              randomized_order = []
-                              # for index_i, sample in enumerate(new_inv.studies[0].materials['samples']):
-                              #some_sample_list = [sample for sample in new_inv.studies[0].materials['samples'] if
-                              #                sample.characteristics[0].value.term == assay_plan[item]["sample type"] and
-                              #                sample.characteristics[1].value.term == assay_plan[item]["collection event"]]
-                              #print("number of samples: ", len(some_sample_list))
-                              #extractlist_before = [ext for ext in new_inv.studies[0].assays[0].materials['other_material'] if
-                              #                        ext.type == "Extract Name"]
-                              # print("number of extracts", len(extractlist_before))
-                              expected_total_number_run = len([sample for sample in new_inv.studies[0].materials['samples'] if
-                                                            sample.characteristics[0].value.term == assay_plan[item][
-                                                                "sample type"]]) \
-                                                          * int(
-                                  assay_plan[item]["params"]["number of technical replicates"])
-                                                 # * len(assay_plan[item]["params"]["number of channels"]) \
-
-                              print(len([sample for sample in new_inv.studies[0].materials['samples'] if
-                                                            sample.characteristics[0].value.term == assay_plan[item][
-                                                                "sample type"]]))
-                              print("expected size:", expected_total_number_run)
-
-                              len(assay_plan) *  int(
-                                  assay_plan[item]["params"]["number of technical replicates"])
-
-                              randomized_order = get_processrun_random_token(expected_total_number_run)
-                              counter = -1
-                              for index_i, sample in enumerate([sample for sample in new_inv.studies[0].materials['samples'] if
-                                                            sample.characteristics[0].value.term == assay_plan[item][
-                                                                "sample type"]]):
-                                    # print("i: ", index_i, "sample: ", sample.characteristics[1].value.term)
-                                    # print("current collection event", assay_plan[item]["collection event"])
-                                    if str(sample.characteristics[1].value.term) == str(assay_plan[item]["collection event"]):
-                                        # create an extraction process that executes the extraction protocol
-                                        extraction_process = Process(executes_protocol=[prtcl for prtcl in new_inv.studies[0].protocols
-                                                                                        if prtcl.name == "metabolite extraction"][0],
-                                                                     performer="rick",
-                                                                     date_=datetime.datetime.now())
-
-                                        # extraction process takes as input a sample, and produces an extract material as output
-                                        # we make sure only the right kind of samples get assayed so we check against the sample type
-                                        # if sample.characteristics[0].value.term == assay_plan[item]["sample type"]:
-                                        # print("sample characteristics: ", sample.characteristics[0].value.term)
-
-                                        extraction_process.inputs.append(sample)
-                                        extract = Material(name=sample.name + "extract-{}".format(index_i))
-                                        extract.type = "Extract Name"
-                                        extraction_process.outputs.append(extract)
-
-                                        # this loop is meant to handle the case where several acquisition modes (e.g. Neg or positive) are used from a sample
-                                        # TODO: include a function to obtain the relevant parameters used for data acquisition
-                                        #for index_j in range(int(assay_plan[item]["params"]["injection modes"])):
-                                            # this inner is for handling multiple runs of the same mode, i.e. tech replicates
-                                        for index_k in range(
-                                                int(assay_plan[item]["params"]["number of technical replicates"])):
-                                            prtcl_name = [prtcl for prtcl in new_inv.studies[0].protocols
-                                                          if prtcl.name == inj_mode + "-" + acq_mode + ' mass spectrometry'][0]
-                                            data_acq_process = Process(executes_protocol=prtcl_name,
-                                                                       performer="louis",
-                                                                       date_=datetime.datetime.now())
-                                            counter = counter+1
-                                            # print(counter, randomized_order[counter])
-                                            run_order = randomized_order[counter]
-                                            pv_run_order = ParameterValue(category=ProtocolParameter(
-                                                parameter_name=OntologyAnnotation(term="randomized run order")),
-                                                                  value=OntologyAnnotation(term=str(run_order)))
-
-                                            pv_1 = ParameterValue(category=ProtocolParameter(parameter_name=OntologyAnnotation(term="injection mode")),value=OntologyAnnotation(term=inj_mode))
-
-                                            # if we are dealing with liquid or gas "C"hromatography
-                                            if "C" in inj_mode:
-                                                pv_1a = ParameterValue(category=ProtocolParameter(parameter_name=OntologyAnnotation(term="chromatography instrument")),value=OntologyAnnotation(term="Agilent Q12324A"))
-                                                pv_1b = ParameterValue(category=ProtocolParameter(parameter_name=OntologyAnnotation(term="chromatography column")),value=OntologyAnnotation(term="AB Hydroxyapatite"))
-                                                pv_1c = ParameterValue(category=ProtocolParameter(parameter_name=OntologyAnnotation(term="elution program")),value=OntologyAnnotation(term="Acetonitrile 90%, water 10% for 30 min, flow rate: 1ml/min"))
-
-                                                data_acq_process.parameter_values.append(pv_1a)
-                                                data_acq_process.parameter_values.append(pv_1b)
-                                                data_acq_process.parameter_values.append(pv_1c)
-
-                                            pv_2 = ParameterValue(category=ProtocolParameter(parameter_name=OntologyAnnotation(term="mass spectrometry instrument")),value=OntologyAnnotation(term="Agilent QTOF"))
-                                            pv_3 = ParameterValue(category=ProtocolParameter(parameter_name=OntologyAnnotation(term="scan polarity")),value=OntologyAnnotation(term=acq_mode))
-
-                                            data_acq_process.parameter_values.append(pv_1)
-                                            data_acq_process.parameter_values.append(pv_2)
-                                            data_acq_process.parameter_values.append(pv_3)
-                                            data_acq_process.parameter_values.append(pv_run_order)
-
-
-                                            # platform_name = "platform-{}".format(index_j)
-                                            platform_name = "platform-" + inj_mode
-                                            data_acq_process.name = "assay-name-{}".format(index_i) + "_" + platform_name + \
-                                                                    "_run-{}".format(index_k)
-                                            data_acq_process.inputs.append(extraction_process.outputs[0])
-
-                                            # data acquisition process usually has an output data file
-                                            datafile = DataFile(
-                                                filename="acquired-data-{}".format(index_i) + "_" + platform_name +
-                                                         "_run-{}".format(index_k) + ".mzml.gz",
-                                                label="Raw Spectral Data File")
-                                            data_acq_process.outputs.append(datafile)
-
-                                            # ensure Processes are linked forward and backward
-                                            extraction_process.next_process = data_acq_process
-                                            # labeling_process.prev_process = extraction_process
-                                            extraction_process.next_process = data_acq_process
-                                            # data_acq_process.prev_process = labeling_process
-                                            data_acq_process.prev_process = extraction_process
-
-                                            # make sure extract(library), data file, and the processes are attached to the assay
-                                            this_assay.data_files.append(datafile)
-                                            this_assay.materials['other_material'].append(extract)
-                                            # this_assay.materials['other_material'].append(le)
-                                            this_assay.process_sequence.append(extraction_process)
-                                            # this_assay.process_sequence.append(labeling_process)
-                                            this_assay.process_sequence.append(data_acq_process)
-                # for NMR:
-                elif assay_plan[item]["assay type"] == 4:
-                    #TODO: implement get_or_create method and refactor
-
-                    if len(assay_plan[item]["params"]["injection modes"]) > 0:
-                        inj_mode = ""
-                        acq_mode = ""
-                        for inj_mode_code in range(
-                                len(assay_plan[item]["params"]["injection modes"])):
-                            if inj_mode_code == 0:
-                                print("YAY, this is autoloader")
-                                inj_mode = "autoloader"
-                            elif inj_mode_code == 1:
-                                inj_mode = "LC"
-                            elif inj_mode_code == 2:
-                                inj_mode = "GC"
-                            else:
-                                print("error, injection method not recognized)")
-
-                            for acq_mode_code in range(
-                                    len(assay_plan[item]["params"]["pulse sequences"])):
-                                print("CODE:", assay_plan[item]["params"]["pulse sequences"])
-                                if assay_plan[item]["params"]["pulse sequences"][acq_mode_code] == "1":
-                                    acq_mode = "COSY"
-                                elif assay_plan[item]["params"]["pulse sequences"][acq_mode_code] == "2":
-                                    acq_mode = "NOESY"
-                                elif assay_plan[item]["params"]["pulse sequences"][acq_mode_code] == "3":
-                                    acq_mode = "TOSCY"
-                                elif assay_plan[item]["params"]["pulse sequences"][acq_mode_code] == "3":
-                                    acq_mode = "CPMG"
-                                elif assay_plan[item]["params"]["pulse sequences"][acq_mode_code] == "4":
-                                    acq_mode = "INEPT"
-                                elif assay_plan[item]["params"]["pulse sequences"][acq_mode_code] == "5":
-                                    acq_mode = "HMQC"
-                                elif assay_plan[item]["params"]["pulse sequences"][acq_mode_code] == "6":
-                                    acq_mode = "WATERGATE"
+
+            if repeats is False and "factorial" in free_or_restricted_design:
+
+                obi = OntologySource(name="OBI", description="Ontology for Biomedical Investigations")
+                new_inv.ontology_source_references.append(obi)
+                stato = OntologySource(name="STATO", description="Ontology for Statistical Methods")
+                new_inv.ontology_source_references.append(stato)
+                design1 = OntologyAnnotation(term_source=obi)
+                design1.term = "intervention design"
+                design1.term_accession = "http://purl.obolibrary.org/obo/OBI_0000115"
+                new_inv.studies[0].design_descriptors.append(design1)
+                design2 = OntologyAnnotation(term_source=stato)
+                design2.term = "full factorial design"
+                design2.term_accession = "http://purl.obolibrary.org/obo/STATO_0000270"
+                new_inv.studies[0].design_descriptors.append(design2)
+
+                intervention_list, new_inv = get_list_of_interventions(new_inv)
+
+                assay_plan = []
+                for intervention_type in intervention_list.keys():
+                    # print("type of intervention: ", intervention_type)
+                    for factor in intervention_list[intervention_type].keys():
+                        # print("factor :", factor)
+                        set_factor_values(factor, intervention_list[intervention_type])
+                        # print("associated factor values:", intervention_list[intervention_type][factor])
+
+                # study_factor_combo = compute_study_groups(my_factors)
+                study_group_dictionaries = compute_study_groups(intervention_list[intervention_type])
+                # print("study groups:", study_group_dictionaries)
+                new_inv, sampling_plan = set_study_arms(study_group_dictionaries, new_inv, repeats)
+                # print("is this correct?" , new_inv.studies[0].materials["sources"][0].name)
+
+                new_inv, assay_plan = define_assay_plan(new_inv, sampling_plan)
+
+                print("number of assay plans in Main: ", len(assay_plan))
+
+                for l in range(len(assay_plan)):
+                    assay_plan[l] = set_assay_type_topology_modifiers(assay_plan[l]["sample_type"],
+                                                                      assay_plan[l]["sample_number"],
+                                                                      assay_plan[l]["assay_type"])
+
+                    # applies_to_all_plan_of_that_assay_type = input("Apply this parameter selection to all plans using this assay type? [1]Yes/2[No]")
+
+                    # if applies_to_all_plan_of_that_assay_type == 1:
+
+
+                    print(assay_plan[l])
+
+                    # assay_definitions.append(set_assay_type_topology_modifiers(assay_plan[l]["sample_type"],
+                    #                                                             assay_plan[l]["assay_type"]))
+                    # print("assay plan: ", assay_plan[l]["sample_type"], "|", assay_plan[l]["assay_type"])
+
+                # for m in range(len(assay_plan[l]["assay_types"])):
+
+                print("number of assay full definitions", len(assay_plan))
+                # print(assay_definitions[0]["sample type"])
+
+                for item in range(len(assay_plan)):
+                    # print("assay definitions are: ", assay_definitions[item])
+                    print("dealing with the first assay plan, for the specimen of sample type :", assay_plan[item]["sample type"], "for collection event:", assay_plan[item]["collection event"])
+                    # print("sample type:", assay_definitions[item]["sample type"],
+                    #       "| assay type: ", assay_definitions[item]["assay type"],
+                    #       "| assay params: ", assay_definitions[item]["params"])
+
+                    if assay_plan[item]["assay type"] == 1:
+                        # TODO: implement get_or_create method and refactor
+                        ngs = [a for a in new_inv.studies[0].assays if a.measurement_type.term == "transcription profiling" and a.technology_type.term == "nucleic acid sequencing" and a.filename == "a_tp_ngs.txt"]
+                        if len(ngs) > 0:
+                            print("yes, exists in 1", ngs)
+                            # if such an assay table already exists, we retrieve it
+                            this_assay = ngs[0]
+                        else:
+                            # or print('nothing found, creating a new object)...')
+                            this_assay = Assay(measurement_type=OntologyAnnotation(term="transcription profiling"),
+                                               technology_type=OntologyAnnotation(term="nucleic acid sequencing"),
+                                               filename="a_tp_ngs.txt")
+                            # the object is attached to the relevant study
+                            new_inv.studies[0].assays.append(this_assay)
+
+                            extraction_protocol = Protocol(name='RNA extraction',
+                                                           protocol_type=OntologyAnnotation(term="material separation"))
+                            new_inv.studies[0].protocols.append(extraction_protocol)
+
+                            labeling_protocol = Protocol(name="nucleic acid library preparation",
+                                                         protocol_type=OntologyAnnotation(term="material labeling"))
+                            new_inv.studies[0].protocols.append(labeling_protocol)
+
+                            sequencing_protocol = Protocol(name='nucleic acid sequencing',
+                                                           protocol_type=OntologyAnnotation(term="data collection"))
+                            new_inv.studies[0].protocols.append(sequencing_protocol)
+
+                        i = 0
+                        j = 0
+                        k = 0
+                        # for i, sample in enumerate(new_inv.studies[0].materials['samples']):
+                        samplelist=[sample for sample in new_inv.studies[0].materials['samples'] if
+                         sample.characteristics[0].value.term == assay_plan[item]["sample type"] and sample.characteristics[1].value.term == assay_plan[item]["collection event"]]
+                        # print("number of samples: ", len(samplelist))
+                        extractlist_before = [ext for ext in new_inv.studies[0].assays[0].materials['other_material'] if ext.type == "Extract Name"]
+                        # print("number of extracts", len(extractlist_before))
+
+                        for i, sample in enumerate([sample for sample in new_inv.studies[0].materials['samples'] if
+                                                    sample.characteristics[0].value.term == assay_plan[item][
+                                                            "sample type"]]):
+                            # print("i: ", i, "sample: ", sample.characteristics[1].value.term)
+                            # print("current collection event", assay_plan[item]["collection event"])
+                            if str(sample.characteristics[1].value.term) == str(assay_plan[item]["collection event"]):
+                                # create an extraction process that executes the extraction protocol
+                                extraction_process = Process(executes_protocol=[prtcl for prtcl in new_inv.studies[0].protocols
+                                                                                if prtcl.name == "RNA extraction"][0],
+                                                             performer="amy",
+                                                             date_=datetime.datetime.now())
+
+                                # extraction process takes as input a sample, and produces an extract material as output
+                                # we make sure only the right kind of samples get assayed so we check against the sample type
+                                # if sample.characteristics[0].value.term == assay_plan[item]["sample type"]:
+                                # print("sample characteristics: ", sample.characteristics[0].value.term)
+
+                                extraction_process.inputs.append(sample)
+                                extract = Material(name=sample.name+"extract-{}".format(i))
+                                extract.type = "Extract Name"
+                                extraction_process.outputs.append(extract)
+
+                                # TODO: support multiplex identifiers in a future release
+                                labeling_process = Process(
+                                    executes_protocol=[prtcl for prtcl in new_inv.studies[0].protocols
+                                                       if prtcl.name == "nucleic acid library preparation"][0],
+                                    performer="xua",
+                                    date_=datetime.datetime.now()
+                                    )
+                                # extraction process takes as input a sample, and produces an extract material as output
+                                labeling_process.inputs.append(extract)
+                                le = Material(name= extract.name +"labeled-extract-{}".format(i))
+                                le.type = "Labeled Extract Name"
+                                dye = Characteristic(category=OntologyAnnotation(term="label"),
+                                                     value=OntologyAnnotation(term="none"))
+                                le.characteristics.append(dye)
+                                labeling_process.outputs.append(le)
+
+                                # this loop is meant to handle the case where several libraries are produced from a sample
+                                # TODO: include a function to obtain the relevant parameters used for library creation
+                                for j in range(int(assay_plan[item]["params"]["distinct libraries"])):
+                                    # this inner is for handling multiple runs of the same library, ie tech replicates
+                                    for k in range(
+                                            int(assay_plan[item]["params"]["number of technical replicates"])):
+                                        prtcl_name = [prtcl for prtcl in new_inv.studies[0].protocols
+                                                      if prtcl.name == "nucleic acid sequencing"][0]
+
+                                        data_acq_process = Process(executes_protocol=prtcl_name,
+                                                                   performer="louis",
+                                                                   date_=datetime.datetime.now())
+
+                                        library_name = "library-{}".format(j)
+                                        data_acq_process.name = "assay-name-{}".format(i) + "_" + library_name + \
+                                                                "_run-{}".format(k)
+                                        data_acq_process.inputs.append(labeling_process.outputs[0])
+
+                                        # data acquisition process usually has an output data file
+                                        datafile = DataFile(
+                                            filename="sequence-data-{}".format(i) + "_" + library_name +
+                                                     "_run-{}".format(k) + ".fastq.gz",
+                                            label="Raw Data File")
+                                        data_acq_process.outputs.append(datafile)
+
+                                        # ensure Processes are linked forward and backward
+                                        extraction_process.next_process = labeling_process
+                                        labeling_process.prev_process = extraction_process
+                                        labeling_process.next_process = data_acq_process
+                                        data_acq_process.prev_process = labeling_process
+
+                                        # make sure extract(library), data file, and the processes are attached to the assay
+                                        this_assay.data_files.append(datafile)
+                                        this_assay.materials['other_material'].append(extract)
+                                        this_assay.materials['other_material'].append(le)
+                                        this_assay.process_sequence.append(extraction_process)
+                                        this_assay.process_sequence.append(labeling_process)
+                                        this_assay.process_sequence.append(data_acq_process)
+
+                        extractlist_after = [ext for ext in new_inv.studies[0].assays[0].materials['other_material'] if
+                                              ext.type == "Extract Name"]
+                        print("number of extracts", len(extractlist_after))
+
+                    elif assay_plan[item]["assay type"] == 2:
+                        # TODO: refactor to rely on a specific function handling assay create (create_assays() method)
+                        tx = [a for a in new_inv.studies[0].assays if a.measurement_type.term == "transcription profiling" and a.technology_type.term == "DNA microarray"]
+                        if len(tx) > 0:
+                            print("yes, exists in 2", tx)
+                            this_assay = tx[0]
+                        else:
+                            this_assay = Assay(measurement_type=OntologyAnnotation(term="transcription profiling"),
+                                               technology_type=OntologyAnnotation(term="DNA microarray"),
+                                               filename="a_tp_microarray.txt")
+                            # attach the assay to the study
+                            new_inv.studies[0].assays.append(this_assay)
+
+                            extraction_protocol = Protocol(name='RNA extraction',
+                                                           protocol_type=OntologyAnnotation(term="material separation"))
+                            new_inv.studies[0].protocols.append(extraction_protocol)
+
+                            labeling_protocol = Protocol(name="nucleic acid labeling",
+                                                         protocol_type=OntologyAnnotation(term="material labeling"))
+                            new_inv.studies[0].protocols.append(labeling_protocol)
+
+                            hyb_protocol = Protocol(name='nucleic acid hybridization',
+                                                    protocol_type=OntologyAnnotation(term="nucleic acid hybridization"))
+
+                            new_inv.studies[0].protocols.append(hyb_protocol)
+
+                        i = 0
+                        j = 0
+                        k = 0
+                        # for i, sample in enumerate(new_inv.studies[0].materials['samples']):
+                        for i, sample in enumerate([sample for sample in new_inv.studies[0].materials['samples'] if
+                                                   sample.characteristics[0].value.term == assay_plan[item]["sample type"]]):
+
+                            if str(sample.characteristics[1].value.term) == str(assay_plan[item]["collection event"]):
+                                # print("i: ", i, "sample: ", sample.characteristics[0].value.term)
+
+                                # create an extraction process that executes the extraction protocol
+                                # [prtcl for prtcl in inv.studies[0].protocols if prtcl.name == "RNA extraction"][0]
+
+                                extraction_process = Process(executes_protocol=[prtcl for prtcl in new_inv.studies[0].protocols
+                                                                                if prtcl.name == "RNA extraction"][0],
+                                                             performer="amy",
+                                                             date_=datetime.datetime.now())
+
+                                # extraction process takes as input a sample, and produces an extract material as output
+                                # if sample.characteristics[0].value.term == assay_plan[item]["sample type"]:
+
+                                extraction_process.inputs.append(sample)
+                                extract = Material(name="extract-{}".format(i))
+                                extract.type = "Extract Name"
+                                extraction_process.outputs.append(extract)
+
+                                labeling_process = Process(executes_protocol=[prtcl for prtcl in new_inv.studies[0].protocols
+                                                                              if prtcl.name == "nucleic acid labeling"][0],
+                                                           performer="xua",
+                                                           date_=datetime.datetime.now()
+                                                           )
+
+                                # extraction process takes as input a sample, and produces an extract material as output
+                                labeling_process.inputs.append(extract)
+                                le = Material(name="labeled-extract-{}".format(i))
+                                le.type = "Labeled Extract Name"
+                                dye = Characteristic(category=OntologyAnnotation(term="label"),
+                                                     value=OntologyAnnotation(term="biotin"))
+                                le.characteristics.append(dye)
+                                labeling_process.outputs.append(le)
+
+                                # create a data acquisition process that executes a data acquisition protocol
+                                # print('number of array-design: ',
+                                #       assay_definitions[item][0]["params"]["distinct array designs"])
+                                        #assay_modifier1)
+                                # print('number of technical replicates:',
+                                #       assay_definitions[item][0]["params"]["number of technical replicates"])
+                                      # assay_modifier3)
+
+                                for j in range(int(assay_plan[item]["params"]["distinct array designs"])):
+
+                                    for k in range(int(assay_plan[item]["params"]["number of technical replicates"])):
+
+                                        prtcl_name = [prtcl for prtcl in new_inv.studies[0].protocols
+                                                      if prtcl.name == "nucleic acid hybridization"][0]
+
+                                        data_acq_process = Process(executes_protocol=prtcl_name,
+                                                                   performer="louis",
+                                                                   date_=datetime.datetime.now())
+
+                                        array_design_name = "arraydesign-{}".format(j)
+                                        data_acq_process.array_design_ref = OntologyAnnotation(term=array_design_name)
+                                        # print("with array_design: ", array_design_name)
+                                        array_design_as_pv = ParameterValue(
+                                                                       category=ProtocolParameter(parameter_name=OntologyAnnotation(term="array_design_ref")),
+                                                                       value=OntologyAnnotation(term=array_design_name))
+                                        data_acq_process.parameter_values.append(array_design_as_pv)
+
+                                        # print("data acquisition protocol name:", prtcl_name.name)
+                                        # print("replicate: ", k)
+                                        data_acq_process.name = "assay-name-{}".format(i) + "_" + array_design_name +\
+                                                                "_run-{}".format(k)
+                                        data_acq_process.array_design_ref = array_design_name
+                                        # print(data_acq_process.name)
+                                        data_acq_process.inputs.append(labeling_process.outputs[0])
+
+                                        # process usually has an output data file
+                                        datafile = DataFile(filename="microarray-data-{}".format(i) + "_" + array_design_name +
+                                                                     "_run-{}".format(k),
+                                                            label="Array Data File")
+                                        data_acq_process.outputs.append(datafile)
+
+                                        # ensure Processes are linked forward and backward
+                                        extraction_process.next_process = labeling_process
+                                        labeling_process.prev_process = extraction_process
+                                        labeling_process.next_process = data_acq_process
+                                        data_acq_process.prev_process = labeling_process
+
+                                        # make sure the extract, data file, and the processes are attached to the assay
+                                        this_assay.data_files.append(datafile)
+                                        this_assay.materials['other_material'].append(extract)
+                                        this_assay.materials['other_material'].append(le)
+                                        this_assay.process_sequence.append(extraction_process)
+                                        this_assay.process_sequence.append(labeling_process)
+                                        this_assay.process_sequence.append(data_acq_process)
+
+                    elif assay_plan[item]["assay type"] == 3:
+                        # TODO: implement get_or_create method and refactor
+
+                        if len(assay_plan[item]["params"]["injection modes"]) > 0:
+                            inj_mode = ""
+                            acq_mode = ""
+                            for inj_mode_code in range(len(assay_plan[item]["params"]["injection modes"])):
+                                if inj_mode_code == 0:
+                                    print("YAY, this is FIA")
+                                    inj_mode = "FIA"
+                                elif inj_mode_code == 1:
+                                    inj_mode = "LC"
+                                elif inj_mode_code == 2:
+                                    inj_mode = "GC"
                                 else:
                                     print("error, injection method not recognized)")
 
-                                techname = inj_mode + "-" + acq_mode + " nmr spectroscopy"
+                                for acq_mode_code in range(len(assay_plan[item]["params"]["number of channels"])):
+                                  if acq_mode_code == 0:
+                                    acq_mode = "positive"
+                                  elif acq_mode_code == 1:
+                                    acq_mode = "negative"
+                                  else:
+                                        print("error, injection method not recognized)")
 
-                                nmr_filename = "a_mp_" + inj_mode + "_" + acq_mode + "_nmr.txt"
+                                  techname = inj_mode + "-" + acq_mode + " mass spectrometry"
 
-                                nmr = [a for a in new_inv.studies[0].assays if
-                                      a.measurement_type.term == "metabolite profiling"
-                                      and a.technology_type.term == techname and a.filename == nmr_filename]
-                                if len(nmr) > 0:
-                                    print("yes, exists in :", nmr)
-                                    # if such an assay table already exists, we retrieve it
-                                    this_assay = nmr[0]
-                                else:
-                                    # or print('nothing found, creating a new object)...')
-                                    this_assay = Assay(measurement_type=OntologyAnnotation(
-                                        term="metabolite profiling"),
-                                                       technology_type=OntologyAnnotation(
-                                                           term=techname),
-                                                       filename=nmr_filename)
+                                  ms_filename = "a_mp_" + inj_mode + "_" + acq_mode + "_ms.txt"
 
-                                    new_inv.studies[0].assays.append(this_assay)
+                                  ms = [a for a in new_inv.studies[0].assays if
+                                        a.measurement_type.term == "metabolite profiling"
+                                        and a.technology_type.term == techname and a.filename == ms_filename]
+                                  if len(ms) > 0:
+                                      print("yes, exists in :", ms)
+                                      # if such an assay table already exists, we retrieve it
+                                      this_assay = ms[0]
+                                  else:
+                                      # or print('nothing found, creating a new object)...')
+                                      this_assay = Assay(measurement_type=OntologyAnnotation(term="metabolite profiling"),
+                                                       technology_type=OntologyAnnotation(term=techname),
+                                                       filename=ms_filename)
 
-                                    extraction_protocol = Protocol(name='metabolite extraction',
-                                                                   protocol_type=OntologyAnnotation(
-                                                                       term="material separation"))
-                                    new_inv.studies[0].protocols.append(extraction_protocol)
+                                      new_inv.studies[0].assays.append(this_assay)
+
+                                      extraction_protocol = Protocol(name='metabolite extraction',
+                                                                   protocol_type=OntologyAnnotation(term="material separation"))
+                                      new_inv.studies[0].protocols.append(extraction_protocol)
 
                                     # lc_protocol = Protocol(name="liquid chromatography",
                                     #                              protocol_type=OntologyAnnotation(term="material separation"))
                                     # new_inv.studies[0].protocols.append(labeling_protocol)
 
-                                    nmr_protocol = Protocol(
-                                        name=inj_mode + "-" + acq_mode + ' nmr spectroscopy',
-                                        protocol_type=OntologyAnnotation(
-                                            term="nmr spectroscopy"))
-                                    inj_param = ProtocolParameter(
-                                        parameter_name=OntologyAnnotation(
-                                            term="injection mode"))
-                                    if inj_mode == 1 or inj_mode == 2:
-                                        ch_instr = ProtocolParameter(
+                                      ms_protocol = Protocol(name=inj_mode + "-" + acq_mode +' mass spectrometry',
+                                                                   protocol_type=OntologyAnnotation(term="mass spectrometry"))
+
+                                      randomized_run_order = ProtocolParameter(parameter_name=OntologyAnnotation(term="randomized run order"))
+                                      inj_param = ProtocolParameter(parameter_name=OntologyAnnotation(term="injection mode"))
+
+                                      if inj_mode == 1 or inj_mode == 2:
+                                        ch_instr = ProtocolParameter(parameter_name=OntologyAnnotation(term="chromatography instrument"))
+                                        ch_column = ProtocolParameter(parameter_name=OntologyAnnotation(term="chromatography column"))
+                                        ch_elu_p = ProtocolParameter(parameter_name=OntologyAnnotation(term="elution program"))
+                                        ms_protocol.parameters.append(ch_instr)
+                                        ms_protocol.parameters.append(ch_column)
+                                        ms_protocol.parameters.append(ch_elu_p)
+                                      ms_instr = ProtocolParameter(parameter_name=OntologyAnnotation(term="mass spectrometry instrument"))
+                                      acq_param = ProtocolParameter(parameter_name=OntologyAnnotation(term="scan polarity"))
+
+                                      ms_protocol.parameters.append(randomized_run_order)
+                                      ms_protocol.parameters.append(inj_param)
+                                      ms_protocol.parameters.append(ms_instr)
+                                      ms_protocol.parameters.append(acq_param)
+
+                                      new_inv.studies[0].protocols.append(ms_protocol)
+
+                                  index_i = 0
+                                  index_j = 0
+                                  index_k = 0
+                                  randomized_order = []
+                                  # for index_i, sample in enumerate(new_inv.studies[0].materials['samples']):
+                                  #some_sample_list = [sample for sample in new_inv.studies[0].materials['samples'] if
+                                  #                sample.characteristics[0].value.term == assay_plan[item]["sample type"] and
+                                  #                sample.characteristics[1].value.term == assay_plan[item]["collection event"]]
+                                  #print("number of samples: ", len(some_sample_list))
+                                  #extractlist_before = [ext for ext in new_inv.studies[0].assays[0].materials['other_material'] if
+                                  #                        ext.type == "Extract Name"]
+                                  # print("number of extracts", len(extractlist_before))
+                                  expected_total_number_run = len([sample for sample in new_inv.studies[0].materials['samples'] if
+                                                                sample.characteristics[0].value.term == assay_plan[item][
+                                                                    "sample type"]]) \
+                                                              * int(
+                                      assay_plan[item]["params"]["number of technical replicates"])
+                                                     # * len(assay_plan[item]["params"]["number of channels"]) \
+
+                                  print(len([sample for sample in new_inv.studies[0].materials['samples'] if
+                                                                sample.characteristics[0].value.term == assay_plan[item][
+                                                                    "sample type"]]))
+                                  print("expected size:", expected_total_number_run)
+
+                                  len(assay_plan) *  int(
+                                      assay_plan[item]["params"]["number of technical replicates"])
+
+                                  randomized_order = get_processrun_random_token(expected_total_number_run)
+                                  counter = -1
+                                  for index_i, sample in enumerate([sample for sample in new_inv.studies[0].materials['samples'] if
+                                                                sample.characteristics[0].value.term == assay_plan[item][
+                                                                    "sample type"]]):
+                                        # print("i: ", index_i, "sample: ", sample.characteristics[1].value.term)
+                                        # print("current collection event", assay_plan[item]["collection event"])
+                                        if str(sample.characteristics[1].value.term) == str(assay_plan[item]["collection event"]):
+                                            # create an extraction process that executes the extraction protocol
+                                            extraction_process = Process(executes_protocol=[prtcl for prtcl in new_inv.studies[0].protocols
+                                                                                            if prtcl.name == "metabolite extraction"][0],
+                                                                         performer="rick",
+                                                                         date_=datetime.datetime.now())
+
+                                            # extraction process takes as input a sample, and produces an extract material as output
+                                            # we make sure only the right kind of samples get assayed so we check against the sample type
+                                            # if sample.characteristics[0].value.term == assay_plan[item]["sample type"]:
+                                            # print("sample characteristics: ", sample.characteristics[0].value.term)
+
+                                            extraction_process.inputs.append(sample)
+                                            extract = Material(name=sample.name + "extract-{}".format(index_i))
+                                            extract.type = "Extract Name"
+                                            extraction_process.outputs.append(extract)
+
+                                            # this loop is meant to handle the case where several acquisition modes (e.g. Neg or positive) are used from a sample
+                                            # TODO: include a function to obtain the relevant parameters used for data acquisition
+                                            #for index_j in range(int(assay_plan[item]["params"]["injection modes"])):
+                                                # this inner is for handling multiple runs of the same mode, i.e. tech replicates
+                                            for index_k in range(
+                                                    int(assay_plan[item]["params"]["number of technical replicates"])):
+                                                prtcl_name = [prtcl for prtcl in new_inv.studies[0].protocols
+                                                              if prtcl.name == inj_mode + "-" + acq_mode + ' mass spectrometry'][0]
+                                                data_acq_process = Process(executes_protocol=prtcl_name,
+                                                                           performer="louis",
+                                                                           date_=datetime.datetime.now())
+                                                counter = counter+1
+                                                # print(counter, randomized_order[counter])
+                                                run_order = randomized_order[counter]
+                                                pv_run_order = ParameterValue(category=ProtocolParameter(
+                                                    parameter_name=OntologyAnnotation(term="randomized run order")),
+                                                                      value=OntologyAnnotation(term=str(run_order)))
+
+                                                pv_1 = ParameterValue(category=ProtocolParameter(parameter_name=OntologyAnnotation(term="injection mode")),value=OntologyAnnotation(term=inj_mode))
+
+                                                # if we are dealing with liquid or gas "C"hromatography
+                                                if "C" in inj_mode:
+                                                    pv_1a = ParameterValue(category=ProtocolParameter(parameter_name=OntologyAnnotation(term="chromatography instrument")),value=OntologyAnnotation(term="Agilent Q12324A"))
+                                                    pv_1b = ParameterValue(category=ProtocolParameter(parameter_name=OntologyAnnotation(term="chromatography column")),value=OntologyAnnotation(term="AB Hydroxyapatite"))
+                                                    pv_1c = ParameterValue(category=ProtocolParameter(parameter_name=OntologyAnnotation(term="elution program")),value=OntologyAnnotation(term="Acetonitrile 90%, water 10% for 30 min, flow rate: 1ml/min"))
+
+                                                    data_acq_process.parameter_values.append(pv_1a)
+                                                    data_acq_process.parameter_values.append(pv_1b)
+                                                    data_acq_process.parameter_values.append(pv_1c)
+
+                                                pv_2 = ParameterValue(category=ProtocolParameter(parameter_name=OntologyAnnotation(term="mass spectrometry instrument")),value=OntologyAnnotation(term="Agilent QTOF"))
+                                                pv_3 = ParameterValue(category=ProtocolParameter(parameter_name=OntologyAnnotation(term="scan polarity")),value=OntologyAnnotation(term=acq_mode))
+
+                                                data_acq_process.parameter_values.append(pv_1)
+                                                data_acq_process.parameter_values.append(pv_2)
+                                                data_acq_process.parameter_values.append(pv_3)
+                                                data_acq_process.parameter_values.append(pv_run_order)
+
+
+                                                # platform_name = "platform-{}".format(index_j)
+                                                platform_name = "platform-" + inj_mode
+                                                data_acq_process.name = "assay-name-{}".format(index_i) + "_" + platform_name + \
+                                                                        "_run-{}".format(index_k)
+                                                data_acq_process.inputs.append(extraction_process.outputs[0])
+
+                                                # data acquisition process usually has an output data file
+                                                datafile = DataFile(
+                                                    filename="acquired-data-{}".format(index_i) + "_" + platform_name +
+                                                             "_run-{}".format(index_k) + ".mzml.gz",
+                                                    label="Raw Spectral Data File")
+                                                data_acq_process.outputs.append(datafile)
+
+                                                # ensure Processes are linked forward and backward
+                                                extraction_process.next_process = data_acq_process
+                                                # labeling_process.prev_process = extraction_process
+                                                extraction_process.next_process = data_acq_process
+                                                # data_acq_process.prev_process = labeling_process
+                                                data_acq_process.prev_process = extraction_process
+
+                                                # make sure extract(library), data file, and the processes are attached to the assay
+                                                this_assay.data_files.append(datafile)
+                                                this_assay.materials['other_material'].append(extract)
+                                                # this_assay.materials['other_material'].append(le)
+                                                this_assay.process_sequence.append(extraction_process)
+                                                # this_assay.process_sequence.append(labeling_process)
+                                                this_assay.process_sequence.append(data_acq_process)
+                    # for NMR:
+                    elif assay_plan[item]["assay type"] == 4:
+                        #TODO: implement get_or_create method and refactor
+
+                        if len(assay_plan[item]["params"]["injection modes"]) > 0:
+                            inj_mode = ""
+                            acq_mode = ""
+                            for inj_mode_code in range(
+                                    len(assay_plan[item]["params"]["injection modes"])):
+                                if inj_mode_code == 0:
+                                    print("YAY, this is autoloader")
+                                    inj_mode = "autoloader"
+                                elif inj_mode_code == 1:
+                                    inj_mode = "LC"
+                                elif inj_mode_code == 2:
+                                    inj_mode = "GC"
+                                else:
+                                    print("error, injection method not recognized)")
+
+                                for acq_mode_code in range(
+                                        len(assay_plan[item]["params"]["pulse sequences"])):
+                                    print("CODE:", assay_plan[item]["params"]["pulse sequences"])
+                                    if assay_plan[item]["params"]["pulse sequences"][acq_mode_code] == "1":
+                                        acq_mode = "COSY"
+                                    elif assay_plan[item]["params"]["pulse sequences"][acq_mode_code] == "2":
+                                        acq_mode = "NOESY"
+                                    elif assay_plan[item]["params"]["pulse sequences"][acq_mode_code] == "3":
+                                        acq_mode = "TOSCY"
+                                    elif assay_plan[item]["params"]["pulse sequences"][acq_mode_code] == "3":
+                                        acq_mode = "CPMG"
+                                    elif assay_plan[item]["params"]["pulse sequences"][acq_mode_code] == "4":
+                                        acq_mode = "INEPT"
+                                    elif assay_plan[item]["params"]["pulse sequences"][acq_mode_code] == "5":
+                                        acq_mode = "HMQC"
+                                    elif assay_plan[item]["params"]["pulse sequences"][acq_mode_code] == "6":
+                                        acq_mode = "WATERGATE"
+                                    else:
+                                        print("error, injection method not recognized)")
+
+                                    techname = inj_mode + "-" + acq_mode + " nmr spectroscopy"
+
+                                    nmr_filename = "a_mp_" + inj_mode + "_" + acq_mode + "_nmr.txt"
+
+                                    nmr = [a for a in new_inv.studies[0].assays if
+                                          a.measurement_type.term == "metabolite profiling"
+                                          and a.technology_type.term == techname and a.filename == nmr_filename]
+                                    if len(nmr) > 0:
+                                        print("yes, exists in :", nmr)
+                                        # if such an assay table already exists, we retrieve it
+                                        this_assay = nmr[0]
+                                    else:
+                                        # or print('nothing found, creating a new object)...')
+                                        this_assay = Assay(measurement_type=OntologyAnnotation(
+                                            term="metabolite profiling"),
+                                                           technology_type=OntologyAnnotation(
+                                                               term=techname),
+                                                           filename=nmr_filename)
+
+                                        new_inv.studies[0].assays.append(this_assay)
+
+                                        extraction_protocol = Protocol(name='metabolite extraction',
+                                                                       protocol_type=OntologyAnnotation(
+                                                                           term="material separation"))
+                                        new_inv.studies[0].protocols.append(extraction_protocol)
+
+                                        # lc_protocol = Protocol(name="liquid chromatography",
+                                        #                              protocol_type=OntologyAnnotation(term="material separation"))
+                                        # new_inv.studies[0].protocols.append(labeling_protocol)
+
+                                        nmr_protocol = Protocol(
+                                            name=inj_mode + "-" + acq_mode + ' nmr spectroscopy',
+                                            protocol_type=OntologyAnnotation(
+                                                term="nmr spectroscopy"))
+                                        inj_param = ProtocolParameter(
                                             parameter_name=OntologyAnnotation(
-                                                term="chromatography instrument"))
-                                        ch_column = ProtocolParameter(
+                                                term="injection mode"))
+                                        if inj_mode == 1 or inj_mode == 2:
+                                            ch_instr = ProtocolParameter(
+                                                parameter_name=OntologyAnnotation(
+                                                    term="chromatography instrument"))
+                                            ch_column = ProtocolParameter(
+                                                parameter_name=OntologyAnnotation(
+                                                    term="chromatography column"))
+                                            ch_elu_p = ProtocolParameter(
+                                                parameter_name=OntologyAnnotation(
+                                                    term="elution program"))
+                                            nmr_protocol.parameters.append(ch_instr)
+                                            nmr_protocol.parameters.append(ch_column)
+                                            nmr_protocol.parameters.append(ch_elu_p)
+                                        nmr_instr = ProtocolParameter(
                                             parameter_name=OntologyAnnotation(
-                                                term="chromatography column"))
-                                        ch_elu_p = ProtocolParameter(
-                                            parameter_name=OntologyAnnotation(
-                                                term="elution program"))
-                                        nmr_protocol.parameters.append(ch_instr)
-                                        nmr_protocol.parameters.append(ch_column)
-                                        nmr_protocol.parameters.append(ch_elu_p)
-                                    nmr_instr = ProtocolParameter(
-                                        parameter_name=OntologyAnnotation(
-                                            term="nmr spectroscopy instrument"))
-                                    nmr_probe = ProtocolParameter(parameter_name=(OntologyAnnotation(term="NMR probe")))
-                                    acq_param = ProtocolParameter(
-                                        parameter_name=OntologyAnnotation(term="pulse sequence"))
+                                                term="nmr spectroscopy instrument"))
+                                        nmr_probe = ProtocolParameter(parameter_name=(OntologyAnnotation(term="NMR probe")))
+                                        acq_param = ProtocolParameter(
+                                            parameter_name=OntologyAnnotation(term="pulse sequence"))
 
-                                    nmr_protocol.parameters.append(inj_param)
-                                    nmr_protocol.parameters.append(nmr_instr)
-                                    nmr_protocol.parameters.append(nmr_probe)
-                                    nmr_protocol.parameters.append(acq_param)
+                                        nmr_protocol.parameters.append(inj_param)
+                                        nmr_protocol.parameters.append(nmr_instr)
+                                        nmr_protocol.parameters.append(nmr_probe)
+                                        nmr_protocol.parameters.append(acq_param)
 
-                                    new_inv.studies[0].protocols.append(nmr_protocol)
+                                        new_inv.studies[0].protocols.append(nmr_protocol)
 
-                                index_i = 0
-                                index_j = 0
-                                index_k = 0
-                                # for index_i, sample in enumerate(new_inv.studies[0].materials['samples']):
-                                # some_sample_list = [sample for sample in new_inv.studies[0].materials['samples'] if
-                                #                sample.characteristics[0].value.term == assay_plan[item]["sample type"] and
-                                #                sample.characteristics[1].value.term == assay_plan[item]["collection event"]]
-                                # print("number of samples: ", len(some_sample_list))
-                                # extractlist_before = [ext for ext in new_inv.studies[0].assays[0].materials['other_material'] if
-                                #                        ext.type == "Extract Name"]
-                                # print("number of extracts", len(extractlist_before))
+                                    index_i = 0
+                                    index_j = 0
+                                    index_k = 0
+                                    # for index_i, sample in enumerate(new_inv.studies[0].materials['samples']):
+                                    # some_sample_list = [sample for sample in new_inv.studies[0].materials['samples'] if
+                                    #                sample.characteristics[0].value.term == assay_plan[item]["sample type"] and
+                                    #                sample.characteristics[1].value.term == assay_plan[item]["collection event"]]
+                                    # print("number of samples: ", len(some_sample_list))
+                                    # extractlist_before = [ext for ext in new_inv.studies[0].assays[0].materials['other_material'] if
+                                    #                        ext.type == "Extract Name"]
+                                    # print("number of extracts", len(extractlist_before))
 
-                                for index_i, sample in enumerate([sample for sample in
-                                                                  new_inv.studies[0].materials[
-                                                                      'samples'] if
-                                                                  sample.characteristics[
-                                                                      0].value.term ==
-                                                                          assay_plan[item][
-                                                                              "sample type"]]):
-                                    # print("i: ", index_i, "sample: ", sample.characteristics[1].value.term)
-                                    # print("current collection event", assay_plan[item]["collection event"])
-                                    if str(sample.characteristics[1].value.term) == str(
-                                            assay_plan[item]["collection event"]):
-                                        # create an extraction process that executes the extraction protocol
-                                        extraction_process = Process(executes_protocol=
-                                                                     [prtcl for prtcl in
-                                                                      new_inv.studies[
-                                                                          0].protocols
-                                                                      if
-                                                                      prtcl.name == "metabolite extraction"][
-                                                                         0],
-                                                                     performer="rick",
-                                                                     date_=datetime.datetime.now())
+                                    for index_i, sample in enumerate([sample for sample in
+                                                                      new_inv.studies[0].materials[
+                                                                          'samples'] if
+                                                                      sample.characteristics[
+                                                                          0].value.term ==
+                                                                              assay_plan[item][
+                                                                                  "sample type"]]):
+                                        # print("i: ", index_i, "sample: ", sample.characteristics[1].value.term)
+                                        # print("current collection event", assay_plan[item]["collection event"])
+                                        if str(sample.characteristics[1].value.term) == str(
+                                                assay_plan[item]["collection event"]):
+                                            # create an extraction process that executes the extraction protocol
+                                            extraction_process = Process(executes_protocol=
+                                                                         [prtcl for prtcl in
+                                                                          new_inv.studies[
+                                                                              0].protocols
+                                                                          if
+                                                                          prtcl.name == "metabolite extraction"][
+                                                                             0],
+                                                                         performer="rick",
+                                                                         date_=datetime.datetime.now())
 
-                                        # extraction process takes as input a sample, and produces an extract material as output
-                                        # we make sure only the right kind of samples get assayed so we check against the sample type
-                                        # if sample.characteristics[0].value.term == assay_plan[item]["sample type"]:
-                                        # print("sample characteristics: ", sample.characteristics[0].value.term)
+                                            # extraction process takes as input a sample, and produces an extract material as output
+                                            # we make sure only the right kind of samples get assayed so we check against the sample type
+                                            # if sample.characteristics[0].value.term == assay_plan[item]["sample type"]:
+                                            # print("sample characteristics: ", sample.characteristics[0].value.term)
 
-                                        extraction_process.inputs.append(sample)
-                                        extract = Material(
-                                            name=sample.name + "extract-{}".format(index_i))
-                                        extract.type = "Extract Name"
-                                        extraction_process.outputs.append(extract)
+                                            extraction_process.inputs.append(sample)
+                                            extract = Material(
+                                                name=sample.name + "extract-{}".format(index_i))
+                                            extract.type = "Extract Name"
+                                            extraction_process.outputs.append(extract)
 
-                                        # this loop is meant to handle the case where several acquisition modes (e.g. Neg or positive) are used from a sample
-                                        # TODO: include a function to obtain the relevant parameters used for data acquisition
-                                        # for index_j in range(int(assay_plan[item]["params"]["injection modes"])):
-                                        # this inner is for handling multiple runs of the same mode, i.e. tech replicates
-                                        for index_k in range(
-                                                int(assay_plan[item]["params"][
-                                                        "number of technical replicates"])):
-                                            prtcl_name = \
-                                            [prtcl for prtcl in new_inv.studies[0].protocols
-                                             if
-                                             prtcl.name == inj_mode + "-" + acq_mode + ' nmr spectroscopy'][
-                                                0]
-                                            data_acq_process = Process(
-                                                executes_protocol=prtcl_name,
-                                                performer="mitsuko",
-                                                date_=datetime.datetime.now())
-                                            pv_1 = ParameterValue(category=ProtocolParameter(
-                                                parameter_name=OntologyAnnotation(
-                                                    term="injection mode")),
-                                                                  value=OntologyAnnotation(
-                                                                      term=inj_mode))
+                                            # this loop is meant to handle the case where several acquisition modes (e.g. Neg or positive) are used from a sample
+                                            # TODO: include a function to obtain the relevant parameters used for data acquisition
+                                            # for index_j in range(int(assay_plan[item]["params"]["injection modes"])):
+                                            # this inner is for handling multiple runs of the same mode, i.e. tech replicates
+                                            for index_k in range(
+                                                    int(assay_plan[item]["params"][
+                                                            "number of technical replicates"])):
+                                                prtcl_name = \
+                                                [prtcl for prtcl in new_inv.studies[0].protocols
+                                                 if
+                                                 prtcl.name == inj_mode + "-" + acq_mode + ' nmr spectroscopy'][
+                                                    0]
+                                                data_acq_process = Process(
+                                                    executes_protocol=prtcl_name,
+                                                    performer="mitsuko",
+                                                    date_=datetime.datetime.now())
+                                                pv_1 = ParameterValue(category=ProtocolParameter(
+                                                    parameter_name=OntologyAnnotation(
+                                                        term="injection mode")),
+                                                                      value=OntologyAnnotation(
+                                                                          term=inj_mode))
 
-                                            # if we are dealing with liquid or gas "C"hromatography
-                                            if "C" in inj_mode:
-                                                pv_1a = ParameterValue(
-                                                    category=ProtocolParameter(
-                                                        parameter_name=OntologyAnnotation(
-                                                            term="chromatography instrument")),
-                                                    value=OntologyAnnotation(
-                                                        term="Agilent Q12324A"))
-                                                pv_1b = ParameterValue(
-                                                    category=ProtocolParameter(
-                                                        parameter_name=OntologyAnnotation(
-                                                            term="chromatography column")),
-                                                    value=OntologyAnnotation(
-                                                        term="AB Hydroxyapatite"))
-                                                pv_1c = ParameterValue(
-                                                    category=ProtocolParameter(
-                                                        parameter_name=OntologyAnnotation(
-                                                            term="elution program")),
-                                                    value=OntologyAnnotation(
-                                                        term="acetonitrile 90%, water 10% for 30 min, flow rate: 1ml/min"))
+                                                # if we are dealing with liquid or gas "C"hromatography
+                                                if "C" in inj_mode:
+                                                    pv_1a = ParameterValue(
+                                                        category=ProtocolParameter(
+                                                            parameter_name=OntologyAnnotation(
+                                                                term="chromatography instrument")),
+                                                        value=OntologyAnnotation(
+                                                            term="Agilent Q12324A"))
+                                                    pv_1b = ParameterValue(
+                                                        category=ProtocolParameter(
+                                                            parameter_name=OntologyAnnotation(
+                                                                term="chromatography column")),
+                                                        value=OntologyAnnotation(
+                                                            term="AB Hydroxyapatite"))
+                                                    pv_1c = ParameterValue(
+                                                        category=ProtocolParameter(
+                                                            parameter_name=OntologyAnnotation(
+                                                                term="elution program")),
+                                                        value=OntologyAnnotation(
+                                                            term="acetonitrile 90%, water 10% for 30 min, flow rate: 1ml/min"))
 
-                                                pv_1d = ParameterValue(
-                                                    category=ProtocolParameter(
-                                                        parameter_name=OntologyAnnotation(
-                                                            term="NMR probe")),
-                                                    value=OntologyAnnotation(
-                                                        term="flow probe"))
+                                                    pv_1d = ParameterValue(
+                                                        category=ProtocolParameter(
+                                                            parameter_name=OntologyAnnotation(
+                                                                term="NMR probe")),
+                                                        value=OntologyAnnotation(
+                                                            term="flow probe"))
 
-                                                data_acq_process.parameter_values.append(pv_1a)
-                                                data_acq_process.parameter_values.append(pv_1b)
-                                                data_acq_process.parameter_values.append(pv_1c)
-                                                data_acq_process.parameter_values.append(pv_1d)
+                                                    data_acq_process.parameter_values.append(pv_1a)
+                                                    data_acq_process.parameter_values.append(pv_1b)
+                                                    data_acq_process.parameter_values.append(pv_1c)
+                                                    data_acq_process.parameter_values.append(pv_1d)
 
-                                            else:
-                                                pv_1d = ParameterValue(
-                                                    category=ProtocolParameter(
-                                                        parameter_name=OntologyAnnotation(
-                                                            term="NMR probe")),
-                                                    value=OntologyAnnotation(
-                                                        term="non-flow probe"))
+                                                else:
+                                                    pv_1d = ParameterValue(
+                                                        category=ProtocolParameter(
+                                                            parameter_name=OntologyAnnotation(
+                                                                term="NMR probe")),
+                                                        value=OntologyAnnotation(
+                                                            term="non-flow probe"))
 
 
 
-                                            pv_2 = ParameterValue(category=ProtocolParameter(
-                                                parameter_name=OntologyAnnotation(
-                                                    term="nmr spectroscopy instrument")),
-                                                                  value=OntologyAnnotation(
-                                                                      term="Bruker Avance III"))
-                                            pv_3 = ParameterValue(category=ProtocolParameter(
-                                                parameter_name=OntologyAnnotation(
-                                                    term="pulse sequence")),
-                                                                  value=OntologyAnnotation(
-                                                                      term=acq_mode))
+                                                pv_2 = ParameterValue(category=ProtocolParameter(
+                                                    parameter_name=OntologyAnnotation(
+                                                        term="nmr spectroscopy instrument")),
+                                                                      value=OntologyAnnotation(
+                                                                          term="Bruker Avance III"))
+                                                pv_3 = ParameterValue(category=ProtocolParameter(
+                                                    parameter_name=OntologyAnnotation(
+                                                        term="pulse sequence")),
+                                                                      value=OntologyAnnotation(
+                                                                          term=acq_mode))
 
-                                            data_acq_process.parameter_values.append(pv_1)
-                                            data_acq_process.parameter_values.append(pv_2)
-                                            data_acq_process.parameter_values.append(pv_3)
+                                                data_acq_process.parameter_values.append(pv_1)
+                                                data_acq_process.parameter_values.append(pv_2)
+                                                data_acq_process.parameter_values.append(pv_3)
 
-                                            # platform_name = "platform-{}".format(index_j)
-                                            platform_name = "platform-" + inj_mode
-                                            data_acq_process.name = "assay-name-{}".format(
-                                                index_i) + "_" + platform_name + \
-                                                                    "_run-{}".format(index_k)
-                                            data_acq_process.inputs.append(
-                                                extraction_process.outputs[0])
+                                                # platform_name = "platform-{}".format(index_j)
+                                                platform_name = "platform-" + inj_mode
+                                                data_acq_process.name = "assay-name-{}".format(
+                                                    index_i) + "_" + platform_name + \
+                                                                        "_run-{}".format(index_k)
+                                                data_acq_process.inputs.append(
+                                                    extraction_process.outputs[0])
 
-                                            # data acquisition process usually has an output data file
-                                            datafile = DataFile(
-                                                filename="acquired-data-{}".format(
-                                                    index_i) + "_" + platform_name +
-                                                         "_run-{}".format(index_k) + ".nmrml.gz",
-                                                label="Free Induction Decay Data File")
-                                            data_acq_process.outputs.append(datafile)
+                                                # data acquisition process usually has an output data file
+                                                datafile = DataFile(
+                                                    filename="acquired-data-{}".format(
+                                                        index_i) + "_" + platform_name +
+                                                             "_run-{}".format(index_k) + ".nmrml.gz",
+                                                    label="Free Induction Decay Data File")
+                                                data_acq_process.outputs.append(datafile)
 
-                                            # ensure Processes are linked forward and backward
-                                            extraction_process.next_process = data_acq_process
-                                            # labeling_process.prev_process = extraction_process
-                                            extraction_process.next_process = data_acq_process
-                                            # data_acq_process.prev_process = labeling_process
-                                            data_acq_process.prev_process = extraction_process
+                                                # ensure Processes are linked forward and backward
+                                                extraction_process.next_process = data_acq_process
+                                                # labeling_process.prev_process = extraction_process
+                                                extraction_process.next_process = data_acq_process
+                                                # data_acq_process.prev_process = labeling_process
+                                                data_acq_process.prev_process = extraction_process
 
-                                            # make sure extract(library), data file, and the processes are attached to the assay
-                                            this_assay.data_files.append(datafile)
-                                            this_assay.materials['other_material'].append(
-                                                extract)
-                                            # this_assay.materials['other_material'].append(le)
-                                            this_assay.process_sequence.append(
-                                                extraction_process)
-                                            # this_assay.process_sequence.append(labeling_process)
-                                            this_assay.process_sequence.append(data_acq_process)
-                # else:
-                #     print("no luck :(")
+                                                # make sure extract(library), data file, and the processes are attached to the assay
+                                                this_assay.data_files.append(datafile)
+                                                this_assay.materials['other_material'].append(
+                                                    extract)
+                                                # this_assay.materials['other_material'].append(le)
+                                                this_assay.process_sequence.append(
+                                                    extraction_process)
+                                                # this_assay.process_sequence.append(labeling_process)
+                                                this_assay.process_sequence.append(data_acq_process)
+                    # else:
+                    #     print("no luck :(")
 
-        elif repeats is True and "factorial" in free_or_restricted_design:
+            elif repeats is True and "factorial" in free_or_restricted_design:
+
+                obi = OntologySource(name="OBI", description="Ontology for Biomedical Investigations")
+                new_inv.ontology_source_references.append(obi)
+                stato = OntologySource(name="STATO", description="Ontology for Statistical Methods")
+                new_inv.ontology_source_references.append(stato)
+                design1 = OntologyAnnotation(term_source=obi)
+                design1.term = "intervention design"
+                design1.term_accession = "http://purl.obolibrary.org/obo/OBI_0000115"
+                new_inv.studies[0].design_descriptors.append(design1)
+                design2 = OntologyAnnotation(term_source=stato)
+                design2.term = "full factorial design"
+                design2.term_accession = "http://purl.obolibrary.org/obo/STATO_0000270"
+                new_inv.studies[0].design_descriptors.append(design2)
+                design3 = OntologyAnnotation(term_source=obi)
+                design3.term = "repeated measures design"
+                design3.term_accession = "http://purl.obolibrary.org/obo/OBI_0500002"
+                new_inv.studies[0].design_descriptors.append(design3)
+
+                intervention_list, new_inv = get_list_of_interventions(new_inv)
+
+                assay_plan = []
+                for intervention_type in intervention_list.keys():
+                    # print("type of intervention: ", intervention_type)
+                    for factor in intervention_list[intervention_type].keys():
+                        # print("factor :", factor)
+                        set_factor_values(factor, intervention_list[intervention_type])
+                        # print("associated factor values:", intervention_list[intervention_type][factor])
+
+            dump(isa_obj=new_inv, output_path='./')
+
+        except NotImplemented:
+                    print("we have recognized a cross over design & repeated treatment case, which is not yet fully implemented")
+                    print("error in create_study_subject() method")
+
+                # my_factors = {}
+                # study_group_dictionaries = []
+                # number_of_repeats = get_repeat_number()
+                # intervention_list = get_list_of_interventions()
+                # """factors_for_treatment = get_factors_from_treatment_type(intervention_list)"""
+                # for intervention_type in intervention_list.keys():
+                #     print("type of intervention: ", intervention_type)
+                #     for factor in intervention_list[intervention_type].keys():
+                #         print("factor :", factor)
+                #         set_factor_values(factor, intervention_list[intervention_type])
+                #         print("associated factor values:", intervention_list[intervention_type][factor])
+                #
+                #         study_group_dictionaries.append(compute_study_groups(intervention_list[intervention_type]))
+                #     print("study groups:", list_of_study_group_dictionaries)
+                #     # set_study_arms()
+                #
+                # # for intervention in intervention_list:
+                # #         int_dict = dict
+                # #         set_factor_values(intervention, int_dict)
+                # print(compute_treatment_sequences(list_of_study_group_dictionaries, number_of_repeats))
+                # # treatment_arms = compute_treatment_sequences(intervention_list, number_of_repeats)
+                # new_inv = set_study_arms(number_of_repeats)
+                #
+                # # for element in range(len(treatment_arms)):
+
+    else:
+        try:
+            new_inv = use_default_inv()
 
             obi = OntologySource(name="OBI", description="Ontology for Biomedical Investigations")
             new_inv.ontology_source_references.append(obi)
             stato = OntologySource(name="STATO", description="Ontology for Statistical Methods")
             new_inv.ontology_source_references.append(stato)
+            omiabis = OntologySource(name="OMIABIS", description="an ontological version of MIABIS (Minimum Information About BIobank data Sharing)")
+            new_inv.ontology_source_references.append(obi)
+
             design1 = OntologyAnnotation(term_source=obi)
-            design1.term = "intervention design"
-            design1.term_accession = "http://purl.obolibrary.org/obo/OBI_0000115"
+            design1.term = "observation design"
+            design1.term_accession = "http://purl.obolibrary.org/obo/OBI_0300311"
             new_inv.studies[0].design_descriptors.append(design1)
-            design2 = OntologyAnnotation(term_source=stato)
-            design2.term = "full factorial design"
-            design2.term_accession = "http://purl.obolibrary.org/obo/STATO_0000270"
+            design2 = OntologyAnnotation(term_source=omiabis)
+            design2.term = "cohort study design"
+            design2.term_accession = "http://purl.obolibrary.org/obo/OMIABIS_0001020"
             new_inv.studies[0].design_descriptors.append(design2)
-            design3 = OntologyAnnotation(term_source=obi)
-            design3.term = "repeated measures design"
-            design3.term_accession = "http://purl.obolibrary.org/obo/OBI_0500002"
-            new_inv.studies[0].design_descriptors.append(design3)
 
-            intervention_list, new_inv = get_list_of_interventions(new_inv)
+            # get_study_group()
+            # get_study_temporal_span()
+            # get_sample_collection_plan()
+            # get_assay_plan()
 
-            assay_plan = []
-            for intervention_type in intervention_list.keys():
-                # print("type of intervention: ", intervention_type)
-                for factor in intervention_list[intervention_type].keys():
-                    # print("factor :", factor)
-                    set_factor_values(factor, intervention_list[intervention_type])
-                    # print("associated factor values:", intervention_list[intervention_type][factor])
+        except NotImplemented:
+            print("we have recognized an observation study, which is not yet fully implemented")
+            print("error in create_study_subject() method")
 
-        dump(isa_obj=new_inv, output_path='./')
-
-    except NotImplemented:
-                print("we have recognized a cross over design & repeated treatment case, which is not yet fully implemented")
-                print("error in create_study_subject() method")
-
-            # my_factors = {}
-            # study_group_dictionaries = []
-            # number_of_repeats = get_repeat_number()
-            # intervention_list = get_list_of_interventions()
-            # """factors_for_treatment = get_factors_from_treatment_type(intervention_list)"""
-            # for intervention_type in intervention_list.keys():
-            #     print("type of intervention: ", intervention_type)
-            #     for factor in intervention_list[intervention_type].keys():
-            #         print("factor :", factor)
-            #         set_factor_values(factor, intervention_list[intervention_type])
-            #         print("associated factor values:", intervention_list[intervention_type][factor])
-            #
-            #         study_group_dictionaries.append(compute_study_groups(intervention_list[intervention_type]))
-            #     print("study groups:", list_of_study_group_dictionaries)
-            #     # set_study_arms()
-            #
-            # # for intervention in intervention_list:
-            # #         int_dict = dict
-            # #         set_factor_values(intervention, int_dict)
-            # print(compute_treatment_sequences(list_of_study_group_dictionaries, number_of_repeats))
-            # # treatment_arms = compute_treatment_sequences(intervention_list, number_of_repeats)
-            # new_inv = set_study_arms(number_of_repeats)
-            #
-            # # for element in range(len(treatment_arms)):
-
-else:
-    try:
-        new_inv = use_default_inv()
-
-        obi = OntologySource(name="OBI", description="Ontology for Biomedical Investigations")
-        new_inv.ontology_source_references.append(obi)
-        stato = OntologySource(name="STATO", description="Ontology for Statistical Methods")
-        new_inv.ontology_source_references.append(stato)
-        omiabis = OntologySource(name="OMIABIS", description="an ontological version of MIABIS (Minimum Information About BIobank data Sharing)")
-        new_inv.ontology_source_references.append(obi)
-
-        design1 = OntologyAnnotation(term_source=obi)
-        design1.term = "observation design"
-        design1.term_accession = "http://purl.obolibrary.org/obo/OBI_0300311"
-        new_inv.studies[0].design_descriptors.append(design1)
-        design2 = OntologyAnnotation(term_source=omiabis)
-        design2.term = "cohort study design"
-        design2.term_accession = "http://purl.obolibrary.org/obo/OMIABIS_0001020"
-        new_inv.studies[0].design_descriptors.append(design2)
-
-        # get_study_group()
-        # get_study_temporal_span()
-        # get_sample_collection_plan()
-        # get_assay_plan()
-
-    except NotImplemented:
-        print("we have recognized an observation study, which is not yet fully implemented")
-        print("error in create_study_subject() method")
+if __name__ == '__main__':
+    main()
