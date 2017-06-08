@@ -30,14 +30,14 @@ Investigation Person Roles
 Investigation Person Roles Term Accession Number
 Investigation Person Roles Term Source REF
 STUDY
-Study Identifier	b5e5a99f-1911-4e6e-909a-653d10aa072b
+Study Identifier	e14e489d-59c5-460d-9834-05a6149fc774
 Study Title	boilerplate title
 Study Description	boilerplate study description (testing purpose)
 Study Submission Date	2017-06-07
 Study Public Release Date	2017-07-07
 Study File Name	s_study.txt
 Comment[number of study groups]	8.0
-Comment[study group size]	3.0
+Comment[study group size]	4.0
 STUDY DESIGN DESCRIPTORS
 Study Design Type	intervention design	full factorial design	balanced design
 Study Design Type Term Accession Number	http://purl.obolibrary.org/obo/OBI_0000115	http://purl.obolibrary.org/obo/STATO_0000270	http://purl.obolibrary.org/obo/STATO_0000003
@@ -56,29 +56,29 @@ Study Factor Type	perturbation agent	intensity	time
 Study Factor Type Term Accession Number			
 Study Factor Type Term Source REF			
 STUDY ASSAYS
-Study Assay File Name	a_mp_FIA_positive_ms.txt	a_mp_FIA_negative_ms.txt	a_mp_LC_positive_ms.txt	a_mp_LC_negative_ms.txt	a_tp_ngs.txt
-Study Assay Measurement Type	metabolite profiling	metabolite profiling	metabolite profiling	metabolite profiling	transcription profiling
-Study Assay Measurement Type Term Accession Number					
-Study Assay Measurement Type Term Source REF					
-Study Assay Technology Type	FIA-positive mass spectrometry	FIA-negative mass spectrometry	LC-positive mass spectrometry	LC-negative mass spectrometry	nucleic acid sequencing
-Study Assay Technology Type Term Accession Number					
-Study Assay Technology Type Term Source REF					
-Study Assay Technology Platform					
+Study Assay File Name	a_tp_ngs.txt
+Study Assay Measurement Type	transcription profiling
+Study Assay Measurement Type Term Accession Number	
+Study Assay Measurement Type Term Source REF	
+Study Assay Technology Type	nucleic acid sequencing
+Study Assay Technology Type Term Accession Number	
+Study Assay Technology Type Term Source REF	
+Study Assay Technology Platform	
 STUDY PROTOCOLS
-Study Protocol Name	sample collection	metabolite extraction	FIA-positive mass spectrometry	metabolite extraction	FIA-negative mass spectrometry	metabolite extraction	LC-positive mass spectrometry	metabolite extraction	LC-negative mass spectrometry	RNA extraction	nucleic acid library preparation	nucleic acid sequencing
-Study Protocol Type	sample collection	material separation	mass spectrometry	material separation	mass spectrometry	material separation	mass spectrometry	material separation	mass spectrometry	material separation	material labeling	data collection
-Study Protocol Type Term Accession Number												
-Study Protocol Type Term Source REF												
-Study Protocol Description												
-Study Protocol URI												
-Study Protocol Version												
-Study Protocol Parameters Name			randomized run order;injection mode;mass spectrometry instrument;scan polarity		randomized run order;injection mode;mass spectrometry instrument;scan polarity		randomized run order;injection mode;mass spectrometry instrument;scan polarity		randomized run order;injection mode;mass spectrometry instrument;scan polarity			
-Study Protocol Parameters Name Term Accession Number			;;;		;;;		;;;		;;;			
-Study Protocol Parameters Name Term Source REF			;;;		;;;		;;;		;;;			
-Study Protocol Components Name												
-Study Protocol Components Type												
-Study Protocol Components Type Term Accession Number												
-Study Protocol Components Type Term Source REF												
+Study Protocol Name	sample collection	RNA extraction	nucleic acid library preparation	nucleic acid sequencing
+Study Protocol Type	sample collection	material separation	material labeling	data collection
+Study Protocol Type Term Accession Number				
+Study Protocol Type Term Source REF				
+Study Protocol Description				
+Study Protocol URI				
+Study Protocol Version				
+Study Protocol Parameters Name				
+Study Protocol Parameters Name Term Accession Number				
+Study Protocol Parameters Name Term Source REF				
+Study Protocol Components Name				
+Study Protocol Components Type				
+Study Protocol Components Type Term Accession Number				
+Study Protocol Components Type Term Source REF				
 STUDY CONTACTS
 Study Person Last Name	Plate
 Study Person First Name	Boiler
