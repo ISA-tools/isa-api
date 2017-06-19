@@ -781,7 +781,7 @@ def parse_idf(file_path, technology_type=None, measurement_type=None):
         magetab_version = get_single(values=squashed_table_dict["mage-tabversion"])
         S.comments.append(Comment(name="MAGE-TAB Version", value=magetab_version))
     except KeyError:
-        raise MageTabParserException("The field MAGE-TAB Version is compulsory but not found")
+        print("WARNING: The field MAGE-TAB Version is compulsory but not found")
     try:
         S.title = get_single(values=squashed_table_dict["investigationtitle"])
     except KeyError:
