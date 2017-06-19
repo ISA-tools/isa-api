@@ -34,7 +34,7 @@ def convert(source_idf_fp, output_path, technology_type, measurement_type):
                 assay_df.to_csv(path_or_buf=a_fp, mode='a', sep='\t', encoding='utf-8', index=False)
     print("Writing {0} to {1}".format("i_investigation.txt", output_path))
     source_idf_fp.seek(0)
-    ISA = magetab.parse(source_idf_fp.name, technology_type=technology_type, measurement_type=measurement_type)
+    ISA = magetab.parse_idf(source_idf_fp.name, technology_type=technology_type, measurement_type=measurement_type)
     isatab.dump(ISA, output_path=output_path, skip_dump_tables=True)
 
 
