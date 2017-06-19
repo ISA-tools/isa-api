@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from io import StringIO
 from itertools import zip_longest
+import re
 
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
@@ -1153,13 +1154,21 @@ def parse_idf(file_path, technology_type=None, measurement_type=None):
 
     # Comments in IDF
 
-    comment_keys = [x for x in squashed_table_dict.keys() if x.startswith("comment")]
+    comments_dict = dict(map(lambda x: (x[0][8:-1], get_single(x[1])), [x for x in squashed_table_dict.items()
+                                                                        if x[0].startswith("comment")]))
 
-    for key in comment_keys:
-        c = Comment(name=key[8:-1], value=get_single(squashed_table_dict[key]))
-        if c.name == "ArrayExpressAccession":
-            S.identifier = c.value  # ArrayExpress adds this comment, so use it as the study ID if it's available
+    for key in comments_dict.keys():
+        c = Comment(name=key, value=comments_dict[key])
         S.comments.append(c)
+
+    if "ArrayExpressAccession" in comments_dict.keys():
+        S.identifier = comments_dict["ArrayExpressAccession"]  # ArrayExpress adds this, so use it as the study ID
+
+
+    design_type = None
+
+    if "AEExperimentType" in comments_dict.keys():
+        design_type = comments_dict["AEExperimentType"]
 
     protocol_types = [x.protocol_type for x in S.protocols]
     hyb_prots_used = {"nucleic acid hybridization",
@@ -1167,6 +1176,9 @@ def parse_idf(file_path, technology_type=None, measurement_type=None):
     if sdrf_file is not None:
         S.filename = "s_{}".format(sdrf_file)
         a_filename = "a_{}".format(sdrf_file)
+
+
+
         ttoa = None
         if technology_type is not None:
             ttoa = OntologyAnnotation(term=technology_type)
@@ -1184,3 +1196,22 @@ def parse_idf(file_path, technology_type=None, measurement_type=None):
     ISA.title = S.title
     ISA.studies = [S]
     return ISA
+
+
+def get_measurement_and_type(design_type):
+
+    if re.match("(?i).*ChIP-Chip.*", design_type):
+        return "protein-DNA binding site identification", "DNA microarray", "ChIP-Chip"
+    if re.match("(?i).*RNA-seq.*", design_type) or re.match("(?i).*RNA-Seq.*", design_type) or re.match(
+            "(?i).*transcription profiling by high throughput sequencing.*", design_type):
+        return "transcription profiling", "nucleotide sequencing", "RNA-Seq"
+    if re.match(".*transcription profiling by array.*", design_type) or re.match("dye_swap_design", design_type):
+        return "transcription profiling", "DNA microarray", "GeneChip"
+    if re.match("(?i).*methylation profiling by array.*", design_type):
+        return "DNA methylation profiling", "DNA microarray", "Me-Chip"
+    if re.match("(?i).*comparative genomic hybridization by array.*", design_type):
+        return "comparative genomic hybridization", "DNA microarray", "CGH-Chip"
+    if re.match(".*genotyping by array.*", design_type):
+        return "SNP analysis", "DNA microarray", "SNPChip"
+    if re.match("(?i).*ChIP-Seq.*", design_type) or re.match("(?i).*chip-seq.*", design_type):
+        return "protein-DNA binding site identification", "nucleotide sequencing", "ChIP-Seq"
