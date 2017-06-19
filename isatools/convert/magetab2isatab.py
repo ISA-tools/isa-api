@@ -48,7 +48,14 @@ def get_investigation_title(line, ISA):
 def split_tables(sdrf_path):
     sdrf_df = isatab.read_tfile(sdrf_path)
     sdrf_df_isatab_header = sdrf_df.isatab_header
-    sample_name_index = list(sdrf_df.columns).index("Sample Name")
+    if "Sample Name" in sdrf_df.columns:
+        sample_name_index = list(sdrf_df.columns).index("Sample Name")
+    elif "Extract Name" in sdrf_df.columns:
+        sample_name_index = list(sdrf_df.columns).index("Extract Name")
+    elif "Labeled Extract Name" in sdrf_df.columns:
+        sample_name_index = list(sdrf_df.columns).index("Labeled Extract Name")
+    else:
+        raise magetab.MageTabParserException("Could not split SDRF table as could not find suitable column to split on")
     study_df = sdrf_df[sdrf_df.columns[0:sample_name_index+1]].drop_duplicates()
     study_df.isatab_header = sdrf_df_isatab_header[0:sample_name_index+1]
     assay_df = sdrf_df[sdrf_df.columns[sample_name_index:]]
