@@ -700,7 +700,7 @@ def parse(magetab_idf_path, technology_type, measurement_type):
     return ISA
 
 
-def tsv_to_dict(file_path):
+def transposed_tsv_to_dict(file_path):
     with open(file_path, encoding='utf-8') as tsvfile:
         tsvreader = csv.reader(filter(lambda r: r[0] != '#', tsvfile), dialect='excel-tab')
         table_dict = {}
@@ -739,7 +739,7 @@ def parse_idf(file_path, technology_type=None, measurement_type=None):
                 print("Warning: more than one value found, selecting first in value list")
             return stripped_values[0]
 
-    table_dict = tsv_to_dict(file_path=file_path)
+    table_dict = transposed_tsv_to_dict(file_path=file_path)
 
     squashed_table_dict = {}
 
