@@ -536,7 +536,8 @@ def set_study_arms(list_of_study_group_dictionaries, this_investigation, this_re
                 if size > 0:
 
                     study_group_size = size
-
+                    stato = OntologySource(name="STATO", description="Ontology for Statistical Methods")
+                    this_investigation.ontology_source_references.append(stato)
                     design_term = OntologyAnnotation(term_source=stato)
                     design_term.term = "balanced design"
                     design_term.term_accession = "http://purl.obolibrary.org/obo/STATO_0000003"
@@ -575,7 +576,8 @@ def set_study_arms(list_of_study_group_dictionaries, this_investigation, this_re
                 size = int(size)
                 if int(size) > 0:
                     study_group_size = size
-
+                    stato = OntologySource(name="STATO", description="Ontology for Statistical Methods")
+                    this_investigation.ontology_source_references.append(stato)
                     design_term = OntologyAnnotation(term_source=stato)
                     design_term.term = "unbalanced design"
                     design_term.term_accession = "http://purl.obolibrary.org/obo/STATO_000000X"
