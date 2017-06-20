@@ -35,3 +35,12 @@ class TestMageTab2IsaTab(unittest.TestCase):
             with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
                 isatab.validate(i_fp)
 
+    def test_magetab2isatab_convert_e_geod_59671(self):
+        with open(os.path.join(self._magetab_data_dir, 'E-GEOD-59671.idf.txt')) as idf_fp:
+            magetab2isatab.convert(idf_fp, self._tmp_dir, 'DNA microarray', 'expression profiling')
+            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
+            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-GEOD-59671.sdrf.txt')))
+            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-GEOD-59671.sdrf.txt')))
+            from isatools import isatab
+            with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+                isatab.validate(i_fp)

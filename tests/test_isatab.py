@@ -461,7 +461,7 @@ class TestIsaTabLoad(unittest.TestCase):
     # def test_isatab_load__flower(self):  # don't commit this as it takes 2 minutes to run on local machine
     #     with open(os.path.join(self._tab_data_dir, 'Flower_Study', 'i_Investigation.txt')) as fp:
     #         ISA = isatab.load(fp)
-
+    #
     # def test_isatab_load__dump_flower(self):  # don't commit this as it takes 3 minutes to run on local machine
     #     with open(os.path.join(self._tab_data_dir, 'Flower_Study', 'i_Investigation.txt')) as fp:
     #         ISA = isatab.load(fp)
@@ -967,3 +967,16 @@ sample1	extraction	e2	scanning	d2"""
         self.assertEqual(len(om), 2)
         self.assertEqual(len(d), 2)
         self.assertEqual(len(pr), 3)
+
+    def test_isatab_load_issue210_on_MTBLS30(self):
+        with open(os.path.join(self._tab_data_dir, 'MTBLS30', 'i_Investigation.txt')) as fp:
+            ISA = isatab.load(fp)
+            self.assertEqual(len(ISA.studies[0].assays[0].data_files), 1)
+            self.assertEqual(len(ISA.studies[0].assays[1].data_files), 1)
+
+    def test_isatab_load_issue210_on_Sacurine(self):
+        with open(os.path.join(self._tab_data_dir, 'MTBLS404', 'i_sacurine.txt')) as fp:
+            ISA = isatab.load(fp)
+            self.assertEqual(len([x for x in ISA.studies[0].assays[0].materials['other_material']
+                                  if x.type == "Labeled Extract Name"]), 0)
+

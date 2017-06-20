@@ -3184,7 +3184,8 @@ class ProcessSequenceFactory:
         unit_categories = {}
 
         try:
-            sources = dict(map(lambda x: ('Source Name:' + x, Source(name=x)), DF['Source Name'].drop_duplicates()))
+            sources = dict(map(lambda x: ('Source Name:' + x, Source(name=x)),
+                           [x for x in DF['Source Name'].drop_duplicates() if x != '']))
         except KeyError:
             pass
 
@@ -3192,19 +3193,22 @@ class ProcessSequenceFactory:
         try:
             if self.samples is not None:
                 sample_map = dict(map(lambda x: ('Sample Name:' + x.name, x), self.samples))
-                sample_keys = list(map(lambda x: 'Sample Name:' + x, DF['Sample Name'].drop_duplicates()))
+                sample_keys = list(map(lambda x: 'Sample Name:' + x,
+                                   [x for x in DF['Sample Name'].drop_duplicates() if x != '']))
                 for k in sample_keys:
                     try:
                         samples[k] = sample_map[k]
                     except KeyError:
                         print('warning! Did not find sample referenced at assay level in study samples')
             else:
-                samples = dict(map(lambda x: ('Sample Name:' + x, Sample(name=x)), DF['Sample Name'].drop_duplicates()))
+                samples = dict(map(lambda x: ('Sample Name:' + x, Sample(name=x)),
+                               [x for x in DF['Sample Name'].drop_duplicates() if x != '']))
         except KeyError:
             pass
 
         try:
-            extracts = dict(map(lambda x: ('Extract Name:' + x, Material(name=x, type_='Extract Name')), DF['Extract Name'].drop_duplicates()))
+            extracts = dict(map(lambda x: ('Extract Name:' + x, Material(name=x, type_='Extract Name')),
+                            [x for x in DF['Extract Name'].drop_duplicates() if x != '']))
             other_material.update(extracts)
         except KeyError:
             pass
@@ -3217,14 +3221,15 @@ class ProcessSequenceFactory:
                     category = OntologyAnnotation(term='Label')
                     characteristic_categories['Label'] = category
                 for _, lextract_name in DF['Labeled Extract Name'].drop_duplicates().iteritems():
-                    lextract = Material(name=lextract_name, type_='Labeled Extract Name')
-                    lextract.characteristics = [
-                        Characteristic(
-                            category=category,
-                            value=OntologyAnnotation(term=DF.loc[_, 'Label'])
-                        )
-                    ]
-                    other_material['Labeled Extract Name:' + lextract_name] = lextract
+                    if lextract_name != '':
+                        lextract = Material(name=lextract_name, type_='Labeled Extract Name')
+                        lextract.characteristics = [
+                            Characteristic(
+                                category=category,
+                                value=OntologyAnnotation(term=DF.loc[_, 'Label'])
+                            )
+                        ]
+                        other_material['Labeled Extract Name:' + lextract_name] = lextract
         except KeyError:
             pass
 
@@ -3250,10 +3255,7 @@ class ProcessSequenceFactory:
             elif l in ('Extract Name', 'Labeled Extract Name'):
                 n = other_material[lk]
             elif l.endswith('File'):
-                try:
-                    n = data[lk]
-                except KeyError:
-                    pass  # if column not found; possibly skipped due to empty values
+                n = data[lk]
             return n
 
         for _cg, column_group in enumerate(object_column_map):
@@ -3271,12 +3273,22 @@ class ProcessSequenceFactory:
                 for _, object_series in pbar(DF[column_group].drop_duplicates().iterrows()):
                     node_name = object_series[object_label]
                     node_key = ":".join([object_label, node_name])
+                    material = None
                     if object_label == "Source Name":
-                        material = sources[node_key]
+                        try:
+                            material = sources[node_key]
+                        except KeyError:
+                            pass  # skip if object not found
                     elif object_label == "Sample Name":
-                        material = samples[node_key]
+                        try:
+                            material = samples[node_key]
+                        except KeyError:
+                            pass  # skip if object not found
                     else:
-                        material = other_material[node_key]
+                        try:
+                            material = other_material[node_key]
+                        except KeyError:
+                            pass  # skip if object not found
 
                     if material is not None:
 
@@ -3335,10 +3347,13 @@ class ProcessSequenceFactory:
                                                                                   ETA()]).start()
 
                 for _, object_series in pbar(DF[column_group].drop_duplicates().iterrows()):
-                    data_file = get_node_by_label_and_key(object_label, object_series[object_label])
-                    for comment_column in [c for c in column_group if c.startswith('Comment[')]:
-                        if comment_column[8:-1] not in [x.name for x in data_file.comments]:
-                            data_file.comments.append(Comment(name=comment_column[8:-1], value=str(object_series[comment_column])))
+                    try:
+                        data_file = get_node_by_label_and_key(object_label, object_series[object_label])
+                        for comment_column in [c for c in column_group if c.startswith('Comment[')]:
+                            if comment_column[8:-1] not in [x.name for x in data_file.comments]:
+                                data_file.comments.append(Comment(name=comment_column[8:-1], value=str(object_series[comment_column])))
+                    except KeyError:
+                        pass  # skip if object not found
 
             elif object_label.startswith('Protocol REF'):
                 object_label_index = list(DF.columns).index(object_label)
@@ -3372,7 +3387,12 @@ class ProcessSequenceFactory:
 
                         node_key = output_node_value
 
-                        output_node = get_node_by_label_and_key(output_node_label, node_key)
+                        output_node = None
+
+                        try:
+                            output_node = get_node_by_label_and_key(output_node_label, node_key)
+                        except KeyError:
+                            pass  # skip if object not found
 
                         if output_node is not None and output_node not in process.outputs:
                             # print(process_key, 'output', output_node_label, node_key)
@@ -3388,7 +3408,12 @@ class ProcessSequenceFactory:
 
                         node_key = input_node_value
 
-                        input_node = get_node_by_label_and_key(input_node_label, node_key)
+                        input_node = None
+
+                        try:
+                            input_node = get_node_by_label_and_key(input_node_label, node_key)
+                        except KeyError:
+                            pass  # skip if object not found
 
                         if input_node is not None and input_node not in process.inputs:
                             # print(process_key, 'input', input_node_label, node_key)
@@ -3446,10 +3471,16 @@ class ProcessSequenceFactory:
                 object_label = column_group[0]
 
                 if object_label.startswith('Source Name'):
-                    source_node_context = get_node_by_label_and_key(object_label, object_series[object_label])
+                    try:
+                        source_node_context = get_node_by_label_and_key(object_label, object_series[object_label])
+                    except KeyError:
+                        pass  # skip if object not found
 
                 if object_label.startswith('Sample Name'):
-                    sample_node_context = get_node_by_label_and_key(object_label, object_series[object_label])
+                    try:
+                        sample_node_context = get_node_by_label_and_key(object_label, object_series[object_label])
+                    except KeyError:
+                        pass  # skip if object not found
                     if source_node_context is not None:
                         if source_node_context not in sample_node_context.derives_from:
                             sample_node_context.derives_from.append(source_node_context)
@@ -3460,7 +3491,11 @@ class ProcessSequenceFactory:
                     process_key_sequence.append(process_key)
 
                 if object_label.endswith(' File'):
-                    data_node = get_node_by_label_and_key(object_label, object_series[object_label])
+                    data_node = None
+                    try:
+                        data_node = get_node_by_label_and_key(object_label, object_series[object_label])
+                    except KeyError:
+                        pass  # skip if object not found
                     if sample_node_context is not None and data_node is not None:
                         if sample_node_context not in data_node.generated_from:
                             data_node.generated_from.append(sample_node_context)

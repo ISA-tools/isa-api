@@ -4,7 +4,7 @@ Known issues
 
 isatools v0.8 package
 ---------------------
-- Issues #153 is still outstanding, as per below; new issues #205 (json2isatab conversion issue), #208 and #210 (ISA-Tab reader issues)
+- Issues #153 is still outstanding, as per below; new issues #205 (json2isatab conversion issue), #208 (ISA-Tab validation issue) and #218 (MAGE-TAB conversion issue)
 - SRA/ENA importer and Biocrates importer relies on XSLT2 processing only available with SAXON and requires .jar file to run
 
 isatools v0.7 package
