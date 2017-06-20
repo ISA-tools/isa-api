@@ -486,15 +486,45 @@ def export_to_isatab(FP, output_dir):
         assay_df.to_csv(assay_fp, sep='\t', index=False, header=assay_df.isatab_header)
 
 
+def get_first_node_index(header):
+    squashed_header = list(map(lambda x: squashstr(x), header))
+    nodes = ["samplename", "extractname", "labeledextractname", "hybridizationname", "assayname"]
+    for node in nodes:
+        try:
+            index = squashed_header.index(node)
+            return index
+        except ValueError:
+            pass
+
+
 def split_tables(sdrf_path):
+
+    def split_on_sample(sdrf_df):
+        sdrf_df_isatab_header = sdrf_df.isatab_header
+        sdrf_df_cols = list(sdrf_df.columns)
+        sample_name_index = sdrf_df_cols.index("Sample Name")
+        study_df = sdrf_df[sdrf_df.columns[0:sample_name_index + 1]].drop_duplicates()
+        study_df.isatab_header = sdrf_df_isatab_header[0:sample_name_index + 1]
+        assay_df = sdrf_df[sdrf_df.columns[sample_name_index:]]
+        assay_df.isatab_header = sdrf_df_isatab_header[sample_name_index:]
+        return study_df, assay_df
+
     sdrf_df = isatab.read_tfile(sdrf_path)
-    sdrf_df_isatab_header = sdrf_df.isatab_header
-    sample_name_index = list(sdrf_df.columns).index("Sample Name")
-    study_df = sdrf_df[sdrf_df.columns[0:sample_name_index+1]].drop_duplicates()
-    study_df.isatab_header = sdrf_df_isatab_header[0:sample_name_index+1]
-    assay_df = sdrf_df[sdrf_df.columns[sample_name_index:]]
-    assay_df.isatab_header = sdrf_df_isatab_header[sample_name_index:]
-    return study_df, assay_df
+
+    if "Sample Name" in sdrf_df.columns:
+        return split_on_sample(sdrf_df)
+    else:  # insert Sample Name
+        sdrf_df_columns = list(sdrf_df.columns)
+        sdrf_df["Sample Name"] = sdrf_df[sdrf_df_columns[get_first_node_index(sdrf_df_columns)]]
+        sdrf_df_isatab_header = sdrf_df.isatab_header
+        sdrf_df_isatab_header.insert(get_first_node_index(sdrf_df_columns), "Sample Name")
+
+        sdrf_df_columns.insert(get_first_node_index(sdrf_df_columns), "Sample Name")
+
+        sdrf_df = sdrf_df[sdrf_df_columns]
+        sdrf_df.isatab_header = sdrf_df_isatab_header
+
+        return split_on_sample(sdrf_df)
 
 
 idf_map = {
@@ -731,7 +761,7 @@ def get_squashed(key):  # for MAGE-TAB spec 2.1.7, deal with variants on labels
         return squashstr(key)
 
 
-def parse_idf(file_path, technology_type=None, measurement_type=None):
+def parse_idf(file_path, technology_type=None, measurement_type=None, technology_platform=None):
 
     def get_single(values):
         stripped_values = [x for x in values if x != '']
@@ -1164,32 +1194,44 @@ def parse_idf(file_path, technology_type=None, measurement_type=None):
     if "ArrayExpressAccession" in comments_dict.keys():
         S.identifier = comments_dict["ArrayExpressAccession"]  # ArrayExpress adds this, so use it as the study ID
 
-
     design_type = None
 
     if "AEExperimentType" in comments_dict.keys():
         design_type = comments_dict["AEExperimentType"]
 
-    protocol_types = [x.protocol_type for x in S.protocols]
-    hyb_prots_used = {"nucleic acid hybridization",
-                      "hybridization"}.intersection({squashstr(x.term) for x in protocol_types})
+    inferred_t_type = None
+    inferred_m_type = None
+    inferred_t_plat = None
+    if design_type is not None:
+        inferred_t_type, inferred_m_type, inferred_t_plat = get_measurement_and_type(design_type=design_type)
+
     if sdrf_file is not None:
         S.filename = "s_{}".format(sdrf_file)
         a_filename = "a_{}".format(sdrf_file)
 
-
-
         ttoa = None
         if technology_type is not None:
             ttoa = OntologyAnnotation(term=technology_type)
-        elif technology_type is None and len(hyb_prots_used) > 0:
-            print("Detected probable DNA microarray technology type")
-            ttoa = OntologyAnnotation(term="DNA microarray")
+        elif technology_type is None and inferred_t_type is not None:
+            print("Detected probable '{}' technology type".format(inferred_t_type))
+            ttoa = OntologyAnnotation(term=inferred_t_type)
+
         mtoa = None
         if measurement_type is not None:
             mtoa = OntologyAnnotation(term=measurement_type)
+        elif measurement_type is None and inferred_m_type is not None:
+            print("Detected probable '{}' measurement type".format(inferred_m_type))
+            mtoa = OntologyAnnotation(term=inferred_m_type)
+
+        tp = ''
+        if technology_platform is not None:
+            tp = technology_platform
+        elif technology_platform is None and inferred_t_plat is not None:
+            print("Detected probable '{}' technology platform".format(inferred_t_plat))
+            tp = inferred_t_plat
+
         S.assays = [
-            Assay(filename=a_filename, technology_type=ttoa, measurement_type=mtoa)
+            Assay(filename=a_filename, technology_type=ttoa, measurement_type=mtoa, technology_platform=tp)
         ]
 
     ISA.identifier = S.identifier
