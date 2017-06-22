@@ -6,7 +6,7 @@ import shutil
 from isatools.convert import magetab2isatab, magetab2json
 
 EBI_FTP_SERVER = 'ftp.ebi.ac.uk'
-AX_EXPERIMENT_BASE_DIR = '/pub/databases/arrayexpress/data/experiment/'
+AX_EXPERIMENT_BASE_DIR = '/pub/databases/arrayexpress/data/experiment'
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -43,8 +43,8 @@ def get(arrayexpress_id, target_dir=None):
             logging.info("Using directory '{}'".format(target_dir))
             idf_filename = "{}.idf.txt".format(arrayexpress_id)
             with open(os.path.join(target_dir, idf_filename), 'wb') as out_file:
-                logging.info("Retrieving file '{}'".format(EBI_FTP_SERVER + AX_EXPERIMENT_BASE_DIR + '/' + exp_type + '/' +
-                                                           arrayexpress_id + '/' + idf_filename))
+                logging.info("Retrieving file '{}'".format(EBI_FTP_SERVER + AX_EXPERIMENT_BASE_DIR + '/' + exp_type +
+                                                           '/' + arrayexpress_id + '/' + idf_filename))
                 ftp.retrbinary('RETR ' + idf_filename, out_file.write)
             sdrf_filename = "{}.sdrf.txt".format(arrayexpress_id)
             with open(os.path.join(target_dir, sdrf_filename), 'wb') as out_file:
