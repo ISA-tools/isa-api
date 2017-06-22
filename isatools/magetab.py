@@ -500,29 +500,34 @@ def get_first_node_index(header):
 def split_tables(sdrf_path):
 
     def split_on_sample(sdrf_df):
-        sdrf_df_isatab_header = sdrf_df.isatab_header
         sdrf_df_cols = list(sdrf_df.columns)
+
         sample_name_index = sdrf_df_cols.index("Sample Name")
+
         study_df = sdrf_df[sdrf_df.columns[0:sample_name_index + 1]].drop_duplicates()
-        study_df.isatab_header = sdrf_df_isatab_header[0:sample_name_index + 1]
+        study_df.isatab_header = sdrf_df.isatab_header[0:sample_name_index + 1]
+
         assay_df = sdrf_df[sdrf_df.columns[sample_name_index:]]
-        assay_df.isatab_header = sdrf_df_isatab_header[sample_name_index:]
+        assay_df.isatab_header = sdrf_df.isatab_header[sample_name_index:]
+
         return study_df, assay_df
 
     sdrf_df = isatab.read_tfile(sdrf_path)
 
-    if "Sample Name" in sdrf_df.columns:
+    sdrf_columns = list(sdrf_df.columns)
+    if "Hybridization Name" in sdrf_columns:
+        sdrf_df.columns = [x.replace("Hybridization Name", "Hybridization Assay Name") for x in sdrf_columns]
+
+    if "Sample Name" in list(sdrf_df.columns):
         return split_on_sample(sdrf_df)
     else:  # insert Sample Name
         sdrf_df_columns = list(sdrf_df.columns)
         sdrf_df["Sample Name"] = sdrf_df[sdrf_df_columns[get_first_node_index(sdrf_df_columns)]]
-        sdrf_df_isatab_header = sdrf_df.isatab_header
-        sdrf_df_isatab_header.insert(get_first_node_index(sdrf_df_columns), "Sample Name")
+        sdrf_df.isatab_header.insert(get_first_node_index(sdrf_df_columns), "Sample Name")
 
         sdrf_df_columns.insert(get_first_node_index(sdrf_df_columns), "Sample Name")
 
         sdrf_df = sdrf_df[sdrf_df_columns]
-        sdrf_df.isatab_header = sdrf_df_isatab_header
 
         return split_on_sample(sdrf_df)
 
@@ -1233,9 +1238,21 @@ def parse_idf(file_path, technology_type=None, measurement_type=None, technology
             print("Detected probable '{}' technology platform".format(inferred_t_plat))
             tp = inferred_t_plat
 
-        S.assays = [
-            Assay(filename=a_filename, technology_type=ttoa, measurement_type=mtoa, technology_platform=tp)
-        ]
+        A = Assay(filename=a_filename, technology_type=ttoa, measurement_type=mtoa, technology_platform=tp)
+
+        if (A.measurement_type, A.technology_type) in [
+            ("transcription profiling", "nucleotide sequencing"),
+            ("protein-DNA binding site identification", "nucleotide sequencing")
+        ]:
+            if "library construction" not in [x.name for x in S.protocols]:
+                logger.info("PROTOCOL INSERTION: {}, library construction".format(a_filename))
+                S.protocols.append(Protocol(name="library construction",
+                                            protocol_type=OntologyAnnotation(term="library construction")))
+            if "nucleic acid sequencing" not in [x.name for x in S.protocols]:
+                logger.info("PROTOCOL INSERTION: {}, nucleic acid sequencing".format(a_filename))
+                S.protocols.append(Protocol(name="nucleic acid sequencing",
+                                            protocol_type=OntologyAnnotation(term="nucleic acid sequencing")))
+        S.assays = [A]
 
     ISA.identifier = S.identifier
     ISA.title = S.title

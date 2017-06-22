@@ -24,7 +24,7 @@ class TestArrayExpressIO(unittest.TestCase):
         mock_ftp.cwd.assert_called_with('/pub/databases/arrayexpress/data/experiment/AFMX/E-AFMX-1')
         shutil.rmtree(tmp_dir)
 
-    """Tries to do actual call on ArrayExpress; uses E-AFMX-1 as not so big"""
+    """Tries to do actual call on ArrayExpress; uses E-AFMX-1"""
     def test_get_experiment_as_magetab(self):
         tmp_dir = AX.get('E-AFMX-1')  # gets E-AFMX-1 MAGE-TAB files
         self.assertEqual(len(os.listdir(tmp_dir)), 2)
