@@ -39,10 +39,10 @@ class TestMageTab2IsaTab(unittest.TestCase):
 
     def test_magetab2isatab_convert_e_geod_59671(self):
         with open(os.path.join(self._magetab_data_dir, 'E-GEOD-59671.idf.txt')) as idf_fp:
-            magetab2isatab.convert(idf_fp, self._tmp_dir2)
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir2, 'i_investigation.txt')))
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir2, 's_E-GEOD-59671.sdrf.txt')))
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir2, 'a_E-GEOD-59671.sdrf.txt')))
+            magetab2isatab.convert(idf_fp, self._tmp_dir)
+            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
+            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-GEOD-59671.sdrf.txt')))
+            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-GEOD-59671.sdrf.txt')))
             from isatools import isatab
             with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
                 isatab.validate(i_fp)
@@ -54,7 +54,7 @@ class TestMageTab2IsaTab(unittest.TestCase):
 
     def test_get_experiment_as_isatab_afmx_2(self):
         AX.get_isatab('E-AFMX-2', self._tmp_dir)  # gets E-AFMX-2 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir2, 'i_investigation.txt')) as i_fp:
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
     def test_get_experiment_as_isatab_afmx_3(self):
