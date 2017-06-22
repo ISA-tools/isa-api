@@ -8,10 +8,10 @@ logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=loggi
 logger = logging.getLogger(__name__)
 
 
-def convert(source_idf_fp, output_path, technology_type, measurement_type):
+def convert(source_idf_fp, output_path, technology_type=None, measurement_type=None):
     """ Converter for MAGE-TAB to ISA-Tab
     :param source_idf_fp: File descriptor of input IDF file
-    :param output_dir: Path to directory to write output ISA-Tab files to
+    :param output_path: Path to directory to write output ISA-Tab files to
     """
     df = pd.read_csv(source_idf_fp, names=range(0, 128), sep='\t', engine='python', encoding='utf-8', comment='#').dropna(axis=1, how='all')
     df = df.T  # transpose
@@ -46,7 +46,7 @@ def get_investigation_title(line, ISA):
 
 
 def get_first_node_index(header):
-    sqaushed_header = map(lambda x: magetab.squashstr(x), header)
+    sqaushed_header = list(map(lambda x: magetab.squashstr(x), header))
     nodes = ["samplename", "extractname", "labeledextractname", "hybridizationname", "assayname"]
     for node in nodes:
         try:
