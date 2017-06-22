@@ -1,5 +1,6 @@
 import itertools
-from isatools.model.v1 import StudyFactor
+from collections import OrderedDict, Iterable
+from isatools.model.v1 import StudyFactor, OntologyAnnotation
 
 __author__ = 'massi'
 
@@ -11,15 +12,15 @@ FACTOR_TYPES = dict(AGENT_VALUES='agent values', INTENSITY_VALUES='intensity_val
 
 BASE_FACTORS = [
     dict(
-        name='AGENT', display_singular='AGENT VALUE',
+        name='AGENT', type=OntologyAnnotation(term="perturbation agent"), display_singular='AGENT VALUE',
         display_plural='AGENT VALUES', uri='', values=set()
     ),
     dict(
-        name='INTENSITY', display_singular='INTENSITY VALUE',
+        name='INTENSITY', type=OntologyAnnotation(term="intensity"), display_singular='INTENSITY VALUE',
         display_plural='INTENSITY VALUES', uri='', values=set()
     ),
     dict(
-        name='DURATION', display_singular='DURATION VALUE',
+        name='DURATION', type=OntologyAnnotation(term="time"), display_singular='DURATION VALUE',
         display_plural='DURATION VALUES', uri='', values=set()
     )
 ]
@@ -47,13 +48,11 @@ class InterventionStudyDesign(StudyDesigner):
 class Treatment(object):
     """
     """
-
-
-
     def __init__(self):
         pass
 
-#FIXME use the factor class??
+
+# FIXME use the factor class??
 class TreatmentFactory(object):
 
     def __init__(self, intervention_type=INTERVENTIONS['CHEMICAL'], factors=BASE_FACTORS):
@@ -68,15 +67,26 @@ class TreatmentFactory(object):
         self._duration_values = set()
         self._factors = [factor.get('name', None) for factor in factors]
         """
-        self._factors = factors
+        self._factors = OrderedDict([(StudyFactor(name=factor.get('name'), factor_type=factor.get('type')), set())
+                                     for factor in factors])
+
         self._factorial_design = set()
 
-    def add_factor_value(self, factor_name, factor_value):
-        factor_names = [factor.get('name') for factor in self.factors]
-        if factor_name in factor_names:
-            self.factors['values'].update(factor_value)
+    def add_factor_value(self, factor, factor_value):
+        """
+        Add a single factor value or a list of factor value to the relevant set set
+        :param factor: isatools.model.v1.StudyFactor
+        :param factor_value: string/list
+        :return: None
+        """
+        if factor in self.factors:
+            current_factors = self.factors.get(factor, set())
+            if isinstance(factor_value, str):
+                current_factors.add(factor_value)
+            elif isinstance(factor_value, Iterable):
+                current_factors.update(factor_value)
         else:
-            raise KeyError('The factor {} is not present in the design'.format(factor_name))
+            raise KeyError('The factor {} is not present in the design'.format(factor.name))
 
     @property
     def type(self):
