@@ -22,7 +22,8 @@ def convert(source_idf_fp, output_path, technology_type=None, measurement_type=N
     for _, row in df.iterrows():
         sdrf_file = row["SDRF File"]
         if isinstance(sdrf_file, str):
-            study_df, assay_df = magetab.split_tables(sdrf_path=os.path.join(os.path.dirname(source_idf_fp.name), sdrf_file))
+            study_df, assay_df = magetab.split_tables(sdrf_path=os.path.join(os.path.dirname(source_idf_fp.name),
+                                                                             sdrf_file))
             study_df.columns = study_df.isatab_header
             assay_df.columns = assay_df.isatab_header
             # write out ISA table files
