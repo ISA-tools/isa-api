@@ -2527,40 +2527,49 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
                     technology_type = assay_df['Study Assay Technology Type'].tolist()[x]
                     if assay_filename is not '':
                         try:
-                            logger.info("Loading... {}".format(assay_filename))
-                            with open(os.path.join(os.path.dirname(fp.name), assay_filename), encoding='utf-8') as a_fp:
-                                assay_table = load_table(a_fp)
-                                assay_table.filename = assay_filename
-                                assay_tables.append(assay_table)
-                                config = configs[(measurement_type, technology_type)]
-                                logger.info(
-                                    "Validating {} against assay table configuration ({}, {})...".format(
-                                        assay_filename, measurement_type, technology_type))
-                                logger.info("Checking Factor Value presence...")
-                                check_factor_value_presence(assay_table)  # Rule 4007
-                                logger.info("Checking required fields...")
-                                check_required_fields(assay_table, config)  # Rule 4003-8, 4010
-                                logger.info("Checking generic fields...")
-                                if not check_field_values(assay_table, config):  # Rule 4011
-                                    logger.warn(
-                                        "(W) There are some field value inconsistencies in {} against {} configuration".format(
-                                            assay_table.filename, (measurement_type, technology_type)))
-                                logger.info("Checking unit fields...")
-                                if not check_unit_field(assay_table, config):
-                                    logger.warn(
-                                        "(W) There are some unit value inconsistencies in {} against {} configuration".format(
-                                            assay_table.filename, (measurement_type, technology_type)))
-                                logger.info("Checking protocol fields...")
-                                if not check_protocol_fields(assay_table, config, protocol_names_and_types):  # Rule 4009
-                                    logger.warn("(W) There are some protocol inconsistencies in {} against {} "
-                                                "configuration".format(assay_table.filename, (measurement_type, technology_type)))
-                                logger.info("Checking ontology fields...")
-                                if not check_ontology_fields(assay_table, config):  # Rule 3010
-                                    logger.warn("(W) There are some ontology annotation inconsistencies in {} against {} "
-                                                "configuration".format(assay_table.filename, (measurement_type, technology_type)))
-                                logger.info("Finished validation on {}".format(assay_filename))
-                        except FileNotFoundError:
-                            pass
+                            config = configs[(measurement_type, technology_type)]
+                        except KeyError:
+                            logger.error("Could not load config matching ({}, {})".format(measurement_type, technology_type))
+                            logger.error("Only have configs matching:")
+                            for k in configs.keys():
+                                logger.error(k)
+                        if config is None:
+                            logger.warn("Skipping configuration validation as could not load config...")
+                        else:
+                            try:
+                                logger.info("Loading... {}".format(assay_filename))
+                                with open(os.path.join(os.path.dirname(fp.name), assay_filename), encoding='utf-8') as a_fp:
+                                    assay_table = load_table(a_fp)
+                                    assay_table.filename = assay_filename
+                                    assay_tables.append(assay_table)
+                                    logger.info(
+                                        "Validating {} against assay table configuration ({}, {})...".format(
+                                            assay_filename, measurement_type, technology_type))
+                                    logger.info("Checking Factor Value presence...")
+                                    check_factor_value_presence(assay_table)  # Rule 4007
+                                    logger.info("Checking required fields...")
+                                    check_required_fields(assay_table, config)  # Rule 4003-8, 4010
+                                    logger.info("Checking generic fields...")
+                                    if not check_field_values(assay_table, config):  # Rule 4011
+                                        logger.warn(
+                                            "(W) There are some field value inconsistencies in {} against {} configuration".format(
+                                                assay_table.filename, (measurement_type, technology_type)))
+                                    logger.info("Checking unit fields...")
+                                    if not check_unit_field(assay_table, config):
+                                        logger.warn(
+                                            "(W) There are some unit value inconsistencies in {} against {} configuration".format(
+                                                assay_table.filename, (measurement_type, technology_type)))
+                                    logger.info("Checking protocol fields...")
+                                    if not check_protocol_fields(assay_table, config, protocol_names_and_types):  # Rule 4009
+                                        logger.warn("(W) There are some protocol inconsistencies in {} against {} "
+                                                    "configuration".format(assay_table.filename, (measurement_type, technology_type)))
+                                    logger.info("Checking ontology fields...")
+                                    if not check_ontology_fields(assay_table, config):  # Rule 3010
+                                        logger.warn("(W) There are some ontology annotation inconsistencies in {} against {} "
+                                                    "configuration".format(assay_table.filename, (measurement_type, technology_type)))
+                                    logger.info("Finished validation on {}".format(assay_filename))
+                            except FileNotFoundError:
+                                pass
             if study_sample_table is not None:
                 logger.info("Checking consistencies between study sample table and assay tables...")
                 check_sample_names(study_sample_table, assay_tables)
