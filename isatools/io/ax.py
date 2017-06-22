@@ -3,7 +3,7 @@ import logging
 import os
 import tempfile
 import shutil
-from isatools.convert import magetab2isatab
+from isatools.convert import magetab2isatab, magetab2json
 
 EBI_FTP_SERVER = 'ftp.ebi.ac.uk'
 AX_EXPERIMENT_BASE_DIR = '/pub/databases/arrayexpress/data/experiment/'
@@ -86,3 +86,27 @@ def get_isatab(arrayexpress_id, target_dir=None):
     finally:
         shutil.rmtree(tmp_dir)
         return target_dir
+
+
+def getj(arrayexpress_id):
+    """
+    This function downloads MAGE-TAB content as ISA-JSON from the ArrayExpress FTP site.
+
+    :param ax_experiment_id: Experiment identifier for ArrayExpress study to get, as a str (e.g. E-GEOD-59671)
+    :return: ISA-JSON representation of the MAGE-TAB content
+
+    Example usage:
+        from isatools.io import ax as AX
+        my_json = AX.getj('E-GEOD-59671')
+    """
+    tmp_dir = tempfile.mkdtemp()
+    mage_json = None
+    try:
+        get(arrayexpress_id=arrayexpress_id, target_dir=tmp_dir)
+        with open(os.path.join(tmp_dir, "{}.idf.txt".format(arrayexpress_id))) as idf_fp:
+            mage_json = magetab2json.convert(source_idf_fp=idf_fp)
+    except Exception as e:
+        logger.fatal("Something went wrong: {}".format(e))
+    finally:
+        shutil.rmtree(tmp_dir)
+        return mage_json
