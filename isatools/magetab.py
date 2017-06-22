@@ -847,12 +847,12 @@ def parse_idf(file_path, technology_type=None, measurement_type=None, technology
     except KeyError:
         pass
 
-    if len(experimental_designs) > 0:
-        S.comments.append(Comment(name="Experimental Design", value=';'.join(experimental_designs)))
-    if len(experimental_design_tsrs) > 0:
-        S.comments.append(Comment(name="Experimental Design Term Source REF", value=';'.join(experimental_design_tsrs)))
-    if len(experimental_design_tans) > 0:
-        S.comments.append(Comment(name="Experimental Design Term Accession Number", value=';'.join(experimental_design_tans)))
+    for design, tsr, tan in zip_longest(experimental_designs, experimental_design_tsrs, experimental_design_tans):
+        try:
+            ts = ts_dict[tsr]
+        except KeyError:
+            ts = None
+        S.design_descriptors.append(OntologyAnnotation(term=design, term_source=ts, term_accession=tan))
 
     # Experimental Factor section of IDF
 
@@ -1194,16 +1194,19 @@ def parse_idf(file_path, technology_type=None, measurement_type=None, technology
     if "ArrayExpressAccession" in comments_dict.keys():
         S.identifier = comments_dict["ArrayExpressAccession"]  # ArrayExpress adds this, so use it as the study ID
 
-    design_type = None
+    design_types = None
 
-    if "AEExperimentType" in comments_dict.keys():
-        design_type = comments_dict["AEExperimentType"]
+    if "experimentaldesign" in squashed_table_dict.keys():
+        design_types = experimental_designs
 
-    inferred_t_type = None
+    elif "AEExperimentType" in comments_dict.keys():
+        design_types = [comments_dict["AEExperimentType"]]
+
     inferred_m_type = None
+    inferred_t_type = None
     inferred_t_plat = None
-    if design_type is not None:
-        inferred_t_type, inferred_m_type, inferred_t_plat = get_measurement_and_type(design_type=design_type)
+    if design_types is not None:
+        inferred_m_type, inferred_t_type, inferred_t_plat = get_measurement_and_tech(design_types=design_types)
 
     if sdrf_file is not None:
         S.filename = "s_{}".format(sdrf_file)
@@ -1240,20 +1243,21 @@ def parse_idf(file_path, technology_type=None, measurement_type=None, technology
     return ISA
 
 
-def get_measurement_and_type(design_type):
+def get_measurement_and_tech(design_types):
+    for design_type in design_types:
+        if re.match("(?i).*ChIP-Chip.*", design_type):
+            return "protein-DNA binding site identification", "DNA microarray", "ChIP-Chip"
+        if re.match("(?i).*RNA-seq.*", design_type) or re.match("(?i).*RNA-Seq.*", design_type) or re.match(
+                "(?i).*transcription profiling by high throughput sequencing.*", design_type):
+            return "transcription profiling", "nucleotide sequencing", "RNA-Seq"
+        if re.match(".*transcription profiling by array.*", design_type) or re.match("dye_swap_design", design_type):
+            return "transcription profiling", "DNA microarray", "GeneChip"
+        if re.match("(?i).*methylation profiling by array.*", design_type):
+            return "DNA methylation profiling", "DNA microarray", "Me-Chip"
+        if re.match("(?i).*comparative genomic hybridization by array.*", design_type):
+            return "comparative genomic hybridization", "DNA microarray", "CGH-Chip"
+        if re.match(".*genotyping by array.*", design_type):
+            return "SNP analysis", "DNA microarray", "SNPChip"
+        if re.match("(?i).*ChIP-Seq.*", design_type) or re.match("(?i).*chip-seq.*", design_type):
+            return "protein-DNA binding site identification", "nucleotide sequencing", "ChIP-Seq"
 
-    if re.match("(?i).*ChIP-Chip.*", design_type):
-        return "protein-DNA binding site identification", "DNA microarray", "ChIP-Chip"
-    if re.match("(?i).*RNA-seq.*", design_type) or re.match("(?i).*RNA-Seq.*", design_type) or re.match(
-            "(?i).*transcription profiling by high throughput sequencing.*", design_type):
-        return "transcription profiling", "nucleotide sequencing", "RNA-Seq"
-    if re.match(".*transcription profiling by array.*", design_type) or re.match("dye_swap_design", design_type):
-        return "transcription profiling", "DNA microarray", "GeneChip"
-    if re.match("(?i).*methylation profiling by array.*", design_type):
-        return "DNA methylation profiling", "DNA microarray", "Me-Chip"
-    if re.match("(?i).*comparative genomic hybridization by array.*", design_type):
-        return "comparative genomic hybridization", "DNA microarray", "CGH-Chip"
-    if re.match(".*genotyping by array.*", design_type):
-        return "SNP analysis", "DNA microarray", "SNPChip"
-    if re.match("(?i).*ChIP-Seq.*", design_type) or re.match("(?i).*chip-seq.*", design_type):
-        return "protein-DNA binding site identification", "nucleotide sequencing", "ChIP-Seq"
