@@ -424,6 +424,15 @@ class StudyFactor(Commentable):
         else:
             self.factor_type = factor_type
 
+    def __hash__(self):
+        return hash(self.name)
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __ne__(self, other):
+        return not self == other
+
 
 class Assay(Commentable):
     """An Assay represents a test performed either on material taken from a subject or on a whole initial subject,
