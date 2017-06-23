@@ -129,6 +129,18 @@ class OntologySource(Commentable):
         self.version = version
         self.description = description
 
+    def __repr__(self):
+        return 'OntologySource(name={0}, file={1})'.format(self.name, self.file)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return self.name == other.name and self.file == other.file
+
+    def __ne__(self, other):
+        return not self == other
+
 
 class OntologyAnnotation(Commentable):
     """An ontology annotation
@@ -147,6 +159,20 @@ class OntologyAnnotation(Commentable):
         self.term_source = term_source
         self.term_accession = term_accession
         self.id = id_
+
+    def __repr__(self):
+        return 'OntologyAnnotation(term={0}, term_source={1}, term_accession={2})'.format(self.term, self.term_source,
+                                                                                         self.term_accession)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return self.term == other.term and self.term_source == other.term_source \
+               and self.term_accession == self.term_accession
+
+    def __ne__(self, other):
+        return not self == other
 
     @property
     def term(self):
@@ -424,8 +450,11 @@ class StudyFactor(Commentable):
         else:
             self.factor_type = factor_type
 
+    def __repr__(self):
+        return 'StudyFactor(name={0})'.format(self.name)
+
     def __hash__(self):
-        return hash(self.name)
+        return hash(repr(self))
 
     def __eq__(self, other):
         return self.name == other.name
@@ -722,6 +751,18 @@ class FactorValue(Commentable):
         self.factor_name = factor_name
         self.value = value
         self.unit = unit
+
+    def __repr__(self):
+        return 'FactorValue(factor_name={0}, value={1}, unit={2}'.format(self.factor_name, self.value, self.unit)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return self.factor_name == other.factor_name and self.value == other.value and self.unit == other.unit
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class Process(Commentable):

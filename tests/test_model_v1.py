@@ -1,5 +1,5 @@
 import unittest
-from isatools.model.v1 import StudyFactor
+from isatools.model.v1 import OntologySource, OntologyAnnotation, StudyFactor, FactorValue
 
 
 class TestSimpleExamples(unittest.TestCase):
@@ -49,16 +49,42 @@ class TestSimpleExamples(unittest.TestCase):
                                                            'sample_material-2'})
 
 
+class TestOntologySource(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_repr(self):
+        ontology_source = OntologySource(name='some ontology', file='ontology_file.txt')
+        self.assertEqual(repr(ontology_source), 'OntologySource(name=some ontology, file=ontology_file.txt)')
+
+class TestOntologyAnnotation(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_repr(self):
+        ontology_source = OntologySource(name='some ontology', file='ontology_file.txt')
+        ontology_annotation = OntologyAnnotation(term='thing', term_source=ontology_source, term_accession='http://this.is.a.uri.org')
+        self.assertEqual(repr(ontology_annotation), 'OntologyAnnotation(term=thing, '
+                                                    'term_source=OntologySource(name=some ontology, '
+                                                    'file=ontology_file.txt), '
+                                                    'term_accession=http://this.is.a.uri.org)')
+
 class TestStudyFactor(unittest.TestCase):
 
     def setUp(self):
         pass
 
+    def test_study_factor_repr(self):
+        study_factor = StudyFactor(name='Duration', factor_type='time')
+        self.assertEqual(repr(study_factor), 'StudyFactor(name=Duration)')
+
     def test_study_factor_hash(self):
         name = 'Duration'
         factor_type = 'time'
         study_factor = StudyFactor(name=name, factor_type=factor_type)
-        self.assertEqual(hash(study_factor), hash(name))
+        self.assertEqual(hash(study_factor), hash(repr(study_factor)))
 
     def test_study_factor_eq(self):
         name = 'Duration'
@@ -70,3 +96,5 @@ class TestStudyFactor(unittest.TestCase):
         study_factor_1 = StudyFactor(name='Duration', factor_type='time')
         study_factor_2 = StudyFactor(name='Time', factor_type='time')
         self.assertNotEqual(study_factor_1, study_factor_2, 'The two tests pass the equality test')
+
+
