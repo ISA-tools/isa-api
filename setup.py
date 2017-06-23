@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='isatools',
-    version='0.8.1',
+    version='0.8.2',
     packages=['isatools', 'isatools.convert', 'isatools.io', 'isatools.model'],
     package_data={'isatools': ['schemas/cedar/*.json',
                                'schemas/isa_model_version_1_0_schemas/core/*.json',
