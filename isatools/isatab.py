@@ -2527,40 +2527,49 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
                     technology_type = assay_df['Study Assay Technology Type'].tolist()[x]
                     if assay_filename is not '':
                         try:
-                            logger.info("Loading... {}".format(assay_filename))
-                            with open(os.path.join(os.path.dirname(fp.name), assay_filename), encoding='utf-8') as a_fp:
-                                assay_table = load_table(a_fp)
-                                assay_table.filename = assay_filename
-                                assay_tables.append(assay_table)
-                                config = configs[(measurement_type, technology_type)]
-                                logger.info(
-                                    "Validating {} against assay table configuration ({}, {})...".format(
-                                        assay_filename, measurement_type, technology_type))
-                                logger.info("Checking Factor Value presence...")
-                                check_factor_value_presence(assay_table)  # Rule 4007
-                                logger.info("Checking required fields...")
-                                check_required_fields(assay_table, config)  # Rule 4003-8, 4010
-                                logger.info("Checking generic fields...")
-                                if not check_field_values(assay_table, config):  # Rule 4011
-                                    logger.warn(
-                                        "(W) There are some field value inconsistencies in {} against {} configuration".format(
-                                            assay_table.filename, (measurement_type, technology_type)))
-                                logger.info("Checking unit fields...")
-                                if not check_unit_field(assay_table, config):
-                                    logger.warn(
-                                        "(W) There are some unit value inconsistencies in {} against {} configuration".format(
-                                            assay_table.filename, (measurement_type, technology_type)))
-                                logger.info("Checking protocol fields...")
-                                if not check_protocol_fields(assay_table, config, protocol_names_and_types):  # Rule 4009
-                                    logger.warn("(W) There are some protocol inconsistencies in {} against {} "
-                                                "configuration".format(assay_table.filename, (measurement_type, technology_type)))
-                                logger.info("Checking ontology fields...")
-                                if not check_ontology_fields(assay_table, config):  # Rule 3010
-                                    logger.warn("(W) There are some ontology annotation inconsistencies in {} against {} "
-                                                "configuration".format(assay_table.filename, (measurement_type, technology_type)))
-                                logger.info("Finished validation on {}".format(assay_filename))
-                        except FileNotFoundError:
-                            pass
+                            config = configs[(measurement_type, technology_type)]
+                        except KeyError:
+                            logger.error("Could not load config matching ({}, {})".format(measurement_type, technology_type))
+                            logger.error("Only have configs matching:")
+                            for k in configs.keys():
+                                logger.error(k)
+                        if config is None:
+                            logger.warn("Skipping configuration validation as could not load config...")
+                        else:
+                            try:
+                                logger.info("Loading... {}".format(assay_filename))
+                                with open(os.path.join(os.path.dirname(fp.name), assay_filename), encoding='utf-8') as a_fp:
+                                    assay_table = load_table(a_fp)
+                                    assay_table.filename = assay_filename
+                                    assay_tables.append(assay_table)
+                                    logger.info(
+                                        "Validating {} against assay table configuration ({}, {})...".format(
+                                            assay_filename, measurement_type, technology_type))
+                                    logger.info("Checking Factor Value presence...")
+                                    check_factor_value_presence(assay_table)  # Rule 4007
+                                    logger.info("Checking required fields...")
+                                    check_required_fields(assay_table, config)  # Rule 4003-8, 4010
+                                    logger.info("Checking generic fields...")
+                                    if not check_field_values(assay_table, config):  # Rule 4011
+                                        logger.warn(
+                                            "(W) There are some field value inconsistencies in {} against {} configuration".format(
+                                                assay_table.filename, (measurement_type, technology_type)))
+                                    logger.info("Checking unit fields...")
+                                    if not check_unit_field(assay_table, config):
+                                        logger.warn(
+                                            "(W) There are some unit value inconsistencies in {} against {} configuration".format(
+                                                assay_table.filename, (measurement_type, technology_type)))
+                                    logger.info("Checking protocol fields...")
+                                    if not check_protocol_fields(assay_table, config, protocol_names_and_types):  # Rule 4009
+                                        logger.warn("(W) There are some protocol inconsistencies in {} against {} "
+                                                    "configuration".format(assay_table.filename, (measurement_type, technology_type)))
+                                    logger.info("Checking ontology fields...")
+                                    if not check_ontology_fields(assay_table, config):  # Rule 3010
+                                        logger.warn("(W) There are some ontology annotation inconsistencies in {} against {} "
+                                                    "configuration".format(assay_table.filename, (measurement_type, technology_type)))
+                                    logger.info("Finished validation on {}".format(assay_filename))
+                            except FileNotFoundError:
+                                pass
             if study_sample_table is not None:
                 logger.info("Checking consistencies between study sample table and assay tables...")
                 check_sample_names(study_sample_table, assay_tables)
@@ -2932,12 +2941,12 @@ def process_keygen(protocol_ref, column_group, object_label_index, all_columns, 
     output_node_index = find_gt(node_cols, object_label_index)
     if output_node_index > -1:
         output_node_label = all_columns[output_node_index]
-        output_node_value = series[output_node_label]
+        output_node_value = str(series[output_node_label])
 
     input_node_index = find_lt(node_cols, object_label_index)
     if input_node_index > -1:
         input_node_label = all_columns[input_node_index]
-        input_node_value = series[input_node_label]
+        input_node_value = str(series[input_node_label])
 
     input_nodes_with_prot_keys = DF[[all_columns[object_label_index], all_columns[input_node_index]]].drop_duplicates()
     output_nodes_with_prot_keys = DF[[all_columns[object_label_index], all_columns[output_node_index]]].drop_duplicates()
@@ -3194,7 +3203,7 @@ class ProcessSequenceFactory:
             if self.samples is not None:
                 sample_map = dict(map(lambda x: ('Sample Name:' + x.name, x), self.samples))
                 sample_keys = list(map(lambda x: 'Sample Name:' + x,
-                                   [x for x in DF['Sample Name'].drop_duplicates() if x != '']))
+                                   [str(x) for x in DF['Sample Name'].drop_duplicates() if x != '']))
                 for k in sample_keys:
                     try:
                         samples[k] = sample_map[k]
@@ -3202,7 +3211,7 @@ class ProcessSequenceFactory:
                         print('warning! Did not find sample referenced at assay level in study samples')
             else:
                 samples = dict(map(lambda x: ('Sample Name:' + x, Sample(name=x)),
-                               [x for x in DF['Sample Name'].drop_duplicates() if x != '']))
+                               [str(x) for x in DF['Sample Name'].drop_duplicates() if x != '']))
         except KeyError:
             pass
 
@@ -3271,7 +3280,7 @@ class ProcessSequenceFactory:
                                                                                   ETA()]).start()
 
                 for _, object_series in pbar(DF[column_group].drop_duplicates().iterrows()):
-                    node_name = object_series[object_label]
+                    node_name = str(object_series[object_label])
                     node_key = ":".join([object_label, node_name])
                     material = None
                     if object_label == "Source Name":
@@ -3348,7 +3357,7 @@ class ProcessSequenceFactory:
 
                 for _, object_series in pbar(DF[column_group].drop_duplicates().iterrows()):
                     try:
-                        data_file = get_node_by_label_and_key(object_label, object_series[object_label])
+                        data_file = get_node_by_label_and_key(object_label, str(object_series[object_label]))
                         for comment_column in [c for c in column_group if c.startswith('Comment[')]:
                             if comment_column[8:-1] not in [x.name for x in data_file.comments]:
                                 data_file.comments.append(Comment(name=comment_column[8:-1], value=str(object_series[comment_column])))
@@ -3366,7 +3375,7 @@ class ProcessSequenceFactory:
                 for _, object_series in pbar(DF.iterrows()):  # don't drop duplicates
                     # if _ == 0:
                     #     print('processing: ', object_series[object_label])
-                    protocol_ref = object_series[object_label]
+                    protocol_ref = str(object_series[object_label])
                     process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
 
                     # TODO: Keep process key sequence here to reduce number of passes on Protocol REF columns?
@@ -3383,7 +3392,7 @@ class ProcessSequenceFactory:
                     if output_proc_index < output_node_index > -1:
 
                         output_node_label = DF.columns[output_node_index]
-                        output_node_value = object_series[output_node_label]
+                        output_node_value = str(object_series[output_node_label])
 
                         node_key = output_node_value
 
@@ -3404,7 +3413,7 @@ class ProcessSequenceFactory:
                     if input_proc_index < input_node_index > -1:
 
                         input_node_label = DF.columns[input_node_index]
-                        input_node_value = object_series[input_node_label]
+                        input_node_value = str(object_series[input_node_label])
 
                         node_key = input_node_value
 
@@ -3472,13 +3481,13 @@ class ProcessSequenceFactory:
 
                 if object_label.startswith('Source Name'):
                     try:
-                        source_node_context = get_node_by_label_and_key(object_label, object_series[object_label])
+                        source_node_context = get_node_by_label_and_key(object_label, str(object_series[object_label]))
                     except KeyError:
                         pass  # skip if object not found
 
                 if object_label.startswith('Sample Name'):
                     try:
-                        sample_node_context = get_node_by_label_and_key(object_label, object_series[object_label])
+                        sample_node_context = get_node_by_label_and_key(object_label, str(object_series[object_label]))
                     except KeyError:
                         pass  # skip if object not found
                     if source_node_context is not None:
@@ -3486,14 +3495,14 @@ class ProcessSequenceFactory:
                             sample_node_context.derives_from.append(source_node_context)
 
                 if object_label.startswith('Protocol REF'):
-                    protocol_ref = object_series[object_label]
+                    protocol_ref = str(object_series[object_label])
                     process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
                     process_key_sequence.append(process_key)
 
                 if object_label.endswith(' File'):
                     data_node = None
                     try:
-                        data_node = get_node_by_label_and_key(object_label, object_series[object_label])
+                        data_node = get_node_by_label_and_key(object_label, str(object_series[object_label]))
                     except KeyError:
                         pass  # skip if object not found
                     if sample_node_context is not None and data_node is not None:

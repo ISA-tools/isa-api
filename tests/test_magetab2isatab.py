@@ -4,6 +4,8 @@ import shutil
 from isatools.convert import magetab2isatab
 from tests import utils
 import tempfile
+from isatools.io import ax as AX
+from isatools import isatab
 
 
 def setUpModule():
@@ -37,10 +39,30 @@ class TestMageTab2IsaTab(unittest.TestCase):
 
     def test_magetab2isatab_convert_e_geod_59671(self):
         with open(os.path.join(self._magetab_data_dir, 'E-GEOD-59671.idf.txt')) as idf_fp:
-            magetab2isatab.convert(idf_fp, self._tmp_dir, 'DNA microarray', 'expression profiling')
+            magetab2isatab.convert(idf_fp, self._tmp_dir)
             self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
             self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-GEOD-59671.sdrf.txt')))
             self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-GEOD-59671.sdrf.txt')))
             from isatools import isatab
             with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
                 isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_afmx_1(self):
+        AX.get_isatab('E-AFMX-1', self._tmp_dir)  # gets E-AFMX-1 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_afmx_2(self):  # FIXME -> output ISA-Tab has many missing cells! WHY!?!?
+        AX.get_isatab('E-AFMX-2', self._tmp_dir)  # gets E-AFMX-2 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_afmx_3(self):
+        AX.get_isatab('E-AFMX-3', self._tmp_dir)  # gets E-AFMX-3 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_afmx_5(self):
+        AX.get_isatab('E-AFMX-5', self._tmp_dir)  # gets E-AFMX-5 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)

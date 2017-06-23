@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from io import StringIO
 from itertools import zip_longest
+import re
 
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
@@ -485,15 +486,49 @@ def export_to_isatab(FP, output_dir):
         assay_df.to_csv(assay_fp, sep='\t', index=False, header=assay_df.isatab_header)
 
 
+def get_first_node_index(header):
+    squashed_header = list(map(lambda x: squashstr(x), header))
+    nodes = ["samplename", "extractname", "labeledextractname", "hybridizationname", "assayname"]
+    for node in nodes:
+        try:
+            index = squashed_header.index(node)
+            return index
+        except ValueError:
+            pass
+
+
 def split_tables(sdrf_path):
+
+    def split_on_sample(sdrf_df):
+        sdrf_df_isatab_header = sdrf_df.isatab_header
+        sdrf_df_cols = list(sdrf_df.columns)
+        sample_name_index = sdrf_df_cols.index("Sample Name")
+        study_df = sdrf_df[sdrf_df.columns[0:sample_name_index + 1]].drop_duplicates()
+        study_df.isatab_header = sdrf_df_isatab_header[0:sample_name_index + 1]
+        assay_df = sdrf_df[sdrf_df.columns[sample_name_index:]]
+        assay_df.isatab_header = sdrf_df_isatab_header[sample_name_index:]
+        return study_df, assay_df
+
     sdrf_df = isatab.read_tfile(sdrf_path)
-    sdrf_df_isatab_header = sdrf_df.isatab_header
-    sample_name_index = list(sdrf_df.columns).index("Sample Name")
-    study_df = sdrf_df[sdrf_df.columns[0:sample_name_index+1]].drop_duplicates()
-    study_df.isatab_header = sdrf_df_isatab_header[0:sample_name_index+1]
-    assay_df = sdrf_df[sdrf_df.columns[sample_name_index:]]
-    assay_df.isatab_header = sdrf_df_isatab_header[sample_name_index:]
-    return study_df, assay_df
+
+    sdrf_columns = list(sdrf_df.columns)
+    if "Hybridization Name" in sdrf_columns:
+        sdrf_df.columns = [x.replace("Hybridization Name", "Hybridization Assay Name") for x in sdrf_columns]
+
+    if "Sample Name" in sdrf_df.columns:
+        return split_on_sample(sdrf_df)
+    else:  # insert Sample Name
+        sdrf_df_columns = list(sdrf_df.columns)
+        sdrf_df["Sample Name"] = sdrf_df[sdrf_df_columns[get_first_node_index(sdrf_df_columns)]]
+        sdrf_df_isatab_header = sdrf_df.isatab_header
+        sdrf_df_isatab_header.insert(get_first_node_index(sdrf_df_columns), "Sample Name")
+
+        sdrf_df_columns.insert(get_first_node_index(sdrf_df_columns), "Sample Name")
+
+        sdrf_df = sdrf_df[sdrf_df_columns]
+        sdrf_df.isatab_header = sdrf_df_isatab_header
+
+        return split_on_sample(sdrf_df)
 
 
 idf_map = {
@@ -730,7 +765,7 @@ def get_squashed(key):  # for MAGE-TAB spec 2.1.7, deal with variants on labels
         return squashstr(key)
 
 
-def parse_idf(file_path, technology_type=None, measurement_type=None):
+def parse_idf(file_path, technology_type=None, measurement_type=None, technology_platform=None):
 
     def get_single(values):
         stripped_values = [x for x in values if x != '']
@@ -816,12 +851,12 @@ def parse_idf(file_path, technology_type=None, measurement_type=None):
     except KeyError:
         pass
 
-    if len(experimental_designs) > 0:
-        S.comments.append(Comment(name="Experimental Design", value=';'.join(experimental_designs)))
-    if len(experimental_design_tsrs) > 0:
-        S.comments.append(Comment(name="Experimental Design Term Source REF", value=';'.join(experimental_design_tsrs)))
-    if len(experimental_design_tans) > 0:
-        S.comments.append(Comment(name="Experimental Design Term Accession Number", value=';'.join(experimental_design_tans)))
+    for design, tsr, tan in zip_longest(experimental_designs, experimental_design_tsrs, experimental_design_tans):
+        try:
+            ts = ts_dict[tsr]
+        except KeyError:
+            ts = None
+        S.design_descriptors.append(OntologyAnnotation(term=design, term_source=ts, term_accession=tan))
 
     # Experimental Factor section of IDF
 
@@ -1153,34 +1188,92 @@ def parse_idf(file_path, technology_type=None, measurement_type=None):
 
     # Comments in IDF
 
-    comment_keys = [x for x in squashed_table_dict.keys() if x.startswith("comment")]
+    comments_dict = dict(map(lambda x: (x[0][8:-1], get_single(x[1])), [x for x in squashed_table_dict.items()
+                                                                        if x[0].startswith("comment")]))
 
-    for key in comment_keys:
-        c = Comment(name=key[8:-1], value=get_single(squashed_table_dict[key]))
-        if c.name == "ArrayExpressAccession":
-            S.identifier = c.value  # ArrayExpress adds this comment, so use it as the study ID if it's available
+    for key in comments_dict.keys():
+        c = Comment(name=key, value=comments_dict[key])
         S.comments.append(c)
 
-    protocol_types = [x.protocol_type for x in S.protocols]
-    hyb_prots_used = {"nucleic acid hybridization",
-                      "hybridization"}.intersection({squashstr(x.term) for x in protocol_types})
+    if "ArrayExpressAccession" in comments_dict.keys():
+        S.identifier = comments_dict["ArrayExpressAccession"]  # ArrayExpress adds this, so use it as the study ID
+
+    design_types = None
+
+    if "experimentaldesign" in squashed_table_dict.keys():
+        design_types = experimental_designs
+
+    elif "AEExperimentType" in comments_dict.keys():
+        design_types = [comments_dict["AEExperimentType"]]
+
+    inferred_m_type = None
+    inferred_t_type = None
+    inferred_t_plat = None
+    if design_types is not None:
+        inferred_m_type, inferred_t_type, inferred_t_plat = get_measurement_and_tech(design_types=design_types)
+
     if sdrf_file is not None:
         S.filename = "s_{}".format(sdrf_file)
         a_filename = "a_{}".format(sdrf_file)
+
         ttoa = None
         if technology_type is not None:
             ttoa = OntologyAnnotation(term=technology_type)
-        elif technology_type is None and len(hyb_prots_used) > 0:
-            print("Detected probable DNA microarray technology type")
-            ttoa = OntologyAnnotation(term="DNA microarray")
+        elif technology_type is None and inferred_t_type is not None:
+            print("Detected probable '{}' technology type".format(inferred_t_type))
+            ttoa = OntologyAnnotation(term=inferred_t_type)
+
         mtoa = None
         if measurement_type is not None:
             mtoa = OntologyAnnotation(term=measurement_type)
-        S.assays = [
-            Assay(filename=a_filename, technology_type=ttoa, measurement_type=mtoa)
-        ]
+        elif measurement_type is None and inferred_m_type is not None:
+            print("Detected probable '{}' measurement type".format(inferred_m_type))
+            mtoa = OntologyAnnotation(term=inferred_m_type)
+
+        tp = ''
+        if technology_platform is not None:
+            tp = technology_platform
+        elif technology_platform is None and inferred_t_plat is not None:
+            print("Detected probable '{}' technology platform".format(inferred_t_plat))
+            tp = inferred_t_plat
+
+        A = Assay(filename=a_filename, technology_type=ttoa, measurement_type=mtoa, technology_platform=tp)
+
+        if (A.measurement_type, A.technology_type) in [
+            ("transcription profiling", "nucleotide sequencing"),
+            ("protein-DNA binding site identification", "nucleotide sequencing")
+        ]:
+            if "library construction" not in [x.name for x in S.protocols]:
+                logger.info("PROTOCOL INSERTION: {}, library construction".format(a_filename))
+                S.protocols.append(Protocol(name="library construction",
+                                            protocol_type=OntologyAnnotation(term="library construction")))
+            if "nucleic acid sequencing" not in [x.name for x in S.protocols]:
+                logger.info("PROTOCOL INSERTION: {}, nucleic acid sequencing".format(a_filename))
+                S.protocols.append(Protocol(name="nucleic acid sequencing",
+                                            protocol_type=OntologyAnnotation(term="nucleic acid sequencing")))
+        S.assays = [A]
 
     ISA.identifier = S.identifier
     ISA.title = S.title
     ISA.studies = [S]
     return ISA
+
+
+def get_measurement_and_tech(design_types):
+    for design_type in design_types:
+        if re.match("(?i).*ChIP-Chip.*", design_type):
+            return "protein-DNA binding site identification", "DNA microarray", "ChIP-Chip"
+        if re.match("(?i).*RNA-seq.*", design_type) or re.match("(?i).*RNA-Seq.*", design_type) or re.match(
+                "(?i).*transcription profiling by high throughput sequencing.*", design_type):
+            return "transcription profiling", "nucleotide sequencing", "RNA-Seq"
+        if re.match(".*transcription profiling by array.*", design_type) or re.match("dye_swap_design", design_type):
+            return "transcription profiling", "DNA microarray", "GeneChip"
+        if re.match("(?i).*methylation profiling by array.*", design_type):
+            return "DNA methylation profiling", "DNA microarray", "Me-Chip"
+        if re.match("(?i).*comparative genomic hybridization by array.*", design_type):
+            return "comparative genomic hybridization", "DNA microarray", "CGH-Chip"
+        if re.match(".*genotyping by array.*", design_type):
+            return "SNP analysis", "DNA microarray", "SNPChip"
+        if re.match("(?i).*ChIP-Seq.*", design_type) or re.match("(?i).*chip-seq.*", design_type):
+            return "protein-DNA binding site identification", "nucleotide sequencing", "ChIP-Seq"
+
