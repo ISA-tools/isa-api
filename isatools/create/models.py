@@ -1,6 +1,7 @@
 import itertools
+from numbers import Number
 from collections import OrderedDict, Iterable
-from isatools.model.v1 import StudyFactor, OntologyAnnotation
+from isatools.model.v1 import StudyFactor, FactorValue, OntologyAnnotation
 
 __author__ = 'massi'
 
@@ -48,8 +49,29 @@ class InterventionStudyDesign(StudyDesigner):
 class Treatment(object):
     """
     """
-    def __init__(self):
+    def __init__(self, factor_values):
+        """
+        Creates a new Treatment
+        :param factor_values: tuple of isatools.model.v1.FactorValue
+        """
+        self._factor_values = ()
+
+        self.factor_values = factor_values
+
+    def __hash__(self):
         pass
+
+    @property
+    def factor_values(self):
+        return self._factor_values
+
+    @factor_values.setter
+    def factor_values(self, factor_values=()):
+        if isinstance(factor_values, tuple) and all([isinstance(factor_value, FactorValue)
+                                                     for factor_value in factor_values]):
+            self._factor_values = factor_values
+        else:
+            raise TypeError('Data supplied is not correctly formatted for Treatment')
 
 
 # FIXME use the factor class??
@@ -81,7 +103,7 @@ class TreatmentFactory(object):
         """
         if factor in self.factors:
             current_factors = self.factors.get(factor, set())
-            if isinstance(factor_value, str):
+            if isinstance(factor_value, (str, Number)):
                 current_factors.add(factor_value)
             elif isinstance(factor_value, Iterable):
                 current_factors.update(factor_value)
@@ -95,6 +117,14 @@ class TreatmentFactory(object):
     @property
     def factors(self):
         return self._factors
+
+    def compute_full_factorial_design(self):
+        factor_values = [FactorValue(factor_name=factor_name, value=value, unit=None)
+                         for factor_name, values in self.factors.items() for value in values]
+        if set() not in self.factors.values():
+            return [Treatment(treatment_factors) for treatment_factors in itertools.product(*factor_values)]
+        else:
+            return []
 
     """
     @property
@@ -144,12 +174,6 @@ class TreatmentFactory(object):
             self._duration_values = value
         else:
             self._duration_values = {value}
-
-    def compute_full_factorial_design(self):
-        if self._agent_values and self._intensity_values and self.duration_values:
-            return {el for el in itertools.product(self.agent_values, self.intensity_values, self.duration_values)}
-        else:
-            return set()
 
     """
     

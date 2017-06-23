@@ -103,7 +103,73 @@ class TreatmentFactoryTest(unittest.TestCase):
         self.assertEqual(self.factory.type, INTERVENTIONS['CHEMICAL'])
         self.assertTrue(isinstance(self.factory.factors, OrderedDict))
 
-    def test_add_factor_value(self):
+    def test_add_factor_value_str(self):
         factor = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
         self.factory.add_factor_value(factor, 'agent_orange')
         self.assertEqual(self.factory.factors.get(factor), {'agent_orange'})
+
+    def test_add_factor_value_number(self):
+        factor = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
+        self.factory.add_factor_value(factor, 1.05)
+        self.assertEqual(self.factory.factors.get(factor), {1.05})
+
+    def test_add_factor_value_list(self):
+        values_to_add = ['agent_orange', 'crack, cocaine']
+        factor = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
+        self.factory.add_factor_value(factor, values_to_add)
+        self.assertEqual(self.factory.factors.get(factor), set(values_to_add))
+
+    def test_add_factor_value_list(self):
+        values_to_add = {'agent_orange', 'crack, cocaine'}
+        factor = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
+        self.factory.add_factor_value(factor, values_to_add)
+        self.assertEqual(self.factory.factors.get(factor), values_to_add)
+
+    def test_compute_full_factorial_design(self):
+        test_agents = {'cocaine', 'crack', 'ether'}
+        test_intensities = {'low', 'medium', 'high'}
+        test_durations = {'short', 'long'}
+        self.treatment.agent_values = test_agents
+        self.treatment.intensity_values = test_intensities
+        self.treatment.duration_values = test_durations
+        full_factorial = self.treatment.compute_full_factorial_design()
+        self.assertEqual(full_factorial, {
+            ('cocaine', 'high', 'long'),
+            ('cocaine', 'high', 'short'),
+            ('cocaine', 'low', 'long'),
+            ('cocaine', 'low', 'short'),
+            ('cocaine', 'medium', 'long'),
+            ('cocaine', 'medium', 'short'),
+            ('crack', 'high', 'long'),
+            ('crack', 'high', 'short'),
+            ('crack', 'low', 'long'),
+            ('crack', 'low', 'short'),
+            ('crack', 'medium', 'long'),
+            ('crack', 'medium', 'short'),
+            ('ether', 'high', 'long'),
+            ('ether', 'high', 'short'),
+            ('ether', 'low', 'long'),
+            ('ether', 'low', 'short'),
+            ('ether', 'medium', 'long'),
+            ('ether', 'medium', 'short')
+        })
+
+    def test_compute_full_factorial_design_empty_agents(self):
+        test_agents = set()
+        test_intensities = {'low', 'medium', 'high'}
+        test_durations = {'short', 'long'}
+        self.treatment.agent_values = test_agents
+        self.treatment.intensity_values = test_intensities
+        self.treatment.duration_values = test_durations
+        full_factorial = self.treatment.compute_full_factorial_design()
+        self.assertEqual(full_factorial, set())
+
+    def test_compute_full_factorial_design_empty_intensities(self):
+        test_agents = {'cocaine', 'crack', 'ether'}
+        test_intensities = set()
+        test_durations = {'short', 'long'}
+        self.treatment.agent_values = test_agents
+        self.treatment.intensity_values = test_intensities
+        self.treatment.duration_values = test_durations
+        full_factorial = self.treatment.compute_full_factorial_design()
+        self.assertEqual(full_factorial, set())
