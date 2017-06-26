@@ -455,7 +455,7 @@ def split_tables(sdrf_path):
 
 
 def transposed_tsv_to_dict(file_path):
-    with open(file_path, encoding='utf-8') as tsvfile:
+    with open(file_path, 'rU') as tsvfile:
         tsvreader = csv.reader(filter(lambda r: r[0] != '#', tsvfile), dialect='excel-tab')
         table_dict = {}
         for row in tsvreader:
@@ -930,6 +930,10 @@ def parse_idf(file_path, technology_type=None, measurement_type=None, technology
     inferred_t_plat = None
     if design_types is not None:
         inferred_m_type, inferred_t_type, inferred_t_plat = get_measurement_and_tech(design_types=design_types)
+    else:  # Final try to determine types from study title
+        if "transcription prof" in S.title.lower() or "gene expression prof" in S.title.lower():
+            inferred_m_type = "transcription profiling"
+            measurement_type = "DNA microarray"
 
     if sdrf_file is not None:
         S.filename = "s_{}".format(sdrf_file)
@@ -995,3 +999,5 @@ def get_measurement_and_tech(design_types):
             return "SNP analysis", "DNA microarray", "SNPChip"
         if re.match("(?i).*ChIP-Seq.*", design_type) or re.match("(?i).*chip-seq.*", design_type):
             return "protein-DNA binding site identification", "nucleotide sequencing", "ChIP-Seq"
+        else:
+            return None, None, None

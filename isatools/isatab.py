@@ -2530,9 +2530,10 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
                             config = configs[(measurement_type, technology_type)]
                         except KeyError:
                             logger.error("Could not load config matching ({}, {})".format(measurement_type, technology_type))
-                            logger.error("Only have configs matching:")
+                            logger.warn("Only have configs matching:")
                             for k in configs.keys():
-                                logger.error(k)
+                                logger.warn(k)
+                            config = None
                         if config is None:
                             logger.warn("Skipping configuration validation as could not load config...")
                         else:
@@ -2570,10 +2571,10 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
                                     logger.info("Finished validation on {}".format(assay_filename))
                             except FileNotFoundError:
                                 pass
-            if study_sample_table is not None:
-                logger.info("Checking consistencies between study sample table and assay tables...")
-                check_sample_names(study_sample_table, assay_tables)
-                logger.info("Finished checking study sample table against assay tables...")
+                        if study_sample_table is not None:
+                            logger.info("Checking consistencies between study sample table and assay tables...")
+                            check_sample_names(study_sample_table, assay_tables)
+                            logger.info("Finished checking study sample table against assay tables...")
             if len(errors) != 0:
                 logger.info("Skipping pooling test as there are outstanding errors")
             else:
@@ -3068,8 +3069,8 @@ def pairwise(iterable):
 
 def read_tfile(tfile_path, index_col=None, factor_filter=None):
 
-    with open(tfile_path, encoding='utf-8') as tfile_fp:
-        reader = csv.reader(tfile_fp, delimiter='\t')
+    with open(tfile_path, 'rU') as tfile_fp:
+        reader = csv.reader(tfile_fp, dialect='excel-tab')
         header = list(next(reader))
         tfile_fp.seek(0)
         tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col, memory_map=True, comment='#', encoding='utf-8').fillna('')

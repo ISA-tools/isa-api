@@ -79,8 +79,7 @@ def get_isatab(arrayexpress_id, target_dir=None):
         if target_dir is None:
             target_dir = tempfile.mkdtemp()
         logging.info("Using directory '{}'".format(target_dir))
-        with open(os.path.join(tmp_dir, "{}.idf.txt".format(arrayexpress_id))) as idf_fp:
-            magetab2isatab.convert(source_idf_fp=idf_fp, output_path=target_dir)
+        magetab2isatab.convert(os.path.join(tmp_dir, "{}.idf.txt".format(arrayexpress_id)), output_path=target_dir)
     except Exception as e:
         logger.fatal("Something went wrong: {}".format(e))
     finally:
