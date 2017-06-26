@@ -14,10 +14,13 @@ from itertools import tee
 import pandas as pd
 from progressbar import ProgressBar, SimpleProgress, Bar, ETA
 import io
+from itertools import zip_longest
 
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+LOG = logging.getLogger("isatools.isatab")
 
 errors = list()
 warnings = list()
@@ -3567,3 +3570,69 @@ def merge_study_with_assay_tables(study_file_path, assay_file_path, target_file_
     merged_DF = pd.merge(study_DF, assay_DF, on='Sample Name')
     with open(target_file_path, 'w') as fp:
         merged_DF.to_csv(fp, sep='\t', index=False, header=study_DF.isatab_header + assay_DF.isatab_header[1:])
+
+
+def squashstr(string):
+    nospaces = "".join(string.split())
+    return nospaces.lower()
+
+
+def get_squashed(key):
+    try:
+        if '[' in key and ']' in key:
+            return key[0:key.index('[')-1] + key[key.index('['):]
+        else:
+            return squashstr(key)
+    except ValueError:
+        return squashstr(key)
+
+
+class Parser(object):
+
+    def __init__(self):
+        self.ISA = Investigation()
+        self._ts_dict = {}
+
+    def parse_investigation(self, in_filename):
+        table_dict = {}
+        with open(in_filename, 'rU') as in_file:
+            tabreader = csv.reader(filter(lambda r: r[0] != '#', in_file), dialect='excel-tab')
+            for row in tabreader:
+                table_dict[get_squashed(row[0])] = row[1:]
+        self.parse_ontology_sources_section(table_dict.get('termsourcename'),
+                                            table_dict.get('termsourcefile'),
+                                            table_dict.get('termsourceversion'),
+                                            table_dict.get('termsourcedescription'))
+        self.parse_investigation_section(table_dict.get('investigationidentifier'),
+                                         table_dict.get('investigationtitle'),
+                                         table_dict.get('investigationdescription'),
+                                         table_dict.get('investigationsubmissiondate'),
+                                         table_dict.get('investigationpublicreleasedate'))
+
+    def parse_ontology_sources_section(self, names, files, versions, descriptions):
+        for name, file, version, description in zip_longest(names, files, versions, descriptions):
+            os = OntologySource(name=name, file=file, version=version, description=description)
+            self.ISA.ontology_source_references.append(os)
+            self._ts_dict[name] = os
+
+    def parse_investigation_section(self, identifiers, titles, descriptions, submissiondates, publicreleasedates):
+        for identifier, title, description, submissiondate, publicreleasedate in \
+                zip_longest(identifiers, titles, descriptions, submissiondates, publicreleasedates):
+            self.ISA.identifier = identifier
+            self.ISA.title = title
+            self.ISA.description = description
+            self.ISA.submission_date = submissiondate
+            self.ISA.public_release_date = publicreleasedate
+            break  # because there should only be one row
+
+
+
+def parse_in(in_filename, in_format='isa-tab'):
+    """ Parse the given input file using the in_format and return as ISA objects"""
+
+    LOG.debug("parsing {0} in format {1}".format(in_filename, in_format))
+
+    LOG.debug("starting to parse {0}".format(in_filename))
+
+    I = Parser.parse_investigation(in_filename)
+
