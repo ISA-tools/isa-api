@@ -1261,6 +1261,9 @@ def check_study_and_assay_graphs(study_json, configs):
                     process_graph.reverse()
                     assay_graph.append(process_graph)
                     process = [i for i in process_sequence_json if i["@id"] == process["previousProcess"]["@id"]][0]
+                    if process['@id'] == process["previousProcess"]["@id"]:
+                        logger.fatal("Previous process is same as current process, which forms a loop!!!!! Cannot find start node!!!!!!!")
+                        break
             except KeyError:  # this happens when we can"t find a previousProcess
                 pass
             assay_graph.reverse()

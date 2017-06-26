@@ -343,35 +343,6 @@ def dump(inv_obj, output_path):
     return inv_obj
 
 
-def load(FP):  # loads IDF file
-    # first cast to IDF
-    inv_fp = cast_idf_to_inv(FP)
-    df = pd.read_csv(inv_fp, names=range(0, 128), sep='\t', engine='python', encoding='utf-8', comment='#').dropna(axis=1, how='all')
-    df = df.T  # transpose
-    df.reset_index(inplace=True)  # Reset index so it is accessible as column
-    df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
-    # second set output s_ and a_ files
-    sdrf_file = df["Study File Name"].iloc[1]
-    study_df, assay_df = split_tables(sdrf_path=os.path.join(os.path.dirname(FP.name), sdrf_file))
-    study_df.columns = study_df.isatab_header
-    assay_df.columns = assay_df.isatab_header
-    # write out ISA files
-    tmp = "/Users/dj/PycharmProjects/isa-api/tests/data/tmp"
-    inv_fp.seek(0)
-    # print("Writing i_investigation.txt to {}".format(tmp))
-    print("Writing s_{0} to {1}".format(tmp, os.path.basename(sdrf_file)))
-    with open(os.path.join(tmp, "s_" + os.path.basename(sdrf_file)), "w") as s_fp:
-        study_df.to_csv(path_or_buf=s_fp, mode='a', sep='\t', encoding='utf-8', index=False,)
-    print("Writing a_{0} to {1}".format(tmp, os.path.basename(sdrf_file)))
-    with open(os.path.join(tmp, "a_" + os.path.basename(sdrf_file)), "w") as a_fp:
-        assay_df.to_csv(path_or_buf=a_fp, mode='a', sep='\t', encoding='utf-8', index=False,)
-    # with open(os.path.join(tmp, "i_investigation.txt")) as tmp_inv_fp:
-    ISA = isatab.load(inv_fp)
-    ISA.studies[0].filename = "s_" + os.path.basename(sdrf_file)
-    ISA.studies[0].assays = [Assay(filename="a_" + os.path.basename(sdrf_file))]
-    return ISA
-
-
 inv_to_idf_map = {
             "Study File Name": "SDRF File",
             "Study Title": "Investigation Title",
@@ -437,55 +408,6 @@ def cast_inv_to_idf(FP):
     return idf_FP
 
 
-def cast_idf_to_inv(FP):
-    # Cast relevant sections from IDF file into comments
-    # insert Additional Investigation file labels
-    idf_FP = StringIO()
-    idf_dict = {}
-    for line in FP:
-        if line.startswith(tuple(inv_to_idf_map.values())) or line.startswith("Comment["):
-            for k, v in inv_to_idf_map.items():
-                line = line.replace(v, k)  # note k-v is reversed
-        else:
-            first_token = line[:line.index('\t')]
-            line = line.replace(first_token, "Comment[{}]".format(first_token))
-        # idf_FP.write(line)
-        idf_dict[line[:line.index('\t')]] = line
-    # idf_FP.seek(0)
-    idf_FP.name = FP.name
-    with open(os.path.join(os.path.dirname(__file__), 'resources', 'tab_templates', 'i_mage_template.txt')) as i_template_FP:
-        for line in i_template_FP:
-            try:
-                try:
-                    line = idf_dict[line[:line.index('\t')]]
-                except ValueError:
-                    line = idf_dict[line[:line.index('\n')]]
-            except KeyError:
-                pass
-            idf_FP.write(line)
-    # for key in [x for x in idf_dict.keys() if x.startswith("Comment[")]:
-    #     idf_FP.write(idf_dict[key])
-    idf_FP.seek(0)
-    return idf_FP
-
-
-def export_to_isatab(FP, output_dir):
-    # Load and write the investigation section somewhere
-    df = pd.read_csv(FP, names=range(0, 128), sep='\t', engine='python', encoding='utf-8', comment='#').dropna(axis=1, how='all')
-    df = df.T  # transpose
-    df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
-    df.reset_index(inplace=True)  # Reset index so it is accessible as column
-    df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
-    df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
-    sdrf_filename = df.iloc[0]['SDRF File']
-    sdrf_path = os.path.join(os.path.dirname(FP.name), sdrf_filename)
-    study_df, assay_df = split_tables(sdrf_path=sdrf_path)
-    with open(os.path.join(output_dir, "s_" + os.path.basename(sdrf_path)), 'w') as study_fp:
-        study_df.to_csv(study_fp, sep='\t', index=False, header=study_df.isatab_header)
-    with open(os.path.join(output_dir, "a_" + os.path.basename(sdrf_path)), 'w') as assay_fp:
-        assay_df.to_csv(assay_fp, sep='\t', index=False, header=assay_df.isatab_header)
-
-
 def get_first_node_index(header):
     squashed_header = list(map(lambda x: squashstr(x), header))
     nodes = ["samplename", "extractname", "labeledextractname", "hybridizationname", "assayname"]
@@ -514,6 +436,7 @@ def split_tables(sdrf_path):
     sdrf_columns = list(sdrf_df.columns)
     if "Hybridization Name" in sdrf_columns:
         sdrf_df.columns = [x.replace("Hybridization Name", "Hybridization Assay Name") for x in sdrf_columns]
+        sdrf_df.isatab_header = [x.replace("Hybridization Name", "Hybridization Assay Name") for x in sdrf_df.isatab_header]
 
     if "Sample Name" in sdrf_df.columns:
         return split_on_sample(sdrf_df)
@@ -529,210 +452,6 @@ def split_tables(sdrf_path):
         sdrf_df.isatab_header = sdrf_df_isatab_header
 
         return split_on_sample(sdrf_df)
-
-
-idf_map = {
-    "MAGE-TAB Version": "magetab_version",
-    "Investigation Title": "investigation_title",
-    "Investigation Accession": "investigation_accession",
-    "Investigation Accession Term Source REF": "investigation_accession_term_source_ref",
-    "Experimental Design": "experimental_design",
-    "Experimental Design Term Source REF": "experimental_design_term_source_ref",
-    "Experimental Design Term Accession Number": "experimental_design_term_accession_number",
-    "Experimental Factor Name": "experimental_factor",
-    "Experimental Factor Term Source REF": "experimental_factor_term_source_ref",
-    "Experimental Factor Term Accession Number": "experimental_factor_term_accession_number",
-
-    "Person Last Name": "person_last_name",
-    "Person First Name": "person_first_name",
-    "Person Mid Initials": "person_mid_initials",
-    "Person Email": "person_email",
-    "Person Phone": "person_phone",
-    "Person Fax": "person_fax",
-    "Person Address": "person_address",
-    "Person Affiliation": "person_affiliation",
-    "Person Roles": "person_roles",
-    "Person Roles Term Source REF": "person_roles_term_source_ref",
-    "Person Roles Term Accession Number": "person_roles_term_accession_number",
-
-    "Quality Control Type": "quality_control_type",
-    "Quality Control Term Source REF": "quality_control_term_source_ref",
-    "Quality Control Term Accession Number": "quality_control_term_accession_number",
-    "Replicate Type": "replicate_type",
-    "Replicate Term Source REF": "replicate_term_source_ref",
-    "Replicate Term Accession Number": "replicate_term_accession_number",
-    "Normalization Type": "normalization_type",
-    "Normalization Term Source REF": "normalization_term_source_ref",
-    "Normalization Term Accession Number": "normalization_term_accession_number",
-
-    "Date of Experiment": "date_of_experiment",
-    "Public Release Date": "public_release_date",
-
-    "PubMed ID": "publication_pubmed_id",
-    "Publication DOI": "publication_doi",
-    "Publication Author List": "publication_author_list",
-    "Publication Title": "publication_title",
-    "Publication Status": "publication_status",
-    "Publication Status Term Source REF": "publication_status_term_source_ref",
-    "Publication Status Term Accession Number": "publication_status_term_accession_number",
-
-    "Experimental Description": "experimental_description",
-
-    "Protocol Name": "protocol_name",
-    "Protocol Type": "protocol_type",
-    "Protocol Term Source REF": "protocol_term_source_ref",
-    "Protocol Term Accession Number": "protocol_term_accession_number",
-    "Protocol Description": "protocol_description",
-    "Protocol Parameters": "protocol_parameters",
-    "Protocol Hardware": "protocol_hardware",
-    "Protocol Software": "protocol_software",
-    "Protocol Contact": "protocol_contact",
-
-    "SDRF File": "sdrf_file",
-
-    "Term Source Name": "term_source_name",
-    "Term Source File": "term_source_file",
-    "Term Source Version": "term_source_version",
-
-}
-
-
-def parse(magetab_idf_path, technology_type, measurement_type):
-    idf_dict = {}
-
-    with open(magetab_idf_path, "r", encoding="utf-8") as magetab_idf_file:
-        magetab_idf_reader = csv.reader(filter(lambda r: r[0] != '#', magetab_idf_file), dialect='excel-tab')
-
-        for row in magetab_idf_reader:
-            if not row[0].startswith("Comment["):
-                try:
-                    idf_dict[idf_map[row[0]]] = row[1:]
-                except KeyError:
-                    pass
-
-    ISA = Investigation(identifier="Investigation")
-
-    ontology_source_dict = {}
-
-    v = idf_dict['term_source_name']
-    for i in range(0, len(v)):
-        ontology_source = OntologySource(name=v[i])
-        ontology_source.file = idf_dict['term_source_file'][i]
-        ontology_source.version = idf_dict['term_source_version'][i]
-        ISA.ontology_source_references.append(ontology_source)
-        ontology_source_dict[ontology_source.name] = ontology_source
-
-    S = Study(identifier="Study")
-
-    for k, v in idf_dict.items():
-        if k == 'investigation_title' and len([x for x in v if x != '']) == 1:
-            ISA.title = v[0]
-            S.title = v[0]
-        if k == 'experimental_description' and len([x for x in v if x != '']) == 1:
-            ISA.description = v[0]
-        elif k in ('investigation_accession',
-                   'investigation_accession_term_source_ref',
-                   'date_of_experiment',
-                   'magetab_version') and len([x for x in v if x != '']) == 1:
-            S.comments.append(Comment(name=k, value=v[0]))
-        elif k == 'experimental_design':
-            experimental_design_comment = Comment(name="Experimental Design")
-            experimental_design_term_source_ref_comment = Comment(name="Experimental Design Term Source REF")
-            experimental_factor_term_accession_number_comment = Comment(
-                name="Experimental Design Term Accession Number")
-            experimental_design_comment.value += ';'.join(idf_dict['experimental_design'])
-            experimental_design_term_source_ref_comment.value = ';'.join(
-                idf_dict['experimental_design_term_source_ref'])
-            if 'experimental_design_term_accession_number' in idf_dict.keys():
-                experimental_factor_term_accession_number_comment.value = ';'.join(
-                    idf_dict['experimental_design_term_accession_number'])
-            S.comments.append(experimental_design_comment)
-            S.comments.append(experimental_design_term_source_ref_comment)
-            S.comments.append(experimental_factor_term_accession_number_comment)
-
-        elif k == 'public_release_date':
-            ISA.public_release_date = v[0]
-            S.public_release_date = v[0]
-        elif k == 'person_last_name' and len(v) > 0:
-            for i in range(0, len(v)):
-                p = Person()
-                p.last_name = v[i]
-                p.first_name = idf_dict['person_first_name'][i]
-                p.last_name = idf_dict['person_last_name'][i]
-                try:
-                    p.mid_initials = idf_dict['person_mid_initials'][i]
-                except IndexError:
-                    pass
-                p.email = idf_dict['person_email'][i]
-                p.phone = idf_dict['person_phone'][i]
-                p.fax = idf_dict['person_fax'][i]
-                p.address = idf_dict['person_address'][i]
-                p.affiliation = idf_dict['person_affiliation'][i]
-                roles_list = idf_dict['person_roles'][i].split(';')
-                roles_term_source_ref_list = idf_dict['person_roles_term_source_ref'][i].split(';')
-                if 'person_roles_term_accession_number' in idf_dict.keys():
-                    roles_term_accession_number_list = idf_dict['person_roles_term_accession_number'][i].split(';')
-                for j, term in enumerate([x for x in roles_list if x != '']):
-                    role = OntologyAnnotation(term=term)
-                    role_term_source_ref = roles_term_source_ref_list[j]
-                    if role_term_source_ref != '':
-                        role.term_source = ontology_source_dict[role_term_source_ref]
-                    if 'person_roles_term_accession_number' in idf_dict.keys():
-                        role.term_accession = roles_term_accession_number_list[j]
-                    p.roles.append(role)
-                S.contacts.append(p)
-        elif k == 'publication_pubmed_id' and len(v) > 0:
-            for i in range(0, len(v)):
-                p = Publication()
-                p.pubmed_id = v[i]
-                p.doi = idf_dict['publication_doi'][i]
-                p.author_list = idf_dict['publication_author_list'][i]
-                p.title = idf_dict['publication_title'][i]
-                p.doi = idf_dict['publication_doi'][i]
-                status = OntologyAnnotation(term=idf_dict['publication_status'][i])
-                if 'publication_status_term_source_ref' in idf_dict.keys():
-                    try:
-                        status.term_source = ontology_source_dict[idf_dict['publication_status_term_source_ref'][i]]
-                    except IndexError:
-                        pass
-                    except KeyError:
-                        pass
-                if 'publication_status_term_accession_number' in idf_dict.keys():
-                    status.term_accession = idf_dict['publication_status_term_accession_number'][i]
-                p.status = status
-                S.publications.append(p)
-        elif k == 'protocol_name' and len(v) > 0:
-            for i in range(0, len(v)):
-                p = Protocol()
-                p.name = v[i]
-                protocol_type = OntologyAnnotation(term=idf_dict['protocol_type'][i])
-                if 'publication_status_term_source_ref' in idf_dict.keys():
-                    try:
-                        protocol_type.term_source = ontology_source_dict[idf_dict['protocol_term_source_ref'][i]]
-                    except IndexError:
-                        pass
-                    except KeyError:
-                        pass
-                if 'publication_status_term_accession_number' in idf_dict.keys():
-                    protocol_type.term_accession = idf_dict['protocol_term_accession_number'][i]
-                p.protocol_type = protocol_type
-                p.description = idf_dict['protocol_description'][i]
-                if 'protocol_parameters' in idf_dict.keys():
-                    parameters_list = idf_dict['protocol_parameters'][i].split(';')
-                    for item in parameters_list:
-                        if item != '':
-                            protocol_parameter = ProtocolParameter(parameter_name=OntologyAnnotation(term=item))
-                            p.parameters.append(protocol_parameter)
-                S.protocols.append(p)
-        elif k == 'sdrf_file':
-            S.filename = 's_{}'.format(v[0])
-            S.assays = [
-                Assay(filename='a_{}'.format(v[0]),
-                      technology_type=OntologyAnnotation(term=technology_type),
-                      measurement_type=OntologyAnnotation(term=measurement_type))
-            ]
-        ISA.studies = [S]
-    return ISA
 
 
 def transposed_tsv_to_dict(file_path):
@@ -1276,4 +995,3 @@ def get_measurement_and_tech(design_types):
             return "SNP analysis", "DNA microarray", "SNPChip"
         if re.match("(?i).*ChIP-Seq.*", design_type) or re.match("(?i).*chip-seq.*", design_type):
             return "protein-DNA binding site identification", "nucleotide sequencing", "ChIP-Seq"
-

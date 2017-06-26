@@ -33,7 +33,6 @@ class TestMageTab2IsaTab(unittest.TestCase):
             self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
             self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-MEXP-31.sdrf.txt')))
             self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-MEXP-31.sdrf.txt')))
-            from isatools import isatab
             with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
                 isatab.validate(i_fp)
 
@@ -43,7 +42,6 @@ class TestMageTab2IsaTab(unittest.TestCase):
             self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
             self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-GEOD-59671.sdrf.txt')))
             self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-GEOD-59671.sdrf.txt')))
-            from isatools import isatab
             with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
                 isatab.validate(i_fp)
 
@@ -52,7 +50,7 @@ class TestMageTab2IsaTab(unittest.TestCase):
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_afmx_2(self):  # FIXME -> output ISA-Tab has many missing cells! WHY!?!?
+    def test_get_experiment_as_isatab_afmx_2(self):  # FIXME -> output ISA-Tab has many missing cells! See #222
         AX.get_isatab('E-AFMX-2', self._tmp_dir)  # gets E-AFMX-2 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
