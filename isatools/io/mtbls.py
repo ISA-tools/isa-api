@@ -290,6 +290,23 @@ def get_factors_summary(mtbls_study_id):
     return df.to_dict(orient='records')
 
 
+def get_study_groups(mtbls_study_id):
+    factors_summary = get_factors_summary(mtbls_study_id=mtbls_study_id)
+    study_groups = {}
+    for factors_item in factors_summary:
+        fvs = tuple(factors_item[k] for k in factors_item.keys() if k != 'name')
+        if fvs in study_groups.keys():
+            study_groups[fvs].append(factors_item['name'])
+        else:
+            study_groups[fvs] = [factors_item['name']]
+    return study_groups
+
+
+def get_study_groups_sizes(mtbls_study_id):
+    study_groups = get_study_groups(mtbls_study_id=mtbls_study_id)
+    return list(map(lambda x: (x[0], len(x[1])), study_groups.items()))
+
+
 def get_characteristics_summary(mtbls_study_id):
     """
         This function generates a characteristics summary for a MetaboLights study
