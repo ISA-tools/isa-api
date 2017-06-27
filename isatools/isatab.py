@@ -3589,6 +3589,15 @@ def get_squashed(key):
 
 class Parser(object):
 
+    """
+        This replacement should be more robust than current i_*.txt file reader. Based on what I did for the
+        MAGE-TAB IDF parser.
+
+        TODO: Work out how to add comments in correct contexts
+        TODO: Parse Assay section
+        TODO: Unit tests
+    """
+
     def __init__(self):
         self.ISA = Investigation()
         self._ts_dict = {}

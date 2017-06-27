@@ -1,5 +1,7 @@
 from isatools import isatab
 import tempfile
+
+from isatools.isatab import get_squashed
 from .model.v1 import *
 import os
 import logging
@@ -1001,3 +1003,227 @@ def get_measurement_and_tech(design_types):
             return "protein-DNA binding site identification", "nucleotide sequencing", "ChIP-Seq"
         else:
             return None, None, None
+
+
+class Parser(object):
+    """ The MAGE-TAB parser
+    This parses MAGE-TAB IDF and SDRF files into Ithe Python ISA model. It does some best-effort inferences on missing
+    metadata required by ISA, but note that outputs may still be incomplete and flag warnings and errors in the ISA
+    validators. """
+
+    def __init__(self):
+        self.ISA = Investigation(studies=Study())
+        self._ts_dict = {}
+
+    def parse_idf(self, in_filename):
+        idfdict = {}
+        with open(in_filename, 'rU') as in_file:
+            tabreader = csv.reader(filter(lambda r: r[0] != '#', in_file), dialect='excel-tab')
+            for row in tabreader:
+                key = get_squashed(key=row[0])
+                idfdict[key] = row[1:]
+
+        # Parse the ontology sources first, as we need to reference these later
+        self.parse_ontology_sources(idfdict.get('termsourcename'),
+                                            idfdict.get('termsourcefile'),
+                                            idfdict.get('termsourceversion'))
+        # Then parse the rest of the sections in blocks; follows order of MAGE-TAB v1.1 2011-07-28 specification
+        self.parse_investigation(idfdict.get('investigationtitle'),
+                                         idfdict.get('investigationaccession'),
+                                         idfdict.get('investigationaccessiontermsourceref'))
+        self.parse_experimental_designs(idfdict.get('experimentaldesign'),
+                                        idfdict.get('experimentaldesigntermsourceref'),
+                                        idfdict.get('experimentaldesigntermaccessionnumber'))
+        self.parse_experimental_factors(idfdict.get('experimentalfactorname'),
+                                        idfdict.get('experimentalfactortype'),
+                                        idfdict.get('experimentalfactortypetermsourceref'),
+                                        idfdict.get('experimentalfactortypetermaccessionnumber'))
+        self.parse_people(idfdict.get('personlastname'),
+                                  idfdict.get('personfirstname'),
+                                  idfdict.get('personmidinitials'),
+                                  idfdict.get('personemail'),
+                                  idfdict.get('personphone'),
+                                  idfdict.get('personfax'),
+                                  idfdict.get('personaddress'),
+                                  idfdict.get('personaffiliation'),
+                                  idfdict.get('personroles'),
+                                  idfdict.get('personrolestermsourceref'),
+                                  idfdict.get('personrolestermaccessionnumber'))
+        self.parse_dates(idfdict.get('dateofexperiment'), idfdict.get('publicreleasedate'))
+        self.parse_publications(idfdict.get('pubmedid'),
+                                        idfdict.get('publicationdoi'),
+                                        idfdict.get('publicationauthorlist'),
+                                        idfdict.get('publicationtitle'),
+                                        idfdict.get('publicationstatus'),
+                                        idfdict.get('publicationstatustermsourceref'),
+                                        idfdict.get('publicationstatustermaccessionnumber'))
+        self.parse_experiment_description(idfdict.get('experimentdescription'))
+        self.parse_protocols(idfdict.get('protocolname'),
+                             idfdict.get('protocoltype'),
+                             idfdict.get('protocoltermsourceref'),
+                             idfdict.get('protocoltermaccessionnumber'),
+                             idfdict.get('protocoldescription'),
+                             idfdict.get('protocolparameters'),
+                             idfdict.get('protocolhardware'),
+                             idfdict.get('protocolsoftware'),
+                             idfdict.get('protocolcontact'))
+        self.parse_sdrf_file(idfdict.get('sdrffile'))
+        self.parse_comments({key: idfdict[key] for key in [x for x in idfdict.keys() if x.startswith('comment[')]})
+
+    def parse_ontology_sources(self, names, files, versions):
+        for name, file, version, description in zip_longest(names, files, versions):
+            os = OntologySource(name=name, file=file, version=version)
+            self.ISA.ontology_source_references.append(os)
+            self._ts_dict[name] = os
+
+    def parse_investigation(self, titles, accessions, accessiontsrs):
+        for title, accession, accessiontsr in zip_longest(titles, accessions, accessiontsrs):
+            self.ISA.identifier = accession
+            self.ISA.title = title
+            self.ISA.studies[-1].title = title
+            self.ISA.studies[-1].identifier = accession
+            if accessiontsr is not None:
+                self.ISA.comments.append(Comment(name="Investigation Accession Term Source REF", value=accessiontsr))
+            break  # because there should only be one or zero rows
+
+    def parse_experimental_designs(self, designs, tsrs, tans):
+        for design, tsr, tan in zip_longest(designs, tsrs, tans):
+            design_descriptor = OntologyAnnotation(term=design, term_source=self._ts_dict.get(tsr), term_accession=tan)
+            self.ISA.studies[-1].design_descriptors.append(design_descriptor)
+
+    def parse_experimental_factors(self, factors, factortypes, tsrs, tans):
+        for factor, factortype, tsr, tan in zip_longest(factors, factortypes, tsrs, tans):
+            factortype_oa = OntologyAnnotation(term=factortype, term_source=self._ts_dict.get(tsr), term_accession=tan)
+            study_factor = StudyFactor(name=factor, factor_type=factortype_oa)
+            self.ISA.studies[-1].factors.append(study_factor)
+
+    def parse_people(self, lastnames, firstnames, midinitialss, emails, phones, faxes, addresses,
+                             affiliations, roles, roletans, roletrs):
+        for lastname, firstname, midinitials, email, phone, fax, address, role, roletan, roletsr in \
+                zip_longest(lastnames, firstnames, midinitialss, emails, phones, faxes, addresses, affiliations, roles,
+                            roletans, roletrs):
+            rolesoa = OntologyAnnotation(term=role, term_source=self._ts_dict.get(roletsr), term_accession=roletan)
+            person = Person(last_name=lastname, first_name=firstname, mid_initials=midinitials, email=email,
+                            phone=phone, fax=fax, address=address, roles=rolesoa)
+            self.ISA.studies[-1].contacts.append(person)
+
+    def parse_dates(self, dateofexperiments, publicreleasedates):
+        for dateofexperiment, publicreleasedate in zip_longest(dateofexperiments, publicreleasedates):
+            self.ISA.public_release_date = publicreleasedate
+            self.ISA.studies[-1].public_release_date = publicreleasedate
+            self.ISA.studies[-1].comments.append(Comment(name="Date of Experiment", value=dateofexperiment))
+            break  # because there should only be one or zero rows
+
+    def parse_publications(self, pubmedids, dois, authorlists, titles, statuses, statustans, statustsrs):
+        for pubmedid, doi, authorlist, title, status, statustsr, statustan in \
+                zip_longest(pubmedids, dois, authorlists, titles, statuses, statustans, statustsrs):
+            statusoa = OntologyAnnotation(term=status, term_source=self._ts_dict.get(statustsr),
+                                          term_accession=statustan)
+            publication = Publication(pubmed_id=pubmedid, doi=doi, author_list=authorlist, title=title, status=statusoa)
+            self.ISA.studies[-1].publications.append(publication)
+
+    def parse_experiment_description(self, descriptions):
+        for description in zip_longest(descriptions):
+            self.ISA.description = description
+            self.ISA.studies[-1].description = description
+            break  # because there should only be one or zero rows
+
+    def parse_protocols(self, names, ptypes, tsrs, tans, descriptions, parameterslists, hardwares, softwares, contacts):
+        for name, ptype, tsr, tan, description, parameterslist, hardware, software, contact in \
+                zip_longest(names, ptypes, tsrs, tans, descriptions, parameterslists, hardwares, softwares, contacts):
+            protocoltype_oa = OntologyAnnotation(term=ptype, term_source=self._ts_dict.get(tsr), term_accession=tan)
+            protocol = Protocol(name=name, protocol_type=protocoltype_oa, description=description,
+                                parameters=list(map(lambda x: Protocol(name=x), parameterslists.split(';'))))
+            protocol.comments = [Comment(name="Protocol Hardware", value=hardware),
+                                 Comment(name="Protocol Software", value=software),
+                                 Comment(name="Protocol Contact", value=contact)]
+            self.ISA.studies[-1].protocol.append(protocol)
+
+    def parse_sdrf_file(self, sdrffiles):
+        for sdrffile in zip_longest(sdrffiles):
+            self.ISA.studies[-1].comments.append(Comment(name="SDRF FIle", value=sdrffile))
+
+    def parse_comments(self, commentsdict):
+        for k, v in commentsdict.items():
+            if len(v) > 0:
+                if len(v) > 1:
+                    v = ';'.join(v)
+                else:
+                    v = v[0]
+                self.ISA.studies[-1].comments.append(Comment(name=k[8:-1], value=v))
+
+    def infer_missing_metadata(self):
+        I = self.ISA
+        S = I.studies[-1]
+
+        # first let's try and infer the MT/TT from the study design descriptors, only checks first one
+        defaultassay = self._get_measurement_and_tech(S.design_descriptors[0].term)
+
+        # next, go through the loaded comments to see what we can find
+        for comment in S.comments:
+            commentkey = get_squashed(comment.name)
+            # ArrayExpress specific comments
+            # (1) if there is no default assay yet, try use AEExperimentType
+            if commentkey == 'aeexperimenttype' and defaultassay is None:
+                defaultassay = self._get_measurement_and_tech(comment.value)
+            # (2) if there is no identifier set, try use ArrayExpressAccession
+            if commentkey == 'arrayexpressaccession':
+                if I.identifier == '':
+                    I.identifier = comment.value
+                if S.identifier == '':
+                    S.identifier = comment.value
+            # (3) if there is no submission date set, try use ArrayExpressSubmissionDate
+            if commentkey == 'arrayexpresssubmissiondate':
+                if I.submission_date == '':
+                    I.submission_date = comment.value
+                if S.submission_date == '':
+                    S.submission_date = comment.value
+
+        # if there is STILL no defaultassay set, try infer from study title
+        if defaultassay is None \
+                and ('transcriptionprof' in get_squashed(S.title) or 'geneexpressionprof' in get_squashed(S.title)):
+            defaultassay = Assay(measurement_type=OntologyAnnotation(term='transcription profiling'),
+                                 technology_type=OntologyAnnotation(term='DNA microarray'),
+                                 technology_platform='GeneChip')
+
+        if defaultassay is None:
+            defaultassay = Assay()
+
+        defaultassay.filename = 'a_{0}_assay.txt'.format(S.identifier)
+
+        S.assays = [defaultassay]
+
+    @staticmethod
+    def _get_measurement_and_tech(design_type):
+        assay = None
+        if re.match('(?i).*ChIP-Chip.*', design_type):
+            assay = Assay(measurement_type=OntologyAnnotation(term='protein-DNA binding site identification'),
+                          technology_type=OntologyAnnotation(term='DNA microarray'),
+                          technology_platform='ChIP-Chip')
+        if re.match('(?i).*RNA-seq.*', design_type) or re.match('(?i).*RNA-Seq.*', design_type) or re.match(
+                '(?i).*transcription profiling by high throughput sequencing.*', design_type):
+            assay = Assay(measurement_type=OntologyAnnotation(term='transcription profiling'),
+                          technology_type=OntologyAnnotation(term='nucleotide sequencing'),
+                          technology_platform='RNA-Seq')
+        if re.match('.*transcription profiling by array.*', design_type) or re.match('dye_swap_design',
+                                                                                     design_type):
+            assay = Assay(measurement_type=OntologyAnnotation(term='transcription profiling'),
+                          technology_type=OntologyAnnotation(term= 'DNA microarray'),
+                          technology_platform='GeneChip')
+        if re.match('(?i).*methylation profiling by array.*', design_type):
+            assay = Assay(measurement_type=OntologyAnnotation(term='DNA methylation profiling'),
+                          technology_type=OntologyAnnotation(term='DNA microarray'),
+                          technology_platform='Me-Chip')
+        if re.match('(?i).*comparative genomic hybridization by array.*', design_type):
+            assay = Assay(measurement_type=OntologyAnnotation(term='comparative genomic hybridization'),
+                          technology_type=OntologyAnnotation(term='DNA microarray'),
+                          technology_platform='CGH-Chip')
+        if re.match('.*genotyping by array.*', design_type):
+            assay = Assay(measurement_type=OntologyAnnotation(term='SNP analysis'),
+                          technology_type=OntologyAnnotation(term='DNA microarray'),
+                          technology_platform='SNPChip')
+        if re.match('(?i).*ChIP-Seq.*', design_type) or re.match('(?i).*chip-seq.*', design_type):
+            assay = Assay(measurement_type=OntologyAnnotation(term='protein-DNA binding site identification'),
+                          technology_type=OntologyAnnotation(term='nucleotide sequencing'),
+                          technology_platform='ChIP-Seq')
+        return assay
