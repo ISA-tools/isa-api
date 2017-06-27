@@ -3594,20 +3594,85 @@ class Parser(object):
         self._ts_dict = {}
 
     def parse_investigation(self, in_filename):
-        table_dict = {}
+        isecdict = {}
+        ssecdicts = []
         with open(in_filename, 'rU') as in_file:
             tabreader = csv.reader(filter(lambda r: r[0] != '#', in_file), dialect='excel-tab')
             for row in tabreader:
-                table_dict[get_squashed(row[0])] = row[1:]
-        self.parse_ontology_sources_section(table_dict.get('termsourcename'),
-                                            table_dict.get('termsourcefile'),
-                                            table_dict.get('termsourceversion'),
-                                            table_dict.get('termsourcedescription'))
-        self.parse_investigation_section(table_dict.get('investigationidentifier'),
-                                         table_dict.get('investigationtitle'),
-                                         table_dict.get('investigationdescription'),
-                                         table_dict.get('investigationsubmissiondate'),
-                                         table_dict.get('investigationpublicreleasedate'))
+                key = get_squashed(key=row[0])
+                if key == 'study':
+                    ssecdicts.append({})
+                if key.startswith('study'):
+                    ssecdicts[-1][key] = row[1:]
+                else:
+                    isecdict[key] = row[1:]
+
+        self.parse_ontology_sources_section(isecdict.get('termsourcename'),
+                                            isecdict.get('termsourcefile'),
+                                            isecdict.get('termsourceversion'),
+                                            isecdict.get('termsourcedescription'))
+        self.parse_investigation_section(isecdict.get('investigationidentifier'),
+                                         isecdict.get('investigationtitle'),
+                                         isecdict.get('investigationdescription'),
+                                         isecdict.get('investigationsubmissiondate'),
+                                         isecdict.get('investigationpublicreleasedate'))
+        self.parse_publications_section(self.ISA,
+                                        isecdict.get('investigationpubmedid'),
+                                        isecdict.get('investigationpublicationdoi'),
+                                        isecdict.get('investigationpublicationauthorlist'),
+                                        isecdict.get('investigationpublicationtitle'),
+                                        isecdict.get('investigationpublicationstatus'),
+                                        isecdict.get('investigationpublicationstatustermsourceref'),
+                                        isecdict.get('investigationpublicationstatustermaccessionnumber'))
+        self.parse_people_section(self.ISA,
+                                  isecdict.get('investigationpersonlastname'),
+                                  isecdict.get('investigationpersonfirstname'),
+                                  isecdict.get('investigationpersonmidinitials'),
+                                  isecdict.get('investigationpersonemail'),
+                                  isecdict.get('investigationpersonphone'),
+                                  isecdict.get('investigationpersonfax'),
+                                  isecdict.get('investigationpersonaddress'),
+                                  isecdict.get('investigationpersonaffiliation'),
+                                  isecdict.get('investigationpersonroles'),
+                                  isecdict.get('investigationpersonrolestermaccessionnumber'),
+                                  isecdict.get('investigationpersonrolestermsourceref'))
+
+        for ssecdict in ssecdicts:
+            self.parse_study_section(ssecdict.get('studyidentifier'),
+                                     ssecdict.get('studytitle'),
+                                     ssecdict.get('studydescription'),
+                                     ssecdict.get('studysubmissiondate'),
+                                     ssecdict.get('studypublicreleasedate'),
+                                     ssecdict.get('studyfilename'))
+            self.parse_study_design_section(self.ISA.studies[-1],
+                                            ssecdict.get('studydesigntype'),
+                                            ssecdict.get('studydesigntypetermaccessionnumber'),
+                                            ssecdict.get('studydesigntypetermsourceref'))
+            self.parse_publications_section(self.ISA.studies[-1],
+                                            ssecdict.get('studypubmedid'),
+                                            ssecdict.get('studypublicationdoi'),
+                                            ssecdict.get('studypublicationauthorlist'),
+                                            ssecdict.get('studypublicationtitle'),
+                                            ssecdict.get('studypublicationstatus'),
+                                            ssecdict.get('studypublicationstatustermsourceref'),
+                                            ssecdict.get('studypublicationstatustermaccessionnumber'))
+            self.parse_people_section(self.ISA.studies[-1],
+                                      ssecdict.get('studypersonlastname'),
+                                      ssecdict.get('studypersonfirstname'),
+                                      ssecdict.get('studypersonmidinitials'),
+                                      ssecdict.get('studypersonemail'),
+                                      ssecdict.get('studypersonphone'),
+                                      ssecdict.get('studypersonfax'),
+                                      ssecdict.get('studypersonaddress'),
+                                      ssecdict.get('studypersonaffiliation'),
+                                      ssecdict.get('studypersonroles'),
+                                      ssecdict.get('studypersonrolestermaccessionnumber'),
+                                      ssecdict.get('studypersonrolestermsourceref'))
+            self.parse_study_factors_section(self.ISA.studies[-1],
+                                             ssecdict.get('studyfactorname'),
+                                             ssecdict.get('studyfactorntype'),
+                                             ssecdict.get('studyfactortypetermaccessionnumber'),
+                                             ssecdict.get('studyfactortypetermsourceref'))
 
     def parse_ontology_sources_section(self, names, files, versions, descriptions):
         for name, file, version, description in zip_longest(names, files, versions, descriptions):
@@ -3623,8 +3688,44 @@ class Parser(object):
             self.ISA.description = description
             self.ISA.submission_date = submissiondate
             self.ISA.public_release_date = publicreleasedate
-            break  # because there should only be one row
+            break  # because there should only be one or zero rows
 
+    def parse_study_section(self, identifiers, titles, descriptions, submissiondates, publicreleasedates, filenames):
+        for identifier, title, description, submissiondate, publicreleasedate, filename in \
+                zip_longest(identifiers, titles, descriptions, submissiondates, publicreleasedates, filenames):
+            study = Study(identifier=identifier, title=title, description=description, 
+                          submission_date=submissiondate, public_release_date=publicreleasedate, filename=filename)
+            self.ISA.studies.append(study)
+
+    def parse_study_design_section(self, obj, dtypes, dtypetans, dtypetsrs):
+        for dtype, dtypetan, dtypetsr in zip_longest(dtypes, dtypetans, dtypetsrs):
+            dtypeoa = OntologyAnnotation(term=dtype, term_source=self._ts_dict.get(dtypetsr), term_accession=dtypetan)
+            obj.design_type = dtypeoa
+            break
+
+    def parse_publications_section(self, obj, pubmedids, dois, authorlists, titles, statuses, statustans, statustsrs):
+        for pubmedid, doi, authorlist, title, status, statustsr, statustan in \
+                zip_longest(pubmedids, dois, authorlists, titles, statuses, statustans, statustsrs):
+            statusoa = OntologyAnnotation(term=status, term_source=self._ts_dict.get(statustsr),
+                                          term_accession=statustan)
+            publication = Publication(pubmed_id=pubmedid, doi=doi, author_list=authorlist, title=title, status=statusoa)
+            obj.publications.append(publication)
+
+    def parse_people_section(self, obj, lastnames, firstnames, midinitialss, emails, phones, faxes, addresses,
+                             affiliations, roles, roletans, roletrs):
+        for lastname, firstname, midinitials, email, phone, fax, address, role, roletan, roletsr in \
+                zip_longest(lastnames, firstnames, midinitialss, emails, phones, faxes, addresses, affiliations, roles,
+                            roletans, roletrs):
+            rolesoa = OntologyAnnotation(term=role, term_source=self._ts_dict.get(roletsr), term_accession=roletan)
+            person = Person(last_name=lastname, first_name=firstname, mid_initials=midinitials, email=email,
+                            phone=phone, fax=fax, address=address, roles=rolesoa)
+            obj.contacts.append(person)
+
+    def parse_study_factors_section(self, obj, fnames, ftypes, ftypetans, ftypetsrs):
+        for fname, ftype, ftypetan, ftypetsr in zip_longest(fnames, ftypes, ftypetans, ftypetsrs):
+            ftypeoa = OntologyAnnotation(term=ftype, term_source=self._ts_dict.get(ftypetsr), term_accession=ftypetan)
+            factor = StudyFactor(name=fname, factor_type=ftypeoa)
+            obj.factors.append(factor)
 
 
 def parse_in(in_filename, in_format='isa-tab'):
@@ -3634,5 +3735,6 @@ def parse_in(in_filename, in_format='isa-tab'):
 
     LOG.debug("starting to parse {0}".format(in_filename))
 
-    I = Parser.parse_investigation(in_filename)
+    parser = Parser()
+    parser.parse_investigation(in_filename)
 
