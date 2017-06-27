@@ -58,6 +58,7 @@ class TestOntologySource(unittest.TestCase):
         ontology_source = OntologySource(name='some ontology', file='ontology_file.txt')
         self.assertEqual(repr(ontology_source), 'OntologySource(name=some ontology, file=ontology_file.txt)')
 
+
 class TestOntologyAnnotation(unittest.TestCase):
 
     def setUp(self):
@@ -71,30 +72,49 @@ class TestOntologyAnnotation(unittest.TestCase):
                                                     'file=ontology_file.txt), '
                                                     'term_accession=http://this.is.a.uri.org)')
 
+
 class TestStudyFactor(unittest.TestCase):
 
     def setUp(self):
         pass
 
-    def test_study_factor_repr(self):
+    def test_repr(self):
         study_factor = StudyFactor(name='Duration', factor_type='time')
         self.assertEqual(repr(study_factor), 'StudyFactor(name=Duration)')
 
-    def test_study_factor_hash(self):
+    def test_hash(self):
         name = 'Duration'
         factor_type = 'time'
         study_factor = StudyFactor(name=name, factor_type=factor_type)
         self.assertEqual(hash(study_factor), hash(repr(study_factor)))
 
-    def test_study_factor_eq(self):
+    def test_eq(self):
         name = 'Duration'
         study_factor_1 = StudyFactor(name=name, factor_type='time')
         study_factor_2 = StudyFactor(name=name, factor_type='duration')
         self.assertEqual(study_factor_1, study_factor_2, 'The two tests pass the equality test')
 
-    def test_study_factor_ne(self):
+    def test_ne(self):
         study_factor_1 = StudyFactor(name='Duration', factor_type='time')
         study_factor_2 = StudyFactor(name='Time', factor_type='time')
         self.assertNotEqual(study_factor_1, study_factor_2, 'The two tests pass the equality test')
 
 
+class TestFactorValue(unittest.TestCase):
+
+    def setUp(self):
+        self.factor_value = FactorValue(factor_name='AGENT', value='agent_orange')
+
+    def test_repr(self):
+        self.assertEqual(repr(self.factor_value), 'FactorValue(factor_name=AGENT, value=agent_orange, unit=None)')
+
+    def test_hash(self):
+        self.assertEqual(hash(self.factor_value), hash(repr(self.factor_value)))
+
+    def test_eq(self):
+        same_factor_value = FactorValue(factor_name='AGENT', value='agent_orange')
+        self.assertEqual(self.factor_value, same_factor_value)
+
+    def test_ne(self):
+        other_factor_value = FactorValue(factor_name='AGENT', value='Zyklon B')
+        self.assertNotEqual(self.factor_value, other_factor_value)
