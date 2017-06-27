@@ -27,54 +27,72 @@ BASE_FACTORS = [
 ]
 
 
-class StudyDesigner(object):
+class DesignedStudy(object):
     pass
 
 
-class InterventionStudyDesign(StudyDesigner):
+class InterventionDesignedStudy(DesignedStudy):
 
-    def __init__(self, treatments_count):
+    def __init__(self, sequences = []):
         super().__init__()
-        self._treatments_count = 0
-
-    @property
-    def treatments_count(self):
-        return self._treatments_count
-
-    @treatments_count.setter
-    def treatments_count(self, treatments_count):
-        self._treatments_count = treatments_count
+        self.__sequences = set()
 
 
 class Treatment(object):
     """
+    A Treatment is defined as a tuple of factor values (as defined in the ISA model v1) and a treatment type
     """
-    def __init__(self, factor_values):
+    def __init__(self, treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=()):
         """
         Creates a new Treatment
         :param factor_values: tuple of isatools.model.v1.FactorValue
         """
-        self._factor_values = ()
+
+        if treatment_type not in INTERVENTIONS.values():
+            raise ValueError('invalid treatment type provided: ')
+
+        self.__treatment_type = treatment_type
+        self.__factor_values = ()
 
         self.factor_values = factor_values
 
+    def __repr__(self):
+        return 'Treatment(factor_type={0}, factor_values={1})'.format(self.treatment_type, self.factor_values)
+
     def __hash__(self):
-        pass
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Treatment) and self.treatment_type == other.treatment_type \
+               and self.factor_values == other.factor_values
+
+    def __ne__(self, other):
+        return not self.factor_values == other.factor_values
+
+    @property
+    def treatment_type(self):
+        return self.__treatment_type
+
+    @treatment_type.setter
+    def treatment_type(self, treatment_type):
+        if type in INTERVENTIONS.values():
+            self.__treatment_type = treatment_type
+        else:
+            raise ValueError('invalid treatment type provided: ')
 
     @property
     def factor_values(self):
-        return self._factor_values
+        return self.__factor_values
 
     @factor_values.setter
     def factor_values(self, factor_values=()):
         if isinstance(factor_values, tuple) and all([isinstance(factor_value, FactorValue)
                                                      for factor_value in factor_values]):
-            self._factor_values = factor_values
+            self.__factor_values = factor_values
         else:
             raise TypeError('Data supplied is not correctly formatted for Treatment')
 
 
-# FIXME use the factor class??
 class TreatmentFactory(object):
 
     def __init__(self, intervention_type=INTERVENTIONS['CHEMICAL'], factors=BASE_FACTORS):
@@ -82,17 +100,19 @@ class TreatmentFactory(object):
         if intervention_type not in INTERVENTIONS.values():
             raise ValueError('invalid treatment type provided: ')
 
-        self._type = intervention_type
-        """
-        self._agent_values = set()
-        self._intensity_values = set()
-        self._duration_values = set()
-        self._factors = [factor.get('name', None) for factor in factors]
-        """
-        self._factors = OrderedDict([(StudyFactor(name=factor.get('name'), factor_type=factor.get('type')), set())
-                                     for factor in factors])
+        self.__intervention_type = intervention_type
+        self.__factors = OrderedDict([(StudyFactor(name=factor.get('name'), factor_type=factor.get('type')), set())
+                                      for factor in factors])
 
-        self._factorial_design = set()
+        # self._factorial_design = set()
+
+    @property
+    def intervention_type(self):
+        return self.__intervention_type
+
+    @property
+    def factors(self):
+        return self.__factors
 
     def add_factor_value(self, factor, factor_value):
         """
@@ -110,72 +130,62 @@ class TreatmentFactory(object):
         else:
             raise KeyError('The factor {} is not present in the design'.format(factor.name))
 
-    @property
-    def type(self):
-        return self._type
-
-    @property
-    def factors(self):
-        return self._factors
-
     def compute_full_factorial_design(self):
-        factor_values = [FactorValue(factor_name=factor_name, value=value, unit=None)
-                         for factor_name, values in self.factors.items() for value in values]
+        """
+        Computes the ful factorial design on the basis of the stored factor and factor values.
+        If one of the factors has no associated values an empty set is returned
+        :return: set - the ful factorial design as a set of Treatments 
+        """
+        factor_values = [
+            [FactorValue(factor_name=factor_name, value=value, unit=None) for value in values]
+            for factor_name, values in self.factors.items()
+        ]
         if set() not in self.factors.values():
-            return [Treatment(treatment_factors) for treatment_factors in itertools.product(*factor_values)]
+            return {Treatment(treatment_type=self.intervention_type,  factor_values=treatment_factors)
+                    for treatment_factors in itertools.product(*factor_values)}
         else:
-            return []
+            return set()
 
+
+class TreatmentSequence:
     """
-    @property
-    def agent_values(self):
-        return self._agent_values
-
-
-
-    @property
-    def intensity_values(self):
-        return self._intensity_values
-
-    @property
-    def duration_values(self):
-        return self._duration_values
-
-    @type.setter
-    def type(self, value):
-        if value in INTERVENTIONS.values():
-            self._type = value
-        else:
-            raise ValueError('Invalid value type for treatment type property')
-
-    @agent_values.setter
-    def agent_values(self, value):
-        if isinstance(value, list):
-            self._agent_values = set(value)
-        elif isinstance(value, set):
-            self._agent_values = value
-        else:
-            self._agent_values = {value}
-
-    @intensity_values.setter
-    def intensity_values(self, value):
-        if isinstance(value, list):
-            self._intensity_values = set(value)
-        elif isinstance(value, set):
-            self._intensity_values = value
-        else:
-            self._intensity_values = {value}
-
-    @duration_values.setter
-    def duration_values(self, value):
-        if isinstance(value, list):
-            self._duration_values = set(value)
-        elif isinstance(value, set):
-            self._duration_values = value
-        else:
-            self._duration_values = {value}
-
+    A treatment sequence is an ordered (graph-like) combination of treatments
     """
-    
+
+    def __init__(self, ranked_treatments=[]):
+        """
+        :param ranked_treatments: Treatment or list of Treatments of list of tuples (Treatment, int) where the second term represents the 
+            epoch
+        """
+        self.__ranked_treatments = set()
+
+        self.add_multiple_treatments(ranked_treatments)
+
+    @property
+    def ranked_treatments(self):
+        return self.__ranked_treatments
+
+    @ranked_treatments.setter
+    def ranked_treatments(self, ranked_treatments):
+        self.add_multiple_treatments(ranked_treatments)
+
+    def add_multiple_treatments(self, elements_to_add):
+        if isinstance(elements_to_add, Treatment):
+            self.add_treatment(elements_to_add)
+        elif isinstance(elements_to_add, Iterable):
+            for elem in elements_to_add:
+                if isinstance(elem, Treatment):
+                    self.add_treatment(elem)
+                elif isinstance(elem, tuple):
+                    self.add_treatment(*elem)
+                else:
+                    raise TypeError('The argument {0} is not of the correct type.'.format(elem))
+        else:
+            raise TypeError('The argument {0} is not of the correct type.'.format(elements_to_add))
+
+    def add_treatment(self, treatment, epoch=1):
+        if isinstance(treatment, Treatment) and isinstance(epoch, int):
+            # TODO check epoch
+            self.__ranked_treatments.add((treatment, epoch))
 
 

@@ -753,13 +753,14 @@ class FactorValue(Commentable):
         self.unit = unit
 
     def __repr__(self):
-        return 'FactorValue(factor_name={0}, value={1}, unit={2}'.format(self.factor_name, self.value, self.unit)
+        return 'FactorValue(factor_name={0}, value={1}, unit={2})'.format(self.factor_name, self.value, self.unit)
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return self.factor_name == other.factor_name and self.value == other.value and self.unit == other.unit
+        return isinstance(other, FactorValue) and self.factor_name == other.factor_name and self.value == other.value \
+               and self.unit == other.unit
 
     def __ne__(self, other):
         return not self == other
