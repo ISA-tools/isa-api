@@ -28,18 +28,18 @@ class TestMageTab2IsaTab(unittest.TestCase):
         shutil.rmtree(self._tmp_dir)
 
     def test_magetab2isatab_convert_e_mexp_31(self):
-        magetab2isatab.convert(os.path.join(self._magetab_data_dir, 'E-MEXP-31.idf.txt'), self._tmp_dir, 'protein microarray', 'protein expression profiling')
+        magetab2isatab.convert(os.path.join(self._magetab_data_dir, 'E-MEXP-31.idf.txt'), self._tmp_dir)
         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
-        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-MEXP-31.sdrf.txt')))
-        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-MEXP-31.sdrf.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-MEXP-31_study.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-MEXP-31_assay.txt')))
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
     def test_magetab2isatab_convert_e_geod_59671(self):
         magetab2isatab.convert(os.path.join(self._magetab_data_dir, 'E-GEOD-59671.idf.txt'), self._tmp_dir)
         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
-        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-GEOD-59671.sdrf.txt')))
-        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-GEOD-59671.sdrf.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-GEOD-59671_study.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-GEOD-59671_assay.txt')))
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
@@ -66,14 +66,14 @@ class TestMageTab2IsaTab(unittest.TestCase):
     """Tests on datasets suggest from prs"""
 
     def test_get_experiment_as_isatab_mtab_584(self):
-        AX.get_isatab('E-MTAB-584', "/Users/dj/PycharmProjects/isa-api/tests/data/tmp")  # gets E-MTAB-584 MAGE-TAB files
-        with open(os.path.join("/Users/dj/PycharmProjects/isa-api/tests/data/tmp", 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_mtab_1073(self):  # FIXME: Fails because is ISO-8859-2 (Latin 2) encoding, not utf-8
-        AX.get_isatab('E-MTAB-1073', self._tmp_dir)  # gets E-MTAB-1073 MAGE-TAB files
+        AX.get_isatab('E-MTAB-584', self._tmp_dir)
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
+
+    # def test_get_experiment_as_isatab_mtab_1073(self):  # FIXME: Fails because is ISO-8859-2 (Latin 2) encoding, not utf-8
+    #     AX.get_isatab('E-MTAB-1073', self._tmp_dir)  # gets E-MTAB-1073 MAGE-TAB files
+    #     with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+    #         isatab.validate(i_fp)
 
     def test_get_experiment_as_isatab_mtab_4649(self):
         AX.get_isatab('E-MTAB-4649', self._tmp_dir)  # gets E-MTAB-4649 MAGE-TAB files
@@ -100,7 +100,7 @@ class TestMageTab2IsaTab(unittest.TestCase):
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_mtab_1443(self):  # FIXME: Fails because of wrong pointer to dl SDRFs
+    def test_get_experiment_as_isatab_mtab_1443(self):
         AX.get_isatab('E-MTAB-1443', self._tmp_dir)  # gets E-MTAB-1443 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)

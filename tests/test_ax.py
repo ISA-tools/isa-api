@@ -34,12 +34,6 @@ class TestArrayExpressIO(unittest.TestCase):
     def test_get_experiment_as_isatab(self):
         tmp_dir = AX.get_isatab('E-AFMX-1')  # gets E-AFMX-1 MAGE-TAB files
         self.assertEqual(len(os.listdir(tmp_dir)), 3)
-        self.assertSetEqual(set(os.listdir(tmp_dir)), {'i_investigation.txt', 'a_E-AFMX-1.sdrf.txt',
-                                                       's_E-AFMX-1.sdrf.txt'})
+        self.assertSetEqual(set(os.listdir(tmp_dir)), {'i_investigation.txt', 'a_E-AFMX-1_assay.txt',
+                                                       's_E-AFMX-1_study.txt'})
         shutil.rmtree(tmp_dir)
-
-    def test_get_experiment_as_json(self):
-        isa_json = AX.getj('E-AFMX-1')  # loads E-AFMX-1 study into ISA-JSON
-        self.assertIsInstance(isa_json, dict)
-        self.assertEqual(isa_json['identifier'], 'E-AFMX-1')
-        self.assertEqual(isa_json['studies'][0]['people'][0]['email'], 'khaitovich@eva.mpg.de')

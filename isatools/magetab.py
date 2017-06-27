@@ -1,7 +1,6 @@
 from isatools import isatab
 import tempfile
 
-from isatools.isatab import get_squashed
 from .model.v1 import *
 import os
 import logging
@@ -410,63 +409,6 @@ def cast_inv_to_idf(FP):
     return idf_FP
 
 
-def get_first_node_index(header):
-    squashed_header = list(map(lambda x: squashstr(x), header))
-    nodes = ["samplename", "extractname", "labeledextractname", "hybridizationname", "assayname"]
-    for node in nodes:
-        try:
-            index = squashed_header.index(node)
-            return index
-        except ValueError:
-            pass
-
-
-def split_tables(sdrf_path):
-
-    def split_on_sample(sdrf_df):
-        sdrf_df_isatab_header = sdrf_df.isatab_header
-        sdrf_df_cols = list(sdrf_df.columns)
-        sample_name_index = sdrf_df_cols.index("Sample Name")
-        study_df = sdrf_df[sdrf_df.columns[0:sample_name_index + 1]].drop_duplicates()
-        study_df.isatab_header = sdrf_df_isatab_header[0:sample_name_index + 1]
-        assay_df = sdrf_df[sdrf_df.columns[sample_name_index:]]
-        assay_df.isatab_header = sdrf_df_isatab_header[sample_name_index:]
-        return study_df, assay_df
-
-    sdrf_df = isatab.read_tfile(sdrf_path)
-
-    sdrf_columns = list(sdrf_df.columns)
-    if "Hybridization Name" in sdrf_columns:
-        sdrf_df.columns = [x.replace("Hybridization Name", "Hybridization Assay Name") for x in sdrf_columns]
-        sdrf_df.isatab_header = [x.replace("Hybridization Name", "Hybridization Assay Name") for x in sdrf_df.isatab_header]
-
-    if "Sample Name" in sdrf_df.columns:
-        return split_on_sample(sdrf_df)
-    else:  # insert Sample Name
-        sdrf_df_columns = list(sdrf_df.columns)
-        sdrf_df["Sample Name"] = sdrf_df[sdrf_df_columns[get_first_node_index(sdrf_df_columns)]]
-        sdrf_df_isatab_header = sdrf_df.isatab_header
-        sdrf_df_isatab_header.insert(get_first_node_index(sdrf_df_columns), "Sample Name")
-
-        sdrf_df_columns.insert(get_first_node_index(sdrf_df_columns), "Sample Name")
-
-        sdrf_df = sdrf_df[sdrf_df_columns]
-        sdrf_df.isatab_header = sdrf_df_isatab_header
-
-        return split_on_sample(sdrf_df)
-
-
-def transposed_tsv_to_dict(file_path):
-    with open(file_path, 'rU') as tsvfile:
-        tsvreader = csv.reader(filter(lambda r: r[0] != '#', tsvfile), dialect='excel-tab')
-        table_dict = {}
-        for row in tsvreader:
-            while row and row[-1] is '':  # transpose
-                row.pop()
-            table_dict[row[0]] = row[1:]  # build dict of label key: list of values
-    return table_dict
-
-
 class MageTabParserException(Exception):
     pass
 
@@ -486,598 +428,84 @@ def get_squashed(key):  # for MAGE-TAB spec 2.1.7, deal with variants on labels
         return squashstr(key)
 
 
-def parse_idf(file_path, technology_type=None, measurement_type=None, technology_platform=None):
-
-    def get_single(values):
-        stripped_values = [x for x in values if x != '']
-        if len(stripped_values) > 0:
-            if len(stripped_values) > 1:
-                print("Warning: more than one value found, selecting first in value list")
-            return stripped_values[0]
-
-    table_dict = transposed_tsv_to_dict(file_path=file_path)
-
-    squashed_table_dict = {}
-
-    for k, v in table_dict.items():
-        squashed_table_dict[get_squashed(k)] = v
-
-    ISA = Investigation()
-    S = Study()
-
-    ts_dict = {}
-
-    # Term Source section of IDF
-
-    ts_names = []
-    ts_files = []
-    ts_versions = []
-
-    try:
-        ts_names = squashed_table_dict["termsourcename"]
-    except KeyError:
-        pass
-    try:
-        ts_files = squashed_table_dict["termsourcefile"]
-    except KeyError:
-        pass
-    try:
-        ts_versions = squashed_table_dict["termsourceversion"]
-    except KeyError:
-        pass
-
-    for name, file, version in zip_longest(ts_names, ts_files, ts_versions):
-        os = OntologySource(name=name, file=file, version=version)
-        ISA.ontology_source_references.append(os)
-        ts_dict[name] = os
-
-    # Header section of IDF
-
-    try:
-        magetab_version = get_single(values=squashed_table_dict["mage-tabversion"])
-        S.comments.append(Comment(name="MAGE-TAB Version", value=magetab_version))
-    except KeyError:
-        print("WARNING: The field MAGE-TAB Version is compulsory but not found")
-    try:
-        S.title = get_single(values=squashed_table_dict["investigationtitle"])
-    except KeyError:
-        pass
-    try:
-        investigation_accession = get_single(values=squashed_table_dict["investigationaccession"])
-        S.comments.append(Comment(name="Investigation Accession", value=investigation_accession))
-    except KeyError:
-        pass
-    try:
-        investigation_accession_tsr = get_single(values=squashed_table_dict["investigationaccessiontermsourceref"])
-        S.comments.append(Comment(name="Investigation Accession Term Source REF", value=investigation_accession_tsr))
-    except KeyError:
-        pass
-
-    # Experimental Design section of IDF
-
-    experimental_designs = []
-    experimental_design_tsrs = []
-    experimental_design_tans = []
-
-    try:
-        experimental_designs = squashed_table_dict["experimentaldesign"]
-    except KeyError:
-        pass
-    try:
-        experimental_design_tsrs = squashed_table_dict["experimentaldesigntermsourceref"]
-    except KeyError:
-        pass
-    try:
-        experimental_design_tans = squashed_table_dict["experimentaldesigntermaccessionnumber"]
-    except KeyError:
-        pass
-
-    for design, tsr, tan in zip_longest(experimental_designs, experimental_design_tsrs, experimental_design_tans):
-        try:
-            ts = ts_dict[tsr]
-        except KeyError:
-            ts = None
-        S.design_descriptors.append(OntologyAnnotation(term=design, term_source=ts, term_accession=tan))
-
-    # Experimental Factor section of IDF
-
-    factor_names = []
-    factor_types = []
-    factor_tsrs = []
-    factor_tans = []
-
-    try:
-        factor_names = squashed_table_dict["experimentalfactorname"]
-    except KeyError:
-        pass
-    try:
-        factor_types = squashed_table_dict["experimentalfactortype"]
-    except KeyError:
-        pass
-    try:
-        factor_tsrs = squashed_table_dict["experimentalfactortermsourceref"]
-    except KeyError:
-        pass
-    try:
-        factor_tans = squashed_table_dict["experimentalfactortermaccessionnumber"]
-    except KeyError:
-        pass
-
-    for name, type, tsr, tan in zip_longest(factor_names, factor_types, factor_tsrs, factor_tans):
-        try:
-            ts = ts_dict[tsr]
-        except KeyError:
-            ts = None
-        S.factors.append(StudyFactor(name=name, factor_type=OntologyAnnotation(term=type, term_source=ts,
-                                                                               term_accession=tan)))
-
-    # Person section of IDF
-
-    person_last_names = []
-    person_first_names = []
-    person_mid_initials = []
-    person_emails = []
-    person_phones = []
-    person_addresses = []
-    person_affiliations = []
-    person_roles = []
-    person_roles_tsrs = []
-    person_roles_tans = []
-
-    try:
-        person_last_names = squashed_table_dict["personlastname"]
-    except KeyError:
-        pass
-    try:
-        person_first_names = squashed_table_dict["personfirstname"]
-    except KeyError:
-        pass
-    try:
-        person_mid_initials = squashed_table_dict["personmidinitials"]
-    except KeyError:
-        pass
-    try:
-        person_emails = squashed_table_dict["personemail"]
-    except KeyError:
-        pass
-    try:
-        person_phones = squashed_table_dict["personphone"]
-    except KeyError:
-        pass
-    try:
-        person_addresses = squashed_table_dict["personaddress"]
-    except KeyError:
-        pass
-    try:
-        person_affiliations = squashed_table_dict["personaffiliation"]
-    except KeyError:
-        pass
-    try:
-        person_roles = squashed_table_dict["personroles"]
-    except KeyError:
-        pass
-    try:
-        person_roles_tsrs = squashed_table_dict["personrolestermsourceref"]
-    except KeyError:
-        pass
-    try:
-        person_roles_tans = squashed_table_dict["personrolestermaccessionnumber"]
-    except KeyError:
-        pass
-
-    for fname, lname, initials, email, phone, address, affiliation, rolesterm, rolestsrs, rolestans in zip_longest(
-            person_last_names, person_first_names, person_mid_initials, person_emails, person_phones, person_addresses,
-            person_affiliations, person_roles, person_roles_tsrs, person_roles_tans):
-
-        roles = []
-
-        for role, roletsr, roletan in zip_longest(rolesterm.split(';') if rolesterm is not None else [],
-                                                  rolestsrs.split(';') if rolestsrs is not None else [],
-                                                  rolestans.split(';') if rolestans is not None else[]):
-            try:
-                rolets = ts_dict[roletsr]
-            except KeyError:
-                rolets = None
-            roles.append(OntologyAnnotation(term=role, term_source=rolets, term_accession=roletan))  # FIXME roletsr
-
-        S.contacts.append(Person(first_name=fname, last_name=lname, mid_initials=initials, email=email, phone=phone,
-                                 address=address, affiliation=affiliation, roles=roles))
-
-    # Quality Control Type section of IDF
-
-    qc_types = []
-    qc_tsrs = []
-    qc_tans = []
-
-    try:
-        qc_types = squashed_table_dict["qualitycontroltype"]
-    except KeyError:
-        pass
-    try:
-        qc_tsrs = squashed_table_dict["qualitycontroltermsourceref"]
-    except KeyError:
-        pass
-    try:
-        qc_tans = squashed_table_dict["qualitycontroltermaccessionnumber"]
-    except KeyError:
-        pass
-
-    if len(qc_types) > 0:
-        S.comments.append(Comment(name="Quality Control Type", value=';'.join(qc_types)))
-    if len(qc_tsrs) > 0:
-        S.comments.append(Comment(name="Quality Control Term Source REF", value=';'.join(qc_tsrs)))
-    if len(qc_tans) > 0:
-        S.comments.append(Comment(name="Quality Control Term Accession Number", value=';'.join(qc_tans)))
-
-    # Replicate Type section of IDF
-
-    rt_types = []
-    rt_tsrs = []
-    rt_tans = []
-    try:
-        rt_types = squashed_table_dict["replicatetype"]
-    except KeyError:
-        pass
-    try:
-        rt_tsrs = squashed_table_dict["replicatetermsourceref"]
-    except KeyError:
-        pass
-    try:
-        rt_tans = squashed_table_dict["replicatetermaccessionnumber"]
-    except KeyError:
-        pass
-
-    if len(rt_types) > 0:
-        S.comments.append(Comment(name="Replicate Type", value=';'.join(rt_types)))
-    if len(rt_tsrs) > 0:
-        S.comments.append(Comment(name="Replicate Term Source REF", value=';'.join(rt_tsrs)))
-    if len(rt_tans) > 0:
-        S.comments.append(Comment(name="Replicate Term Accession Number", value=';'.join(rt_tans)))
-
-    # Normalization Type section of IDF
-
-    norm_types = []
-    norm_tsrs = []
-    norm_tans = []
-
-    try:
-        norm_types = squashed_table_dict["normalizationtype"]
-    except KeyError:
-        pass
-    try:
-        norm_tsrs = squashed_table_dict["normalizationtermsourceref"]
-    except KeyError:
-        pass
-    try:
-        norm_tans = squashed_table_dict["normalizationtermaccessionnumber"]
-    except KeyError:
-        pass
-
-    if len(norm_types) > 0:
-        S.comments.append(Comment(name="Normalization Type", value=';'.join(norm_types)))
-    if len(norm_tsrs) > 0:
-        S.comments.append(Comment(name="Normalization Term Source REF", value=';'.join(norm_tsrs)))
-    if len(norm_tans) > 0:
-        S.comments.append(Comment(name="Normalization Term Accession Number", value=';'.join(norm_tans)))
-
-    # Dates section of IDF
-    try:
-        S.comments.append(Comment(name="Date of Experiment",
-                                  value=get_single(values=squashed_table_dict["dateofexperiment"])))
-    except KeyError:
-        pass
-    try:
-        S.public_release_date = get_single(values=squashed_table_dict["publicreleasedate"])
-    except KeyError:
-        pass
-
-    # Publications section of IDF
-
-    pub_pmids = []
-    pub_dois = []
-    pub_author_list = []
-    pub_titles = []
-    pub_statuses = []
-    pub_status_tsrs = []
-    pub_status_tans = []
-
-    try:
-        pub_pmids = squashed_table_dict["pubmedid"]
-    except KeyError:
-        pass
-    try:
-        pub_dois = squashed_table_dict["publicationdoi"]
-    except KeyError:
-        pass
-    try:
-        pub_author_list = squashed_table_dict["publicationauthorlist"]
-    except KeyError:
-        pass
-    try:
-        pub_titles = squashed_table_dict["publicationtitle"]
-    except KeyError:
-        pass
-    try:
-        pub_statuses = squashed_table_dict["publicationstatus"]
-    except KeyError:
-        pass
-    try:
-        pub_status_tsrs = squashed_table_dict["publicationstatustermsourceref"]
-    except KeyError:
-        pass
-    try:
-        pub_status_tans = squashed_table_dict["publicationstatustermaccessionnumber"]
-    except KeyError:
-        pass
-
-    for pmid, doi, authors, title, statusterm, statustsr, statustan in zip_longest(pub_pmids, pub_dois, pub_author_list,
-                                                                                   pub_titles, pub_statuses,
-                                                                                   pub_status_tsrs, pub_status_tans):
-        try:
-            statusts = ts_dict[statustsr]
-        except KeyError:
-            statusts = None
-        status = OntologyAnnotation(term=statusterm, term_source=statusts, term_accession=statustan)
-        S.publications.append(Publication(pubmed_id=pmid, doi=doi, author_list=authors, title=title, status=status))
-
-    # Description section of IDF
-
-    try:
-        S.description = get_single(values=squashed_table_dict["experimentdescription"])
-    except KeyError:
-        pass
-
-    # Protocols section of IDF
-
-    prot_names = []
-    prot_types = []
-    prot_tsrs = []
-    prot_tans = []
-    prot_descriptions = []
-    prot_params = []
-    prot_hardware = []
-    prot_software = []
-    prot_contacts = []
-
-    try:
-        prot_names = squashed_table_dict["protocolname"]
-    except KeyError:
-        pass
-    try:
-        prot_types = squashed_table_dict["protocoltype"]
-    except KeyError:
-        pass
-    try:
-        prot_tsrs = squashed_table_dict["protocoltermsourceref"]
-    except KeyError:
-        pass
-    try:
-        prot_tans = squashed_table_dict["protocoltermaccessionnumber"]
-    except KeyError:
-        pass
-    try:
-        prot_descriptions = squashed_table_dict["protocoldescription"]
-    except KeyError:
-        pass
-    try:
-        prot_params = squashed_table_dict["protocolparameters"]
-    except KeyError:
-        pass
-    try:
-        prot_hardware = squashed_table_dict["protocolhardware"]
-    except KeyError:
-        pass
-    try:
-        prot_software = squashed_table_dict["protocolsoftware"]
-    except KeyError:
-        pass
-    try:
-        prot_contacts = squashed_table_dict["protocolcontact"]
-    except KeyError:
-        pass
-
-    for name, prottypeterm, prottsr, prottan, desc, protparams, hard, soft, contact in zip_longest(prot_names,
-                                                                                                   prot_types,
-                                                                                                   prot_tsrs, prot_tans,
-                                                                                                   prot_descriptions,
-                                                                                                   prot_params,
-                                                                                                   prot_hardware,
-                                                                                                   prot_software,
-                                                                                                   prot_contacts):
-        try:
-            protts = ts_dict[prottsr]
-        except KeyError:
-            protts = None
-        prottype = OntologyAnnotation(term=prottypeterm, term_source=protts, term_accession=prottan)
-        params = list(map(lambda x: ProtocolParameter(parameter_name=OntologyAnnotation(term=x)),
-                          [x for x in protparams.split(';') if x != ''] if protparams is not None else []))
-        protcomments = [
-            Comment(name="Protocol Hardware", value=hard),
-            Comment(name="Protocol Software", value=hard),
-            Comment(name="Protocol Contact", value=contact)
-        ]
-        S.protocols.append(Protocol(name=name, protocol_type=prottype, description=desc, parameters=params,
-                                    comments=protcomments))
-
-    # SDRF file section of IDF
-    sdrf_file = None
-    try:
-        sdrf_file = get_single(values=squashed_table_dict["sdrffile"])
-        S.comments.append(Comment(name="SDRF File", value=sdrf_file))
-    except KeyError:
-        pass
-
-    # Comments in IDF
-
-    comments_dict = dict(map(lambda x: (x[0][8:-1], get_single(x[1])), [x for x in squashed_table_dict.items()
-                                                                        if x[0].startswith("comment")]))
-
-    for key in comments_dict.keys():
-        c = Comment(name=key, value=comments_dict[key])
-        S.comments.append(c)
-
-    if "ArrayExpressAccession" in comments_dict.keys():
-        S.identifier = comments_dict["ArrayExpressAccession"]  # ArrayExpress adds this, so use it as the study ID
-
-    design_types = None
-
-    if "experimentaldesign" in squashed_table_dict.keys():
-        design_types = experimental_designs
-
-    elif "AEExperimentType" in comments_dict.keys():
-        design_types = [comments_dict["AEExperimentType"]]
-
-    inferred_m_type = None
-    inferred_t_type = None
-    inferred_t_plat = None
-    if design_types is not None:
-        inferred_m_type, inferred_t_type, inferred_t_plat = get_measurement_and_tech(design_types=design_types)
-    else:  # Final try to determine types from study title
-        if "transcription prof" in S.title.lower() or "gene expression prof" in S.title.lower():
-            inferred_m_type = "transcription profiling"
-            measurement_type = "DNA microarray"
-
-    if sdrf_file is not None:
-        S.filename = "s_{}".format(sdrf_file)
-        a_filename = "a_{}".format(sdrf_file)
-
-        ttoa = None
-        if technology_type is not None:
-            ttoa = OntologyAnnotation(term=technology_type)
-        elif technology_type is None and inferred_t_type is not None:
-            print("Detected probable '{}' technology type".format(inferred_t_type))
-            ttoa = OntologyAnnotation(term=inferred_t_type)
-
-        mtoa = None
-        if measurement_type is not None:
-            mtoa = OntologyAnnotation(term=measurement_type)
-        elif measurement_type is None and inferred_m_type is not None:
-            print("Detected probable '{}' measurement type".format(inferred_m_type))
-            mtoa = OntologyAnnotation(term=inferred_m_type)
-
-        tp = ''
-        if technology_platform is not None:
-            tp = technology_platform
-        elif technology_platform is None and inferred_t_plat is not None:
-            print("Detected probable '{}' technology platform".format(inferred_t_plat))
-            tp = inferred_t_plat
-
-        A = Assay(filename=a_filename, technology_type=ttoa, measurement_type=mtoa, technology_platform=tp)
-
-        if (A.measurement_type, A.technology_type) in [
-            ("transcription profiling", "nucleotide sequencing"),
-            ("protein-DNA binding site identification", "nucleotide sequencing")
-        ]:
-            if "library construction" not in [x.name for x in S.protocols]:
-                logger.info("PROTOCOL INSERTION: {}, library construction".format(a_filename))
-                S.protocols.append(Protocol(name="library construction",
-                                            protocol_type=OntologyAnnotation(term="library construction")))
-            if "nucleic acid sequencing" not in [x.name for x in S.protocols]:
-                logger.info("PROTOCOL INSERTION: {}, nucleic acid sequencing".format(a_filename))
-                S.protocols.append(Protocol(name="nucleic acid sequencing",
-                                            protocol_type=OntologyAnnotation(term="nucleic acid sequencing")))
-        S.assays = [A]
-
-    ISA.identifier = S.identifier
-    ISA.title = S.title
-    ISA.studies = [S]
-    return ISA
-
-
-def get_measurement_and_tech(design_types):
-    for design_type in design_types:
-        if re.match("(?i).*ChIP-Chip.*", design_type):
-            return "protein-DNA binding site identification", "DNA microarray", "ChIP-Chip"
-        if re.match("(?i).*RNA-seq.*", design_type) or re.match("(?i).*RNA-Seq.*", design_type) or re.match(
-                "(?i).*transcription profiling by high throughput sequencing.*", design_type):
-            return "transcription profiling", "nucleotide sequencing", "RNA-Seq"
-        if re.match(".*transcription profiling by array.*", design_type) or re.match("dye_swap_design", design_type):
-            return "transcription profiling", "DNA microarray", "GeneChip"
-        if re.match("(?i).*methylation profiling by array.*", design_type):
-            return "DNA methylation profiling", "DNA microarray", "Me-Chip"
-        if re.match("(?i).*comparative genomic hybridization by array.*", design_type):
-            return "comparative genomic hybridization", "DNA microarray", "CGH-Chip"
-        if re.match(".*genotyping by array.*", design_type):
-            return "SNP analysis", "DNA microarray", "SNPChip"
-        if re.match("(?i).*ChIP-Seq.*", design_type) or re.match("(?i).*chip-seq.*", design_type):
-            return "protein-DNA binding site identification", "nucleotide sequencing", "ChIP-Seq"
-        else:
-            return None, None, None
-
-
-class Parser(object):
+class MageTabParser(object):
     """ The MAGE-TAB parser
     This parses MAGE-TAB IDF and SDRF files into Ithe Python ISA model. It does some best-effort inferences on missing
     metadata required by ISA, but note that outputs may still be incomplete and flag warnings and errors in the ISA
     validators. """
 
     def __init__(self):
-        self.ISA = Investigation(studies=Study())
+        self.ISA = Investigation(studies=[Study()])
+        self._idfdict = {}
         self._ts_dict = {}
 
     def parse_idf(self, in_filename):
-        idfdict = {}
+        self.load_into_idfdict(in_filename=in_filename)
+        # Parse the ontology sources first, as we need to reference these later
+        self.parse_ontology_sources(self._idfdict.get('termsourcename', []),
+                                    self._idfdict.get('termsourcefile', []),
+                                    self._idfdict.get('termsourceversion', []))
+        # Then parse the rest of the sections in blocks; follows order of MAGE-TAB v1.1 2011-07-28 specification
+        self.parse_investigation(self._idfdict.get('investigationtitle', []),
+                                 self._idfdict.get('investigationaccession', []),
+                                 self._idfdict.get('investigationaccessiontermsourceref', []))
+        self.parse_experimental_designs(self._idfdict.get('experimentaldesign', []),
+                                        self._idfdict.get('experimentaldesigntermsourceref', []),
+                                        self._idfdict.get('experimentaldesigntermaccessionnumber', []))
+        self.parse_experimental_factors(self._idfdict.get('experimentalfactorname', []),
+                                        self._idfdict.get('experimentalfactortype', []),
+                                        self._idfdict.get('experimentalfactortypetermsourceref', []),
+                                        self._idfdict.get('experimentalfactortypetermaccessionnumber', []))
+        self.parse_people(self._idfdict.get('personlastname', []),
+                          self._idfdict.get('personfirstname', []),
+                          self._idfdict.get('personmidinitials', []),
+                          self._idfdict.get('personemail', []),
+                          self._idfdict.get('personphone', []),
+                          self._idfdict.get('personfax', []),
+                          self._idfdict.get('personaddress', []),
+                          self._idfdict.get('personaffiliation', []),
+                          self._idfdict.get('personroles', []),
+                          self._idfdict.get('personrolestermsourceref', []),
+                          self._idfdict.get('personrolestermaccessionnumber', []))
+        self.parse_dates(self._idfdict.get('dateofexperiment', []), self._idfdict.get('publicreleasedate', []))
+        self.parse_publications(self._idfdict.get('pubmedid', []),
+                                self._idfdict.get('publicationdoi', []),
+                                self._idfdict.get('publicationauthorlist', []),
+                                self._idfdict.get('publicationtitle', []),
+                                self._idfdict.get('publicationstatus', []),
+                                self._idfdict.get('publicationstatustermsourceref', []),
+                                self._idfdict.get('publicationstatustermaccessionnumber', []))
+        self.parse_experiment_description(self._idfdict.get('experimentdescription'))
+        self.parse_protocols(self._idfdict.get('protocolname', []),
+                             self._idfdict.get('protocoltype', []),
+                             self._idfdict.get('protocoltermsourceref', []),
+                             self._idfdict.get('protocoltermaccessionnumber', []),
+                             self._idfdict.get('protocoldescription', []),
+                             self._idfdict.get('protocolparameters', []),
+                             self._idfdict.get('protocolhardware', []),
+                             self._idfdict.get('protocolsoftware', []),
+                             self._idfdict.get('protocolcontact', []))
+        self.parse_sdrf_file(self._idfdict.get('sdrffile', []))
+        self.parse_comments({key: self._idfdict[key] for key in [x for x in self._idfdict.keys() if x.startswith('comment[')]})
+        self.infer_missing_metadata()
+        return self.ISA
+    
+    def load_into_idfdict(self, in_filename):
         with open(in_filename, 'rU') as in_file:
             tabreader = csv.reader(filter(lambda r: r[0] != '#', in_file), dialect='excel-tab')
             for row in tabreader:
                 key = get_squashed(key=row[0])
-                idfdict[key] = row[1:]
-
-        # Parse the ontology sources first, as we need to reference these later
-        self.parse_ontology_sources(idfdict.get('termsourcename'),
-                                            idfdict.get('termsourcefile'),
-                                            idfdict.get('termsourceversion'))
-        # Then parse the rest of the sections in blocks; follows order of MAGE-TAB v1.1 2011-07-28 specification
-        self.parse_investigation(idfdict.get('investigationtitle'),
-                                         idfdict.get('investigationaccession'),
-                                         idfdict.get('investigationaccessiontermsourceref'))
-        self.parse_experimental_designs(idfdict.get('experimentaldesign'),
-                                        idfdict.get('experimentaldesigntermsourceref'),
-                                        idfdict.get('experimentaldesigntermaccessionnumber'))
-        self.parse_experimental_factors(idfdict.get('experimentalfactorname'),
-                                        idfdict.get('experimentalfactortype'),
-                                        idfdict.get('experimentalfactortypetermsourceref'),
-                                        idfdict.get('experimentalfactortypetermaccessionnumber'))
-        self.parse_people(idfdict.get('personlastname'),
-                                  idfdict.get('personfirstname'),
-                                  idfdict.get('personmidinitials'),
-                                  idfdict.get('personemail'),
-                                  idfdict.get('personphone'),
-                                  idfdict.get('personfax'),
-                                  idfdict.get('personaddress'),
-                                  idfdict.get('personaffiliation'),
-                                  idfdict.get('personroles'),
-                                  idfdict.get('personrolestermsourceref'),
-                                  idfdict.get('personrolestermaccessionnumber'))
-        self.parse_dates(idfdict.get('dateofexperiment'), idfdict.get('publicreleasedate'))
-        self.parse_publications(idfdict.get('pubmedid'),
-                                        idfdict.get('publicationdoi'),
-                                        idfdict.get('publicationauthorlist'),
-                                        idfdict.get('publicationtitle'),
-                                        idfdict.get('publicationstatus'),
-                                        idfdict.get('publicationstatustermsourceref'),
-                                        idfdict.get('publicationstatustermaccessionnumber'))
-        self.parse_experiment_description(idfdict.get('experimentdescription'))
-        self.parse_protocols(idfdict.get('protocolname'),
-                             idfdict.get('protocoltype'),
-                             idfdict.get('protocoltermsourceref'),
-                             idfdict.get('protocoltermaccessionnumber'),
-                             idfdict.get('protocoldescription'),
-                             idfdict.get('protocolparameters'),
-                             idfdict.get('protocolhardware'),
-                             idfdict.get('protocolsoftware'),
-                             idfdict.get('protocolcontact'))
-        self.parse_sdrf_file(idfdict.get('sdrffile'))
-        self.parse_comments({key: idfdict[key] for key in [x for x in idfdict.keys() if x.startswith('comment[')]})
+                self._idfdict[key] = row[1:]
 
     def parse_ontology_sources(self, names, files, versions):
-        for name, file, version, description in zip_longest(names, files, versions):
-            os = OntologySource(name=name, file=file, version=version)
-            self.ISA.ontology_source_references.append(os)
-            self._ts_dict[name] = os
+        for name, file, version in zip_longest(names, files, versions, fillvalue=''):
+            if name != '':  # only add if the OS has a name and therefore can be referenced
+                os = OntologySource(name=name, file=file, version=version)
+                self.ISA.ontology_source_references.append(os)
+                self._ts_dict[name] = os
 
     def parse_investigation(self, titles, accessions, accessiontsrs):
-        for title, accession, accessiontsr in zip_longest(titles, accessions, accessiontsrs):
+        for title, accession, accessiontsr in zip_longest(titles, accessions, accessiontsrs, fillvalue=''):
             self.ISA.identifier = accession
             self.ISA.title = title
             self.ISA.studies[-1].title = title
@@ -1087,28 +515,30 @@ class Parser(object):
             break  # because there should only be one or zero rows
 
     def parse_experimental_designs(self, designs, tsrs, tans):
-        for design, tsr, tan in zip_longest(designs, tsrs, tans):
+        for design, tsr, tan in zip_longest(designs, tsrs, tans, fillvalue=''):
             design_descriptor = OntologyAnnotation(term=design, term_source=self._ts_dict.get(tsr), term_accession=tan)
-            self.ISA.studies[-1].design_descriptors.append(design_descriptor)
+            if design_descriptor.term != '':  # only add if the DD has a term
+                self.ISA.studies[-1].design_descriptors.append(design_descriptor)
 
     def parse_experimental_factors(self, factors, factortypes, tsrs, tans):
-        for factor, factortype, tsr, tan in zip_longest(factors, factortypes, tsrs, tans):
-            factortype_oa = OntologyAnnotation(term=factortype, term_source=self._ts_dict.get(tsr), term_accession=tan)
-            study_factor = StudyFactor(name=factor, factor_type=factortype_oa)
-            self.ISA.studies[-1].factors.append(study_factor)
+        for factor, factortype, tsr, tan in zip_longest(factors, factortypes, tsrs, tans, fillvalue=''):
+            if factor != '':  # only add if there's a factor name
+                factortype_oa = OntologyAnnotation(term=factortype, term_source=self._ts_dict.get(tsr), term_accession=tan)
+                study_factor = StudyFactor(name=factor, factor_type=factortype_oa)
+                self.ISA.studies[-1].factors.append(study_factor)
 
-    def parse_people(self, lastnames, firstnames, midinitialss, emails, phones, faxes, addresses,
-                             affiliations, roles, roletans, roletrs):
-        for lastname, firstname, midinitials, email, phone, fax, address, role, roletan, roletsr in \
+    def parse_people(self, lastnames, firstnames, midinitialss, emails, phones, faxes, addresses, affiliations, roles,
+                     roletans, roletrs):
+        for lastname, firstname, midinitials, email, phone, fax, address, affiliation, role, roletan, roletsr in \
                 zip_longest(lastnames, firstnames, midinitialss, emails, phones, faxes, addresses, affiliations, roles,
-                            roletans, roletrs):
+                            roletans, roletrs, fillvalue=''):
             rolesoa = OntologyAnnotation(term=role, term_source=self._ts_dict.get(roletsr), term_accession=roletan)
             person = Person(last_name=lastname, first_name=firstname, mid_initials=midinitials, email=email,
-                            phone=phone, fax=fax, address=address, roles=rolesoa)
+                            phone=phone, fax=fax, address=address, affiliation=affiliation, roles=[rolesoa])
             self.ISA.studies[-1].contacts.append(person)
 
     def parse_dates(self, dateofexperiments, publicreleasedates):
-        for dateofexperiment, publicreleasedate in zip_longest(dateofexperiments, publicreleasedates):
+        for dateofexperiment, publicreleasedate in zip_longest(dateofexperiments, publicreleasedates, fillvalue=''):
             self.ISA.public_release_date = publicreleasedate
             self.ISA.studies[-1].public_release_date = publicreleasedate
             self.ISA.studies[-1].comments.append(Comment(name="Date of Experiment", value=dateofexperiment))
@@ -1116,48 +546,60 @@ class Parser(object):
 
     def parse_publications(self, pubmedids, dois, authorlists, titles, statuses, statustans, statustsrs):
         for pubmedid, doi, authorlist, title, status, statustsr, statustan in \
-                zip_longest(pubmedids, dois, authorlists, titles, statuses, statustans, statustsrs):
-            statusoa = OntologyAnnotation(term=status, term_source=self._ts_dict.get(statustsr),
-                                          term_accession=statustan)
-            publication = Publication(pubmed_id=pubmedid, doi=doi, author_list=authorlist, title=title, status=statusoa)
-            self.ISA.studies[-1].publications.append(publication)
+                zip_longest(pubmedids, dois, authorlists, titles, statuses, statustans, statustsrs, fillvalue=''):
+            if pubmedid != '' or doi != '' or title != '':  # only add if there's a pubmed ID, DOI or title
+                statusoa = OntologyAnnotation(term=status, term_source=self._ts_dict.get(statustsr),
+                                              term_accession=statustan)
+                publication = Publication(pubmed_id=pubmedid, doi=doi, author_list=authorlist, title=title, status=statusoa)
+                self.ISA.studies[-1].publications.append(publication)
 
     def parse_experiment_description(self, descriptions):
-        for description in zip_longest(descriptions):
-            self.ISA.description = description
+        for description in zip_longest(descriptions, fillvalue=''):
             self.ISA.studies[-1].description = description
             break  # because there should only be one or zero rows
 
     def parse_protocols(self, names, ptypes, tsrs, tans, descriptions, parameterslists, hardwares, softwares, contacts):
         for name, ptype, tsr, tan, description, parameterslist, hardware, software, contact in \
-                zip_longest(names, ptypes, tsrs, tans, descriptions, parameterslists, hardwares, softwares, contacts):
-            protocoltype_oa = OntologyAnnotation(term=ptype, term_source=self._ts_dict.get(tsr), term_accession=tan)
-            protocol = Protocol(name=name, protocol_type=protocoltype_oa, description=description,
-                                parameters=list(map(lambda x: Protocol(name=x), parameterslists.split(';'))))
-            protocol.comments = [Comment(name="Protocol Hardware", value=hardware),
-                                 Comment(name="Protocol Software", value=software),
-                                 Comment(name="Protocol Contact", value=contact)]
-            self.ISA.studies[-1].protocol.append(protocol)
+                zip_longest(names, ptypes, tsrs, tans, descriptions, parameterslists, hardwares, softwares, contacts,
+                            fillvalue=''):
+            if name != '':  # only add if there's a name
+                protocoltype_oa = OntologyAnnotation(term=ptype, term_source=self._ts_dict.get(tsr), term_accession=tan)
+                protocol = Protocol(name=name, protocol_type=protocoltype_oa, description=description,
+                                    parameters=list(map(lambda x: ProtocolParameter(
+                                        parameter_name=OntologyAnnotation(term=x)),
+                                                        parameterslist.split(';')
+                                                        if parameterslist is not None else '')))
+                protocol.comments = [Comment(name="Protocol Hardware", value=hardware),
+                                     Comment(name="Protocol Software", value=software),
+                                     Comment(name="Protocol Contact", value=contact)]
+                self.ISA.studies[-1].protocols.append(protocol)
 
     def parse_sdrf_file(self, sdrffiles):
-        for sdrffile in zip_longest(sdrffiles):
-            self.ISA.studies[-1].comments.append(Comment(name="SDRF FIle", value=sdrffile))
+        sdrffiles_no_empty = [x for x in sdrffiles if x != '']
+        if len(sdrffiles_no_empty) > 0:
+            if len(sdrffiles_no_empty) > 1:
+                self.ISA.studies[-1].comments.append(Comment(name="SDRF File", value=';'.join(sdrffiles_no_empty)))
+            else:
+                self.ISA.studies[-1].comments.append(Comment(name="SDRF File", value=sdrffiles_no_empty[0]))
 
     def parse_comments(self, commentsdict):
         for k, v in commentsdict.items():
-            if len(v) > 0:
-                if len(v) > 1:
-                    v = ';'.join(v)
+            v_no_empty = [x for x in v if x != '']
+            if len(v_no_empty) > 0:
+                if len(v_no_empty) > 1:
+                    v = ';'.join(v_no_empty)
                 else:
-                    v = v[0]
+                    v = v_no_empty[0]
                 self.ISA.studies[-1].comments.append(Comment(name=k[8:-1], value=v))
 
     def infer_missing_metadata(self):
         I = self.ISA
         S = I.studies[-1]
 
+        defaultassay = None
         # first let's try and infer the MT/TT from the study design descriptors, only checks first one
-        defaultassay = self._get_measurement_and_tech(S.design_descriptors[0].term)
+        if len(S.design_descriptors) > 0:
+            defaultassay = self._get_measurement_and_tech(S.design_descriptors[0].term)
 
         # next, go through the loaded comments to see what we can find
         for comment in S.comments:
@@ -1189,9 +631,12 @@ class Parser(object):
         if defaultassay is None:
             defaultassay = Assay()
 
-        defaultassay.filename = 'a_{0}_assay.txt'.format(S.identifier)
+        # set file names if identifiers are available
+        I.filename = 'i_{0}investigation.txt'.format(I.identifier + '_' if I.identifier != '' else I.identifier)
+        S.filename = 's_{0}study.txt'.format(S.identifier + '_' if S.identifier != '' else S.identifier)
+        defaultassay.filename = 'a_{0}assay.txt'.format(S.identifier + '_' if S.identifier != '' else S.identifier)
 
-        S.assays = [defaultassay]
+        S.assays = [defaultassay]  # TODO: Deal with cases where there are multiple SDRF Files to split multiple assays
 
     @staticmethod
     def _get_measurement_and_tech(design_type):
@@ -1227,3 +672,56 @@ class Parser(object):
                           technology_type=OntologyAnnotation(term='nucleotide sequencing'),
                           technology_platform='ChIP-Seq')
         return assay
+
+    def parse_sdrf_to_dataframes(self, in_filename):
+        """ Parses MAGE-TAB SDRF file into ISA-Tab study and assay tables as pandas dataframes"""
+        df = pd.read_csv(in_filename, sep='\t', comment='#').fillna('')
+        # do some preliminary cleanup of the table
+        columns_to_keep = []
+        for i, col in enumerate(df.columns):
+            if col.lower().startswith('term source ref') and df.columns[i-1].lower().startswith('protocol ref'):
+                pass  # drop term source ref column that appears after protocol ref
+            elif col.lower().startswith('term source ref') and df.columns[i-1].lower().startswith('array design ref'):
+                pass  # drop term source ref column that appears after array design ref
+            elif col.lower().startswith('technology type'):
+                pass  # drop technology type column / in java code it moves it 1 to the right of assay name column
+            elif col.lower().startswith('provider'):
+                pass  # drop provider column
+            else:
+                columns_to_keep.append(col)
+        df = df[columns_to_keep]  # reset dataframe with only columns we are interested in
+        #  TODO: Do we need to replicate what CleanupRunner.java does?
+
+        # now find the first index to split the SDRF into sfile and afile(s)
+        cols = [x.lower() for x in list(df.columns)]  # columns all lowered
+        if 'sample name' not in cols:  # if we can't find the sample name, we need to insert it somewhere
+            first_node_index = -1
+            if 'extract name' in cols:
+                first_node_index = cols.index('extract name')
+            elif 'labeled extract name' in cols:
+                first_node_index = cols.index('labeled extract name')
+            elif 'labeled extract name' in cols:
+                first_node_index = cols.index('hybridization name')
+            if first_node_index > 0:  # do Sample Name insertion here
+                cols_ = list(df.columns)
+                df["Sample Name"] = df[cols_[first_node_index]]  # add Sample Name column where first indexed col is
+                cols_.insert(first_node_index, "Sample Name")  # insert to the column index where Sample Name should occur
+                df = df[cols_]  # reset the dataframe with the new order of columns
+
+        # before splitting, let's rename columns where necessary
+
+        df = df.rename(columns={
+            "Material Type": "Characteristic[material]",
+            "Technology Type": "Comment[technology type]",
+            "Hybridization Name": "Hybridization Assay Name"
+        })
+
+        # now do the slice
+        cols = list(df.columns)
+        sample_name_index = cols.index("Sample Name")
+        study_df = df[df.columns[0:sample_name_index + 1]].drop_duplicates()
+        assay_df = df[df.columns[sample_name_index:]]
+
+        # TODO: Do the split on Assay types if we can detect in each row based on looking for keywords on technology
+
+        return study_df, assay_df

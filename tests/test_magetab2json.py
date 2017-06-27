@@ -28,7 +28,7 @@ class TestMageTab2IsaJson(unittest.TestCase):
         shutil.rmtree(self._tmp_dir)
 
     def test_magetab2json_convert_e_mexp_31(self):
-        actual_json = magetab2json.convert(os.path.join(self._magetab_data_dir, 'E-MEXP-31.idf.txt'), 'protein microarray', 'protein expression profiling')
+        actual_json = magetab2json.convert(os.path.join(self._magetab_data_dir, 'E-MEXP-31.idf.txt'),)
         with open(os.path.join(self._tmp_dir, 'isa.json'), 'w') as out_fp:
             json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
