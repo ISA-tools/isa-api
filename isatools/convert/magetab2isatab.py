@@ -19,6 +19,12 @@ def convert(idf_file_path, output_path):
     sdrf_files = [x.value for x in parser.ISA.studies[-1].comments if 'SDRF File' in x.name]
     if len(sdrf_files) == 1:
         study_df, assay_df = parser.parse_sdrf_to_dataframes(os.path.join(os.path.dirname(idf_file_path), sdrf_files[0]))
+
+        columns = [x[:x.rindex('.')] if '.' in x else x for x in list(study_df.columns)]
+        study_df.columns = columns
+        columns = [x[:x.rindex('.')] if '.' in x else x for x in list(assay_df.columns)]
+        assay_df.columns = columns
+
         study_filename = parser.ISA.studies[-1].filename
         assay_filename = parser.ISA.studies[-1].assays[-1].filename
         print("Writing {0} to {1}".format(study_filename, output_path))
