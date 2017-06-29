@@ -1285,7 +1285,7 @@ def check_study_and_assay_graphs(study_json, configs):
                                                                                                                 squished_assay_protocol_sequence_of_interest),
                     "code": 4004
                 })
-                logger.warn("Configuration protocol sequence {} does not match study graph found in {}"
+                logger.warning("Configuration protocol sequence {} does not match study graph found in {}"
                             .format(config_protocol_sequence, assay_protocol_sequence))
 
     protocols_and_types = dict([(i["@id"], i["protocolType"]["annotationValue"]) for i in study_json["protocols"]])
@@ -1446,7 +1446,7 @@ def batch_validate(json_file_list):
     for json_file in json_file_list:
         logger.info("***Validating {}***\n".format(json_file))
         if not os.path.isfile(json_file):
-            logger.warn("Could not find ISA-JSON file, skipping {}".format(json_file))
+            logger.warning("Could not find ISA-JSON file, skipping {}".format(json_file))
         else:
             with open(json_file) as fp:
                 batch_report["batch_report"].append(

@@ -491,7 +491,7 @@ class MageTabParser(object):
         return self.ISA
     
     def load_into_idfdict(self, in_filename):
-        with open(in_filename, 'rU') as in_file:
+        with open(in_filename) as in_file:
             tabreader = csv.reader(filter(lambda r: r[0] != '#', in_file), dialect='excel-tab')
             for row in tabreader:
                 key = get_squashed(key=row[0])

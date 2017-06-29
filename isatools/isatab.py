@@ -17,10 +17,8 @@ import io
 from itertools import zip_longest
 
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-LOG = logging.getLogger("isatools.isatab")
+logging.basicConfig(level=logging.INFO)
+LOG = logging.getLogger(__name__)
 
 errors = list()
 warnings = list()
@@ -1017,7 +1015,7 @@ def check_utf8(fp):
                 "supplemental": "Encoding is '{0}' with confidence {1}".format(charset['encoding'], charset['confidence']),
                 "code": 10
             })
-            logger.warning("File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
+            LOG.warning("File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
                            .format(charset['encoding'], charset['confidence']))
             raise SystemError()
 
@@ -1030,21 +1028,21 @@ def load_investigation(fp):
 
         if not labels_expected.issubset(labels_found):
             missing_labels = labels_expected - labels_found
-            logger.fatal("(F) In {} section, expected labels {} not found in {}"
+            LOG.fatal("(F) In {} section, expected labels {} not found in {}"
                          .format(section, missing_labels, labels_found))
         if len(labels_found - labels_expected) > 0:
             # check extra labels, i.e. make sure they're all comments
             extra_labels = labels_found - labels_expected
             for label in extra_labels:
                 if _RX_COMMENT.match(label) is None:
-                    logger.fatal("(F) In {} section, label {} is not allowed".format(section, label))
+                    LOG.fatal("(F) In {} section, label {} is not allowed".format(section, label))
                     errors.append({
                         "message": "Invalid label found in investigation file",
                         "supplemental": "In {} section, label {} is not allowed".format(section, label),
                         "code": 5
                     })
                 elif len(_RX_COMMENT.findall(label)) == 0:
-                    logger.warn("(W) In {} section, label {} is missing a name".format(section, label))
+                    LOG.warning("(W) In {} section, label {} is missing a name".format(section, label))
                     warnings.append({
                         "message": "Missing name in Comment[] label",
                         "supplemental": "In {} section, label {} is missing a name".format(section, label),
@@ -1052,23 +1050,23 @@ def load_investigation(fp):
                     })
 
     df_dict = read_investigation_file(fp)  # Read in investigation file into DataFrames first
-    logger.info("Loading ONTOLOGY SOURCE REFERENCE section")
+    LOG.info("Loading ONTOLOGY SOURCE REFERENCE section")
     labels_expected = {'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
     check_labels('ONTOLOGY SOURCE REFERENCE', labels_expected, df_dict['ontology_sources'])
 
-    logger.info("Loading INVESTIGATION section")
+    LOG.info("Loading INVESTIGATION section")
     labels_expected = {'Investigation Identifier', 'Investigation Title', 'Investigation Description',
                        'Investigation Submission Date', 'Investigation Public Release Date'}
     check_labels('INVESTIGATION', labels_expected, df_dict['investigation'])
 
-    logger.info("Loading INVESTIGATION PUBLICATIONS section")
+    LOG.info("Loading INVESTIGATION PUBLICATIONS section")
     labels_expected = {'Investigation PubMed ID', 'Investigation Publication DOI',
                        'Investigation Publication Author List', 'Investigation Publication Title',
                        'Investigation Publication Status', 'Investigation Publication Status Term Accession Number',
                        'Investigation Publication Status Term Source REF'}
     check_labels('INVESTIGATION PUBLICATIONS', labels_expected, df_dict['i_publications'])
 
-    logger.info("Loading INVESTIGATION CONTACTS section")
+    LOG.info("Loading INVESTIGATION CONTACTS section")
     labels_expected = {'Investigation Person Last Name', 'Investigation Person First Name',
                        'Investigation Person Mid Initials', 'Investigation Person Email',
                        'Investigation Person Phone', 'Investigation Person Fax',
@@ -1078,19 +1076,19 @@ def load_investigation(fp):
                        'Investigation Person Roles Term Source REF'}
     check_labels('INVESTIGATION CONTACTS', labels_expected, df_dict['i_contacts'])
     for i in range(0, len(df_dict['studies'])):
-        logger.info("Loading STUDY section")
+        LOG.info("Loading STUDY section")
         labels_expected = {'Study Identifier', 'Study Title', 'Study Description',
                            'Study Submission Date', 'Study Public Release Date',
                            'Study File Name'}
         check_labels('STUDY', labels_expected, df_dict['studies'][i])
 
-        logger.info("Loading STUDY DESIGN DESCRIPTORS section")
+        LOG.info("Loading STUDY DESIGN DESCRIPTORS section")
         labels_expected = {'Study Design Type', 'Study Design Type Term Accession Number',
                            'Study Design Type Term Source REF'}
         check_labels('STUDY DESIGN DESCRIPTORS', labels_expected,
                      df_dict['s_design_descriptors'][i])
 
-        logger.info("Loading STUDY PUBLICATIONS section")
+        LOG.info("Loading STUDY PUBLICATIONS section")
         labels_expected = {'Study PubMed ID', 'Study Publication DOI',
                            'Study Publication Author List', 'Study Publication Title',
                            'Study Publication Status',
@@ -1099,12 +1097,12 @@ def load_investigation(fp):
         check_labels('STUDY PUBLICATIONS', labels_expected,
                      df_dict['s_publications'][i])
 
-        logger.info("Loading STUDY FACTORS section")
+        LOG.info("Loading STUDY FACTORS section")
         labels_expected = {'Study Factor Name', 'Study Factor Type', 'Study Factor Type Term Accession Number',
                            'Study Factor Type Term Source REF'}
         check_labels('STUDY FACTORS', labels_expected, df_dict['s_factors'][i])
 
-        logger.info("Loading STUDY ASSAYS section")
+        LOG.info("Loading STUDY ASSAYS section")
         labels_expected = {'Study Assay Measurement Type', 'Study Assay Measurement Type Term Accession Number',
                            'Study Assay Measurement Type Term Source REF', 'Study Assay Technology Type',
                            'Study Assay Technology Type Term Accession Number',
@@ -1112,7 +1110,7 @@ def load_investigation(fp):
                            'Study Assay File Name'}
         check_labels('STUDY ASSAYS', labels_expected, df_dict['s_assays'][i])
 
-        logger.info("Loading STUDY PROTOCOLS section")
+        LOG.info("Loading STUDY PROTOCOLS section")
         labels_expected = {'Study Protocol Name', 'Study Protocol Type',
                            'Study Protocol Type Term Accession Number', 'Study Protocol Type Term Source REF',
                            'Study Protocol Description', 'Study Protocol URI', 'Study Protocol Version',
@@ -1122,7 +1120,7 @@ def load_investigation(fp):
                            'Study Protocol Components Type Term Source REF'}
         check_labels('STUDY PROTOCOLS', labels_expected, df_dict['s_protocols'][i])
 
-        logger.info("Loading STUDY CONTACTS section")
+        LOG.info("Loading STUDY CONTACTS section")
         labels_expected = {'Study Person Last Name', 'Study Person First Name',
                            'Study Person Mid Initials', 'Study Person Email',
                            'Study Person Phone', 'Study Person Fax',
@@ -1144,7 +1142,7 @@ def check_filenames_present(i_df):
                 "supplemental": "STUDY.{}".format(s_pos),
                 "code": 3005
             })
-            logger.warning("(W) A study filename is missing for STUDY.{}".format(s_pos))
+            LOG.warning("(W) A study filename is missing for STUDY.{}".format(s_pos))
         for a_pos, filename in enumerate(i_df['s_assays'][s_pos]['Study Assay File Name'].tolist()):
             if filename is '':
                 warnings.append({
@@ -1152,7 +1150,7 @@ def check_filenames_present(i_df):
                     "supplemental": "STUDY.{}, STUDY ASSAY.{}".format(s_pos, a_pos),
                     "code": 3005
                 })
-                logger.warning("(W) An assay filename is missing for STUDY ASSAY.{}".format(a_pos))
+                LOG.warning("(W) An assay filename is missing for STUDY ASSAY.{}".format(a_pos))
 
 
 def check_date_formats(i_df):
@@ -1167,7 +1165,7 @@ def check_date_formats(i_df):
                     "supplemental": "Found {} in date field".format(date_str),
                     "code": 3001
                 })
-                logger.warning("(W) Date {} does not conform to ISO8601 format".format(date_str))
+                LOG.warning("(W) Date {} does not conform to ISO8601 format".format(date_str))
     import iso8601
     release_date_vals = i_df['investigation']['Investigation Public Release Date'].tolist()
     if len(release_date_vals) > 0:
@@ -1196,7 +1194,7 @@ def check_dois(i_df):
                     "supplemental": "Found {} in DOI field".format(doi_str),
                     "code": 3002
                 })
-                logger.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
+                LOG.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
     for doi in i_df['i_publications']['Investigation Publication DOI'].tolist():
         check_doi(doi)
     for i, study_df in enumerate(i_df['s_publications']):
@@ -1214,7 +1212,7 @@ def check_pubmed_ids_format(i_df):
                     "supplemental": "Found PubMedID {}".format(pubmed_id_str),
                     "code": 3003
                 })
-                logger.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
+                LOG.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
     for doi in i_df['i_publications']['Investigation PubMed ID'].tolist():
         check_pubmed_id(doi)
     for study_pubs_df in i_df['s_publications']:
@@ -1232,7 +1230,7 @@ def check_protocol_names(i_df):
                     "supplemental": "pos={}".format(i),
                     "code": 1010
                 })
-                logger.warning("(W) A Protocol at position {} is missing Protocol Name, so can't be referenced in "
+                LOG.warning("(W) A Protocol at position {} is missing Protocol Name, so can't be referenced in "
                                "ISA-tab".format(i))
 
 
@@ -1248,7 +1246,7 @@ def check_protocol_parameter_names(i_df):
                             "supplemental": "Protocol Parameter at pos={}".format(i),
                             "code": 1011
                         })
-                        logger.warning("(W) A Protocol Parameter used in Protocol position {} is missing a Name, so "
+                        LOG.warning("(W) A Protocol Parameter used in Protocol position {} is missing a Name, so "
                                        "can't be referenced in ISA-tab".format(i))
 
 
@@ -1262,7 +1260,7 @@ def check_study_factor_names(i_df):
                     "supplemental": "Study Factor pos={}".format(i),
                     "code": 1012
                 })
-                logger.warning("(W) A Study Factor at position {} is missing a name, so can't be referenced in ISA-tab"
+                LOG.warning("(W) A Study Factor at position {} is missing a name, so can't be referenced in ISA-tab"
                                .format(i))
 
 
@@ -1275,7 +1273,7 @@ def check_ontology_sources(i_df):
                 "supplemental": "pos={}".format(i),
                 "code": 3008
             })
-            logger.warning("(W) An Ontology Source Reference at position {} is missing Term Source Name, so can't be "
+            LOG.warning("(W) An Ontology Source Reference at position {} is missing Term Source Name, so can't be "
                            "referenced".format(i))
 
 
@@ -1285,14 +1283,15 @@ def check_table_files_read(i_df, dir_context):
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename is not '':
             try:
-                open(os.path.join(dir_context, study_filename))
+                with open(os.path.join(dir_context, study_filename)):
+                    pass
             except FileNotFoundError:
                 errors.append({
                     "message": "Missing study tab file(s)",
                     "supplemental": "Study File {} does not appear to exist".format(study_filename),
                     "code": 6
                 })
-                logger.error("(E) Study File {} does not appear to exist".format(study_filename))
+                LOG.error("(E) Study File {} does not appear to exist".format(study_filename))
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
@@ -1303,7 +1302,7 @@ def check_table_files_read(i_df, dir_context):
                         "supplemental": "Assay File {} does not appear to exist".format(assay_filename),
                         "code": 8
                     })
-                    logger.error("(E) Assay File {} does not appear to exist".format(assay_filename))
+                    LOG.error("(E) Assay File {} does not appear to exist".format(assay_filename))
 
 
 def check_table_files_load(i_df, dir_context):
@@ -1342,7 +1341,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
                         assay_df = load_table(a_fp)
                         assay_samples = set(assay_df['Sample Name'])
                         if not assay_samples.issubset(study_samples):
-                            logger.error("(E) Some samples in an assay file {} are not declared in the study file {}: {}".format(assay_filename, study_filename, list(assay_samples - study_samples)))
+                            LOG.error("(E) Some samples in an assay file {} are not declared in the study file {}: {}".format(assay_filename, study_filename, list(assay_samples - study_samples)))
                 except FileNotFoundError:
                     pass
 
@@ -1368,7 +1367,7 @@ def check_protocol_usage(i_df, dir_context):
                                             "{}".format(study_filename, diff),
                             "code": 1007
                         })
-                        logger.error(
+                        LOG.error(
                             "(E) Some protocols used in a study file {} are not declared in the investigation file: "
                             "{}".format(study_filename, diff))
             except FileNotFoundError:
@@ -1390,7 +1389,7 @@ def check_protocol_usage(i_df, dir_context):
                                                 "{}".format(study_filename, diff),
                                 "code": 1007
                             })
-                            logger.error("(E) Some protocols used in an assay file {} are not declared in the "
+                            LOG.error("(E) Some protocols used in an assay file {} are not declared in the "
                                          "investigation file: {}".format(assay_filename, diff))
                 except FileNotFoundError:
                     pass
@@ -1421,7 +1420,7 @@ def check_protocol_usage(i_df, dir_context):
                                 "{}".format(study_filename, diff),
                 "code": 1019
             })
-            logger.warn(
+            LOG.warning(
                 "(W) Some protocols declared in the file {} are not used in any assay file: {}".format(
                     study_filename, list(diff)))
 
@@ -1430,7 +1429,7 @@ def load_table(fp):
     try:
         df = pd.read_csv(fp, sep='\t', encoding='utf-8', comment='#')
     except UnicodeDecodeError:
-        logger.warning("Could not load file with UTF-8, trying ISO-8859-1")
+        LOG.warning("Could not load file with UTF-8, trying ISO-8859-1")
         df = pd.read_csv(fp, sep='\t', encoding='latin1', comment='#')
     return df
 
@@ -1450,10 +1449,10 @@ def load_table_checks(fp):
                            'Data Transformation Name', 'Derived Spectral Data File', 'Normalization Name',
                            'Derived Array Data File', 'Image File', 'Metabolite Assignment File',
                            'Free Induction Decay File', 'Acquisition Parameter Data File']) and not _RX_CHARACTERISTICS.match(column) and not _RX_PARAMETER_VALUE.match(column) and not _RX_FACTOR_VALUE.match(column) and not _RX_COMMENT.match(column):
-            logger.error("Unrecognised column heading {} at column position {} in table file {}".format(column, x, os.path.basename(fp.name)))
+            LOG.error("Unrecognised column heading {} at column position {} in table file {}".format(column, x, os.path.basename(fp.name)))
         if _RX_COMMENT.match(column):
             if len(_RX_COMMENT.findall(column)) == 0:
-                logger.warn("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
+                LOG.warning("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
                 warnings.append({
                     "message": "Missing name in Comment[] label",
                     "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
@@ -1461,7 +1460,7 @@ def load_table_checks(fp):
                 })
         if _RX_CHARACTERISTICS.match(column):
             if len(_RX_CHARACTERISTICS.findall(column)) == 0:
-                logger.warn("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
+                LOG.warning("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
                 warnings.append({
                     "message": "Missing name in Characteristics[] label",
                     "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
@@ -1469,7 +1468,7 @@ def load_table_checks(fp):
                 })
         if _RX_PARAMETER_VALUE.match(column):
             if len(_RX_PARAMETER_VALUE.findall(column)) == 0:
-                logger.warn("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
+                LOG.warning("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
                 warnings.append({
                     "message": "Missing name in Parameter Value[] label",
                     "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
@@ -1477,7 +1476,7 @@ def load_table_checks(fp):
                 })
         if _RX_FACTOR_VALUE.match(column):
             if len(_RX_FACTOR_VALUE.findall(column)) == 0:
-                logger.warn("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
+                LOG.warning("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
                 warnings.append({
                     "message": "Missing name in Factor Value[] label",
                     "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
@@ -1510,41 +1509,41 @@ def load_table_checks(fp):
         if prop_name in ['Sample Name', 'Source Name']:
             for x, col in enumerate(object_columns[1:]):
                 if col not in ['Term Source REF', 'Term Accession Number', 'Unit'] and not _RX_CHARACTERISTICS.match(col) and not _RX_FACTOR_VALUE.match(col) and not _RX_COMMENT.match(col):
-                    logger.error("(E) Expected only Characteristics, Factor Values or Comments following {} columns but found {} at offset {}".format(prop_name, col, x+1))
+                    LOG.error("(E) Expected only Characteristics, Factor Values or Comments following {} columns but found {} at offset {}".format(prop_name, col, x+1))
         elif prop_name == 'Protocol REF':
             for x, col in enumerate(object_columns[1:]):
                 if col not in ['Term Source REF', 'Term Accession Number', 'Unit', 'Assay Name',
                                'Hybridization Assay Name', 'Array Design REF', 'Scan Name'] and not _RX_PARAMETER_VALUE.match(col) and not _RX_COMMENT.match(col):
-                    logger.error("(E) Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, col, x+1))
+                    LOG.error("(E) Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, col, x+1))
         elif prop_name == 'Extract Name':
             if len(object_columns) > 1:
-                logger.error(
+                LOG.error(
                     "Unexpected column heading(s) following {} column. Found {} at offset {}".format(prop_name, object_columns[1:], 2))
         elif prop_name == 'Labeled Extract Name':
             if len(object_columns) > 1:
                 if object_columns[1] == 'Label':
                     for x, col in enumerate(object_columns[2:]):
                         if col not in ['Term Source REF', 'Term Accession Number']:
-                            logger.error("(E) Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, col, x+1))
+                            LOG.error("(E) Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, col, x+1))
                 else:
-                    logger.error("(E) Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, object_columns[1:], 2))
+                    LOG.error("(E) Unexpected column heading following {} column. Found {} at offset {}".format(prop_name, object_columns[1:], 2))
             else:
-                logger.error("Expected Label column after Labeled Extract Name but none found")
+                LOG.error("Expected Label column after Labeled Extract Name but none found")
         elif prop_name in ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
                            'Raw Spectral Data File', 'Protein Assignment File', 'Peptide Assignment File',
                            'Post Translational Modification Assignment File']:
             for x, col in enumerate(object_columns[1:]):
                 if not _RX_COMMENT.match(col):
-                    logger.error("(E) Expected only Comments following {} columns but found {} at offset {}".format(prop_name, col, x+1))
+                    LOG.error("(E) Expected only Comments following {} columns but found {} at offset {}".format(prop_name, col, x+1))
         elif _RX_FACTOR_VALUE.match(prop_name):
             for x, col in enumerate(object_columns[2:]):
                 if col not in ['Term Source REF', 'Term Accession Number']:
-                    logger.error(
+                    LOG.error(
                         "(E) Unexpected column heading following {} column. Found {} at offset {}".format(prop_name,
                                                                                                       col, x + 1))
         else:
-            logger.info("Need to implement a rule for... " + prop_name)
-            logger.info(object_columns)
+            LOG.info("Need to implement a rule for... " + prop_name)
+            LOG.info(object_columns)
     return df
 
 
@@ -1563,7 +1562,7 @@ def check_study_factor_usage(i_df, dir_context):
                         fv = _RX_FACTOR_VALUE.findall(col)
                         study_factors_used = study_factors_used.union(set(fv))
                     if not study_factors_used.issubset(study_factors_declared):
-                        logger.error(
+                        LOG.error(
                             "(E) Some factors used in an study file {} are not declared in the investigation file: {}".format(
                                 study_filename, list(study_factors_used - study_factors_declared)))
             except FileNotFoundError:
@@ -1579,7 +1578,7 @@ def check_study_factor_usage(i_df, dir_context):
                             fv = _RX_FACTOR_VALUE.findall(col)
                             study_factors_used = study_factors_used.union(set(fv))
                         if not study_factors_used.issubset(study_factors_declared):
-                            logger.error(
+                            LOG.error(
                                 "(E) Some factors used in an assay file {} are not declared in the investigation file: {}".format(
                                     assay_filename, list(study_factors_used - study_factors_declared)))
                 except FileNotFoundError:
@@ -1607,7 +1606,7 @@ def check_study_factor_usage(i_df, dir_context):
                 except FileNotFoundError:
                     pass
         if len(study_factors_declared - study_factors_used) > 0:
-            logger.warn(
+            LOG.warning(
                 "(W) Some study factors declared in the investigation file are not used in any assay file: {}".format(
                     list(study_factors_declared - study_factors_used)))
 
@@ -1632,7 +1631,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                         pv = _RX_PARAMETER_VALUE.findall(col)
                         protocol_parameters_used = protocol_parameters_used.union(set(pv))
                     if not protocol_parameters_used.issubset(protocol_parameters_declared):
-                        logger.error(
+                        LOG.error(
                             "(E) Some protocol parameters referenced in an study file {} are not declared in the investigation file: {}".format(
                                 study_filename, list(protocol_parameters_used - protocol_parameters_declared)))
             except FileNotFoundError:
@@ -1648,7 +1647,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                             pv = _RX_PARAMETER_VALUE.findall(col)
                             protocol_parameters_used = protocol_parameters_used.union(set(pv))
                         if not protocol_parameters_used.issubset(protocol_parameters_declared):
-                            logger.error(
+                            LOG.error(
                                 "(E) Some protocol parameters referenced in an assay file {} are not declared in the investigation file: {}".format(
                                     assay_filename, list(protocol_parameters_used - protocol_parameters_declared)))
                 except FileNotFoundError:
@@ -1677,7 +1676,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                 except FileNotFoundError:
                     pass
         if len(protocol_parameters_declared - protocol_parameters_used) > 0:
-            logger.warn(
+            LOG.warning(
                 "(W) Some protocol parameters declared in the investigation file are not used in any assay file: {}".format(
                     list(protocol_parameters_declared - protocol_parameters_used)))
 
@@ -1708,7 +1707,7 @@ def check_term_source_refs_in_investigation(i_df):
                 "supplemental": "Ontology sources missing {}".format(list(diff)),
                 "code": 3009
             })
-            logger.warn("(W) In {} one or more of {} has not been declared in {}.{} section".format(
+            LOG.warning("(W) In {} one or more of {} has not been declared in {}.{} section".format(
                 column_label, section_term_source_refs, section_label, pos))
 
     i_publication_status_term_source_ref = [i for i in i_df['i_publications']['Investigation Publication Status Term Source REF'].tolist() if i != '']
@@ -1719,7 +1718,7 @@ def check_term_source_refs_in_investigation(i_df):
             "supplemental": "Ontology sources missing {}".format(list(diff)),
             "code": 3009
         })
-        logger.warn("(W) Investigation Publication Status Term Source REF {} has not been declared in ONTOLOGY SOURCE "
+        LOG.warning("(W) Investigation Publication Status Term Source REF {} has not been declared in ONTOLOGY SOURCE "
                     "REFERENCE section".format(i_publication_status_term_source_ref))
     i_person_roles_term_source_ref = [i for i in i_df['i_contacts']['Investigation Person Roles Term Source REF'].tolist() if i != '']
     diff = set(i_person_roles_term_source_ref) - set(ontology_sources_list)
@@ -1729,7 +1728,7 @@ def check_term_source_refs_in_investigation(i_df):
             "supplemental": "Ontology sources missing {}".format(list(diff)),
             "code": 3009
         })
-        logger.warn("(W) Investigation Person Roles Term Source REF {} has not been declared in ONTOLOGY SOURCE "
+        LOG.warning("(W) Investigation Person Roles Term Source REF {} has not been declared in ONTOLOGY SOURCE "
                     "REFERENCE section".format(i_person_roles_term_source_ref))
 
     for i, study_df in enumerate(i_df['studies']):
@@ -1776,7 +1775,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                                                 list(ontology_sources_list)),
                                             "code": 3009
                                         })
-                                        logger.warn("(W) Term Source REF {} at column position {} and row {} in {} not "
+                                        LOG.warning("(W) Term Source REF {} at column position {} and row {} in {} not "
                                                     "declared in ontology sources {}".format(row+1, object_index[x], y+1,
                                                                                              study_filename,
                                                                                              list(ontology_sources_list)))
@@ -1789,7 +1788,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                                             list(ontology_sources_list)),
                                         "code": 3009
                                     })
-                                    logger.warn("(W) Term Source REF {} at column position {} and row {} in {} not in "
+                                    LOG.warning("(W) Term Source REF {} at column position {} and row {} in {} not in "
                                                 "declared ontology sources {}"
                                                 .format(row+1, object_index[x], y+1, study_filename,
                                                         list(ontology_sources_list)))
@@ -1823,7 +1822,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                                 list(ontology_sources_list)),
                                                     "code": 3009
                                                 })
-                                                logger.warn("(W) Term Source REF {} at column position {} and row {} in {} "
+                                                LOG.warning("(W) Term Source REF {} at column position {} and row {} in {} "
                                                             "not declared in ontology sources {}"
                                                             .format(row+1, object_index[x], y+1, study_filename,
                                                                     list(ontology_sources_list)))
@@ -1836,7 +1835,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                             list(ontology_sources_list)),
                                                 "code": 3009
                                             })
-                                            logger.warn("(W) Term Source REF {} at column position {} and row {} in {} not "
+                                            LOG.warning("(W) Term Source REF {} at column position {} and row {} in {} not "
                                                         "in declared ontology sources {}"
                                                         .format(row+1, object_index[x], y+1, study_filename,
                                                                 list(ontology_sources_list)))
@@ -1861,17 +1860,17 @@ def load_config(config_dir):
             "supplemental": "On loading {}".format(config_dir),
             "code": 4001
         })
-        logger.error("(E) FileNotFoundError on trying to load from {}".format(config_dir))
+        LOG.error("(E) FileNotFoundError on trying to load from {}".format(config_dir))
     if configs is None:
         errors.append({
             "message": "Configurations could not be loaded",
             "supplemental": "On loading {}".format(config_dir),
             "code": 4001
         })
-        logger.error("(E) Could not load configurations from {}".format(config_dir))
+        LOG.error("(E) Could not load configurations from {}".format(config_dir))
     else:
         for k in configs.keys():
-            logger.info("Loaded table configuration '{}' for measurement and technology {}"
+            LOG.info("Loaded table configuration '{}' for measurement and technology {}"
                         .format(str(configs[k].get_isatab_configuration()[0].table_name), str(k)))
     return configs
 
@@ -1890,7 +1889,7 @@ def check_measurement_technology_types(i_df, configs):
                             .format(measurement_types[x], technology_types[x], i),
                         "code": 4002
                     })
-                    logger.error("(E) Could not load configuration for measurement type '{}' and technology type '{}' "
+                    LOG.error("(E) Could not load configuration for measurement type '{}' and technology type '{}' "
                                  "for STUDY ASSAY.{}'".format(measurement_types[x], technology_types[x], i))
 
 
@@ -1913,7 +1912,7 @@ def check_investigation_against_config(i_df, configs):
                                                     "required".format(col, i + 1, x + 1),
                                     "code": 4003
                                 })
-                                logger.warn(
+                                LOG.warning(
                                     "(W) A property value in {}.{} of investigation file at column {} is required".format(
                                         col, i+1, x + 1))
                             else:
@@ -1923,7 +1922,7 @@ def check_investigation_against_config(i_df, configs):
                                                     "required".format(col, x + 1),
                                     "code": 4003
                                 })
-                                logger.warn(
+                                LOG.warning(
                                     "(W) A property value in {} of investigation file at column {} is required".format(
                                         col, x + 1))
                     else:
@@ -1935,7 +1934,7 @@ def check_investigation_against_config(i_df, configs):
                                                     "required".format(col, i+1, x + 1),
                                     "code": 4003
                                 })
-                                logger.warn(
+                                LOG.warning(
                                     "(W) A property value in {}.{} of investigation file at column {} is required".format(
                                         col, i+1, x + 1))
                             else:
@@ -1945,7 +1944,7 @@ def check_investigation_against_config(i_df, configs):
                                                     "required".format(col, x + 1),
                                     "code": 4003
                                 })
-                                logger.warn(
+                                LOG.warning(
                                     "(W) A property value in {} of investigation file at column {} is required".format(
                                         col, x + 1))
 
@@ -1991,7 +1990,7 @@ def check_study_table_against_config(s_df, protocols_declared, config):
                     .format(fields[x], object[1], object[0]),
                 "code": 4005
             })
-            logger.warn("(W) Unexpected heading found. Expected {} but found {} at column number {}"
+            LOG.warning("(W) Unexpected heading found. Expected {} but found {} at column number {}"
                         .format(fields[x], object[1], object[0]))
 
     # Second, check if Protocol REFs are of valid types
@@ -2034,7 +2033,7 @@ def check_assay_table_against_config(s_df, config):
                     .format(fields[x], object[1], object[0]),
                 "code": 4005
             })
-            logger.warn("(W) Unexpected heading found. Expected {} but found {} at column number {}".format(fields[x], object[1], object[0]))
+            LOG.warning("(W) Unexpected heading found. Expected {} but found {} at column number {}".format(fields[x], object[1], object[0]))
 
 
 def cell_has_value(cell):
@@ -2064,7 +2063,7 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
                     .format(filename, required_field),
                 "code": 4010
             })
-            logger.warn("(W) In {} the required column {} missing from column headings".format(filename, required_field))
+            LOG.warning("(W) In {} the required column {} missing from column headings".format(filename, required_field))
         else:
             # Now check that the required column cells all have values, Rules 4003-4008
             for y, cell in enumerate(df[required_field]):
@@ -2074,7 +2073,7 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
                         "supplemental": "Cell at row {} in column '{}' has no value".format(y, required_field),
                         "code": 4012
                     })
-                    logger.warn("(W) Cell at row {} in column '{}' has no value, but it is required by the "
+                    LOG.warning("(W) Cell at row {} in column '{}' has no value, but it is required by the "
                                 "configuration".format(y, required_field))
 
     # Check if protocol ref column values are consistently structured
@@ -2090,8 +2089,8 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
                 "supplemental": "Multiple protocol references {} are found in {}".format(prots_found, each),
                 "code": 4999
             })
-            logger.warn("(W) Multiple protocol references {} are found in {}".format(prots_found, each))
-            logger.warn("(W) Only one protocol reference should be used in a Protocol REF column.")
+            LOG.warning("(W) Multiple protocol references {} are found in {}".format(prots_found, each))
+            LOG.warning("(W) Only one protocol reference should be used in a Protocol REF column.")
             prots_ok = False
 
 
@@ -2107,7 +2106,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                 with open(os.path.join(dir_context, study_filename)) as s_fp:
                     df = load_table(s_fp)
                     config = configs[('[Sample]', '')]
-                    logger.info("Checking study file {} against default study table configuration...".format(study_filename))
+                    LOG.info("Checking study file {} against default study table configuration...".format(study_filename))
                     check_assay_table_with_config(df, config, study_filename, protocol_names_and_types)
             except FileNotFoundError:
                 pass
@@ -2120,7 +2119,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                     with open(os.path.join(dir_context, assay_filename)) as a_fp:
                         df = load_table(a_fp)
                         config = configs[(measurement_type, technology_type)]
-                        logger.info(
+                        LOG.info(
                             "Checking assay file {} against default table configuration ({}, {})...".format(assay_filename, measurement_type, technology_type))
                         check_assay_table_with_config(df, config, assay_filename, protocol_names_and_types)
                         # check_assay_table_with_config(df, protocols, config, assay_filename)
@@ -2140,7 +2139,7 @@ def check_factor_value_presence(table):
                                     table.filename,
                     "code": 4007
                 })
-                logger.warn("(W) Missing value for '" + factor_field + "' at row " + str(x) + " in " + table.filename)
+                LOG.warning("(W) Missing value for '" + factor_field + "' at row " + str(x) + " in " + table.filename)
 
 
 def check_required_fields(table, cfg):
@@ -2152,14 +2151,14 @@ def check_required_fields(table, cfg):
                 "supplemental": "Required field '" + fheader + "' not found in the file '" + table.filename + "'",
                 "code": 4010
             })
-            logger.warn("(W) Required field '" + fheader + "' not found in the file '" + table.filename + "'")
+            LOG.warning("(W) Required field '" + fheader + "' not found in the file '" + table.filename + "'")
         elif len(found_field) > 1:
             warnings.append({
                 "message": "Multiple columns found",
                 "supplemental": "Field '" + fheader + "' cannot have multiple values in the file '" + table.filename,
                 "code": 4013
             })
-            logger.warn("(W) Field '" + fheader + "' cannot have multiple values in the file '" + table.filename)
+            LOG.warning("(W) Field '" + fheader + "' cannot have multiple values in the file '" + table.filename)
 
 
 def check_sample_names(study_sample_table, assay_tables=[]):
@@ -2175,7 +2174,7 @@ def check_sample_names(study_sample_table, assay_tables=[]):
                                 .format(assay_sample, assay_table.filename, study_sample_table.filename),
                         "code": 1003
                     })
-                    logger.warn("(W) {} is a Sample Name in {}, but it is not defined in the Study Sample File {}."
+                    LOG.warning("(W) {} is a Sample Name in {}, but it is not defined in the Study Sample File {}."
                                 .format(assay_sample, assay_table.filename, study_sample_table.filename))
 
 
@@ -2191,7 +2190,7 @@ def check_field_values(table, cfg):
                                         + "' in the file '" + table.filename + "'",
                         "code": 4010
                     })
-                    logger.warn("(W) Missing value for the required field '" + cfg_field.header + "' in the file '" +
+                    LOG.warning("(W) Missing value for the required field '" + cfg_field.header + "' in the file '" +
                                 table.filename + "'")
                 return True
         elif isinstance(cell_value, str):
@@ -2204,7 +2203,7 @@ def check_field_values(table, cfg):
                                 table.filename + "'",
                         "code": 4012
                     })
-                    logger.warn("(W) Missing value for the required field '" + cfg_field.header + "' in the file '" +
+                    LOG.warning("(W) Missing value for the required field '" + cfg_field.header + "' in the file '" +
                                 table.filename + "'")
                 return True
         is_valid_value = True
@@ -2241,7 +2240,7 @@ def check_field_values(table, cfg):
                                 "' in the file '" + table.filename + "'",
                 "code": 4011
             })
-            logger.warn("(W) Unknown data type '" + data_type + "' for field '" + cfg_field.header +
+            LOG.warning("(W) Unknown data type '" + data_type + "' for field '" + cfg_field.header +
                         "' in the file '" + table.filename + "'")
             return False
         if not is_valid_value:
@@ -2251,10 +2250,10 @@ def check_field_values(table, cfg):
                                 + cfg_field.header + "'",
                 "code": 4011
             })
-            logger.warn("(W) Invalid value '" + cell_value + "' for type '" + data_type + "' of the field '" +
+            LOG.warning("(W) Invalid value '" + cell_value + "' for type '" + data_type + "' of the field '" +
                         cfg_field.header + "'")
             if data_type == 'list':
-                logger.warn("(W) Value must be one of: " + cfg_field.list_values)
+                LOG.warning("(W) Value must be one of: " + cfg_field.list_values)
         return is_valid_value
 
     result = True
@@ -2277,7 +2276,7 @@ def check_unit_field(table, cfg):
                                 + "'",
                 "code": 4999
             })
-            logger.warn("(W) Field '" + cfield.header + "' has a unit but not a value in the file '" + filename + "'")
+            LOG.warning("(W) Field '" + cfield.header + "' has a unit but not a value in the file '" + filename + "'")
             return False
         return True
 
@@ -2303,7 +2302,7 @@ def check_unit_field(table, cfg):
                                                                                                   "'Unit' column",
                     "code": 4999
                 })
-                logger.warn("(W) The field '" + header + "' in the file '" + table.filename +
+                LOG.warning("(W) The field '" + header + "' in the file '" + table.filename +
                             "' misses a required 'Unit' column")
                 result = False
             else:
@@ -2328,8 +2327,8 @@ def check_protocol_fields(table, cfg, proto_map):
         for cell in table[each]:
             prots_found.add(cell)
         if len(prots_found) > 1:
-            logger.warn("(W) Multiple protocol references {} are found in {}".format(prots_found, each))
-            logger.warn("(W) Only one protocol reference should be used in a Protocol REF column.")
+            LOG.warning("(W) Multiple protocol references {} are found in {}".format(prots_found, each))
+            LOG.warning("(W) Only one protocol reference should be used in a Protocol REF column.")
             result = False
     if result:
         field_headers = [i for i in table.columns if
@@ -2342,7 +2341,7 @@ def check_protocol_fields(table, cfg, proto_map):
             last_proto_indx = -1
         last_mat_or_dat_indx = table.columns.get_loc(field_headers[len(field_headers) - 1])
         if last_proto_indx > last_mat_or_dat_indx:
-            logger.warn("(W) Protocol REF column without output in file '" + table.filename + "'")
+            LOG.warning("(W) Protocol REF column without output in file '" + table.filename + "'")
         for left, right in pairwise(field_headers):
             cleft = None
             cright = None
@@ -2373,7 +2372,7 @@ def check_protocol_fields(table, cfg, proto_map):
                                             "against name only".format(proto_name),
                             "code": 1007
                         })
-                        logger.warn("(W) Could not find protocol type for protocol name '{}', trying to validate "
+                        LOG.warning("(W) Could not find protocol type for protocol name '{}', trying to validate "
                                     "against name only".format(proto_name))
                         fprotos.append(proto_name)
                 invalid_protos = set(cprotos) - set(fprotos)
@@ -2386,7 +2385,7 @@ def check_protocol_fields(table, cfg, proto_map):
                                         + "' but has not been found, in the file '" + table.filename + "'",
                         "code": 1007
                     })
-                    logger.warn("(W) Protocol(s) of type " + str(
+                    LOG.warning("(W) Protocol(s) of type " + str(
                         list(invalid_protos)) + " defined in the ISA-configuration expected as a between '" +
                                 cleft.header + "' and '" + cright.header + "' but has not been found, in the file '" + table.filename + "'")
                     result = False
@@ -2403,7 +2402,7 @@ def check_ontology_fields(table, cfg):
                                 + filename + "'. Check that all the label/accession/source are provided.",
                 "code": 3008
             })
-            logger.warn(
+            LOG.warning(
                 "(W) Incomplete values for ontology headers, for the field '" + cfield.header + "' in the file '" +
                 filename + "'. Check that all the label/accession/source are provided.")
             return False
@@ -2428,7 +2427,7 @@ def check_ontology_fields(table, cfg):
         if rrindx < nfields:
             rrheader = table.columns[rrindx]
         if 'term source ref' not in rheader.lower() or 'term accession number' not in rrheader.lower():
-            logger.warn("(W) The Field '" + header
+            LOG.warning("(W) The Field '" + header
                         + "' should have values from ontologies and has no ontology headers instead")
             result = False
             continue
@@ -2449,18 +2448,18 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
     global warnings
     errors = list()
     warnings = list()
-    logger.setLevel(log_level)
-    logger.info("ISA tab Validator from ISA tools API v0.6")
+    LOG.setLevel(log_level)
+    LOG.info("ISA tab Validator from ISA tools API v0.6")
     from io import StringIO
     stream = StringIO()
     handler = logging.StreamHandler(stream)
-    logger.addHandler(handler)
+    LOG.addHandler(handler)
     validation_finished = False
     try:
         # check_utf8(fp)  # skip as does not correctly report right now
-        logger.info("Loading... {}".format(fp.name))
+        LOG.info("Loading... {}".format(fp.name))
         i_df = load_investigation(fp=fp)
-        logger.info("Running prechecks...")
+        LOG.info("Running prechecks...")
         check_filenames_present(i_df)  # Rule 3005
         check_table_files_read(i_df, os.path.dirname(fp.name))  # Rules 0006 and 0008
         # check_table_files_load(i_df, os.path.dirname(fp.name))  # Rules 0007 and 0009, covered by later validation?
@@ -2475,16 +2474,16 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
         check_protocol_parameter_names(i_df)  # Rule 1011
         check_study_factor_names(i_df)  # Rule 1012
         check_ontology_sources(i_df)  # Rule 3008
-        logger.info("Finished prechecks...")
-        logger.info("Loading configurations found in {}".format(config_dir))
+        LOG.info("Finished prechecks...")
+        LOG.info("Loading configurations found in {}".format(config_dir))
         configs = load_config(config_dir)  # Rule 4001
         if configs is None:
             raise SystemError("No configuration to load so cannot proceed with validation!")
-        logger.info("Using configurations found in {}".format(config_dir))
+        LOG.info("Using configurations found in {}".format(config_dir))
         check_measurement_technology_types(i_df, configs)  # Rule 4002
-        logger.info("Checking investigation file against configuration...")
+        LOG.info("Checking investigation file against configuration...")
         check_investigation_against_config(i_df, configs)  # Rule 4003 for investigation file only
-        logger.info("Finished checking investigation file")
+        LOG.info("Finished checking investigation file")
         for i, study_df in enumerate(i_df['studies']):
             study_filename = study_df.iloc[0]['Study File Name']
             study_sample_table = None
@@ -2494,34 +2493,34 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
                 protocol_types = i_df['s_protocols'][i]['Study Protocol Type'].tolist()
                 protocol_names_and_types = dict(zip(protocol_names, protocol_types))
                 try:
-                    logger.info("Loading... {}".format(study_filename))
+                    LOG.info("Loading... {}".format(study_filename))
                     with open(os.path.join(os.path.dirname(fp.name), study_filename), encoding='utf-8') as s_fp:
                         study_sample_table = load_table(s_fp)
                         study_sample_table.filename = study_filename
                         config = configs[('[Sample]', '')]
-                        logger.info(
+                        LOG.info(
                             "Validating {} against default study table configuration".format(study_filename))
-                        logger.info("Checking Factor Value presence...")
+                        LOG.info("Checking Factor Value presence...")
                         check_factor_value_presence(study_sample_table)  # Rule 4007
-                        logger.info("Checking required fields...")
+                        LOG.info("Checking required fields...")
                         check_required_fields(study_sample_table, config)  # Rule 4003-8, 4010
-                        logger.info("Checking generic fields...")
+                        LOG.info("Checking generic fields...")
                         if not check_field_values(study_sample_table, config):  # Rule 4011
-                            logger.warn("(W) There are some field value inconsistencies in {} against {} "
+                            LOG.warning("(W) There are some field value inconsistencies in {} against {} "
                                         "configuration".format(study_sample_table.filename, 'Study Sample'))
-                        logger.info("Checking unit fields...")
+                        LOG.info("Checking unit fields...")
                         if not check_unit_field(study_sample_table, config):
-                            logger.warn("(W) There are some unit value inconsistencies in {} against {} "
+                            LOG.warning("(W) There are some unit value inconsistencies in {} against {} "
                                         "configuration".format(study_sample_table.filename, 'Study Sample'))
-                        logger.info("Checking protocol fields...")
+                        LOG.info("Checking protocol fields...")
                         if not check_protocol_fields(study_sample_table, config, protocol_names_and_types):  # Rule 4009
-                            logger.warn("(W) There are some protocol inconsistencies in {} against {} "
+                            LOG.warning("(W) There are some protocol inconsistencies in {} against {} "
                                         "configuration".format(study_sample_table.filename, 'Study Sample'))
-                        logger.info("Checking ontology fields...")
+                        LOG.info("Checking ontology fields...")
                         if not check_ontology_fields(study_sample_table, config):  # Rule 3010
-                            logger.warn("(W) There are some ontology annotation inconsistencies in {} against {} "
+                            LOG.warning("(W) There are some ontology annotation inconsistencies in {} against {} "
                                         "configuration".format(study_sample_table.filename, 'Study Sample'))
-                        logger.info("Finished validation on {}".format(study_filename))
+                        LOG.info("Finished validation on {}".format(study_filename))
                 except FileNotFoundError:
                     pass
                 assay_df = i_df['s_assays'][i]
@@ -2532,54 +2531,54 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
                         try:
                             config = configs[(measurement_type, technology_type)]
                         except KeyError:
-                            logger.error("Could not load config matching ({}, {})".format(measurement_type, technology_type))
-                            logger.warn("Only have configs matching:")
+                            LOG.error("Could not load config matching ({}, {})".format(measurement_type, technology_type))
+                            LOG.warning("Only have configs matching:")
                             for k in configs.keys():
-                                logger.warn(k)
+                                LOG.warning(k)
                             config = None
                         if config is None:
-                            logger.warn("Skipping configuration validation as could not load config...")
+                            LOG.warning("Skipping configuration validation as could not load config...")
                         else:
                             try:
-                                logger.info("Loading... {}".format(assay_filename))
+                                LOG.info("Loading... {}".format(assay_filename))
                                 with open(os.path.join(os.path.dirname(fp.name), assay_filename), encoding='utf-8') as a_fp:
                                     assay_table = load_table(a_fp)
                                     assay_table.filename = assay_filename
                                     assay_tables.append(assay_table)
-                                    logger.info(
+                                    LOG.info(
                                         "Validating {} against assay table configuration ({}, {})...".format(
                                             assay_filename, measurement_type, technology_type))
-                                    logger.info("Checking Factor Value presence...")
+                                    LOG.info("Checking Factor Value presence...")
                                     check_factor_value_presence(assay_table)  # Rule 4007
-                                    logger.info("Checking required fields...")
+                                    LOG.info("Checking required fields...")
                                     check_required_fields(assay_table, config)  # Rule 4003-8, 4010
-                                    logger.info("Checking generic fields...")
+                                    LOG.info("Checking generic fields...")
                                     if not check_field_values(assay_table, config):  # Rule 4011
-                                        logger.warn(
+                                        LOG.warning(
                                             "(W) There are some field value inconsistencies in {} against {} configuration".format(
                                                 assay_table.filename, (measurement_type, technology_type)))
-                                    logger.info("Checking unit fields...")
+                                    LOG.info("Checking unit fields...")
                                     if not check_unit_field(assay_table, config):
-                                        logger.warn(
+                                        LOG.warning(
                                             "(W) There are some unit value inconsistencies in {} against {} configuration".format(
                                                 assay_table.filename, (measurement_type, technology_type)))
-                                    logger.info("Checking protocol fields...")
+                                    LOG.info("Checking protocol fields...")
                                     if not check_protocol_fields(assay_table, config, protocol_names_and_types):  # Rule 4009
-                                        logger.warn("(W) There are some protocol inconsistencies in {} against {} "
+                                        LOG.warning("(W) There are some protocol inconsistencies in {} against {} "
                                                     "configuration".format(assay_table.filename, (measurement_type, technology_type)))
-                                    logger.info("Checking ontology fields...")
+                                    LOG.info("Checking ontology fields...")
                                     if not check_ontology_fields(assay_table, config):  # Rule 3010
-                                        logger.warn("(W) There are some ontology annotation inconsistencies in {} against {} "
+                                        LOG.warning("(W) There are some ontology annotation inconsistencies in {} against {} "
                                                     "configuration".format(assay_table.filename, (measurement_type, technology_type)))
-                                    logger.info("Finished validation on {}".format(assay_filename))
+                                    LOG.info("Finished validation on {}".format(assay_filename))
                             except FileNotFoundError:
                                 pass
                         if study_sample_table is not None:
-                            logger.info("Checking consistencies between study sample table and assay tables...")
+                            LOG.info("Checking consistencies between study sample table and assay tables...")
                             check_sample_names(study_sample_table, assay_tables)
-                            logger.info("Finished checking study sample table against assay tables...")
+                            LOG.info("Finished checking study sample table against assay tables...")
             if len(errors) != 0:
-                logger.info("Skipping pooling test as there are outstanding errors")
+                LOG.info("Skipping pooling test as there are outstanding errors")
             else:
                 from isatools import utils
                 try:
@@ -2587,7 +2586,7 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
                     utils.detect_isatab_process_pooling(fp)
                 except:
                     pass
-        logger.info("Finished validation...")
+        LOG.info("Finished validation...")
         validation_finished = True
     except CParserError as cpe:
         errors.append({
@@ -2595,32 +2594,32 @@ def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
             "supplemental": "The validator could not identify what the error is: {}".format(str(cpe)),
             "code": 0
         })
-        logger.fatal("(F) There was an error when trying to parse the ISA tab")
-        logger.fatal(cpe)
+        LOG.fatal("(F) There was an error when trying to parse the ISA tab")
+        LOG.fatal(cpe)
     except ValueError as ve:
         errors.append({
             "message": "Unknown/System Error",
             "supplemental": "The validator could not identify what the error is: {}".format(str(ve)),
             "code": 0
         })
-        logger.fatal("(F) There was an error when trying to parse the ISA tab")
-        logger.fatal(ve)
+        LOG.fatal("(F) There was an error when trying to parse the ISA tab")
+        LOG.fatal(ve)
     except SystemError as se:
         errors.append({
             "message": "Unknown/System Error",
             "supplemental": "The validator could not identify what the error is: {}".format(str(se)),
             "code": 0
         })
-        logger.fatal("(F) Something went very very wrong! :(")
-        logger.fatal(se)
+        LOG.fatal("(F) Something went very very wrong! :(")
+        LOG.fatal(se)
     except Exception as e:
         errors.append({
             "message": "Unknown/System Error",
             "supplemental": "The validator could not identify what the error is: {}".format(str(e)),
             "code": 0
         })
-        logger.fatal("(F) Something went very very wrong! :(")
-        logger.fatal(e)
+        LOG.fatal("(F) Something went very very wrong! :(")
+        LOG.fatal(e)
     finally:
         handler.flush()
         return {
@@ -2647,10 +2646,10 @@ def batch_validate(tab_dir_list):
         "batch_report": []
     }
     for tab_dir in tab_dir_list:
-        logger.info("***Validating {}***\n".format(tab_dir))
+        LOG.info("***Validating {}***\n".format(tab_dir))
         i_files = glob.glob(os.path.join(tab_dir, 'i_*.txt'))
         if len(i_files) != 1:
-            logger.warn("Could not find an investigation file, skipping {}".format(tab_dir))
+            LOG.warning("Could not find an investigation file, skipping {}".format(tab_dir))
         else:
             with open(i_files[0], encoding='utf-8') as fp:
                 batch_report['batch_report'].append(
@@ -3064,21 +3063,23 @@ def get_value(object_column, column_group, object_series, ontology_source_map, u
 def pairwise(iterable):
     """Pairwise iterator"""
     a, b = tee(iterable)
-
     next(b, None)
-
     return zip(a, b)
 
 
 def read_tfile(tfile_path, index_col=None, factor_filter=None):
-
-    with open(tfile_path, 'rU') as tfile_fp:
+    LOG.debug("Opening %s", tfile_path)
+    with open(tfile_path) as tfile_fp:
+        LOG.debug("Reading file header")
         reader = csv.reader(tfile_fp, dialect='excel-tab')
         header = list(next(reader))
         tfile_fp.seek(0)
+        LOG.debug("Reading file into DataFrame")
         tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col, memory_map=True, comment='#', encoding='utf-8').fillna('')
+        LOG.debug("Setting isatab_header")
         tfile_df.isatab_header = header
     if factor_filter:
+        LOG.debug("Filtering DataFrame contents on Factor Value %s", factor_filter)
         return tfile_df[tfile_df['Factor Value[{}]'.format(factor_filter[0])] == factor_filter[1]]
     else:
         return tfile_df
@@ -3565,9 +3566,13 @@ def merge_study_with_assay_tables(study_file_path, assay_file_path, target_file_
 
         merge_study_with_assay_tables('/path/to/study.txt', '/path/to/assay.txt', '/path/to/merged.txt')
     """
+    LOG.info("Reading study file %s into DataFrame", study_file_path)
     study_DF = read_tfile(study_file_path)
+    LOG.info("Reading assay file %s into DataFrame", assay_file_path)
     assay_DF = read_tfile(assay_file_path)
+    LOG.info("Merging DataFrames...")
     merged_DF = pd.merge(study_DF, assay_DF, on='Sample Name')
+    LOG.info("Writing merged DataFrame to file %s", target_file_path)
     with open(target_file_path, 'w') as fp:
         merged_DF.to_csv(fp, sep='\t', index=False, header=study_DF.isatab_header + assay_DF.isatab_header[1:])
 
@@ -3587,11 +3592,11 @@ def get_squashed(key):
         return squashstr(key)
 
 
-class Parser(object):
+class IsaTabParser(object):
 
     """
         This replacement should be more robust than current i_*.txt file reader. Based on what I did for the
-        MAGE-TAB IDF parser.
+        MAGE-TAB IDF parser. INCOMPLETE - do not use!
 
         TODO: Work out how to add comments in correct contexts
         TODO: Parse Assay section
@@ -3605,7 +3610,7 @@ class Parser(object):
     def parse_investigation(self, in_filename):
         isecdict = {}
         ssecdicts = []
-        with open(in_filename, 'rU') as in_file:
+        with open(in_filename) as in_file:
             tabreader = csv.reader(filter(lambda r: r[0] != '#', in_file), dialect='excel-tab')
             for row in tabreader:
                 key = get_squashed(key=row[0])
