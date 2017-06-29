@@ -8,6 +8,7 @@ from urllib.request import urlopen
 from urllib.parse import urlencode
 import os
 from zipfile import ZipFile
+from io import StringIO
 
 
 def format_report_csv(report):
@@ -255,3 +256,15 @@ def create_isatab_archive(inv_fp, target_filename=None, filter_by_measurement=No
         print("Not zipping")
         print("Missing: ", missing_files)
         return None
+
+
+def strip_comments(in_fp):
+    out_fp = StringIO()
+    for line in in_fp.readlines():
+        if line.strip().startswith('#'):
+            pass
+        else:
+            out_fp.write(line)
+    out_fp.name = in_fp.name
+    out_fp.seek(0)
+    return out_fp
