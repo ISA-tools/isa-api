@@ -626,7 +626,7 @@ def strip_comments(in_fp):
     if not isinstance(in_fp, StringIO):
         out_fp.name = in_fp.name
     for line in in_fp.readlines():
-        if line.strip().startswith('#'):
+        if line.lstrip().startswith('#'):
             pass
         else:
             out_fp.write(line)

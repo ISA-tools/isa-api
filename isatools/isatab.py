@@ -923,15 +923,6 @@ def read_investigation_file(fp):
         df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
         return df
 
-    memf = io.StringIO()
-    while True:
-        line = fp.readline()
-        if not line:
-            break
-        if not line.lstrip().startswith('#'):
-            memf.write(line)
-    memf.seek(0)
-
     df_dict = dict()
 
     # Read in investigation file into DataFrames first
@@ -3761,7 +3752,7 @@ def strip_comments(in_fp):
     if not isinstance(in_fp, StringIO):
         out_fp.name = in_fp.name
     for line in in_fp.readlines():
-        if line.strip().startswith('#'):
+        if line.lstrip().startswith('#'):
             pass
         else:
             out_fp.write(line)
