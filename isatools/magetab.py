@@ -675,7 +675,9 @@ class MageTabParser(object):
 
     def parse_sdrf_to_dataframes(self, in_filename):
         """ Parses MAGE-TAB SDRF file into ISA-Tab study and assay tables as pandas dataframes"""
-        df = pd.read_csv(in_filename, sep='\t', comment='#').fillna('')
+        in_fp = open(in_filename)
+        with strip_comments(in_fp) as fp:
+            df = pd.read_csv(fp, dtype=str, sep='\t', encoding='utf-8').fillna('')
         # do some preliminary cleanup of the table
         columns_to_keep = []
         for i, col in enumerate(df.columns):
@@ -725,3 +727,16 @@ class MageTabParser(object):
         # TODO: Do the split on Assay types if we can detect in each row based on looking for keywords on technology
 
         return study_df, assay_df
+
+
+def strip_comments(in_fp):
+    out_fp = StringIO()
+    if not isinstance(in_fp, StringIO):
+        out_fp.name = in_fp.name
+    for line in in_fp.readlines():
+        if line.strip().startswith('#'):
+            pass
+        else:
+            out_fp.write(line)
+    out_fp.seek(0)
+    return out_fp

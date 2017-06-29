@@ -36,7 +36,9 @@ def _read_tab_section(f, sec_key, next_sec_key=None):
 def read_sampletab_msi(fp):
 
     def _build_msi_df(f):
-        df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python', encoding='utf-8', comment='#').dropna(axis=1, how='all')  # load MSI section
+        f = strip_comments(f)
+        df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python',
+                         encoding='utf-8').dropna(axis=1, how='all')  # load MSI section
         df = df.T  # transpose MSI section
         df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
         df.reset_index(inplace=True)  # Reset index so it is accessible as column
@@ -170,10 +172,8 @@ def load(FP):
         ])
 
     # Read in SCD section into DataFrame first
-    scd_df = pd.read_csv(_read_tab_section(
-        f=FP,
-        sec_key='[SCD]'
-    ), sep='\t', encoding='utf-8', comment='#').fillna('')
+    FP = strip_comments(FP)
+    scd_df = pd.read_csv(_read_tab_section(f=FP, sec_key='[SCD]'), sep='\t', encoding='utf-8').fillna('')
 
     study = Study(filename="s_{}.txt".format(ISA.identifier))
     study.protocols = [Protocol(name='sample collection', protocol_type=OntologyAnnotation(term='sample collection'))]
@@ -619,3 +619,16 @@ def get_value_columns(label, x):
         return map(lambda x: "{0}.{1}".format(label, x), ["Term Source REF", "Term Accession Number"])
     else:
         return []
+
+
+def strip_comments(in_fp):
+    out_fp = StringIO()
+    if not isinstance(in_fp, StringIO):
+        out_fp.name = in_fp.name
+    for line in in_fp.readlines():
+        if line.strip().startswith('#'):
+            pass
+        else:
+            out_fp.write(line)
+    out_fp.seek(0)
+    return out_fp

@@ -7,7 +7,7 @@ import collections
 import pprint
 import bisect
 import pandas as pd
-from isatools.utils import strip_comments
+from io import StringIO
 
 """Parse ISA-Tab structured metadata describing experimental data.
 Works with ISA-Tab (http://isatab.sourceforge.net), which provides a structured
@@ -837,3 +837,16 @@ class ProcessNodeRecord:
                                         next_process=self.next_process.name if self.next_process else "",
                                         parameters=pprint.pformat(self.parameters).replace("\n","\n"+" "*9)
                                         )
+
+
+def strip_comments(in_fp):
+    out_fp = StringIO()
+    if not isinstance(in_fp, StringIO):
+        out_fp.name = in_fp.name
+    for line in in_fp.readlines():
+        if line.strip().startswith('#'):
+            pass
+        else:
+            out_fp.write(line)
+    out_fp.seek(0)
+    return out_fp

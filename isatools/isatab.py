@@ -15,6 +15,7 @@ import pandas as pd
 from progressbar import ProgressBar, SimpleProgress, Bar, ETA
 import io
 from itertools import zip_longest
+from io import StringIO
 
 
 logging.basicConfig(level=logging.INFO)
@@ -911,10 +912,8 @@ def read_investigation_file(fp):
         # print('Max width = {}'.format(max([len(line.split('\t')) for line in f])))
         f.seek(0)
         try:
-            df = pd.read_csv(f, sep='\t', encoding='utf-8', comment='#').T  # Load and transpose ISA file section
-            # df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python', encoding='utf-8',
-            #                  comment='#', converters={'Term Source Name': str}).dropna(axis=1, how='all')
-            # df = df.T
+            f = strip_comments(f)
+            df = pd.read_csv(f, dtype=str, sep='\t', encoding='utf-8').T  # Load and transpose ISA file section
         except CParserError:
             f.seek(0)
             raise IOError("There was a problem parsing the investigation section:\n\n{}".format(f.read()))
@@ -1427,10 +1426,12 @@ def check_protocol_usage(i_df, dir_context):
 
 def load_table(fp):
     try:
-        df = pd.read_csv(fp, sep='\t', encoding='utf-8', comment='#')
+        fp = strip_comments(fp)
+        df = pd.read_csv(fp, dtype=str, sep='\t', encoding='utf-8')
     except UnicodeDecodeError:
         LOG.warning("Could not load file with UTF-8, trying ISO-8859-1")
-        df = pd.read_csv(fp, sep='\t', encoding='latin1', comment='#')
+        fp = strip_comments(fp)
+        df = pd.read_csv(fp, dtype=str, sep='\t', encoding='latin1')
     return df
 
 
@@ -3075,7 +3076,9 @@ def read_tfile(tfile_path, index_col=None, factor_filter=None):
         header = list(next(reader))
         tfile_fp.seek(0)
         LOG.debug("Reading file into DataFrame")
-        tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col, memory_map=True, comment='#', encoding='utf-8').fillna('')
+        tfile_fp = strip_comments(tfile_fp)
+        tfile_df = pd.read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col, memory_map=True,
+                               encoding='utf-8').fillna('')
         LOG.debug("Setting isatab_header")
         tfile_df.isatab_header = header
     if factor_filter:
@@ -3749,6 +3752,18 @@ def parse_in(in_filename, in_format='isa-tab'):
 
     LOG.debug("starting to parse {0}".format(in_filename))
 
-    parser = Parser()
+    parser = IsaTabParser()
     parser.parse_investigation(in_filename)
 
+
+def strip_comments(in_fp):
+    out_fp = StringIO()
+    if not isinstance(in_fp, StringIO):
+        out_fp.name = in_fp.name
+    for line in in_fp.readlines():
+        if line.strip().startswith('#'):
+            pass
+        else:
+            out_fp.write(line)
+    out_fp.seek(0)
+    return out_fp
