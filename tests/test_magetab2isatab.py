@@ -48,7 +48,7 @@ class TestMageTab2IsaTab(unittest.TestCase):
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_afmx_2(self):  # FIXME -> output ISA-Tab has many missing cells! See #222
+    def test_get_experiment_as_isatab_afmx_2(self):
         AX.get_isatab('E-AFMX-2', self._tmp_dir)  # gets E-AFMX-2 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
@@ -70,22 +70,21 @@ class TestMageTab2IsaTab(unittest.TestCase):
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    # def test_get_experiment_as_isatab_mtab_1073(self):  # FIXME: Fails because is ISO-8859-2 (Latin 2) encoding, not utf-8
-    #     AX.get_isatab('E-MTAB-1073', self._tmp_dir)  # gets E-MTAB-1073 MAGE-TAB files
-    #     with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-    #         isatab.validate(i_fp)
+    def test_get_experiment_as_isatab_mtab_1073(self):  # FIXME: Fails because is ISO-8859-2 (Latin 2) encoding, not utf-8
+        AX.get_isatab('E-MTAB-1073', self._tmp_dir)  # gets E-MTAB-1073 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
 
     def test_get_experiment_as_isatab_mtab_4649(self):
         AX.get_isatab('E-MTAB-4649', self._tmp_dir)  # gets E-MTAB-4649 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_mtab_1936(self):  # check transcription profiling list
-        AX.get_isatab('E-MTAB-1936', self._tmp_dir)  # gets E-MTAB-1936 MAGE-TAB files
+    def test_get_experiment_as_isatab_mtab_1936(self):  # FIXME: Fails because cannot load Study Publication section from generated ISA-Tab; see #223
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_mtab_621(self):
+    def test_get_experiment_as_isatab_mtab_621(self):   # FIXME: Fails because cannot load Study Publication section from generated ISA-Tab; see #223
         AX.get_isatab('E-MTAB-621', self._tmp_dir)  # gets E-MTAB-621 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
@@ -100,7 +99,7 @@ class TestMageTab2IsaTab(unittest.TestCase):
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_mtab_1443(self):
+    def test_get_experiment_as_isatab_mtab_1443(self):   # FIXME: Fails because cannot load Study Publication section from generated ISA-Tab; see #223
         AX.get_isatab('E-MTAB-1443', self._tmp_dir)  # gets E-MTAB-1443 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
@@ -115,12 +114,12 @@ class TestMageTab2IsaTab(unittest.TestCase):
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_mtab_1653(self):
+    def test_get_experiment_as_isatab_mtab_1653(self):   # FIXME: Fails because cannot load Study Publication section from generated ISA-Tab; see #223
         AX.get_isatab('E-MTAB-1653', self._tmp_dir)  # gets E-MTAB-1653 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_mtab_2143(self):
+    def test_get_experiment_as_isatab_mtab_2143(self):   # FIXME: Fails because cannot load Study Publication section from generated ISA-Tab; see #223
         AX.get_isatab('E-MTAB-2143', self._tmp_dir)  # gets E-MTAB-2143 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
