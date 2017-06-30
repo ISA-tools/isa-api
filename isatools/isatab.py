@@ -925,6 +925,8 @@ def read_investigation_file(fp):
 
     df_dict = dict()
 
+    memf = fp
+
     # Read in investigation file into DataFrames first
     df_dict['ontology_sources'] = _build_section_df(_read_tab_section(
         f=memf,
