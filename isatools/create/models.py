@@ -5,11 +5,11 @@ from isatools.model.v1 import StudyFactor, FactorValue, OntologyAnnotation
 
 __author__ = 'massi'
 
-INTERVENTIONS = dict(CHEMICAL='chemical intervention', BEHAVIOURAL='behavioural interention',
+INTERVENTIONS = dict(CHEMICAL='chemical intervention', BEHAVIOURAL='behavioural intervention',
                      SURGICAL='surgical intervention', BIOLOGICAL='biological intervention',
                      RADIOLOGICAL='radiological intervention')
 
-FACTOR_TYPES = dict(AGENT_VALUES='agent values', INTENSITY_VALUES='intensity_values', DURATION_VALUES='duration values')
+FACTOR_TYPES = dict(AGENT_VALUES='agent values', INTENSITY_VALUES='intensity values', DURATION_VALUES='duration values')
 
 BASE_FACTORS = [
     dict(
