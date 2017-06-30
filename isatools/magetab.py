@@ -673,7 +673,7 @@ class MageTabParser(object):
                           technology_platform='ChIP-Seq')
         return assay
 
-    def parse_sdrf_to_dataframes(self, in_filename):
+    def parse_sdrf_to_isa_table_files(self, in_filename):
         """ Parses MAGE-TAB SDRF file into ISA-Tab study and assay tables as pandas dataframes"""
         in_fp = open(in_filename)
         with strip_comments(in_fp) as fp:
@@ -725,8 +725,44 @@ class MageTabParser(object):
         assay_df = df[df.columns[sample_name_index:]]
 
         # TODO: Do the split on Assay types if we can detect in each row based on looking for keywords on technology
+        with StringIO() as assay_fp:
+            columns = [x[:x.rindex('.')] if '.' in x else x for x in list(assay_df.columns)]
+            assay_df.columns = columns
+            assay_df.to_csv(path_or_buf=assay_fp, mode='a', sep='\t', encoding='utf-8', index=False)
+            assay_fp_dict = split_assay(assay_fp)
+        table_files = list(map(lambda x: x, assay_fp_dict.values()))
 
-        return study_df, assay_df
+        study_fp = StringIO()
+        study_fp.name = in_fp.name
+        columns = [x[:x.rindex('.')] if '.' in x else x for x in list(study_df.columns)]
+        study_df.columns = columns
+        study_df.to_csv(path_or_buf=study_fp, mode='a', sep='\t', encoding='utf-8', index=False)
+        table_files.append(study_fp)
+
+        return table_files
+
+
+def split_assay(fp):
+    assay_lines = {}
+    TECHTYPES = ('chip-seq', 'bisulfite-seq', 'mre-seq', 'mdb-seq', 'medip-seq')
+    header = fp.readline()
+    for techtype in TECHTYPES:
+        print(techtype)
+        for line in fp.readlines():
+            if techtype in get_squashed(line):
+                if techtype not in assay_lines.keys():
+                    assay_lines[techtype] = []
+                assay_lines[techtype].append(line)
+        fp.seek(0)
+    assay_files = {}
+    for k, v in assay_lines.items():
+        assay_file = StringIO()
+        assay_file.write(header)
+        assay_file.writelines(v)
+        assay_file.seek(0)
+        assay_file.name = "{0}-{1}.txt".format(fp.name[:fp.name.rindex('.')], k)
+        assay_files[k] = assay_file
+    return assay_files
 
 
 def strip_comments(in_fp):
