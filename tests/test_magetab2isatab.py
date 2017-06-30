@@ -81,7 +81,7 @@ class TestMageTab2IsaTab(unittest.TestCase):
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_mtab_1443(self):   # FIXME: Fails because it needes to load 2 SDRFs
+    def test_get_experiment_as_isatab_mtab_1443(self):   # FIXME: Fails because cannot load Study Publication section from generated ISA-Tab; see #223
         AX.get_isatab('E-MTAB-1443', self._tmp_dir)  # gets E-MTAB-1443 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)

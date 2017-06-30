@@ -432,7 +432,7 @@ def get_squashed(key):  # for MAGE-TAB spec 2.1.7, deal with variants on labels
 
 class MageTabParser(object):
     """ The MAGE-TAB parser
-    This parses MAGE-TAB IDF and SDRF files into Ithe Python ISA model. It does some best-effort inferences on missing
+    This parses MAGE-TAB IDF and SDRF files into the Python ISA model. It does some best-effort inferences on missing
     metadata required by ISA, but note that outputs may still be incomplete and flag warnings and errors in the ISA
     validators. """
 
@@ -638,7 +638,7 @@ class MageTabParser(object):
         S.filename = 's_{0}study.txt'.format(S.identifier + '_' if S.identifier != '' else S.identifier)
         defaultassay.filename = 'a_{0}assay.txt'.format(S.identifier + '_' if S.identifier != '' else S.identifier)
 
-        S.assays = [defaultassay]  # TODO: Deal with cases where there are multiple SDRF Files to split multiple assays
+        S.assays = [defaultassay]
 
     @staticmethod
     def _get_measurement_and_tech(design_type):
