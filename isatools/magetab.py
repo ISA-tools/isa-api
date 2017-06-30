@@ -1,6 +1,6 @@
 from isatools import isatab
 import tempfile
-
+import copy
 from .model.v1 import *
 import os
 import logging
@@ -13,7 +13,7 @@ import re
 
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 def _get_sdrf_filenames(ISA):
@@ -419,6 +419,8 @@ def squashstr(string):
 
 
 def get_squashed(key):  # for MAGE-TAB spec 2.1.7, deal with variants on labels
+    if key is None:
+        return ''
     try:
         if squashstr(key[:key.index('[')]) == 'comment':
             return 'comment' + key[key.index('['):]
@@ -671,6 +673,8 @@ class MageTabParser(object):
             assay = Assay(measurement_type=OntologyAnnotation(term='protein-DNA binding site identification'),
                           technology_type=OntologyAnnotation(term='nucleotide sequencing'),
                           technology_platform='ChIP-Seq')
+        if assay is not None:
+            assay._design_type = design_type
         return assay
 
     def parse_sdrf_to_isa_table_files(self, in_filename):
@@ -724,45 +728,161 @@ class MageTabParser(object):
         study_df = df[df.columns[0:sample_name_index + 1]].drop_duplicates()
         assay_df = df[df.columns[sample_name_index:]]
 
-        # TODO: Do the split on Assay types if we can detect in each row based on looking for keywords on technology
+        table_files = []
         with StringIO() as assay_fp:
             columns = [x[:x.rindex('.')] if '.' in x else x for x in list(assay_df.columns)]
             assay_df.columns = columns
             assay_df.to_csv(path_or_buf=assay_fp, mode='a', sep='\t', encoding='utf-8', index=False)
-            assay_fp_dict = split_assay(assay_fp)
-        table_files = list(map(lambda x: x, assay_fp_dict.values()))
+            LOG.info("Trying to split assay file extracted from %s", in_filename)
+            assay_fp.seek(0)
+            assay_files = self.split_assay(assay_fp)
+            LOG.info("We have %s assays", len(assay_files))
 
         study_fp = StringIO()
-        study_fp.name = in_fp.name
+        study_fp.name = self.ISA.studies[-1].filename
         columns = [x[:x.rindex('.')] if '.' in x else x for x in list(study_df.columns)]
         study_df.columns = columns
         study_df.to_csv(path_or_buf=study_fp, mode='a', sep='\t', encoding='utf-8', index=False)
+        study_fp.seek(0)
         table_files.append(study_fp)
-
+        table_files.extend(assay_files)
         return table_files
 
+    def split_assay(self, fp):
+        assay_files = []
+        header = fp.readline()
+        chip_seq_records = [header]
+        rna_seq_records = [header]
+        me_seq_records = [header]
+        tf_seq_records = [header]
+        genechip_records = [header]
+        chipchip_records = [header]
 
-def split_assay(fp):
-    assay_lines = {}
-    TECHTYPES = ('chip-seq', 'bisulfite-seq', 'mre-seq', 'mdb-seq', 'medip-seq')
-    header = fp.readline()
-    for techtype in TECHTYPES:
-        print(techtype)
+        default_records = [header]
+
+        assay_types = set()
+
+        is_hybridization_assay = 'hybridization' in get_squashed(header)
+        contains_antibody_in_header = 'antibody' in get_squashed(header)
+
+        A = self.ISA.studies[-1].assays[-1]
+
+        LOG.info("Reading assay memory file; mt=%s, tt=%s", A.measurement_type.term, A.technology_type.term)
         for line in fp.readlines():
-            if techtype in get_squashed(line):
-                if techtype not in assay_lines.keys():
-                    assay_lines[techtype] = []
-                assay_lines[techtype].append(line)
-        fp.seek(0)
-    assay_files = {}
-    for k, v in assay_lines.items():
-        assay_file = StringIO()
-        assay_file.write(header)
-        assay_file.writelines(v)
-        assay_file.seek(0)
-        assay_file.name = "{0}-{1}.txt".format(fp.name[:fp.name.rindex('.')], k)
-        assay_files[k] = assay_file
-    return assay_files
+            sqline = get_squashed(line)
+            if A.measurement_type and A.technology_type:
+                if 'sequencing' in get_squashed(A.technology_type.term) \
+                        and 'protein-dnabindingsiteidentification' == get_squashed(A.measurement_type.term):
+                    if not is_hybridization_assay and 'chip-seq' in sqline or 'chipseq' in sqline:
+                        assay_types.add('ChIP-Seq')
+                        chip_seq_records.append(line)
+                    if 'bisulfite-seq' in sqline or 'mre-seq' in sqline or 'mbd-seq' in sqline or 'medip-seq' in sqline:
+                        assay_types.add('ME-Seq')
+                        me_seq_records.append(line)
+                    if 'dnase-hypersensitivity' in sqline or 'mnase-seq' in sqline:
+                        assay_types.add('Chromatin-Seq')
+                        tf_seq_records.append(line)
+
+            if is_hybridization_assay and ('genomicdna' in sqline or 'genomic_dna' in sqline) and 'mnase-seq' not in sqline:
+                assay_types.add('ChIP-Seq')
+                chip_seq_records.append(line)
+
+            if hasattr(A, '_design_type'):
+                if 'dye_swap_design' == get_squashed(A._design_type):
+                    assay_types.add('Hybridization')
+                    genechip_records.append(line)
+
+                if 'chip-chipbytilingarray' in get_squashed(A._design_type):
+                    assay_types.add('ChIP-chip by tiling array')
+                    chipchip_records.append(line)
+
+            if (is_hybridization_assay and not contains_antibody_in_header) and 'rna' in sqline \
+                    or 'genomicdna' in sqline:
+                assay_types.add('transcription profiling by array')
+                genechip_records.append(line)
+
+            if (not is_hybridization_assay and ('genomicdna' in sqline or 'genomic_dna' in sqline)) \
+                    and 'mnase-seq' in sqline:
+                assay_types.add('ChIP-Seq')
+                chip_seq_records.append(line)
+
+            if not is_hybridization_assay and ('rna-seq' in sqline or 'totalrna' in sqline):
+                assay_types.add('RNA-Seq')
+                rna_seq_records.append(line)
+
+            if is_hybridization_assay and contains_antibody_in_header and ('genomicdna' in sqline or 'chip' in sqline):
+                assay_types.add('ChIP-chip')
+                chipchip_records.append(line)
+            else:
+                default_records.append(line)
+
+        LOG.info("assay_types found: %s", assay_types)
+
+        if len(assay_types) > 0:
+            self.ISA.studies[-1].assays = []  # reset the assays list to load new split ones
+            for assay_type in assay_types:
+                new_A = copy.copy(A)
+                if 'transcription profiling by array' in assay_type:
+                    new_A.filename = '{0}-{1}.txt'.format(A.filename[:A.filename.rindex('.')], assay_type)
+                    new_A.technology_platform = assay_type
+                    a_fp = StringIO()
+                    a_fp.writelines(genechip_records)
+                    a_fp.name = new_A.filename
+                    a_fp.seek(0)
+                    self.ISA.studies[-1].assays.append(new_A)
+                    assay_files.append(a_fp)
+                if 'ChIP-chip' in assay_type:
+                    new_A.filename = '{0}-{1}.txt'.format(A.filename[:A.filename.rindex('.')], assay_type)
+                    new_A.technology_platform = assay_type
+                    a_fp = StringIO()
+                    a_fp.writelines(chipchip_records)
+                    a_fp.name = new_A.filename
+                    a_fp.seek(0)
+                    self.ISA.studies[-1].assays.append(new_A)
+                    assay_files.append(a_fp)
+                if 'ChIP-Seq' in assay_type:
+                    new_A.filename = '{0}-{1}.txt'.format(A.filename[:A.filename.rindex('.')], assay_type)
+                    new_A.technology_platform = assay_type
+                    a_fp = StringIO()
+                    a_fp.writelines(chip_seq_records)
+                    a_fp.name = new_A.filename
+                    a_fp.seek(0)
+                    self.ISA.studies[-1].assays.append(new_A)
+                    assay_files.append(a_fp)
+                if 'RNA-Seq' in assay_type:
+                    new_A.filename = '{0}-{1}.txt'.format(A.filename[:A.filename.rindex('.')], assay_type)
+                    new_A.technology_platform = assay_type
+                    a_fp = StringIO()
+                    a_fp.writelines(rna_seq_records)
+                    a_fp.name = new_A.filename
+                    a_fp.seek(0)
+                    self.ISA.studies[-1].assays.append(new_A)
+                    assay_files.append(a_fp)
+                if 'ME-Seq' in assay_type:
+                    new_A.filename = '{0}-{1}.txt'.format(A.filename[:A.filename.rindex('.')], assay_type)
+                    new_A.technology_platform = assay_type
+                    a_fp = StringIO()
+                    a_fp.writelines(me_seq_records)
+                    a_fp.name = new_A.filename
+                    a_fp.seek(0)
+                    self.ISA.studies[-1].assays.append(new_A)
+                    assay_files.append(a_fp)
+                if 'Chromatin-Seq' in assay_type:
+                    new_A.filename = '{0}-{1}.txt'.format(A.filename[:A.filename.rindex('.')], assay_type)
+                    new_A.technology_platform = assay_type
+                    a_fp = StringIO()
+                    a_fp.writelines(tf_seq_records)
+                    a_fp.name = new_A.filename
+                    a_fp.seek(0)
+                    self.ISA.studies[-1].assays.append(new_A)
+                    assay_files.append(a_fp)
+        else:
+            a_fp = StringIO()
+            a_fp.writelines(default_records)
+            a_fp.name = A.filename
+            a_fp.seek(0)
+            assay_files.append(a_fp)
+        return assay_files
 
 
 def strip_comments(in_fp):

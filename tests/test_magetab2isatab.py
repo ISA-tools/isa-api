@@ -31,7 +31,8 @@ class TestMageTab2IsaTab(unittest.TestCase):
         magetab2isatab.convert(os.path.join(self._magetab_data_dir, 'E-MEXP-31.idf.txt'), self._tmp_dir)
         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-MEXP-31_study.txt')))
-        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-MEXP-31_assay.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir,
+                                                    'a_E-MEXP-31_assay-transcription profiling by array.txt')))
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
@@ -39,27 +40,7 @@ class TestMageTab2IsaTab(unittest.TestCase):
         magetab2isatab.convert(os.path.join(self._magetab_data_dir, 'E-GEOD-59671.idf.txt'), self._tmp_dir)
         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
         self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-GEOD-59671_study.txt')))
-        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-GEOD-59671_assay.txt')))
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_afmx_1(self):
-        AX.get_isatab('E-AFMX-1', self._tmp_dir)  # gets E-AFMX-1 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_afmx_2(self):
-        AX.get_isatab('E-AFMX-2', self._tmp_dir)  # gets E-AFMX-2 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_afmx_3(self):
-        AX.get_isatab('E-AFMX-3', self._tmp_dir)  # gets E-AFMX-3 MAGE-TAB files
-        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-            isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_afmx_5(self):
-        AX.get_isatab('E-AFMX-5', self._tmp_dir)  # gets E-AFMX-5 MAGE-TAB files
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-GEOD-59671_assay-RNA-Seq.txt')))
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
@@ -80,7 +61,8 @@ class TestMageTab2IsaTab(unittest.TestCase):
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_mtab_1936(self):  # FIXME: Fails because cannot load Study Publication section from generated ISA-Tab; see #223
+    def test_get_experiment_as_isatab_mtab_1936(self):  # splits three assays
+        AX.get_isatab('E-MTAB-1963', self._tmp_dir)  # gets E-MTAB-4649 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
@@ -99,7 +81,7 @@ class TestMageTab2IsaTab(unittest.TestCase):
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_mtab_1443(self):   # FIXME: Fails because cannot load Study Publication section from generated ISA-Tab; see #223
+    def test_get_experiment_as_isatab_mtab_1443(self):   # FIXME: Fails because it needes to load 2 SDRFs
         AX.get_isatab('E-MTAB-1443', self._tmp_dir)  # gets E-MTAB-1443 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
@@ -128,3 +110,10 @@ class TestMageTab2IsaTab(unittest.TestCase):
         AX.get_isatab('E-MTAB-5171', self._tmp_dir)  # gets E-MTAB-5171 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_mtab_3954 (self):  # Tests assay splitting
+        AX.get_isatab('E-MTAB-3954', self._tmp_dir)
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-MTAB-3954_study.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-MTAB-3954_assay-ChIP-Seq.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-MTAB-3954_assay-Chromatin-Seq.txt')))
