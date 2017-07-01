@@ -3581,7 +3581,7 @@ def squashstr(string):
 def get_squashed(key):
     try:
         if '[' in key and ']' in key:
-            return key[0:key.index('[')-1] + key[key.index('['):]
+            return squashstr(key[0:key.index('[')]) + key[key.index('['):]
         else:
             return squashstr(key)
     except ValueError:
@@ -3604,12 +3604,28 @@ class IsaTabParser(object):
         self._ts_dict = {}
 
     def parse_investigation(self, in_filename):
+        section_keys = ('ontologysourcereference',
+                    'investigation',
+                    'investigationpublications',
+                    'investigationcontacts',
+                    'study',
+                    'studydesigndescriptors',
+                    'studypublciations',
+                    'studyfactors',
+                    'studyassays',
+                    'studyprotocols',
+                    'studycontacts')
         isecdict = {}
         ssecdicts = []
         with open(in_filename) as in_file:
             tabreader = csv.reader(filter(lambda r: r[0] != '#', in_file), dialect='excel-tab')
+            current_section = ''
             for row in tabreader:
                 key = get_squashed(key=row[0])
+                if key in section_keys:
+                    current_section = key
+                if key.startswith('comment'):
+                    key = '.'.join((current_section, key))
                 if key == 'study':
                     ssecdicts.append({})
                 if key.startswith('study'):
@@ -3617,80 +3633,89 @@ class IsaTabParser(object):
                 else:
                     isecdict[key] = row[1:]
 
-        self.parse_ontology_sources_section(isecdict.get('termsourcename'),
-                                            isecdict.get('termsourcefile'),
-                                            isecdict.get('termsourceversion'),
-                                            isecdict.get('termsourcedescription'))
-        self.parse_investigation_section(isecdict.get('investigationidentifier'),
-                                         isecdict.get('investigationtitle'),
-                                         isecdict.get('investigationdescription'),
-                                         isecdict.get('investigationsubmissiondate'),
-                                         isecdict.get('investigationpublicreleasedate'))
+        self.parse_ontology_sources_section(isecdict.get('termsourcename', []),
+                                            isecdict.get('termsourcefile', []),
+                                            isecdict.get('termsourceversion', []),
+                                            isecdict.get('termsourcedescription'),
+                                            {k: isecdict[k] for k in isecdict.keys() \
+                                             if k.startswith('ontologysourcereferences.')})
+        self.parse_investigation_section(isecdict.get('investigationidentifier', []),
+                                         isecdict.get('investigationtitle', []),
+                                         isecdict.get('investigationdescription', []),
+                                         isecdict.get('investigationsubmissiondate', []),
+                                         isecdict.get('investigationpublicreleasedate'),
+                                         {k: isecdict[k] for k in isecdict.keys() \
+                                          if k.startswith('investigation.')}
+                                         )
         self.parse_publications_section(self.ISA,
-                                        isecdict.get('investigationpubmedid'),
-                                        isecdict.get('investigationpublicationdoi'),
-                                        isecdict.get('investigationpublicationauthorlist'),
-                                        isecdict.get('investigationpublicationtitle'),
-                                        isecdict.get('investigationpublicationstatus'),
-                                        isecdict.get('investigationpublicationstatustermsourceref'),
+                                        isecdict.get('investigationpubmedid', []),
+                                        isecdict.get('investigationpublicationdoi', []),
+                                        isecdict.get('investigationpublicationauthorlist', []),
+                                        isecdict.get('investigationpublicationtitle', []),
+                                        isecdict.get('investigationpublicationstatus', []),
+                                        isecdict.get('investigationpublicationstatustermsourceref', []),
                                         isecdict.get('investigationpublicationstatustermaccessionnumber'))
         self.parse_people_section(self.ISA,
-                                  isecdict.get('investigationpersonlastname'),
-                                  isecdict.get('investigationpersonfirstname'),
-                                  isecdict.get('investigationpersonmidinitials'),
-                                  isecdict.get('investigationpersonemail'),
-                                  isecdict.get('investigationpersonphone'),
-                                  isecdict.get('investigationpersonfax'),
-                                  isecdict.get('investigationpersonaddress'),
-                                  isecdict.get('investigationpersonaffiliation'),
-                                  isecdict.get('investigationpersonroles'),
-                                  isecdict.get('investigationpersonrolestermaccessionnumber'),
+                                  isecdict.get('investigationpersonlastname', []),
+                                  isecdict.get('investigationpersonfirstname', []),
+                                  isecdict.get('investigationpersonmidinitials', []),
+                                  isecdict.get('investigationpersonemail', []),
+                                  isecdict.get('investigationpersonphone', []),
+                                  isecdict.get('investigationpersonfax', []),
+                                  isecdict.get('investigationpersonaddress', []),
+                                  isecdict.get('investigationpersonaffiliation', []),
+                                  isecdict.get('investigationpersonroles', []),
+                                  isecdict.get('investigationpersonrolestermaccessionnumber', []),
                                   isecdict.get('investigationpersonrolestermsourceref'))
 
         for ssecdict in ssecdicts:
-            self.parse_study_section(ssecdict.get('studyidentifier'),
-                                     ssecdict.get('studytitle'),
-                                     ssecdict.get('studydescription'),
-                                     ssecdict.get('studysubmissiondate'),
-                                     ssecdict.get('studypublicreleasedate'),
+            self.parse_study_section(ssecdict.get('studyidentifier', []),
+                                     ssecdict.get('studytitle', []),
+                                     ssecdict.get('studydescription', []),
+                                     ssecdict.get('studysubmissiondate', []),
+                                     ssecdict.get('studypublicreleasedate', []),
                                      ssecdict.get('studyfilename'))
             self.parse_study_design_section(self.ISA.studies[-1],
-                                            ssecdict.get('studydesigntype'),
-                                            ssecdict.get('studydesigntypetermaccessionnumber'),
+                                            ssecdict.get('studydesigntype', []),
+                                            ssecdict.get('studydesigntypetermaccessionnumber', []),
                                             ssecdict.get('studydesigntypetermsourceref'))
             self.parse_publications_section(self.ISA.studies[-1],
-                                            ssecdict.get('studypubmedid'),
-                                            ssecdict.get('studypublicationdoi'),
-                                            ssecdict.get('studypublicationauthorlist'),
-                                            ssecdict.get('studypublicationtitle'),
-                                            ssecdict.get('studypublicationstatus'),
-                                            ssecdict.get('studypublicationstatustermsourceref'),
+                                            ssecdict.get('studypubmedid', []),
+                                            ssecdict.get('studypublicationdoi', []),
+                                            ssecdict.get('studypublicationauthorlist', []),
+                                            ssecdict.get('studypublicationtitle', []),
+                                            ssecdict.get('studypublicationstatus', []),
+                                            ssecdict.get('studypublicationstatustermsourceref', []),
                                             ssecdict.get('studypublicationstatustermaccessionnumber'))
             self.parse_people_section(self.ISA.studies[-1],
-                                      ssecdict.get('studypersonlastname'),
-                                      ssecdict.get('studypersonfirstname'),
-                                      ssecdict.get('studypersonmidinitials'),
-                                      ssecdict.get('studypersonemail'),
-                                      ssecdict.get('studypersonphone'),
-                                      ssecdict.get('studypersonfax'),
-                                      ssecdict.get('studypersonaddress'),
-                                      ssecdict.get('studypersonaffiliation'),
-                                      ssecdict.get('studypersonroles'),
-                                      ssecdict.get('studypersonrolestermaccessionnumber'),
+                                      ssecdict.get('studypersonlastname', []),
+                                      ssecdict.get('studypersonfirstname', []),
+                                      ssecdict.get('studypersonmidinitials', []),
+                                      ssecdict.get('studypersonemail', []),
+                                      ssecdict.get('studypersonphone', []),
+                                      ssecdict.get('studypersonfax', []),
+                                      ssecdict.get('studypersonaddress', []),
+                                      ssecdict.get('studypersonaffiliation', []),
+                                      ssecdict.get('studypersonroles', []),
+                                      ssecdict.get('studypersonrolestermaccessionnumber', []),
                                       ssecdict.get('studypersonrolestermsourceref'))
             self.parse_study_factors_section(self.ISA.studies[-1],
-                                             ssecdict.get('studyfactorname'),
-                                             ssecdict.get('studyfactorntype'),
-                                             ssecdict.get('studyfactortypetermaccessionnumber'),
+                                             ssecdict.get('studyfactorname', []),
+                                             ssecdict.get('studyfactorntype', []),
+                                             ssecdict.get('studyfactortypetermaccessionnumber', []),
                                              ssecdict.get('studyfactortypetermsourceref'))
 
-    def parse_ontology_sources_section(self, names, files, versions, descriptions):
+    def parse_ontology_sources_section(self, names, files, versions, descriptions, comments_dict):
         for name, file, version, description in zip_longest(names, files, versions, descriptions):
             os = OntologySource(name=name, file=file, version=version, description=description)
+            for k, v in comments_dict:
+                if len(v) > 0:
+                    os.comments.append(Comment(name=k[7:-1], value=';'.join(v) if len(v) > 1 else v[0]))
             self.ISA.ontology_source_references.append(os)
             self._ts_dict[name] = os
 
-    def parse_investigation_section(self, identifiers, titles, descriptions, submissiondates, publicreleasedates):
+    def parse_investigation_section(self, identifiers, titles, descriptions, submissiondates, publicreleasedates,
+                                    comments_dict):
         for identifier, title, description, submissiondate, publicreleasedate in \
                 zip_longest(identifiers, titles, descriptions, submissiondates, publicreleasedates):
             self.ISA.identifier = identifier
@@ -3698,6 +3723,10 @@ class IsaTabParser(object):
             self.ISA.description = description
             self.ISA.submission_date = submissiondate
             self.ISA.public_release_date = publicreleasedate
+            for k, v in comments_dict.items():
+                if len(v) > 0:
+                    self.ISA.comments.append(Comment(name=k[k.index('[')+1:-1],
+                                                     value=';'.join(v) if len(v) > 1 else v[0]))
             break  # because there should only be one or zero rows
 
     def parse_study_section(self, identifiers, titles, descriptions, submissiondates, publicreleasedates, filenames):
@@ -3723,12 +3752,12 @@ class IsaTabParser(object):
 
     def parse_people_section(self, obj, lastnames, firstnames, midinitialss, emails, phones, faxes, addresses,
                              affiliations, roles, roletans, roletrs):
-        for lastname, firstname, midinitials, email, phone, fax, address, role, roletan, roletsr in \
+        for lastname, firstname, midinitials, email, phone, fax, address, affiliation, role, roletan, roletsr in \
                 zip_longest(lastnames, firstnames, midinitialss, emails, phones, faxes, addresses, affiliations, roles,
                             roletans, roletrs):
             rolesoa = OntologyAnnotation(term=role, term_source=self._ts_dict.get(roletsr), term_accession=roletan)
             person = Person(last_name=lastname, first_name=firstname, mid_initials=midinitials, email=email,
-                            phone=phone, fax=fax, address=address, roles=rolesoa)
+                            phone=phone, fax=fax, address=address, affiliation=affiliation, roles=rolesoa)
             obj.contacts.append(person)
 
     def parse_study_factors_section(self, obj, fnames, ftypes, ftypetans, ftypetsrs):
