@@ -1,8 +1,9 @@
 from isatools import isatab, magetab
 import logging
+import isatools
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=isatools.log_level)
+LOG = logging.getLogger(__name__)
 
 
 def convert(source_inv_fp, output_path):
@@ -10,5 +11,7 @@ def convert(source_inv_fp, output_path):
     :param source_inv_fp: File descriptor of input investigation file
     :param output_dir: Path to directory to write output MAGE-TAB files to
     """
+    LOG.info("loading isatab %s", source_inv_fp.name)
     ISA = isatab.load(source_inv_fp)
+    LOG.info("dumping magetab %s", output_path)
     magetab.dump(ISA, output_path)

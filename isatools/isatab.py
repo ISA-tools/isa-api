@@ -16,16 +16,17 @@ from progressbar import ProgressBar, SimpleProgress, Bar, ETA
 import io
 from itertools import zip_longest
 from io import StringIO
+import isatools
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=isatools.log_level)
 LOG = logging.getLogger(__name__)
 
 errors = list()
 warnings = list()
 
 
-## REGEXES
+# REGEXES
 _RX_I_FILE_NAME = re.compile('i_(.*?)\.txt')
 _RX_DATA = re.compile('data\[(.*?)\]')
 _RX_COMMENT = re.compile('Comment\[(.*?)\]')
@@ -51,6 +52,7 @@ _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name'
 def dump(isa_obj, output_path, i_file_name='i_investigation.txt', skip_dump_tables=False):
 
     def _build_roles_str(roles):
+        LOG.debug('building roles from: %s', roles)
         if roles is None:
             roles = list()
         roles_names = ''
@@ -64,9 +66,13 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt', skip_dump_tabl
             roles_names = roles_names[:-1]
             roles_accession_numbers = roles_accession_numbers[:-1]
             roles_source_refs = roles_source_refs[:-1]
+        LOG.debug('role_names: %s', roles)
+        LOG.debug('roles_accession_numbers: %s', roles)
+        LOG.debug('roles_source_refs: %s', roles)
         return roles_names, roles_accession_numbers, roles_source_refs
 
     def _build_contacts_section_df(prefix='Investigation', contacts=list()):
+        LOG.debug('building contacts from: %s', contacts)
         contacts_df_cols = [prefix + ' Person Last Name',
                             prefix + ' Person First Name',
                             prefix + ' Person Mid Initials',
@@ -84,6 +90,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt', skip_dump_tabl
                     contacts_df_cols.append('Comment[' + comment.name + ']')
         contacts_df = pd.DataFrame(columns=tuple(contacts_df_cols))
         for i, contact in enumerate(contacts):
+            LOG.debug('%s iteration, item=%s', i, contact)
             roles_names, roles_accession_numbers, roles_source_refs = _build_roles_str(contact.roles)
             contacts_df_row = [
                 contact.last_name,
@@ -101,10 +108,12 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt', skip_dump_tabl
             if contact.comments:
                 for comment in contact.comments:
                     contacts_df_row.append(comment.value)
+            LOG.debug('row=%s', contacts_df_row)
             contacts_df.loc[i] = contacts_df_row
         return contacts_df.set_index(prefix + ' Person Last Name').T
 
     def _build_publications_section_df(prefix='Investigation', publications=list()):
+        LOG.debug('building contacts from: %s', publications)
         publications_df_cols = [prefix + ' PubMed ID',
                                 prefix + ' Publication DOI',
                                 prefix + ' Publication Author List',
@@ -120,6 +129,7 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt', skip_dump_tabl
                 pass
         publications_df = pd.DataFrame(columns=tuple(publications_df_cols))
         for i, publication in enumerate(publications):
+            LOG.debug('%s iteration, item=%s', i, publication)
             if publication.status is not None:
                 status_term = publication.status.term
                 status_term_accession = publication.status.term_accession
@@ -145,15 +155,22 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt', skip_dump_tabl
                     publications_df_row.append(comment.value)
             except TypeError:
                 pass
+            LOG.debug('row=%s', publications_df_row)
             publications_df.loc[i] = publications_df_row
         return publications_df.set_index(prefix +' PubMed ID').T
+
     if not _RX_I_FILE_NAME.match(i_file_name):
+        LOG.debug('investigation filename=', i_file_name)
         raise NameError("Investigation file must match pattern i_*.txt")
+
     if os.path.exists(output_path):
         fp = open(os.path.join(output_path, i_file_name), 'w')
     else:
+        LOG.debug('output_path=', i_file_name)
         raise FileNotFoundError("Can't find " + output_path)
+
     if not isinstance(isa_obj, Investigation):
+        LOG.debug('object type=', type(isa_obj))
         raise NotImplementedError("Can only dump an Investigation object")
 
     # Process Investigation object first to write the investigation file
@@ -167,12 +184,14 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt', skip_dump_tabl
                                                           )
                                                  )
     for i,  ontology_source_reference in enumerate(investigation.ontology_source_references):
+        LOG.debug('%s iteration, item=%s', i, ontology_source_reference)
         ontology_source_references_df.loc[i] = [
             ontology_source_reference.name,
             ontology_source_reference.file,
             ontology_source_reference.version,
             ontology_source_reference.description
         ]
+        LOG.debug('ontology_source_reference=%s', ontology_source_references_df.loc[i])
     ontology_source_references_df = ontology_source_references_df.set_index('Term Source Name').T
     fp.write('ONTOLOGY SOURCE REFERENCE\n')
     ontology_source_references_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
@@ -454,9 +473,12 @@ def _all_end_to_end_paths(G, start_nodes):  # we know graphs start with Source o
         message = 'Calculating for paths for {} sources: '.format(num_start_nodes)
     elif isinstance(start_nodes[0], Sample):
         message = 'Calculating for paths for {} samples: '.format(num_start_nodes)
-    pbar = ProgressBar(min_value=0, max_value=num_start_nodes, widgets=[message,
-                                                                       SimpleProgress(),
-                                                                       Bar(left=" |", right="| "), ETA()]).start()
+    if isatools.log_level == logging.DEBUG:
+        pbar = ProgressBar(min_value=0, max_value=num_start_nodes, widgets=[message,
+                                                                            SimpleProgress(),
+                                                                            Bar(left=" |", right="| "), ETA()]).start()
+    else:
+        pbar = lambda x: x
     for start in pbar(start_nodes):
         # Find ends
         if isinstance(start, Source):  # only look for Sample ends if start is a Source
@@ -526,11 +548,12 @@ def write_study_table_files(inv_obj, output_dir):
         omap = get_object_column_map(columns, columns)
         # load into dictionary
         df_dict = dict(map(lambda k: (k, []), flatten(omap)))
-
-        pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)),
-                                                                       SimpleProgress(),
-                                                                       Bar(left=" |", right="| "), ETA()]).start()
-
+        if isatools.log_level == logging.DEBUG:
+            pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)),
+                                                                           SimpleProgress(),
+                                                                           Bar(left=" |", right="| "), ETA()]).start()
+        else:
+            pbar = lambda x: x
         for path in pbar(paths):
             for k in df_dict.keys():  # add a row per path
                 df_dict[k].extend([""])
@@ -565,7 +588,7 @@ def write_study_table_files(inv_obj, output_dir):
                     for fv in node.factor_values:
                         fvlabel = "{0}.Factor Value[{1}]".format(olabel, fv.factor_name.name)
                         write_value_columns(df_dict, fvlabel, fv)
-        pbar.finish()
+        if isinstance(pbar, ProgressBar):  pbar.finish()
 
         DF = pd.DataFrame(columns=columns)
         DF = DF.from_dict(data=df_dict)
@@ -705,11 +728,12 @@ def write_assay_table_files(inv_obj, output_dir):
             # load into dictionary
             df_dict = dict(map(lambda k: (k, []), flatten(omap)))
 
-            from progressbar import ProgressBar, SimpleProgress, Bar, ETA
-            pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)),
-                                                                           SimpleProgress(),
-                                                                           Bar(left=" |", right="| "), ETA()]).start()
-
+            if isatools.log_level == logging.DEBUG:
+                pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)),
+                                                                               SimpleProgress(),
+                                                                               Bar(left=" |", right="| "), ETA()]).start()
+            else:
+                pbar = lambda x: x
             for path in pbar(paths):
                 for k in df_dict.keys():  # add a row per path
                     df_dict[k].extend([""])
@@ -768,7 +792,7 @@ def write_assay_table_files(inv_obj, output_dir):
                     elif isinstance(node, DataFile):
                         pass  # handled in process
 
-            pbar.finish()
+            if isinstance(pbar, ProgressBar):  pbar.finish()
 
             DF = pd.DataFrame(columns=columns)
             DF = DF.from_dict(data=df_dict)
@@ -2437,7 +2461,7 @@ BASE_DIR = os.path.dirname(__file__)
 default_config_dir = os.path.join(BASE_DIR, 'config', 'xml')
 
 
-def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
+def validate(fp, config_dir=default_config_dir, log_level=isatools.log_level):
     global errors
     global warnings
     errors = list()
@@ -3295,10 +3319,13 @@ class ProcessSequenceFactory:
 
             if object_label in _LABELS_MATERIAL_NODES:
 
-                pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Setting material objects: ',
-                                                                                  SimpleProgress(),
-                                                                                  Bar(left=" |", right="| "),
-                                                                                  ETA()]).start()
+                if isatools.log_level == logging.DEBUG:
+                    pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Setting material objects: ',
+                                                                                      SimpleProgress(),
+                                                                                      Bar(left=" |", right="| "),
+                                                                                      ETA()]).start()
+                else:
+                    pbar = lambda x: x
 
                 for _, object_series in pbar(DF[column_group].drop_duplicates().iterrows()):
                     node_name = str(object_series[object_label])
@@ -3371,11 +3398,13 @@ class ProcessSequenceFactory:
                                                          value=str(object_series[comment_column])))
 
             elif object_label in _LABELS_DATA_NODES:
-                pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Setting data objects: ',
-                                                                                  SimpleProgress(),
-                                                                                  Bar(left=" |", right="| "),
-                                                                                  ETA()]).start()
-
+                if isatools.log_level == logging.DEBUG:
+                    pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Setting data objects: ',
+                                                                                      SimpleProgress(),
+                                                                                      Bar(left=" |", right="| "),
+                                                                                      ETA()]).start()
+                else:
+                    pbar = lambda x: x
                 for _, object_series in pbar(DF[column_group].drop_duplicates().iterrows()):
                     try:
                         data_file = get_node_by_label_and_key(object_label, str(object_series[object_label]))
@@ -3387,12 +3416,13 @@ class ProcessSequenceFactory:
 
             elif object_label.startswith('Protocol REF'):
                 object_label_index = list(DF.columns).index(object_label)
-
-                pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Generating process objects: ',
-                                                                                   SimpleProgress(),
-                                                                                   Bar(left=" |", right="| "),
-                                                                                   ETA()]).start()
-
+                if isatools.log_level == logging.DEBUG:
+                    pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Generating process objects: ',
+                                                                                      SimpleProgress(),
+                                                                                      Bar(left=" |", right="| "),
+                                                                                      ETA()]).start()
+                else:
+                    pbar = lambda x: x
                 for _, object_series in pbar(DF.iterrows()):  # don't drop duplicates
                     # if _ == 0:
                     #     print('processing: ', object_series[object_label])
@@ -3487,11 +3517,13 @@ class ProcessSequenceFactory:
                                                     value=str(object_series[comment_column])))
 
         # now go row by row pulling out processes and linking them accordingly
-
-        pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Linking processes and other nodes in paths: ',
-                                                                          SimpleProgress(),
-                                                                          Bar(left=" |", right="| "),
-                                                                          ETA()]).start()
+        if isatools.log_level == logging.DEBUG:
+            pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Linking processes and other nodes in paths: ',
+                                                                              SimpleProgress(),
+                                                                              Bar(left=" |", right="| "),
+                                                                              ETA()]).start()
+        else:
+            pbar = lambda x: x
         for _, object_series in pbar(DF.iterrows()):  # don't drop duplicates
             process_key_sequence = list()
             source_node_context = None

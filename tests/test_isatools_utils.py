@@ -10,6 +10,11 @@ from isatools import utils
 from isatools.model.v1 import OntologySource, OntologyAnnotation
 import tempfile
 import shutil
+import logging
+import isatools
+
+logging.basicConfig(level=isatools.log_level)
+LOG = logging.getLogger(__name__)
 
 
 def setUpModule():
@@ -25,10 +30,8 @@ class TestIsaGraph(unittest.TestCase):
     def test_detect_graph_process_pooling(self):
         ISA = isajson.load(open(os.path.join(test_utils.JSON_DATA_DIR, 'MTBLS1', 'MTBLS1.json')))
         for study in ISA.studies:
-            print("Checking {}".format(study.filename))
             utils.detect_graph_process_pooling(study.graph)
             for assay in study.assays:
-                print("Checking {}".format(assay.filename))
                 pooling_list = utils.detect_graph_process_pooling(assay.graph)
                 self.assertListEqual(sorted(pooling_list),
                                      sorted(['#process/Extraction1', '#process/NMR_assay1']))
@@ -36,23 +39,20 @@ class TestIsaGraph(unittest.TestCase):
     def test_detect_graph_process_pooling_batch_on_mtbls(self):
         for i in range(1, 1):
             try:
-                print("Loading MTBLS{}".format(i))
                 J = MTBLS.getj("MTBLS{}".format(i))
                 ISA = isajson.load(StringIO(json.dumps(J)))
                 for study in ISA.studies:
-                    print("Checking {}".format(study.filename))
                     utils.detect_graph_process_pooling(study.graph)
                     for assay in study.assays:
-                        print("Checking {}".format(assay.filename))
                         utils.detect_graph_process_pooling(assay.graph)
             except IOError:
-                print("IO Error, skipping...")
+                LOG.error("IO Error, skipping...")
             except KeyError:
-                print("KeyError, skipping...")
+                LOG.error("KeyError, skipping...")
             except AttributeError:
-                print("AttributeError, skipping...")
+                LOG.error("AttributeError, skipping...")
             except ValidationError:
-                print("jsonschema ValidationError, skipping...")
+                LOG.error("jsonschema ValidationError, skipping...")
 
 
 class TestOlsSearch(unittest.TestCase):

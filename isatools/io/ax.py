@@ -5,11 +5,12 @@ import tempfile
 import shutil
 from isatools.convert import magetab2isatab, magetab2json
 import csv
+import isatools
 
 EBI_FTP_SERVER = 'ftp.ebi.ac.uk'
 AX_EXPERIMENT_BASE_DIR = '/pub/databases/arrayexpress/data/experiment'
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+logging.basicConfig(level=isatools.log_level)
 LOG = logging.getLogger(__name__)
 
 

@@ -458,15 +458,6 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(assay_gx.data_files), 29)  # 29 data files  in a_matteo-assay-Gx.txt
             self.assertEqual(len(assay_gx.process_sequence), 116)  # 116 processes in in a_matteo-assay-Gx.txt
 
-    # def test_isatab_load__flower(self):  # don't commit this as it takes 2 minutes to run on local machine
-    #     with open(os.path.join(self._tab_data_dir, 'Flower_Study', 'i_Investigation.txt')) as fp:
-    #         ISA = isatab.load(fp)
-    #
-    # def test_isatab_load__dump_flower(self):  # don't commit this as it takes 3 minutes to run on local machine
-    #     with open(os.path.join(self._tab_data_dir, 'Flower_Study', 'i_Investigation.txt')) as fp:
-    #         ISA = isatab.load(fp)
-    #         print(isatab.dumps(ISA))
-
 
 class UnitTestIsaTabDump(unittest.TestCase):
     def setUp(self):

@@ -10,9 +10,9 @@ import pandas as pd
 from io import StringIO
 from itertools import zip_longest
 import re
+import isatools
 
-
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+logging.basicConfig(level=isatools.log_level)
 LOG = logging.getLogger(__name__)
 
 
@@ -322,7 +322,7 @@ def write_sdrf_table_files(i, output_path):
     for study in i.studies:
         for assay in [x for x in study.assays if x.technology_type.term.lower() == "dna microarray"]:
             sdrf_filename = study.filename[2:-3] + assay.filename[2:-3] + "sdrf.txt"
-            print("Writing {}".format(sdrf_filename))
+            LOG.debug("Writing {}".format(sdrf_filename))
             try:
                 isatab.merge_study_with_assay_tables(os.path.join(tmp, study.filename),
                                                      os.path.join(tmp, assay.filename),

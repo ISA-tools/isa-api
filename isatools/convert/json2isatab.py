@@ -3,9 +3,10 @@ from isatools import isatab
 import os
 import shutil
 import logging
+import isatools
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=isatools.log_level)
+LOG = logging.getLogger(__name__)
 
 
 def convert(json_fp, path, i_file_name='i_investigation.txt', config_dir=isajson.default_config_dir,
@@ -28,21 +29,23 @@ def convert(json_fp, path, i_file_name='i_investigation.txt', config_dir=isajson
 
     """
     if validate_first:
-        logger.info("Validating input JSON before conversion")
+        LOG.info("Validating input JSON before conversion")
         report = isajson.validate(fp=json_fp, config_dir=config_dir, log_level=logging.ERROR)
         if len(report['errors']) > 0:
-            logger.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
+            LOG.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
             return
         json_fp.seek(0)  # reset file pointer after validation
-    logger.info("Loading source ISA JSON...")
+    LOG.info("Loading ISA-JSON from %s", json_fp.name)
     isa_obj = isajson.load(fp=json_fp)
-    logger.info("Dumping target ISA-Tab...")
+    LOG.info("Dumping ISA-Tab to %s", path)
+    LOG.debug("Using configuration from %s", config_dir)
     isatab.dump(isa_obj=isa_obj, output_path=path, i_file_name=i_file_name)
     #  copy data files across from source directory where JSON is located
-    logger.info("Copying data files from source to target...")
+    LOG.info("Copying data files from source to target")
     for file in [f for f in os.listdir(os.path.dirname(json_fp.name))
                  if not (f.endswith('.txt') and (f.startswith('i_') or f.startswith('s_') or f.startswith('a_'))) and
                  not (f.endswith('.json'))]:
         filepath = os.path.join(os.path.dirname(json_fp.name), file)
         if os.path.isfile(filepath):
+            LOG.debug("Copying %s to %s", filepath, path)
             shutil.copy(filepath, path)

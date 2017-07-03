@@ -2,8 +2,9 @@ from isatools import isatab
 import os
 import logging
 from isatools.magetab import MageTabParser
+import isatools
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+logging.basicConfig(level=isatools.log_level)
 LOG = logging.getLogger(__name__)
 
 

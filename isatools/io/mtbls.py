@@ -9,13 +9,14 @@ from isatools.convert import isatab2json
 from isatools import isatab
 from isatools.model.v1 import OntologyAnnotation
 import pandas as pd
+import isatools
 
 EBI_FTP_SERVER = 'ftp.ebi.ac.uk'
 MTBLS_BASE_DIR = '/pub/databases/metabolights/studies/public'
 INVESTIGATION_FILENAME = 'i_Investigation.txt'
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=isatools.log_level)
+LOG = logging.getLogger(__name__)
 
 # REGEXES
 _RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
@@ -64,7 +65,7 @@ def get(mtbls_study_id, target_dir=None):
                             EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + a_filename))
                         ftp.retrbinary('RETR ' + a_filename, out_file.write)
         except ftplib.error_perm as ftperr:
-            logger.fatal("Could not retrieve MetaboLights study '{study}': {error}".format(study=mtbls_study_id, error=ftperr))
+            LOG.fatal("Could not retrieve MetaboLights study '{study}': {error}".format(study=mtbls_study_id, error=ftperr))
         finally:
             return target_dir
     else:
@@ -130,7 +131,7 @@ def slice_data_files(dir, factor_selection=None):
     results = list()
     # first collect matching samples
     for table_file in glob.iglob(os.path.join(dir, '[a|s]_*')):
-        logger.info("Loading {}".format(table_file))
+        LOG.info("Loading {}".format(table_file))
         with open(table_file, encoding='utf-8') as fp:
             df = isatab.load_table(fp)
             if factor_selection is None:

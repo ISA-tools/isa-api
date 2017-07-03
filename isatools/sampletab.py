@@ -4,7 +4,11 @@ import numpy as np
 from isatools.model.v1 import *
 from progressbar import ProgressBar, SimpleProgress, Bar, ETA
 from io import StringIO
-import os
+import logging
+import isatools
+
+logging.basicConfig(level=isatools.log_level)
+LOG = logging.getLogger(__name__)
 
 
 def _peek(f):
@@ -490,11 +494,12 @@ def dumps(investigation):
         all_samples += study.materials['samples']
 
     all_samples = list(set(all_samples))
-
-    pbar = ProgressBar(min_value=0, max_value=len(all_samples),
-                       widgets=['Writing {} samples: '.format(len(all_samples)), SimpleProgress(),
-                                Bar(left=" |", right="| "), ETA()]).start()
-
+    if isatools.log_level == logging.DEBUG:
+        pbar = ProgressBar(min_value=0, max_value=len(all_samples),
+                           widgets=['Writing {} samples: '.format(len(all_samples)), SimpleProgress(),
+                                    Bar(left=" |", right="| "), ETA()]).start()
+    else:
+        pbar = lambda x: x
     for i, s in pbar(enumerate(all_samples)):
         derived_from = ""
         if isinstance(s, Sample) and s.derives_from is not None:
