@@ -494,7 +494,7 @@ def dumps(investigation):
         all_samples += study.materials['samples']
 
     all_samples = list(set(all_samples))
-    if isatools.log_level == logging.DEBUG:
+    if isatools.show_pbars:
         pbar = ProgressBar(min_value=0, max_value=len(all_samples),
                            widgets=['Writing {} samples: '.format(len(all_samples)), SimpleProgress(),
                                     Bar(left=" |", right="| "), ETA()]).start()

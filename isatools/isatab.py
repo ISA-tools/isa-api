@@ -473,7 +473,7 @@ def _all_end_to_end_paths(G, start_nodes):  # we know graphs start with Source o
         message = 'Calculating for paths for {} sources: '.format(num_start_nodes)
     elif isinstance(start_nodes[0], Sample):
         message = 'Calculating for paths for {} samples: '.format(num_start_nodes)
-    if isatools.log_level == logging.DEBUG:
+    if isatools.show_pbars:
         pbar = ProgressBar(min_value=0, max_value=num_start_nodes, widgets=[message,
                                                                             SimpleProgress(),
                                                                             Bar(left=" |", right="| "), ETA()]).start()
@@ -548,7 +548,7 @@ def write_study_table_files(inv_obj, output_dir):
         omap = get_object_column_map(columns, columns)
         # load into dictionary
         df_dict = dict(map(lambda k: (k, []), flatten(omap)))
-        if isatools.log_level == logging.DEBUG:
+        if isatools.show_pbars:
             pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)),
                                                                            SimpleProgress(),
                                                                            Bar(left=" |", right="| "), ETA()]).start()
@@ -728,7 +728,7 @@ def write_assay_table_files(inv_obj, output_dir):
             # load into dictionary
             df_dict = dict(map(lambda k: (k, []), flatten(omap)))
 
-            if isatools.log_level == logging.DEBUG:
+            if isatools.show_pbars:
                 pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)),
                                                                                SimpleProgress(),
                                                                                Bar(left=" |", right="| "), ETA()]).start()
@@ -3319,7 +3319,7 @@ class ProcessSequenceFactory:
 
             if object_label in _LABELS_MATERIAL_NODES:
 
-                if isatools.log_level == logging.DEBUG:
+                if isatools.show_pbars:
                     pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Setting material objects: ',
                                                                                       SimpleProgress(),
                                                                                       Bar(left=" |", right="| "),
@@ -3398,7 +3398,7 @@ class ProcessSequenceFactory:
                                                          value=str(object_series[comment_column])))
 
             elif object_label in _LABELS_DATA_NODES:
-                if isatools.log_level == logging.DEBUG:
+                if isatools.show_pbars:
                     pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Setting data objects: ',
                                                                                       SimpleProgress(),
                                                                                       Bar(left=" |", right="| "),
@@ -3416,7 +3416,7 @@ class ProcessSequenceFactory:
 
             elif object_label.startswith('Protocol REF'):
                 object_label_index = list(DF.columns).index(object_label)
-                if isatools.log_level == logging.DEBUG:
+                if isatools.show_pbars:
                     pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Generating process objects: ',
                                                                                       SimpleProgress(),
                                                                                       Bar(left=" |", right="| "),
@@ -3517,7 +3517,7 @@ class ProcessSequenceFactory:
                                                     value=str(object_series[comment_column])))
 
         # now go row by row pulling out processes and linking them accordingly
-        if isatools.log_level == logging.DEBUG:
+        if isatools.show_pbars:
             pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Linking processes and other nodes in paths: ',
                                                                               SimpleProgress(),
                                                                               Bar(left=" |", right="| "),
