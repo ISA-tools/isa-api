@@ -38,6 +38,20 @@ class InterventionDesignedStudy(DesignedStudy):
         self.__sequences = set()
 
 
+        self.sequences = sequences
+
+    @property
+    def sequences(self):
+        return self.__sequences if self.__sequences else set()
+
+    @sequences.setter
+    def sequences(self, sequences):
+        if isinstance(sequences, Iterable) and all([isinstance(elem, TreatmentSequence) for elem in sequences]):
+            self.__sequences = sequences
+        else:
+            raise TypeError('The object supplied is not a valid iterable of TreatmentSequence: {0}'.format(sequences))
+
+
 class Treatment(object):
     """
     A Treatment is defined as a tuple of factor values (as defined in the ISA model v1) and a treatment type
@@ -149,15 +163,17 @@ class TreatmentFactory(object):
 
 class TreatmentSequence:
     """
-    A treatment sequence is an ordered (graph-like) combination of treatments
+    A treatment sequence is an ordered (graph-like) combination of treatment
     """
 
-    def __init__(self, ranked_treatments=[]):
+    def __init__(self, ranked_treatments=[], subject_count=10):
         """
         :param ranked_treatments: Treatment or list of Treatments of list of tuples (Treatment, int) where the second term represents the 
             epoch
         """
         self.__ranked_treatments = set()
+        self.__subject_count = subject_count if isinstance(subject_count, int) and subject_count >= 0 else 0
+        self.__sample_map = {}
 
         self.add_multiple_treatments(ranked_treatments)
 
@@ -168,6 +184,18 @@ class TreatmentSequence:
     @ranked_treatments.setter
     def ranked_treatments(self, ranked_treatments):
         self.add_multiple_treatments(ranked_treatments)
+
+    @property
+    def subject_count(self):
+        return self.__subject_count if isinstance(self.__subject_count, int) and self.__subject_count >= 0 else 0
+
+    @subject_count.setter
+    def subject_count(self, subject_count):
+        self.__subject_count = subject_count if isinstance(subject_count, int) and subject_count >= 0 else 0
+
+    @property
+    def sample_map(self):
+        return self.__sample_map
 
     def add_multiple_treatments(self, elements_to_add):
         if isinstance(elements_to_add, Treatment):

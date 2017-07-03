@@ -294,3 +294,8 @@ class TreatmentSequenceTest(unittest.TestCase):
         self.assertTrue(isinstance(self.sequence.ranked_treatments, set))
         self.assertTrue(treatments[0] in self.sequence.ranked_treatments)
         self.assertTrue(treatments[1] in self.sequence.ranked_treatments)
+
+    def test_subject_count_setter(self):
+        subject_count = 20
+        self.sequence.subject_count = subject_count
+        self.assertTrue(self.sequence.subject_count, subject_count)
