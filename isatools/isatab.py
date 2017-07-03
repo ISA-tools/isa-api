@@ -889,7 +889,6 @@ def read_investigation_file(fp):
         return l
 
     def _read_tab_section(f, sec_key, next_sec_key=None):
-
         line = f.readline()
         normed_line = line.rstrip()
         if normed_line[0] == '"':
@@ -908,24 +907,25 @@ def read_investigation_file(fp):
         return memf
 
     def _build_section_df(f):
-        # find tab dimension
-        # print('Max width = {}'.format(max([len(line.split('\t')) for line in f])))
-        f.seek(0)
-        try:
-            f = strip_comments(f)
-            df = pd.read_csv(f, dtype=str, sep='\t', encoding='utf-8').T  # Load and transpose ISA file section
-        except CParserError:
-            f.seek(0)
-            raise IOError("There was a problem parsing the investigation section:\n\n{}".format(f.read()))
+        df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python', encoding='utf-8',
+                         comment='#').dropna(axis=1, how='all')
+        df = df.T
         df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
         df.reset_index(inplace=True)  # Reset index so it is accessible as column
         df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
         df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
         return df
 
-    df_dict = dict()
+    memf = io.StringIO()
+    while True:
+        line = fp.readline()
+        if not line:
+            break
+        if not line.lstrip().startswith('#'):
+            memf.write(line)
+    memf.seek(0)
 
-    memf = fp
+    df_dict = dict()
 
     # Read in investigation file into DataFrames first
     df_dict['ontology_sources'] = _build_section_df(_read_tab_section(
@@ -1016,12 +1016,12 @@ def load_investigation(fp):
     """Used for rules 0005"""
 
     def check_labels(section, labels_expected, df):
-        labels_found = set(df.columns)
+        labels_found = set([x for x in df.columns if isinstance(x, str)])
 
         if not labels_expected.issubset(labels_found):
             missing_labels = labels_expected - labels_found
             LOG.fatal("(F) In {} section, expected labels {} not found in {}"
-                         .format(section, missing_labels, labels_found))
+                      .format(section, missing_labels, labels_found))
         if len(labels_found - labels_expected) > 0:
             # check extra labels, i.e. make sure they're all comments
             extra_labels = labels_found - labels_expected
@@ -3637,16 +3637,14 @@ class IsaTabParser(object):
                                             isecdict.get('termsourcefile', []),
                                             isecdict.get('termsourceversion', []),
                                             isecdict.get('termsourcedescription'),
-                                            {k: isecdict[k] for k in isecdict.keys() \
+                                            {k: isecdict[k] for k in isecdict.keys()
                                              if k.startswith('ontologysourcereferences.')})
         self.parse_investigation_section(isecdict.get('investigationidentifier', []),
                                          isecdict.get('investigationtitle', []),
                                          isecdict.get('investigationdescription', []),
                                          isecdict.get('investigationsubmissiondate', []),
                                          isecdict.get('investigationpublicreleasedate'),
-                                         {k: isecdict[k] for k in isecdict.keys() \
-                                          if k.startswith('investigation.')}
-                                         )
+                                         {k: isecdict[k] for k in isecdict.keys() if k.startswith('investigation.')})
         self.parse_publications_section(self.ISA,
                                         isecdict.get('investigationpubmedid', []),
                                         isecdict.get('investigationpublicationdoi', []),
@@ -3654,7 +3652,9 @@ class IsaTabParser(object):
                                         isecdict.get('investigationpublicationtitle', []),
                                         isecdict.get('investigationpublicationstatus', []),
                                         isecdict.get('investigationpublicationstatustermsourceref', []),
-                                        isecdict.get('investigationpublicationstatustermaccessionnumber'))
+                                        isecdict.get('investigationpublicationstatustermaccessionnumber'),
+                                        {k: isecdict[k] for k in isecdict.keys()
+                                         if k.startswith('investigationpublications.')})
         self.parse_people_section(self.ISA,
                                   isecdict.get('investigationpersonlastname', []),
                                   isecdict.get('investigationpersonfirstname', []),
@@ -3666,7 +3666,8 @@ class IsaTabParser(object):
                                   isecdict.get('investigationpersonaffiliation', []),
                                   isecdict.get('investigationpersonroles', []),
                                   isecdict.get('investigationpersonrolestermaccessionnumber', []),
-                                  isecdict.get('investigationpersonrolestermsourceref'))
+                                  isecdict.get('investigationpersonrolestermsourceref'),
+                                  {k: isecdict[k] for k in isecdict.keys() if k.startswith('investigationcontacts.')})
 
         for ssecdict in ssecdicts:
             self.parse_study_section(ssecdict.get('studyidentifier', []),
@@ -3686,7 +3687,9 @@ class IsaTabParser(object):
                                             ssecdict.get('studypublicationtitle', []),
                                             ssecdict.get('studypublicationstatus', []),
                                             ssecdict.get('studypublicationstatustermsourceref', []),
-                                            ssecdict.get('studypublicationstatustermaccessionnumber'))
+                                            ssecdict.get('studypublicationstatustermaccessionnumber'),
+                                            {k: ssecdict[k] for k in ssecdict.keys()
+                                             if k.startswith('studypublications.')})
             self.parse_people_section(self.ISA.studies[-1],
                                       ssecdict.get('studypersonlastname', []),
                                       ssecdict.get('studypersonfirstname', []),
@@ -3698,7 +3701,8 @@ class IsaTabParser(object):
                                       ssecdict.get('studypersonaffiliation', []),
                                       ssecdict.get('studypersonroles', []),
                                       ssecdict.get('studypersonrolestermaccessionnumber', []),
-                                      ssecdict.get('studypersonrolestermsourceref'))
+                                      ssecdict.get('studypersonrolestermsourceref'),
+                                      {k: ssecdict[k] for k in ssecdict.keys() if k.startswith('studycontacts.')})
             self.parse_study_factors_section(self.ISA.studies[-1],
                                              ssecdict.get('studyfactorname', []),
                                              ssecdict.get('studyfactorntype', []),
@@ -3706,11 +3710,13 @@ class IsaTabParser(object):
                                              ssecdict.get('studyfactortypetermsourceref'))
 
     def parse_ontology_sources_section(self, names, files, versions, descriptions, comments_dict):
+        i = 0
         for name, file, version, description in zip_longest(names, files, versions, descriptions):
+            i += 1
             os = OntologySource(name=name, file=file, version=version, description=description)
-            for k, v in comments_dict:
-                if len(v) > 0:
-                    os.comments.append(Comment(name=k[7:-1], value=';'.join(v) if len(v) > 1 else v[0]))
+            for k, v in comments_dict.items():
+                if i < len(v) > 0:
+                    os.comments.append(Comment(name=k[k.index('[')+1:-1], value=v[i]))
             self.ISA.ontology_source_references.append(os)
             self._ts_dict[name] = os
 
@@ -3742,23 +3748,35 @@ class IsaTabParser(object):
             obj.design_type = dtypeoa
             break
 
-    def parse_publications_section(self, obj, pubmedids, dois, authorlists, titles, statuses, statustans, statustsrs):
+    def parse_publications_section(self, obj, pubmedids, dois, authorlists, titles, statuses, statustans, statustsrs,
+                                   comments_dict):
+        i = 0
         for pubmedid, doi, authorlist, title, status, statustsr, statustan in \
                 zip_longest(pubmedids, dois, authorlists, titles, statuses, statustans, statustsrs):
+            i += 1
             statusoa = OntologyAnnotation(term=status, term_source=self._ts_dict.get(statustsr),
                                           term_accession=statustan)
             publication = Publication(pubmed_id=pubmedid, doi=doi, author_list=authorlist, title=title, status=statusoa)
+            for k, v in comments_dict.items():
+                if i < len(v) > 0:
+                    publication.comments.append(Comment(name=k[k.index('[')+1:-1], value=v[i]))
             obj.publications.append(publication)
 
     def parse_people_section(self, obj, lastnames, firstnames, midinitialss, emails, phones, faxes, addresses,
-                             affiliations, roles, roletans, roletrs):
+                             affiliations, roles, roletans, roletrs, comments_dict):
+        i = 0
         for lastname, firstname, midinitials, email, phone, fax, address, affiliation, role, roletan, roletsr in \
                 zip_longest(lastnames, firstnames, midinitialss, emails, phones, faxes, addresses, affiliations, roles,
                             roletans, roletrs):
+            i += 1
             rolesoa = OntologyAnnotation(term=role, term_source=self._ts_dict.get(roletsr), term_accession=roletan)
             person = Person(last_name=lastname, first_name=firstname, mid_initials=midinitials, email=email,
                             phone=phone, fax=fax, address=address, affiliation=affiliation, roles=rolesoa)
             obj.contacts.append(person)
+        for i, contact in enumerate(self.ISA.studies[-1].contacts):
+            for k, v in comments_dict.items():
+                if len(v) > 0:
+                    contact.comments.append(Comment(name=k[k.index('[')+1:-1], value=v[i]))
 
     def parse_study_factors_section(self, obj, fnames, ftypes, ftypetans, ftypetsrs):
         for fname, ftype, ftypetan, ftypetsr in zip_longest(fnames, ftypes, ftypetans, ftypetsrs):
@@ -3783,9 +3801,10 @@ def strip_comments(in_fp):
     if not isinstance(in_fp, StringIO):
         out_fp.name = in_fp.name
     for line in in_fp.readlines():
+        LOG.debug('processing line: {}'.format(line))
         if line.lstrip().startswith('#'):
-            pass
-        else:
+            LOG.debug('stripping line:'.format(line))
+        elif len(line.strip()) > 0:
             out_fp.write(line)
     out_fp.seek(0)
     return out_fp
