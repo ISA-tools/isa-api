@@ -3120,7 +3120,8 @@ def preprocess(DF):
 
     for i in process_node_name_indices:
         if not columns[find_lt(all_cols_indicies, i)].startswith('Protocol REF'):
-            print('warning: Protocol REF missing before \'{}\', found \'{}\''.format(columns[i], columns[find_lt(all_cols_indicies, i)]))
+            LOG.info('warning: Protocol REF missing between \'{}\' and \'{}\''
+                     .format(columns[find_lt(all_cols_indicies, i)], columns[i]))
             missing_process_indices.append(i)
 
     # insert Protocol REF columns
@@ -3128,13 +3129,32 @@ def preprocess(DF):
 
     for i in reversed(missing_process_indices):
         inferred_protocol_type = ""
-        if columns[i] == "Data Transformation Name":
-            inferred_protocol_type = "data transformation"
-        elif columns[i] == "Normalization Name":
+        leftcol = columns[find_lt(all_cols_indicies, i)]
+        rightcol = columns[i]
+        if leftcol == "Source Name" and rightcol == "Sample Name":
+            inferred_protocol_type = "sample collection"
+        elif leftcol == "Sample Name" and rightcol == "Extract Name":
+            inferred_protocol_type = "extraction"
+        elif leftcol == "Extract Name" and rightcol == "Labeled Extract Name":
+            inferred_protocol_type = "labeling"
+        elif leftcol == "Labeled Extract Name" and rightcol in ("Assay Name", "MS Assay Name"):
+            inferred_protocol_type = "library sequencing"
+        elif leftcol == "Extract Name" and rightcol in ("Assay Name", "MS Assay Name"):
+            inferred_protocol_type = "library preparation"
+        elif leftcol == "Scan Name" and rightcol == "Raw Data File":
+            inferred_protocol_type = "data acquisition"
+        elif leftcol == "Assay Name" and rightcol == "Normalization Name":
             inferred_protocol_type = "normalization"
-        elif columns[i] in ("Scan Name", "MS Assay Name"):
-            inferred_protocol_type = "data collection"
-        DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown' if inferred_protocol_type == "" else inferred_protocol_type)
+        elif leftcol == "Normalization Name" and rightcol == "Data Transformation Name":
+            inferred_protocol_type = "data transformation"
+        elif leftcol == "Raw Data File" and rightcol == "Metabolite Identification File":
+            inferred_protocol_type = "metabolite identification"
+        elif leftcol == "Raw Data File" and rightcol == "Protein Identification File":
+            inferred_protocol_type = "metabolite identification"
+        LOG.info("Inserting protocol {} in bewteen {} and {}"
+                 .format(inferred_protocol_type if inferred_protocol_type != '' else 'unknown', leftcol, rightcol))
+        DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown' \
+            if inferred_protocol_type == "" else inferred_protocol_type)
         DF.isatab_header.insert(i, 'Protocol REF')
         offset += 1
     return DF
