@@ -493,11 +493,18 @@ class MageTabParser(object):
         return self.ISA
     
     def load_into_idfdict(self, in_filename):
-        with open(in_filename) as in_file:
-            tabreader = csv.reader(filter(lambda r: r[0] != '#', in_file), dialect='excel-tab')
-            for row in tabreader:
-                key = get_squashed(key=row[0])
-                self._idfdict[key] = row[1:]
+        try:
+            with open(in_filename) as unicode_file:
+                tabreader = csv.reader(filter(lambda r: r[0] != '#', unicode_file), dialect='excel-tab')
+                for row in tabreader:
+                    key = get_squashed(key=row[0])
+                    self._idfdict[key] = row[1:]
+        except UnicodeDecodeError:
+            with open(in_filename, encoding='ISO8859-2') as latin2_file:
+                tabreader = csv.reader(filter(lambda r: r[0] != '#', latin2_file), dialect='excel-tab')
+                for row in tabreader:
+                    key = get_squashed(key=row[0])
+                    self._idfdict[key] = row[1:]
 
     def parse_ontology_sources(self, names, files, versions):
         for name, file, version in zip_longest(names, files, versions, fillvalue=''):

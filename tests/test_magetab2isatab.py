@@ -51,7 +51,7 @@ class TestMageTab2IsaTab(unittest.TestCase):
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_mtab_1073(self):  # FIXME: Fails because is ISO-8859-2 (Latin 2) encoding, not utf-8
+    def test_get_experiment_as_isatab_mtab_1073(self):
         AX.get_isatab('E-MTAB-1073', self._tmp_dir)  # gets E-MTAB-1073 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)

@@ -47,15 +47,26 @@ def get(arrayexpress_id, target_dir=None):
                 LOG.info("Retrieving file '{}'".format(EBI_FTP_SERVER + AX_EXPERIMENT_BASE_DIR + '/' + exp_type +
                                                            '/' + arrayexpress_id + '/' + idf_filename))
                 ftp.retrbinary('RETR ' + idf_filename, out_file.write)
-            with open(os.path.join(target_dir, idf_filename)) as idf_file:
-                reader = csv.reader(filter(lambda r: r.startswith('SDRF File'), idf_file), dialect='excel-tab')
-                for line in reader:
-                    for sdrf_filename in line[1:]:
-                        with open(os.path.join(target_dir, sdrf_filename), 'wb') as out_file:
-                            LOG.info("Retrieving file '{}'".format(
-                                EBI_FTP_SERVER + AX_EXPERIMENT_BASE_DIR + '/' + exp_type + '/' + arrayexpress_id + '/'
-                                + sdrf_filename))
-                            ftp.retrbinary('RETR ' + sdrf_filename, out_file.write)
+            try:
+                with open(os.path.join(target_dir, idf_filename)) as unicode_idf_file:
+                    reader = csv.reader(filter(lambda r: r.startswith('SDRF File'), unicode_idf_file), dialect='excel-tab')
+                    for line in reader:
+                        for sdrf_filename in line[1:]:
+                            with open(os.path.join(target_dir, sdrf_filename), 'wb') as out_file:
+                                LOG.info("Retrieving file '{}'".format(
+                                    EBI_FTP_SERVER + AX_EXPERIMENT_BASE_DIR + '/' + exp_type + '/' + arrayexpress_id + '/'
+                                    + sdrf_filename))
+                                ftp.retrbinary('RETR ' + sdrf_filename, out_file.write)
+            except UnicodeDecodeError:
+                with open(os.path.join(target_dir, idf_filename), encoding='ISO8859-2') as latin2_idf_file:
+                    reader = csv.reader(filter(lambda r: r.startswith('SDRF File'), latin2_idf_file), dialect='excel-tab')
+                    for line in reader:
+                        for sdrf_filename in line[1:]:
+                            with open(os.path.join(target_dir, sdrf_filename), 'wb') as out_file:
+                                LOG.info("Retrieving file '{}'".format(
+                                    EBI_FTP_SERVER + AX_EXPERIMENT_BASE_DIR + '/' + exp_type + '/' + arrayexpress_id + '/'
+                                    + sdrf_filename))
+                                ftp.retrbinary('RETR ' + sdrf_filename, out_file.write)
         except ftplib.error_perm as ftperr:
             LOG.fatal("Could not retrieve ArrayExpress study '{study}': {error}".format(study=arrayexpress_id,
                                                                                            error=ftperr))
