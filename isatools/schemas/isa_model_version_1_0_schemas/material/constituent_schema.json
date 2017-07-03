@@ -1,0 +1,35 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Constituent",
+	"description": "Definition of a constituent of a material or another constituent",
+	"type": "object",	
+	"properties":{
+		"@id": { "type": "string", "format": "uri" },		
+		"name": { 
+			"type": "string",
+			"description":"Constituent name"
+		},
+		"role": { "type": "string" },		
+		"description": { "type": "string" },
+		"synthesis": { "type": "string" },
+		"linkages":{
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"constituent": {"type": "string", "format": "uri" },
+					"linkageType": {"type": "string" }
+				}
+			}
+		},
+		"characteristics" : {
+			"type" : "array",
+			"items" :  {
+				"$ref": "material_attribute_value_schema.json#"
+			}
+		},
+		"ontologyAnnotation" : {
+			"$ref": "ontology_annotation_schema.json#"
+		}
+	}
+}
