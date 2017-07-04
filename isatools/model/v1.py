@@ -168,8 +168,8 @@ class OntologyAnnotation(Commentable):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return self.term == other.term and self.term_source == other.term_source \
-               and self.term_accession == self.term_accession
+        return isinstance(other, OntologyAnnotation) and self.term == other.term \
+               and self.term_source == other.term_source and self.term_accession == self.term_accession
 
     def __ne__(self, other):
         return not self == other
@@ -234,61 +234,61 @@ class Publication(Commentable):
         self.title = title
         self.status = status
 
-        @property
-        def pubmed_id(self):
-            if self.__pubmed_id is '':
-                return None
-            else:
-                return self.__pubmed_id
+    @property
+    def pubmed_id(self):
+        if self.__pubmed_id is '':
+            return None
+        else:
+            return self.__pubmed_id
 
-        @pubmed_id.setter
-        def pubmed_id(self, pubmed_id):
-            if pubmed_id is not None and not isinstance(pubmed_id, str):
-                raise AttributeError("Publication.pubmed_id must be a str or None")
-            else:
-                self.__pubmed_id = pubmed_id
+    @pubmed_id.setter
+    def pubmed_id(self, pubmed_id):
+        if pubmed_id is not None and not isinstance(pubmed_id, str):
+            raise AttributeError("Publication.pubmed_id must be a str or None")
+        else:
+            self.__pubmed_id = pubmed_id
 
-        @property
-        def doi(self):
-            if self.__doi is '':
-                return None
-            else:
-                return self.__doi
+    @property
+    def doi(self):
+        if self.__doi is '':
+            return None
+        else:
+            return self.__doi
 
-        @doi.setter
-        def doi(self, doi):
-            if doi is not None and not isinstance(doi, str):
-                raise AttributeError("Publication.doi must be a str or None")
-            else:
-                self.__doi = doi
+    @doi.setter
+    def doi(self, doi):
+        if doi is not None and not isinstance(doi, str):
+            raise AttributeError("Publication.doi must be a str or None")
+        else:
+            self.__doi = doi
 
-        @property
-        def author_list(self):
-            if self.__author_list is '':
-                return None
-            else:
-                return self.__author_list
+    @property
+    def author_list(self):
+        if self.__author_list is '':
+            return None
+        else:
+            return self.__author_list
 
-        @author_list.setter
-        def doi(self, author_list):
-            if author_list is not None and not isinstance(author_list, str):
-                raise AttributeError("Publication.author_list must be a str or None")
-            else:
-                self.__author_list = author_list
+    @author_list.setter
+    def doi(self, author_list):
+        if author_list is not None and not isinstance(author_list, str):
+            raise AttributeError("Publication.author_list must be a str or None")
+        else:
+            self.__author_list = author_list
 
-        @property
-        def status(self):
-            if self.__status is '':
-                return None
-            else:
-                return self.__status
+    @property
+    def status(self):
+        if self.__status is '':
+            return None
+        else:
+            return self.__status
 
-        @status.setter
-        def status(self, status):
-            if status is not None and not isinstance(status, (OntologyAnnotation, str)):
-                raise AttributeError("Publication.status must be a str, OntologyAnnotation or None")
-            else:
-                self.__status = status
+    @status.setter
+    def status(self, status):
+        if status is not None and not isinstance(status, (OntologyAnnotation, str)):
+            raise AttributeError("Publication.status must be a str, OntologyAnnotation or None")
+        else:
+            self.__status = status
 
 
 class Person(Commentable):
@@ -671,6 +671,19 @@ class Characteristic(Commentable):
         else:
             self.value = value
         self.unit = unit
+
+    def __repr__(self):
+        return 'Characteristic(category={0}, value={1}, unit={2})'.format(self.category, self.value, self.unit)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Characteristic) and self.category == other.category and self.value == other.value \
+               and self.unit == other.unit
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class Sample(Commentable):
