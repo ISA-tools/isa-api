@@ -303,7 +303,35 @@ def get_study_groups(mtbls_study_id):
     return study_groups
 
 
-def get_study_groups_sizes(mtbls_study_id):
+def get_study_groups_samples_sizes(mtbls_study_id):
+    study_groups = get_study_groups(mtbls_study_id=mtbls_study_id)
+    return list(map(lambda x: (x[0], len(x[1])), study_groups.items()))
+
+
+def get_sources_for_sample(mtbls_study_id, sample_name):
+    ISA = load(mtbls_study_id=mtbls_study_id)
+    hits = []
+    for study in ISA.studies:
+        for sample in study.materials['samples']:
+            if sample.name == sample_name:
+                print('found a hit ', sample.name)
+                for source in sample.derives_from:
+                    hits.append(source.name)
+    return hits
+
+
+def get_data_for_sample(mtbls_study_id, sample_name):
+    ISA = load(mtbls_study_id=mtbls_study_id)
+    hits = []
+    for study in ISA.studies:
+        for assay in study.assays:
+            for data in assay.data_files:
+                if data.generated_from.name == sample_name:
+                    print('found a hit ', data.filename)
+    return hits
+
+
+def get_study_groups_data_sizes(mtbls_study_id):
     study_groups = get_study_groups(mtbls_study_id=mtbls_study_id)
     return list(map(lambda x: (x[0], len(x[1])), study_groups.items()))
 
@@ -415,7 +443,7 @@ def get_study_variable_summary(mtbls_study_id):
     samples_and_variables = []
     for sample in all_samples:
         sample_and_vars = {
-            "name": sample.name
+            "sample_name": sample.name
         }
         for fv in sample.factor_values:
             if isinstance(fv.value, (str, int, float)):
@@ -424,6 +452,7 @@ def get_study_variable_summary(mtbls_study_id):
                 fv_value = fv.value.term
             sample_and_vars[fv.factor_name.name] = fv_value
         for source in sample.derives_from:
+            sample_and_vars["source_name"] = source.name
             for c in source.characteristics:
                 if isinstance(c.value, (str, int, float)):
                     c_value = c.value
