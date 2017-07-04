@@ -217,6 +217,7 @@ class TreatmentFactoryTest(unittest.TestCase):
 class TreatmentSequenceTest(unittest.TestCase):
 
     def setUp(self):
+        self.maxDiff = None
         self.sequence = TreatmentSequence()
         self.agent = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
         self.intensity = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
@@ -276,6 +277,78 @@ class TreatmentSequenceTest(unittest.TestCase):
         self.assertEqual(self.sequence.ranked_treatments, {
             (self.test_treatment, 1)
         })
+
+    def test_repr(self):
+        treatments = [
+            (Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+                FactorValue(factor_name=self.agent, value='crack'),
+                FactorValue(factor_name=self.intensity, value='low'),
+                FactorValue(factor_name=self.duration, value='short')
+            )), 1),
+            (Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+                FactorValue(factor_name=self.agent, value='crack'),
+                FactorValue(factor_name=self.intensity, value='low'),
+                FactorValue(factor_name=self.duration, value='long')
+            )), 2)
+        ]
+        new_sequence = TreatmentSequence(ranked_treatments=treatments)
+        self.assertEqual(repr(new_sequence), 'TreatmentSequence([(Treatment(factor_type=chemical intervention, '
+                                             'factor_values=(FactorValue(factor_name=StudyFactor(name=AGENT), '
+                                             'value=crack, unit=None), FactorValue(factor_name=StudyFactor(name=INTENSITY), '
+                                             'value=low, unit=None), FactorValue(factor_name=StudyFactor(name=DURATION), '
+                                             'value=short, unit=None))), 1), (Treatment(factor_type=chemical intervention, '
+                                             'factor_values=(FactorValue(factor_name=StudyFactor(name=AGENT), value=crack, '
+                                             'unit=None), FactorValue(factor_name=StudyFactor(name=INTENSITY), value=low, '
+                                             'unit=None), FactorValue(factor_name=StudyFactor(name=DURATION), value=long, '
+                                             'unit=None))), 2)])')
+
+    def test_eq(self):
+        treatments = [
+            (Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+                FactorValue(factor_name=self.agent, value='crack'),
+                FactorValue(factor_name=self.intensity, value='low'),
+                FactorValue(factor_name=self.duration, value='short')
+            )), 1),
+            (Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+                FactorValue(factor_name=self.agent, value='crack'),
+                FactorValue(factor_name=self.intensity, value='low'),
+                FactorValue(factor_name=self.duration, value='long')
+            )), 2)
+        ]
+        first_sequence = TreatmentSequence(treatments)
+        second_sequence = TreatmentSequence(reversed(treatments))
+        self.assertEqual(first_sequence, second_sequence)
+        self.assertEqual(hash(first_sequence), hash(second_sequence))
+
+    def test_neq(self):
+        treatments = [
+            (Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+                FactorValue(factor_name=self.agent, value='crack'),
+                FactorValue(factor_name=self.intensity, value='low'),
+                FactorValue(factor_name=self.duration, value='short')
+            )), 1),
+            (Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+                FactorValue(factor_name=self.agent, value='crack'),
+                FactorValue(factor_name=self.intensity, value='low'),
+                FactorValue(factor_name=self.duration, value='long')
+            )), 2)
+        ]
+        other_treatments = [
+            (Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+                FactorValue(factor_name=self.agent, value='spirit'),
+                FactorValue(factor_name=self.intensity, value='low'),
+                FactorValue(factor_name=self.duration, value='short')
+            )), 1),
+            (Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+                FactorValue(factor_name=self.agent, value='spirit'),
+                FactorValue(factor_name=self.intensity, value='low'),
+                FactorValue(factor_name=self.duration, value='long')
+            )), 2)
+        ]
+        first_sequence = TreatmentSequence(treatments)
+        second_sequence = TreatmentSequence(other_treatments)
+        self.assertNotEqual(first_sequence, second_sequence)
+        self.assertNotEqual(hash(first_sequence), hash(second_sequence))
 
     def test_ranked_treatments_setter(self):
         treatments = [

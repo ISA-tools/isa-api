@@ -1,7 +1,8 @@
 import itertools
+from operator import itemgetter
 from numbers import Number
 from collections import OrderedDict, Iterable
-from isatools.model.v1 import StudyFactor, FactorValue, OntologyAnnotation
+from isatools.model.v1 import StudyFactor, FactorValue, OntologyAnnotation, Characteristic
 
 __author__ = 'massi'
 
@@ -27,29 +28,86 @@ BASE_FACTORS = [
 ]
 
 
-class DesignedStudy(object):
+class BaseStudyDesign(object):
     pass
 
 
-class InterventionDesignedStudy(DesignedStudy):
+class InterventionStudyDesign(BaseStudyDesign):
 
-    def __init__(self, sequences = []):
+    def __init__(self, sequences=[]):
         super().__init__()
-        self.__sequences = set()
-
-
-        self.sequences = sequences
+        self.__sequences = OrderedDict()
+        # self.sequences = sequences
 
     @property
     def sequences(self):
-        return self.__sequences if self.__sequences else set()
+        return self.__sequences if self.__sequences else OrderedDict()
 
     @sequences.setter
     def sequences(self, sequences):
+        pass
+        """
         if isinstance(sequences, Iterable) and all([isinstance(elem, TreatmentSequence) for elem in sequences]):
             self.__sequences = sequences
         else:
             raise TypeError('The object supplied is not a valid iterable of TreatmentSequence: {0}'.format(sequences))
+        """
+
+    def add_sequence(self, sequence, group_size=0, sample_plan_map={}):
+        if isinstance(sequence, TreatmentSequence):
+            self.sequences[sequence] = {
+                'group_size': group_size if isinstance(group_size, int) else 0,
+                'sample_plan_map': sample_plan_map if isinstance(sample_plan_map, dict) and {
+                    isinstance(key, Characteristic) for key in sample_plan_map} else {}
+            }
+        else:
+            raise TypeError('{0} is not a valid sequence'.format(sequence))
+
+    def add_group_size_to_sequence(self, group_size, sequence=None):
+        if sequence is None:
+            sequence = self.sequences.keys()[0]
+
+
+class SamplePlan(object):
+
+    def __init__(self, group_size=0):
+        self.__group_size = group_size if isinstance(group_size, int) and group_size > 0 else 0
+        self.__sample_types_map = {}
+
+    @property
+    def group_size(self):
+        return self.__group_size
+
+    @group_size.setter
+    def group_size(self, group_size):
+        if not isinstance(group_size, int):
+            raise TypeError('{0} is not a valid value for group_size. Please provide an integer.')
+        if group_size < 0:
+            raise ValueError('group_size must be greater than 0.')
+        self.__group_size = group_size
+
+    @property
+    def sample_types_map(self):
+        return self.__sample_types_map
+
+    @sample_types_map.setter
+    def sample_types_map(self, sample_types_map):
+        for sample_type, sampling_size in sample_types_map.items():
+            self.add_sample_type_sampling_plan(sample_type, sampling_size)
+
+    def add_sample_type_sampling_plan(self, sample_type, sampling_size):
+        if not isinstance(sampling_size, int):
+            raise TypeError('sampling_size must be a natural number')
+        if sampling_size < 0:
+            raise ValueError('sampling_size must be a natural number')
+        if isinstance(sample_type, Characteristic):
+            self.__sample_types_map[sample_type] = sampling_size
+        elif isinstance(sample_type, str):
+            characteristic = Characteristic(category=OntologyAnnotation(term='organism part'),
+                                            value=OntologyAnnotation(term=sample_type))
+            self.__sample_types_map[characteristic] = sampling_size
+        else:
+            raise TypeError('wrong sample type {0}'.format(sample_type))
 
 
 class Treatment(object):
@@ -81,7 +139,7 @@ class Treatment(object):
                and self.factor_values == other.factor_values
 
     def __ne__(self, other):
-        return not self.factor_values == other.factor_values
+        return not self == other
 
     @property
     def treatment_type(self):
@@ -172,10 +230,22 @@ class TreatmentSequence:
             epoch
         """
         self.__ranked_treatments = set()
-        self.__subject_count = subject_count if isinstance(subject_count, int) and subject_count >= 0 else 0
-        self.__sample_map = {}
+        # self.__subject_count = subject_count if isinstance(subject_count, int) and subject_count >= 0 else 0
+        # self.__sample_map = {}
 
         self.add_multiple_treatments(ranked_treatments)
+
+    def __repr__(self):
+        return 'TreatmentSequence({0})'.format(sorted(self.ranked_treatments, key=itemgetter(1)))
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, TreatmentSequence) and self.ranked_treatments == other.ranked_treatments
+
+    def __ne__(self, other):
+        return not self == other
 
     @property
     def ranked_treatments(self):
@@ -185,6 +255,7 @@ class TreatmentSequence:
     def ranked_treatments(self, ranked_treatments):
         self.add_multiple_treatments(ranked_treatments)
 
+    """
     @property
     def subject_count(self):
         return self.__subject_count if isinstance(self.__subject_count, int) and self.__subject_count >= 0 else 0
@@ -196,6 +267,7 @@ class TreatmentSequence:
     @property
     def sample_map(self):
         return self.__sample_map
+    """
 
     def add_multiple_treatments(self, elements_to_add):
         if isinstance(elements_to_add, Treatment):
@@ -215,5 +287,6 @@ class TreatmentSequence:
         if isinstance(treatment, Treatment) and isinstance(epoch, int):
             # TODO check epoch
             self.__ranked_treatments.add((treatment, epoch))
+
 
 
