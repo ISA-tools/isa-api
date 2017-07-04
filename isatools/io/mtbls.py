@@ -108,11 +108,11 @@ def slice_data_files(dir, factor_selection=None):
     filtered by factor value (currently by matching on exactly 1 factor value)
 
     :param mtbls_study_id: Study identifier for MetaboLights study to get, as a str (e.g. MTBLS1)
-    :param factor_selection: Selected factor values to filter on samples
+    :param factor_selection: A list of selected factor values to filter on samples
     :return: A list of dicts {sample_name, list of data_files} containing sample names with associated data filenames
 
     Example usage:
-        samples_and_data = mtbls.get_data_files('MTBLS1', {'Gender': 'Male'})
+        samples_and_data = mtbls.get_data_files('MTBLS1', [{'Gender': 'Male'}])
 
     TODO:  Need to work on more complex filters e.g.:
         {"gender": ["male", "female"]} selects samples matching "male" or "female" factor value
@@ -191,7 +191,6 @@ def get_factor_names(mtbls_study_id):
         factor_names = get_factor_names('MTBLS1')
     """
     tmp_dir = get(mtbls_study_id)
-    from isatools import isatab
     factors = set()
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
@@ -214,7 +213,6 @@ def get_factor_values(mtbls_study_id, factor_name):
         factor_values = get_factor_values('MTBLS1', 'genotype')
     """
     tmp_dir = get(mtbls_study_id)
-    from isatools import isatab
     fvs = set()
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
@@ -275,7 +273,8 @@ def get_factors_summary(mtbls_study_id):
     samples_and_fvs = []
     for sample in all_samples:
         sample_and_fvs = {
-                "name": sample.name
+                "sources": ';'.join([x.name for x in sample.derives_from]),
+                "sample": sample.name,
             }
         for fv in sample.factor_values:
             if isinstance(fv.value, (str, int, float)):
@@ -489,3 +488,48 @@ def get_study_variable_summary(mtbls_study_id):
     cols_to_drop = nunique[nunique == 1].index
     df = df.drop(cols_to_drop, axis=1)
     return df.to_dict(orient='records')
+
+
+def get_study_group_factors(mtbls_study_id):
+    factors_list = []
+    tmp_dir = get(mtbls_study_id)
+    for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
+        with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
+            df = isatab.load_table(fp)
+            factors_list = df[[x for x in df.columns if x.startswith("Factor Value")]].drop_duplicates()\
+                .to_dict(orient='records')
+    return factors_list
+
+
+def get_filtered_df_on_factors_list(mtbls_study_id):
+    factors_list = get_study_group_factors(mtbls_study_id=mtbls_study_id)
+    queries = []
+    for item in factors_list:
+        query_str = ""
+        for k, v in item.items():
+            k = k.replace(' ', '_').replace('[', '_').replace(']', '_')
+            v = v.replace(' ', '_').replace('[', '_').replace(']', '_')
+            query_str += "{0} == '{1}' and ".format(k, v)
+        queries.append(query_str[:-5])
+    tmp_dir = get(mtbls_study_id)
+    for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
+        with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
+            df = isatab.load_table(fp)
+            cols = df.columns
+            cols = cols.map(lambda x: x.replace(' ', '_') if isinstance(x, str) else x)
+            df.columns = cols
+            cols = df.columns
+            cols = cols.map(lambda x: x.replace('[', '_') if isinstance(x, str) else x)
+            df.columns = cols
+            cols = df.columns
+            cols = cols.map(lambda x: x.replace(']', '_') if isinstance(x, str) else x)
+            df.columns = cols
+        for query in queries:
+            df2 = df.query(query)
+            if "Sample_Name" in df.columns:
+                print("Group: {} / Sample_Name: {}".format(query, list(df2["Sample_Name"])))
+            if "Source_Name" in df.columns:
+                print("Group: {} / Sources_Name: {}".format(query, list(df2["Source_Name"])))
+            if "Raw_Spectral_Data_File" in df.columns:
+                print("Group: {} / Raw_Spectral_Data_File: {}".format(query[13:-2], list(df2["Raw_Spectral_Data_File"])))
+    return queries
