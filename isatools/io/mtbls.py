@@ -493,11 +493,15 @@ def get_study_variable_summary(mtbls_study_id):
 def get_study_group_factors(mtbls_study_id):
     factors_list = []
     tmp_dir = get(mtbls_study_id)
+    if tmp_dir is None:
+        raise FileNotFoundError("Could not download {}".format(mtbls_study_id))
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
             df = isatab.load_table(fp)
-            factors_list = df[[x for x in df.columns if x.startswith("Factor Value")]].drop_duplicates()\
-                .to_dict(orient='records')
+            factor_columns = [x for x in df.columns if x.startswith("Factor Value")]
+            if len(factor_columns) > 0:
+                factors_list = df[factor_columns].drop_duplicates()\
+                    .to_dict(orient='records')
     return factors_list
 
 
@@ -508,9 +512,10 @@ def get_filtered_df_on_factors_list(mtbls_study_id):
         query_str = ""
         for k, v in item.items():
             k = k.replace(' ', '_').replace('[', '_').replace(']', '_')
-            v = v.replace(' ', '_').replace('[', '_').replace(']', '_')
-            query_str += "{0} == '{1}' and ".format(k, v)
-        queries.append(query_str[:-5])
+            if isinstance(v, str):
+                v = v.replace(' ', '_').replace('[', '_').replace(']', '_')
+                query_str += "{0} == '{1}' and ".format(k, v)
+        queries.append(query_str[:-4])
     tmp_dir = get(mtbls_study_id)
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
@@ -524,12 +529,17 @@ def get_filtered_df_on_factors_list(mtbls_study_id):
             cols = df.columns
             cols = cols.map(lambda x: x.replace(']', '_') if isinstance(x, str) else x)
             df.columns = cols
+        from pandas.computation.ops import UndefinedVariableError
         for query in queries:
-            df2 = df.query(query)
-            if "Sample_Name" in df.columns:
-                print("Group: {} / Sample_Name: {}".format(query, list(df2["Sample_Name"])))
-            if "Source_Name" in df.columns:
-                print("Group: {} / Sources_Name: {}".format(query, list(df2["Source_Name"])))
-            if "Raw_Spectral_Data_File" in df.columns:
-                print("Group: {} / Raw_Spectral_Data_File: {}".format(query[13:-2], list(df2["Raw_Spectral_Data_File"])))
+            try:
+                df2 = df.query(query)  # query uses pandas.eval, which evaluates queries like pure Python notation
+                if "Sample_Name" in df.columns:
+                    print("Group: {} / Sample_Name: {}".format(query, list(df2["Sample_Name"])))
+                if "Source_Name" in df.columns:
+                    print("Group: {} / Sources_Name: {}".format(query, list(df2["Source_Name"])))
+                if "Raw_Spectral_Data_File" in df.columns:
+                    print("Group: {} / Raw_Spectral_Data_File: {}".format(query[13:-2],
+                                                                          list(df2["Raw_Spectral_Data_File"])))
+            except UndefinedVariableError:
+                pass
     return queries
