@@ -5,11 +5,12 @@ import tempfile
 import shutil
 import re
 import glob
+import isatools
 from isatools.convert import isatab2json
 from isatools import isatab
 from isatools.model.v1 import OntologyAnnotation
 import pandas as pd
-import isatools
+from itertools import zip_longest
 
 EBI_FTP_SERVER = 'ftp.ebi.ac.uk'
 MTBLS_BASE_DIR = '/pub/databases/metabolights/studies/public'
@@ -543,3 +544,36 @@ def get_filtered_df_on_factors_list(mtbls_study_id):
             except UndefinedVariableError:
                 pass
     return queries
+
+
+def squashstr(string):
+    nospaces = "".join(string.split())
+    return nospaces.lower()
+
+
+def pyvar(string):
+    for ch in string:
+        if ch.isalpha() or ch.isdigit():
+            pass
+        else:
+            string = string.replace(ch, '_')
+    return string
+
+
+def pyisatabify(dataframe):
+    columns = dataframe.columns
+    pycolumns = []
+    nodecontext = None
+    attrcontext = None
+    columns = list(map(lambda x: "Characteristics[Material Type]" if x == 'Material Type' else x, columns))  # cast MT
+    for column in columns:
+        squashedcol = squashstr(column)
+        if squashedcol.endswith(('name', 'file')) or squashedcol == 'protocolref':
+            nodecontext = squashedcol
+            pycolumns.append(squashedcol)
+        elif squashedcol.startswith(('characteristics', 'parametervalue', 'comment', 'factorvalue')) and nodecontext is not None:
+            attrcontext = squashedcol
+            pycolumns.append('{0}__{1}'.format(nodecontext, pyvar(attrcontext)))
+        elif squashedcol.startswith(('term', 'unit')) and nodecontext is not None and attrcontext is not None:
+            pycolumns.append('{0}__{1}_{2}'.format(nodecontext, pyvar(attrcontext), pyvar(squashedcol)))
+    return pycolumns
