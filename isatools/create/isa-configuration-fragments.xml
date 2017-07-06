@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<isatab-config-file xmlns="http://www.ebi.ac.uk/bii/isatab_configuration#">
+    <isatab-configuration table-name="investigation">
+
+ <!-- CHROMATOGRAPHY --> 
+
+
+<protocol-field protocol-type="gas chromatography"/>
+<field header="Parameter Value[molecular fraction]" data-type="List" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the type of metabolite fraction being monitored]]></description>
+    <default-value><![CDATA[polar metabolites,apolar metabolites,nucleic acids,amino-acids,lipids,carbohydrates]]></default-value>
+    <list-values></list-values>
+</field>          
+<field header="Parameter Value[derivatization]" data-type="List" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the type of derivatization used]]></description>
+    <default-value><![CDATA[acetylation,alkylation,methylation,oximation,silylation,trifluoroacetylation]]></default-value>
+    <list-values></list-values>
+</field>  
+<!--
+<field header="Parameter Value[chromatography instrument]" data-type="String" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the name of the chromatography instrument]]></description>
+    <default-value><![CDATA[]]></default-value>
+</field>
+<field header="Parameter Value[chromatography column]" data-type="String" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the name of the chromatography column]]></description>
+    <default-value><![CDATA[]]></default-value>
+</field> --> 
+
+<protocol-field protocol-type="liquid chromatography"/>
+<!-- <field header="Parameter Value[chromatography instrument]" data-type="String" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the name of the chromatography instrument]]></description>
+    <default-value><![CDATA[]]></default-value>
+</field>
+<field header="Parameter Value[chromatography column]" data-type="String" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the name of the chromatography column]]></description>
+    <default-value><![CDATA[]]></default-value>
+</field> -->
+        
+ 
+ 
+ 
+<!-- NMR SPECTROSCOPY --> 
+ 
+<protocol-field protocol-type="NMR spectroscopy"/>
+        
+<!-- ISA Configuration Fragment to use for 1D NMR acquisition -->        
+<field header="Parameter Value[nmr instrument]" data-type="String" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the name of the NMR instrument]]></description>
+    <default-value><![CDATA[]]></default-value>
+</field>
+<field header="Parameter Value[nmr dimension]" data-type="List" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the number of dimensions used during the NMR acquisition]]></description>
+    <default-value><![CDATA[1D]]></default-value>
+    <list-values>1D</list-values>
+</field>
+<field header="Parameter Value[acquisition nucleus]" data-type="List" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the nucleus used during the NMR acquisition]]></description>
+    <default-value><![CDATA[1H]]></default-value>
+    <list-values>1H,13C</list-values>
+</field>
+<field header="Parameter Value[nmr pulse sequence]" data-type="List" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the name of the NMR pulse sequence program]]></description>
+    <default-value><![CDATA[]]></default-value>
+    <list-values>CPMG,JRES,NOESY</list-values>
+</field>
+        
+<!-- ISA Configuration Fragment to use for 2D NMR acquisition -->        
+<field header="Parameter Value[nmr instrument]" data-type="String" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the name of the NMR instrument]]></description>
+    <default-value><![CDATA[]]></default-value>
+</field>
+<field header="Parameter Value[nmr dimension]" data-type="List" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the number of dimensions used during the NMR acquisition]]></description>
+    <default-value><![CDATA[2D]]></default-value>
+    <list-values>2D</list-values>
+</field>
+<field header="Parameter Value[acquisition nucleus]" data-type="List" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the pair of nuclei used in the 2D NMR acquisition]]></description>
+    <default-value><![CDATA[1H]]></default-value>
+    <list-values>1H-1H,13C-13C,1H-13C,</list-values>
+</field>
+<field header="Parameter Value[nmr pulse sequence]" data-type="List" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the name of the NMR pulse sequence program]]></description>
+    <default-value><![CDATA[]]></default-value>
+    <list-values>HSQC,TOCSY,TOESY</list-values>
+</field>
+  
+  
+<!-- MASS SPECTROMETRY --> 
+<!-- ISA Configuration Fragment to use for Mass Spectrometry acquisition --> 
+<protocol-field protocol-type="mass spectrometry"/>
+<field header="Parameter Value[injection mode]" data-type="List" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the type of sample introduction methods used during in the mass spectrometry event]]></description>
+    <default-value><![CDATA[]]></default-value>
+    <list-values>gas chromatography,liquid chromatography.flow injection,direct injection</list-values>
+</field>          
+<field header="Parameter Value[polarity mode]" data-type="List" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the type of polarity used during the data acquisition]]></description>
+    <default-value><![CDATA[]]></default-value>
+    <list-values>positive mode,negative mode,targeted mode</list-values>
+</field>                
+<field header="Parameter Value[number of acquisition runs]" data-type="Integer" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the number of technical replicates for the current data acquisition]]></description>
+    <default-value><![CDATA[1]]></default-value>
+</field>        
+
+
+
+<!-- DNA MICROARRAY HYBRIDIZATION --> 
+<!-- ISA Configuration Fragment to use for DNA microarray data acquisition --> 
+<protocol-field protocol-type="nucleic acid hybridization"/>
+<field header="Array Design REF" data-type="String" is-file-field="false"
+    is-multiple-value="false" is-required="true" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[Reference to the identifier (or accession number) of an existing array design]]></description>
+    <default-value><![CDATA[]]></default-value>
+    <generated-value-template>[ARRAY_DESIGN]</generated-value-template>
+</field>        
+<field header="Parameter Value[number of acquisition channels]" data-type="Integer" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the number of technical replicates for the current data acquisition]]></description>
+    <default-value><![CDATA[1]]></default-value>
+</field>        
+<field header="Parameter Value[number of acquisition runs]" data-type="Integer" is-file-field="false"
+    is-multiple-value="false" is-required="false" is-hidden="false"
+    is-forced-ontology="false">
+    <description><![CDATA[the number of technical replicates for the current data acquisition]]></description>
+    <default-value><![CDATA[1]]></default-value>
+</field>         
+        
+        
+ 
+ 
+ 
+
+
+<!-- DNA MICROARRAY HYBRIDIZATION --> 
+<!-- ISA Configuration Fragment to use for DNA microarray data acquisition --> 
+        
+        
+        
+<structured-field name="factors"/>
+</isatab-configuration>
+</isatab-config-file>
