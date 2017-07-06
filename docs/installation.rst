@@ -60,4 +60,23 @@ After that, you can run the test with the usual command:
 
 ``python setup.py test``
 
+Logging
+-------
 
+By default the ISA-API will output error messages to the standard output. To control the logging level, you can set
+the logging level via the `isatools` package as follows:
+
+```
+import isatools
+import logging
+isatools.log_level = logging.INFO  # sets log level to INFO
+
+from isatools import isatab
+"""
+Now do some stuff with the isatab package - logging should output messages at INFO, WARNING, ERROR and FATAL levels
+"""
+ISA = isatab.load(...)
+
+```
+Note that you cannot reset the log level interactively after setting it the first time, so you would need to reload
+your environment (iPython etc.) to change the log level again.
