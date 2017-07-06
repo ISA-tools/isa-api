@@ -1,5 +1,5 @@
 import unittest
-from isatools.model.v1 import OntologySource, OntologyAnnotation, StudyFactor, FactorValue
+from isatools.model.v1 import OntologySource, OntologyAnnotation, StudyFactor, FactorValue, Characteristic
 
 
 class TestSimpleExamples(unittest.TestCase):
@@ -71,6 +71,32 @@ class TestOntologyAnnotation(unittest.TestCase):
                                                     'term_source=OntologySource(name=some ontology, '
                                                     'file=ontology_file.txt), '
                                                     'term_accession=http://this.is.a.uri.org)')
+
+
+class TestCharacteristic(unittest.TestCase):
+
+    def setUp(self):
+        ontology_source = OntologySource(name='some ontology', file='ontology_file.txt')
+        self.category = OntologyAnnotation(term='thing', term_source=ontology_source, term_accession='http://some.uri.org')
+        self.value = OntologyAnnotation(term='val', term_source=ontology_source, term_accession='http://other.uri.org')
+        self.unit = OntologyAnnotation(term='unit', term_source=ontology_source, term_accession='http://unit.uri.org')
+
+    def test_repr(self):
+        characteristic = Characteristic(category=self.category, value=self.value)
+        self.assertNotEqual(repr(characteristic), 'Characteristic(category={0}, value={1} unit={2})'.format(
+            self.category, self.value, None))
+
+    def test_eq(self):
+        characteristic = Characteristic(category=self.category, value=self.value)
+        same_characteristic = Characteristic(value=self.value, category=self.category)
+        self.assertEqual(characteristic, same_characteristic)
+        self.assertEqual(hash(characteristic), hash(same_characteristic))
+
+    def test_ne(self):
+        characteristic = Characteristic(category=self.category, value=self.value)
+        other_characteristic = Characteristic(value=self.value, category=self.category, unit=self.unit)
+        self.assertNotEqual(characteristic, other_characteristic)
+        self.assertNotEqual(hash(characteristic), hash(other_characteristic))
 
 
 class TestStudyFactor(unittest.TestCase):
