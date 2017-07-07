@@ -261,3 +261,84 @@ def create_isatab_archive(inv_fp, target_filename=None, filter_by_measurement=No
         LOG.debug("Missing: ", missing_files)
         return None
 
+
+def squashstr(string):
+    nospaces = "".join(string.split())
+    return nospaces.lower()
+
+
+def pyvar(string):
+    for ch in string:
+        if ch.isalpha() or ch.isdigit():
+            pass
+        else:
+            string = string.replace(ch, '_')
+    return string
+
+
+def recast_columns(columns):
+    casting_map = {
+        'Material Type': 'Characteristics[Material Type]',
+        'Date': 'Parameter Value[Date]',
+        'Performer': 'Parameter Value[Performer]'
+    }
+    for k, v in casting_map.items():
+        columns = list(map(lambda x: v if x == k else x, columns))
+    return columns
+
+
+def pyisatabify(dataframe):
+    columns = dataframe.columns
+    pycolumns = []
+    nodecontext = None
+    attrcontext = None
+    col2pymap = {}
+    columns = recast_columns(columns=columns)
+    for column in columns:
+        squashedcol = squashstr(column)
+        if squashedcol.endswith(('name', 'file')) or squashedcol == 'protocolref':
+            nodecontext = squashedcol
+            pycolumns.append(squashedcol)
+        elif squashedcol.startswith(('characteristics', 'parametervalue', 'comment', 'factorvalue')) and nodecontext is not None:
+            attrcontext = squashedcol
+            if attrcontext == 'factorvalue':  # factor values are not in node context
+                pycolumns.append(pyvar(attrcontext))
+            else:
+                pycolumns.append('{0}__{1}'.format(nodecontext, pyvar(attrcontext)))
+        elif squashedcol.startswith(('term', 'unit')) and nodecontext is not None and attrcontext is not None:
+            pycolumns.append('{0}__{1}_{2}'.format(nodecontext, pyvar(attrcontext), pyvar(squashedcol)))
+        col2pymap[column] = pycolumns[-1]
+    return col2pymap
+
+
+def factor_query_isatab(df, q):
+    """
+    :param df: A Pandas DataFrame
+    :param q: Query, like "rate is 0.2 and limiting nutrient is sulphur"
+    :return: DataFrame sliced on the query
+    """
+    columns = df.columns
+    columns = recast_columns(columns=columns)
+    for i, column in enumerate(columns):
+        columns[i] = pyvar(column) if column.startswith('Factor Value[') else column
+    df.columns = columns
+
+    qlist = q.split(' and ')
+    fmt_query = []
+    for factor_query in qlist:
+        factor_value = factor_query.split(' is ')
+        fmt_query_part = "Factor_Value_{0}_ == '{1}'".format(pyvar(factor_value[0]), factor_value[1])
+        fmt_query.append(fmt_query_part)
+    fmt_query = ' and '.join(fmt_query)
+    LOG.debug('running query: {}'.format(fmt_query))
+    return df.query(fmt_query)
+
+
+def compute_factors_summary(df):
+    # get all factors combinations
+    factors_df = df[[x for x in df.columns if x.startswith("Factor Value")]].drop_duplicates()
+    factors_list = [x[13:-1] for x in factors_df.columns]
+    print(factors_list)
+    for i, row in factors_df.iterrows():
+        pass
+

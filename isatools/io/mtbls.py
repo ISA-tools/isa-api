@@ -510,13 +510,14 @@ def get_filtered_df_on_factors_list(mtbls_study_id):
     factors_list = get_study_group_factors(mtbls_study_id=mtbls_study_id)
     queries = []
     for item in factors_list:
-        query_str = ""
+        query_str = []
         for k, v in item.items():
             k = k.replace(' ', '_').replace('[', '_').replace(']', '_')
             if isinstance(v, str):
                 v = v.replace(' ', '_').replace('[', '_').replace(']', '_')
-                query_str += "{0} == '{1}' and ".format(k, v)
-        queries.append(query_str[:-4])
+                query_str.append("{0} == '{1}' and ".format(k, v))
+        query_str = ''.join(query_str)[:-4]
+        queries.append(query_str)
     tmp_dir = get(mtbls_study_id)
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
@@ -544,36 +545,3 @@ def get_filtered_df_on_factors_list(mtbls_study_id):
             except UndefinedVariableError:
                 pass
     return queries
-
-
-def squashstr(string):
-    nospaces = "".join(string.split())
-    return nospaces.lower()
-
-
-def pyvar(string):
-    for ch in string:
-        if ch.isalpha() or ch.isdigit():
-            pass
-        else:
-            string = string.replace(ch, '_')
-    return string
-
-
-def pyisatabify(dataframe):
-    columns = dataframe.columns
-    pycolumns = []
-    nodecontext = None
-    attrcontext = None
-    columns = list(map(lambda x: "Characteristics[Material Type]" if x == 'Material Type' else x, columns))  # cast MT
-    for column in columns:
-        squashedcol = squashstr(column)
-        if squashedcol.endswith(('name', 'file')) or squashedcol == 'protocolref':
-            nodecontext = squashedcol
-            pycolumns.append(squashedcol)
-        elif squashedcol.startswith(('characteristics', 'parametervalue', 'comment', 'factorvalue')) and nodecontext is not None:
-            attrcontext = squashedcol
-            pycolumns.append('{0}__{1}'.format(nodecontext, pyvar(attrcontext)))
-        elif squashedcol.startswith(('term', 'unit')) and nodecontext is not None and attrcontext is not None:
-            pycolumns.append('{0}__{1}_{2}'.format(nodecontext, pyvar(attrcontext), pyvar(squashedcol)))
-    return pycolumns
