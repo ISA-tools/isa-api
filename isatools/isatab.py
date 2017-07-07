@@ -1230,10 +1230,10 @@ def check_pubmed_ids_format(i_df):
                 })
                 LOG.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
     for doi in i_df['i_publications']['Investigation PubMed ID'].tolist():
-        check_pubmed_id(doi)
+        check_pubmed_id(str(doi))
     for study_pubs_df in i_df['s_publications']:
         for doi in study_pubs_df['Study PubMed ID'].tolist():
-            check_pubmed_id(doi)
+            check_pubmed_id(str(doi))
 
 
 def check_protocol_names(i_df):
