@@ -1,8 +1,9 @@
 from isatools import isajson, sra
 import logging
+import isatools
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=isatools.log_level)
+LOG = logging.getLogger(__name__)
 
 
 def convert(json_fp, path, config_dir=None, sra_settings=None, datafilehashes=None, validate_first=True):
@@ -14,11 +15,15 @@ def convert(json_fp, path, config_dir=None, sra_settings=None, datafilehashes=No
     :param datafilehashes: Data files with hashes, in a dict
     """
     if validate_first:
+        LOG.info("Validating input JSON first")
         log_msg_stream = isajson.validate(fp=json_fp, config_dir=config_dir, log_level=logging.WARNING)
         if '(E)' in log_msg_stream.getvalue():
-            logger.fatal("Could not proceed with conversion as there are some validation errors. Check log.")
+            LOG.fatal("Could not proceed with conversion as there are some validation errors. Check log.")
             return
+    LOG.info("loading isajson %s", json_fp.name)
     i = isajson.load(fp=json_fp)
+    LOG.info("Exporting SRA to %s", path)
+    LOG.debug("Using SRA settings %s", sra_settings)
     sra.export(i, path, sra_settings=sra_settings, datafilehashes=datafilehashes)
 
 """

@@ -2,6 +2,7 @@ import csv
 import pandas as pd
 import numpy as np
 from isatools.utils import contains
+from io import StringIO
 
 _IFILE_BASE_INDEX_LABELS = (
     'ONTOLOGY SOURCE REFERENCE',
@@ -179,7 +180,9 @@ def read_ifile(ifile_path):
         reader = csv.reader(ifile_fp, delimiter='\t')
         maxwidth = len(max(reader, key=len))
         ifile_fp.seek(0)
-        ifile_df = pd.read_csv(ifile_fp, sep='\t', header=None, names=list(range(0, maxwidth)), index_col=0, encoding='utf-8', comment='#')
+        ifile_fp = strip_comments(ifile_fp)
+        ifile_df = pd.read_csv(ifile_fp, sep='\t', header=None, names=list(range(0, maxwidth)), index_col=0,
+                               encoding='utf-8')
     return ifile_df
 
 
@@ -188,7 +191,8 @@ def read_tfile(tfile_path, index_col):
         reader = csv.reader(tfile_fp, delimiter='\t')
         header = list(next(reader))
         tfile_fp.seek(0)
-        tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col, encoding='utf-8', comment='#')
+        tfile_fp = strip_comments(tfile_fp)
+        tfile_df = pd.read_csv(tfile_fp, sep='\t', index_col=index_col, encoding='utf-8')
         tfile_df.isatab_header = header
     return tfile_df
 
@@ -219,3 +223,16 @@ def check_ontology_source_reference_section(ifile_df):
 
 def get_multiple_index(file_index, key):
     return np.where(np.array(file_index) == key)[0]
+
+
+def strip_comments(in_fp):
+    out_fp = StringIO()
+    if not isinstance(in_fp, StringIO):
+        out_fp.name = in_fp.name
+    for line in in_fp.readlines():
+        if line.lstrip().startswith('#'):
+            pass
+        else:
+            out_fp.write(line)
+    out_fp.seek(0)
+    return out_fp

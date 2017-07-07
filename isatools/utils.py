@@ -8,6 +8,11 @@ from urllib.request import urlopen
 from urllib.parse import urlencode
 import os
 from zipfile import ZipFile
+import logging
+import isatools
+
+logging.basicConfig(level=isatools.log_level)
+LOG = logging.getLogger(__name__)
 
 
 def format_report_csv(report):
@@ -31,8 +36,8 @@ def detect_graph_process_pooling(G):
     report = list()
     for process in [n for n in G.nodes() if isinstance(n, Process)]:
         if len(G.in_edges(process)) > 1:
-            print("Possible process pooling detected on: {}"
-                  .format(' '.join([process.id, process.executes_protocol.name])))
+            LOG.info("Possible process pooling detected on: {}"
+                     .format(' '.join([process.id, process.executes_protocol.name])))
             report.append(process.id)
     return report
 
@@ -42,14 +47,14 @@ def detect_isatab_process_pooling(fp):
     report = []
     ISA = isatab.load(fp)
     for study in ISA.studies:
-        print("Checking {}".format(study.filename))
+        LOG.info("Checking {}".format(study.filename))
         pooling_list = detect_graph_process_pooling(study.graph)
         if len(pooling_list) > 0:
             report.append({
                 study.filename: pooling_list
             })
         for assay in study.assays:
-            print("Checking {}".format(assay.filename))
+            LOG.info("Checking {}".format(assay.filename))
             pooling_list = detect_graph_process_pooling(assay.graph)
             if len(pooling_list) > 0:
                 report.append({
@@ -120,7 +125,7 @@ def get_pubmed_article(pubmed_id):
         if not response["doi"]:
             aids = record.get("AID", "")
             for aid in aids:
-                print("AID:" + aid)
+                LOG.debug("AID:" + aid)
                 if "[doi]" in aid:
                     response["doi"] = aid.split(" ")[0]
                     break
@@ -153,7 +158,7 @@ OLS_PAGINATION_SIZE = 500
 def get_ols_ontologies():
     """Returns a list of OntologySource objects according to what's in OLS"""
     ontologiesUri = OLS_API_BASE_URI + "/ontologies?size=" + str(OLS_PAGINATION_SIZE)
-    print(ontologiesUri)
+    LOG.debug(ontologiesUri)
     J = json.loads(urlopen(ontologiesUri).read().decode("utf-8"))
     ontology_sources = []
     for ontology_source_json in J["_embedded"]["ontologies"]:
@@ -170,7 +175,7 @@ def get_ols_ontologies():
 def get_ols_ontology(ontology_name):
     """Returns a single OntologySource objects according to what's in OLS"""
     ontologiesUri = OLS_API_BASE_URI + "/ontologies?size=" + str(OLS_PAGINATION_SIZE)
-    print(ontologiesUri)
+    LOG.debug(ontologiesUri)
     J = json.loads(urlopen(ontologiesUri).read().decode("utf-8"))
     ontology_sources = []
     for ontology_source_json in J["_embedded"]["ontologies"]:
@@ -199,7 +204,7 @@ def search_ols(term, ontology_source):
     }
     query_string = urlencode(queryObj)
     url += '?q=' + query_string
-    print(url)
+    LOG.debug(url)
     J = json.loads(urlopen(url).read().decode("utf-8"))
     ontology_annotations = []
     for search_result_json in J["response"]["docs"]:
@@ -227,7 +232,7 @@ def create_isatab_archive(inv_fp, target_filename=None, filter_by_measurement=No
     found_files = []
     for s in ISA.studies:
         if filter_by_measurement is not None:
-            print("Selecting ", filter_by_measurement)
+            LOG.debug("Selecting ", filter_by_measurement)
             selected_assays = [a for a in s.assays if a.measurement_type.term == filter_by_measurement]
         else:
             selected_assays = s.assays
@@ -239,7 +244,7 @@ def create_isatab_archive(inv_fp, target_filename=None, filter_by_measurement=No
             found_files.append(fname)
     missing_files = [f for f in all_files_in_isatab if f not in found_files]
     if len(missing_files) == 0:
-        print("Do zip")
+        LOG.debug("Do zip")
         with ZipFile(target_filename, mode='w') as zip_file:
             # use relative dir_name to avoid absolute path on file names
             zip_file.write(inv_fp.name, arcname=os.path.basename(inv_fp.name))
@@ -249,9 +254,10 @@ def create_isatab_archive(inv_fp, target_filename=None, filter_by_measurement=No
                     zip_file.write(os.path.join(dirname, a.filename), arcname=a.filename)
             for file in all_files_in_isatab:
                 zip_file.write(os.path.join(dirname, file), arcname=file)
-            print(zip_file.namelist())
+            LOG.debug(zip_file.namelist())
             return zip_file.namelist()
     else:
-        print("Not zipping")
-        print("Missing: ", missing_files)
+        LOG.debug("Not zipping")
+        LOG.debug("Missing: ", missing_files)
         return None
+

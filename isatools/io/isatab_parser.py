@@ -1,3 +1,14 @@
+from __future__ import with_statement
+import os
+import re
+import csv
+import glob
+import collections
+import pprint
+import bisect
+import pandas as pd
+from io import StringIO
+
 """Parse ISA-Tab structured metadata describing experimental data.
 Works with ISA-Tab (http://isatab.sourceforge.net), which provides a structured
 format for describing experimental metdata.
@@ -22,21 +33,12 @@ the Assay file; in assays the keys are raw data files.
 This is a biased representation of the Study and Assay files which focuses on
 collapsing the data across the samples and raw data.
 """
-from __future__ import with_statement
 
-__author__ = 'brad chapman' #initial version
-__author__ = 'agbeltran' #modifications/extensions
-
-import os
-import re
-import csv
-import glob
-import collections
-import pprint
-import bisect
+__author__ = 'brad chapman, agbeltran, djcomlab'
 
 # REGEXES
 _RX_COLLAPSE_ATTRIBUTE = re.compile("[\W]+")
+
 
 def find_lt(a, x):
     """Find rightmost value less than x"""
@@ -54,6 +56,7 @@ def find_gt(a, x):
         return a[i]
     else:
         return -1
+
 
 def find_in_between(a, x, y):
     result = []
@@ -96,6 +99,7 @@ def find_between(a, x, y):
             i+=1
             return result
     raise ValueError
+
 
 def parse(isatab_ref):
     """Entry point to parse an ISA-Tab directory.
@@ -177,7 +181,8 @@ class InvestigationParser:
             section = next_section
         return rec, had_info
 
-    def _line_iter(self, in_handle):
+    @staticmethod
+    def _line_iter(in_handle):
         """Read tab delimited file, handling ISA-Tab special case headers.
         """
         reader = csv.reader(in_handle, dialect="excel-tab")
@@ -188,7 +193,8 @@ class InvestigationParser:
                     line = [line[0]]
                 yield line
 
-    def _parse_keyvals(self, line_iter):
+    @staticmethod
+    def _parse_keyvals(line_iter):
         """Generate dictionary from key/value pairs.
         """
         out = None
@@ -270,7 +276,6 @@ class StudyAssayParser:
                 final_studies.append(study)
         rec.studies = final_studies
         return rec
-
 
     def _get_process_nodes(self, fname, study):
         """Building the process nodes"""
@@ -420,7 +425,7 @@ class StudyAssayParser:
                               'Scan Name',
                               'Hybridization Assay Name',
                               'MS Assay Name'}
-        with open(os.path.join(self._dir, fname), "rU") as in_handle:
+        with open(os.path.join(self._dir, fname)) as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
             headers = next(reader)  # get column headings
             process_node_name_indices = [x for x, y in enumerate(headers) if y in process_node_names]
@@ -431,9 +436,11 @@ class StudyAssayParser:
                     missing_process_indices.append(i)
             # insert Protocol REF columns
             in_handle.seek(0)
-            import pandas as pd
+
             num_protocol_refs = headers.count('Protocol REF')
-            df = pd.read_csv(in_handle, dtype=str, sep='\t', encoding='utf-8', comment='#')
+
+            in_handle = strip_comments(in_handle)
+            df = pd.read_csv(in_handle, dtype=str, sep='\t', encoding='utf-8')
             offset = 0
             for i in reversed(missing_process_indices):
                 df.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown')
@@ -522,7 +529,8 @@ class StudyAssayParser:
 
         return dict([(k, self._finalize_metadata(v)) for k, v in nodes.items()])
 
-    def _finalize_metadata(self, node):
+    @staticmethod
+    def _finalize_metadata(node):
         """Convert node metadata back into a standard dictionary and list.
         """
         final = {}
@@ -544,7 +552,8 @@ class StudyAssayParser:
                                  self._collapse_attributes)
         return out
 
-    def _line_by_type(self, line, header, hgroups, htypes, out, want_type,
+    @staticmethod
+    def _line_by_type(line, header, hgroups, htypes, out, want_type,
                       collapse_quals_fn = None):
         """Parse out key value pairs for line information based on a group of values.
         """
@@ -570,7 +579,8 @@ class StudyAssayParser:
         Attrs = collections.namedtuple('Attrs', names)
         return Attrs(*vals)
 
-    def _clean_header(self, header):
+    @staticmethod
+    def _clean_header(header):
         """Remove ISA-Tab specific information from Header[real name] headers.
         """
         if header.find("[") >= 0:
@@ -611,8 +621,9 @@ class StudyAssayParser:
     def _swap_synonyms(self, header):
         return [self._synonyms.get(h, h) for h in header]
 
-    #to ensure uniqueness of node indexes
-    def _build_node_index(self, type, name):
+    # to ensure uniqueness of node indexes
+    @staticmethod
+    def _build_node_index(type, name):
         if type=="Source Name":
             return "source-"+name
         elif type == "Sample Name":
@@ -731,6 +742,7 @@ class ISATabRecord:
                                   contact=self.contacts,
                                   studies="\n".join(str(x) for x in self.studies))
 
+
 class ISATabStudyRecord:
     """Represent a study within an ISA-Tab record.
     """
@@ -754,7 +766,8 @@ class ISATabStudyRecord:
                                  protocols="\n".join(str(x) for x in self.protocols),
                                  nodes="\n".join(str(x) for x in self.nodes.values()),
                                  process_nodes="\n".join(str(x) for x in self.process_nodes.values())
-        )
+                                 )
+
 
 class ISATabAssayRecord:
     """Represent an assay within an ISA-Tab record.
@@ -769,7 +782,8 @@ class ISATabAssayRecord:
         return _assay_str.format(md=pprint.pformat(self.metadata).replace("\n", "\n" + " " * 7),
                                  nodes="\n".join(str(x) for x in self.nodes.values()),
                                  process_nodes="\n".join(str(x) for x in self.process_nodes.values())
-        )
+                                 )
+
 
 class NodeRecord:
     """Represent a data or material node within an ISA-Tab Study/Assay file.
@@ -805,7 +819,7 @@ class ProcessNodeRecord:
         self.outputs = []
         self.metadata = {}
         self.parameters = []
-        self.assay_name = "" #used when there is an associated 'Assay Name' for a 'Protocol REF'
+        self.assay_name = ""  # used when there is an associated 'Assay Name' for a 'Protocol REF'
         self.performer = ""
         self.date = ""
 
@@ -821,5 +835,18 @@ class ProcessNodeRecord:
                                         date=self.date,
                                         previous_process=self.previous_process.name if self.previous_process else "",
                                         next_process=self.next_process.name if self.next_process else "",
-                                        parameters=pprint.pformat(self.parameters).replace("\n","\n"+" "*9))
+                                        parameters=pprint.pformat(self.parameters).replace("\n","\n"+" "*9)
+                                        )
 
+
+def strip_comments(in_fp):
+    out_fp = StringIO()
+    if not isinstance(in_fp, StringIO):
+        out_fp.name = in_fp.name
+    for line in in_fp.readlines():
+        if line.lstrip().startswith('#'):
+            pass
+        else:
+            out_fp.write(line)
+    out_fp.seek(0)
+    return out_fp

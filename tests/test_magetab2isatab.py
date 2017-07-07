@@ -28,41 +28,92 @@ class TestMageTab2IsaTab(unittest.TestCase):
         shutil.rmtree(self._tmp_dir)
 
     def test_magetab2isatab_convert_e_mexp_31(self):
-        with open(os.path.join(self._magetab_data_dir, 'E-MEXP-31.idf.txt')) as idf_fp:
-            magetab2isatab.convert(idf_fp, self._tmp_dir, 'protein microarray', 'protein expression profiling')
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-MEXP-31.sdrf.txt')))
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-MEXP-31.sdrf.txt')))
-            from isatools import isatab
-            with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-                isatab.validate(i_fp)
+        magetab2isatab.convert(os.path.join(self._magetab_data_dir, 'E-MEXP-31.idf.txt'), self._tmp_dir)
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-MEXP-31_study.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir,
+                                                    'a_E-MEXP-31_assay-transcription profiling by array.txt')))
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
 
     def test_magetab2isatab_convert_e_geod_59671(self):
-        with open(os.path.join(self._magetab_data_dir, 'E-GEOD-59671.idf.txt')) as idf_fp:
-            magetab2isatab.convert(idf_fp, self._tmp_dir)
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-GEOD-59671.sdrf.txt')))
-            self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-GEOD-59671.sdrf.txt')))
-            from isatools import isatab
-            with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
-                isatab.validate(i_fp)
-
-    def test_get_experiment_as_isatab_afmx_1(self):
-        AX.get_isatab('E-AFMX-1', self._tmp_dir)  # gets E-AFMX-1 MAGE-TAB files
+        magetab2isatab.convert(os.path.join(self._magetab_data_dir, 'E-GEOD-59671.idf.txt'), self._tmp_dir)
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-GEOD-59671_study.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-GEOD-59671_assay-RNA-Seq.txt')))
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_afmx_2(self):  # FIXME -> output ISA-Tab has many missing cells! WHY!?!?
-        AX.get_isatab('E-AFMX-2', self._tmp_dir)  # gets E-AFMX-2 MAGE-TAB files
+    """Tests on datasets suggest from prs"""
+
+    def test_get_experiment_as_isatab_mtab_584(self):
+        AX.get_isatab('E-MTAB-584', self._tmp_dir)
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_afmx_3(self):
-        AX.get_isatab('E-AFMX-3', self._tmp_dir)  # gets E-AFMX-3 MAGE-TAB files
+    def test_get_experiment_as_isatab_mtab_1073(self):
+        AX.get_isatab('E-MTAB-1073', self._tmp_dir)  # gets E-MTAB-1073 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
 
-    def test_get_experiment_as_isatab_afmx_5(self):
-        AX.get_isatab('E-AFMX-5', self._tmp_dir)  # gets E-AFMX-5 MAGE-TAB files
+    def test_get_experiment_as_isatab_mtab_4649(self):
+        AX.get_isatab('E-MTAB-4649', self._tmp_dir)  # gets E-MTAB-4649 MAGE-TAB files
         with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
             isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_mtab_1936(self):  # splits three assays
+        AX.get_isatab('E-MTAB-1963', self._tmp_dir)  # gets E-MTAB-4649 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_mtab_621(self):
+        AX.get_isatab('E-MTAB-621', self._tmp_dir)  # gets E-MTAB-621 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_mtab_3624(self):
+        AX.get_isatab('E-MTAB-3624', self._tmp_dir)  # gets E-MTAB-3624 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_mtab_20(self):
+        AX.get_isatab('E-MTAB-20', self._tmp_dir)  # gets E-MTAB-20 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_mtab_1443(self):
+        AX.get_isatab('E-MTAB-1443', self._tmp_dir)  # gets E-MTAB-1443 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_mtab_3336(self):
+        AX.get_isatab('E-MTAB-3336', self._tmp_dir)  # gets E-MTAB-3336 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_mtab_1677(self):
+        AX.get_isatab('E-MTAB-1677', self._tmp_dir)  # gets E-MTAB-1677 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_mtab_1653(self):
+        AX.get_isatab('E-MTAB-1653', self._tmp_dir)  # gets E-MTAB-1653 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_mtab_2143(self):
+        AX.get_isatab('E-MTAB-2143', self._tmp_dir)  # gets E-MTAB-2143 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_mtab_5171(self):
+        AX.get_isatab('E-MTAB-5171', self._tmp_dir)  # gets E-MTAB-5171 MAGE-TAB files
+        with open(os.path.join(self._tmp_dir, 'i_investigation.txt')) as i_fp:
+            isatab.validate(i_fp)
+
+    def test_get_experiment_as_isatab_mtab_3954 (self):  # Tests assay splitting
+        AX.get_isatab('E-MTAB-3954', self._tmp_dir)
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'i_investigation.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 's_E-MTAB-3954_study.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-MTAB-3954_assay-ChIP-Seq.txt')))
+        self.assertTrue(os.path.isfile(os.path.join(self._tmp_dir, 'a_E-MTAB-3954_assay-Chromatin-Seq.txt')))

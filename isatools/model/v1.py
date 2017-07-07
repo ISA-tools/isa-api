@@ -151,7 +151,7 @@ class OntologyAnnotation(Commentable):
     @property
     def term(self):
         if self.__term is '':
-            return None
+            return ''
         else:
             return self.__term
 

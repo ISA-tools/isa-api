@@ -5,17 +5,19 @@ import tempfile
 import shutil
 import re
 import glob
+import isatools
 from isatools.convert import isatab2json
 from isatools import isatab
 from isatools.model.v1 import OntologyAnnotation
 import pandas as pd
+from itertools import zip_longest
 
 EBI_FTP_SERVER = 'ftp.ebi.ac.uk'
 MTBLS_BASE_DIR = '/pub/databases/metabolights/studies/public'
 INVESTIGATION_FILENAME = 'i_Investigation.txt'
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=isatools.log_level)
+LOG = logging.getLogger(__name__)
 
 # REGEXES
 _RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
@@ -64,7 +66,7 @@ def get(mtbls_study_id, target_dir=None):
                             EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + a_filename))
                         ftp.retrbinary('RETR ' + a_filename, out_file.write)
         except ftplib.error_perm as ftperr:
-            logger.fatal("Could not retrieve MetaboLights study '{study}': {error}".format(study=mtbls_study_id, error=ftperr))
+            LOG.fatal("Could not retrieve MetaboLights study '{study}': {error}".format(study=mtbls_study_id, error=ftperr))
         finally:
             return target_dir
     else:
@@ -107,11 +109,11 @@ def slice_data_files(dir, factor_selection=None):
     filtered by factor value (currently by matching on exactly 1 factor value)
 
     :param mtbls_study_id: Study identifier for MetaboLights study to get, as a str (e.g. MTBLS1)
-    :param factor_selection: Selected factor values to filter on samples
+    :param factor_selection: A list of selected factor values to filter on samples
     :return: A list of dicts {sample_name, list of data_files} containing sample names with associated data filenames
 
     Example usage:
-        samples_and_data = mtbls.get_data_files('MTBLS1', {'Gender': 'Male'})
+        samples_and_data = mtbls.get_data_files('MTBLS1', [{'Gender': 'Male'}])
 
     TODO:  Need to work on more complex filters e.g.:
         {"gender": ["male", "female"]} selects samples matching "male" or "female" factor value
@@ -130,7 +132,7 @@ def slice_data_files(dir, factor_selection=None):
     results = list()
     # first collect matching samples
     for table_file in glob.iglob(os.path.join(dir, '[a|s]_*')):
-        logger.info("Loading {}".format(table_file))
+        LOG.info("Loading {}".format(table_file))
         with open(table_file, encoding='utf-8') as fp:
             df = isatab.load_table(fp)
             if factor_selection is None:
@@ -190,7 +192,6 @@ def get_factor_names(mtbls_study_id):
         factor_names = get_factor_names('MTBLS1')
     """
     tmp_dir = get(mtbls_study_id)
-    from isatools import isatab
     factors = set()
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
@@ -213,7 +214,6 @@ def get_factor_values(mtbls_study_id, factor_name):
         factor_values = get_factor_values('MTBLS1', 'genotype')
     """
     tmp_dir = get(mtbls_study_id)
-    from isatools import isatab
     fvs = set()
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
@@ -274,7 +274,8 @@ def get_factors_summary(mtbls_study_id):
     samples_and_fvs = []
     for sample in all_samples:
         sample_and_fvs = {
-                "name": sample.name
+                "sources": ';'.join([x.name for x in sample.derives_from]),
+                "sample": sample.name,
             }
         for fv in sample.factor_values:
             if isinstance(fv.value, (str, int, float)):
@@ -288,6 +289,51 @@ def get_factors_summary(mtbls_study_id):
     cols_to_drop = nunique[nunique == 1].index
     df = df.drop(cols_to_drop, axis=1)
     return df.to_dict(orient='records')
+
+
+def get_study_groups(mtbls_study_id):
+    factors_summary = get_factors_summary(mtbls_study_id=mtbls_study_id)
+    study_groups = {}
+    for factors_item in factors_summary:
+        fvs = tuple(factors_item[k] for k in factors_item.keys() if k != 'name')
+        if fvs in study_groups.keys():
+            study_groups[fvs].append(factors_item['name'])
+        else:
+            study_groups[fvs] = [factors_item['name']]
+    return study_groups
+
+
+def get_study_groups_samples_sizes(mtbls_study_id):
+    study_groups = get_study_groups(mtbls_study_id=mtbls_study_id)
+    return list(map(lambda x: (x[0], len(x[1])), study_groups.items()))
+
+
+def get_sources_for_sample(mtbls_study_id, sample_name):
+    ISA = load(mtbls_study_id=mtbls_study_id)
+    hits = []
+    for study in ISA.studies:
+        for sample in study.materials['samples']:
+            if sample.name == sample_name:
+                print('found a hit ', sample.name)
+                for source in sample.derives_from:
+                    hits.append(source.name)
+    return hits
+
+
+def get_data_for_sample(mtbls_study_id, sample_name):
+    ISA = load(mtbls_study_id=mtbls_study_id)
+    hits = []
+    for study in ISA.studies:
+        for assay in study.assays:
+            for data in assay.data_files:
+                if data.generated_from.name == sample_name:
+                    print('found a hit ', data.filename)
+    return hits
+
+
+def get_study_groups_data_sizes(mtbls_study_id):
+    study_groups = get_study_groups(mtbls_study_id=mtbls_study_id)
+    return list(map(lambda x: (x[0], len(x[1])), study_groups.items()))
 
 
 def get_characteristics_summary(mtbls_study_id):
@@ -397,7 +443,7 @@ def get_study_variable_summary(mtbls_study_id):
     samples_and_variables = []
     for sample in all_samples:
         sample_and_vars = {
-            "name": sample.name
+            "sample_name": sample.name
         }
         for fv in sample.factor_values:
             if isinstance(fv.value, (str, int, float)):
@@ -406,6 +452,7 @@ def get_study_variable_summary(mtbls_study_id):
                 fv_value = fv.value.term
             sample_and_vars[fv.factor_name.name] = fv_value
         for source in sample.derives_from:
+            sample_and_vars["source_name"] = source.name
             for c in source.characteristics:
                 if isinstance(c.value, (str, int, float)):
                     c_value = c.value
@@ -442,3 +489,91 @@ def get_study_variable_summary(mtbls_study_id):
     cols_to_drop = nunique[nunique == 1].index
     df = df.drop(cols_to_drop, axis=1)
     return df.to_dict(orient='records')
+
+
+def get_study_group_factors(mtbls_study_id):
+    factors_list = []
+    tmp_dir = get(mtbls_study_id)
+    if tmp_dir is None:
+        raise FileNotFoundError("Could not download {}".format(mtbls_study_id))
+    for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
+        with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
+            df = isatab.load_table(fp)
+            factor_columns = [x for x in df.columns if x.startswith("Factor Value")]
+            if len(factor_columns) > 0:
+                factors_list = df[factor_columns].drop_duplicates()\
+                    .to_dict(orient='records')
+    return factors_list
+
+
+def get_filtered_df_on_factors_list(mtbls_study_id):
+    factors_list = get_study_group_factors(mtbls_study_id=mtbls_study_id)
+    queries = []
+    for item in factors_list:
+        query_str = ""
+        for k, v in item.items():
+            k = k.replace(' ', '_').replace('[', '_').replace(']', '_')
+            if isinstance(v, str):
+                v = v.replace(' ', '_').replace('[', '_').replace(']', '_')
+                query_str += "{0} == '{1}' and ".format(k, v)
+        queries.append(query_str[:-4])
+    tmp_dir = get(mtbls_study_id)
+    for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
+        with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
+            df = isatab.load_table(fp)
+            cols = df.columns
+            cols = cols.map(lambda x: x.replace(' ', '_') if isinstance(x, str) else x)
+            df.columns = cols
+            cols = df.columns
+            cols = cols.map(lambda x: x.replace('[', '_') if isinstance(x, str) else x)
+            df.columns = cols
+            cols = df.columns
+            cols = cols.map(lambda x: x.replace(']', '_') if isinstance(x, str) else x)
+            df.columns = cols
+        from pandas.computation.ops import UndefinedVariableError
+        for query in queries:
+            try:
+                df2 = df.query(query)  # query uses pandas.eval, which evaluates queries like pure Python notation
+                if "Sample_Name" in df.columns:
+                    print("Group: {} / Sample_Name: {}".format(query, list(df2["Sample_Name"])))
+                if "Source_Name" in df.columns:
+                    print("Group: {} / Sources_Name: {}".format(query, list(df2["Source_Name"])))
+                if "Raw_Spectral_Data_File" in df.columns:
+                    print("Group: {} / Raw_Spectral_Data_File: {}".format(query[13:-2],
+                                                                          list(df2["Raw_Spectral_Data_File"])))
+            except UndefinedVariableError:
+                pass
+    return queries
+
+
+def squashstr(string):
+    nospaces = "".join(string.split())
+    return nospaces.lower()
+
+
+def pyvar(string):
+    for ch in string:
+        if ch.isalpha() or ch.isdigit():
+            pass
+        else:
+            string = string.replace(ch, '_')
+    return string
+
+
+def pyisatabify(dataframe):
+    columns = dataframe.columns
+    pycolumns = []
+    nodecontext = None
+    attrcontext = None
+    columns = list(map(lambda x: "Characteristics[Material Type]" if x == 'Material Type' else x, columns))  # cast MT
+    for column in columns:
+        squashedcol = squashstr(column)
+        if squashedcol.endswith(('name', 'file')) or squashedcol == 'protocolref':
+            nodecontext = squashedcol
+            pycolumns.append(squashedcol)
+        elif squashedcol.startswith(('characteristics', 'parametervalue', 'comment', 'factorvalue')) and nodecontext is not None:
+            attrcontext = squashedcol
+            pycolumns.append('{0}__{1}'.format(nodecontext, pyvar(attrcontext)))
+        elif squashedcol.startswith(('term', 'unit')) and nodecontext is not None and attrcontext is not None:
+            pycolumns.append('{0}__{1}_{2}'.format(nodecontext, pyvar(attrcontext), pyvar(squashedcol)))
+    return pycolumns
