@@ -326,7 +326,7 @@ def factor_query_isatab(df, q):
     qlist = q.split(' and ')
     fmt_query = []
     for factor_query in qlist:
-        factor_value = factor_query.split(' is ')
+        factor_value = factor_query.split(' == ')
         fmt_query_part = "Factor_Value_{0}_ == '{1}'".format(pyvar(factor_value[0]), factor_value[1])
         fmt_query.append(fmt_query_part)
     fmt_query = ' and '.join(fmt_query)
@@ -336,9 +336,16 @@ def factor_query_isatab(df, q):
 
 def compute_factors_summary(df):
     # get all factors combinations
-    factors_df = df[[x for x in df.columns if x.startswith("Factor Value")]].drop_duplicates()
-    factors_list = [x[13:-1] for x in factors_df.columns]
-    print(factors_list)
-    for i, row in factors_df.iterrows():
-        pass
-
+    study_group_factors_df = df[[x for x in df.columns if x.startswith("Factor Value")]].drop_duplicates()
+    factors_list = [x[13:-1] for x in study_group_factors_df.columns]
+    queries = []
+    for i, row in study_group_factors_df.iterrows():
+        fvs = []
+        for x, y in zip(factors_list, row):
+            fvs.append(' == '.join([x, y]))
+        queries.append(' and '.join(fvs))
+    results = []
+    for query in queries:
+        df2 = factor_query_isatab(df, query)
+        results.append((query, 'numsamples=' + str(len(df2['Sample Name']))))
+        print(results[-1])
