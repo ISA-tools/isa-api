@@ -334,7 +334,7 @@ def factor_query_isatab(df, q):
     return df.query(fmt_query)
 
 
-def compute_factors_summary(df):
+def compute_factor_values_summary(df):
     # get all factors combinations
     study_group_factors_df = df[[x for x in df.columns if x.startswith("Factor Value")]].drop_duplicates()
     factors_list = [x[13:-1] for x in study_group_factors_df.columns]
@@ -344,8 +344,12 @@ def compute_factors_summary(df):
         for x, y in zip(factors_list, row):
             fvs.append(' == '.join([x, y]))
         queries.append(' and '.join(fvs))
-    results = []
+    groups_and_samples = []
     for query in queries:
         df2 = factor_query_isatab(df, query)
-        results.append((query, 'numsamples=' + str(len(df2['Sample Name']))))
-        print(results[-1])
+        data_column = [x for x in df.columns if 'Raw' in x and 'Data File' in x][0]
+        groups_and_samples.append((query, 'samples = {}'.format(len(list(df2['Sample Name']))),
+                                   'raw files = {}'.format(len(list(df2[data_column])))))
+    for gs in groups_and_samples:
+        print(gs)
+
