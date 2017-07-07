@@ -1,0 +1,89 @@
+
+
+
+2 level factorial design: correct representation
+
+full_factorial: true
+number of factors: 1
+number of factor levels: {1:[a,b]}
+length of treatment sequence: 1,
+number of treatments: 2 ,
+list of treatments: [a,b],
+number of treatment groups: 2,
+number of subjects per treatment group: 5,
+
+total number of subject: 10,
+number of specimen types collected per subject: 3,
+list of specimen types : [liver,blood,urine],
+number of collection events per specimen type: {liver:1,blood:4,urine:10},
+number of assay types: 2,
+list of assay types: [ms,ngs],
+settings_applies_to_all_specimen: true
+list of assay types topology modifiers: { ms:[{injection_mode:[fia,lc]},{acquisition_mode:[pos,neg]},{run_number:2}],
+										  ngs:[{library_number:1}, {multiplex_identifier:1}, {run_number:1}]
+										 }
+
+
+
+2 level factorial design: representation with errors
+
+full_factorial: false 
+number of treatments: 2,
+number of factor: 1
+number of factor levels: {1:[a,b]}
+list of treatments: [a,b],
+length of treatment sequence: 1,
+number of treatment groups: 2, # mismatch between value supplied for full_factorial attribute and computed/reported groups
+number of subjects per treatment group: 5,
+total number of subject: 9, # wrong number supplied (to check against computed one)
+number of specimen types collected per subject: 2,
+list of specimen types : [liver,blood,urine], #higher number of specimen types than those declared.
+number of collection events per specimen type: {liver:1,blood:4,urine:10},
+number of assay types: 3, # number supplied does not match actual reported values
+list of assay types: [ms,ngs],
+settings_applies_to_all_specimen: true
+list of assay types topology modifiers: [all:{ ms:[{injection_mode:[fia,lc]},{acquisition_mode:[pos,neg]},{run_number:2}],
+										  ngs:[{library_number:1}, {multiplex_identifier:1}, {run_number:1}]
+										 }]
+
+
+
+
+2x3x2 full factorial design: correct representation
+# A - Treatment_Plan
+full_factorial: true,
+number of factors: 3,
+number of factor levels: {1:[a,b],2:[i,ii,iii], 3:[alpha,beta]},
+number of treatments: 12,
+list of treatments: [{1:a,2:i,3:alpha},....{1:b,2:iii,3:beta}],
+length of treatment sequence: 1,
+number of treatment groups: 12,
+# B - Sampling_Plan
+number of subjects per treatment group: 3,
+total number of subject: 3,
+number of specimen types collected per subject: 3,
+list of specimen types : [liver,blood,urine],
+number of collection events per specimen type: {liver:1,blood:1,urine:2},
+number of assay types: 2,
+list of assay types: [ms,ngs],
+settings_applies_to_all_specimen: false,
+# C - Assay_Plan
+list of assay types topology modifiers: [ {liver-1 : { ms:[{injection_mode:[fia,lc]},{acquisition_mode:[pos,neg]},{run_number:2}],
+										  ngs:[{library_number:1}, {multiplex_identifier:1}, {run_number:1}]}},
+										 
+										 {blood-1 : {ms:[{injection_mode:[fia,lc]},{acquisition_mode:[pos,neg]},{run_number:2}],
+										  ngs:[{library_number:1}, {multiplex_identifier:1}, {run_number:1}]}},
+
+										 {urine-1 : {ms:[{injection_mode:[lc]},{acquisition_mode:[neg]},{run_number:1}]}},
+
+										 {urine-2 : {ms:[{injection_mode:[fia]},{acquisition_mode:[pos,neg]},{run_number:2}]}},
+										 ]
+
+
+
+2 repeats repeated measure design with cross-over
+
+
+
+
+
