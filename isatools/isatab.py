@@ -1366,6 +1366,7 @@ def check_protocol_usage(i_df, dir_context):
     """Used for rules 1007 and 1019"""
     for i, study_df in enumerate(i_df['studies']):
         protocols_declared = set(i_df['s_protocols'][i]['Study Protocol Name'].tolist())
+        protocols_declared.add('')
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename is not '':
             try:
