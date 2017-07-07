@@ -342,12 +342,12 @@ def compute_factor_values_summary(df):
     for i, row in study_group_factors_df.iterrows():
         fvs = []
         for x, y in zip(factors_list, row):
-            fvs.append(' == '.join([x, y]))
+            fvs.append(' == '.join([x, str(y)]))
         queries.append(' and '.join(fvs))
     groups_and_samples = []
     for query in queries:
         df2 = factor_query_isatab(df, query)
-        data_column = [x for x in df.columns if 'Raw' in x and 'Data File' in x][0]
+        data_column = [x for x in df.columns if x.startswith(('Raw', 'Array')) and  x.endswith('Data File')][0]
         groups_and_samples.append((query, 'samples = {}'.format(len(list(df2['Sample Name']))),
                                    'raw files = {}'.format(len(list(df2[data_column])))))
     for gs in groups_and_samples:
