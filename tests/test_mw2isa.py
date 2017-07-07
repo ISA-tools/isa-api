@@ -23,7 +23,7 @@ class mw2ISATest(unittest.TestCase):
 
     def test_conversion(self):
         success, study_id, validate = mw2isa_convert(studyid="ST000367", outputdir=self._tmp_dir, dl_option="no",
-                                                     validate_option="yes")
+                                                     validate_option=True)
         # exit_code = sys.exit()
 
         if success and validate:
@@ -32,6 +32,7 @@ class mw2ISATest(unittest.TestCase):
                 # print(isatab.dumps(isatab.load(fp)))
                 # fp.seek(0)
                 report = isatab.validate(fp)
+                print(report)
                 if len(report['errors']) > 0:
                     self.fail("conversion successful but validation failed")
         else:
