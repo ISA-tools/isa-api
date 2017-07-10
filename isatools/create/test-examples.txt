@@ -4,22 +4,22 @@
 >>> 2 level factorial design: correct representation
 
 full_factorial: true
-number of factors: 1
-number of factor levels: {1:[a,b]}
-length of treatment sequence: 1,
-number of treatments: 2 ,
-list of treatments: [a,b],
-number of treatment groups: 2,
-number of subjects per treatment group: 5,
+number_of_factors: 1
+number_of_factor_levels_per_factor: {1:[a,b]}
+length_of_treatment_sequence: 1,
+number_of_treatments: 2 ,
+list_of_treatments:: [{1:a},{1:b}],
+number_of_treatment groups: 2,
+number_of_subjects_per_treatment_group: 5,
 
-total number of subject: 10,
-number of specimen types collected per subject: 3,
-list of specimen types : [liver,blood,urine],
-number of collection events per specimen type: {liver:1,blood:4,urine:10},
-number of assay types: 2,
-list of assay types: [ms,ngs],
+total_number_of_subjects: 10,
+number_of_specimen_types_collected_per_subject: 3,
+list_of_specimen_types: [liver,blood,urine],
+number_of_collection_events_per_specimen_type: {liver:1,blood:4,urine:10},
+number_of_assay_types: 2,
+list_of_assay_types: [ms,ngs],
 settings_applies_to_all_specimen: true
-list of assay types topology modifiers: { ms:[{injection_mode:[fia,lc]},{acquisition_mode:[pos,neg]},{run_number:2}],
+list_of_assay_types_topology_modifiers { ms:[{injection_mode:[fia,lc]},{acquisition_mode:[pos,neg]},{run_number:2}],
 										  ngs:[{library_number:1}, {multiplex_identifier:1}, {run_number:1}]
 										 }
 
@@ -27,22 +27,22 @@ list of assay types topology modifiers: { ms:[{injection_mode:[fia,lc]},{acquisi
 
 >>> 2 level factorial design: representation with errors
 
-full_factorial: false 
-number of treatments: 2,
-number of factor: 1
-number of factor levels: {1:[a,b]}
-list of treatments: [a,b],
-length of treatment sequence: 1,
-number of treatment groups: 2, # mismatch between value supplied for full_factorial attribute and computed/reported groups
-number of subjects per treatment group: 5,
-total number of subject: 9, # wrong number supplied (to check against computed one)
-number of specimen types collected per subject: 2,
-list of specimen types : [liver,blood,urine], #higher number of specimen types than those declared.
-number of collection events per specimen type: {liver:1,blood:4,urine:10},
-number of assay types: 3, # number supplied does not match actual reported values
-list of assay types: [ms,ngs],
+full_factorial: false
+number_of_factors: 1
+number_of_factor_levels_per_factor: {1:[a,b]}
+number_of_treatments: 2,
+list_of_treatments: [{1:a},{1:b}],
+length_of_treatment_sequence: 1,
+number_of_treatment groups: 2, # mismatch between value supplied for full_factorial attribute and computed/reported groups
+number_of_subjects_per_treatment_group: 5,
+total_number_of_subjects: 9, # wrong number supplied (to check against computed one)
+number_of_specimen_types_collected_per_subject: 2,
+list_of_specimen_types: [liver,blood,urine], #higher number of specimen types than those declared.
+number_of_collection_events_per_specimen_type: {liver:1,blood:4,urine:10},
+number_of_assay_types: 3, # number supplied does not match actual reported values
+list_of_assay_types: [ms,ngs],
 settings_applies_to_all_specimen: true
-list of assay types topology modifiers: [all:{ ms:[{injection_mode:[fia,lc]},{acquisition_mode:[pos,neg]},{run_number:2}],
+list_of_assay_types_topology_modifiers: [all:{ ms:[{injection_mode:[fia,lc]},{acquisition_mode:[pos,neg]},{run_number:2}],
 										  ngs:[{library_number:1}, {multiplex_identifier:1}, {run_number:1}]
 										 }]
 
@@ -53,23 +53,23 @@ list of assay types topology modifiers: [all:{ ms:[{injection_mode:[fia,lc]},{ac
 
 # A - Treatment_Plan
 full_factorial: true,
-number of factors: 3,
-number of factor levels: {1:[a,b],2:[i,ii,iii], 3:[alpha,beta]},
-number of treatments: 12,
-list of treatments: [{1:a,2:i,3:alpha},....{1:b,2:iii,3:beta}],
-length of treatment sequence: 1,
-number of treatment groups: 12,
+number_of_factors: 3,
+number_of_factor_levels_per_factor: {1:[a,b],2:[i,ii,iii], 3:[alpha,beta]},
+number_of_treatments: 12,
+list_of_treatments: [{1:a,2:i,3:alpha},....{1:b,2:iii,3:beta}],
+length_of_treatment_sequence: 1,
+number_of_treatment groups: 12,
 # B - Sampling_Plan
-number of subjects per treatment group: 3,
-total number of subject: 3,
-number of specimen types collected per subject: 3,
-list of specimen types : [liver,blood,urine],
-number of collection events per specimen type: {liver:1,blood:1,urine:2},
-number of assay types: 2,
-list of assay types: [ms,ngs],
+number_of_subjects_per_treatment_group: 3,
+total_number_of_subjects: 3,
+number_of_specimen_types_collected_per_subject: 3,
+list_of_specimen_types: [liver,blood,urine],
+number_of_collection_events_per_specimen_type: {liver:1,blood:1,urine:2},
+number_of_assay_types: 2,
+list_of_assay_types: [ms,ngs],
 settings_applies_to_all_specimen: false,
 # C - Assay_Plan
-list of assay types topology modifiers: [ {liver-1 : { ms:[{injection_mode:[fia,lc]},{acquisition_mode:[pos,neg]},{run_number:2}],
+list_of_assay_types_topology_modifiers: [ {liver-1 : { ms:[{injection_mode:[fia,lc]},{acquisition_mode:[pos,neg]},{run_number:2}],
 										  ngs:[{library_number:1}, {multiplex_identifier:1}, {run_number:1}]}},
 										 
 										 {blood-1 : {ms:[{injection_mode:[fia,lc]},{acquisition_mode:[pos,neg]},{run_number:2}],
@@ -84,30 +84,31 @@ list of assay types topology modifiers: [ {liver-1 : { ms:[{injection_mode:[fia,
 
 >>> 2 repeats repeated measure design with cross-over
 repeated_measure: true
-symmetric: true
-length of treatment sequence: 2,
+symmetric: true #specific qualifier to repeated measure intervention, if false then allow for specifying more than one sequence
+length_of_treatment_sequence: 2,
 treatment_type: [chemical intervention,chemical intervention],
 number_of_factors: 3,
-number of factor levels: {1:[a],2:[i], 3:[alpha]},
+number_of_factor_levels_per_factor: {1:[a],2:[i], 3:[alpha]},
 number_of_treatment: 1,
 number_of_factors: 3,
-number of factor levels: {1:[b],2:[i], 3:[delta]},
+number_of_factor_levels_per_factor:: {1:[b],2:[i], 3:[delta]},
 number_of_treatment: 1,
 number_of_treatment_groups: 2,
 list_of_treatments: [{1:[a],2:[i], 3:[alpha]},{1:[b],2:[i], 3:[delta]}]
 treatment_sequences:[ {seq:{trt:{1:[b],2:[i], 3:[delta]},rk:1},{trt:{1:[a],2:[i], 3:[alpha]},rk:2}, {seq:{trt:{1:[b],2:[i], 3:[delta]},rk:2},{trt:{1:[a],2:[i], 3:[alpha]},rk:1}
 
 # B - Sampling_Plan
-number of subjects per treatment group: 3,
-total number of subject: 3,
-number of specimen types collected per subject: 3,
-list of specimen types : [liver,blood,urine],
-number of collection events per specimen type: {liver:1,blood:1,urine:2},
-number of assay types: 2,
-list of assay types: [ms,ngs],
+number_of_subjects_per_treatment_group: 3,
+total_number_of_subjects: 3,
+number_of_specimen_types_collected_per_subject: 3,
+list_of_specimen_types: [liver,blood,urine],
+number_of_collection_events_per_specimen_type: {liver:1,blood:1,urine:2},
+number_of_assay_types: 2,
+list_of_assay_types: [ms,ngs],
 settings_applies_to_all_specimen: false,
+
 # C - Assay_Plan
-list of assay types topology modifiers: [ {liver-1 : { ms:[{injection_mode:[fia,lc]},{acquisition_mode:[pos,neg]},{run_number:2}],
+list_of_assay_types_topology_modifiers: [ {liver-1 : { ms:[{injection_mode:[fia,lc]},{acquisition_mode:[pos,neg]},{run_number:2}],
 										  ngs:[{library_number:1}, {multiplex_identifier:1}, {run_number:1}]}},
 
 										 {blood-1 : {ms:[{injection_mode:[fia,lc]},{acquisition_mode:[pos,neg]},{run_number:2}],
