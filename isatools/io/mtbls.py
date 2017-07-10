@@ -545,3 +545,30 @@ def get_filtered_df_on_factors_list(mtbls_study_id):
             except UndefinedVariableError:
                 pass
     return queries
+
+
+def get_mtbls_list():
+    logging.info("Setting up ftp with {}".format(EBI_FTP_SERVER))
+    ftp = ftplib.FTP(EBI_FTP_SERVER)
+    logging.info("Logging in as anonymous user...")
+    response = ftp.login()
+    mtbls_list = []
+    if '230' in response:  # 230 means Login successful
+        logging.info("Log in successful!")
+        try:
+            ftp.cwd('{base_dir}'.format(base_dir=MTBLS_BASE_DIR))
+            mtbls_list = ftp.nlst()
+        except ftplib.error_perm as ftperr:
+            LOG.error("Could not get MTBLS directory list. Error: {}".format(ftperr))
+    return mtbls_list
+
+
+def dl_all_mtbls_isatab(target_dir):
+    download_count = 0
+    for i, mtblsid in enumerate(get_mtbls_list()):
+        target_mtbls_subdir = os.path.join(target_dir, mtblsid)
+        if not os.path.exists(target_mtbls_subdir):
+            os.makedirs(target_mtbls_subdir)
+        get(mtblsid, target_mtbls_subdir)
+        download_count = i
+    print("Downloaded {} ISA-Tab studies from MetaboLights".format(download_count))
