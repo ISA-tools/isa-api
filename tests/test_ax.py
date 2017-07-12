@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, mock_open
-from isatools.io import ax as AX
+from isatools.net import ax as AX
 import shutil
 import os
 

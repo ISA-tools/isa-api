@@ -1,6 +1,6 @@
 import unittest
 from isatools import isatab
-from isatools.convert.mw2isa import mw2isa_convert
+from isatools.net.mw2isa import mw2isa_convert
 import tempfile
 import shutil
 import os

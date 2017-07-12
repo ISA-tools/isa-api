@@ -4,7 +4,7 @@ import shutil
 from isatools.convert import magetab2isatab
 from tests import utils
 import tempfile
-from isatools.io import ax as AX
+from isatools.net import ax as AX
 from isatools import isatab
 
 

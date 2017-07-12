@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, mock_open
-from isatools.io import mtbls as MTBLS
+from isatools.net import mtbls as MTBLS
 import shutil
 import os
 

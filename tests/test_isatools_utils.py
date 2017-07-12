@@ -2,7 +2,7 @@ import unittest
 import os
 import json
 from isatools import isajson
-from isatools.io import mtbls as MTBLS
+from isatools.net import mtbls as MTBLS
 from io import StringIO
 from jsonschema.exceptions import ValidationError
 from tests import utils as test_utils
