@@ -2708,7 +2708,7 @@ def dumps(isa_obj, skip_dump_tables=False):
     return output
 
 
-def load(FP, skip_load_tables=False):  # from DF of investigation file
+def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigation file
 
     def get_ontology_source(term_source_ref):
         try:
@@ -2801,6 +2801,18 @@ def load(FP, skip_load_tables=False):  # from DF of investigation file
             comment = Comment(name=col[8:-1], value=row[col])
             comments.append(comment)
         return comments
+
+    FP = None
+
+    if isinstance(isatab_path_or_ifile, str):
+        if os.path.isdir(isatab_path_or_ifile):
+            fnames = glob.glob(os.path.join(isatab_path_or_ifile, "i_*.txt"))
+            assert len(fnames) == 1
+            FP = open(fnames[0])
+    elif hasattr(isatab_path_or_ifile, 'read'):
+        FP = isatab_path_or_ifile
+    else:
+        raise IOError("Cannot resolve input file")
 
     df_dict = read_investigation_file(FP)
 

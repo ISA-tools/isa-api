@@ -10,6 +10,8 @@ import os
 from zipfile import ZipFile
 import logging
 import isatools
+from isatools import isatab
+import pandas as pd
 
 logging.basicConfig(level=isatools.log_level)
 LOG = logging.getLogger(__name__)
@@ -336,20 +338,102 @@ def factor_query_isatab(df, q):
 
 def compute_factor_values_summary(df):
     # get all factors combinations
-    study_group_factors_df = df[[x for x in df.columns if x.startswith("Factor Value")]].drop_duplicates()
-    factors_list = [x[13:-1] for x in study_group_factors_df.columns]
-    queries = []
-    for i, row in study_group_factors_df.iterrows():
-        fvs = []
-        for x, y in zip(factors_list, row):
-            fvs.append(' == '.join([x, str(y)]))
-        queries.append(' and '.join(fvs))
-    groups_and_samples = []
-    for query in queries:
-        df2 = factor_query_isatab(df, query)
-        data_column = [x for x in df.columns if x.startswith(('Raw', 'Array')) and  x.endswith('Data File')][0]
-        groups_and_samples.append((query, 'samples = {}'.format(len(list(df2['Sample Name']))),
-                                   'raw files = {}'.format(len(list(df2[data_column])))))
-    for gs in groups_and_samples:
-        print(gs)
+    factor_columns = [x for x in df.columns if x.startswith("Factor Value")]
+    if len(factor_columns) > 0:  # add branch to get all if no FVs
+        study_group_factors_df = df[factor_columns].drop_duplicates()
+        factors_list = [x[13:-1] for x in study_group_factors_df.columns]
+        queries = []
+        factors_and_levels = {}
+        for i, row in study_group_factors_df.iterrows():
+            fvs = []
+            for x, y in zip(factors_list, row):
+                fvs.append(' == '.join([x, str(y)]))
+                try:
+                    factor_and_levels = factors_and_levels[x]
+                except KeyError:
+                    factors_and_levels[x] = set()
+                    factor_and_levels = factors_and_levels[x]
+                factor_and_levels.add(str(y))
+            queries.append(' and '.join(fvs))
+        groups_and_samples = []
+        print("Calculated {} study groups".format(len(queries)))
+        for k, v in factors_and_levels.items():
+            print("factor: {0} | levels={1} | {2}".format(k, len(v), tuple(v)))
+        for query in queries:
+            try:
+                df2 = factor_query_isatab(df, query)
+                data_column = [x for x in df.columns if x.startswith(('Raw', 'Array', 'Free Induction Decay'))
+                               and x.endswith('Data File')][0]
+                groups_and_samples.append(
+                    (query,
+                     'sources = {}'.format(len(list(df2['Source Name'].drop_duplicates()))),
+                     'samples = {}'.format(len(list(df2['Sample Name'].drop_duplicates()))),
+                     'raw files = {}'.format(len(list(df2[data_column].drop_duplicates()))))
+                    )
+            except Exception as e:
+                print("error in query, {}".format(e))
+        for gs in groups_and_samples:
+            print(gs)
 
+
+def check_loadable(tab_dir_root):
+    for mtbls_dir in [x for x in os.listdir(tab_dir_root) if x.startswith("MTBLS")]:
+        try:
+            isatab.load(os.path.join(tab_dir_root, mtbls_dir))
+            print("{} load OK".format(mtbls_dir))
+        except Exception as e:
+            print("{0} load FAIL, reason: {1}".format(mtbls_dir, e))
+
+
+def compute_study_factors_on_mtbls(tab_dir_root):
+    """
+    Produces study factors report like:
+
+    MTBLS1 load OK
+    Study sample level: total sources = 1, total samples = 132
+    Assay level: total samples = 132, total raw data = 132
+    Calculated 4 study groups
+    factor: Gender | levels=2 | ('Female', 'Male')
+    factor: Metabolic syndrome | levels=2 | ('diabetes mellitus', 'Control Group')
+    ('Gender == Male and Metabolic syndrome == diabetes mellitus', 'sources = 1', 'samples = 22', 'raw files = 22')
+    ('Gender == Female and Metabolic syndrome == diabetes mellitus', 'sources = 1', 'samples = 26', 'raw files = 26')
+    ('Gender == Male and Metabolic syndrome == Control Group', 'sources = 1', 'samples = 56', 'raw files = 56')
+    ('Gender == Female and Metabolic syndrome == Control Group', 'sources = 1', 'samples = 28', 'raw files = 28')
+
+    :param tab_dir_root: Directory containing MTBLS ISA-Tab directories
+    :return: None, output writes to stdout
+
+    Usage:
+        >>> compute_study_factors_on_mtbls('tests/data')
+        # if tests/data contains tests/data/MTBLS1, tests/data/MTBLS2 etc.
+
+        To write to an output file:
+        >>> import sys
+        >>> stdout_console = sys.stdout  # save normal stdout
+        >>> sys.stdout = open('out.txt')  # set to file
+        >>> compute_study_factors_on_mtbls('tests/data')
+        >>> sys.stdout = stdout_console  # reset stdout
+    """
+    for mtbls_dir in [x for x in os.listdir(tab_dir_root) if x.startswith("MTBLS")]:
+        ISA = None
+        study_dir = os.path.join(tab_dir_root, mtbls_dir)
+        try:
+            ISA = isatab.load(study_dir, skip_load_tables=False)
+            print("{} load OK".format(mtbls_dir))
+        except Exception as e:
+            print("{0} load FAIL, reason: {1}".format(mtbls_dir, e))
+        if ISA is None:
+            continue
+        for S in ISA.studies:
+            print('Study sample level: total sources = {0}, total samples = {1}'.format(
+                len(S.materials['sources']), len(S.materials['samples'])))
+            with open(os.path.join(study_dir, S.filename)) as s_fp:
+                s_df = isatab.load_table(s_fp)
+                for A in S.assays:
+                    print('Assay level: total samples = {0}, total raw data = {1}'.format(
+                        len(A.materials['samples']),
+                        len([x for x in A.data_files if x.label.startswith(('Raw', 'Array', 'Free Induction Decay'))])))
+                    with open(os.path.join(study_dir, A.filename)) as a_fp:
+                        a_df = isatab.load_table(a_fp)
+                        sa_df = pd.merge(s_df, a_df, on='Sample Name')
+                        compute_factor_values_summary(sa_df)
