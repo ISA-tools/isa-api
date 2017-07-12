@@ -17,7 +17,7 @@ The three main objects that you need to create ISA content are:
 Getting started
 ---------------
 
-In ``isatools.model.v1``, the class ``Investigation`` is used as the top level container for all other ISA content.
+In ``isatools.model``, the class ``Investigation`` is used as the top level container for all other ISA content.
 The ``Investigation`` Python class corresponds to the
 `Investigation <http://isa-specs.readthedocs.io/en/latest/isamodel.html#investigation>`_ as defined in the
 `ISA Model Specification <http://isa-specs.readthedocs.io/en/latest/isamodel.html>`_. For example, to create an empty
@@ -25,7 +25,7 @@ ISA structure consisting of an investigation with one study, you might use the f
 
 .. code-block:: python
 
-    >>> from isatools.model.v1 import *
+    >>> from isatools.model import *
     >>> investigation = Investigation()
     >>> investigation.studies.append(Study())  # adds a new default Study object to investigation
 
@@ -36,7 +36,7 @@ its instance variables as follows:
 .. code-block:: python
 
     >>> investigation.studies
-    [<isatools.model.v1.Study object>]
+    [<isatools.model.Study object>]
 
     >>> investigation.studies[0].assays
     []
@@ -59,7 +59,7 @@ instance variables with data as follows:
 
     >>> investigation.studies[0].assays.append(Assay())  # adds a new default Assay object to study
     >>> i.studies[0].assays
-    [<isatools.model.v1.Assay object>]
+    [<isatools.model.Assay object>]
 
 If you then write these out to ISA-Tab, we can inspect the output written into an ``i_investigation.txt`` file. We
 do this using the ``isatab`` module to ``dump()`` the ``Investigation`` object we created, as follows:
@@ -68,7 +68,7 @@ do this using the ``isatab`` module to ``dump()`` the ``Investigation`` object w
 
     >>> from isatools import isatab
     >>> isatab.dump(investigation, 'tmp/')  # dump out ISA-Tab  to tmp/
-    <isatools.model.v1.Investigation object>
+    <isatools.model.Investigation object>
 
 If all went as expected, you should find an ``i_investigation.txt`` file with the standard Investigation sections,
 one Study section structured as defined by the
@@ -77,10 +77,10 @@ one Study section structured as defined by the
 .. hint:: Remember that when you ``dump()`` ISA content, you do it on the ``Investigation`` object. This means any
    ``Study`` and ``Assay`` objects and content must be attached to the ``Investigation`` for it to be serialized out.
 
-Different classes in ``isatools.model.v1`` have class constructors and instance variables that roughly map to the
+Different classes in ``isatools.model`` have class constructors and instance variables that roughly map to the
 ISA Abstract Model. For full details of how to instantiate model classes, access and manipulate ISA data as objects,
 please inspect the module's docstrings.
 
 Obviously this isn't enough to create a fully populated ISA investigation, but we would recommend that you have a look
-in the ``isatools.model.v1`` package to inspect all the docstring documentation that is included with each of the ISA
+in the ``isatools.model`` package to inspect all the docstring documentation that is included with each of the ISA
 model classes.

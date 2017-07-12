@@ -1,7 +1,7 @@
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from isatools import isatab
-from isatools.model.v1 import *
+from isatools.model import *
 from datetime import date
 from collections import defaultdict
 import urllib

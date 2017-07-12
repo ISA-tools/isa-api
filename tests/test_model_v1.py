@@ -11,7 +11,7 @@ class TestSimpleExamples(unittest.TestCase):
 
     def test_construct_investigation_object(self):
         try:
-            from isatools.model.v1 import Investigation
+            from isatools.model import Investigation
         except ImportError:
             self.fail("Could not import Investigation class")
         I = Investigation()
@@ -23,19 +23,19 @@ class TestSimpleExamples(unittest.TestCase):
 
     def test_batch_create_materials(self):
         try:
-            from isatools.model.v1 import Source
+            from isatools.model import Source
         except ImportError:
             self.fail("Could not import Source class")
         source = Source(name='source_material')
 
         try:
-            from isatools.model.v1 import Sample
+            from isatools.model import Sample
         except ImportError:
             self.fail("Could not import Sample class")
         prototype_sample = Sample(name='sample_material', derives_from=source)
 
         try:
-            from isatools.model.v1 import batch_create_materials
+            from isatools.model import batch_create_materials
         except ImportError:
             self.fail("Could not import batch_create_materials function")
 

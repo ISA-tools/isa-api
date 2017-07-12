@@ -2,7 +2,7 @@ import unittest
 from tests.utils import MAGETAB_DATA_DIR
 import os
 from isatools.magetab import MageTabParser
-from isatools.model.v1 import Investigation
+from isatools.model import Investigation
 
 """ Unit tests for MAGE-TAB package - only for sanity check, not comprehensive testing """
 

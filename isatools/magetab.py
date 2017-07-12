@@ -1,19 +1,20 @@
-from isatools import isatab
-import tempfile
+"""Functions for reading and writing MAGE-TAB."""
+from __future__ import absolute_import
 import copy
-from .model.v1 import *
-import os
-import logging
 import csv
+import logging
+import tempfile
 import numpy as np
+import os
 import pandas as pd
+import re
 from io import StringIO
 from itertools import zip_longest
-import re
-import isatools
 
-logging.basicConfig(level=isatools.log_level)
-LOG = logging.getLogger(__name__)
+from isatools import isatab
+from isatools.model import *
+
+log = logging.getLogger(__name__)
 
 
 def _get_sdrf_filenames(ISA):
@@ -322,7 +323,7 @@ def write_sdrf_table_files(i, output_path):
     for study in i.studies:
         for assay in [x for x in study.assays if x.technology_type.term.lower() == "dna microarray"]:
             sdrf_filename = study.filename[2:-3] + assay.filename[2:-3] + "sdrf.txt"
-            LOG.debug("Writing {}".format(sdrf_filename))
+            log.debug("Writing {}".format(sdrf_filename))
             try:
                 isatab.merge_study_with_assay_tables(os.path.join(tmp, study.filename),
                                                      os.path.join(tmp, assay.filename),
@@ -740,10 +741,10 @@ class MageTabParser(object):
             columns = [x[:x.rindex('.')] if '.' in x else x for x in list(assay_df.columns)]
             assay_df.columns = columns
             assay_df.to_csv(path_or_buf=assay_fp, mode='a', sep='\t', encoding='utf-8', index=False)
-            LOG.info("Trying to split assay file extracted from %s", in_filename)
+            log.info("Trying to split assay file extracted from %s", in_filename)
             assay_fp.seek(0)
             assay_files = self.split_assay(assay_fp)
-            LOG.info("We have %s assays", len(assay_files))
+            log.info("We have %s assays", len(assay_files))
 
         study_fp = StringIO()
         study_fp.name = self.ISA.studies[-1].filename
@@ -774,7 +775,7 @@ class MageTabParser(object):
 
         A = self.ISA.studies[-1].assays[-1]
 
-        LOG.info("Reading assay memory file; mt=%s, tt=%s", A.measurement_type.term, A.technology_type.term)
+        log.info("Reading assay memory file; mt=%s, tt=%s", A.measurement_type.term, A.technology_type.term)
         for line in fp.readlines():
             sqline = get_squashed(line)
             if A.measurement_type and A.technology_type:
@@ -823,7 +824,7 @@ class MageTabParser(object):
             else:
                 default_records.append(line)
 
-        LOG.info("assay_types found: %s", assay_types)
+        log.info("assay_types found: %s", assay_types)
 
         if len(assay_types) > 0:
             self.ISA.studies[-1].assays = []  # reset the assays list to load new split ones

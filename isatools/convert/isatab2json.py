@@ -15,7 +15,7 @@ from isatools.isajson import ISAJSONEncoder
 logging.basicConfig(level=isatools.log_level)
 LOG = logging.getLogger(__name__)
 
-SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/isa_model_version_1_0_schemas/core/")
+SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../resources/schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
 
 # REGEXES

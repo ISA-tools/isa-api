@@ -1,14 +1,17 @@
+"""Functions for reading and writing SampleTab."""
 import io
-import pandas as pd
-import numpy as np
-from isatools.model.v1 import *
-from progressbar import ProgressBar, SimpleProgress, Bar, ETA
-from io import StringIO
 import logging
-import isatools
+import numpy as np
+import pandas as pd
+from io import StringIO
+from progressbar import Bar
+from progressbar import ETA
+from progressbar import ProgressBar
+from progressbar import SimpleProgress
 
-logging.basicConfig(level=isatools.log_level)
-LOG = logging.getLogger(__name__)
+from isatools.model import *
+
+log = logging.getLogger(__name__)
 
 
 def _peek(f):

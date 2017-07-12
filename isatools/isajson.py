@@ -1,15 +1,20 @@
-from isatools.model.v1 import *
+"""Functions for reading, writing and validating ISA-JSON.
+
+Don't forget to read the ISA-JSON spec:
+http://isa-specs.readthedocs.io/en/latest/isajson.html
+"""
+from __future__ import absolute_import
+import glob
 import json
 import logging
-from jsonschema import Draft4Validator, RefResolver, ValidationError
 import os
-import glob
 import re
 from json import JSONEncoder
-import isatools
+from jsonschema import Draft4Validator, RefResolver, ValidationError
 
-logging.basicConfig(level=isatools.log_level)
-LOG = logging.getLogger(__name__)
+from isatools.model import *
+
+log = logging.getLogger(__name__)
 
 errors = list()
 warnings = list()
@@ -18,6 +23,7 @@ warnings = list()
 _RX_DOI = re.compile("(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%'#? ])\\S)+)")
 _RX_PMID = re.compile("[0-9]{8}")
 _RX_PMCID = re.compile("PMC[0-9]{8}")
+
 
 def load(fp):
 
@@ -573,7 +579,7 @@ def load(fp):
                                 parameter_value.value = parameter_value_json["value"]
                             process.parameter_values.append(parameter_value)
                     else:
-                        LOG.warn("warning: parameter category not found for instance {}".format(parameter_json))
+                        log.warn("warning: parameter category not found for instance {}".format(parameter_json))
                 assay.process_sequence.append(process)
                 process_dict[process.id] = process
 
@@ -644,7 +650,7 @@ def check_material_ids_declared_used(study_json, id_collector_func):
             "supplemental": "{} not used in any inputs/outputs in {}".format(node_ids, io_ids_in_process_sequence),
             "code": 1017
         })
-        LOG.warning("(W) Not all node IDs in {} used by inputs/outputs {}".format(node_ids,
+        log.warning("(W) Not all node IDs in {} used by inputs/outputs {}".format(node_ids,
                                                                                   io_ids_in_process_sequence))
 
 
@@ -661,7 +667,7 @@ def check_material_ids_not_declared_used(study_json):
                             "declarations".format(list(diff)),
             "code": 1005
         })
-        LOG.error("(E) There are some inputs/outputs IDs {} not found in sources, samples, materials or data files"
+        log.error("(E) There are some inputs/outputs IDs {} not found in sources, samples, materials or data files"
                      "declared".format(list(diff)))
 
 
@@ -677,7 +683,7 @@ def check_process_sequence_links(process_sequence_json):
                                     "sequence".format(process["previousProcess"]["@id"], process["@id"]),
                     "code": 1006
                 })
-                LOG.error("(E) previousProcess link {} in process {} does not refer to another process in "
+                log.error("(E) previousProcess link {} in process {} does not refer to another process in "
                              "sequence".format(process["previousProcess"]["@id"], process["@id"]))
         except KeyError:
             pass
@@ -689,7 +695,7 @@ def check_process_sequence_links(process_sequence_json):
                                     "sequence".format(process["nextProcess"]["@id"], process["@id"]),
                     "code": 1006
                 })
-                LOG.error("(E) nextProcess {} in process {} does not refer to another process in sequence".format(
+                log.error("(E) nextProcess {} in process {} does not refer to another process in sequence".format(
                     process["nextProcess"]["@id"], process["@id"]))
         except KeyError:
             pass
@@ -724,7 +730,7 @@ def check_process_protocol_ids_usage(study_json):
             "supplemental": "protocol IDs {} not declared".format(list(diff)),
             "code": 1007
         })
-        LOG.error("(E) There are protocol IDs {} used in a study or assay process sequence not declared".format(
+        log.error("(E) There are protocol IDs {} used in a study or assay process sequence not declared".format(
             list(diff)))
     elif len(set(protocol_ids_declared) - set(protocol_ids_used)) > 0:
         diff = set(protocol_ids_declared) - set(protocol_ids_used)
@@ -733,7 +739,7 @@ def check_process_protocol_ids_usage(study_json):
             "supplemental": "protocol IDs declared {} not used".format(list(diff)),
             "code": 1019
         })
-        LOG.warning("(W) There are some protocol IDs declared {} not used in any study or assay process "
+        log.warning("(W) There are some protocol IDs declared {} not used in any study or assay process "
                        "sequence".format(list(diff)))
 
 
@@ -768,7 +774,7 @@ def check_protocol_parameter_ids_usage(study_json):
             "supplemental": "protocol parameters {} used".format(list(diff)),
             "code": 1009
         })
-        LOG.error("(E) There are protocol parameters {} used in a study or assay process not declared in any "
+        log.error("(E) There are protocol parameters {} used in a study or assay process not declared in any "
                      "protocol".format(list(diff)))
     elif len(set(protocols_declared) - set(protocols_used)) > 0:
         diff = set(protocols_declared) - set(protocols_used)
@@ -777,7 +783,7 @@ def check_protocol_parameter_ids_usage(study_json):
             "supplemental": "protocol declared {} are not used".format(list(diff)),
             "code": 1020
         })
-        LOG.warning("(W) There are some protocol parameters declared {} not used in any study or assay process"
+        log.warning("(W) There are some protocol parameters declared {} not used in any study or assay process"
                     .format(list(diff)))
 
 
@@ -820,7 +826,7 @@ def check_characteristic_category_ids_usage(studies_json):
                 "supplemental": "Characteristic Categories {} used not declared".format(list(diff)),
                 "code": 1013
             })
-        LOG.error("(E) There are characteristic categories {} used in a source or sample characteristic that have "
+        log.error("(E) There are characteristic categories {} used in a source or sample characteristic that have "
                      "not been not declared".format(list(diff)))
     elif len(set(characteristic_categories_declared) - set(characteristic_categories_used)) > 0:
         diff = set(characteristic_categories_declared) - set(characteristic_categories_used)
@@ -829,7 +835,7 @@ def check_characteristic_category_ids_usage(studies_json):
             "supplemental": "Characteristic Categories {} declared".format(list(diff)),
             "code": 1022
         })
-        LOG.warning("(W) There are characteristic categories declared {} that have not been used in any source or "
+        log.warning("(W) There are characteristic categories declared {} that have not been used in any source or "
                        "sample characteristic".format(list(diff)))
 
 
@@ -855,7 +861,7 @@ def check_study_factor_usage(study_json):
             "supplemental": "Study Factors {} used".format(list(diff)),
             "code": 1008
         })
-        LOG.error("(E) There are study factors {} used in a sample factor value that have not been not declared"
+        log.error("(E) There are study factors {} used in a sample factor value that have not been not declared"
                   .format(list(diff)))
     elif len(set(factors_declared) - set(factors_used)) > 0:
         diff = set(factors_declared) - set(factors_used)
@@ -864,7 +870,7 @@ def check_study_factor_usage(study_json):
             "supplemental": "Study Factors {} are not used".format(list(diff)),
             "code": 1021
         })
-        LOG.warning("(W) There are some study factors declared {} that have not been used in any sample factor value"
+        log.warning("(W) There are some study factors declared {} that have not been used in any sample factor value"
                     .format(list(diff)))
 
 
@@ -911,19 +917,19 @@ def get_assay_unit_category_ids_in_materials_and_processes(assay_json):
 
 def check_unit_category_ids_usage(study_json):
     """Used for rules 1014 and 1022"""
-    LOG.info("Getting units declared...")
+    log.info("Getting units declared...")
     units_declared = get_unit_category_ids(study_json)
     for assay in study_json["assays"]:
         units_declared.extend(get_unit_category_ids(assay))
-    LOG.info("Getting units used (study)...")
+    log.info("Getting units used (study)...")
     units_used = get_study_unit_category_ids_in_materials_and_processes(study_json)
-    LOG.info("Getting units used (assay)...")
+    log.info("Getting units used (assay)...")
     for assay in study_json["assays"]:
         units_used.extend(get_assay_unit_category_ids_in_materials_and_processes(assay))
-    LOG.info("Comparing units declared vs units used...")
+    log.info("Comparing units declared vs units used...")
     if len(set(units_used) - set(units_declared)) > 0:
         diff = set(units_used) - set(units_declared)
-        LOG.error("(E) There are units {} used in a material or parameter value that have not been not declared"
+        log.error("(E) There are units {} used in a material or parameter value that have not been not declared"
                   .format(list(diff)))
     elif len(set(units_declared) - set(units_used)) > 0:
         diff = set(units_declared) - set(units_used)
@@ -932,7 +938,7 @@ def check_unit_category_ids_usage(study_json):
             "supplemental": "Units declared {} not used".format(list(diff)),
             "code": 1022
         })
-        LOG.warning("(W) There are some units declared {} that have not been used in any material or parameter value"
+        log.warning("(W) There are some units declared {} that have not been used in any material or parameter value"
                     .format(list(diff)))
 
 
@@ -947,7 +953,7 @@ def check_utf8(fp):
                 "supplemental": "Encoding is '{0}' with confidence {1}".format(charset["encoding"], charset["confidence"]),
                 "code": 10
             })
-            LOG.warning("(W) File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
+            log.warning("(W) File should be UTF-8 encoding but found it is '{0}' encoding with {1} confidence"
                         .format(charset["encoding"], charset["confidence"]))
             raise SystemError()
 
@@ -966,8 +972,8 @@ def check_isa_schemas(isa_json, investigation_schema_path):
             "supplemental": str(ve),
             "code": 3
         })
-        LOG.fatal("(F) The JSON does not validate against the provided ISA-JSON schemas!")
-        LOG.fatal("Fatal error: " + str(ve))
+        log.fatal("(F) The JSON does not validate against the provided ISA-JSON schemas!")
+        log.fatal("Fatal error: " + str(ve))
         raise SystemError("(F) The JSON does not validate against the provided ISA-JSON schemas!")
 
 
@@ -983,7 +989,7 @@ def check_date_formats(isa_json):
                     "supplemental": "Found {} in date field".format(date_str),
                     "code": 3001
                 })
-                LOG.warning("(W) Date {} does not conform to ISO8601 format".format(date_str))
+                log.warning("(W) Date {} does not conform to ISO8601 format".format(date_str))
     import iso8601
     try:
         check_iso8601_date(isa_json["publicReleaseDate"])
@@ -1019,7 +1025,7 @@ def check_dois(isa_json):
                     "supplemental": "Found {} in DOI field".format(doi_str),
                     "code": 3002
                 })
-                LOG.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
+                log.warning("(W) DOI {} does not conform to DOI format".format(doi_str))
     for ipub in isa_json["publications"]:
         try:
             check_doi(ipub["doi"])
@@ -1042,7 +1048,7 @@ def check_filenames_present(isa_json):
                 "supplemental": "At study position {}".format(s_pos),
                 "code": 3005
             })
-            LOG.warning("(W) A study filename is missing")
+            log.warning("(W) A study filename is missing")
         for a_pos, assay in enumerate(study["assays"]):
             if assay["filename"] is "":
                 warnings.append({
@@ -1050,7 +1056,7 @@ def check_filenames_present(isa_json):
                     "supplemental": "At study position {}, assay position {}".format(s_pos, a_pos),
                     "code": 3005
                 })
-                LOG.warning("(W) An assay filename is missing")
+                log.warning("(W) An assay filename is missing")
 
 
 def check_pubmed_ids_format(isa_json):
@@ -1063,7 +1069,7 @@ def check_pubmed_ids_format(isa_json):
                     "supplemental": "Found PubMedID {}".format(pubmed_id_str),
                     "code": 3003
                 })
-                LOG.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
+                log.warning("(W) PubMed ID {} is not valid format".format(pubmed_id_str))
     for ipub in isa_json["publications"]:
         check_pubmed_id(ipub["pubMedID"])
     for study in isa_json["studies"]:
@@ -1081,7 +1087,7 @@ def check_protocol_names(isa_json):
                     "supplemental": "Protocol @id={}".format(protocol["@id"]),
                     "code": 1010
                 })
-                LOG.warning("(W) A Protocol {} is missing Protocol Name, so can't be referenced in ISA-tab"
+                log.warning("(W) A Protocol {} is missing Protocol Name, so can't be referenced in ISA-tab"
                             .format(protocol["@id"]))
 
 
@@ -1096,7 +1102,7 @@ def check_protocol_parameter_names(isa_json):
                         "supplemental": "Protocol Parameter @id={}".format(parameter["@id"]),
                         "code": 1011
                     })
-                    LOG.warning("(W) A Protocol Parameter {} is missing name, so can't be referenced in ISA-tab"
+                    log.warning("(W) A Protocol Parameter {} is missing name, so can't be referenced in ISA-tab"
                                 .format(parameter["@id"]))
 
 
@@ -1110,7 +1116,7 @@ def check_study_factor_names(isa_json):
                     "supplemental": "Study Factor @id={}".format(factor["@id"]),
                     "code": 1012
                 })
-                LOG.warning("(W) A Study Factor is missing name, so can't be referenced in ISA-tab"
+                log.warning("(W) A Study Factor is missing name, so can't be referenced in ISA-tab"
                             .format(factor["@id"]))
 
 
@@ -1123,7 +1129,7 @@ def check_ontology_sources(isa_json):
                 "supplemental": "name={}".format(ontology_source["name"]),
                 "code": 3008
             })
-            LOG.warning("(W) An Ontology Source Reference is missing Term Source Name, so can't be referenced")
+            log.warning("(W) An Ontology Source Reference is missing Term Source Name, so can't be referenced")
 
 
 def get_ontology_source_refs(isa_json):
@@ -1164,7 +1170,7 @@ def check_term_source_refs(isa_json):
             "supplemental": "Ontology sources missing {}".format(list(diff)),
             "code": 3009
         })
-        LOG.error("(E) There are ontology sources {} referenced in an annotation that have not been not declared"
+        log.error("(E) There are ontology sources {} referenced in an annotation that have not been not declared"
                   .format(list(diff)))
     elif len(set(term_sources_declared) - set(term_sources_used)) > 0:
         diff = set(term_sources_declared) - set(term_sources_used)
@@ -1173,7 +1179,7 @@ def check_term_source_refs(isa_json):
             "supplemental": "Ontology sources not used {}".format(list(diff)),
             "code": 3007
         })
-        LOG.warning("(W) There are some ontology sources declared {} that have not been used in any annotation"
+        log.warning("(W) There are some ontology sources declared {} that have not been used in any annotation"
                     .format(list(diff)))
 
 
@@ -1189,7 +1195,7 @@ def check_term_accession_used_no_source_ref(isa_json):
             "supplemental": "Terms with accession but no source reference {}".format(terms_using_accession_no_source_ref),
             "code": 3010
         })
-        LOG.warning("(W) There are ontology annotations with termAccession set but no termSource referenced: {}"
+        log.warning("(W) There are ontology annotations with termAccession set but no termSource referenced: {}"
                     .format(terms_using_accession_no_source_ref))
 
 
@@ -1212,7 +1218,7 @@ def load_config(config_dir):
                 "supplemental": "On loading {}".format(file),
                 "code": 4001
             })
-            LOG.error("(E) Could not load configuration file {}".format(os.path.basename(file)))
+            log.error("(E) Could not load configuration file {}".format(os.path.basename(file)))
     return configs
 
 
@@ -1229,7 +1235,7 @@ def check_measurement_technology_types(assay_json, configs):
             "supplemental": "Measurement {}/technology {}".format(measurement_type, technology_type),
             "code": 4002
         })
-        LOG.error("(E) Could not load configuration for measurement type '{}' and technology type '{}'"
+        log.error("(E) Could not load configuration for measurement type '{}' and technology type '{}'"
                   .format(measurement_type, technology_type))
 
 
@@ -1237,7 +1243,7 @@ def check_study_and_assay_graphs(study_json, configs):
 
     def check_assay_graph(process_sequence_json, config):
         list_of_last_processes_in_sequence = [i for i in process_sequence_json if "nextProcess" not in i.keys()]
-        LOG.info("Checking against assay protocol sequence configuration {}".format(config["description"]))
+        log.info("Checking against assay protocol sequence configuration {}".format(config["description"]))
         config_protocol_sequence = [i["protocol"] for i in config["protocols"]]
         for process in list_of_last_processes_in_sequence:  # build graphs backwards
             assay_graph = list()
@@ -1262,7 +1268,7 @@ def check_study_and_assay_graphs(study_json, configs):
                     assay_graph.append(process_graph)
                     process = [i for i in process_sequence_json if i["@id"] == process["previousProcess"]["@id"]][0]
                     if process['@id'] == process["previousProcess"]["@id"]:
-                        LOG.fatal("Previous process is same as current process, which forms a loop!!!!! Cannot find start node!!!!!!!")
+                        log.fatal("Previous process is same as current process, which forms a loop!!!!! Cannot find start node!!!!!!!")
                         break
             except KeyError:  # this happens when we can"t find a previousProcess
                 pass
@@ -1285,50 +1291,50 @@ def check_study_and_assay_graphs(study_json, configs):
                                                                                                                 squished_assay_protocol_sequence_of_interest),
                     "code": 4004
                 })
-                LOG.warning("Configuration protocol sequence {} does not match study graph found in {}"
+                log.warning("Configuration protocol sequence {} does not match study graph found in {}"
                             .format(config_protocol_sequence, assay_protocol_sequence))
 
     protocols_and_types = dict([(i["@id"], i["protocolType"]["annotationValue"]) for i in study_json["protocols"]])
     # first check study graph
-    LOG.info("Loading configuration (study)")
+    log.info("Loading configuration (study)")
     config = configs["study"]
     check_assay_graph(study_json["processSequence"], config)
     for assay_json in study_json["assays"]:
         m = assay_json["measurementType"]["annotationValue"]
         t = assay_json["technologyType"]["annotationValue"]
-        LOG.info("Loading configuration ({}, {})".format(m, t))
+        log.info("Loading configuration ({}, {})".format(m, t))
         config = configs[(m, t)]
         check_assay_graph(assay_json["processSequence"], config)
 
 
 BASE_DIR = os.path.dirname(__file__)
-default_config_dir = os.path.join(BASE_DIR, "config", "json", "default")
+default_config_dir = os.path.join(BASE_DIR, "resources", "config", "json", "default")
 
 
 def validate(fp, config_dir=default_config_dir, log_level=isatools.log_level,
              base_schemas_dir="isa_model_version_1_0_schemas"):
     if config_dir is None:
         config_dir = default_config_dir
-    LOG.setLevel(log_level)
-    LOG.info("ISA JSON Validator from ISA tools API v0.3")
+    log.setLevel(log_level)
+    log.info("ISA JSON Validator from ISA tools API v0.3")
     from io import StringIO
     stream = StringIO()
     handler = logging.StreamHandler(stream)
-    LOG.addHandler(handler)
+    log.addHandler(handler)
     try:
         global errors
         errors = list()
         global warnings
         warnings = list()
-        LOG.info("Checking if encoding is UTF8")
+        log.info("Checking if encoding is UTF8")
         check_utf8(fp=fp)  # Rule 0010
-        LOG.info("Loading json from " + fp.name)
+        log.info("Loading json from " + fp.name)
         isa_json = json.load(fp=fp)  # Rule 0002
-        LOG.info("Validating JSON against schemas using Draft4Validator")
+        log.info("Validating JSON against schemas using Draft4Validator")
         check_isa_schemas(isa_json=isa_json,
-                          investigation_schema_path=os.path.join(BASE_DIR, "schemas", base_schemas_dir,
+                          investigation_schema_path=os.path.join(BASE_DIR, "resources", "schemas", base_schemas_dir,
                                                                  "core", "investigation_schema.json"))  # Rule 0003
-        LOG.info("Checking if material IDs used are declared...")
+        log.info("Checking if material IDs used are declared...")
         for study_json in isa_json["studies"]:
             check_material_ids_not_declared_used(study_json)  # Rules 1002-1005
         for study_json in isa_json["studies"]:
@@ -1336,89 +1342,89 @@ def validate(fp, config_dir=default_config_dir, log_level=isatools.log_level,
             check_material_ids_declared_used(study_json, get_sample_ids)  # Rule 1016
             check_material_ids_declared_used(study_json, get_material_ids)  # Rule 1017
             check_material_ids_declared_used(study_json, get_data_file_ids)  # Rule 1018
-        LOG.info("Checking characteristic categories usage...")
+        log.info("Checking characteristic categories usage...")
         check_characteristic_category_ids_usage(isa_json["studies"])  # Rules 1013 and 1022
-        LOG.info("Checking study factor usage...")
+        log.info("Checking study factor usage...")
         for study_json in isa_json["studies"]:
             check_study_factor_usage(study_json)  # Rules 1008 and 1021
-        LOG.info("Checking protocol parameter usage...")
+        log.info("Checking protocol parameter usage...")
         for study_json in isa_json["studies"]:
             check_protocol_parameter_ids_usage(study_json)  # Rules 1009 and 1020
-        LOG.info("Checking unit category usage...")
+        log.info("Checking unit category usage...")
         for study_json in isa_json["studies"]:
             check_unit_category_ids_usage(study_json)  # Rules 1014 and 1022
-        LOG.info("Checking process sequences (study)...")
+        log.info("Checking process sequences (study)...")
         for study_json in isa_json["studies"]:
             check_process_sequence_links(study_json["processSequence"])  # Rule 1006
-            LOG.info("Checking process sequences (assay)...")
+            log.info("Checking process sequences (assay)...")
             for assay_json in study_json["assays"]:
                 check_process_sequence_links(assay_json["processSequence"])  # Rule 1006
-        LOG.info("Checking process protocol usage...")
+        log.info("Checking process protocol usage...")
         for study_json in isa_json["studies"]:
             check_process_protocol_ids_usage(study_json)  # Rules 1007 and 1019
-        LOG.info("Checking date formats...")
+        log.info("Checking date formats...")
         check_date_formats(isa_json)  # Rule 3001
-        LOG.info("Checking DOI formats...")
+        log.info("Checking DOI formats...")
         check_dois(isa_json)  # Rule 3002
-        LOG.info("Checking Pubmed ID formats...")
+        log.info("Checking Pubmed ID formats...")
         check_pubmed_ids_format(isa_json)  # Rule 3003
-        LOG.info("Checking filenames are present...")
+        log.info("Checking filenames are present...")
         check_filenames_present(isa_json)  # Rule 3005
-        LOG.info("Checking protocol names...")
+        log.info("Checking protocol names...")
         check_protocol_names(isa_json)  # Rule 1010
-        LOG.info("Checking protocol parameter names...")
+        log.info("Checking protocol parameter names...")
         check_protocol_parameter_names(isa_json)  # Rule 1011
-        LOG.info("Checking study factor names...")
+        log.info("Checking study factor names...")
         check_study_factor_names(isa_json)  # Rule 1012
-        LOG.info("Checking ontology sources...")
+        log.info("Checking ontology sources...")
         check_ontology_sources(isa_json)  # Rule 3008
-        LOG.info("Checking term source REFs...")
+        log.info("Checking term source REFs...")
         check_term_source_refs(isa_json)  # Rules 3007 and 3009
-        LOG.info("Checking missing term source REFs...")
+        log.info("Checking missing term source REFs...")
         check_term_accession_used_no_source_ref(isa_json)  # Rule 3010
-        LOG.info("Loading configurations from " + config_dir)
+        log.info("Loading configurations from " + config_dir)
         configs = load_config(config_dir)  # Rule 4001
-        LOG.info("Checking measurement and technology types...")
+        log.info("Checking measurement and technology types...")
         for study_json in isa_json["studies"]:
             for assay_json in study_json["assays"]:
                 check_measurement_technology_types(assay_json, configs)  # Rule 4002
-        LOG.info("Checking against configuration schemas...")
+        log.info("Checking against configuration schemas...")
         check_isa_schemas(isa_json=isa_json,
                           investigation_schema_path=os.path.join(config_dir, "schemas",
                                                                  "investigation_schema.json"))  # Rule 4003
         # if all ERRORS are resolved, then try and validate against configuration
         handler.flush()
         if "(E)" in stream.getvalue():
-            LOG.fatal("(F) There are some errors that mean validation against configurations cannot proceed.")
+            log.fatal("(F) There are some errors that mean validation against configurations cannot proceed.")
             return stream
         fp.seek(0)  # reset file pointer
-        LOG.info("Checking study and assay graphs...")
+        log.info("Checking study and assay graphs...")
         for study_json in isa_json["studies"]:
             check_study_and_assay_graphs(study_json, configs)  # Rule 4004
-        LOG.info("Finished validation...")
+        log.info("Finished validation...")
     except KeyError as k:
         errors.append({
             "message": "JSON Error",
             "supplemental": "Error when reading JSON; key: {}".format(str(k)),
             "code": 2
         })
-        LOG.fatal("(F) There was an error when trying to read the JSON")
-        LOG.fatal("Key: " + str(k))
+        log.fatal("(F) There was an error when trying to read the JSON")
+        log.fatal("Key: " + str(k))
     except ValueError as v:
         errors.append({
             "message": "JSON Error",
             "supplemental": "Error when parsing JSON; key: {}".format(str(v)),
             "code": 2
         })
-        LOG.fatal("(F) There was an error when trying to parse the JSON")
-        LOG.fatal("Value: " + str(v))
+        log.fatal("(F) There was an error when trying to parse the JSON")
+        log.fatal("Value: " + str(v))
     except SystemError as e:
         errors.append({
             "message": "Unknown/System Error",
             "supplemental": str(e),
             "code": 0
         })
-        LOG.fatal("(F) Something went very very wrong! :(")
+        log.fatal("(F) Something went very very wrong! :(")
     finally:
         handler.flush()
         return {
@@ -1445,9 +1451,9 @@ def batch_validate(json_file_list):
         "batch_report": []
     }
     for json_file in json_file_list:
-        LOG.info("***Validating {}***\n".format(json_file))
+        log.info("***Validating {}***\n".format(json_file))
         if not os.path.isfile(json_file):
-            LOG.warning("Could not find ISA-JSON file, skipping {}".format(json_file))
+            log.warning("Could not find ISA-JSON file, skipping {}".format(json_file))
         else:
             with open(json_file) as fp:
                 batch_report["batch_report"].append(

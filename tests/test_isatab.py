@@ -2,7 +2,7 @@ import unittest
 import os
 import shutil
 from tests.utils import assert_tab_content_equal
-from isatools.model.v1 import *
+from isatools.model import *
 from tests import utils
 import tempfile
 from isatools import isatab

@@ -11,7 +11,7 @@ from jsonschema.exceptions import ValidationError
 #from bcbio.isatab.parser import InvestigationParser
 from isatools.io.isatab_parser import parse
 
-CEDAR_SCHEMA_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/cedar")
+CEDAR_SCHEMA_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../resources/schemas/cedar")
 
 class ISATab2CEDAR():
 

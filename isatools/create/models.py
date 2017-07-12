@@ -1,5 +1,5 @@
 import itertools
-from isatools.model.v1 import StudyFactor
+from isatools.model import StudyFactor
 
 __author__ = 'massi'
 

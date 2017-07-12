@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from isatools.isatab import load, dumps
-from isatools.model.v1 import *
+from isatools.model import *
 
 
 def modify_investigation(fp):

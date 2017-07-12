@@ -7,11 +7,12 @@ from io import StringIO
 from jsonschema.exceptions import ValidationError
 from tests import utils as test_utils
 from isatools import utils
-from isatools.model.v1 import OntologySource, OntologyAnnotation
+from isatools.model import OntologySource, OntologyAnnotation
 import tempfile
 import shutil
 import logging
 import isatools
+from isatools.net import pubmed, ols
 
 logging.basicConfig(level=isatools.log_level)
 LOG = logging.getLogger(__name__)
@@ -58,13 +59,13 @@ class TestIsaGraph(unittest.TestCase):
 class TestOlsSearch(unittest.TestCase):
 
     def test_get_ontologies(self):
-        ontology_sources = utils.get_ols_ontologies()
+        ontology_sources = ols.get_ols_ontologies()
         self.assertGreater(len(ontology_sources), 0)
         self.assertIsInstance(ontology_sources, list)
         self.assertIsInstance(ontology_sources[0], OntologySource)
 
     def test_get_ontology(self):
-        ontology_source = utils.get_ols_ontology("efo")
+        ontology_source = ols.get_ols_ontology("efo")
         self.assertIsInstance(ontology_source, OntologySource)
         self.assertEqual(ontology_source.name, "efo")
         self.assertEqual(ontology_source.file, None)
@@ -72,8 +73,8 @@ class TestOlsSearch(unittest.TestCase):
         self.assertEqual(ontology_source.description, "Experimental Factor Ontology")
 
     def test_search_for_term(self):
-        ontology_source = utils.get_ols_ontology("efo")
-        ontology_annotations = utils.search_ols("cell type", ontology_source)
+        ontology_source = ols.get_ols_ontology("efo")
+        ontology_annotations = ols.search_ols("cell type", ontology_source)
         self.assertIsInstance(ontology_annotations, list)
         self.assertGreater(len(ontology_annotations), 0)
         ontology_anotation = [oa for oa in ontology_annotations if oa.term == "cell type"][0]  # always do a search, as order is not immutable
@@ -128,7 +129,7 @@ class TestISArchiveExport(unittest.TestCase):
 class TestPubMedIDUtil(unittest.TestCase):
 
     def test_get_pubmed_article(self):
-        J = utils.get_pubmed_article("25520553")
+        J = pubmed.get_pubmed_article("25520553")
         self.assertEqual(J["doi"], "10.4137/CIN.S13895")
         self.assertEqual(J["authors"], ['Johnson D', 'Connor AJ', 'McKeever S', 'Wang Z', 'Deisboeck TS', 'Quaiser T', 'Shochat E'])
         self.assertEqual(J["year"], "2014")
@@ -136,9 +137,9 @@ class TestPubMedIDUtil(unittest.TestCase):
         self.assertEqual(J["title"], "Semantically linking in silico cancer models.")
 
     def test_set_pubmed_article(self):
-        from isatools.model.v1 import Publication, Comment
+        from isatools.model import Publication, Comment
         p = Publication(pubmed_id="25520553")
-        utils.set_pubmed_article(p)
+        pubmed.set_pubmed_article(p)
         self.assertEqual(p.doi, "10.4137/CIN.S13895")
         self.assertEqual(p.author_list, "Johnson D, Connor AJ, McKeever S, Wang Z, Deisboeck TS, Quaiser T, Shochat E")
         self.assertEqual(p.title, "Semantically linking in silico cancer models.")

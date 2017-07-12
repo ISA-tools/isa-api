@@ -1,23 +1,29 @@
+"""Functions for retrieving metadata from MetaboLights.
+
+This module connects to the European Bioinformatics Institute's
+MetaboLights database. If you have problems with it, check that
+it's working at http://www.ebi.ac.uk/metabolights/
+"""
+from __future__ import absolute_import
 import ftplib
+import glob
 import logging
 import os
+import pandas as pd
 import tempfile
 import shutil
 import re
-import glob
-import isatools
-from isatools.convert import isatab2json
+
 from isatools import isatab
-from isatools.model.v1 import OntologyAnnotation
-import pandas as pd
-from itertools import zip_longest
+from isatools.convert import isatab2json
+from isatools.model import OntologyAnnotation
+
 
 EBI_FTP_SERVER = 'ftp.ebi.ac.uk'
 MTBLS_BASE_DIR = '/pub/databases/metabolights/studies/public'
 INVESTIGATION_FILENAME = 'i_Investigation.txt'
 
-logging.basicConfig(level=isatools.log_level)
-LOG = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 # REGEXES
 _RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
@@ -66,7 +72,7 @@ def get(mtbls_study_id, target_dir=None):
                             EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + a_filename))
                         ftp.retrbinary('RETR ' + a_filename, out_file.write)
         except ftplib.error_perm as ftperr:
-            LOG.fatal("Could not retrieve MetaboLights study '{study}': {error}".format(study=mtbls_study_id, error=ftperr))
+            log.fatal("Could not retrieve MetaboLights study '{study}': {error}".format(study=mtbls_study_id, error=ftperr))
         finally:
             return target_dir
     else:
@@ -132,7 +138,7 @@ def slice_data_files(dir, factor_selection=None):
     results = list()
     # first collect matching samples
     for table_file in glob.iglob(os.path.join(dir, '[a|s]_*')):
-        LOG.info("Loading {}".format(table_file))
+        log.info("Loading {}".format(table_file))
         with open(table_file, encoding='utf-8') as fp:
             df = isatab.load_table(fp)
             if factor_selection is None:
@@ -559,7 +565,7 @@ def get_mtbls_list():
             ftp.cwd('{base_dir}'.format(base_dir=MTBLS_BASE_DIR))
             mtbls_list = ftp.nlst()
         except ftplib.error_perm as ftperr:
-            LOG.error("Could not get MTBLS directory list. Error: {}".format(ftperr))
+            log.error("Could not get MTBLS directory list. Error: {}".format(ftperr))
     return mtbls_list
 
 

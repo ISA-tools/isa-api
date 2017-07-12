@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """ISA Model 1.0 implementation in Python.
 
 This module implements the ISA Abstract Model 1.0 as Python classes, as
@@ -13,8 +12,8 @@ Todo:
 .. _ISA Model and Serialization Specifications 1.0: http://isa-specs.readthedocs.io/
 
 """
-
 import networkx as nx
+
 
 
 def _build_assay_graph(process_sequence=list()):
