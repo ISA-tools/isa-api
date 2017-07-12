@@ -24,7 +24,9 @@ from progressbar import SimpleProgress
 from progressbar import Bar
 from progressbar import ETA
 
+import isatools
 from isatools.model import *
+
 
 log = logging.getLogger(__name__)
 

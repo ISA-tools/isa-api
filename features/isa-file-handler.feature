@@ -12,8 +12,8 @@ Feature: ISA file management
 
   Scenario: resource retrieval with directory download
     Given an authenticated storage adapter
-    And a file object named "tests/data/BII-I-1" in the remote repository "isa-api" owned by "ISA-tools"
-    And a branch named "develop"
+    And a file object named "tab/BII-I-1" in the remote repository "ISAdatasets" owned by "ISA-tools"
+    And a branch named "tests"
     And a destination directory "destination_dir_0" in your home folder
     When the file object is a directory
     Then it should download the files contained within the directory
@@ -27,8 +27,8 @@ Feature: ISA file management
 
   Scenario: resource retrieval with JSON file download
     Given an authenticated storage adapter
-    And a file object named "isatools/sampledata/BII-I-1.json" in the remote repository "isa-api" owned by "ISA-tools"
-    And a branch named "latest-feat"
+    And a file object named "json/BII-I-1.json" in the remote repository "ISAdatasets" owned by "ISA-tools"
+    And a branch named "master"
     And a destination directory "destination_dir_2" in your home folder
     When the source file points to an ISA-TAB JSON file
     Then it should download it as a JSON file
@@ -36,7 +36,7 @@ Feature: ISA file management
 
   Scenario: resource retrieval with XML configuration file download
     Given an authenticated storage adapter
-    And a file object named "tests/data/configs/xml/isaconfig-default_v2015-07-02/genome_seq.xml" in the remote repository "isa-api" owned by "ISA-tools"
+    And a file object named "isatools/configs/xml/genome_seq.xml" in the remote repository "isa-api" owned by "ISA-tools"
     And a destination directory "destination_dir_3" in your home folder
     When the source file points to an ISA-TAB XML configuration file
     Then it should download it as an XML file

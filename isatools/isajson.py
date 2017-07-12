@@ -12,7 +12,10 @@ import re
 from json import JSONEncoder
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 
+import isatools
 from isatools.model import *
+
+__author__ = 'djcomlab@gmail.com (David Johnson)'
 
 log = logging.getLogger(__name__)
 
