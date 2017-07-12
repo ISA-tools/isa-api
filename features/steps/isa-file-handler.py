@@ -9,7 +9,7 @@ from behave import *
 from sure import expect
 from zipfile import is_zipfile
 from urllib.parse import urljoin
-from isatools.io.storage_adapter import IsaGitHubStorageAdapter, REPOS, CONTENTS
+from isatools.net.storage_adapter import IsaGitHubStorageAdapter, REPOS, CONTENTS
 from lxml import etree
 from io import BytesIO, StringIO
 from requests.exceptions import HTTPError
