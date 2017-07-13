@@ -1,5 +1,6 @@
 """Various utility functions."""
 import csv
+import json
 import logging
 import os
 import pandas as pd
@@ -298,25 +299,100 @@ def compute_study_factors_on_mtbls(tab_dir_root):
         >>> sys.stdout = stdout_console  # reset stdout
     """
     for mtbls_dir in [x for x in os.listdir(tab_dir_root) if x.startswith("MTBLS")]:
-        ISA = None
         study_dir = os.path.join(tab_dir_root, mtbls_dir)
+        analyzer = IsaTabAnalyzer(study_dir)
         try:
-            ISA = isatab.load(study_dir, skip_load_tables=False)
-            print("{} load OK".format(mtbls_dir))
-        except Exception as e:
-            print("{0} load FAIL, reason: {1}".format(mtbls_dir, e))
-        if ISA is None:
-            continue
-        for S in ISA.studies:
-            print('Study sample level: total sources = {0}, total samples = {1}'.format(
-                len(S.materials['sources']), len(S.materials['samples'])))
-            with open(os.path.join(study_dir, S.filename)) as s_fp:
+            print(analyzer.pprint_study_design_report())
+        except ValueError:
+            pass
+
+
+class IsaTabAnalyzer(object):
+
+    def __init__(self, path):
+        self.path = path
+
+    def generate_study_design_report(self, get_num_study_groups=True, get_factors=True, get_num_levels=True,
+                                     get_levels=True, get_study_groups=True):
+        isa = isatab.load(self.path, skip_load_tables=False)
+        study_design_report = []
+        raw_data_file_prefix = ('Raw', 'Array', 'Free Induction Decay')
+        for study in isa.studies:
+            study_key = study.identifier if study.identifier != '' else study.filename
+            study_design_report.append({
+                'study_key': study_key,
+                'total_sources': len(study.materials['sources']),
+                'total_samples': len(study.materials['samples']),
+                'assays': []
+            })
+            with open(os.path.join(self.path, study.filename)) as s_fp:
                 s_df = isatab.load_table(s_fp)
-                for A in S.assays:
-                    print('Assay level: total samples = {0}, total raw data = {1}'.format(
-                        len(A.materials['samples']),
-                        len([x for x in A.data_files if x.label.startswith(('Raw', 'Array', 'Free Induction Decay'))])))
-                    with open(os.path.join(study_dir, A.filename)) as a_fp:
+                for assay in study.assays:
+                    assay_key = '/'.join([assay.filename, assay.measurement_type.term, assay.technology_type.term,
+                                           assay.technology_platform])
+                    assay_report = {
+                        'assay_key': assay_key,
+                        'num_sources': len(assay.materials['samples']),
+                        'num_samples': len([x for x in assay.data_files
+                                              if x.label.startswith(raw_data_file_prefix)])
+                    }
+                    with open(os.path.join(self.path, assay.filename)) as a_fp:
                         a_df = isatab.load_table(a_fp)
-                        sa_df = pd.merge(s_df, a_df, on='Sample Name')
-                        compute_factor_values_summary(sa_df)
+                        merged_df = pd.merge(s_df, a_df, on='Sample Name')
+                        factor_cols = [x for x in merged_df.columns if x.startswith("Factor Value")]
+                        if len(factor_cols) > 0:  # add branch to get all if no FVs
+                            study_group_factors_df = merged_df[factor_cols].drop_duplicates()
+                            factors_list = [x[13:-1] for x in study_group_factors_df.columns]
+                            queries = []
+                            factors_and_levels = {}
+                            for i, row in study_group_factors_df.iterrows():
+                                fvs = []
+                                for x, y in zip(factors_list, row):
+                                    fvs.append(' == '.join([x, str(y)]))
+                                    try:
+                                        factor_and_levels = factors_and_levels[x]
+                                    except KeyError:
+                                        factors_and_levels[x] = set()
+                                        factor_and_levels = factors_and_levels[x]
+                                    factor_and_levels.add(str(y))
+                                queries.append(' and '.join(fvs))
+                            assay_report['total_study_groups'] = len(queries)
+                            assay_report['factors_and_levels'] = []
+                            for k, v in factors_and_levels.items():
+                                assay_report['factors_and_levels'].append({
+                                    'factor': k,
+                                    'num_levels': len(v),
+                                    'group_summary': []
+                                })
+                            for query in queries:
+                                try:
+                                    columns = merged_df.columns
+                                    columns = recast_columns(columns=columns)
+                                    for i, column in enumerate(columns):
+                                        columns[i] = pyvar(column) if column.startswith('Factor Value[') else column
+                                    merged_df.columns = columns
+                                    qlist = query.split(' and ')
+                                    fmt_query = []
+                                    for factor_query in qlist:
+                                        factor_value = factor_query.split(' == ')
+                                        fmt_query_part = "Factor_Value_{0}_ == '{1}'".format(pyvar(factor_value[0]),
+                                                                                             factor_value[1])
+                                        fmt_query.append(fmt_query_part)
+                                    fmt_query = ' and '.join(fmt_query)
+                                    log.debug('running query: {}'.format(fmt_query))
+                                    df2 = merged_df.query(fmt_query)
+                                    data_column = [x for x in merged_df.columns if x.startswith(raw_data_file_prefix)
+                                                   and x.endswith('Data File')][0]
+                                    assay_report['factors_and_levels'][-1]['group_summary'].append(
+                                        (query,
+                                         'sources = {}'.format(len(list(df2['Source Name'].drop_duplicates()))),
+                                         'samples = {}'.format(len(list(df2['Sample Name'].drop_duplicates()))),
+                                         'raw files = {}'.format(len(list(df2[data_column].drop_duplicates()))))
+                                        )
+                                except Exception as e:
+                                    print("error in query, {}".format(e))
+                    study_design_report[-1]['assays'].append(assay_report)
+        return study_design_report
+
+    def pprint_study_design_report(self):
+        print(json.dumps(self.generate_study_design_report(), indent=4, sort_keys=True))
