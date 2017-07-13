@@ -687,74 +687,74 @@ class MageTabParser(object):
 
     def parse_sdrf_to_isa_table_files(self, in_filename):
         """ Parses MAGE-TAB SDRF file into ISA-Tab study and assay tables as pandas dataframes"""
-        in_fp = open(in_filename)
-        with strip_comments(in_fp) as fp:
-            df = pd.read_csv(fp, dtype=str, sep='\t', encoding='utf-8').fillna('')
-        # do some preliminary cleanup of the table
-        columns_to_keep = []
-        for i, col in enumerate(df.columns):
-            if col.lower().startswith('term source ref') and df.columns[i-1].lower().startswith('protocol ref'):
-                pass  # drop term source ref column that appears after protocol ref
-            elif col.lower().startswith('term source ref') and df.columns[i-1].lower().startswith('array design ref'):
-                pass  # drop term source ref column that appears after array design ref
-            elif col.lower().startswith('technology type'):
-                pass  # drop technology type column / in java code it moves it 1 to the right of assay name column
-            elif col.lower().startswith('provider'):
-                pass  # drop provider column
-            else:
-                columns_to_keep.append(col)
-        df = df[columns_to_keep]  # reset dataframe with only columns we are interested in
-        #  TODO: Do we need to replicate what CleanupRunner.java does?
+        with open(in_filename) as in_fp:
+            with strip_comments(in_fp) as fp:
+                df = pd.read_csv(fp, dtype=str, sep='\t', encoding='utf-8').fillna('')
+            # do some preliminary cleanup of the table
+            columns_to_keep = []
+            for i, col in enumerate(df.columns):
+                if col.lower().startswith('term source ref') and df.columns[i-1].lower().startswith('protocol ref'):
+                    pass  # drop term source ref column that appears after protocol ref
+                elif col.lower().startswith('term source ref') and df.columns[i-1].lower().startswith('array design ref'):
+                    pass  # drop term source ref column that appears after array design ref
+                elif col.lower().startswith('technology type'):
+                    pass  # drop technology type column / in java code it moves it 1 to the right of assay name column
+                elif col.lower().startswith('provider'):
+                    pass  # drop provider column
+                else:
+                    columns_to_keep.append(col)
+            df = df[columns_to_keep]  # reset dataframe with only columns we are interested in
+            #  TODO: Do we need to replicate what CleanupRunner.java does?
 
-        # now find the first index to split the SDRF into sfile and afile(s)
-        cols = [x.lower() for x in list(df.columns)]  # columns all lowered
-        if 'sample name' not in cols:  # if we can't find the sample name, we need to insert it somewhere
-            first_node_index = -1
-            if 'extract name' in cols:
-                first_node_index = cols.index('extract name')
-            elif 'labeled extract name' in cols:
-                first_node_index = cols.index('labeled extract name')
-            elif 'labeled extract name' in cols:
-                first_node_index = cols.index('hybridization name')
-            if first_node_index > 0:  # do Sample Name insertion here
-                cols_ = list(df.columns)
-                df["Sample Name"] = df[cols_[first_node_index]]  # add Sample Name column where first indexed col is
-                cols_.insert(first_node_index, "Sample Name")  # insert to the column index where Sample Name should occur
-                df = df[cols_]  # reset the dataframe with the new order of columns
+            # now find the first index to split the SDRF into sfile and afile(s)
+            cols = [x.lower() for x in list(df.columns)]  # columns all lowered
+            if 'sample name' not in cols:  # if we can't find the sample name, we need to insert it somewhere
+                first_node_index = -1
+                if 'extract name' in cols:
+                    first_node_index = cols.index('extract name')
+                elif 'labeled extract name' in cols:
+                    first_node_index = cols.index('labeled extract name')
+                elif 'labeled extract name' in cols:
+                    first_node_index = cols.index('hybridization name')
+                if first_node_index > 0:  # do Sample Name insertion here
+                    cols_ = list(df.columns)
+                    df["Sample Name"] = df[cols_[first_node_index]]  # add Sample Name column where first indexed col is
+                    cols_.insert(first_node_index, "Sample Name")  # insert to the column index where Sample Name should occur
+                    df = df[cols_]  # reset the dataframe with the new order of columns
 
-        # before splitting, let's rename columns where necessary
+            # before splitting, let's rename columns where necessary
 
-        df = df.rename(columns={
-            "Material Type": "Characteristic[material]",
-            "Technology Type": "Comment[technology type]",
-            "Hybridization Name": "Hybridization Assay Name"
-        })
+            df = df.rename(columns={
+                "Material Type": "Characteristic[material]",
+                "Technology Type": "Comment[technology type]",
+                "Hybridization Name": "Hybridization Assay Name"
+            })
 
-        # now do the slice
-        cols = list(df.columns)
-        sample_name_index = cols.index("Sample Name")
-        study_df = df[df.columns[0:sample_name_index + 1]].drop_duplicates()
-        assay_df = df[df.columns[sample_name_index:]]
+            # now do the slice
+            cols = list(df.columns)
+            sample_name_index = cols.index("Sample Name")
+            study_df = df[df.columns[0:sample_name_index + 1]].drop_duplicates()
+            assay_df = df[df.columns[sample_name_index:]]
 
-        table_files = []
-        with StringIO() as assay_fp:
-            columns = [x[:x.rindex('.')] if '.' in x else x for x in list(assay_df.columns)]
-            assay_df.columns = columns
-            assay_df.to_csv(path_or_buf=assay_fp, mode='a', sep='\t', encoding='utf-8', index=False)
-            log.info("Trying to split assay file extracted from %s", in_filename)
-            assay_fp.seek(0)
-            assay_files = self.split_assay(assay_fp)
-            log.info("We have %s assays", len(assay_files))
+            table_files = []
+            with StringIO() as assay_fp:
+                columns = [x[:x.rindex('.')] if '.' in x else x for x in list(assay_df.columns)]
+                assay_df.columns = columns
+                assay_df.to_csv(path_or_buf=assay_fp, mode='a', sep='\t', encoding='utf-8', index=False)
+                log.info("Trying to split assay file extracted from %s", in_filename)
+                assay_fp.seek(0)
+                assay_files = self.split_assay(assay_fp)
+                log.info("We have %s assays", len(assay_files))
 
-        study_fp = StringIO()
-        study_fp.name = self.ISA.studies[-1].filename
-        columns = [x[:x.rindex('.')] if '.' in x else x for x in list(study_df.columns)]
-        study_df.columns = columns
-        study_df.to_csv(path_or_buf=study_fp, mode='a', sep='\t', encoding='utf-8', index=False)
-        study_fp.seek(0)
-        table_files.append(study_fp)
-        table_files.extend(assay_files)
-        return table_files
+            study_fp = StringIO()
+            study_fp.name = self.ISA.studies[-1].filename
+            columns = [x[:x.rindex('.')] if '.' in x else x for x in list(study_df.columns)]
+            study_df.columns = columns
+            study_df.to_csv(path_or_buf=study_fp, mode='a', sep='\t', encoding='utf-8', index=False)
+            study_fp.seek(0)
+            table_files.append(study_fp)
+            table_files.extend(assay_files)
+            return table_files
 
     def split_assay(self, fp):
         assay_files = []

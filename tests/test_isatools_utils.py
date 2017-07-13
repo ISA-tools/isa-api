@@ -1,20 +1,22 @@
-import unittest
-import os
+"""Tests on isatools.utils package"""
+from __future__ import absolute_import
+from io import StringIO
 import json
+from jsonschema.exceptions import ValidationError
+import logging
+import os
+import shutil
+import tempfile
+import unittest
+
 from isatools import isajson
 from isatools.net import mtbls as MTBLS
-from io import StringIO
-from jsonschema.exceptions import ValidationError
-from tests import utils as test_utils
-from isatools import utils
-from isatools.model import OntologySource, OntologyAnnotation
-import tempfile
-import shutil
-import logging
-import isatools
+from isatools.model import Publication, Comment, OntologySource, OntologyAnnotation
 from isatools.net import pubmed, ols
+from isatools import utils
+from tests import utils as test_utils
 
-logging.basicConfig(level=isatools.log_level)
+
 LOG = logging.getLogger(__name__)
 
 
@@ -29,13 +31,14 @@ def setUpModule():
 class TestIsaGraph(unittest.TestCase):
 
     def test_detect_graph_process_pooling(self):
-        ISA = isajson.load(open(os.path.join(test_utils.JSON_DATA_DIR, 'MTBLS1', 'MTBLS1.json')))
-        for study in ISA.studies:
-            utils.detect_graph_process_pooling(study.graph)
-            for assay in study.assays:
-                pooling_list = utils.detect_graph_process_pooling(assay.graph)
-                self.assertListEqual(sorted(pooling_list),
-                                     sorted(['#process/Extraction1', '#process/NMR_assay1']))
+        with open(os.path.join(test_utils.JSON_DATA_DIR, 'MTBLS1', 'MTBLS1.json')) as isajson_fp:
+            ISA = isajson.load(isajson_fp)
+            for study in ISA.studies:
+                utils.detect_graph_process_pooling(study.graph)
+                for assay in study.assays:
+                    pooling_list = utils.detect_graph_process_pooling(assay.graph)
+                    self.assertListEqual(sorted(pooling_list),
+                                         sorted(['#process/Extraction1', '#process/NMR_assay1']))
 
     def test_detect_graph_process_pooling_batch_on_mtbls(self):
         for i in range(1, 1):
@@ -137,7 +140,6 @@ class TestPubMedIDUtil(unittest.TestCase):
         self.assertEqual(J["title"], "Semantically linking in silico cancer models.")
 
     def test_set_pubmed_article(self):
-        from isatools.model import Publication, Comment
         p = Publication(pubmed_id="25520553")
         pubmed.set_pubmed_article(p)
         self.assertEqual(p.doi, "10.4137/CIN.S13895")

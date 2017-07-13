@@ -19,9 +19,10 @@ __author__ = 'massi'
 
 DIR_NAME = os.path.dirname(__file__)
 
-INVESTIGATION_SCHEMA_FILE = os.path.abspath(os.path.join(DIR_NAME, '..', 'schemas', 'isa_model_version_1_0_schemas',
-                                                         'core', 'investigation_schema.json'))
-CONFIGURATION_SCHEMA_FILE = os.path.join(DIR_NAME, '..', 'schemas', 'isatab_configurator.xsd')
+INVESTIGATION_SCHEMA_FILE = os.path.abspath(os.path.join(DIR_NAME, '..', 'resources', 'schemas',
+                                                         'isa_model_version_1_0_schemas', 'core',
+                                                         'investigation_schema.json'))
+CONFIGURATION_SCHEMA_FILE = os.path.join(DIR_NAME, '..', 'resources', 'schemas', 'isatab_configurator.xsd')
 
 GITHUB_API_BASE_URL = 'https://api.github.com'
 GITHUB_RAW_MEDIA_TYPE = 'application/vnd.github.VERSION.raw'

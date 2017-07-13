@@ -52,30 +52,32 @@ def get(mtbls_study_id, target_dir=None):
             if target_dir is None:
                 target_dir = tempfile.mkdtemp()
             logging.info("Using directory '{}'".format(target_dir))
-            out_file = open(os.path.join(target_dir, INVESTIGATION_FILENAME), 'wb')
-            logging.info("Retrieving file '{}'".format(EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + INVESTIGATION_FILENAME))
-            ftp.retrbinary('RETR ' + INVESTIGATION_FILENAME, out_file.write)
+            with open(os.path.join(target_dir, INVESTIGATION_FILENAME), 'wb') as out_file:
+                logging.info("Retrieving file '{}'".format(EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + INVESTIGATION_FILENAME))
+                ftp.retrbinary('RETR ' + INVESTIGATION_FILENAME, out_file.write)
             with open(out_file.name, encoding='utf-8') as i_fp:
                 i_bytes = i_fp.read()
                 lines = i_bytes.splitlines()
                 s_filenames = [l.split('\t')[1][1:-1] for l in lines if 'Study File Name' in l]
                 for s_filename in s_filenames:
-                    out_file = open(os.path.join(target_dir, s_filename), 'wb')
-                    logging.info("Retrieving file '{}'".format(
-                        EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + s_filename))
-                    ftp.retrbinary('RETR ' + s_filename, out_file.write)
+                    with open(os.path.join(target_dir, s_filename), 'wb') as out_file:
+                        logging.info("Retrieving file '{}'".format(
+                            EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + s_filename))
+                        ftp.retrbinary('RETR ' + s_filename, out_file.write)
                 a_filenames_lines = [l.split('\t') for l in lines if 'Study Assay File Name' in l]
                 for a_filename_line in a_filenames_lines:
                     for a_filename in [f[1:-1] for f in a_filename_line[1:]]:
-                        out_file = open(os.path.join(target_dir, a_filename), 'wb')
-                        logging.info("Retrieving file '{}'".format(
-                            EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + a_filename))
-                        ftp.retrbinary('RETR ' + a_filename, out_file.write)
+                        with open(os.path.join(target_dir, a_filename), 'wb') as out_file:
+                            logging.info("Retrieving file '{}'".format(
+                                EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + a_filename))
+                            ftp.retrbinary('RETR ' + a_filename, out_file.write)
         except ftplib.error_perm as ftperr:
             log.fatal("Could not retrieve MetaboLights study '{study}': {error}".format(study=mtbls_study_id, error=ftperr))
         finally:
+            ftp.close()
             return target_dir
     else:
+        ftp.close()
         raise ConnectionError("There was a problem connecting to MetaboLights: " + response)
 
 

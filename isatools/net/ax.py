@@ -41,6 +41,7 @@ def get(arrayexpress_id, target_dir=None):
     ftp = ftplib.FTP(EBI_FTP_SERVER)
     log.info("Logging in as anonymous user...")
     response = ftp.login()
+
     if '230' in response:  # 230 means Login successful
         log.info("Log in successful!")
         try:
@@ -79,8 +80,10 @@ def get(arrayexpress_id, target_dir=None):
             log.fatal("Could not retrieve ArrayExpress study '{study}': {error}".format(study=arrayexpress_id,
                                                                                         error=ftperr))
         finally:
+            ftp.close()
             return target_dir
     else:
+        ftp.close()
         raise ConnectionError("There was a problem connecting to ArrayExpress: " + response)
 
 

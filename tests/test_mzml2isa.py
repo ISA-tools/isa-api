@@ -33,9 +33,8 @@ class TestMzml2IsaTab(unittest.TestCase):
                 else:
                     stripped_actual_file.write(row)
             stripped_actual_file.seek(0)
-            self.assertTrue(assert_tab_content_equal(stripped_actual_file,
-                                                     open(os.path.join(self._tab_data_dir,
-                                                                       study_id + '-partial', 'i_Investigation.txt'))))
+            with open(os.path.join(self._tab_data_dir, study_id + '-partial', 'i_Investigation.txt')) as reference_fp:
+                self.assertTrue(assert_tab_content_equal(stripped_actual_file, reference_fp))
 
     def test_mzml2isa_convert_study_table(self):
         study_id = 'MTBLS267'
@@ -43,10 +42,9 @@ class TestMzml2IsaTab(unittest.TestCase):
                                   validate_output=True)
         self.assertTrue(report['validation_finished'])
         self.assertEqual(len(report['errors']), 0)
-        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, study_id,
-                                                                   's_{}.txt'.format(study_id))),
-                                                 open(os.path.join(self._tab_data_dir, study_id + '-partial',
-                                                                   's_{}.txt'.format(study_id)))))
+        with open(os.path.join(self._tmp_dir, study_id, 's_{}.txt'.format(study_id))) as out_fp:
+            with open(os.path.join(self._tab_data_dir, study_id + '-partial', 's_{}.txt'.format(study_id))) as reference_fp:
+                self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
     def test_mzml2isa_convert_assay_table(self):
         study_id = 'MTBLS267'
@@ -54,9 +52,6 @@ class TestMzml2IsaTab(unittest.TestCase):
                                   validate_output=True)
         self.assertTrue(report['validation_finished'])
         self.assertEqual(len(report['errors']), 0)
-        self.assertTrue(assert_tab_content_equal(open(os.path.join(self._tmp_dir, study_id,
-                                                                   'a_{}_metabolite_profiling_mass_spectrometry.txt'
-                                                                   .format(study_id))),
-                                                 open(os.path.join(self._tab_data_dir, study_id + '-partial',
-                                                                   'a_{}_metabolite_profiling_mass_spectrometry.txt'
-                                                                   .format(study_id)))))
+        with open(os.path.join(self._tmp_dir, study_id, 'a_{}_metabolite_profiling_mass_spectrometry.txt'.format(study_id))) as out_fp:
+            with open(os.path.join(self._tab_data_dir, study_id + '-partial', 'a_{}_metabolite_profiling_mass_spectrometry.txt'.format(study_id))) as reference_fp:
+                self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))

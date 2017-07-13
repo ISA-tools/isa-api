@@ -114,7 +114,7 @@ def parse(isatab_ref):
         isatab_ref = fnames[0]
     assert os.path.exists(isatab_ref), "Did not find investigation file: %s" % isatab_ref
     i_parser = InvestigationParser()
-    with open(isatab_ref, "rU") as in_handle:
+    with open(isatab_ref) as in_handle:
         rec = i_parser.parse(in_handle)
     s_parser = StudyAssayParser(isatab_ref)
     rec = s_parser.parse(rec)

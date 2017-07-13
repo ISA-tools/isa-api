@@ -15,7 +15,6 @@ Todo:
 import networkx as nx
 
 
-
 def _build_assay_graph(process_sequence=list()):
     G = nx.DiGraph()
     for process in process_sequence:

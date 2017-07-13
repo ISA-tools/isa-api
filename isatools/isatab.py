@@ -1319,7 +1319,8 @@ def check_table_files_read(i_df, dir_context):
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
-                    open(os.path.join(dir_context, assay_filename))
+                    with open(os.path.join(dir_context, assay_filename)):
+                        pass
                 except FileNotFoundError:
                     errors.append({
                         "message": "Missing assay tab file(s)",
