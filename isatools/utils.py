@@ -273,18 +273,59 @@ def compute_study_factors_on_mtbls(tab_dir_root):
     """
     Produces study factors report like:
 
-    MTBLS1 load OK
-    Study sample level: total sources = 1, total samples = 132
-    Assay level: total samples = 132, total raw data = 132
-    Calculated 4 study groups
-    factor: Gender | levels=2 | ('Female', 'Male')
-    factor: Metabolic syndrome | levels=2 | ('diabetes mellitus', 'Control Group')
-    ('Gender == Male and Metabolic syndrome == diabetes mellitus', 'sources = 1', 'samples = 22', 'raw files = 22')
-    ('Gender == Female and Metabolic syndrome == diabetes mellitus', 'sources = 1', 'samples = 26', 'raw files = 26')
-    ('Gender == Male and Metabolic syndrome == Control Group', 'sources = 1', 'samples = 56', 'raw files = 56')
-    ('Gender == Female and Metabolic syndrome == Control Group', 'sources = 1', 'samples = 28', 'raw files = 28')
+    [
+        {
+            "assays": [
+                {
+                    "assay_key": "a_mtbls1_metabolite_profiling_NMR_spectroscopy.txt/metabolite profiling/NMR spectroscopy/Bruker",
+                    "factors_and_levels": [
+                        {
+                            "factor": "Metabolic syndrome",
+                            "num_levels": 2
+                        },
+                        {
+                            "factor": "Gender",
+                            "num_levels": 2
+                        }
+                    ],
+                    "group_summary": [
+                        {
+                            "raw_files": 22,
+                            "samples": 22,
+                            "sources": 1,
+                            "study_group": "Gender == Male and Metabolic syndrome == diabetes mellitus"
+                        },
+                        {
+                            "raw_files": 26,
+                            "samples": 26,
+                            "sources": 1,
+                            "study_group": "Gender == Female and Metabolic syndrome == diabetes mellitus"
+                        },
+                        {
+                            "raw_files": 56,
+                            "samples": 56,
+                            "sources": 1,
+                            "study_group": "Gender == Male and Metabolic syndrome == Control Group"
+                        },
+                        {
+                            "raw_files": 28,
+                            "samples": 28,
+                            "sources": 1,
+                            "study_group": "Gender == Female and Metabolic syndrome == Control Group"
+                        }
+                    ],
+                    "num_samples": 132,
+                    "num_sources": 132,
+                    "total_study_groups": 4
+                }
+            ],
+            "study_key": "MTBLS1",
+            "total_samples": 132,
+            "total_sources": 1
+        }
+    ]
 
-    :param tab_dir_root: Directory containing MTBLS ISA-Tab directories
+    :param tab_dir_root: Directory containing MTBLS prefixed ISA-Tab directories
     :return: None, output writes to stdout
 
     Usage:
@@ -302,7 +343,7 @@ def compute_study_factors_on_mtbls(tab_dir_root):
         study_dir = os.path.join(tab_dir_root, mtbls_dir)
         analyzer = IsaTabAnalyzer(study_dir)
         try:
-            print(analyzer.pprint_study_design_report())
+            analyzer.pprint_study_design_report()
         except ValueError:
             pass
 
@@ -358,11 +399,11 @@ class IsaTabAnalyzer(object):
                                 queries.append(' and '.join(fvs))
                             assay_report['total_study_groups'] = len(queries)
                             assay_report['factors_and_levels'] = []
+                            assay_report['group_summary'] = []
                             for k, v in factors_and_levels.items():
                                 assay_report['factors_and_levels'].append({
                                     'factor': k,
                                     'num_levels': len(v),
-                                    'group_summary': []
                                 })
                             for query in queries:
                                 try:
@@ -383,12 +424,12 @@ class IsaTabAnalyzer(object):
                                     df2 = merged_df.query(fmt_query)
                                     data_column = [x for x in merged_df.columns if x.startswith(raw_data_file_prefix)
                                                    and x.endswith('Data File')][0]
-                                    assay_report['factors_and_levels'][-1]['group_summary'].append(
-                                        (query,
-                                         'sources = {}'.format(len(list(df2['Source Name'].drop_duplicates()))),
-                                         'samples = {}'.format(len(list(df2['Sample Name'].drop_duplicates()))),
-                                         'raw files = {}'.format(len(list(df2[data_column].drop_duplicates()))))
-                                        )
+                                    assay_report['group_summary'].append(
+                                        dict(study_group=query,
+                                             sources=len(list(df2['Source Name'].drop_duplicates())),
+                                             samples=len(list(df2['Sample Name'].drop_duplicates())),
+                                             raw_files=len(list(df2[data_column].drop_duplicates()))
+                                        ))
                                 except Exception as e:
                                     print("error in query, {}".format(e))
                     study_design_report[-1]['assays'].append(assay_report)

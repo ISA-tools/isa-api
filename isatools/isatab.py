@@ -2472,7 +2472,7 @@ BASE_DIR = os.path.dirname(__file__)
 default_config_dir = os.path.join(BASE_DIR, 'resources', 'config', 'xml')
 
 
-def validate(fp, config_dir=default_config_dir, log_level=isatools.log_level):
+def validate(fp, config_dir=default_config_dir, log_level=logging.INFO):
     global errors
     global warnings
     errors = list()
