@@ -79,12 +79,6 @@ class TreatmentFactoryTest(unittest.TestCase):
         self.factory.add_factor_value(factor, values_to_add)
         self.assertEqual(self.factory.factors.get(factor), set(values_to_add))
 
-    def test_add_factor_value_list(self):
-        values_to_add = {'agent_orange', 'crack, cocaine'}
-        factor = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
-        self.factory.add_factor_value(factor, values_to_add)
-        self.assertEqual(self.factory.factors.get(factor), values_to_add)
-
     def test_compute_full_factorial_design(self):
 
         agent = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
