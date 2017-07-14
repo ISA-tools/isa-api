@@ -1,7 +1,7 @@
 """Tests on Assay planning model objects in isatools.create.models"""
 import unittest
 
-from isatools.create.models import AssayType
+from isatools.create.models import AssayType, AssayTopologyModifiers
 from isatools.model.v1 import OntologyAnnotation
 
 MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING = 'transcription profiling'
@@ -12,7 +12,6 @@ TECHNOLOGY_TYPE_DNA_SEQUENCING = 'nucleic acid sequencing'
 class AssayTypeTest(unittest.TestCase):
 
     def setUp(self):
-        self.maxDiff = None
         self.assay_type = AssayType(
             measurement_type=MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING,
             technology_type=TECHNOLOGY_TYPE_DNA_MICROARRAY
@@ -51,3 +50,59 @@ class AssayTypeTest(unittest.TestCase):
         self.assertNotEqual(hash(expected_other_assay_type), hash(self.assay_type))
         self.assertNotEqual(expected_other_assay_type, self.assay_type_with_oa)
         self.assertNotEqual(hash(expected_other_assay_type), hash(self.assay_type_with_oa))
+
+
+class AssayTopologyModifiersTest(unittest.TestCase):
+
+    def setUp(self):
+        self.assay_topology_modifiers_default = AssayTopologyModifiers()
+        self.assay_topology_modifiers = AssayTopologyModifiers(
+            distinct_libraries=1,
+            distinct_array_designs=2,
+            injection_modes=3,
+            acquisition_modes=4,
+            pulse_sequences=5,
+            technical_replicates=6
+        )
+
+    def test_repr(self):
+        self.assertEqual('AssayTopologyModifiers('
+                         'distinct_libraries=0, '
+                         'distinct_array_designs=0, '
+                         'injection_modes=0, '
+                         'acquisition_modes=0, '
+                         'pulse_sequences=0, '
+                         'technical_replicates=0)', repr(self.assay_topology_modifiers_default))
+        self.assertEqual('AssayTopologyModifiers('
+                         'distinct_libraries=1, '
+                         'distinct_array_designs=2, '
+                         'injection_modes=3, '
+                         'acquisition_modes=4, '
+                         'pulse_sequences=5, '
+                         'technical_replicates=6)', repr(self.assay_topology_modifiers))
+
+    def test_eq(self):
+        expected_assay_topology_modifiers_default = AssayTopologyModifiers()
+        expected_assay_topology_modifiers = AssayTopologyModifiers(
+            distinct_libraries=1,
+            distinct_array_designs=2,
+            injection_modes=3,
+            acquisition_modes=4,
+            pulse_sequences=5,
+            technical_replicates=6
+        )
+        self.assertEqual(expected_assay_topology_modifiers_default, self.assay_topology_modifiers_default)
+        self.assertEqual(hash(expected_assay_topology_modifiers), hash(self.assay_topology_modifiers))
+
+    def test_ne(self):
+        expected_assay_topology_modifiers_default = AssayTopologyModifiers()
+        expected_assay_topology_modifiers = AssayTopologyModifiers(
+            distinct_libraries=1,
+            distinct_array_designs=2,
+            injection_modes=3,
+            acquisition_modes=4,
+            pulse_sequences=5,
+            technical_replicates=6
+        )
+        self.assertNotEqual(expected_assay_topology_modifiers, self.assay_topology_modifiers_default)
+        self.assertNotEqual(hash(expected_assay_topology_modifiers_default), hash(self.assay_topology_modifiers))

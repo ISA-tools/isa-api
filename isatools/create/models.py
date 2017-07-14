@@ -470,6 +470,7 @@ class AssayTopologyModifiers(object):
                and self.distinct_libraries == other.distinct_libraries \
                and self.distinct_array_designs == other.distinct_array_designs \
                and self.injection_modes == other.injection_modes \
+               and self.acquisition_modes == other.acquisition_modes \
                and self.pulse_sequences == other.pulse_sequences \
                and self.technical_replicates == other.technical_replicates
 
