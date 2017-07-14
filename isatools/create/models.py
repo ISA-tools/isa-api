@@ -295,7 +295,9 @@ class AssayType(object):
         if isinstance(measurement_type, OntologyAnnotation):
             self.__measurement_type = measurement_type
         elif isinstance(measurement_type, str):
-            self.__measurement_type = OntologyAnnotation(term=technology_type)
+            self.__measurement_type = OntologyAnnotation(term=measurement_type)
+        elif measurement_type is None:
+            self.__measurement_type = None
         else:
             raise TypeError('{0} is not a valid value for technology_type. '
                             'Please provide an OntologyAnnotation or string.')
@@ -303,6 +305,8 @@ class AssayType(object):
             self.__technology_type = technology_type
         elif isinstance(technology_type, str):
             self.__technology_type = OntologyAnnotation(term=technology_type)
+        elif technology_type is None:
+            self.__technology_type = None
         else:
             raise TypeError('{0} is not a valid value for technology_type. '
                             'Please provide an OntologyAnnotation or string.')
@@ -317,6 +321,8 @@ class AssayType(object):
             self.__measurement_type = measurement_type
         elif isinstance(measurement_type, str):
             self.__measurement_type = OntologyAnnotation(term=measurement_type)
+        elif measurement_type is None:
+            self.__measurement_type = None
         else:
             raise TypeError('{0} is not a valid value for measurement_type. '
                             'Please provide an OntologyAnnotation or string.')
@@ -331,12 +337,14 @@ class AssayType(object):
             self.__technology_type = technology_type
         elif isinstance(technology_type, str):
             self.__technology_type = OntologyAnnotation(term=technology_type)
+        elif technology_type is None:
+            self.__technology_type = None
         else:
             raise TypeError('{0} is not a valid value for technology_type. '
                             'Please provide an OntologyAnnotation or string.')
 
     def __repr__(self):
-        return 'AssayType(mt={0}, tt={1})'.format(self.measurement_type, self.technology_type)
+        return 'AssayType(mt={0}, tt={1})'.format(self.measurement_type.term, self.technology_type.term)
 
     def __hash__(self):
         return hash(repr(self))
@@ -434,6 +442,36 @@ class AssayTopologyModifiers(object):
         if technical_replicates < 0:
             raise ValueError('injection_modes must be greater than 0.')
         self.__technical_replicates = technical_replicates
+
+    def __repr__(self):
+        return 'AssayTopologyModifiers(' \
+               'distinct_libraries={0}, ' \
+               'distinct_array_designs={1}, ' \
+               'injection_modes={2}, ' \
+               'acquisition_modes={3}, ' \
+               'pulse_sequences={4}, ' \
+               'technical_replicates={5})'.format(
+                self.distinct_libraries,
+                self.distinct_array_designs,
+                self.injection_modes,
+                self.acquisition_modes,
+                self.pulse_sequences,
+                self.technical_replicates
+                )
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __eq__(self, other):
+        return isinstance(other, AssayTopologyModifiers) \
+               and self.distinct_libraries == other.distinct_libraries \
+               and self.distinct_array_designs == other.distinct_array_designs \
+               and self.injection_modes == other.injection_modes \
+               and self.pulse_sequences == other.pulse_sequences \
+               and self.technical_replicates == other.technical_replicates
 
 
 class AssayPlan(object):
