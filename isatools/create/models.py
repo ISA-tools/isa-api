@@ -299,7 +299,7 @@ class AssayType(object):
         elif measurement_type is None:
             self.__measurement_type = None
         else:
-            raise TypeError('{0} is not a valid value for technology_type. '
+            raise TypeError('{0} is an invalid value for technology_type. '
                             'Please provide an OntologyAnnotation or string.')
         if isinstance(technology_type, OntologyAnnotation):
             self.__technology_type = technology_type
@@ -308,7 +308,7 @@ class AssayType(object):
         elif technology_type is None:
             self.__technology_type = None
         else:
-            raise TypeError('{0} is not a valid value for technology_type. '
+            raise TypeError('{0} is an invalid value for technology_type. '
                             'Please provide an OntologyAnnotation or string.')
 
     @property
@@ -324,7 +324,7 @@ class AssayType(object):
         elif measurement_type is None:
             self.__measurement_type = None
         else:
-            raise TypeError('{0} is not a valid value for measurement_type. '
+            raise TypeError('{0} is an invalid value for measurement_type. '
                             'Please provide an OntologyAnnotation or string.')
 
     @property
@@ -340,7 +340,7 @@ class AssayType(object):
         elif technology_type is None:
             self.__technology_type = None
         else:
-            raise TypeError('{0} is not a valid value for technology_type. '
+            raise TypeError('{0} is an invalid value for technology_type. '
                             'Please provide an OntologyAnnotation or string.')
 
     def __repr__(self):
@@ -378,7 +378,7 @@ class AssayTopologyModifiers(object):
     @distinct_libraries.setter
     def distinct_libraries(self, distinct_libraries):
         if not isinstance(distinct_libraries, int):
-            raise TypeError('{0} is not a valid value for distinct_libraries. Please provide an integer.')
+            raise TypeError('{0} is an invalid value for distinct_libraries. Please provide an integer.')
         if distinct_libraries < 0:
             raise ValueError('distinct_libraries must be greater than 0.')
         self.__distinct_libraries = distinct_libraries
@@ -390,7 +390,7 @@ class AssayTopologyModifiers(object):
     @distinct_array_designs.setter
     def distinct_array_designs(self, distinct_array_designs):
         if not isinstance(distinct_array_designs, int):
-            raise TypeError('{0} is not a valid value for distinct_array_designs. Please provide an integer.')
+            raise TypeError('{0} is an invalid value for distinct_array_designs. Please provide an integer.')
         if distinct_array_designs < 0:
             raise ValueError('distinct_array_designs must be greater than 0.')
         self.__distinct_array_designs = distinct_array_designs
@@ -402,7 +402,7 @@ class AssayTopologyModifiers(object):
     @injection_modes.setter
     def injection_modes(self, injection_modes):
         if not isinstance(injection_modes, int):
-            raise TypeError('{0} is not a valid value for injection_modes. Please provide an integer.')
+            raise TypeError('{0} is an invalid value for injection_modes. Please provide an integer.')
         if injection_modes < 0:
             raise ValueError('injection_modes must be greater than 0.')
         self.__injection_modes = injection_modes
@@ -414,7 +414,7 @@ class AssayTopologyModifiers(object):
     @acquisition_modes.setter
     def acquisition_modes(self, acquisition_modes):
         if not isinstance(acquisition_modes, int):
-            raise TypeError('{0} is not a valid value for acquisition_modes. Please provide an integer.')
+            raise TypeError('{0} is an invalid value for acquisition_modes. Please provide an integer.')
         if acquisition_modes < 0:
             raise ValueError('injection_modes must be greater than 0.')
         self.__acquisition_modes = acquisition_modes
@@ -426,7 +426,7 @@ class AssayTopologyModifiers(object):
     @pulse_sequences.setter
     def pulse_sequences(self, pulse_sequences):
         if not isinstance(pulse_sequences, int):
-            raise TypeError('{0} is not a valid value for pulse_sequences. Please provide an integer.')
+            raise TypeError('{0} is an invalid value for pulse_sequences. Please provide an integer.')
         if pulse_sequences < 0:
             raise ValueError('injection_modes must be greater than 0.')
         self.__pulse_sequences = pulse_sequences
@@ -438,7 +438,7 @@ class AssayTopologyModifiers(object):
     @technical_replicates.setter
     def technical_replicates(self, technical_replicates):
         if not isinstance(technical_replicates, int):
-            raise TypeError('{0} is not a valid value for technical_replicates. Please provide an integer.')
+            raise TypeError('{0} is an invalid value for technical_replicates. Please provide an integer.')
         if technical_replicates < 0:
             raise ValueError('injection_modes must be greater than 0.')
         self.__technical_replicates = technical_replicates
@@ -479,8 +479,8 @@ class AssayPlan(object):
 
     def __init__(self, sample_plan=None):
         self.__sample_plan = sample_plan
-        self.__assay_types_map = None
-        self.__assay_topologies_map = None
+        self.__assay_types_map = {}
+        self.__assay_topologies_map = {}
 
     @property
     def sample_plan(self):
@@ -489,7 +489,7 @@ class AssayPlan(object):
     @sample_plan.setter
     def sample_plan(self, sample_plan):
         if not isinstance(sample_plan, (SamplePlan, None)):
-            raise TypeError('{0} is not a valid value for sample_plan. Please provide a SamplePlan object.')
+            raise TypeError('{0} is an invalid value for sample_plan. Please provide a SamplePlan object.')
         self.__sample_plan = sample_plan
 
     @property
@@ -499,16 +499,19 @@ class AssayPlan(object):
     @assay_types_map.setter
     def assay_types_map(self, assay_types_map):
         for sample_type, assay_type in assay_types_map.items():
-            self.add_sample_type_assay_plan(sample_type, assay_type)
+            self.add_sample_to_assay_type_mapping(sample_type, assay_type)
 
-    def add_sample_type_assay_plan(self, sample_type, assay_type):
-        if not isinstance(sample_type, Characteristic):
-            raise TypeError('wrong sample_type {0}'.format(sample_type))
+    def add_sample_to_assay_type_mapping(self, sample_type, assay_type):
+        if not isinstance(sample_type, (Characteristic, str)):
+            raise TypeError('invalid sample_type {0}'.format(sample_type))
         elif not isinstance(assay_type, AssayType):
-            raise TypeError('wrong assay_type {0}'.format(assay_type))
-        elif isinstance(sample_type, str):
+            raise TypeError('invalid assay_type {0}'.format(assay_type))
+        if isinstance(sample_type, str):
             characteristic = Characteristic(category=OntologyAnnotation(term='organism part'),
                                             value=OntologyAnnotation(term=sample_type))
+            if characteristic not in self.sample_plan.sample_types_map.keys():
+                print('warning: sample type {0} is not present in the sample plan provided'
+                      .format(repr(characteristic)))
             self.__assay_types_map[characteristic] = assay_type
         else:
             self.__assay_types_map[sample_type] = assay_type
@@ -526,8 +529,8 @@ class AssayPlan(object):
         if isinstance(assay_type, AssayType) and assay_type in self.assay_types_map.keys():
             self.__assay_topologies_map[assay_type] = assay_topology_modifiers
         else:
-            raise TypeError('wrong assay_type type {0}'.format(assay_topology_modifiers))
+            raise TypeError('invalid assay_type {0}'.format(assay_topology_modifiers))
         if isinstance(assay_topology_modifiers, AssayTopologyModifiers):
             self.__assay_topologies_map[assay_type] = assay_topology_modifiers
         else:
-            raise TypeError('wrong assay_topology_modifiers type {0}'.format(assay_topology_modifiers))
+            raise TypeError('invalid assay_topology_modifiers type {0}'.format(assay_topology_modifiers))
