@@ -289,4 +289,206 @@ class TreatmentSequence:
             self.__ranked_treatments.add((treatment, epoch))
 
 
+class AssayType(object):
 
+    def __init__(self, measurement_type=None, technology_type=None):
+        if isinstance(measurement_type, OntologyAnnotation):
+            self.__measurement_type = measurement_type
+        elif isinstance(measurement_type, str):
+            self.__measurement_type = OntologyAnnotation(term=technology_type)
+        else:
+            raise TypeError('{0} is not a valid value for technology_type. '
+                            'Please provide an OntologyAnnotation or string.')
+        if isinstance(technology_type, OntologyAnnotation):
+            self.__technology_type = technology_type
+        elif isinstance(technology_type, str):
+            self.__technology_type = OntologyAnnotation(term=technology_type)
+        else:
+            raise TypeError('{0} is not a valid value for technology_type. '
+                            'Please provide an OntologyAnnotation or string.')
+
+    @property
+    def measurement_type(self):
+        return self.__measurement_type
+
+    @measurement_type.setter
+    def measurement_type(self, measurement_type):
+        if isinstance(measurement_type, OntologyAnnotation):
+            self.__measurement_type = measurement_type
+        elif isinstance(measurement_type, str):
+            self.__measurement_type = OntologyAnnotation(term=measurement_type)
+        else:
+            raise TypeError('{0} is not a valid value for measurement_type. '
+                            'Please provide an OntologyAnnotation or string.')
+
+    @property
+    def technology_type(self):
+        return self.__technology_type
+
+    @technology_type.setter
+    def technology_type(self, technology_type):
+        if isinstance(technology_type, OntologyAnnotation):
+            self.__technology_type = technology_type
+        elif isinstance(technology_type, str):
+            self.__technology_type = OntologyAnnotation(term=technology_type)
+        else:
+            raise TypeError('{0} is not a valid value for technology_type. '
+                            'Please provide an OntologyAnnotation or string.')
+
+    def __repr__(self):
+        return 'AssayType(mt={0}, tt={1})'.format(self.measurement_type, self.technology_type)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __eq__(self, other):
+        return isinstance(other, AssayType) \
+               and isinstance(other.measurement_type, OntologyAnnotation) \
+               and isinstance(other.technology_type, OntologyAnnotation) \
+               and self.measurement_type.term == other.measurement_type.term \
+               and self.technology_type.term == other.technology_type.term
+
+
+class AssayTopologyModifiers(object):
+
+    def __init__(self, distinct_libraries=0, distinct_array_designs=0, injection_modes=0, acquisition_modes=0,
+                 pulse_sequences=0, technical_replicates=0):
+        self.__distinct_libraries = distinct_libraries
+        self.__distinct_array_designs = distinct_array_designs
+        self.__injection_modes = injection_modes
+        self.__acquisition_modes = acquisition_modes
+        self.__pulse_sequences = pulse_sequences
+        self.__technical_replicates = technical_replicates
+
+    @property
+    def distinct_libraries(self):
+        return self.__distinct_libraries
+
+    @distinct_libraries.setter
+    def distinct_libraries(self, distinct_libraries):
+        if not isinstance(distinct_libraries, int):
+            raise TypeError('{0} is not a valid value for distinct_libraries. Please provide an integer.')
+        if distinct_libraries < 0:
+            raise ValueError('distinct_libraries must be greater than 0.')
+        self.__distinct_libraries = distinct_libraries
+
+    @property
+    def distinct_array_designs(self):
+        return self.__distinct_array_designs
+
+    @distinct_array_designs.setter
+    def distinct_array_designs(self, distinct_array_designs):
+        if not isinstance(distinct_array_designs, int):
+            raise TypeError('{0} is not a valid value for distinct_array_designs. Please provide an integer.')
+        if distinct_array_designs < 0:
+            raise ValueError('distinct_array_designs must be greater than 0.')
+        self.__distinct_array_designs = distinct_array_designs
+
+    @property
+    def injection_modes(self):
+        return self.__injection_modes
+
+    @injection_modes.setter
+    def injection_modes(self, injection_modes):
+        if not isinstance(injection_modes, int):
+            raise TypeError('{0} is not a valid value for injection_modes. Please provide an integer.')
+        if injection_modes < 0:
+            raise ValueError('injection_modes must be greater than 0.')
+        self.__injection_modes = injection_modes
+
+    @property
+    def acquisition_modes(self):
+        return self.__acquisition_modes
+
+    @acquisition_modes.setter
+    def acquisition_modes(self, acquisition_modes):
+        if not isinstance(acquisition_modes, int):
+            raise TypeError('{0} is not a valid value for acquisition_modes. Please provide an integer.')
+        if acquisition_modes < 0:
+            raise ValueError('injection_modes must be greater than 0.')
+        self.__acquisition_modes = acquisition_modes
+
+    @property
+    def pulse_sequences(self):
+        return self.__pulse_sequences
+
+    @pulse_sequences.setter
+    def pulse_sequences(self, pulse_sequences):
+        if not isinstance(pulse_sequences, int):
+            raise TypeError('{0} is not a valid value for pulse_sequences. Please provide an integer.')
+        if pulse_sequences < 0:
+            raise ValueError('injection_modes must be greater than 0.')
+        self.__pulse_sequences = pulse_sequences
+
+    @property
+    def technical_replicates(self):
+        return self.__technical_replicates
+
+    @technical_replicates.setter
+    def technical_replicates(self, technical_replicates):
+        if not isinstance(technical_replicates, int):
+            raise TypeError('{0} is not a valid value for technical_replicates. Please provide an integer.')
+        if technical_replicates < 0:
+            raise ValueError('injection_modes must be greater than 0.')
+        self.__technical_replicates = technical_replicates
+
+
+class AssayPlan(object):
+
+    def __init__(self, sample_plan=None):
+        self.__sample_plan = sample_plan
+        self.__assay_types_map = None
+        self.__assay_topologies_map = None
+
+    @property
+    def sample_plan(self):
+        return self.__sample_plan
+
+    @sample_plan.setter
+    def sample_plan(self, sample_plan):
+        if not isinstance(sample_plan, (SamplePlan, None)):
+            raise TypeError('{0} is not a valid value for sample_plan. Please provide a SamplePlan object.')
+        self.__sample_plan = sample_plan
+
+    @property
+    def assay_types_map(self):
+        return self.__assay_types_map
+
+    @assay_types_map.setter
+    def assay_types_map(self, assay_types_map):
+        for sample_type, assay_type in assay_types_map.items():
+            self.add_sample_type_assay_plan(sample_type, assay_type)
+
+    def add_sample_type_assay_plan(self, sample_type, assay_type):
+        if not isinstance(sample_type, Characteristic):
+            raise TypeError('wrong sample_type {0}'.format(sample_type))
+        elif not isinstance(assay_type, AssayType):
+            raise TypeError('wrong assay_type {0}'.format(assay_type))
+        elif isinstance(sample_type, str):
+            characteristic = Characteristic(category=OntologyAnnotation(term='organism part'),
+                                            value=OntologyAnnotation(term=sample_type))
+            self.__assay_types_map[characteristic] = assay_type
+        else:
+            self.__assay_types_map[sample_type] = assay_type
+
+    @property
+    def assay_topologies_map(self):
+        return self.__assay_topologies_map
+
+    @assay_topologies_map.setter
+    def assay_topologies_map(self, assay_topologies_map):
+        for assay_type, assay_topology_modifiers in assay_topologies_map.items():
+            self.set_assay_type_topology(assay_type, assay_topology_modifiers)
+
+    def set_assay_type_topology(self, assay_type, assay_topology_modifiers):
+        if isinstance(assay_type, AssayType) and assay_type in self.assay_types_map.keys():
+            self.__assay_topologies_map[assay_type] = assay_topology_modifiers
+        else:
+            raise TypeError('wrong assay_type type {0}'.format(assay_topology_modifiers))
+        if isinstance(assay_topology_modifiers, AssayTopologyModifiers):
+            self.__assay_topologies_map[assay_type] = assay_topology_modifiers
+        else:
+            raise TypeError('wrong assay_topology_modifiers type {0}'.format(assay_topology_modifiers))
