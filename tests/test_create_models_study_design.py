@@ -1,7 +1,8 @@
 import unittest
 from collections import OrderedDict
 from isatools.model.v1 import StudyFactor, FactorValue
-from isatools.create.models import Treatment, TreatmentFactory, TreatmentSequence, INTERVENTIONS, BASE_FACTORS
+from isatools.create.models import Treatment, SamplePlan, Characteristic, TreatmentFactory, TreatmentSequence, \
+    OntologyAnnotation, INTERVENTIONS, BASE_FACTORS
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitoglycerin'
@@ -52,6 +53,38 @@ class TreatmentTest(unittest.TestCase):
         ))
         self.assertNotEqual(self.treatment, other_treatment)
         self.assertNotEqual(hash(self.treatment), hash(other_treatment))
+
+
+class SamplePlanTest(unittest.TestCase):
+
+    def setUp(self):
+        self.sample_plan = SamplePlan()
+
+    def test_init_default(self):
+        sample_plan = self.sample_plan
+        self.assertEqual(sample_plan.group_size, 0)
+        self.assertEqual(sample_plan.sample_types_map, {})
+
+    def test_init_group_size(self):
+        group_size = 100
+        sample_plan = SamplePlan(group_size=group_size)
+        self.assertEqual(sample_plan.group_size, group_size)
+
+    def test_add_sample_type_sampling_plan_single_value(self):
+        sampling_size = 12
+        sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='blood')
+        self.sample_plan.add_sample_type_sampling_plan(sample_type, sampling_size=sampling_size)
+        self.assertEqual(self.sample_plan.sample_types_map, {
+           sample_type: sampling_size
+        })
+
+    def test_add_sample_type_sampling_plan_multiple_value(self):
+        sampling_size = (10, 0, 8, 5)
+        sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='liver')
+        self.sample_plan.add_sample_type_sampling_plan(sample_type, sampling_size=sampling_size)
+        self.assertEqual(self.sample_plan.sample_types_map, {
+            sample_type: sampling_size
+        })
 
 
 class TreatmentFactoryTest(unittest.TestCase):

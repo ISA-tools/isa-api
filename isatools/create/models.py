@@ -15,15 +15,15 @@ FACTOR_TYPES = dict(AGENT_VALUES='agent values', INTENSITY_VALUES='intensity val
 BASE_FACTORS = [
     dict(
         name='AGENT', type=OntologyAnnotation(term="perturbation agent"), display_singular='AGENT VALUE',
-        display_plural='AGENT VALUES', uri='', values=set()
+        display_plural='AGENT VALUES', values=set()
     ),
     dict(
         name='INTENSITY', type=OntologyAnnotation(term="intensity"), display_singular='INTENSITY VALUE',
-        display_plural='INTENSITY VALUES', uri='', values=set()
+        display_plural='INTENSITY VALUES', values=set()
     ),
     dict(
         name='DURATION', type=OntologyAnnotation(term="time"), display_singular='DURATION VALUE',
-        display_plural='DURATION VALUES', uri='', values=set()
+        display_plural='DURATION VALUES', values=set()
     )
 ]
 
@@ -70,9 +70,12 @@ class InterventionStudyDesign(BaseStudyDesign):
 
 class SamplePlan(object):
 
-    def __init__(self, group_size=0):
+    def __init__(self, group_size=0, sample_type_map=None):
         self.__group_size = group_size if isinstance(group_size, int) and group_size > 0 else 0
         self.__sample_types_map = {}
+
+        if sample_type_map:
+            self.sample_types_map = sample_type_map
 
     @property
     def group_size(self):
@@ -95,14 +98,25 @@ class SamplePlan(object):
         for sample_type, sampling_size in sample_types_map.items():
             self.add_sample_type_sampling_plan(sample_type, sampling_size)
 
-    def add_sample_type_sampling_plan(self, sample_type, sampling_size):
-        if not isinstance(sampling_size, int):
-            raise TypeError('sampling_size must be a natural number')
-        if sampling_size < 0:
-            raise ValueError('sampling_size must be a natural number')
+    def add_sample_type_sampling_plan(self, sample_type, sampling_size=0):
+        """
+        
+        :param sample_type: (Characteristic/str) a sample type
+        :param sampling_size: (int/tuple of int) for the provided sample type how many sampling events happen for a single
+                                                 source/subject. This can be specified throughout the whole sequence with
+                                                 a single integer value, or with a tuple of value, each value for an 
+                                                 epoch. Missing values will be considered as zero (no sampling.
+        :return: 
+        """
+        if not isinstance(sampling_size, int) and not isinstance(sampling_size, tuple):
+            raise TypeError('sampling_size must be a natural number or a tuple of natural numbers')
+        if isinstance(sampling_size, int) and sampling_size < 0:
+            raise ValueError('sampling_size value must be a positive integer')
+        if isinstance(sampling_size, tuple) and not all(isinstance(el, int) and el >= 0 for el in sampling_size):
+            raise ValueError('all values in the sampling_size tuple must be positive integers')
         if isinstance(sample_type, Characteristic):
             self.__sample_types_map[sample_type] = sampling_size
-        elif isinstance(sample_type, str):
+        elif isinstance(sample_type, str):  # TODO should we remove this case?
             characteristic = Characteristic(category=OntologyAnnotation(term='organism part'),
                                             value=OntologyAnnotation(term=sample_type))
             self.__sample_types_map[characteristic] = sampling_size
@@ -147,7 +161,7 @@ class Treatment(object):
 
     @treatment_type.setter
     def treatment_type(self, treatment_type):
-        if type in INTERVENTIONS.values():
+        if treatment_type in INTERVENTIONS.values():
             self.__treatment_type = treatment_type
         else:
             raise ValueError('invalid treatment type provided: ')
@@ -226,8 +240,8 @@ class TreatmentSequence:
 
     def __init__(self, ranked_treatments=[], subject_count=10):
         """
-        :param ranked_treatments: Treatment or list of Treatments of list of tuples (Treatment, int) where the second term represents the 
-            epoch
+        :param ranked_treatments: Treatment or list of Treatments of list of tuples (Treatment, int) where the second 
+               term represents the  epoch
         """
         self.__ranked_treatments = set()
         # self.__subject_count = subject_count if isinstance(subject_count, int) and subject_count >= 0 else 0
