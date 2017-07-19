@@ -1,8 +1,8 @@
 import unittest
 from collections import OrderedDict
 from isatools.model.v1 import StudyFactor, FactorValue
-from isatools.create.models import Treatment, SamplePlan, Characteristic, TreatmentFactory, TreatmentSequence, \
-    OntologyAnnotation, INTERVENTIONS, BASE_FACTORS
+from isatools.create.models import InterventionStudyDesign, Treatment, SamplePlan, Characteristic, TreatmentFactory, \
+    TreatmentSequence, OntologyAnnotation, INTERVENTIONS, BASE_FACTORS
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitoglycerin'
@@ -399,3 +399,52 @@ class TreatmentSequenceTest(unittest.TestCase):
         subject_count = 20
         self.sequence.subject_count = subject_count
         self.assertTrue(self.sequence.subject_count, subject_count)
+
+
+class InterventionStudyDesignTest(unittest.TestCase):
+
+    def setUp(self):
+        self.design = InterventionStudyDesign()
+        self.agent = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
+        self.intensity = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
+        self.duration = StudyFactor(name=BASE_FACTORS[2]['name'], factor_type=BASE_FACTORS[2]['type'])
+        self.first_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            FactorValue(factor_name=self.agent, value='crack'),
+            FactorValue(factor_name=self.intensity, value='low'),
+            FactorValue(factor_name=self.duration, value='medium')
+        ))
+        self.second_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            FactorValue(factor_name=self.agent, value='crack'),
+            FactorValue(factor_name=self.intensity, value='high'),
+            FactorValue(factor_name=self.duration, value='medium')
+        ))
+        self.test_sequence = TreatmentSequence(ranked_treatments=[(self.first_treatment, 1), (self.second_treatment, 2)])
+        self.sample_plan = SamplePlan(group_size=10, sample_type_map={})
+
+    def test_add_single_sequence_plan(self):
+        self.design.add_single_sequence_plan(treatment_sequence=self.test_sequence, sample_plan=self.sample_plan)
+        self.assertEqual(self.design.sequences_plan.get(self.test_sequence, None), self.sample_plan)
+
+    def test_add_single_sequence_error_sequence(self):
+        wrong_sequence = 'This is not a sequence'
+        self.assertRaises(TypeError, self.design.add_single_sequence_plan, treatment_sequence=wrong_sequence,
+                          sample_plan=self.sample_plan)
+
+    def test_add_single_sequence_error_sample_plan(self):
+        wrong_sample_plan = 'This is not a sample plan'
+        self.assertRaises(TypeError, self.design.add_single_sequence_plan, treatment_sequence=self.test_sequence,
+                          sample_plan=wrong_sample_plan)
+
+    def test_sequences_plan_properties(self):
+        other_test_sequence = TreatmentSequence(ranked_treatments=[(self.first_treatment, 2), (self.second_treatment, 1)])
+        other_sample_plan = SamplePlan(group_size=12, sample_type_map={})
+        sequences_plan = {
+            self.test_sequence: self.sample_plan,
+            other_test_sequence: other_sample_plan
+        }
+        self.design.sequences_plan = sequences_plan
+        self.assertEqual(self.design.sequences_plan, sequences_plan)
+
+    def test_sequences_plan_properties(self):
+        not_a_sequences_plan_object = [self.test_sequence, self.sample_plan]
+        self.assertRaises(TypeError, self.design.sequences_plan, not_a_sequences_plan_object)

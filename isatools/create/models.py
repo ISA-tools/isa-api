@@ -34,38 +34,30 @@ class BaseStudyDesign(object):
 
 class InterventionStudyDesign(BaseStudyDesign):
 
-    def __init__(self, sequences=[]):
+    def __init__(self, sequences_plan=[]):
         super().__init__()
-        self.__sequences = OrderedDict()
+        self.__sequences_plan = {}
         # self.sequences = sequences
 
     @property
-    def sequences(self):
-        return self.__sequences if self.__sequences else OrderedDict()
+    def sequences_plan(self):
+        return self.__sequences_plan if self.__sequences_plan else OrderedDict()
 
-    @sequences.setter
-    def sequences(self, sequences):
-        pass
-        """
-        if isinstance(sequences, Iterable) and all([isinstance(elem, TreatmentSequence) for elem in sequences]):
-            self.__sequences = sequences
-        else:
-            raise TypeError('The object supplied is not a valid iterable of TreatmentSequence: {0}'.format(sequences))
-        """
+    @sequences_plan.setter
+    def sequences_plan(self, sequences_plan):
+        if not isinstance(sequences_plan, dict):
+            raise TypeError('{0} is not a valid input. please provide a dictionary mapping Treatment Sequences to'
+                            'Sample Plans')
+        for treatment_sequence, sample_plan in sequences_plan.items():
+            self.add_single_sequence_plan(treatment_sequence, sample_plan)
 
-    def add_sequence(self, sequence, group_size=0, sample_plan_map={}):
-        if isinstance(sequence, TreatmentSequence):
-            self.sequences[sequence] = {
-                'group_size': group_size if isinstance(group_size, int) else 0,
-                'sample_plan_map': sample_plan_map if isinstance(sample_plan_map, dict) and {
-                    isinstance(key, Characteristic) for key in sample_plan_map} else {}
-            }
-        else:
-            raise TypeError('{0} is not a valid sequence'.format(sequence))
-
-    def add_group_size_to_sequence(self, group_size, sequence=None):
-        if sequence is None:
-            sequence = self.sequences.keys()[0]
+    def add_single_sequence_plan(self, treatment_sequence, sample_plan):
+        if not isinstance(treatment_sequence, TreatmentSequence):
+            raise TypeError('Please provide a valid TreatmentSequence. {0} not a valid Treatment Sequence.'.format([
+                treatment_sequence]))
+        if not isinstance(sample_plan, SamplePlan):
+            raise TypeError('Please provide a valid SamplePlan. {0} not a valid Sample Plan.'.format([sample_plan]))
+        self.__sequences_plan[treatment_sequence] = sample_plan
 
 
 class SamplePlan(object):
