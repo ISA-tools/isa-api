@@ -51,6 +51,10 @@ class InterventionStudyDesign(BaseStudyDesign):
         for treatment_sequence, sample_plan in sequences_plan.items():
             self.add_single_sequence_plan(treatment_sequence, sample_plan)
 
+    @property
+    def sample_types(self):
+        pass
+
     def add_single_sequence_plan(self, treatment_sequence, sample_plan):
         if not isinstance(treatment_sequence, TreatmentSequence):
             raise TypeError('Please provide a valid TreatmentSequence. {0} not a valid Treatment Sequence.'.format([
@@ -305,8 +309,8 @@ class AssayType(object):
         elif measurement_type is None:
             self.__measurement_type = None
         else:
-            raise TypeError('{0} is an invalid value for technology_type. '
-                            'Please provide an OntologyAnnotation or string.')
+            raise TypeError('{0} is an invalid value for measurement_type. '
+                            'Please provide an OntologyAnnotation or string.'.format(measurement_type))
         if isinstance(technology_type, OntologyAnnotation):
             self.__technology_type = technology_type
         elif isinstance(technology_type, str):
@@ -315,7 +319,7 @@ class AssayType(object):
             self.__technology_type = None
         else:
             raise TypeError('{0} is an invalid value for technology_type. '
-                            'Please provide an OntologyAnnotation or string.')
+                            'Please provide an OntologyAnnotation or string.'.format(technology_type))
 
     @property
     def measurement_type(self):

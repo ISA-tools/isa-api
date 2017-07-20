@@ -435,7 +435,7 @@ class InterventionStudyDesignTest(unittest.TestCase):
         self.assertRaises(TypeError, self.design.add_single_sequence_plan, treatment_sequence=self.test_sequence,
                           sample_plan=wrong_sample_plan)
 
-    def test_sequences_plan_properties(self):
+    def test_sequences_plan_property(self):
         other_test_sequence = TreatmentSequence(ranked_treatments=[(self.first_treatment, 2), (self.second_treatment, 1)])
         other_sample_plan = SamplePlan(group_size=12, sample_type_map={})
         sequences_plan = {
@@ -448,3 +448,6 @@ class InterventionStudyDesignTest(unittest.TestCase):
     def test_sequences_plan_properties(self):
         not_a_sequences_plan_object = [self.test_sequence, self.sample_plan]
         self.assertRaises(TypeError, self.design.sequences_plan, not_a_sequences_plan_object)
+
+    def test_sample_types_property(self):
+        pass
