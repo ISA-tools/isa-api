@@ -240,9 +240,9 @@ class GenericSampleTabProcessSequenceFactory:
         try:
             cproject = DF["Characteristic[project]"].drop_duplicates()
             if len(cproject.index) == 1:
-                print("{} project type".format(cproject.iloc[0]))
+                log.info("{} project type".format(cproject.iloc[0]))
         except KeyError:
-            print("Assuming default project type")
+            log.info("Assuming default project type")
 
         try:
             samples.update(dict(map(lambda x: (x, Source(comments=[Comment(name="Sample Accession", value=x)])),
@@ -515,7 +515,8 @@ def dumps(investigation):
                 if len(derives_from_accession_hits) == 1:
                     derived_from = derives_from_accession_hits[0].value
                 else:
-                    print("WARNING! No Sample Accession available so referencing Derived From relation using Sample Name \"{}\" instead".format(derived_from_obj.name))
+                    log.warn("WARNING! No Sample Accession available so referencing Derived From relation using "
+                             "Sample Name \"{}\" instead".format(derived_from_obj.name))
                     derived_from = derived_from_obj.name
         sample_accession_hits = [x for x in s.characteristics if x.category.term == "Sample Accession"]
         if len(sample_accession_hits) == 1:

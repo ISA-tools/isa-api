@@ -18,6 +18,8 @@ def read(path):
         log_level = logging.WARNING
     elif log_level_ini.lower() == 'debug':
         log_level = logging.DEBUG
+    elif log_level_ini.lower() == 'error':
+        log_level = logging.ERROR
     elif log_level_ini.lower() == 'critical':
         log_level = logging.CRITICAL
     else:
