@@ -16,10 +16,11 @@ from lxml import etree as etree_
 import os
 import glob
 import logging
-import isatools
 
-logging.basicConfig(level=isatools.log_level)
-LOG = logging.getLogger(__name__)
+from isatools import config
+
+logging.basicConfig(level=config.log_level)
+log = logging.getLogger(__name__)
 
 
 def load(config_dir):
@@ -31,7 +32,7 @@ def load(config_dir):
             technology_type = config_obj.get_isatab_configuration()[0].get_technology().get_term_label()
             config_dict[(measurement_type, technology_type)] = config_obj
         except GDSParseError as parse_error:
-            LOG.error(parse_error)
+            log.error(parse_error)
     return config_dict
 
 

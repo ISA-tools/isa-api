@@ -6,9 +6,12 @@ https://www.ncbi.nlm.nih.gov/pubmed/
 """
 from __future__ import absolute_import
 from Bio import Entrez, Medline
-from isatools.model import Comment, Publication
 import logging
 
+from isatools import config
+from isatools.model import Comment, Publication
+
+logging.basicConfig(level=config.log_level)
 log = logging.getLogger(__name__)
 
 

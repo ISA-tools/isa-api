@@ -1,11 +1,11 @@
-from mzml2isa.parsing import convert as mzml_convert
-from isatools import isatab
-import isatools
-
 import logging
 import os
+from mzml2isa.parsing import convert as mzml_convert
 
-logging.basicConfig(level=isatools.log_level)
+from isatools import config
+from isatools import isatab
+
+logging.basicConfig(level=config.log_level)
 logger = logging.getLogger(__name__)
 
 

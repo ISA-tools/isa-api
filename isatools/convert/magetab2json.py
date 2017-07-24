@@ -1,10 +1,11 @@
-from . import magetab2isatab
 import json
-from isatools import isatab
-from isatools.isajson import ISAJSONEncoder
-import tempfile
 import os
 import shutil
+import tempfile
+
+from isatools import isatab
+from isatools.convert import magetab2isatab
+from isatools.isajson import ISAJSONEncoder
 
 
 def convert(idf_file_path):

@@ -7,13 +7,14 @@ from uuid import uuid4
 from enum import Enum
 import re
 import glob
-from isatools import isatab
 import logging
-import isatools
+
+from isatools import config
+from isatools import isatab
 from isatools.isajson import ISAJSONEncoder
 
-logging.basicConfig(level=isatools.log_level)
-LOG = logging.getLogger(__name__)
+logging.basicConfig(level=config.log_level)
+log = logging.getLogger(__name__)
 
 SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../resources/schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"
@@ -31,25 +32,25 @@ class IdentifierType(Enum):
 def convert(work_dir, identifier_type=IdentifierType.name, validate_first=True, use_new_parser=False):
     i_files = glob.glob(os.path.join(work_dir, 'i_*.txt'))
     if validate_first:
-        LOG.info("Validating input ISA tab before conversion")
+        log.info("Validating input ISA tab before conversion")
         if len(i_files) != 1:
-            LOG.fatal("Could not resolve input investigation file, please check input ISA tab directory")
+            log.fatal("Could not resolve input investigation file, please check input ISA tab directory")
             return
         with open(i_files[0], 'r', encoding='utf-8') as validate_fp:
             report = isatab.validate(fp=validate_fp, log_level=logging.ERROR)
             if len(report['errors']) > 0:
-                LOG.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log")
+                log.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log")
                 return
     if use_new_parser:
-        LOG.info("Using new ISA-Tab parser")
-        LOG.info("Loading ISA-Tab: %s", i_files[0])
+        log.info("Using new ISA-Tab parser")
+        log.info("Loading ISA-Tab: %s", i_files[0])
         with open(i_files[0], 'r', encoding='utf-8') as fp:
             ISA = isatab.load(fp)
-            LOG.info("Dumping ISA-JSON")
+            log.info("Dumping ISA-JSON")
             return json.loads(json.dumps(ISA, cls=ISAJSONEncoder))
     else:
         converter = ISATab2ISAjson_v1(identifier_type)
-        LOG.info("Using old parser")
+        log.info("Using old parser")
         return converter.convert(work_dir)
 
 
@@ -102,14 +103,14 @@ class ISATab2ISAjson_v1:
         """Convert an ISA-Tab dataset (version 1) to JSON provided the ISA model v1.0 JSON Schemas
             :param work_dir: directory containing the ISA-tab dataset
         """
-        LOG.info("Converting ISA-Tab to ISA-JSON for %s", work_dir)
+        log.info("Converting ISA-Tab to ISA-JSON for %s", work_dir)
 
 
         isa_tab = parse(work_dir)
         #print(isa_tab)
 
         if isa_tab is None:
-            LOG.fatal("No ISA-Tab dataset found")
+            log.fatal("No ISA-Tab dataset found")
         else:
                 isa_json = dict([])
                 if isa_tab.metadata != {}:
@@ -134,7 +135,7 @@ class ISATab2ISAjson_v1:
                     validator = Draft4Validator(schema, resolver=resolver)
                     validator.validate(isa_json, schema)
 
-                    LOG.info("Conversion finished")
+                    log.info("Conversion finished")
                     return isa_json
 
     def createComments(self, isadict):
@@ -595,7 +596,7 @@ class ISATab2ISAjson_v1:
 
                      json_item["derivesFrom"] = json_list
                 except KeyError:
-                     LOG.error("There is no source declared for sample %s", node_index)
+                     log.error("There is no source declared for sample %s", node_index)
 
                 json_dict.update({node_index: json_item})
 
@@ -610,7 +611,7 @@ class ISATab2ISAjson_v1:
                 if sample_identifier:
                     json_dict.append(dict([("@id", sample_identifier)]))
                 else:
-                    LOG.warning("Warning: sample identifier has not been defined before %s", node_index)
+                    log.warning("Warning: sample identifier has not been defined before %s", node_index)
                 #  adding sample attributes that may have been defined at the assay level
                 try:
                     sample_json = sample_dict[node_index]
@@ -618,7 +619,7 @@ class ISATab2ISAjson_v1:
                     sample_json["characteristics"] = sample_json["characteristics"] + new_characteristics
                     sample_dict[node_index] = sample_json
                 except KeyError:
-                    LOG.warning("Warning: the sample %s has not been defined at the study level", node_index)
+                    log.warning("Warning: the sample %s has not been defined at the study level", node_index)
 
         return json_dict
 

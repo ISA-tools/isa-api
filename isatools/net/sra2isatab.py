@@ -8,6 +8,8 @@ import logging
 import pdb
 import uuid
 
+from isatools import config
+
 __author__ ='massi'
 
 DESTINATION_DIR = 'output'
@@ -18,7 +20,7 @@ INPUT_FILE = os.path.join(SRA_DIR, 'blank.xml')
 SUBMISSION_XSL_FILE = os.path.join(SRA_DIR, 'sra-submission-embl-online2isatab-txt.xsl')
 STUDY_XSL_FILE = os.path.join(SRA_DIR, 'sra-study-embl-online2isatab.xsl')
 
-# logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=config.log_level)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 

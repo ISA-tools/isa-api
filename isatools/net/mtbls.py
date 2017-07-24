@@ -14,6 +14,7 @@ import tempfile
 import shutil
 import re
 
+from isatools import config
 from isatools import isatab
 from isatools.convert import isatab2json
 from isatools.model import OntologyAnnotation
@@ -23,6 +24,7 @@ EBI_FTP_SERVER = 'ftp.ebi.ac.uk'
 MTBLS_BASE_DIR = '/pub/databases/metabolights/studies/public'
 INVESTIGATION_FILENAME = 'i_Investigation.txt'
 
+logging.basicConfig(level=config.log_level)
 log = logging.getLogger(__name__)
 
 # REGEXES

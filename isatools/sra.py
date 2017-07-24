@@ -10,10 +10,12 @@ import xml.dom.minidom
 from functools import partial
 from lxml import etree
 
+from isatools import config
 from isatools.model import DataFile
 from isatools.model import OntologyAnnotation
 from isatools.model import Sample
 
+logging.basicConfig(level=config.log_level)
 log = logging.getLogger(__name__)
 
 supported_sra_assays = [

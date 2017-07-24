@@ -17,7 +17,7 @@ from isatools import utils
 from tests import utils as test_utils
 
 
-LOG = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 def setUpModule():
@@ -50,13 +50,13 @@ class TestIsaGraph(unittest.TestCase):
                     for assay in study.assays:
                         utils.detect_graph_process_pooling(assay.graph)
             except IOError:
-                LOG.error("IO Error, skipping...")
+                log.error("IO Error, skipping...")
             except KeyError:
-                LOG.error("KeyError, skipping...")
+                log.error("KeyError, skipping...")
             except AttributeError:
-                LOG.error("AttributeError, skipping...")
+                log.error("AttributeError, skipping...")
             except ValidationError:
-                LOG.error("jsonschema ValidationError, skipping...")
+                log.error("jsonschema ValidationError, skipping...")
 
 
 class TestOlsSearch(unittest.TestCase):

@@ -11,9 +11,11 @@ import re
 from io import StringIO
 from itertools import zip_longest
 
+from isatools import config
 from isatools import isatab
 from isatools.model import *
 
+logging.basicConfig(level=config.log_level)
 log = logging.getLogger(__name__)
 
 

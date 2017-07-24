@@ -9,11 +9,12 @@ import json
 import os
 import pathlib
 import base64
-import isatools
 import logging
 
-logging.basicConfig(level=isatools.log_level)
-LOG = logging.getLogger(__name__)
+from isatools import config
+
+logging.basicConfig(level=config.log_level)
+log = logging.getLogger(__name__)
 
 __author__ = 'massi'
 
@@ -172,7 +173,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             'accept': 'application/json'
         }
         r = requests.delete(self.authorization_uri, headers=headers, auth=(self._username, self._password))
-        LOG.debug(r)
+        log.debug(r)
         return r.raise_for_status()
 
     def download(self, source, destination='isa-target', owner='ISA-tools', repository='isa-api', validate_json=False):
@@ -234,7 +235,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                 except etree.XMLSyntaxError:
                     return False
         else:
-            LOG.warn("The request was not successfully fulfilled: ", res.status_code)
+            log.warn("The request was not successfully fulfilled: ", res.status_code)
             return False
 
     def retrieve(self, source, destination='isa-target', owner='ISA-tools', repository='isa-api', ref='master',

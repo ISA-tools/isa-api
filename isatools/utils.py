@@ -7,9 +7,10 @@ import pandas as pd
 import uuid
 from zipfile import ZipFile
 
+from isatools import config
 from isatools import isatab
 
-
+logging.basicConfig(level=config.log_level)
 log = logging.getLogger(__name__)
 
 

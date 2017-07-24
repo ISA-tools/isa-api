@@ -12,11 +12,12 @@ import re
 from json import JSONEncoder
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 
-import isatools
+from isatools import config
 from isatools.model import *
 
 __author__ = 'djcomlab@gmail.com (David Johnson)'
 
+logging.basicConfig(level=config.log_level)
 log = logging.getLogger(__name__)
 
 errors = list()
@@ -1314,7 +1315,7 @@ BASE_DIR = os.path.dirname(__file__)
 default_config_dir = os.path.join(BASE_DIR, "resources", "config", "json", "default")
 
 
-def validate(fp, config_dir=default_config_dir, log_level=isatools.log_level,
+def validate(fp, config_dir=default_config_dir, log_level=config.log_level,
              base_schemas_dir="isa_model_version_1_0_schemas"):
     if config_dir is None:
         config_dir = default_config_dir

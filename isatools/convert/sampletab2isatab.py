@@ -1,8 +1,10 @@
-from isatools import sampletab, isatab
 import logging
-import isatools
 
-logging.basicConfig(level=isatools.log_level)
+from isatools import config
+from isatools import isatab
+from isatools import sampletab
+
+logging.basicConfig(level=config.log_level)
 logger = logging.getLogger(__name__)
 
 
