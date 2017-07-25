@@ -153,8 +153,153 @@ class Commentable(metaclass=abc.ABCMeta):
         else:
             return None
 
+    def get_comment_names(self):
+        """Gets all of the comment names
 
-class Investigation(Commentable):
+        Returns:
+            :obj:`list` of str.
+
+        """
+        return [x.name for x in self.comments]
+
+    def get_comment_values(self):
+        """Gets all of the comment values
+
+        Returns:
+            :obj:`list` of str.
+
+        """
+        return [x.value for x in self.comments]
+
+
+class MetadataMixin(metaclass=abc.ABCMeta):
+    """Abstract mixin class to contain metadata fields found in Investigation
+    and Study sections of ISA
+
+    Attributes:
+        identifier: An identifier associated with objects of this class.
+        title: A title associated with objects of this class.
+        description: A description associated with objects of this class.
+        submission_date: A submission date associated with objects of this
+            class.
+        public_release_date: A submission date associated with objects of this
+            class.
+    """
+
+    def __init__(self, identifier='', title='', description='',
+                 submission_date='', public_release_date='', publications=None,
+                 contacts=None):
+        self.__identifier = identifier
+        self.__title = title
+        self.__description = description
+        self.__submission_date = submission_date
+        self.__public_release_date = public_release_date
+        if publications is None:
+            self.publications = []
+        else:
+            self.__publications = publications
+        if contacts is None:
+            self.contacts = []
+        else:
+            self.__contacts = contacts
+
+    @property
+    def identifier(self):
+        """str: An identifier"""
+        return self.__identifier
+
+    @identifier.setter
+    def identifier(self, value):
+        if value is not None and isinstance(value, str):
+                self.__identifier = value
+        else:
+            raise TypeError('{0}.identifier must be a string'
+                            .format(type(self).__name__))
+
+    @property
+    def title(self):
+        """str: A title"""
+        return self.__title
+
+    @title.setter
+    def title(self, value):
+        if value is not None and isinstance(value, str):
+            self.__title = value
+        else:
+            raise TypeError('{0}.title must be a string'
+                            .format(type(self).__name__))
+
+    @property
+    def description(self):
+        """str: A description"""
+        return self.__description
+
+    @description.setter
+    def description(self, value):
+        if value is not None and isinstance(value, str):
+            self.__description = value
+        else:
+            raise TypeError('{0}.description must be a string'
+                            .format(type(self).__name__))
+
+    @property
+    def submission_date(self):
+        """str: A submission date"""
+        return self.__submission_date
+
+    @submission_date.setter
+    def submission_date(self, value):
+        if value is not None and isinstance(value, str):
+            self.__submission_date = value
+        else:
+            raise TypeError('{0}.submission_date must be a string'
+                            .format(type(self).__name__))
+
+    @property
+    def public_release_date(self):
+        """str: A public release date"""
+        return self.__public_release_date
+
+    @public_release_date.setter
+    def public_release_date(self, value):
+        if value is not None and isinstance(value, str):
+            self.__public_release_date = value
+        else:
+            raise TypeError('{0}.public_release_date must be a string'
+                            .format(type(self).__name__))
+
+    @property
+    def publications(self):
+        """:obj:`list` of :obj:`Publication`: Container for ISA publications"""
+        return self.__publications
+
+    @publications.setter
+    def publications(self, value):
+        if value is not None and hasattr(value, '__iter__'):
+            if value == [] or all(isinstance(x, Publication) for x in value):
+                self.__publications = list(value)
+        else:
+            raise TypeError(
+                '{0}.publications must be iterable containing Publications'
+                .format(type(self).__name__))
+
+    @property
+    def contacts(self):
+        """:obj:`list` of :obj:`Person`: Container for ISA contacts"""
+        return self.__contacts
+
+    @contacts.setter
+    def contacts(self, value):
+        if value is not None and hasattr(value, '__iter__'):
+            if value == [] or all(isinstance(x, Person) for x in value):
+                self.__contacts = list(value)
+        else:
+            raise TypeError(
+                '{0}.contacts must be iterable containing Person objects'
+                .format(type(self).__name__))
+
+
+class Investigation(Commentable, MetadataMixin, object):
     """An investigation maintains metadata about the project context and links
     to one or more studies. There can only be 1 Investigation in an ISA
     descriptor. Investigations have the following properties:
@@ -181,41 +326,69 @@ class Investigation(Commentable):
                  description='', submission_date='', public_release_date='',
                  ontology_source_references=None, publications=None,
                  contacts=None, studies=None, comments=None):
-        super().__init__(comments)
+        MetadataMixin.__init__(self, identifier=identifier, title=title,
+                               description=description,
+                               submission_date=submission_date,
+                               public_release_date=public_release_date,
+                               publications=publications, contacts=contacts)
+        Commentable.__init__(self, comments=comments)
+
         self.id = id_
         self.filename = filename
-        self.identifier = identifier
-        self.title = title
-        self.description = description
-        self.submission_date = submission_date
-        self.public_release_date = public_release_date
+
         if ontology_source_references is None:
-            self.ontology_source_references = list()
+            self.__ontology_source_references = []
         else:
-            self.ontology_source_references = ontology_source_references
-        if publications is None:
-            self.publications = list()
-        else:
-            self.publications = publications
-        if contacts is None:
-            self.contacts = list()
-        else:
-            self.contacts = contacts
+            self.__ontology_source_references = ontology_source_references
+
         if studies is None:
-            self.studies = list()
+            self.__studies = []
         else:
-            self.studies = studies
+            self.__studies = studies
+
+    @property
+    def ontology_source_references(self):
+        """:obj:`list` of :obj:`OntologySource`: Container for ontology
+                sources
+        """
+        return self.__ontology_source_references
+
+    @ontology_source_references.setter
+    def ontology_source_references(self, value):
+        if value is not None and hasattr(value, '__iter__'):
+            if value == [] or all(isinstance(x, OntologySource) for x in value):
+                self.__ontology_source_references = list(value)
+        else:
+            raise TypeError('Investigation.ontology_source_references must be '
+                            'iterable containing OntologySource objects')
+
+    @property
+    def studies(self):
+        """:obj:`list` of :obj:`Study`: Container for studies"""
+        return self.__studies
+
+    @studies.setter
+    def studies(self, value):
+        if value is not None and hasattr(value, '__iter__'):
+            if value == [] or all(isinstance(x, Study) for x in value):
+                self.__studies = list(value)
+        else:
+            raise TypeError('Investigation.studies must be iterable containing '
+                            'OntologySource objects')
 
 
 class OntologySource(Commentable):
-    """An OntologySource describes the resource from which the value of an OntologyAnnotation is derived from.
+    """An OntologySource describes the resource from which the value of an
+    OntologyAnnotation is derived from.
 
     Attributes:
-        name (str): The name of the source of a term; i.e. the source controlled vocabulary or ontology.
-        file (str): A file name or a URI of an official resource.
-        version (str): The version number of the Term Source to support terms tracking.
-        description (str): A free text description of the resource.
-        comments (list,): Comments associated with instances of this class.
+        name: The name of the source of a term; i.e. the source controlled
+            vocabulary or ontology.
+        file: A file name or a URI of an official resource.
+        version: The version number of the Term Source to support terms
+            tracking.
+        description: A free text description of the resource.
+        comments: Comments associated with instances of this class.
     """
 
     def __init__(self, name, file='', version='', description='', comments=''):
@@ -224,6 +397,83 @@ class OntologySource(Commentable):
         self.file = file
         self.version = version
         self.description = description
+
+
+class OntologyAnnotation(Commentable):
+    """An ontology annotation
+
+    Attributes:
+        term : A term taken from an ontology or controlled vocabulary.
+        term_source : Reference to the OntologySource from which the term is
+            derived.
+        term_accession : A URI or resource-specific identifier for the term.
+        comments: Comments associated with instances of this class.
+    """
+
+    def __init__(self, term=None, term_source=None, term_accession=None,
+                 comments=None, id_=''):
+        super().__init__(comments)
+
+        self.term = term
+        self.term_source = term_source
+        self.term_accession = term_accession
+        self.id = id_
+
+    @property
+    def term(self):
+        if self.__term is '':
+            return None
+        else:
+            return self.__term
+
+    @term.setter
+    def term(self, term):
+        if term is not None and not isinstance(term, str):
+            raise AttributeError("OntologyAnnotation.term must be a str or None; got {}:{}".format(term, type(term)))
+        else:
+            self.__term = term
+
+    @property
+    def term_source(self):
+        return self.__term_source
+
+    @term_source.setter
+    def term_source(self, term_source):
+        if term_source is not None and not isinstance(term_source, OntologySource):
+            raise AttributeError("OntologyAnnotation.term_source must be a OntologySource or None; got {}:{}".format(term_source, type(term_source)))
+        else:
+            self.__term_source = term_source
+
+    @property
+    def term_accession(self):
+        if self.__term is '':
+            return None
+        else:
+            return self.__term_accession
+
+    @term_accession.setter
+    def term_accession(self, term_accession):
+        if term_accession is not None and not isinstance(term_accession, str):
+            raise AttributeError("OntologyAnnotation.term_accession must be a str or None")
+        else:
+            self.__term_accession = term_accession
+
+    def __repr__(self):
+        return 'OntologyAnnotation(term="{0}", term_source="{1}", term_accession="{2}")'.format(
+            self.term, self.term_source, self.term_accession)
+
+
+    def __hash__(self):
+        return hash(repr(self))
+
+
+    def __eq__(self, other):
+        return isinstance(other, OntologyAnnotation) and self.term == other.term \
+               and self.term_source == other.term_source and self.term_accession == self.term_accession
+
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class OntologyAnnotation(Commentable):
