@@ -497,9 +497,9 @@ def _all_end_to_end_paths(G, start_nodes):  # we know graphs start with Source o
             for end in [x for x in nx.algorithms.descendants(G, start) if
                         isinstance(x, Process) and x.next_process is None]:
                 paths += list(nx.algorithms.all_simple_paths(G, start, end))
-    print("Found {} paths!".format(len(paths)))
+    log.info("Found {} paths!".format(len(paths)))
     if len(paths) == 0:
-        print([x.name for x in start_nodes])  # TODO: Find out why no paths in BII-I-1
+        log.debug([x.name for x in start_nodes])  # TODO: Find out why no paths in BII-I-1
     return paths
 
 
@@ -634,14 +634,14 @@ def write_study_table_files(inv_obj, output_dir):
             elif col.startswith("Sample Name."):
                 columns[i] = "Sample Name"
 
-        print("Rendered {} paths".format(len(DF.index)))
+        log.info("Rendered {} paths".format(len(DF.index)))
 
         DF_no_dups = DF.drop_duplicates()
         if len(DF.index) > len(DF_no_dups.index):
-            print("Dropping duplicates...")
+            log.info("Dropping duplicates...")
             DF = DF_no_dups
 
-        print("Writing {} rows".format(len(DF.index)))
+        log.info("Writing {} rows".format(len(DF.index)))
         # reset columns, replace nan with empty string, drop empty columns
         DF.columns = columns
         DF = DF.replace('', np.nan)
@@ -677,7 +677,7 @@ def write_assay_table_files(inv_obj, output_dir):
             # start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
             paths = _all_end_to_end_paths(assay_obj.graph, [x for x in assay_obj.graph.nodes() if isinstance(x, Sample)])
             if len(paths) == 0:
-                print("No paths found, skipping writing assay file")
+                log.info("No paths found, skipping writing assay file")
                 continue
             if _longest_path_and_attrs(paths) is None:
                 raise IOError("Could not find any valid end-to-end paths in assay graph")
@@ -842,13 +842,13 @@ def write_assay_table_files(inv_obj, output_dir):
                 elif "." in col:
                         columns[i] = col[:col.rindex(".")]
 
-            print("Rendered {} paths".format(len(DF.index)))
+            log.info("Rendered {} paths".format(len(DF.index)))
             if len(DF.index) > 1:
                 if len(DF.index) > len(DF.drop_duplicates().index):
-                    print("Dropping duplicates...")
+                    log.debug("Dropping duplicates...")
                     DF = DF.drop_duplicates()
 
-            print("Writing {} rows".format(len(DF.index)))
+            log.info("Writing {} rows".format(len(DF.index)))
             # reset columns, replace nan with empty string, drop empty columns
             DF.columns = columns
             DF = DF.replace('', np.nan)
@@ -2024,7 +2024,7 @@ def check_study_table_against_config(s_df, protocols_declared, config):
 
     # Second, check if Protocol REFs are of valid types
     for row in s_df['Protocol REF']:
-        print(row, protocols_declared[row] in [i[1] for i in protocols], [i[1] for i in protocols])
+        log.debug(row, protocols_declared[row] in [i[1] for i in protocols], [i[1] for i in protocols])
     # Third, check if required values are present
 
 
@@ -3056,7 +3056,7 @@ def get_value(object_column, column_group, object_series, ontology_source_map, u
             try:
                 value.term_source = ontology_source_map[term_source_value]
             except KeyError:
-                print('term source: ', term_source_value, ' not found')
+                log.debug('term source: ', term_source_value, ' not found')
 
         term_accession_value = object_series[offset_2r_col]
 
@@ -3088,7 +3088,7 @@ def get_value(object_column, column_group, object_series, ontology_source_map, u
                 try:
                     unit_term_value.term_source = ontology_source_map[unit_term_source_value]
                 except KeyError:
-                    print('term source: ', unit_term_source_value, ' not found')
+                    log.debug('term source: ', unit_term_source_value, ' not found')
 
             term_accession_value = object_series[offset_3r_col]
 
@@ -3276,7 +3276,7 @@ class ProcessSequenceFactory:
                     try:
                         samples[k] = sample_map[k]
                     except KeyError:
-                        print('warning! Did not find sample referenced at assay level in study samples')
+                        log.warn('warning! Did not find sample referenced at assay level in study samples')
             else:
                 samples = dict(map(lambda x: ('Sample Name:' + x, Sample(name=x)),
                                [str(x) for x in DF['Sample Name'].drop_duplicates() if x != '']))
