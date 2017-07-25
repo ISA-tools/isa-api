@@ -9,9 +9,11 @@ Todo:
     * Finish docstringing rest of the module
     * Add constraints on attributes throughout, and test
 
-.. _ISA Model and Serialization Specifications 1.0: http://isa-specs.readthedocs.io/
+.. _ISA Model and Serialization Specs 1.0: http://isa-specs.readthedocs.io/
 
 """
+from __future__ import absolute_import
+import abc
 import networkx as nx
 
 
@@ -19,9 +21,12 @@ def _build_assay_graph(process_sequence=list()):
     G = nx.DiGraph()
     for process in process_sequence:
         if process.next_process is not None or len(
-                process.outputs) > 0:  # first check if there's some valid outputs to connect
-            if len([n for n in process.outputs if not isinstance(n, DataFile)]) > 0:
-                for output in [n for n in process.outputs if not isinstance(n, DataFile)]:
+                process.outputs) > 0:
+            # first check if there's some valid outputs to connect
+            if len([n for n in process.outputs if
+                    not isinstance(n, DataFile)]) > 0:
+                for output in [n for n in process.outputs if
+                               not isinstance(n, DataFile)]:
                     G.add_edge(process, output)
             else:  # otherwise just connect the process to the next one
                 G.add_edge(process, process.next_process)
@@ -35,51 +40,146 @@ def _build_assay_graph(process_sequence=list()):
 
 
 class Comment(object):
-    """A comment allows arbitrary annotation of all ISA classes
-
-    Comments are implemented in ISA-Tab and ISA-JSON formats.
+    """A Comment allows arbitrary annotation of all Commentable ISA classes
 
     Attributes:
-        name (str): The name of the comment (as mapped to Comment[SomeName] in ISA-Tab) to give context to the comment field.
-        value (str, int, float, NoneType): A value for the corresponding comment, as a string or number.
+        name: A string name for the comment context (maps to Comment[{name}])
+        value: A string value for the comment.
     """
-    def __init__(self, name, value=''):
-        self.name = name
-        self.value = value
+
+    def __init__(self, name='', value=''):
+        self.__name = name
+        self.__value = value
+
+    @property
+    def name(self):
+        """str: name for the comment context"""
+        return self.__name
+
+    @name.setter
+    def name(self, value_):
+        if value_ is not None and isinstance(value_, str):
+            object.__setattr__(self, '__name', value_)
+        else:
+            raise TypeError('Comment.name must be a string')
+
+    @property
+    def value(self):
+        """str: value for the comment content"""
+        return self.__value
+
+    @value.setter
+    def value(self, value_):
+        if isinstance(value_, str):
+            object.__setattr__(self, '__value', value_)
+        raise TypeError('Comment.value must be a string')
+
+    def __repr__(self):
+        return 'Comment(name="{0}", value="{1}")'.format(self.__name,
+                                                         self.__value)
 
 
-class Commentable(object):
-    """ An ISA Object is an abstract class to enable containment of Comments
+class Commentable(metaclass=abc.ABCMeta):
+    """Abstract class to enable containment of Comments
 
     Attributes:
-        comments (list, NoneType): Comments associated with the implementing ISA class (all ISA classes).
+        comments: Comments associated with the implementing ISA class.
     """
     def __init__(self, comments=None):
         if comments is None:
-            self.comments = []
+            self.__comments = []
         else:
-            self.comments = comments
+            self.__comments = comments
+
+    @property
+    def comments(self):
+        """:obj:`list` of :obj:`Comment`: Container for ISA comments"""
+        return self.__comments
+
+    @comments.setter
+    def comments(self, value):
+        if value is not None and hasattr(value, '__iter__'):
+            if value == [] or all(isinstance(x, Comment) for x in value):
+                self.__comments = list(value)
+        else:
+            raise TypeError('{0}.comments must be iterable containing Comments'
+                            .format(type(self).__name__))
+
+    def add_comment(self, name=None, value_=None):
+        """Adds a new comment to the comment list.
+
+        Args:
+            name: Comment name
+            value_: Comment value
+        """
+        c = Comment(name=name, value=value_)
+        self.comments.append(c)
+
+    def yield_comments(self, name=None):
+        """Gets an iterator of matching comments for a given name.
+
+        Args:
+            name: Comment name
+
+        Returns:
+            :obj:`filter` of :obj:`Comments` that can be iterated on.
+        """
+        if name is None:
+            return filter(True, self.comments)
+        else:
+            return filter(lambda x: x.name == name, self.comments)
+
+    def get_comments(self):
+        """Gets a list of all comments.
+
+        Returns:
+            :obj:`list` of :obj:`Comment` of all comments, if any
+        """
+        return self.comments
+
+    def get_comment(self, name):
+        """Gets the first matching comment for a given name
+
+        Args:
+            name: Comment name
+
+        Returns:
+            :obj:`Comment` matching the name. Only returns the first found.
+
+        """
+        clist = list(self.yield_comments(name=name))
+        if len(clist) > 0:
+            return clist[-1]
+        else:
+            return None
 
 
 class Investigation(Commentable):
-    """An investigation maintains metadata about the project context and links to one or more studies. There can only
-    be 1 Investigation in an ISA descriptor. Investigations has the following properties:
+    """An investigation maintains metadata about the project context and links
+    to one or more studies. There can only be 1 Investigation in an ISA
+    descriptor. Investigations have the following properties:
 
     Attributes:
-        identifier (str): A locally unique identifier or an accession number provided by a repository.
-        title (str): A concise name given to the investigation.
-        description (str): A textual description of the investigation.
-        submission_date (str): The date on which the investigation was reported to the repository. This should be ISO8601 formatted.
-        public_release_date (str): The date on which the investigation should be released publicly. This should be ISO8601 formatted.
-        ontology_source_references (list, NoneType): OntologySources to be referenced by OntologyAnnotations used in this ISA descriptor.
-        publications (list, NoneType): A list of Publications associated with an Investigation.
-        contacts (list, NoneType): A list of People/contacts associated with an Investigation.
-        studies (list, NoneType): Study is the central unit, containing information on the subject under study.
-        comments (list, NoneType): Comments associated with instances of this class.
+        identifier: A locally unique identifier or an accession number provided
+            by a repository.
+        title: A concise name given to the investigation.
+            description: A textual description of the investigation.
+        submission_date  date on which the investigation was reported to the
+            repository. This should be ISO8601 formatted.
+        public_release_date: The date on which the investigation should be
+            released publicly. This should be ISO8601 formatted.
+        ontology_source_references: OntologySources to be referenced by
+            OntologyAnnotations used in this ISA descriptor.
+        publications: A list of Publications associated with an Investigation.
+        contacts: A list of People/contacts associated with an Investigation.
+        studies: Study is the central unit, containing information on the
+            subject under study.
+        comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, id_='', filename='', identifier="", title="", description="", submission_date='',
-                 public_release_date='', ontology_source_references=None, publications=None,
+    def __init__(self, id_='', filename='', identifier='', title='',
+                 description='', submission_date='', public_release_date='',
+                 ontology_source_references=None, publications=None,
                  contacts=None, studies=None, comments=None):
         super().__init__(comments)
         self.id = id_
@@ -105,8 +205,6 @@ class Investigation(Commentable):
             self.studies = list()
         else:
             self.studies = studies
-        if comments is None:
-            self.comments = list()
 
 
 class OntologySource(Commentable):

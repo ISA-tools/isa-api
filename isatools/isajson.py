@@ -32,9 +32,8 @@ _RX_PMCID = re.compile("PMC[0-9]{8}")
 def load(fp):
 
     def get_comments(j):
-        comments = None
+        comments = []
         if "comments" in j.keys():
-            comments = list()
             for comment_json in j["comments"]:
                 name = comment_json["name"]
                 value = comment_json["value"]
