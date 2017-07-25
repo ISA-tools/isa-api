@@ -72,7 +72,7 @@ class SamplePlanTest(unittest.TestCase):
 
     def test_add_sample_type_sampling_plan_single_value(self):
         sampling_size = 12
-        sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='blood')
+        sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='liver')
         self.sample_plan.add_sample_type_sampling_plan(sample_type, sampling_size=sampling_size)
         self.assertEqual(self.sample_plan.sample_types_map, {
            sample_type: sampling_size
@@ -85,6 +85,18 @@ class SamplePlanTest(unittest.TestCase):
         self.assertEqual(self.sample_plan.sample_types_map, {
             sample_type: sampling_size
         })
+
+    def test_sample_types_property(self):
+        liver_sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='liver')
+        blood_sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='blood')
+        self.sample_plan.sample_types_map = {
+            liver_sample_type: (0, 1, 1),
+            blood_sample_type: (3, 3, 4)
+        }
+        self.assertEqual(self.sample_plan.sample_types, { liver_sample_type, blood_sample_type })
+
+    def test_sample_types_property_empty(self):
+        self.assertEqual(self.sample_plan.sample_types, set())
 
 
 class TreatmentFactoryTest(unittest.TestCase):
@@ -111,6 +123,12 @@ class TreatmentFactoryTest(unittest.TestCase):
         factor = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
         self.factory.add_factor_value(factor, values_to_add)
         self.assertEqual(self.factory.factors.get(factor), set(values_to_add))
+
+    def test_add_factor_value_set(self):
+        values_to_add = {'agent_orange', 'crack, cocaine'}
+        factor = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
+        self.factory.add_factor_value(factor, values_to_add)
+        self.assertEqual(self.factory.factors.get(factor), values_to_add)
 
     def test_compute_full_factorial_design(self):
 
@@ -451,3 +469,5 @@ class InterventionStudyDesignTest(unittest.TestCase):
 
     def test_sample_types_property(self):
         pass
+
+

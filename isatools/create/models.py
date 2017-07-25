@@ -28,42 +28,6 @@ BASE_FACTORS = [
 ]
 
 
-class BaseStudyDesign(object):
-    pass
-
-
-class InterventionStudyDesign(BaseStudyDesign):
-
-    def __init__(self, sequences_plan=[]):
-        super().__init__()
-        self.__sequences_plan = {}
-        # self.sequences = sequences
-
-    @property
-    def sequences_plan(self):
-        return self.__sequences_plan if self.__sequences_plan else OrderedDict()
-
-    @sequences_plan.setter
-    def sequences_plan(self, sequences_plan):
-        if not isinstance(sequences_plan, dict):
-            raise TypeError('{0} is not a valid input. please provide a dictionary mapping Treatment Sequences to'
-                            'Sample Plans')
-        for treatment_sequence, sample_plan in sequences_plan.items():
-            self.add_single_sequence_plan(treatment_sequence, sample_plan)
-
-    @property
-    def sample_types(self):
-        pass
-
-    def add_single_sequence_plan(self, treatment_sequence, sample_plan):
-        if not isinstance(treatment_sequence, TreatmentSequence):
-            raise TypeError('Please provide a valid TreatmentSequence. {0} not a valid Treatment Sequence.'.format([
-                treatment_sequence]))
-        if not isinstance(sample_plan, SamplePlan):
-            raise TypeError('Please provide a valid SamplePlan. {0} not a valid Sample Plan.'.format([sample_plan]))
-        self.__sequences_plan[treatment_sequence] = sample_plan
-
-
 class SamplePlan(object):
 
     def __init__(self, group_size=0, sample_type_map=None):
@@ -118,6 +82,10 @@ class SamplePlan(object):
             self.__sample_types_map[characteristic] = sampling_size
         else:
             raise TypeError('wrong sample type {0}'.format(sample_type))
+
+    @property
+    def sample_types(self):
+        return {sample_type for sample_type in self.__sample_types_map}
 
 
 class Treatment(object):
@@ -335,7 +303,7 @@ class AssayType(object):
             self.__measurement_type = None
         else:
             raise TypeError('{0} is an invalid value for measurement_type. '
-                            'Please provide an OntologyAnnotation or string.')
+                            'Please provide an OntologyAnnotation or string.'.format(measurement_type))
 
     @property
     def technology_type(self):
@@ -351,7 +319,7 @@ class AssayType(object):
             self.__technology_type = None
         else:
             raise TypeError('{0} is an invalid value for technology_type. '
-                            'Please provide an OntologyAnnotation or string.')
+                            'Please provide an OntologyAnnotation or string.'.format(technology_type))
 
     def __repr__(self):
         return 'AssayType(mt={0}, tt={1})'.format(self.measurement_type.term, self.technology_type.term)
@@ -487,11 +455,12 @@ class AssayTopologyModifiers(object):
 
 class AssayPlan(object):
 
-    def __init__(self, sample_plan=None):
-        self.__sample_plan = sample_plan
+    def __init__(self):
+        # self.__sample_plan = sample_plan
         self.__assay_types_map = {}
         self.__assay_topologies_map = {}
 
+    """
     @property
     def sample_plan(self):
         return self.__sample_plan
@@ -501,6 +470,7 @@ class AssayPlan(object):
         if not isinstance(sample_plan, (SamplePlan, None)):
             raise TypeError('{0} is an invalid value for sample_plan. Please provide a SamplePlan object.')
         self.__sample_plan = sample_plan
+    """
 
     @property
     def assay_types_map(self):
@@ -544,3 +514,41 @@ class AssayPlan(object):
             self.__assay_topologies_map[assay_type] = assay_topology_modifiers
         else:
             raise TypeError('invalid assay_topology_modifiers type {0}'.format(assay_topology_modifiers))
+
+
+class BaseStudyDesign(object):
+    pass
+
+
+class InterventionStudyDesign(BaseStudyDesign):
+
+    def __init__(self, sequences_plan=[]):
+        super().__init__()
+        self.__sequences_plan = {}
+        # self.sequences = sequences
+
+    @property
+    def sequences_plan(self):
+        return self.__sequences_plan if self.__sequences_plan else OrderedDict()
+
+    @sequences_plan.setter
+    def sequences_plan(self, sequences_plan):
+        if not isinstance(sequences_plan, dict):
+            raise TypeError('{0} is not a valid input. please provide a dictionary mapping Treatment Sequences to'
+                            'Sample Plans')
+        for treatment_sequence, sample_plan in sequences_plan.items():
+            self.add_single_sequence_plan(treatment_sequence, sample_plan)
+
+    # TODO move/remove??
+    @property
+    def sample_types(self):
+        pass
+
+    def add_single_sequence_plan(self, treatment_sequence, sample_plan):
+        if not isinstance(treatment_sequence, TreatmentSequence):
+            raise TypeError('Please provide a valid TreatmentSequence. '
+                            '{0} not a valid Treatment Sequence.'.format([
+                treatment_sequence]))
+        if not isinstance(sample_plan, SamplePlan):
+            raise TypeError('Please provide a valid SamplePlan. {0} not a valid Sample Plan.'.format(sample_plan))
+        self.__sequences_plan[treatment_sequence] = sample_plan
