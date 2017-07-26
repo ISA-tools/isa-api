@@ -410,26 +410,25 @@ class OntologyAnnotation(Commentable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, term=None, term_source=None, term_accession=None,
+    def __init__(self, term='', term_source=None, term_accession='',
                  comments=None, id_=''):
         super().__init__(comments)
 
-        self.term = term
-        self.term_source = term_source
-        self.term_accession = term_accession
+        self.__term = term
+        self.__term_source = term_source
+        self.__term_accession = term_accession
         self.id = id_
 
     @property
     def term(self):
-        if self.__term is '':
-            return None
-        else:
-            return self.__term
+        return self.__term
 
     @term.setter
     def term(self, term):
         if term is not None and not isinstance(term, str):
-            raise AttributeError("OntologyAnnotation.term must be a str or None; got {}:{}".format(term, type(term)))
+            raise AttributeError(
+                'OntologyAnnotation.term must be a str or None; got {}:{}'
+                .format(term, type(term)))
         else:
             self.__term = term
 
@@ -439,99 +438,42 @@ class OntologyAnnotation(Commentable):
 
     @term_source.setter
     def term_source(self, term_source):
-        if term_source is not None and not isinstance(term_source, OntologySource):
-            raise AttributeError("OntologyAnnotation.term_source must be a OntologySource or None; got {}:{}".format(term_source, type(term_source)))
+        if term_source is not None and not isinstance(term_source,
+                                                      OntologySource):
+            raise AttributeError('OntologyAnnotation.term_source must be a '
+                                 'OntologySource or None; got {}:{}'
+                                 .format(term_source, type(term_source)))
         else:
             self.__term_source = term_source
 
     @property
     def term_accession(self):
-        if self.__term is '':
-            return None
-        else:
-            return self.__term_accession
+        return self.__term_accession
 
     @term_accession.setter
     def term_accession(self, term_accession):
         if term_accession is not None and not isinstance(term_accession, str):
-            raise AttributeError("OntologyAnnotation.term_accession must be a str or None")
+            raise AttributeError(
+                'OntologyAnnotation.term_accession must be a str or None')
         else:
             self.__term_accession = term_accession
 
     def __repr__(self):
-        return 'OntologyAnnotation(term="{0}", term_source="{1}", term_accession="{2}")'.format(
-            self.term, self.term_source, self.term_accession)
-
+        return 'OntologyAnnotation(term="{0}", term_source="{1}", ' \
+               'term_accession="{2}")'.format(self.term, self.term_source,
+                                              self.term_accession)
 
     def __hash__(self):
         return hash(repr(self))
 
-
     def __eq__(self, other):
-        return isinstance(other, OntologyAnnotation) and self.term == other.term \
-               and self.term_source == other.term_source and self.term_accession == self.term_accession
-
+        return isinstance(other, OntologyAnnotation) \
+            and self.term == other.term \
+            and self.term_source == other.term_source \
+            and self.term_accession == self.term_accession
 
     def __ne__(self, other):
         return not self == other
-
-
-class OntologyAnnotation(Commentable):
-    """An ontology annotation
-
-    Attributes:
-        term (str, NoneType): A term taken from an ontology or controlled vocabulary.
-        term_source (OntologySource, NoneType): Reference to the OntologySource from which the term is derived.
-        term_accession (str, NoneType): A URI or resource-specific identifier for the term.
-        comments (list, NoneType): Comments associated with instances of this class.
-    """
-
-    def __init__(self, term=None, term_source=None, term_accession=None, comments=None, id_=''):
-        super().__init__(comments)
-
-        self.term = term
-        self.term_source = term_source
-        self.term_accession = term_accession
-        self.id = id_
-
-    @property
-    def term(self):
-        if self.__term is '':
-            return ''
-        else:
-            return self.__term
-
-    @term.setter
-    def term(self, term):
-        if term is not None and not isinstance(term, str):
-            raise AttributeError("OntologyAnnotation.term must be a str or None; got {}:{}".format(term, type(term)))
-        else:
-            self.__term = term
-
-    @property
-    def term_source(self):
-        return self.__term_source
-
-    @term_source.setter
-    def term_source(self, term_source):
-        if term_source is not None and not isinstance(term_source, OntologySource):
-            raise AttributeError("OntologyAnnotation.term_source must be a OntologySource or None; got {}:{}".format(term_source, type(term_source)))
-        else:
-            self.__term_source = term_source
-
-    @property
-    def term_accession(self):
-        if self.__term is '':
-            return None
-        else:
-            return self.__term_accession
-
-    @term_accession.setter
-    def term_accession(self, term_accession):
-        if term_accession is not None and not isinstance(term_accession, str):
-            raise AttributeError("OntologyAnnotation.term_accession must be a str or None")
-        else:
-            self.__term_accession = term_accession
 
 
 class Publication(Commentable):
@@ -546,69 +488,14 @@ class Publication(Commentable):
         comments (list, NoneType): Comments associated with instances of this class.
     """
 
-    def __init__(self, pubmed_id=None, doi=None, author_list=None, title=None, status=None, comments=None):
+    def __init__(self, pubmed_id='', doi='', author_list='', title='',
+                 status=None, comments=None):
         super().__init__(comments)
         self.pubmed_id = pubmed_id
         self.doi = doi
         self.author_list = author_list
         self.title = title
         self.status = status
-
-        @property
-        def pubmed_id(self):
-            if self.__pubmed_id is '':
-                return None
-            else:
-                return self.__pubmed_id
-
-        @pubmed_id.setter
-        def pubmed_id(self, pubmed_id):
-            if pubmed_id is not None and not isinstance(pubmed_id, str):
-                raise AttributeError("Publication.pubmed_id must be a str or None")
-            else:
-                self.__pubmed_id = pubmed_id
-
-        @property
-        def doi(self):
-            if self.__doi is '':
-                return None
-            else:
-                return self.__doi
-
-        @doi.setter
-        def doi(self, doi):
-            if doi is not None and not isinstance(doi, str):
-                raise AttributeError("Publication.doi must be a str or None")
-            else:
-                self.__doi = doi
-
-        @property
-        def author_list(self):
-            if self.__author_list is '':
-                return None
-            else:
-                return self.__author_list
-
-        @author_list.setter
-        def doi(self, author_list):
-            if author_list is not None and not isinstance(author_list, str):
-                raise AttributeError("Publication.author_list must be a str or None")
-            else:
-                self.__author_list = author_list
-
-        @property
-        def status(self):
-            if self.__status is '':
-                return None
-            else:
-                return self.__status
-
-        @status.setter
-        def status(self, status):
-            if status is not None and not isinstance(status, (OntologyAnnotation, str)):
-                raise AttributeError("Publication.status must be a str, OntologyAnnotation or None")
-            else:
-                self.__status = status
 
 
 class Person(Commentable):
@@ -644,9 +531,9 @@ class Person(Commentable):
         self.roles = roles
 
 
-class Study(Commentable, object):
-    """Study is the central unit, containing information on the subject under study, its characteristics
-    and any treatments applied.
+class Study(Commentable, MetadataMixin, object):
+    """Study is the central unit, containing information on the subject under 
+    study, its characteristics and any treatments applied.
 
     Attributes:
         identifier (str): A unique identifier: either a temporary identifier supplied by users or one generated by a repository or other database.
@@ -669,48 +556,41 @@ class Study(Commentable, object):
         comments (list, NoneType): Comments associated with instances of this class.
     """
 
-    def __init__(self, id_='', filename="", identifier="",  title="", description="", submission_date='',
-                 public_release_date='', contacts=None, design_descriptors=None, publications=None,
-                 factors=None, protocols=None, assays=None, sources=None, samples=None,
-                 process_sequence=None, other_material=None, characteristic_categories=None, comments=None, units=None):
-        super().__init__(comments)
+    def __init__(self, id_='', filename='', identifier='', title='',
+                 description='', submission_date='', public_release_date='',
+                 contacts=None, design_descriptors=None, publications=None,
+                 factors=None, protocols=None, assays=None, sources=None,
+                 samples=None, process_sequence=None, other_material=None,
+                 characteristic_categories=None, comments=None, units=None):
+        MetadataMixin.__init__(self, identifier=identifier, title=title,
+                               description=description,
+                               submission_date=submission_date,
+                               public_release_date=public_release_date,
+                               publications=publications, contacts=contacts)
+        Commentable.__init__(self, comments=comments)
+
         self.id = id_
         self.filename = filename
-        self.identifier = identifier
-        self.title = title
-        self.description = description
-        self.submission_date = submission_date
-        self.public_release_date = public_release_date
-
-        if publications is None:
-            self.publications = list()
-        else:
-            self.publications = publications
-
-        if contacts is None:
-            self.contacts = list()
-        else:
-            self.contacts = contacts
 
         if design_descriptors is None:
-            self.design_descriptors = list()
+            self.design_descriptors = []
         else:
             self.design_descriptors = design_descriptors
 
         if protocols is None:
-            self.protocols = list()
+            self.protocols = []
         else:
             self.protocols = protocols
 
         if units is None:
-            self.units = list()
+            self.units = []
         else:
             self.units = units
 
         self.materials = {
-            'sources': list(),
-            'samples': list(),
-            'other_material': list()
+            'sources': [],
+            'samples': [],
+            'other_material': []
         }
         if not (sources is None):
             self.materials['sources'] = sources

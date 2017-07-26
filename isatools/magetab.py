@@ -567,7 +567,7 @@ class MageTabParser(object):
 
     def parse_experiment_description(self, descriptions):
         for description in zip_longest(descriptions, fillvalue=''):
-            self.ISA.studies[-1].description = description
+            self.ISA.studies[-1].description = description[-1]
             break  # because there should only be one or zero rows
 
     def parse_protocols(self, names, ptypes, tsrs, tans, descriptions, parameterslists, hardwares, softwares, contacts):
