@@ -16,27 +16,31 @@ from __future__ import absolute_import
 import abc
 import networkx as nx
 
+from isatools.errors import ISAModelAttributeError
+
 
 def _build_assay_graph(process_sequence=list()):
-    G = nx.DiGraph()
+    """:obj:`networkx.DiGraph` Returns a directed graph object based on a
+    given ISA process sequence."""
+    g = nx.DiGraph()
     for process in process_sequence:
         if process.next_process is not None or len(
                 process.outputs) > 0:
-            # first check if there's some valid outputs to connect
             if len([n for n in process.outputs if
                     not isinstance(n, DataFile)]) > 0:
                 for output in [n for n in process.outputs if
                                not isinstance(n, DataFile)]:
-                    G.add_edge(process, output)
-            else:  # otherwise just connect the process to the next one
-                G.add_edge(process, process.next_process)
+                    g.add_edge(process, output)
+            else:
+                g.add_edge(process, process.next_process)
+
         if process.prev_process is not None or len(process.inputs) > 0:
             if len(process.inputs) > 0:
                 for input_ in process.inputs:
-                    G.add_edge(input_, process)
+                    g.add_edge(input_, process)
             else:
-                G.add_edge(process.prev_process, process)
-    return G
+                g.add_edge(process.prev_process, process)
+    return g
 
 
 class Comment(object):
@@ -53,30 +57,40 @@ class Comment(object):
 
     @property
     def name(self):
-        """str: name for the comment context"""
+        """:obj:`str`: name for the comment context"""
         return self.__name
 
     @name.setter
-    def name(self, value_):
-        if value_ is not None and isinstance(value_, str):
-            object.__setattr__(self, '__name', value_)
+    def name(self, val):
+        if val is not None and isinstance(val, str):
+            self.__name = val
         else:
-            raise TypeError('Comment.name must be a string')
+            raise ISAModelAttributeError('Comment.name must be a string')
 
     @property
     def value(self):
-        """str: value for the comment content"""
+        """:obj:`str`: value for the comment content"""
         return self.__value
 
     @value.setter
-    def value(self, value_):
-        if isinstance(value_, str):
-            object.__setattr__(self, '__value', value_)
+    def value(self, val):
+        if isinstance(val, str):
+            self.__value = val
         raise TypeError('Comment.value must be a string')
 
     def __repr__(self):
-        return 'Comment(name="{0}", value="{1}")'.format(self.__name,
-                                                         self.__value)
+        return 'Comment(name="{0.name}", value="{0.value}")'.format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Comment) \
+               and self.name == other.name \
+               and self.value == other.value
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class Commentable(metaclass=abc.ABCMeta):
@@ -97,13 +111,14 @@ class Commentable(metaclass=abc.ABCMeta):
         return self.__comments
 
     @comments.setter
-    def comments(self, value):
-        if value is not None and hasattr(value, '__iter__'):
-            if value == [] or all(isinstance(x, Comment) for x in value):
-                self.__comments = list(value)
+    def comments(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Comment) for x in val):
+                self.__comments = list(val)
         else:
-            raise TypeError('{0}.comments must be iterable containing Comments'
-                            .format(type(self).__name__))
+            raise ISAModelAttributeError(
+                '{0}.comments must be iterable containing Comments'
+                .format(type(self).__name__))
 
     def add_comment(self, name=None, value_=None):
         """Adds a new comment to the comment list.
@@ -186,87 +201,104 @@ class MetadataMixin(metaclass=abc.ABCMeta):
             class.
     """
 
-    def __init__(self, identifier='', title='', description='',
+    def __init__(self, filename='', identifier='', title='', description='',
                  submission_date='', public_release_date='', publications=None,
                  contacts=None):
+
+        self.__filename = filename
         self.__identifier = identifier
         self.__title = title
         self.__description = description
         self.__submission_date = submission_date
         self.__public_release_date = public_release_date
+
         if publications is None:
-            self.publications = []
+            self.__publications = []
         else:
             self.__publications = publications
+
         if contacts is None:
             self.contacts = []
         else:
             self.__contacts = contacts
+            
+    @property
+    def filename(self):
+        """:obj:`str`: A filename"""
+        return self.__filename
+
+    @filename.setter
+    def filename(self, val):
+        if val is not None and isinstance(val, str):
+                self.__filename = val
+        else:
+            raise ISAModelAttributeError('{0}.filename must be a string'
+                                         .format(type(self).__name__))
 
     @property
     def identifier(self):
-        """str: An identifier"""
+        """:obj:`str`: An identifier"""
         return self.__identifier
 
     @identifier.setter
-    def identifier(self, value):
-        if value is not None and isinstance(value, str):
-                self.__identifier = value
+    def identifier(self, val):
+        if val is not None and isinstance(val, str):
+                self.__identifier = val
         else:
-            raise TypeError('{0}.identifier must be a string'
-                            .format(type(self).__name__))
+            raise ISAModelAttributeError('{0}.identifier must be a string'
+                                         .format(type(self).__name__))
 
     @property
     def title(self):
-        """str: A title"""
+        """:obj:`str`: A title"""
         return self.__title
 
     @title.setter
-    def title(self, value):
-        if value is not None and isinstance(value, str):
-            self.__title = value
+    def title(self, val):
+        if val is not None and isinstance(val, str):
+            self.__title = val
         else:
-            raise TypeError('{0}.title must be a string'
-                            .format(type(self).__name__))
+            raise ISAModelAttributeError('{0}.title must be a string'
+                                         .format(type(self).__name__))
 
     @property
     def description(self):
-        """str: A description"""
+        """:obj:`str`: A description"""
         return self.__description
 
     @description.setter
-    def description(self, value):
-        if value is not None and isinstance(value, str):
-            self.__description = value
+    def description(self, val):
+        if val is not None and isinstance(val, str):
+            self.__description = val
         else:
-            raise TypeError('{0}.description must be a string'
-                            .format(type(self).__name__))
+            raise ISAModelAttributeError('{0}.description must be a string'
+                                         .format(type(self).__name__))
 
     @property
     def submission_date(self):
-        """str: A submission date"""
+        """:obj:`str`: A submission date"""
         return self.__submission_date
 
     @submission_date.setter
-    def submission_date(self, value):
-        if value is not None and isinstance(value, str):
-            self.__submission_date = value
+    def submission_date(self, val):
+        if val is not None and isinstance(val, str):
+            self.__submission_date = val
         else:
-            raise TypeError('{0}.submission_date must be a string'
-                            .format(type(self).__name__))
+            raise ISAModelAttributeError('{0}.submission_date must be a string'
+                                         .format(type(self).__name__))
 
     @property
     def public_release_date(self):
-        """str: A public release date"""
+        """:obj:`str`: A public release date"""
         return self.__public_release_date
 
     @public_release_date.setter
-    def public_release_date(self, value):
-        if value is not None and isinstance(value, str):
-            self.__public_release_date = value
+    def public_release_date(self, val):
+        if val is not None and isinstance(val, str):
+            self.__public_release_date = val
         else:
-            raise TypeError('{0}.public_release_date must be a string'
-                            .format(type(self).__name__))
+            raise ISAModelAttributeError('{0}.public_release_date must be a '
+                                         'string'.format(type(self).__name__))
 
     @property
     def publications(self):
@@ -274,12 +306,12 @@ class MetadataMixin(metaclass=abc.ABCMeta):
         return self.__publications
 
     @publications.setter
-    def publications(self, value):
-        if value is not None and hasattr(value, '__iter__'):
-            if value == [] or all(isinstance(x, Publication) for x in value):
-                self.__publications = list(value)
+    def publications(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Publication) for x in val):
+                self.__publications = list(val)
         else:
-            raise TypeError(
+            raise ISAModelAttributeError(
                 '{0}.publications must be iterable containing Publications'
                 .format(type(self).__name__))
 
@@ -289,12 +321,12 @@ class MetadataMixin(metaclass=abc.ABCMeta):
         return self.__contacts
 
     @contacts.setter
-    def contacts(self, value):
-        if value is not None and hasattr(value, '__iter__'):
-            if value == [] or all(isinstance(x, Person) for x in value):
-                self.__contacts = list(value)
+    def contacts(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Person) for x in val):
+                self.__contacts = list(val)
         else:
-            raise TypeError(
+            raise ISAModelAttributeError(
                 '{0}.contacts must be iterable containing Person objects'
                 .format(type(self).__name__))
 
@@ -326,15 +358,14 @@ class Investigation(Commentable, MetadataMixin, object):
                  description='', submission_date='', public_release_date='',
                  ontology_source_references=None, publications=None,
                  contacts=None, studies=None, comments=None):
-        MetadataMixin.__init__(self, identifier=identifier, title=title,
-                               description=description,
+        MetadataMixin.__init__(self, filename=filename, identifier=identifier,
+                               title=title, description=description,
                                submission_date=submission_date,
                                public_release_date=public_release_date,
                                publications=publications, contacts=contacts)
         Commentable.__init__(self, comments=comments)
 
         self.id = id_
-        self.filename = filename
 
         if ontology_source_references is None:
             self.__ontology_source_references = []
@@ -354,13 +385,14 @@ class Investigation(Commentable, MetadataMixin, object):
         return self.__ontology_source_references
 
     @ontology_source_references.setter
-    def ontology_source_references(self, value):
-        if value is not None and hasattr(value, '__iter__'):
-            if value == [] or all(isinstance(x, OntologySource) for x in value):
-                self.__ontology_source_references = list(value)
+    def ontology_source_references(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, OntologySource) for x in val):
+                self.__ontology_source_references = list(val)
         else:
-            raise TypeError('Investigation.ontology_source_references must be '
-                            'iterable containing OntologySource objects')
+            raise ISAModelAttributeError(
+                'Investigation.ontology_source_references must be iterable '
+                'containing OntologySource objects')
 
     @property
     def studies(self):
@@ -368,13 +400,43 @@ class Investigation(Commentable, MetadataMixin, object):
         return self.__studies
 
     @studies.setter
-    def studies(self, value):
-        if value is not None and hasattr(value, '__iter__'):
-            if value == [] or all(isinstance(x, Study) for x in value):
-                self.__studies = list(value)
+    def studies(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Study) for x in val):
+                self.__studies = list(val)
         else:
-            raise TypeError('Investigation.studies must be iterable containing '
-                            'OntologySource objects')
+            raise ISAModelAttributeError(
+                'Investigation.studies must be iterable containing '
+                'OntologySource objects')
+
+    def __repr__(self):
+        return 'Investigation(identifier="{0.identifier}", ' \
+               'filename="{0.filename}", title="{0.title}", ' \
+               'submission_date="{0.submission_date}", ' \
+               'public_release_date="{0.public_release_date}"), ' \
+               'ontology_source_references={0.ontology_source_reference}, ' \
+               'publications={0.publications}, contacts={0.contacts}, ' \
+               'studies={0.studies}, comments={0.comments}'.format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Investigation) \
+            and self.filename == other.filename \
+            and self.identifier == other.identifier \
+            and self.title == other.title \
+            and self.submission_date == other.submission_date \
+            and self.public_release_date == other.public_release_date \
+            and self.ontology_source_references \
+            == other.ontology_source_references \
+            and self.publications == other.publications \
+            and self.contacts == other.contacts \
+            and self.studies == other.studies \
+            and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class OntologySource(Commentable):
@@ -393,10 +455,86 @@ class OntologySource(Commentable):
 
     def __init__(self, name, file='', version='', description='', comments=''):
         super().__init__(comments)
-        self.name = name
-        self.file = file
-        self.version = version
-        self.description = description
+
+        self.__name = name
+        self.__file = file
+        self.__version = version
+        self.__description = description
+
+    @property
+    def name(self):
+        """:obj:`str`: name of the ontology source"""
+        return self.__name
+
+    @name.setter
+    def name(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'OntologySource.name must be a str; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__name = val
+
+    @property
+    def file(self):
+        """:obj:`str`: file of the ontology source"""
+        return self.__file
+    
+    @file.setter
+    def file(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'OntologySource.file must be a str; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__file = val
+
+    @property
+    def version(self):
+        """:obj:`str`: version of the ontology source"""
+        return self.__version
+
+    @version.setter
+    def version(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'OntologySource.version must be a str; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__version = val   
+
+    @property
+    def description(self):
+        """:obj:`str`: description of the ontology source"""
+        return self.__description
+
+    @description.setter
+    def description(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'OntologySource.description must be a str; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__description = val
+
+    def __repr__(self):
+        return 'OntologySource(name="{0.name}", file="{0.file}", ' \
+               'version="{0.version}", description="{0.description}", ' \
+               'comments={0.comments})'.format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, OntologySource) \
+            and self.name == other.name \
+            and self.file == other.file \
+            and self.version == other.version \
+            and self.description == other.description \
+            and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class OntologyAnnotation(Commentable):
@@ -421,47 +559,51 @@ class OntologyAnnotation(Commentable):
 
     @property
     def term(self):
+        """:obj:`str`: the ontology annotation name used"""
         return self.__term
 
     @term.setter
-    def term(self, term):
-        if term is not None and not isinstance(term, str):
-            raise AttributeError(
-                'OntologyAnnotation.term must be a str or None; got {}:{}'
-                .format(term, type(term)))
+    def term(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'OntologyAnnotation.term must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
         else:
-            self.__term = term
+            self.__term = val
 
     @property
     def term_source(self):
+        """:obj:`OntologySource: a reference to the ontology source the term is
+        taken from"""
         return self.__term_source
 
     @term_source.setter
-    def term_source(self, term_source):
-        if term_source is not None and not isinstance(term_source,
-                                                      OntologySource):
-            raise AttributeError('OntologyAnnotation.term_source must be a '
-                                 'OntologySource or None; got {}:{}'
-                                 .format(term_source, type(term_source)))
+    def term_source(self, val):
+        if val is not None and not isinstance(val, OntologySource):
+            raise ISAModelAttributeError(
+                'OntologyAnnotation.term_source must be a OntologySource or '
+                'None; got {0}:{1}'.format(val, type(val)))
         else:
-            self.__term_source = term_source
+            self.__term_source = val
 
     @property
     def term_accession(self):
+        """:obj:`str`: the term accession number of reference of the term"""
         return self.__term_accession
 
     @term_accession.setter
-    def term_accession(self, term_accession):
-        if term_accession is not None and not isinstance(term_accession, str):
-            raise AttributeError(
+    def term_accession(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
                 'OntologyAnnotation.term_accession must be a str or None')
         else:
-            self.__term_accession = term_accession
+            self.__term_accession = val
 
     def __repr__(self):
-        return 'OntologyAnnotation(term="{0}", term_source="{1}", ' \
-               'term_accession="{2}")'.format(self.term, self.term_source,
-                                              self.term_accession)
+        return 'OntologyAnnotation(term="{0.term}", ' \
+               'term_source={0.term_source}, ' \
+               'term_accession="{0.term_accession}", comments={0.comments})' \
+                .format(self)
 
     def __hash__(self):
         return hash(repr(self))
@@ -470,7 +612,8 @@ class OntologyAnnotation(Commentable):
         return isinstance(other, OntologyAnnotation) \
             and self.term == other.term \
             and self.term_source == other.term_source \
-            and self.term_accession == self.term_accession
+            and self.term_accession == other.term_accession \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -480,80 +623,533 @@ class Publication(Commentable):
     """A publication associated with an investigation or study.
 
     Attributes:
-        pubmed_id (str, NoneType): The PubMed IDs of the described publication(s) associated with this investigation.
-        doi (str, NoneType): A Digital Object Identifier (DOI) for that publication (where available).
-        author_list (str, NoneType): The list of authors associated with that publication.
-        title (str, NoneType): The title of publication associated with the investigation.
-        status(str, OntologyAnnotation, NoneType): A term describing the status of that publication (i.e. submitted, in preparation, published).
-        comments (list, NoneType): Comments associated with instances of this class.
+        pubmed_id: The PubMed IDs of the described publication(s) associated
+            with this investigation.
+        doi: A Digital Object Identifier (DOI) for that publication (where
+            available).
+        author_list: The list of authors associated with that publication.
+        title: The title of publication associated with the investigation.
+        status: A term describing the status of that publication (i.e.
+            submitted, in preparation, published).
+        comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, pubmed_id='', doi='', author_list='', title='',
+    def __init__(self, pubmed_id='', doi='', author_list='', title='', 
                  status=None, comments=None):
         super().__init__(comments)
-        self.pubmed_id = pubmed_id
-        self.doi = doi
-        self.author_list = author_list
-        self.title = title
-        self.status = status
+
+        self.__pubmed_id = pubmed_id
+        self.__doi = doi
+        self.__author_list = author_list
+        self.__title = title
+        self.__status = status
+
+    @property
+    def pubmed_id(self):
+        """:obj:`str`: the PubMed ID of the publication"""
+        return self.__pubmed_id
+
+    @pubmed_id.setter
+    def pubmed_id(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Publication.pubmed_id must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__pubmed_id = val
+            
+    @property
+    def doi(self):
+        """:obj:`str`: the DOI of the publication"""
+        return self.__doi
+
+    @doi.setter
+    def doi(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Publication.doi must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__doi = val
+            
+    @property
+    def author_list(self):
+        """:obj:`str`: the author list (comma separated) of the publication"""
+        return self.__author_list
+
+    @author_list.setter
+    def author_list(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Publication.author_list must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__author_list = val
+            
+    @property
+    def title(self):
+        """:obj:`str`: the title of the publication"""
+        return self.__title
+
+    @title.setter
+    def title(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Publication.title must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__title = val
+
+    @property
+    def status(self):
+        """:obj:`OntologyAnnotation: an ontology annotation representing the
+        publication status"""
+        return self.__status
+
+    @status.setter
+    def status(self, val):
+        if val is not None and not isinstance(val, OntologyAnnotation):
+            raise ISAModelAttributeError(
+                'Publication.status must be a OntologyAnnotation or '
+                'None; got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__status = val
+
+    def __repr__(self):
+        return 'Publication(pubmed_id="{0.pubmed_id}", doi="{0.doi}", ' \
+               'author_list="{0.author_list}", title="{0.title}", ' \
+               'status={0.status}, comments={0.comments})'.format(self)
+    
+    def __hash__(self):
+        return hash(repr(self))
+    
+    def __eq__(self, other):
+        return isinstance(other, Publication) \
+               and self.pubmed_id == other.pubmed_id \
+               and self.doi == other.doi \
+               and self.author_list == other.author_list \
+               and self.title == other.title \
+               and self.status == other.status \
+               and self.comments == other.comments
+    
+    def __ne__(self, other):
+        return not self == other
 
 
 class Person(Commentable):
     """A person/contact that can be attributed to an Investigation or Study.
 
     Attributes:
-        last_name (str, NoneType): The last name of a person associated with the investigation.
-        first_name (str, NoneType): The first name of a person associated with the investigation.
-        mid_initials (str, NoneType): The middle initials of a person associated with the investigation.
-        email (str, NoneType): The email address of a person associated with the investigation.
-        phone (str, NoneType): The telephone number of a person associated with the investigation.
-        fax (str, NoneType): The fax number of a person associated with the investigation.
-        address (str, NoneType): The address of a person associated with the investigation.
-        affiliation (str, NoneType): The organization affiliation for a person associated with the investigation.
-        roles (list, NoneType): OntologyAnnotations to classify the role(s) performed by this person in the context of
-        the investigation, which means that the roles reported here need not correspond to roles held withing their
-        affiliated organization.
-        comments (list, NoneType): Comments associated with instances of this class.
+        last_name: The last name of a person.
+        first_name: The first name of a person.
+        mid_initials: The middle initials of a person.
+        email: The email address of a person.
+        phone: The telephone number.
+        fax: The fax number.
+        address: The address of a person.
+        affiliation: The organization affiliation for a person.
+        roles: A list of Orole(s) performed by this person. Roles reported here
+            need not correspond to roles held withing their affiliated
+            organization.
+        comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, first_name='', last_name='', mid_initials='', email='', phone='', fax='',
-                 address='', affiliation='', roles=[], comments=[], id_=''):
+    def __init__(self, last_name='', first_name='', mid_initials='', email='', 
+                 phone='', fax='', address='', affiliation='', roles=None, 
+                 comments=None, id_=''):
         super().__init__(comments)
+
         self.id = id_
-        self.last_name = last_name
-        self.first_name = first_name
-        self.mid_initials = mid_initials
-        self.email = email
-        self.phone = phone
-        self.fax = fax
-        self.address = address
-        self.affiliation = affiliation
-        self.roles = roles
+        self.__last_name = last_name
+        self.__first_name = first_name
+        self.__mid_initials = mid_initials
+        self.__email = email
+        self.__phone = phone
+        self.__fax = fax
+        self.__address = address
+        self.__affiliation = affiliation
+
+        if roles is None:
+            self.__roles = []
+        else:
+            self.__roles = roles
+
+    @property
+    def last_name(self):
+        """:obj:`str`: the last_name of the person"""
+        return self.__last_name
+    
+    @last_name.setter
+    def last_name(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Person.last_name must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__last_name = val
+
+    @property
+    def first_name(self):
+        """:obj:`str`: the first_name of the person"""
+        return self.__first_name
+
+    @first_name.setter
+    def first_name(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Person.first_name must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__first_name = val
+
+    @property
+    def mid_initials(self):
+        """:obj:`str`: the mid_initials of the person"""
+        return self.__mid_initials
+
+    @mid_initials.setter
+    def mid_initials(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Person.mid_initials must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__mid_initials = val
+
+    @property
+    def email(self):
+        """:obj:`str`: the email of the person"""
+        return self.__email
+
+    @email.setter
+    def email(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Person.email must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__email = val
+
+    @property
+    def phone(self):
+        """:obj:`str`: the phone number of the person"""
+        return self.__phone
+
+    @phone.setter
+    def phone(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Person.phone must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__phone = val
+
+    @property
+    def fax(self):
+        """:obj:`str`: the fax number of the person"""
+        return self.__fax
+
+    @fax.setter
+    def fax(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Person.fax must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__fax = val
+
+    @property
+    def address(self):
+        """:obj:`str`: the address of the person"""
+        return self.__address
+
+    @address.setter
+    def address(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Person.address must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__address = val
+
+    @property
+    def affiliation(self):
+        """:obj:`str`: the affiliation of the person"""
+        return self.__affiliation
+
+    @affiliation.setter
+    def affiliation(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Person.affiliation must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__affiliation = val
+
+    @property
+    def roles(self):
+        """:obj:`list` of :obj:`OntologyAnnotation`: Container for person roles
+        """
+        return self.__roles
+
+    @roles.setter
+    def roles(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
+                self.__roles = list(val)
+        else:
+            raise ISAModelAttributeError(
+                '{0}.roles must be iterable containing OntologyAnnotations'
+                .format(type(self).__name__))
+
+    def __repr__(self):
+        return 'Person(last_name="{0.last_name}", ' \
+               'first_name="{0.first_name}", ' \
+               'mid_initials="{0.mid_initials}", email="{0.email}", ' \
+               'phone="{0.phone}", fax="{0.fax}", address="{0.address}", ' \
+               'roles={0.roles}, comments={0.comments})'.format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Person) \
+               and self.last_name == other.last_name \
+               and self.first_name == other.first_name \
+               and self.mid_initials == other.mid_initials \
+               and self.email == other.email \
+               and self.phone == other.phone \
+               and self.fax == other.fax \
+               and self.address == other.address \
+               and self.affiliation == other.affiliation \
+               and self.roles == other.roles \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
-class Study(Commentable, MetadataMixin, object):
+class StudyAssayMixin(metaclass=abc.ABCMeta):
+    """Abstract mixin class to contain common fields found in Study
+    and Assay sections of ISA
+
+    Attributes:
+        filename: A field to specify the file for compatibility with ISA-Tab.
+        materials: Materials associated with the Study or Assay.
+        sources: Sources associated with the Study or Assay.
+        samples: Samples associated with the Study or Assay.
+        other_material: Other Material types associated with the Study or Assay.
+        units: A list of Units used in the annotation of materials.
+        characteristic_categories-: A list of OntologyAnnotation used in
+            the annotation of material characteristics.
+        process_sequence: A list of Process objects representing the
+            experimental graphs.
+        graph: Graph representation of the experimental graph.
+
+    """
+
+    def __init__(self, filename='', sources=None, samples=None,
+                 other_material=None, units=None,
+                 characteristic_categories=None, process_sequence=None):
+        self.__filename = filename
+
+        self.__materials = {
+            'sources': [],
+            'samples': [],
+            'other_material': []
+        }
+        if not (sources is None):
+            self.__materials['sources'] = sources
+        if not (samples is None):
+            self.__materials['samples'] = samples
+        if not (other_material is None):
+            self.__materials['other_material'] = other_material
+
+        if units is None:
+            self.__units = []
+        else:
+            self.__units = units
+
+        if process_sequence is None:
+            self.__process_sequence = []
+        else:
+            self.__process_sequence = process_sequence
+
+        if characteristic_categories is None:
+            self.__characteristic_categories = []
+        else:
+            self.__characteristic_categories = characteristic_categories
+            
+    @property
+    def filename(self):
+        """:obj:`str`: the filename of the study or assay"""
+        return self.__filename
+
+    @filename.setter
+    def filename(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                '{0}.filename must be a str or None; got {1}:{2}'
+                .format(type(self).__name__, val, type(val)))
+        else:
+            self.__filename = val
+
+    @property
+    def units(self):
+        """:obj:`list` of :obj:`OntologyAnnotation`: Container for study units
+        """
+        return self.__units
+
+    @units.setter
+    def units(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
+                self.__units = list(val)
+        else:
+            raise ISAModelAttributeError(
+                '{}.units must be iterable containing OntologyAnnotations'
+                .format(type(self).__name__))
+
+    @property
+    def sources(self):
+        """:obj:`list` of :obj:`Source`: Container for study sources"""
+        return self.__materials['sources']
+
+    @sources.setter
+    def sources(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Source) for x in val):
+                self.__materials['sources'] = list(val)
+        else:
+            raise ISAModelAttributeError(
+                '{}.sources must be iterable containing Sources'
+                .format(type(self).__name__))
+
+    @property
+    def samples(self):
+        """:obj:`list` of :obj:`Sample`: Container for study samples"""
+        return self.__materials['samples']
+
+    @samples.setter
+    def samples(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Sample) for x in val):
+                self.__materials['samples'] = list(val)
+        else:
+            raise ISAModelAttributeError(
+                '{}.samples must be iterable containing Samples'
+                .format(type(self).__name__))
+
+    @property
+    def other_material(self):
+        """:obj:`list` of :obj:`Material`: Container for study other_material
+        """
+        return self.__materials['other_material']
+
+    @other_material.setter
+    def other_material(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Material) for x in val):
+                self.__materials['other_material'] = list(val)
+        else:
+            raise ISAModelAttributeError(
+                '{}.other_material must be iterable containing Materials'
+                .format(type(self).__name__))
+
+    @property
+    def materials(self):
+        """:obj:`dict` of :obj:`list`: Container for sources, samples and
+        other_material"""
+        return self.__materials
+
+    @property
+    def process_sequence(self):
+        """:obj:`list` of :obj:`Process`: Container for study Processes"""
+        return self.__process_sequence
+
+    @process_sequence.setter
+    def process_sequence(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Process) for x in val):
+                self.__process_sequence = list(val)
+        else:
+            raise ISAModelAttributeError(
+                '{}.process_sequence must be iterable containing Processes'
+                .format(type(self).__name__))
+
+    @property
+    def characteristic_categories(self):
+        """:obj:`list` of :obj:`OntologyAnnotation`: Container for study
+        characteristic categories used"""
+        return self.__characteristic_categories
+
+    @characteristic_categories.setter
+    def characteristic_categories(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
+                self.__characteristic_categories = list(val)
+        else:
+            raise ISAModelAttributeError(
+                '{}.characteristic_categories must be iterable containing '
+                'OntologyAnnotation'.format(type(self).__name__))
+
+    @property
+    def graph(self):
+        """:obj:`networkx.DiGraph` A graph representation of the study's 
+        process sequence"""
+        if len(self.process_sequence) > 0:
+            return _build_assay_graph(self.process_sequence)
+        else:
+            return None
+
+    @graph.setter
+    def graph(self, graph):
+        raise ISAModelAttributeError('{}.graph is not settable'
+                                     .format(type(self).__name__))
+
+
+class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     """Study is the central unit, containing information on the subject under 
     study, its characteristics and any treatments applied.
 
     Attributes:
-        identifier (str): A unique identifier: either a temporary identifier supplied by users or one generated by a repository or other database.
-        title (str): A concise phrase used to encapsulate the purpose and goal of the study.
-        description (str): A textual description of the study, with components such as objective or goals.
-        submission_date (str): The date on which the study was reported to the repository. This should be ISO8601 formatted.
-        public_release_date (str): The date on which the study should be released publicly. This should be ISO8601 formatted.
-        filename (str): A field to specify the name of the Study file corresponding the definition of that Study.
-        design_descriptors (list, NoneType): Classifications of the study based on the overall experimental design, a list of OntologyAnnotations.
-        publications (list, NoneType): A list of Publications associated with the Study.
-        contacts (list, NoneType): A list of People/contacts associated with the Study.
-        factors (list, NoneType): A factor corresponds to an independent variable manipulated by the experimentalist with the intention.
-        to affect biological systems in a way that can be measured by an assay.  A list of StudyFactor objects.
-        protocols (list, NoneType): Protocols used within the ISA artifact. A list of Protocol objects.
-        assays (list, NoneType): An Assay represents a portion of the experimental design. A list of Assay objects.
-        materials (dict): Materials associated with the study, lists of 'sources', 'samples' and 'other_material'.
-        units (list, NoneType): A list of Units used in the annotation of material units in the study.
-        characteristic_categories (list, NoneType): A list of OntologyAnnotation used in the annotation of material characteristics in the study.
-        process_sequence (list, NoneType): A list of Process objects representing the experimental graphs at the study level.
-        comments (list, NoneType): Comments associated with instances of this class.
+        identifier: A unique identifier: either a temporary identifier supplied 
+            by users or one generated by a repository or other database.
+        title: A concise phrase used to encapsulate the purpose and goal of the 
+            study.
+        description: A textual description of the study, with components such
+            as objective or goals.
+        submission_date: The date on which the study was reported to the
+            repository. This should be ISO8601 formatted.
+        public_release_date: The date on which the study should be released
+            publicly. This should be ISO8601 formatted.
+        filename: A field to specify the name of the Study file corresponding
+            the definition of that Study.
+        design_descriptors: Classifications of the study based on the overall
+            experimental design.
+        publications: A list of Publications associated with the Study.
+        contacts: A list of People/contacts associated with the Study.
+        factors: A factor corresponds to an independent variable manipulated by
+            the experimentalist with the intention to affect biological systems
+            in a way that can be measured by an assay.
+        protocols: Protocols used within the ISA artifact.
+        assays: An Assay represents a portion of the experimental design.
+        materials: Materials associated with the study, contains lists of
+            'sources', 'samples' and 'other_material'.
+        sources: Sources associated with the study, is equivalent to
+            materials['sources'].
+        samples: Samples associated with the study, is equivalent to
+            materials['samples'].
+        other_material: Other Materials associated with the study, is
+            equivalent to materials['other_material'].
+        units: A list of Units used in the annotation of material units in the
+            study.
+        characteristic_categories: Annotations of material characteristics used
+            in the study.
+        process_sequence: A list of Process objects representing the
+            experimental graphs at the study level.
+        comments: Comments associated with instances of this class.
+        graph: Graph representation of the study graph.
     """
 
     def __init__(self, id_='', filename='', identifier='', title='',
@@ -562,524 +1158,1806 @@ class Study(Commentable, MetadataMixin, object):
                  factors=None, protocols=None, assays=None, sources=None,
                  samples=None, process_sequence=None, other_material=None,
                  characteristic_categories=None, comments=None, units=None):
-        MetadataMixin.__init__(self, identifier=identifier, title=title,
-                               description=description,
+        MetadataMixin.__init__(self, filename=filename, identifier=identifier,
+                               title=title, description=description,
                                submission_date=submission_date,
                                public_release_date=public_release_date,
                                publications=publications, contacts=contacts)
+        StudyAssayMixin.__init__(self, filename=filename, sources=sources,
+                                 samples=samples, other_material=other_material,
+                                 process_sequence=process_sequence,
+                                 characteristic_categories=
+                                 characteristic_categories,
+                                 units=units)
         Commentable.__init__(self, comments=comments)
 
         self.id = id_
-        self.filename = filename
 
         if design_descriptors is None:
-            self.design_descriptors = []
+            self.__design_descriptors = []
         else:
-            self.design_descriptors = design_descriptors
+            self.__design_descriptors = design_descriptors
 
         if protocols is None:
-            self.protocols = []
+            self.__protocols = []
         else:
-            self.protocols = protocols
-
-        if units is None:
-            self.units = []
-        else:
-            self.units = units
-
-        self.materials = {
-            'sources': [],
-            'samples': [],
-            'other_material': []
-        }
-        if not (sources is None):
-            self.materials['sources'] = sources
-        if not (samples is None):
-            self.materials['samples'] = samples
-        if not (other_material is None):
-            self.materials['other_material'] = other_material
-
-        if process_sequence is None:
-            self.process_sequence = list()
-        else:
-            self.process_sequence = process_sequence
+            self.__protocols = protocols
 
         if assays is None:
-            self.assays = list()
+            self.__assays = []
         else:
-            self.assays = assays
+            self.__assays = assays
 
         if factors is None:
-            self.factors = list()
+            self.__factors = []
         else:
-            self.factors = factors
-
-        if characteristic_categories is None:
-            self.characteristic_categories = list()
-        else:
-            self.characteristic_categories = characteristic_categories
+            self.__factors = factors
 
     @property
-    def graph(self):
-        if len(self.process_sequence) > 0:
-            self.__graph = _build_assay_graph(self.process_sequence)
-        else:
-            self.__graph = None
-        return self.__graph
+    def design_descriptors(self):
+        """:obj:`list` of :obj:`OntologyAnnotation`: Container for study design
+        descriptors"""
+        return self.__design_descriptors
 
-    @graph.setter
-    def graph(self, graph):
-        raise AttributeError("Study.graph is not settable")
+    @design_descriptors.setter
+    def design_descriptors(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
+                self.__design_descriptors = list(val)
+        else:
+            raise ISAModelAttributeError(
+                '{}.design_descriptors must be iterable containing '
+                'OntologyAnnotations'.format(type(self).__name__))
+        
+    @property
+    def protocols(self):
+        """:obj:`list` of :obj:`Protocol`: Container for study protocols"""
+        return self.__protocols
+
+    @protocols.setter
+    def protocols(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Protocol) for x in val):
+                self.__protocols = list(val)
+        else:
+            raise ISAModelAttributeError(
+                '{}.protocols must be iterable containing Protocol'
+                .format(type(self).__name__))
+        
+    @property
+    def assays(self):
+        """:obj:`list` of :obj:`Assay`: Container for study Assays"""
+        return self.__assays
+
+    @assays.setter
+    def assays(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Assay) for x in val):
+                self.__assays = list(val)
+        else:
+            raise ISAModelAttributeError(
+                '{}.assays must be iterable containing Assays'
+                .format(type(self).__name__))
+
+    @property
+    def factors(self):
+        """:obj:`list` of :obj:`StudyFactor`: Container for study
+        StudyFactors"""
+        return self.__factors
+
+    @factors.setter
+    def factors(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, StudyFactor) for x in val):
+                self.__factors = list(val)
+        else:
+            raise ISAModelAttributeError(
+                '{}.factors must be iterable containing StudyFactors'
+                .format(type(self).__name__))
+
+    def __repr__(self):
+        return 'Study(filename="{0.filename}", identifier="{0.identifier}", ' \
+               'title="{0.title}", description="{0.description}", ' \
+               'submission_date="{0.submission_date}", ' \
+               'public_release_date="{0.public_release_date}", ' \
+               'contacts={0.contacts}, ' \
+               'design_descriptors={0.design_descriptors}, ' \
+               'publications={0.publications}, factors={0.factors}, ' \
+               'protocols={0.protocols}, ' \
+               'assays={0.assays}, sources={0.sources}, ' \
+               'samples={0.samples}, process_sequence={0.process_sequence}, ' \
+               'other_material={0.other_material}, ' \
+               'characteristic_categories={0.characteristic_categories}, ' \
+               'comments={0.comments}, units={0.units})'.format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Study) \
+               and self.filename == other.filename \
+               and self.identifier == other.identifier \
+               and self.title == other.title \
+               and self.description == other.description \
+               and self.submission_date == other.submission_date \
+               and self.public_release_date == other.public_release_date \
+               and self.contacts == other.contacts \
+               and self.design_descriptors == other.design_descriptors \
+               and self.publications == other.publications \
+               and self.factors == other.factors \
+               and self.protocols == other.protocols \
+               and self.assays == other.assays \
+               and self.sources == other.sources \
+               and self.samples == other.samples \
+               and self.process_sequence == other.process_sequence \
+               and self.other_material == other.other_material \
+               and self.characteristic_categories \
+               == other.faccharacteristic_categoriestors \
+               and self.comments == other.comments \
+               and self.units == other.units
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class StudyFactor(Commentable):
-    """A Study Factor corresponds to an independent variable manipulated by the experimentalist with the intention to
-    affect biological systems in a way that can be measured by an assay.
+    """A Study Factor corresponds to an independent variable manipulated by the 
+    experimentalist with the intention to affect biological systems in a way 
+    that can be measured by an assay.
 
     Attributes:
-        name (str): Study factor name
-        factor_type (OntologyAnnotation): An ontology source reference of the study factor type
-        comments (list, NoneType): Comments associated with instances of this class.
+        name: Study factor name
+        factor_type: An ontology source reference of the study factor type
+        comments: Comments associated with instances of this class.
     """
-    def __init__(self, id_='', name="", factor_type=None, comments=None):
+    def __init__(self, id_='', name='', factor_type=None, comments=None):
         super().__init__(comments)
+
         self.id = id_
-        self.name = name
+        self.__name = name
+
         if factor_type is None:
-            self.factor_type = OntologyAnnotation()
+            self.__factor_type = OntologyAnnotation()
         else:
-            self.factor_type = factor_type
-
-
-class Assay(Commentable):
-    """An Assay represents a test performed either on material taken from a subject or on a whole initial subject,
-    producing qualitative or quantitative measurements. An Assay groups descriptions of provenance of sample processing
-    for related tests. Each test typically follows the steps of one particular experimental workflow described by a
-    particular protocol.
-
-    Attributes:
-        measurement_type (OntologyAnnotation): An Ontology Annotation to qualify the endpoint, or what is being measured (e.g. gene expression profiling or protein identification).
-        technology_type (OntologyAnnotation): An Ontology Annotation to identify the technology used to perform the measurement.
-        technology_platform (str): Manufacturer and platform name, e.g. Bruker AVANCE.
-        filename (str): A field to specify the name of the Assay file for compatibility with ISA-Tab.
-        materials (dict): Materials associated with the Assay, lists of 'samples' and 'other_material'.
-        units (list, NoneType): A list of Units used in the annotation of material units in the Assay.
-        characteristic_categories (list, NoneType): A list of OntologyAnnotation used in the annotation of material characteristics in the Assay.
-        process_sequence (list, NoneType): A list of Process objects representing the experimental graphs at the Assay level.
-        comments (list, NoneType): Comments associated with instances of this class.
-        graph (networkx.DiGraph): A graph representation of the process_sequence using the networkx package.
-    """
-    def __init__(self, measurement_type=None, technology_type=None, technology_platform="", filename="",
-                 process_sequence=None, data_files=None, samples=None, other_material=None,
-                 characteristic_categories=None, units=None, comments=None):
-        super().__init__(comments)
-        if measurement_type is None:
-            self.measurement_type = OntologyAnnotation()
-        else:
-            self.measurement_type = measurement_type
-
-        if technology_type is None:
-            self.technology_type = OntologyAnnotation()
-        else:
-            self.technology_type = technology_type
-
-        self.technology_platform = technology_platform
-        self.filename = filename
-
-        if process_sequence is None:
-            self.process_sequence = list()
-        else:
-            self.process_sequence = process_sequence
-
-        if data_files is None:
-            self.data_files = list()
-        else:
-            self.data_files = data_files
-
-        self.materials = {
-            'samples': list(),
-            'other_material': list()
-        }
-
-        if not (samples is None):
-            self.materials['samples'].append(samples)
-
-        if not (other_material is None):
-            self.materials['other_material'].append(other_material)
-
-        if characteristic_categories is None:
-            self.characteristic_categories = list()
-        else:
-            self.characteristic_categories = characteristic_categories
-
-        if units is None:
-            self.units = list()
-        else:
-            self.units = units
+            self.__factor_type = factor_type
 
     @property
-    def graph(self):
-        if len(self.process_sequence) > 0:
-            self.__graph = _build_assay_graph(self.process_sequence)
-        else:
-            self.__graph = None
-        return self.__graph
+    def name(self):
+        """:obj:`str`: the name of the study factor"""
+        return self.__name
 
-    @graph.setter
-    def graph(self, graph):
-        raise AttributeError("Assay.graph is not settable")
+    @name.setter
+    def name(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'StudyFactor.name must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__name = val
+
+    @property
+    def factor_type(self):
+        """:obj:`OntologyAnnotation: an ontology annotation representing the
+        study factor type"""
+        return self.__factor_type
+
+    @factor_type.setter
+    def factor_type(self, val):
+        if val is not None and not isinstance(val, OntologyAnnotation):
+            raise ISAModelAttributeError(
+                'StudyFactor.factor_type must be a OntologyAnnotation or '
+                'None; got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__factor_type = val
+
+    def __repr__(self):
+        return 'StudyFactor(name="{0.name}", factor_type={0.factor_type}, ' \
+               'comments={0.comments})'.format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, StudyFactor) \
+               and self.name == other.name \
+               and self.factor_type == other.factor_type \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
+
+
+class Assay(Commentable, StudyAssayMixin, object):
+    """An Assay represents a test performed either on material taken from a
+    subject or on a whole initial subject, producing qualitative or quantitative
+    measurements. An Assay groups descriptions of provenance of sample
+    processing for related tests. Each test typically follows the steps of one
+    particular experimental workflow described by a particular protocol.
+
+    Attributes:
+        measurement_type: An Ontology Annotation to qualify the endpoint, or 
+            what is being measured (e.g. gene expression profiling or protein 
+            identification).
+        technology_type: An Ontology Annotation to identify the technology 
+            used to perform the measurement.
+        technology_platform: Manufacturer and platform name, e.g. Bruker AVANCE.
+        filename: A field to specify the name of the Assay file for 
+            compatibility with ISA-Tab.
+        materials: Materials associated with the Assay, lists of 'samples' and 
+            'other_material'.
+        units: A list of Units used in the annotation of material units.
+        characteristic_categories: A list of OntologyAnnotation used in the 
+            annotation of material characteristics in the Assay.
+        process_sequence: A list of Process objects representing the
+            experimental graphs at the Assay level.
+        comments: Comments associated with instances of this class.
+        graph: A graph representation of the assay graph.
+    """
+    def __init__(self, measurement_type=None, technology_type=None,
+                 technology_platform='', filename='', process_sequence=None,
+                 data_files=None, samples=None, other_material=None,
+                 characteristic_categories=None, units=None, comments=None):
+        super().__init__(comments)
+        StudyAssayMixin.__init__(self, filename=filename, samples=samples,
+                                 other_material=other_material,
+                                 process_sequence=process_sequence,
+                                 characteristic_categories=
+                                 characteristic_categories, units=units)
+
+        if measurement_type is None:
+            self.__measurement_type = OntologyAnnotation()
+        else:
+            self.__measurement_type = measurement_type
+
+        if technology_type is None:
+            self.__technology_type = OntologyAnnotation()
+        else:
+            self.__technology_type = technology_type
+
+        self.__technology_platform = technology_platform
+
+        if data_files is None:
+            self.__data_files = []
+        else:
+            self.__data_files = data_files
+            
+    @property
+    def measurement_type(self):
+        """:obj:`OntologyAnnotation: an ontology annotation representing the
+        assay measurement_type"""
+        return self.__measurement_type
+
+    @measurement_type.setter
+    def measurement_type(self, val):
+        if val is not None and not isinstance(val, OntologyAnnotation):
+            raise ISAModelAttributeError(
+                'Assay.measurement_type must be a OntologyAnnotation or '
+                'None; got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__measurement_type = val
+            
+    @property
+    def technology_type(self):
+        """:obj:`OntologyAnnotation: an ontology annotation representing the
+        assay technology type"""
+        return self.__technology_type
+
+    @technology_type.setter
+    def technology_type(self, val):
+        if val is not None and not isinstance(val, OntologyAnnotation):
+            raise ISAModelAttributeError(
+                'Assay.technology_type must be a OntologyAnnotation or '
+                'None; got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__technology_type = val
+
+    @property
+    def technology_platform(self):
+        """:obj:`str`: the technology_platform of the assay"""
+        return self.__technology_platform
+    
+    @technology_platform.setter
+    def technology_platform(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Assay.technology_platform must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__technology_platform = val
+            
+    @property
+    def data_files(self):
+        """:obj:`list` of :obj:`DataFile`: Container for data files"""
+        return self.__data_files
+
+    @data_files.setter
+    def data_files(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, DataFile) for x in val):
+                self.__data_files = list(val)
+        else:
+            raise ISAModelAttributeError(
+                '{0}.data_files must be iterable containing DataFiles'
+                .format(type(self).__name__))
+
+    def __repr__(self):
+        return 'Assay(measurement_type={0.measurement_type}, ' \
+               'technology_type={0.technology_type}, ' \
+               'technology_platform={0.technology_platform}, ' \
+               'filename="{0.filename}", data_files={0.data_files}, ' \
+               'samples={0.samples}, process_sequence={0.process_sequence}, ' \
+               'other_material={0.other_material}, ' \
+               'characteristic_categories={0.characteristic_categories}, ' \
+               'comments={0.comments}, units={0.units})'.format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Assay) \
+               and self.measurement_type == other.measurement_type \
+               and self.technology_type == other.technology_type \
+               and self.technology_platform == other.technology_platform \
+               and self.filename == other.filename \
+               and self.data_files == other.data_files \
+               and self.samples == other.samples \
+               and self.process_sequence == other.process_sequence \
+               and self.other_material == other.other_material \
+               and self.characteristic_categories \
+               == other.faccharacteristic_categoriestors \
+               and self.comments == other.comments \
+               and self.units == other.units
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class Protocol(Commentable):
     """An experimental Protocol used in the study.
 
     Attributes:
-        name (str): The name of the protocol used
-        protocol_type (OntologyAnnotation, NoneType): Term to classify the protocol.
-        description (str): A free-text description of the protocol.
-        uri (str): Pointer to protocol resources externally that can be accessed by their Uniform Resource Identifier (URI).
-        version (str): An identifier for the version to ensure protocol tracking.
-        parameters (list, None): A list of ProtocolParameter describing the list of parameters required to execute the protocol.
-        components (list, None): A list of OntologyAnnotation describing a protocol’s components; e.g. instrument names, software names, and reagents names.
-        comments (list, NoneType): Comments associated with instances of this class.
+        name: The name of the protocol used
+        protocol_type: Term to classify the protocol.
+        description: A free-text description of the protocol.
+        uri: Pointer to protocol resources externally that can be accessed by 
+            their Uniform Resource Identifier (URI).
+        version: An identifier for the version to ensure protocol tracking.
+        parameters: A list of ProtocolParameter describing the list of 
+            parameters required to execute the protocol.
+        components: A list of OntologyAnnotation describing a protocol's 
+            components; e.g. instrument names, software names, and reagents 
+            names.
+        comments: Comments associated with instances of this class.
     """
-    def __init__(self, id_='', name="", protocol_type=None, uri="", description="", version="", parameters=None,
-                 components=None, comments=None):
+    def __init__(self, id_='', name='', protocol_type=None, uri='',
+                 description='', version='', parameters=None, components=None,
+                 comments=None):
         super().__init__(comments)
+        
         self.id = id_
-        self.name = name
+        self.__name = name
+
         if protocol_type is None:
-            self.protocol_type = OntologyAnnotation()
+            self.__protocol_type = OntologyAnnotation()
         else:
-            self.protocol_type = protocol_type
-        self.description = description
-        self.uri = uri
-        self.version = version
+            self.__protocol_type = protocol_type
+            
+        self.__description = description
+        self.__uri = uri
+        self.__version = version
+        
         if parameters is None:
-            self.parameters = list()
+            self.__parameters = []
         else:
-            self.parameters = parameters
+            self.__parameters = parameters
+            
         if components is None:
-            self.components = list()
+            self.__components = []
         else:
-            self.components = components
+            self.__components = components
+
+    @property
+    def name(self):
+        """:obj:`str`: the name of the protocol"""
+        return self.__name
+    
+    @name.setter
+    def name(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Protocol.name must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__name = val
+
+    @property
+    def protocol_type(self):
+        """:obj:`OntologyAnnotation: an ontology annotation representing the
+        study protocol type"""
+        return self.__protocol_type
+
+    @protocol_type.setter
+    def protocol_type(self, val):
+        if val is not None and not isinstance(val, OntologyAnnotation):
+            raise ISAModelAttributeError(
+                'Protocol.protocol_type must be a OntologyAnnotation or '
+                'None; got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__protocol_type = val
+
+    @property
+    def description(self):
+        """:obj:`str`: the description of the protocol"""
+        return self.__description
+
+    @description.setter
+    def description(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Protocol.description must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__description = val
+
+    @property
+    def uri(self):
+        """:obj:`str`: the uri of the protocol"""
+        return self.__uri
+
+    @uri.setter
+    def uri(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Protocol.uri must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__uri = val
+
+    @property
+    def version(self):
+        """:obj:`str`: the version of the protocol"""
+        return self.__version
+
+    @version.setter
+    def version(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Protocol.version must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__version = val
+            
+    @property
+    def parameters(self):
+        """:obj:`list` of :obj:`ProtocolParameter`: Container for protocol 
+        parameters"""
+        return self.__parameters
+
+    @parameters.setter
+    def parameters(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, ProtocolParameter) for x in val):
+                self.__parameters = list(val)
+        else:
+            raise ISAModelAttributeError('Protocol.parameters must be iterable '
+                                         'containing ProtocolParameters')
+        
+    @property
+    def components(self):
+        """:obj:`list` of :obj:`OntologyAnnotation`: Container for protocol
+        components"""
+        return self.__components
+
+    @components.setter
+    def components(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
+                self.__components = list(val)
+        else:
+            raise ISAModelAttributeError('Protocol.components must be iterable '
+                                         'containing OntologyAnnotations')
+
+    def __repr__(self):
+        return 'Protocol(name="{0.name}", protocol_type={0.protocol_type}, ' \
+               'uri="{0.uri}", version="{0.version}", ' \
+               'parameters={0.parameters}, components={0.components}, ' \
+               'comments={0.comments})'.format(self)
+    
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Protocol) \
+               and self.name == other.name \
+               and self.protocol_type == other.protocol_type \
+               and self.uri == other.uri \
+               and self.version == other.version \
+               and self.parameters == other.parameters \
+               and self.components == other.components \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class ProtocolParameter(Commentable):
     """A parameter used by a protocol.
 
     Attributes:
-        name (OntologyAnnotation): A parameter name as a term
-        unit (OntologyAnnotation): A unit, if applicable
-        comments (list, NoneType): Comments associated with instances of this class.
+        parameter_name: A parameter name as an ontology term
+        comments: Comments associated with instances of this class.
     """
-    def __init__(self, id_='', parameter_name=None, unit=None, comments=None):
+    def __init__(self, id_='', parameter_name=None, comments=None):
         super().__init__(comments)
+        
         self.id = id_
+        
         if parameter_name is None:
-            self.parameter_name = OntologyAnnotation()
+            self.__parameter_name = OntologyAnnotation()
         else:
-            self.parameter_name = parameter_name
-        # if unit is None:
-        #     self.unit = OntologyAnnotation()
-        # else:
-        #     self.unit = unit
+            self.__parameter_name = parameter_name
+            
+    @property
+    def parameter_name(self):
+        """:obj:`OntologyAnnotation`: an ontology annotation representing the
+        parameter name"""
+        return self.__parameter_name
+
+    @parameter_name.setter
+    def parameter_name(self, val):
+        if val is not None and not isinstance(val, OntologyAnnotation):
+            raise ISAModelAttributeError(
+                'ProtocolParameter.parameter_name must be a OntologyAnnotation '
+                'or None; got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__parameter_name = val
+
+    def __repr__(self):
+        return 'ProtocolParameter(parameter_name="{0.parameter_name}", ' \
+               'comments={0.comments})'.format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, ProtocolParameter) \
+               and self.parameter_name == other.parameter_name \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class ParameterValue(object):
-    """A ParameterValue represents the instance value of a ProtocolParameter, that is used in a Process.
+    """A ParameterValue represents the instance value of a ProtocolParameter,
+    used in a Process.
 
     Attributes:
-        category (ProtocolParameter): A link to the relevant ProtocolParameter that the value is set for.
-        value (OntologyAnnotation): The value of the parameter.
-        unit (OntologyAnnotation): The qualifying unit classifier, if the value is numeric.
-        comments (list, NoneType): Comments associated with instances of this class.
+        category: A link to the relevant ProtocolParameter that the value is
+            set for.
+        value: The value of the parameter.
+        unit: The qualifying unit classifier, if the value is numeric.
+        comments: Comments associated with instances of this class.
     """
     def __init__(self, category=None, value=None, unit=None):
         super().__init__()
-        # if category is None:
-        #     raise TypeError("You must specify a category")
-        self.category = category
-        self.value = value
-        self.unit = unit
+        
+        self.__category = category
+        self.__value = value
+        self.__unit = unit
+        
+    @property
+    def category(self):
+        """:obj:`ProtocolParameter`: a references to the ProtocolParameter the
+        value applies to"""
+        return self.__category
+
+    @category.setter
+    def category(self, val):
+        if val is not None and not isinstance(val, ProtocolParameter):
+            raise ISAModelAttributeError(
+                'ParameterValue.category must be a ProtocolParameter '
+                'or None; got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__category = val
+        
+    @property
+    def value(self):
+        """:obj:`str` or :obj:`int` or :obj:`float` 
+        or :obj:`OntologyAnnotation`: a parameter value"""
+        return self.__value
+
+    @value.setter
+    def value(self, val):
+        if val is not None \
+                and not isinstance(val, (str, int, float, OntologyAnnotation)):
+            raise ISAModelAttributeError(
+                'ParameterValue.value must be a string, numeric, an '
+                'OntologyAnnotation, or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__value = val
+            
+    @property
+    def unit(self):
+        """ :obj:`OntologyAnnotation`: a unit for the parameter value"""
+        return self.__unit
+
+    @unit.setter
+    def unit(self, val):
+        if val is not None and not isinstance(val, OntologyAnnotation):
+            raise ISAModelAttributeError(
+                'ParameterValue.unit must be a OntologyAnnotation, or None; '
+                'got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__unit = val
+
+    def __repr__(self):
+        return 'ParameterValue(category="{0.category}", value={0.value}, ' \
+               'unit={0.unit})'.format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, ParameterValue) \
+               and self.category == other.category \
+               and self.value == other.value \
+               and self.unit == other.unit
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class ProtocolComponent(Commentable):
     """A component used in a protocol.
 
     Attributes:
-        name (str): A component name.
-        component_type (OntologyAnnotation): The classifier as a term for the component.
-        comments (list, NoneType): Comments associated with instances of this class.
+        name: A component name.
+        component_type: The classifier as a term for the component.
+        comments: Comments associated with instances of this class.
     """
     def __init__(self, id_='', name='', component_type=None, comments=None):
         super().__init__(comments)
+        
         self.id = id_
-        self.name = name
+        self.__name = name
+        
         if component_type is None:
-            self.component_type = OntologyAnnotation()
+            self.__component_type = OntologyAnnotation()
         else:
-            self.component_type = component_type
+            self.__component_type = component_type
+
+    @property
+    def name(self):
+        """:obj:`str`: the name of the protocol component"""
+        return self.__name
+
+    @name.setter
+    def name(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'ProtocolComponent.name must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__name = val
+            
+    @property
+    def component_type(self):
+        """ :obj:`OntologyAnnotation`: a component_type for the protocol 
+        component"""
+        return self.__component_type
+
+    @component_type.setter
+    def component_type(self, val):
+        if val is not None and not isinstance(val, OntologyAnnotation):
+            raise ISAModelAttributeError(
+                'ProtocolComponent.component_type must be a OntologyAnnotation,'
+                ' or None; got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__component_type = val
+
+    def __repr__(self):
+        return 'ProtocolComponent(name="{0.name}", ' \
+               'category={0.component_type}, comments={0.comments})' \
+               .format(self)
+    
+    def __hash__(self):
+        return hash(repr(self))
+    
+    def __eq__(self, other):
+        return isinstance(other, ProtocolComponent) \
+               and self.name == other.name \
+               and self.component_type == other.component_type \
+               and self.comments == other.comments
+    
+    def __ne__(self, other):
+        return not self == other
 
 
 class Source(Commentable):
     """Represents a Source material in an experimental graph.
 
     Attributes:
-        name (str): A name/reference for the source material.
-        characteristics (list, NoneType): A list of Characteristics used to qualify the material properties.
-        comments (list, NoneType): Comments associated with instances of this class.
+        name: A name/reference for the source material.
+        characteristics: A list of Characteristics used to qualify the material
+            properties.
+        comments: Comments associated with instances of this class.
     """
-    def __init__(self, name="", id_='', characteristics=None, comments=None):
+    def __init__(self, name='', id_='', characteristics=None, comments=None):
         super().__init__(comments)
+
         self.id = id_
-        self.name = name
+        self.__name = name
+
         if characteristics is None:
-            self.characteristics = list()
+            self.__characteristics = []
         else:
-            self.characteristics = characteristics
+            self.__characteristics = characteristics
+
+    @property
+    def name(self):
+        """:obj:`str`: the name of the source material"""
+        return self.__name
+
+    @name.setter
+    def name(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Source.name must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__name = val
+
+    @property
+    def characteristics(self):
+        """:obj:`list` of :obj:`Characteristic`: Container for source material
+        characteristics"""
+        return self.__characteristics
+
+    @characteristics.setter
+    def characteristics(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Characteristic) for x in val):
+                self.__characteristics = list(val)
+        else:
+            raise ISAModelAttributeError(
+                'Source.characteristics must be iterable containing '
+                'Characteristics')
+
+    def __repr__(self):
+        return 'Source(name="{0.name}", characteristics={0.characteristics}, ' \
+               'comments={0.comments})'.format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Source) \
+               and self.name == other.name \
+               and self.characteristics == other.characteristics \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class Characteristic(Commentable):
     """A Characteristic acts as a qualifying property to a material object.
 
     Attributes:
-        category (OntologyAnnotation, NoneType): The classifier of the type of characteristic being described.
-        value (OntologyAnnotation, NoneType): The value of this instance of a characteristic as relevant to the attached material.
-        unit (OntologyAnnotation, NoneType): If applicable, a unit qualifier for the value (if the value is numeric).
+        category: The classifier of the type of characteristic being described.
+        value: The value of this instance of a characteristic as relevant to
+            the attached material.
+        unit: If applicable, a unit qualifier for the value (if the value is
+            numeric).
         """
     def __init__(self, category=None, value=None, unit=None, comments=None):
         super().__init__(comments)
+
         if category is None:
-            self.category = OntologyAnnotation()
+            self.__category = OntologyAnnotation()
         else:
-            self.category = category
+            self.__category = category
+
         if value is None:
-            self.value = OntologyAnnotation()
+            self.__value = OntologyAnnotation()
         else:
-            self.value = value
-        self.unit = unit
+            self.__value = value
+
+        self.__unit = unit
+
+    @property
+    def category(self):
+        """ :obj:`OntologyAnnotation`: a category for the characteristic
+        component"""
+        return self.__category
+
+    @category.setter
+    def category(self, val):
+        if val is not None and not isinstance(val, OntologyAnnotation):
+            raise ISAModelAttributeError(
+                'Characteristic.category must be a OntologyAnnotation,'
+                ' or None; got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__category = val
+
+    @property
+    def value(self):
+        """:obj:`str` or :obj:`int` or :obj:`float`
+        or :obj:`OntologyAnnotation`: a characteristic value"""
+        return self.__value
+
+    @value.setter
+    def value(self, val):
+        if val is not None \
+                and not isinstance(val, (str, int, float, OntologyAnnotation)):
+            raise ISAModelAttributeError(
+                'Characteristic.value must be a string, numeric, an '
+                'OntologyAnnotation, or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__value = val
+
+    @property
+    def unit(self):
+        """ :obj:`OntologyAnnotation`: a unit for the characteristic value"""
+        return self.__unit
+
+    @unit.setter
+    def unit(self, val):
+        if val is not None and not isinstance(val, OntologyAnnotation):
+            raise ISAModelAttributeError(
+                'Characteristic.unit must be a OntologyAnnotation, or None; '
+                'got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__unit = val
+
+    def __repr__(self):
+        return 'Characteristic(category="{0.category}", value={0.value}, ' \
+               'unit={0.unit}, comments={0.comments})'.format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Characteristic) \
+               and self.category == other.category \
+               and self.value == other.value \
+               and self.unit == other.unit \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class Sample(Commentable):
     """Represents a Sample material in an experimental graph.
 
     Attributes:
-        name (str): A name/reference for the sample material.
-        characteristics (list, NoneType): A list of Characteristics used to qualify the material properties.
-        factor_values (list, NoneType): A list of FactorValues used to qualify the material in terms of study factors/design.
-        derives_from (Source): A link to the source material that the sample is derived from.
-        comments (list, NoneType): Comments associated with instances of this class.
+        name: A name/reference for the sample material.
+        characteristics: A list of Characteristics used to qualify the material
+            properties.
+        factor_values: A list of FactorValues used to qualify the material in
+            terms of study factors/design.
+        derives_from: A link to the source material that the sample is derived
+            from.
+        comments: Comments associated with instances of this class.
     """
-    def __init__(self, name="", id_='', factor_values=None, characteristics=None, derives_from=None, comments=None):
+    def __init__(self, name='', id_='', factor_values=None,
+                 characteristics=None, derives_from=None, comments=None):
         super().__init__(comments)
+
         self.id = id_
-        self.name = name
+        self.__name = name
+
         if factor_values is None:
-            self.factor_values = list()
+            self.__factor_values = []
         else:
-            self.factor_values = factor_values
+            self.__factor_values = factor_values
+
         if characteristics is None:
-            self.characteristics = list()
+            self.__characteristics = []
         else:
-            self.characteristics = characteristics
+            self.__characteristics = characteristics
+
         if derives_from is None:
-            self.derives_from = []
+            self.__derives_from = []
         else:
-            self.derives_from = derives_from
+            self.__derives_from = derives_from
+
+    @property
+    def name(self):
+        """:obj:`str`: the name of the sample material"""
+        return self.__name
+
+    @name.setter
+    def name(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                'Sample.name must be a str or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__name = val
+
+    @property
+    def factor_values(self):
+        """:obj:`list` of :obj:`FactorValue`: Container for sample material
+        factor_values"""
+        return self.__factor_values
+
+    @factor_values.setter
+    def factor_values(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, FactorValue) for x in val):
+                self.__factor_values = list(val)
+        else:
+            raise ISAModelAttributeError(
+                'Sample.factor_values must be iterable containing '
+                'FactorValues')
+
+    @property
+    def characteristics(self):
+        """:obj:`list` of :obj:`Characteristic`: Container for sample material
+        characteristics"""
+        return self.__characteristics
+
+    @characteristics.setter
+    def characteristics(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Characteristic) for x in val):
+                self.__characteristics = list(val)
+        else:
+            raise ISAModelAttributeError(
+                'Sample.characteristics must be iterable containing '
+                'Characteristics')
+
+    @property
+    def derives_from(self):
+        """:obj:`list` of :obj:`Source`: a list of references from this sample
+        material to a source material(s)"""
+        return self.__derives_from
+
+    @derives_from.setter
+    def derives_from(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Source) for x in val):
+                self.__derives_from = list(val)
+        else:
+            raise ISAModelAttributeError(
+                'Sample.derives_from must be iterable containing Sources')
+
+    def __repr__(self):
+        return 'Sample(name="{0.name}", characteristics={0.characteristics}, ' \
+               'factor_values={0.factor_values}, ' \
+               'derives_from={0.derives_from}, comments={0.comments})'\
+                .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Sample) \
+               and self.name == other.name \
+               and self.characteristics == other.characteristics \
+               and self.factor_values == other.factor_values \
+               and self.derives_from == other.derives_from \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
-class Material(Commentable):
+class Material(Commentable, metaclass=abc.ABCMeta):
     """Represents a generic material in an experimental graph.
-
-    Attributes:
-        name (str): A name/reference for the sample material.
-        characteristics (list, NoneType): A list of Characteristics used to qualify the material properties.
-        derives_from (Source): A link to the material that this material is derived from.
-        comments (list, NoneType): Comments associated with instances of this class.
     """
-    def __init__(self, name="", id_='', type_='', characteristics=None, derives_from=None, comments=None):
+    def __init__(self, name='', id_='', type_='', characteristics=None,
+                 comments=None):
         super().__init__(comments)
+
         self.id = id_
-        self.name = name
-        self.type = type_
+        self.__name = name
+        self.__type = type_
+
         if characteristics is None:
-            self.characteristics = list()
+            self.__characteristics = list()
         else:
-            self.characteristics = characteristics
+            self.__characteristics = characteristics
+
+    @property
+    def name(self):
+        """:obj:`str`: the name of the material"""
+        return self.__name
+
+    @name.setter
+    def name(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                '{0}.name must be a str or None; got {1}:{2}'
+                .format(type(self).__name__, val, type(val)))
+        else:
+            self.__name = val
+
+    @property
+    def type(self):
+        """:obj:`str`: the type of the material"""
+        return self.__type
+
+    @type.setter
+    def type(self, val):
+        if val is not None and not isinstance(val, str) \
+                and val not in ('Extract Name', 'Labeled Extract Name'):
+            raise ISAModelAttributeError(
+                '{0}.type must be a str in ("Extract Name", "Labeled Extract '
+                'Name") or None; got {1}:{2}'
+                .format(type(self).__name__, val, type(val)))
+        else:
+            self.__type = val
+
+    @property
+    def characteristics(self):
+        """:obj:`list` of :obj:`Characteristic`: Container for material
+        characteristics"""
+        return self.__characteristics
+
+    @characteristics.setter
+    def characteristics(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Characteristic) for x in val):
+                self.__characteristics = list(val)
+        else:
+            raise ISAModelAttributeError(
+                '{}.characteristics must be iterable containing '
+                'Characteristics'.format(type(self).__name__))
 
 
 class Extract(Material):
-
-    def __init__(self, name="", id_='', characteristics=None, derives_from=None, comments=None):
-        super().__init__(name=name, id_=id_, characteristics=characteristics, derives_from=derives_from,
+    """Represents a extract material in an experimental graph."""
+    def __init__(self, name='', id_='', characteristics=None, comments=None):
+        super().__init__(name=name, id_=id_, characteristics=characteristics,
                          comments=comments)
-        self.type = "Extract Name"
+
+        self.type = 'Extract Name'
+
+    def __repr__(self):
+        return 'Extract(name="{0.name}", type="{0.type}", ' \
+               'characteristics={0.characteristics}, comments={0.comments})' \
+               .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Extract) \
+               and self.name == other.name \
+               and self.characteristics == other.characteristics \
+               and self.type == other.type \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class LabeledExtract(Material):
-
-    def __init__(self, name="", id_='', characteristics=None, derives_from=None, comments=None):
-        super().__init__(name=name, id_=id_, characteristics=characteristics, derives_from=derives_from,
+    """Represents a labeled extract material in an experimental graph."""
+    def __init__(self, name='', id_='', characteristics=None, comments=None):
+        super().__init__(name=name, id_=id_, characteristics=characteristics,
                          comments=comments)
-        self.type = "Labeled Extract Name"
+
+        self.type = 'Labeled Extract Name'
+
+    def __repr__(self):
+        return 'LabeledExtract(name="{0.name}", type="{0.type}", ' \
+               'characteristics={0.characteristics}, comments={0.comments})' \
+            .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Extract) \
+               and self.name == other.name \
+               and self.characteristics == other.characteristics \
+               and self.type == other.type \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class FactorValue(Commentable):
     """A FactorValue represents the value instance of a StudyFactor.
 
     Attributes:
-        factor_name (StudyFactor): Reference to an instance of a relevant StudyFactor.
-        value (OntologyAnnotation, NoneType): The value of the factor at hand.
-        unit (OntologyAnnotation, NoneType): If numeric, the unit qualifier for the value.
-        comments (list, NoneType): Comments associated with instances of this class.
+        factor_name: Reference to an instance of a relevant StudyFactor.
+        value: The value of the factor at hand.
+        unit: If numeric, the unit qualifier for the value.
+        comments: Comments associated with instances of this class.
     """
     def __init__(self, factor_name=None, value=None, unit=None, comments=None):
         super().__init__(comments)
-        self.factor_name = factor_name
-        self.value = value
-        self.unit = unit
+        self.__factor_name = factor_name
+        self.__value = value
+        self.__unit = unit
+
+    @property
+    def factor_name(self):
+        """:obj:`StudyFactor`: a references to the StudyFactor the
+        value applies to"""
+        return self.__factor_name
+
+    @factor_name.setter
+    def factor_name(self, val):
+        if val is not None and not isinstance(val, StudyFactor):
+            raise ISAModelAttributeError(
+                'FactorValue.factor_name must be a StudyFactor '
+                'or None; got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__factor_name = val
+
+    @property
+    def value(self):
+        """:obj:`str` or :obj:`int` or :obj:`float` 
+        or :obj:`OntologyAnnotation`: a parameter value"""
+        return self.__value
+
+    @value.setter
+    def value(self, val):
+        if val is not None \
+                and not isinstance(val, (str, int, float, OntologyAnnotation)):
+            raise ISAModelAttributeError(
+                'FactorValue.value must be a string, numeric, an '
+                'OntologyAnnotation, or None; got {0}:{1}'
+                .format(val, type(val)))
+        else:
+            self.__value = val
+
+    @property
+    def unit(self):
+        """ :obj:`OntologyAnnotation`: a unit for the parameter value"""
+        return self.__unit
+
+    @unit.setter
+    def unit(self, val):
+        if val is not None and not isinstance(val, OntologyAnnotation):
+            raise ISAModelAttributeError(
+                'FactorValue.unit must be a OntologyAnnotation, or None; '
+                'got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__unit = val
+
+    def __repr__(self):
+        return 'FactorValue(factor_name="{0.factor_name}", value={0.value}, ' \
+               'unit={0.unit})'.format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, FactorValue) \
+               and self.factor_name == other.factor_name \
+               and self.value == other.value \
+               and self.unit == other.unit
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class Process(Commentable):
-    """Process nodes represent the application of a protocol to some input material (e.g. a Source) to produce some
-    output (e.g.a Sample).
+    """Process nodes represent the application of a protocol to some input
+    material (e.g. a Source) to produce some output (e.g.a Sample).
 
     Attributes:
-        name (str): If relevant, a unique name for the process to disambiguate it from other processes.
-        executes_protocol (Protocol): A reference to the Protocol that this process executes.
-        date_ (str): A date formatted as an ISO8601 string corresponding to when the process event occurred.
-        performer (str): The name of the person or organisation that carried out the process.
-        parameter_values (list, NoneType): A list of ParameterValues relevant to the executing protocol.
-        inputs (list, NoneType): A list of input materials, possibly Sources, Samples, Materials, DataFiles
-        outputs (list, NoneType): A list of output materials, possibly Samples, Materials, DataFiles
-        comments (list, NoneType): Comments associated with instances of this class.
+        name : If relevant, a unique name for the process to disambiguate it
+            from other processes.
+        executes_protocol: A reference to the Protocol that this process
+            executes.
+        date_: A date formatted as an ISO8601 string corresponding to when the
+            process event occurred.
+        performer: The name of the person or organisation that carried out the
+            process.
+        parameter_values: A list of ParameterValues relevant to the executing
+            protocol.
+        inputs: A list of input materials, possibly Sources, Samples,
+            Materials, DataFiles
+        outputs: A list of output materials, possibly Samples, Materials,
+            DataFiles
+        comments: Comments associated with instances of this class.
     """
-    def __init__(self, id_='', name="", executes_protocol=None, date_=None, performer=None,
-                 parameter_values=None, inputs=None, outputs=None, comments=None):
+    # TODO: replace with above but need to debug where behaviour starts varying
+    def __init__(self, id_='', name='', executes_protocol=None, date_=None,
+                 performer=None, parameter_values=None, inputs=None,
+                 outputs=None, comments=None):
         super().__init__(comments)
+
         self.id = id_
-        self.name = name
+        self.__name = name
+
         if executes_protocol is None:
-            self.executes_protocol = Protocol()
+            self.__executes_protocol = Protocol()
         else:
-            self.executes_protocol = executes_protocol
-        self.date = date_
-        self.performer = performer
+            self.__executes_protocol = executes_protocol
+
+        self.__date = date_
+        self.__performer = performer
+        
         if parameter_values is None:
-            self.parameter_values = list()
+            self.__parameter_values = []
         else:
-            self.parameter_values = parameter_values
+            self.__parameter_values = parameter_values
+            
         if inputs is None:
-            self.inputs = list()
+            self.__inputs = []
         else:
-            self.inputs = inputs
+            self.__inputs = inputs
+
         if outputs is None:
-            self.outputs = list()
+            self.__outputs = []
         else:
-            self.outputs = outputs
-        self.additional_properties = dict()
-        self.prev_process = None
-        self.next_process = None
+            self.__outputs = outputs
+
+        self.__prev_process = None
+        self.__next_process = None
+
+    @property
+    def name(self):
+        """:obj:`str`: disambiguation name for the process"""
+        return self.__name
+
+    @name.setter
+    def name(self, val):
+        if val is not None and isinstance(val, str):
+            self.__name = val
+        else:
+            raise ISAModelAttributeError('Process.name must be a string')
+
+    @property
+    def executes_protocol(self):
+        """:obj:`Protocol`: a references to the study protocol the process has
+        applied"""
+        return self.__executes_protocol
+
+    @executes_protocol.setter
+    def executes_protocol(self, val):
+        if val is not None and not isinstance(val, Protocol):
+            raise ISAModelAttributeError(
+                'Process.executes_protocol must be a Protocol '
+                'or None; got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__executes_protocol = val
+
+    @property
+    def date(self):
+        """:obj:`str`: date the process event occurred"""
+        return self.__date
+
+    @date.setter
+    def date(self, val):
+        if val is not None and isinstance(val, str):
+            self.__date = val
+        else:
+            raise ISAModelAttributeError('Process.date must be a string')
+
+    @property
+    def performer(self):
+        """:obj:`str`: name of the performer responsible for the process"""
+        return self.__performer
+
+    @performer.setter
+    def performer(self, val):
+        if val is not None and isinstance(val, str):
+            self.__performer = val
+        else:
+            raise ISAModelAttributeError('Process.performer must be a string')
+
+    @property
+    def parameter_values(self):
+        """:obj:`list` of :obj:`ParameterValue`: Container for
+        process parameter values"""
+        return self.__parameter_values
+
+    @parameter_values.setter
+    def parameter_values(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, ParameterValue) for x in val):
+                self.__parameter_values = list(val)
+        else:
+            raise ISAModelAttributeError(
+                'Process.parameter_values must be iterable containing '
+                'ParameterValues')
+
+    @property
+    def inputs(self):
+        """:obj:`list` of :obj:`Material` or :obj:`DataFile`: Container for
+        process inputs"""
+        return self.__inputs
+
+    @inputs.setter
+    def inputs(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(
+                    isinstance(x, (Material, Source, Sample, DataFile)) for
+                    x in
+                    val):
+                self.__inputs = list(val)
+        else:
+            raise ISAModelAttributeError(
+                'Process.inputs must be iterable containing objects of types '
+                '(Material, Source, Sample, DataFile)')
+
+    @property
+    def outputs(self):
+        """:obj:`list` of :obj:`Material` or :obj:`DataFile`: Container for
+        process outputs"""
+        return self.__outputs
+
+    @outputs.setter
+    def outputs(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(
+                    isinstance(x, (Material, Source, Sample, DataFile)) for
+                    x in val):
+                self.__outputs = list(val)
+        else:
+            raise ISAModelAttributeError(
+                'Process.outputs must be iterable containing objects of types '
+                '(Material, Source, Sample, DataFile)')
+
+    @property
+    def prev_process(self):
+        """:obj:`Process`: a reference to another process, previous in the
+        process sequence to the current process"""
+        return self.__prev_process
+
+    @prev_process.setter
+    def prev_process(self, val):
+        if val is not None and not isinstance(val, Process):
+            raise ISAModelAttributeError(
+                'Process.prev_process must be a Process '
+                'or None; got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__prev_process = val
+
+    @property
+    def next_process(self):
+        """:obj:`Process`: a reference to another process, next in the process
+        sequence to the current process"""
+        return self.__next_process
+
+    @next_process.setter
+    def next_process(self, val):
+        if val is not None and not isinstance(val, Process):
+            raise ISAModelAttributeError(
+                'Process.next_process must be a Process '
+                'or None; got {0}:{1}'.format(val, type(val)))
+        else:
+            self.__next_process = val
+
+    # def __repr__(self):
+    #     return 'Process(name="{0.name}", ' \
+    #            'executes_protocol={0.executes_protocol}, ' \
+    #            'date="{0.date}", performer="{0.performer}", ' \
+    #            'inputs={0.inputs}, outputs={0.outputs})'.format(self)
+    #
+    # def __hash__(self):
+    #     return hash(repr(self))
+    #
+    # def __eq__(self, other):
+    #     return isinstance(other, Process) \
+    #            and self.name == other.name \
+    #            and self.executes_protocol == other.executes_protocol \
+    #            and self.date == other.date \
+    #            and self.performer == other.performer \
+    #            and self.inputs == other.inputs \
+    #            and self.outputs == other.outputs
+    #
+    # def __ne__(self, other):
+    #     return not self == other
 
 
 class DataFile(Commentable):
     """Represents a data file in an experimental graph.
 
-        Attributes:
-            filename (str): A name/reference for the data file.
-            label (str):
-            generated_from (Sample): The Sample the DataFile is generated from
-            comments (list, NoneType): Comments associated with instances of this class.
-        """
-    def __init__(self, filename='', id_='', label='', generated_from=None, comments=None):
+    Attributes:
+        filename : A name/reference for the data file.
+        label: The data file type, as indicated by a label such as 
+            'Array Data File' or 'Raw Data File'
+        generated_from: Reference to Sample(s) the DataFile is generated from
+        comments: Comments associated with instances of this class.
+    """
+    def __init__(self, filename='', id_='', label='', generated_from=None, 
+                 comments=None):
         super().__init__(comments)
+        
         self.id = id_
-        self.filename = filename
-        self.label = label
+        self.__filename = filename
+        self.__label = label
+        
         if generated_from is None:
-            self.generated_from = []
+            self.__generated_from = []
         else:
-            self.generated_from = generated_from
+            self.__generated_from = generated_from
+            
+    @property
+    def filename(self):
+        """:obj:`str`: the filename of the data file"""
+        return self.__filename
 
+    @filename.setter
+    def filename(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                '{0}.name must be a str or None; got {1}:{2}'
+                .format(type(self).__name__, val, type(val)))
+        else:
+            self.__filename = val
+
+    @property
+    def label(self):
+        """:obj:`str`: the ISA-Tab file heading label of the data file"""
+        return self.__label
+
+    @label.setter
+    def label(self, val):
+        if val is not None and not isinstance(val, str):
+            raise ISAModelAttributeError(
+                '{0}.label must be a str or None; got {1}:{2}'
+                .format(type(self).__name__, val, type(val)))
+        else:
+            self.__label = val
+            
+    @property
+    def generated_from(self):
+        """:obj:`list` of :obj:`Sample`: a list of references from this data
+        file to samples that the file was generated from"""
+        return self.__generated_from
+
+    @generated_from.setter
+    def generated_from(self, val):
+        if val is not None and hasattr(val, '__iter__'):
+            if val == [] or all(isinstance(x, Sample) for x in val):
+                self.__generated_from = list(val)
+        else:
+            raise ISAModelAttributeError(
+                '{}.generated_from must be iterable containing Samples'.format(
+                    type(self).__name__))
+
+    def __repr__(self):
+        return 'DataFile(filename="{0.filename}", label="{0.label}", ' \
+               'generated_from={0.generated_from}, comments={0.comments})' \
+               .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, DataFile) \
+               and self.filename == other.filename \
+               and self.label == other.label \
+               and self.generated_from == other.generated_from \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
+            
 
 class RawDataFile(DataFile):
-
+    """Represents a raw data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
-        self.label = "Raw Data File"
+        super().__init__(filename=filename, id_=id_,
+                         generated_from=generated_from, comments=comments)
+
+        self.label = 'Raw Data File'
+
+    def __repr__(self):
+        return 'RawDataFile(filename="{0.filename}" ' \
+               'generated_from={0.generated_from}, comments={0.comments})' \
+               .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, RawDataFile) \
+               and self.filename == other.filename \
+               and self.generated_from == other.generated_from \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class DerivedDataFile(DataFile):
-
+    """Represents a derived data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
-        self.label = "Derived Data File"
+        super().__init__(filename=filename, id_=id_,
+                         generated_from=generated_from, comments=comments)
+
+        self.label = 'Derived Data File'
+
+    def __repr__(self):
+        return 'DerivedDataFile(filename="{0.filename}" ' \
+               'generated_from={0.generated_from}, comments={0.comments})' \
+               .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, DerivedDataFile) \
+               and self.filename == other.filename \
+               and self.generated_from == other.generated_from \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class RawSpectralDataFile(DataFile):
-
+    """Represents a raw spectral data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
-        self.label = "Raw Spectral Data File"
+        super().__init__(filename=filename, id_=id_,
+                         generated_from=generated_from, comments=comments)
+
+        self.label = 'Raw Spectral Data File'
+
+    def __repr__(self):
+        return 'RawSpectralDataFile(filename="{0.filename}" ' \
+               'generated_from={0.generated_from}, comments={0.comments})' \
+            .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, RawSpectralDataFile) \
+               and self.filename == other.filename \
+               and self.generated_from == other.generated_from \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class DerivedArrayDataFile(DataFile):
+    """Represents a derived array data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
-        self.label = "Derived Array Data File"
+        super().__init__(filename=filename, id_=id_,
+                         generated_from=generated_from, comments=comments)
+
+        self.label = 'Derived Array Data File'
+
+    def __repr__(self):
+        return 'DerivedArrayDataFile(filename="{0.filename}" ' \
+               'generated_from={0.generated_from}, comments={0.comments})' \
+            .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, DerivedArrayDataFile) \
+               and self.filename == other.filename \
+               and self.generated_from == other.generated_from \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class ArrayDataFile(DataFile):
+    """Represents a array data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
-        self.label = "Array Data File"
+        super().__init__(filename=filename, id_=id_,
+                         generated_from=generated_from, comments=comments)
+
+        self.label = 'Array Data File'
+
+    def __repr__(self):
+        return 'ArrayDataFile(filename="{0.filename}" ' \
+               'generated_from={0.generated_from}, comments={0.comments})' \
+            .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, ArrayDataFile) \
+               and self.filename == other.filename \
+               and self.generated_from == other.generated_from \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class DerivedSpectralDataFile(DataFile):
+    """Represents a derived spectral data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
-        self.label = "Derived Spectral Data File"
+        super().__init__(filename=filename, id_=id_,
+                         generated_from=generated_from, comments=comments)
+
+        self.label = 'Derived Spectral Data File'
+
+    def __repr__(self):
+        return 'DerivedSpectralDataFile(filename="{0.filename}" ' \
+               'generated_from={0.generated_from}, comments={0.comments})' \
+            .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, DerivedSpectralDataFile) \
+               and self.filename == other.filename \
+               and self.generated_from == other.generated_from \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class ProteinAssignmentFile(DataFile):
+    """Represents a protein assignment file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
-        self.label = "Protein Assignment File"
+        super().__init__(filename=filename, id_=id_,
+                         generated_from=generated_from, comments=comments)
+
+        self.label = 'Protein Assignment File'
+
+    def __repr__(self):
+        return 'ProteinAssignmentFile(filename="{0.filename}" ' \
+               'generated_from={0.generated_from}, comments={0.comments})' \
+            .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, ProteinAssignmentFile) \
+               and self.filename == other.filename \
+               and self.generated_from == other.generated_from \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class PeptideAssignmentFile(DataFile):
+    """Represents a peptide assignment file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
-        self.label = "Peptide Assignment File"
+        super().__init__(filename=filename, id_=id_,
+                         generated_from=generated_from, comments=comments)
+
+        self.label = 'Peptide Assignment File'
+
+    def __repr__(self):
+        return 'PeptideAssignmentFile(filename="{0.filename}" ' \
+               'generated_from={0.generated_from}, comments={0.comments})' \
+            .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, PeptideAssignmentFile) \
+               and self.filename == other.filename \
+               and self.generated_from == other.generated_from \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class DerivedArrayDataMatrixFile(DataFile):
+    """Represents a derived array data matrix file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
-        self.label = "Derived Array Data Matrix File"
+        super().__init__(filename=filename, id_=id_,
+                         generated_from=generated_from, comments=comments)
+
+        self.label = 'Derived Array Data Matrix File'
+
+    def __repr__(self):
+        return 'DerivedArrayDataMatrixFile(filename="{0.filename}" ' \
+               'generated_from={0.generated_from}, comments={0.comments})' \
+            .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, DerivedArrayDataMatrixFile) \
+               and self.filename == other.filename \
+               and self.generated_from == other.generated_from \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class PostTranslationalModificationAssignmentFile(DataFile):
+    """Represents a post translational modification assignment file in an
+    experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
-        self.label = "Post Translational Modification Assignment File"
+        super().__init__(filename=filename, id_=id_,
+                         generated_from=generated_from, comments=comments)
+
+        self.label = 'Post Translational Modification Assignment File'
+
+    def __repr__(self):
+        return 'PostTranslationalModificationAssignmentFile(' \
+               'filename="{0.filename}" generated_from={0.generated_from}, ' \
+               'comments={0.comments})' \
+            .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, PostTranslationalModificationAssignmentFile) \
+               and self.filename == other.filename \
+               and self.generated_from == other.generated_from \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class AcquisitionParameterDataFile(DataFile):
+    """Represents a acquisition parameter data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
-        self.label = "Acquisition Parameter Data File"
+        super().__init__(filename=filename, id_=id_,
+                         generated_from=generated_from, comments=comments)
+
+        self.label = 'Acquisition Parameter Data File'
+
+    def __repr__(self):
+        return 'AcquisitionParameterDataFile(filename="{0.filename}" ' \
+               'generated_from={0.generated_from}, comments={0.comments})' \
+               .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, AcquisitionParameterDataFile) \
+               and self.filename == other.filename \
+               and self.generated_from == other.generated_from \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class FreeInductionDecayDataFile(DataFile):
+    """Represents a free induction decay data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_, generated_from=generated_from, comments=comments)
-        self.label = "Free Induction Decay Data File"
+        super().__init__(filename=filename, id_=id_,
+                         generated_from=generated_from, comments=comments)
+
+        self.label = 'Free Induction Decay Data File'
+
+    def __repr__(self):
+        return 'FreeInductionDecayDataFile(filename="{0.filename}" ' \
+               'generated_from={0.generated_from}, comments={0.comments})' \
+            .format(self)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, FreeInductionDecayDataFile) \
+               and self.filename == other.filename \
+               and self.generated_from == other.generated_from \
+               and self.comments == other.comments
+
+    def __ne__(self, other):
+        return not self == other
 
 
 def batch_create_materials(material=None, n=1):
-    """Creates a batch of material objects (Source, Sample or Material) from a prototype material object
+    """Creates a batch of material objects (Source, Sample or Material) from a
+    prototype material object
 
     :param material: existing material object to use as a prototype
     :param n: Number of material objects to create in the batch
@@ -1093,23 +2971,29 @@ def batch_create_materials(material=None, n=1):
         prototype_sample = Sample(name='sample_material', derives_from=source)
         batch = batch_create_materials(prototype_sample, n=10)
 
-        [Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, ]
+        [Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>,
+        Sample<>, Sample<>, Sample<>, ]
 
     """
     material_list = list()
-    if isinstance(material, Source) or isinstance(material, Sample) or isinstance(material, Material):
+    if isinstance(material, (Source, Sample, Material)):
         from copy import deepcopy
         for x in range(0, n):
             new_obj = deepcopy(material)
             new_obj.name = material.name + '-' + str(x)
-            new_obj.derives_from = material.derives_from
+
+            if hasattr(material, 'derives_from'):
+                new_obj.derives_from = material.derives_from
+
             material_list.append(new_obj)
+
     return material_list
 
 
 def batch_create_assays(*args, n=1):
-    """Creates a batch of assay process sequences (Material->Process->Material) from a prototype sequence
-    (currently works only as flat end-to-end processes of Material->Process->Material->...)
+    """Creates a batch of assay process sequences (Material->Process->Material)
+    from a prototype sequence (currently works only as flat end-to-end
+    processes of Material->Process->Material->...)
 
     :param *args: An argument list representing the process sequence prototype
     :param n: Number of process sequences to create in the batch
@@ -1117,28 +3001,32 @@ def batch_create_assays(*args, n=1):
 
     :Example:
 
-        # Create 3 assays of (Sample -> Process -> Material -> Process -> LabeledExtract)
+        # Create 3 assays of (Sample -> Process -> Material -> Process ->
+        LabeledExtract)
 
         sample = Sample(name='sample')
         data_acquisition = Process(name='data acquisition')
         material = Material(name='material')
         labeling = Process(name='labeling')
         extract = LabeledExtract(name='lextract')
-        batch = batch_create_assays(sample, data_acquisition, material, labeling, extract, n=3)
+        batch = batch_create_assays(sample, data_acquisition, material,
+        labeling, extract, n=3)
 
         [Process<> Process<>, Process<> Process<>, Process<>, Process<>]
 
-        # Create 3 assays of ([Sample, Sample] -> Process -> [Material, Material])
+        # Create 3 assays of ([Sample, Sample] -> Process -> [Material,
+        Material])
 
         sample1 = Sample(name='sample')
         sample2 = Sample(name='sample')
         process = Process(name='data acquisition')
         material1 = Material(name='material')
         material2 = Material(name='material')
-        batch = batch_create_assays([sample1, sample2], process, [material1, material2], n=3)
+        batch = batch_create_assays([sample1, sample2], process, [material1,
+        material2], n=3)
 
     """
-    process_sequence = list()
+    process_sequence = []
     materialA = None
     process = None
     materialB = None
@@ -1146,18 +3034,20 @@ def batch_create_assays(*args, n=1):
     for x in range(0, n):
         for arg in args:
             if isinstance(arg, list) and len(arg) > 0:
-                if isinstance(arg[0], Source) or isinstance(arg[0], Sample) or isinstance(arg[0], Material):
+                if isinstance(arg[0], (Source, Sample, Material)):
                     if materialA is None:
                         materialA = deepcopy(arg)
                         y = 0
                         for material in materialA:
-                            material.name = material.name + '-' + str(x) + '-' + str(y)
+                            material.name = material.name + '-' + str(x) + '-' \
+                                            + str(y)
                             y += 1
                     else:
                         materialB = deepcopy(arg)
                         y = 0
                         for material in materialB:
-                            material.name = material.name + '-' + str(x) + '-' + str(y)
+                            material.name = material.name + '-' + str(x) + '-' \
+                                            + str(y)
                             y += 1
                 elif isinstance(arg[0], Process):
                     process = deepcopy(arg)
@@ -1165,7 +3055,7 @@ def batch_create_assays(*args, n=1):
                     for p in process:
                         p.name = p.name + '-' + str(x) + '-' + str(y)
                         y += 1
-            if isinstance(arg, Source) or isinstance(arg, Sample) or isinstance(arg, Material):
+            if isinstance(arg, (Source, Sample, Material)):
                 if materialA is None:
                     materialA = deepcopy(arg)
                     materialA.name = materialA.name + '-' + str(x)
@@ -1175,7 +3065,8 @@ def batch_create_assays(*args, n=1):
             elif isinstance(arg, Process):
                 process = deepcopy(arg)
                 process.name = process.name + '-' + str(x)
-            if materialA is not None and materialB is not None and process is not None:
+            if materialA is not None and materialB is not None \
+                    and process is not None:
                 if isinstance(process, list):
                     for p in process:
                         if isinstance(materialA, list):
@@ -1237,6 +3128,7 @@ class ISADocument:
     @property
     def valid_isajson(self):
         return True
+
 
 def plink(p1, p2):
     if isinstance(p1, Process) and isinstance(p2, Process):

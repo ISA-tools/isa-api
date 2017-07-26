@@ -19,7 +19,7 @@ class TestSimpleExamples(unittest.TestCase):
         self.assertIsInstance(I.title, str)
         self.assertIsInstance(I.description, str)
         self.assertIsInstance(I.submission_date, str)  # todo: check if ISO8601
-        self.assertIsInstance(I.public_release_date, str)  # todo: check if ISO8601
+        self.assertIsInstance(I.public_release_date, str)
 
     def test_batch_create_materials(self):
         try:
@@ -32,7 +32,7 @@ class TestSimpleExamples(unittest.TestCase):
             from isatools.model import Sample
         except ImportError:
             self.fail("Could not import Sample class")
-        prototype_sample = Sample(name='sample_material', derives_from=source)
+        prototype_sample = Sample(name='sample_material', derives_from=[source])
 
         try:
             from isatools.model import batch_create_materials
@@ -43,6 +43,7 @@ class TestSimpleExamples(unittest.TestCase):
         self.assertEqual(len(batch), 3)
         for material in batch:
             self.assertIsInstance(material, Sample)
-            self.assertEqual(material.derives_from, source)
-        self.assertSetEqual(set([m.name for m in batch]), {'sample_material-0', 'sample_material-1',
-                                                           'sample_material-2'})
+            self.assertEqual(material.derives_from, [source])
+        self.assertSetEqual(set([m.name for m in batch]),
+                            {'sample_material-0', 'sample_material-1',
+                             'sample_material-2'})
