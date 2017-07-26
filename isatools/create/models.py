@@ -322,7 +322,7 @@ class AssayType(object):
                             'Please provide an OntologyAnnotation or string.'.format(technology_type))
 
     def __repr__(self):
-        return 'AssayType(mt={0}, tt={1})'.format(self.measurement_type.term, self.technology_type.term)
+        return 'AssayType(mt={0}, tt={1})'.format(self.measurement_type, self.technology_type)
 
     def __hash__(self):
         return hash(repr(self))
@@ -331,11 +331,8 @@ class AssayType(object):
         return not self == other
 
     def __eq__(self, other):
-        return isinstance(other, AssayType) \
-               and isinstance(other.measurement_type, OntologyAnnotation) \
-               and isinstance(other.technology_type, OntologyAnnotation) \
-               and self.measurement_type.term == other.measurement_type.term \
-               and self.technology_type.term == other.technology_type.term
+        return isinstance(other, AssayType) and self.measurement_type == other.measurement_type \
+            and self.technology_type == other.technology_type
 
 
 class AssayTopologyModifiers(object):
@@ -455,22 +452,26 @@ class AssayTopologyModifiers(object):
 
 class AssayPlan(object):
 
-    def __init__(self):
-        # self.__sample_plan = sample_plan
+    def __init__(self, sample_plan=SamplePlan()):
+        self.__sample_plan = set()
         self.__assay_types_map = {}
         self.__assay_topologies_map = {}
 
-    """
+        self.sample_plan = sample_plan
+
     @property
     def sample_plan(self):
         return self.__sample_plan
 
     @sample_plan.setter
     def sample_plan(self, sample_plan):
-        if not isinstance(sample_plan, (SamplePlan, None)):
+        if not isinstance(sample_plan, SamplePlan):
             raise TypeError('{0} is an invalid value for sample_plan. Please provide a SamplePlan object.')
+        missing_sample_types = { sample_type for sample_type in self.__assay_types_map } - sample_plan.sample_types
+        if missing_sample_types != set():
+            raise ValueError('Some of the sample_types required by the assay plan are not declared in the sample plan'
+                             '{0}'.format(missing_sample_types))
         self.__sample_plan = sample_plan
-    """
 
     @property
     def assay_types_map(self):
@@ -516,6 +517,118 @@ class AssayPlan(object):
             raise TypeError('invalid assay_topology_modifiers type {0}'.format(assay_topology_modifiers))
 
 
+class StudyPlan(object):
+    def __init__(self, group_size=0):
+        self.__group_size = 0
+        self.__sample_types = set()
+        self.__assay_types = set()
+
+        self.__sample_plan = {}
+        self.__assay_plan = set()
+
+        self.group_size = group_size
+
+    @property
+    def group_size(self):
+        return self.__group_size
+
+    @group_size.setter
+    def group_size(self, group_size):
+        if not isinstance(group_size, int):
+            raise TypeError('{0} is not a valid value for group_size. Please provide an integer.')
+        if group_size < 0:
+            raise ValueError('group_size must be greater than 0.')
+        self.__group_size = group_size
+
+    def add_sample_type(self, sample_type):
+        if isinstance(sample_type, Characteristic):
+            self.__sample_types.add(sample_type)
+        elif isinstance(sample_type, str):  # TODO should we remove this case?
+            characteristic = Characteristic(category=OntologyAnnotation(term='organism part'),
+                                            value=OntologyAnnotation(term=sample_type))
+            self.__sample_types.add(characteristic)
+        else:
+            raise TypeError('Not a valid sample type: {0}'.format(sample_type))
+
+    @property
+    def sample_types(self):
+        return self.__sample_types
+
+    @sample_types.setter
+    def sample_types(self, sample_types):
+        if not isinstance(sample_types, Iterable):
+            raise TypeError('wrong sample types: {0)}'.format(sample_types))
+        for sample_type in sample_types:
+            self.add_sample_type(sample_type)
+
+    def add_assay_type(self, assay_type):
+        if isinstance(assay_type, AssayType):
+            self.__assay_types.add(assay_type)
+        elif isinstance(assay_type, str):
+            assay_type = AssayType(measurement_type=assay_type)
+            self.__assay_types.add(assay_type)
+        else:
+            raise TypeError('Not a valid assay type: {0}'.format(assay_type))
+
+    @property
+    def assay_types(self):
+        return self.__assay_types
+
+    @assay_types.setter
+    def assay_types(self, assay_types):
+        for assay_type in assay_types:
+            self.add_assay_type(assay_type)
+
+    def add_sample_plan_record(self, sample_type, sampling_size=0):
+        """
+
+        :param sample_type: (Characteristic/str) a sample type
+        :param sampling_size: (int/tuple of int) for the provided sample type how many sampling events happen for a single
+                                                 source/subject. This can be specified throughout the whole sequence with
+                                                 a single integer value, or with a tuple of value, each value for an 
+                                                 epoch. Missing values will be considered as zero (no sampling.
+        :return: 
+        """
+        if sample_type not in self.sample_types:
+            raise TypeError('nonexistent sample type: {0}'.format(sample_type))
+        if not isinstance(sampling_size, int) and not isinstance(sampling_size, tuple):
+            raise TypeError('sampling_size must be a natural number or a tuple of natural numbers')
+        if isinstance(sampling_size, int) and sampling_size < 0:
+            raise ValueError('sampling_size value must be a positive integer')
+        if isinstance(sampling_size, tuple) and not all(isinstance(el, int) and el >= 0 for el in sampling_size):
+            raise ValueError('all values in the sampling_size tuple must be positive integers')
+        self.__sample_plan[sample_type] = sampling_size
+
+    @property
+    def sample_plan(self):
+        return self.__sample_plan
+
+    @sample_plan.setter
+    def sample_plan(self, sample_plan):
+        for sample_type, sampling_size in sample_plan.items():
+            self.add_sample_plan_record(sample_type, sampling_size)
+            
+    def add_assay_plan_record(self, sample_type, assay_type):
+        if sample_type not in self.sample_types:
+            raise ValueError('nonexistent sample type: {0}. These are the available sample types: {1}'.format(
+                sample_type, self.sample_types))
+        if assay_type not in self.assay_types:
+            raise ValueError('nonexistent assay type: {0}. These are the assay types available in the plan: '
+                             '{1}'.format(assay_type, self.assay_types))
+        self.__assay_plan.add((sample_type, assay_type))
+
+    @property
+    def assay_plan(self):
+        return self.__assay_plan
+
+    @assay_plan.setter
+    def assay_plan(self, assay_plan):
+        if not isinstance(assay_plan, set):
+            raise TypeError('Assay plan must be a set of (SampleType, AssayType)')
+        for sample_type, assay_type in assay_plan:
+            self.add_assay_plan_record(sample_type, assay_type)
+
+
 class BaseStudyDesign(object):
     pass
 
@@ -539,16 +652,10 @@ class InterventionStudyDesign(BaseStudyDesign):
         for treatment_sequence, sample_plan in sequences_plan.items():
             self.add_single_sequence_plan(treatment_sequence, sample_plan)
 
-    # TODO move/remove??
-    @property
-    def sample_types(self):
-        pass
-
-    def add_single_sequence_plan(self, treatment_sequence, sample_plan):
+    def add_single_sequence_plan(self, treatment_sequence, study_plan):
         if not isinstance(treatment_sequence, TreatmentSequence):
             raise TypeError('Please provide a valid TreatmentSequence. '
-                            '{0} not a valid Treatment Sequence.'.format([
-                treatment_sequence]))
-        if not isinstance(sample_plan, SamplePlan):
-            raise TypeError('Please provide a valid SamplePlan. {0} not a valid Sample Plan.'.format(sample_plan))
-        self.__sequences_plan[treatment_sequence] = sample_plan
+                            '{0} not a valid Treatment Sequence.'.format([treatment_sequence]))
+        if not isinstance(study_plan, StudyPlan):
+            raise TypeError('Please provide a valid SamplePlan. {0} not a valid Sample Plan.'.format(study_plan))
+        self.__sequences_plan[treatment_sequence] = study_plan

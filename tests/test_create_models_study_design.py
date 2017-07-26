@@ -1,8 +1,8 @@
 import unittest
 from collections import OrderedDict
-from isatools.model.v1 import StudyFactor, FactorValue
+from isatools.model.v1 import StudyFactor, FactorValue, OntologyAnnotation
 from isatools.create.models import InterventionStudyDesign, Treatment, SamplePlan, Characteristic, TreatmentFactory, \
-    TreatmentSequence, OntologyAnnotation, INTERVENTIONS, BASE_FACTORS
+    TreatmentSequence, AssayType, StudyPlan, INTERVENTIONS, BASE_FACTORS
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitoglycerin'
@@ -440,7 +440,7 @@ class InterventionStudyDesignTest(unittest.TestCase):
         self.sample_plan = SamplePlan(group_size=10, sample_type_map={})
 
     def test_add_single_sequence_plan(self):
-        self.design.add_single_sequence_plan(treatment_sequence=self.test_sequence, sample_plan=self.sample_plan)
+        self.design.add_single_sequence_plan(treatment_sequence=self.test_sequence, study_plan=self.sample_plan)
         self.assertEqual(self.design.sequences_plan.get(self.test_sequence, None), self.sample_plan)
 
     def test_add_single_sequence_error_sequence(self):
@@ -469,5 +469,70 @@ class InterventionStudyDesignTest(unittest.TestCase):
 
     def test_sample_types_property(self):
         pass
+
+
+class StudyPlanTest(unittest.TestCase):
+
+    def setUp(self):
+        self.plan = StudyPlan()
+
+
+    def test_init_default(self):
+        sample_plan = self.plan
+        self.assertEqual(sample_plan.group_size, 0)
+        self.assertEqual(sample_plan.sample_types, set())
+
+    def test_init_group_size(self):
+        group_size = 100
+        sample_plan = SamplePlan(group_size=group_size)
+        self.assertEqual(sample_plan.group_size, group_size)
+
+    def test_add_sample_type(self):
+        liver_sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='liver')
+        self.plan.add_sample_type(liver_sample_type)
+        self.assertEqual(self.plan.sample_types, { liver_sample_type })
+
+    def test_add_sample_type_str(self):
+        liver_sample_type = 'liver'
+        self.plan.add_sample_type(liver_sample_type)
+        self.assertEqual(self.plan.sample_types, {
+            Characteristic(category=OntologyAnnotation(term='organism part'),
+                           value=OntologyAnnotation(term=liver_sample_type))
+        })
+
+    def test_sample_types_property_from_set(self):
+        liver_sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='liver')
+        blood_sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='blood')
+        heart_sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='heart')
+        test_sample_types = { liver_sample_type, blood_sample_type, heart_sample_type }
+        self.plan.sample_types = test_sample_types
+        self.assertEqual(self.plan.sample_types, test_sample_types)
+
+    def test_sample_types_property_from_list(self):
+        liver_sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='liver')
+        blood_sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='blood')
+        brain_sample_type = 'brain'
+        test_sample_types = [liver_sample_type, blood_sample_type, liver_sample_type, brain_sample_type]
+        self.plan.sample_types = test_sample_types
+        self.assertEqual(self.plan.sample_types, {
+            blood_sample_type, liver_sample_type, Characteristic(category=OntologyAnnotation(term='organism part'),
+                                                                 value=OntologyAnnotation(term=brain_sample_type))
+        })
+
+    def test_add_assay_type(self):
+        ngs = OntologyAnnotation(term='ngs')
+        test_assay_type = AssayType(measurement_type=ngs)
+        self.plan.add_assay_type(test_assay_type)
+        self.assertEqual(self.plan.assay_types, { test_assay_type })
+
+    def test_add_assay_type_str(self):
+        ngs = 'ngs'
+        self.plan.add_assay_type(ngs)
+        assay_type = AssayType(measurement_type=ngs)
+        self.assertEqual(self.plan.assay_types, { assay_type })
+
+    def test_add_assay_type_err(self):
+        not_an_assay = SamplePlan()
+        self.assertRaises(TypeError, self.plan.add_assay_type, not_an_assay)
 
 
