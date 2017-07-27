@@ -17,19 +17,26 @@ class AssayTypeTest(unittest.TestCase):
             technology_type=TECHNOLOGY_TYPE_DNA_MICROARRAY
         )
         self.assay_type_with_oa = AssayType(
-            measurement_type=OntologyAnnotation(term=MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING),
-            technology_type=OntologyAnnotation(term=TECHNOLOGY_TYPE_DNA_MICROARRAY)
+            measurement_type=OntologyAnnotation(
+                term=MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING),
+            technology_type=OntologyAnnotation(
+                term=TECHNOLOGY_TYPE_DNA_MICROARRAY)
         )
 
     def test_repr(self):
-        self.assertEqual('AssayType(mt={0}, tt={1})'.format(
+        self.assertEqual('AssayType(mt=OntologyAnnotation(term={0}, '
+                         'term_source=None, term_accession=None), '
+                         'tt=OntologyAnnotation(term={1}, term_source=None, '
+                         'term_accession=None))'.format(
             MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING,
-            TECHNOLOGY_TYPE_DNA_MICROARRAY
-        ), repr(self.assay_type))
-        self.assertEqual('AssayType(mt={0}, tt={1})'.format(
+            TECHNOLOGY_TYPE_DNA_MICROARRAY), repr(self.assay_type))
+
+        self.assertEqual('AssayType(mt=OntologyAnnotation(term={0}, '
+                         'term_source=None, term_accession=None), '
+                         'tt=OntologyAnnotation(term={1}, term_source=None, '
+                         'term_accession=None))'.format(
             MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING,
-            TECHNOLOGY_TYPE_DNA_MICROARRAY
-        ), repr(self.assay_type_with_oa))
+            TECHNOLOGY_TYPE_DNA_MICROARRAY), repr(self.assay_type_with_oa))
 
     def test_eq(self):
         expected_assay_type = AssayType(
@@ -39,7 +46,8 @@ class AssayTypeTest(unittest.TestCase):
         self.assertEqual(expected_assay_type, self.assay_type)
         self.assertEqual(hash(expected_assay_type), hash(self.assay_type))
         self.assertEqual(expected_assay_type, self.assay_type_with_oa)
-        self.assertEqual(hash(expected_assay_type), hash(self.assay_type_with_oa))
+        self.assertEqual(hash(expected_assay_type),
+                         hash(self.assay_type_with_oa))
 
     def test_ne(self):
         expected_other_assay_type = AssayType(
@@ -49,7 +57,8 @@ class AssayTypeTest(unittest.TestCase):
         self.assertNotEqual(expected_other_assay_type, self.assay_type)
         self.assertNotEqual(hash(expected_other_assay_type), hash(self.assay_type))
         self.assertNotEqual(expected_other_assay_type, self.assay_type_with_oa)
-        self.assertNotEqual(hash(expected_other_assay_type), hash(self.assay_type_with_oa))
+        self.assertNotEqual(hash(expected_other_assay_type),
+                            hash(self.assay_type_with_oa))
 
 
 class AssayTopologyModifiersTest(unittest.TestCase):
@@ -72,14 +81,16 @@ class AssayTopologyModifiersTest(unittest.TestCase):
                          'injection_modes=0, '
                          'acquisition_modes=0, '
                          'pulse_sequences=0, '
-                         'technical_replicates=0)', repr(self.assay_topology_modifiers_default))
+                         'technical_replicates=0)',
+                         repr(self.assay_topology_modifiers_default))
         self.assertEqual('AssayTopologyModifiers('
                          'distinct_libraries=1, '
                          'distinct_array_designs=2, '
                          'injection_modes=3, '
                          'acquisition_modes=4, '
                          'pulse_sequences=5, '
-                         'technical_replicates=6)', repr(self.assay_topology_modifiers))
+                         'technical_replicates=6)',
+                         repr(self.assay_topology_modifiers))
 
     def test_eq(self):
         expected_assay_topology_modifiers_default = AssayTopologyModifiers()
@@ -91,8 +102,10 @@ class AssayTopologyModifiersTest(unittest.TestCase):
             pulse_sequences=5,
             technical_replicates=6
         )
-        self.assertEqual(expected_assay_topology_modifiers_default, self.assay_topology_modifiers_default)
-        self.assertEqual(hash(expected_assay_topology_modifiers), hash(self.assay_topology_modifiers))
+        self.assertEqual(expected_assay_topology_modifiers_default,
+                         self.assay_topology_modifiers_default)
+        self.assertEqual(hash(expected_assay_topology_modifiers),
+                         hash(self.assay_topology_modifiers))
 
     def test_ne(self):
         expected_assay_topology_modifiers_default = AssayTopologyModifiers()
@@ -104,5 +117,7 @@ class AssayTopologyModifiersTest(unittest.TestCase):
             pulse_sequences=5,
             technical_replicates=6
         )
-        self.assertNotEqual(expected_assay_topology_modifiers, self.assay_topology_modifiers_default)
-        self.assertNotEqual(hash(expected_assay_topology_modifiers_default), hash(self.assay_topology_modifiers))
+        self.assertNotEqual(expected_assay_topology_modifiers,
+                            self.assay_topology_modifiers_default)
+        self.assertNotEqual(hash(expected_assay_topology_modifiers_default),
+                            hash(self.assay_topology_modifiers))

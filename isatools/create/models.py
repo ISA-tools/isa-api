@@ -279,7 +279,8 @@ class AssayType(object):
             self.__measurement_type = None
         else:
             raise TypeError('{0} is an invalid value for measurement_type. '
-                            'Please provide an OntologyAnnotation or string.'.format(measurement_type))
+                            'Please provide an OntologyAnnotation or string.'
+                            .format(measurement_type))
         if isinstance(technology_type, OntologyAnnotation):
             self.__technology_type = technology_type
         elif isinstance(technology_type, str):
@@ -288,7 +289,8 @@ class AssayType(object):
             self.__technology_type = None
         else:
             raise TypeError('{0} is an invalid value for technology_type. '
-                            'Please provide an OntologyAnnotation or string.'.format(technology_type))
+                            'Please provide an OntologyAnnotation or string.'
+                            .format(technology_type))
 
     @property
     def measurement_type(self):
@@ -304,7 +306,8 @@ class AssayType(object):
             self.__measurement_type = None
         else:
             raise TypeError('{0} is an invalid value for measurement_type. '
-                            'Please provide an OntologyAnnotation or string.'.format(measurement_type))
+                            'Please provide an OntologyAnnotation or string.'
+                            .format(measurement_type))
 
     @property
     def technology_type(self):
@@ -320,10 +323,12 @@ class AssayType(object):
             self.__technology_type = None
         else:
             raise TypeError('{0} is an invalid value for technology_type. '
-                            'Please provide an OntologyAnnotation or string.'.format(technology_type))
+                            'Please provide an OntologyAnnotation or string.'
+                            .format(technology_type))
 
     def __repr__(self):
-        return 'AssayType(mt={0}, tt={1})'.format(self.measurement_type, self.technology_type)
+        return 'AssayType(mt={0}, tt={1})'.format(self.measurement_type,
+                                                  self.technology_type)
 
     def __hash__(self):
         return hash(repr(self))
@@ -332,13 +337,15 @@ class AssayType(object):
         return not self == other
 
     def __eq__(self, other):
-        return isinstance(other, AssayType) and self.measurement_type == other.measurement_type \
-            and self.technology_type == other.technology_type
+        return isinstance(other, AssayType) \
+               and self.measurement_type == other.measurement_type \
+               and self.technology_type == other.technology_type
 
 
 class AssayTopologyModifiers(object):
 
-    def __init__(self, distinct_libraries=0, distinct_array_designs=0, injection_modes=0, acquisition_modes=0,
+    def __init__(self, distinct_libraries=0, distinct_array_designs=0,
+                 injection_modes=0, acquisition_modes=0,
                  pulse_sequences=0, technical_replicates=0):
         self.__distinct_libraries = distinct_libraries
         self.__distinct_array_designs = distinct_array_designs
@@ -354,7 +361,8 @@ class AssayTopologyModifiers(object):
     @distinct_libraries.setter
     def distinct_libraries(self, distinct_libraries):
         if not isinstance(distinct_libraries, int):
-            raise TypeError('{0} is an invalid value for distinct_libraries. Please provide an integer.')
+            raise TypeError('{0} is an invalid value for distinct_libraries. '
+                            'Please provide an integer.')
         if distinct_libraries < 0:
             raise ValueError('distinct_libraries must be greater than 0.')
         self.__distinct_libraries = distinct_libraries
@@ -366,7 +374,8 @@ class AssayTopologyModifiers(object):
     @distinct_array_designs.setter
     def distinct_array_designs(self, distinct_array_designs):
         if not isinstance(distinct_array_designs, int):
-            raise TypeError('{0} is an invalid value for distinct_array_designs. Please provide an integer.')
+            raise TypeError('{0} is an invalid value for distinct_array_'
+                            'designs. Please provide an integer.')
         if distinct_array_designs < 0:
             raise ValueError('distinct_array_designs must be greater than 0.')
         self.__distinct_array_designs = distinct_array_designs
@@ -378,7 +387,8 @@ class AssayTopologyModifiers(object):
     @injection_modes.setter
     def injection_modes(self, injection_modes):
         if not isinstance(injection_modes, int):
-            raise TypeError('{0} is an invalid value for injection_modes. Please provide an integer.')
+            raise TypeError('{0} is an invalid value for injection_modes. '
+                            'Please provide an integer.')
         if injection_modes < 0:
             raise ValueError('injection_modes must be greater than 0.')
         self.__injection_modes = injection_modes
@@ -390,7 +400,8 @@ class AssayTopologyModifiers(object):
     @acquisition_modes.setter
     def acquisition_modes(self, acquisition_modes):
         if not isinstance(acquisition_modes, int):
-            raise TypeError('{0} is an invalid value for acquisition_modes. Please provide an integer.')
+            raise TypeError('{0} is an invalid value for acquisition_modes. '
+                            'Please provide an integer.')
         if acquisition_modes < 0:
             raise ValueError('injection_modes must be greater than 0.')
         self.__acquisition_modes = acquisition_modes
@@ -402,7 +413,8 @@ class AssayTopologyModifiers(object):
     @pulse_sequences.setter
     def pulse_sequences(self, pulse_sequences):
         if not isinstance(pulse_sequences, int):
-            raise TypeError('{0} is an invalid value for pulse_sequences. Please provide an integer.')
+            raise TypeError('{0} is an invalid value for pulse_sequences. '
+                            'Please provide an integer.')
         if pulse_sequences < 0:
             raise ValueError('injection_modes must be greater than 0.')
         self.__pulse_sequences = pulse_sequences
@@ -414,7 +426,8 @@ class AssayTopologyModifiers(object):
     @technical_replicates.setter
     def technical_replicates(self, technical_replicates):
         if not isinstance(technical_replicates, int):
-            raise TypeError('{0} is an invalid value for technical_replicates. Please provide an integer.')
+            raise TypeError('{0} is an invalid value for technical_replicates. '
+                            'Please provide an integer.')
         if technical_replicates < 0:
             raise ValueError('injection_modes must be greater than 0.')
         self.__technical_replicates = technical_replicates
@@ -543,7 +556,8 @@ class SampleAssayPlan(object):
     @group_size.setter
     def group_size(self, group_size):
         if not isinstance(group_size, int):
-            raise TypeError('{0} is not a valid value for group_size. Please provide an integer.')
+            raise TypeError('{0} is not a valid value for group_size. Please '
+                            'provide an integer.')
         if group_size < 0:
             raise ValueError('group_size must be greater than 0.')
         self.__group_size = group_size
@@ -551,9 +565,10 @@ class SampleAssayPlan(object):
     def add_sample_type(self, sample_type):
         if isinstance(sample_type, Characteristic):
             self.__sample_types.add(sample_type)
-        elif isinstance(sample_type, str):  # TODO should we remove this case?
-            characteristic = Characteristic(category=OntologyAnnotation(term='organism part'),
-                                            value=OntologyAnnotation(term=sample_type))
+        elif isinstance(sample_type, str):
+            characteristic = Characteristic(
+                category=OntologyAnnotation(term='organism part'),
+                value=OntologyAnnotation(term=sample_type))
             self.__sample_types.add(characteristic)
         else:
             raise TypeError('Not a valid sample type: {0}'.format(sample_type))
@@ -565,7 +580,7 @@ class SampleAssayPlan(object):
     @sample_types.setter
     def sample_types(self, sample_types):
         if not isinstance(sample_types, Iterable):
-            raise TypeError('wrong sample types: {0)}'.format(sample_types))
+            raise TypeError('wrong sample types: {0}'.format(sample_types))
         for sample_type in sample_types:
             self.add_sample_type(sample_type)
 
@@ -591,20 +606,30 @@ class SampleAssayPlan(object):
         """
 
         :param sample_type: (Characteristic/str) a sample type
-        :param sampling_size: (int/tuple of int) for the provided sample type how many sampling events happen for a single
-                                                 source/subject. This can be specified throughout the whole sequence with
-                                                 a single integer value, or with a tuple of value, each value for an 
-                                                 epoch. Missing values will be considered as zero (no sampling.
+        :param sampling_size: (int/tuple of int) for the provided sample type
+            how many sampling events happen for a single source/subject. This
+            can be specified throughout the whole sequence with a single
+            integer value, or with a tuple of value, each value for an
+            epoch. Missing values will be considered as zero (no sampling).
         :return: 
         """
-        if sample_type not in self.sample_types:
+        if isinstance(sample_type, str):
+            if sample_type not in [x.value.term for x in self.sample_types]:
+                raise TypeError(
+                    'nonexistent sample type: {0}'.format(sample_type))
+        elif sample_type not in self.sample_types:
             raise TypeError('nonexistent sample type: {0}'.format(sample_type))
-        if not isinstance(sampling_size, int) and not isinstance(sampling_size, tuple):
-            raise TypeError('sampling_size must be a natural number or a tuple of natural numbers')
+        if not isinstance(sampling_size, int) \
+                and not isinstance(sampling_size, tuple):
+            raise TypeError('sampling_size must be a natural number or a tuple '
+                            'of natural numbers')
         if isinstance(sampling_size, int) and sampling_size < 0:
             raise ValueError('sampling_size value must be a positive integer')
-        if isinstance(sampling_size, tuple) and not all(isinstance(el, int) and el >= 0 for el in sampling_size):
-            raise ValueError('all values in the sampling_size tuple must be positive integers')
+        if isinstance(sampling_size, tuple) \
+                and not all(isinstance(el, int)
+                            and el >= 0 for el in sampling_size):
+            raise ValueError('all values in the sampling_size tuple must be '
+                             'positive integers')
         self.__sample_plan[sample_type] = sampling_size
 
     @property
@@ -617,12 +642,20 @@ class SampleAssayPlan(object):
             self.add_sample_plan_record(sample_type, sampling_size)
             
     def add_assay_plan_record(self, sample_type, assay_type):
+        if isinstance(sample_type, str):
+            sample_type = Characteristic(category=OntologyAnnotation(
+                term='organism part'), value=OntologyAnnotation(
+                term=sample_type))
         if sample_type not in self.sample_types:
-            raise ValueError('nonexistent sample type: {0}. These are the available sample types: {1}'.format(
-                sample_type, self.sample_types))
+            raise ValueError('nonexistent sample type: {0}. These are the '
+                             'available sample types: {1}'
+                             .format(sample_type, self.sample_types))
+        if isinstance(assay_type, str):
+            assay_type = AssayType(measurement_type=assay_type)
         if assay_type not in self.assay_types:
-            raise ValueError('nonexistent assay type: {0}. These are the assay types available in the plan: '
-                             '{1}'.format(assay_type, self.assay_types))
+            raise ValueError('nonexistent assay type: {0}. These are the assay '
+                             'types available in the plan: {1}'
+                             .format(assay_type, self.assay_types))
         self.__assay_plan.add((sample_type, assay_type))
 
     @property
@@ -632,7 +665,8 @@ class SampleAssayPlan(object):
     @assay_plan.setter
     def assay_plan(self, assay_plan):
         if not isinstance(assay_plan, set):
-            raise TypeError('Assay plan must be a set of (SampleType, AssayType)')
+            raise TypeError('Assay plan must be a set of (SampleType, '
+                            'AssayType)')
         for sample_type, assay_type in assay_plan:
             self.add_assay_plan_record(sample_type, assay_type)
 
