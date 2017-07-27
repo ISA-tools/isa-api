@@ -1,8 +1,8 @@
 import unittest
 from collections import OrderedDict
 from isatools.model.v1 import StudyFactor, FactorValue, OntologyAnnotation
-from isatools.create.models import InterventionStudyDesign, Treatment, SamplePlan, Characteristic, TreatmentFactory, \
-    TreatmentSequence, AssayType, StudyPlan, INTERVENTIONS, BASE_FACTORS
+from isatools.create.models import InterventionStudyDesign, Treatment, Characteristic, TreatmentFactory, \
+    TreatmentSequence, AssayType, SampleAssayPlan, INTERVENTIONS, BASE_FACTORS
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitoglycerin'
@@ -13,48 +13,7 @@ FACTORS_2_VALUE_ALT = 50.0
 FACTORS_2_UNIT = 's'
 
 
-class TreatmentTest(unittest.TestCase):
-
-    def setUp(self):
-        self.maxDiff = None
-        self.treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS[0][NAME], value=FACTORS_0_VALUE),
-            FactorValue(factor_name=BASE_FACTORS[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
-        ))
-
-    def test_repr(self):
-        self.assertEqual(repr(self.treatment),
-                         'Treatment(factor_type=chemical intervention, factor_values=('
-                         'FactorValue(factor_name={0}, value={1}, unit=None), '
-                         'FactorValue(factor_name={2}, value={3}, unit={4}), '
-                         'FactorValue(factor_name={5}, value={6}, unit={7})'
-                         '))'.format(BASE_FACTORS[0][NAME], FACTORS_0_VALUE,
-                                     BASE_FACTORS[1][NAME], FACTORS_1_VALUE, FACTORS_1_UNIT,
-                                     BASE_FACTORS[2][NAME], FACTORS_2_VALUE, FACTORS_2_UNIT))
-
-    def test_hash(self):
-        self.assertEqual(hash(self.treatment), hash(repr(self.treatment)))
-
-    def test_eq(self):
-        same_treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS[0][NAME], value=FACTORS_0_VALUE),
-            FactorValue(factor_name=BASE_FACTORS[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
-        ))
-        self.assertEqual(self.treatment, same_treatment)
-        self.assertEqual(hash(self.treatment), hash(same_treatment))
-
-    def test_ne(self):
-        other_treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS[0][NAME], value=FACTORS_0_VALUE),
-            FactorValue(factor_name=BASE_FACTORS[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS[2][NAME], value=FACTORS_2_VALUE_ALT, unit=FACTORS_2_UNIT)
-        ))
-        self.assertNotEqual(self.treatment, other_treatment)
-        self.assertNotEqual(hash(self.treatment), hash(other_treatment))
-
-
+""""
 class SamplePlanTest(unittest.TestCase):
 
     def setUp(self):
@@ -97,6 +56,49 @@ class SamplePlanTest(unittest.TestCase):
 
     def test_sample_types_property_empty(self):
         self.assertEqual(self.sample_plan.sample_types, set())
+"""
+
+
+class TreatmentTest(unittest.TestCase):
+
+    def setUp(self):
+        self.maxDiff = None
+        self.treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0][NAME], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+
+    def test_repr(self):
+        self.assertEqual(repr(self.treatment),
+                         'Treatment(factor_type=chemical intervention, factor_values=('
+                         'FactorValue(factor_name={0}, value={1}, unit=None), '
+                         'FactorValue(factor_name={2}, value={3}, unit={4}), '
+                         'FactorValue(factor_name={5}, value={6}, unit={7})'
+                         '))'.format(BASE_FACTORS[0][NAME], FACTORS_0_VALUE,
+                                     BASE_FACTORS[1][NAME], FACTORS_1_VALUE, FACTORS_1_UNIT,
+                                     BASE_FACTORS[2][NAME], FACTORS_2_VALUE, FACTORS_2_UNIT))
+
+    def test_hash(self):
+        self.assertEqual(hash(self.treatment), hash(repr(self.treatment)))
+
+    def test_eq(self):
+        same_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0][NAME], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.assertEqual(self.treatment, same_treatment)
+        self.assertEqual(hash(self.treatment), hash(same_treatment))
+
+    def test_ne(self):
+        other_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS[0][NAME], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS[2][NAME], value=FACTORS_2_VALUE_ALT, unit=FACTORS_2_UNIT)
+        ))
+        self.assertNotEqual(self.treatment, other_treatment)
+        self.assertNotEqual(hash(self.treatment), hash(other_treatment))
 
 
 class TreatmentFactoryTest(unittest.TestCase):
@@ -419,62 +421,10 @@ class TreatmentSequenceTest(unittest.TestCase):
         self.assertTrue(self.sequence.subject_count, subject_count)
 
 
-class InterventionStudyDesignTest(unittest.TestCase):
+class SampleAssayPlanTest(unittest.TestCase):
 
     def setUp(self):
-        self.design = InterventionStudyDesign()
-        self.agent = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
-        self.intensity = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
-        self.duration = StudyFactor(name=BASE_FACTORS[2]['name'], factor_type=BASE_FACTORS[2]['type'])
-        self.first_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-            FactorValue(factor_name=self.agent, value='crack'),
-            FactorValue(factor_name=self.intensity, value='low'),
-            FactorValue(factor_name=self.duration, value='medium')
-        ))
-        self.second_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
-            FactorValue(factor_name=self.agent, value='crack'),
-            FactorValue(factor_name=self.intensity, value='high'),
-            FactorValue(factor_name=self.duration, value='medium')
-        ))
-        self.test_sequence = TreatmentSequence(ranked_treatments=[(self.first_treatment, 1), (self.second_treatment, 2)])
-        self.sample_plan = SamplePlan(group_size=10, sample_type_map={})
-
-    def test_add_single_sequence_plan(self):
-        self.design.add_single_sequence_plan(treatment_sequence=self.test_sequence, study_plan=self.sample_plan)
-        self.assertEqual(self.design.sequences_plan.get(self.test_sequence, None), self.sample_plan)
-
-    def test_add_single_sequence_error_sequence(self):
-        wrong_sequence = 'This is not a sequence'
-        self.assertRaises(TypeError, self.design.add_single_sequence_plan, treatment_sequence=wrong_sequence,
-                          sample_plan=self.sample_plan)
-
-    def test_add_single_sequence_error_sample_plan(self):
-        wrong_sample_plan = 'This is not a sample plan'
-        self.assertRaises(TypeError, self.design.add_single_sequence_plan, treatment_sequence=self.test_sequence,
-                          sample_plan=wrong_sample_plan)
-
-    def test_sequences_plan_property(self):
-        other_test_sequence = TreatmentSequence(ranked_treatments=[(self.first_treatment, 2), (self.second_treatment, 1)])
-        other_sample_plan = SamplePlan(group_size=12, sample_type_map={})
-        sequences_plan = {
-            self.test_sequence: self.sample_plan,
-            other_test_sequence: other_sample_plan
-        }
-        self.design.sequences_plan = sequences_plan
-        self.assertEqual(self.design.sequences_plan, sequences_plan)
-
-    def test_sequences_plan_properties(self):
-        not_a_sequences_plan_object = [self.test_sequence, self.sample_plan]
-        self.assertRaises(TypeError, self.design.sequences_plan, not_a_sequences_plan_object)
-
-    def test_sample_types_property(self):
-        pass
-
-
-class StudyPlanTest(unittest.TestCase):
-
-    def setUp(self):
-        self.plan = StudyPlan()
+        self.plan = SampleAssayPlan()
 
 
     def test_init_default(self):
@@ -484,8 +434,8 @@ class StudyPlanTest(unittest.TestCase):
 
     def test_init_group_size(self):
         group_size = 100
-        sample_plan = SamplePlan(group_size=group_size)
-        self.assertEqual(sample_plan.group_size, group_size)
+        sample_assay_plan = SampleAssayPlan(group_size=group_size)
+        self.assertEqual(sample_assay_plan.group_size, group_size)
 
     def test_add_sample_type(self):
         liver_sample_type = Characteristic(category=OntologyAnnotation(term='organism part'), value='liver')
@@ -532,7 +482,62 @@ class StudyPlanTest(unittest.TestCase):
         self.assertEqual(self.plan.assay_types, { assay_type })
 
     def test_add_assay_type_err(self):
-        not_an_assay = SamplePlan()
+        not_an_assay = OntologyAnnotation(term='bao')
         self.assertRaises(TypeError, self.plan.add_assay_type, not_an_assay)
+
+
+class InterventionStudyDesignTest(unittest.TestCase):
+
+    def setUp(self):
+        self.design = InterventionStudyDesign()
+        self.agent = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
+        self.intensity = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
+        self.duration = StudyFactor(name=BASE_FACTORS[2]['name'], factor_type=BASE_FACTORS[2]['type'])
+        self.first_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            FactorValue(factor_name=self.agent, value='crack'),
+            FactorValue(factor_name=self.intensity, value='low'),
+            FactorValue(factor_name=self.duration, value='medium')
+        ))
+        self.second_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            FactorValue(factor_name=self.agent, value='crack'),
+            FactorValue(factor_name=self.intensity, value='high'),
+            FactorValue(factor_name=self.duration, value='medium')
+        ))
+        self.test_sequence = TreatmentSequence(ranked_treatments=[(self.first_treatment, 1), (self.second_treatment, 2)])
+        self.sample_plan = SampleAssayPlan(group_size=10, sample_plan={}, assay_plan=None)
+
+    def test_add_single_sequence_plan(self):
+        self.design.add_single_sequence_plan(treatment_sequence=self.test_sequence, study_plan=self.sample_plan)
+        self.assertEqual(self.design.sequences_plan.get(self.test_sequence, None), self.sample_plan)
+
+    def test_add_single_sequence_error_sequence(self):
+        wrong_sequence = 'This is not a sequence'
+        self.assertRaises(TypeError, self.design.add_single_sequence_plan, treatment_sequence=wrong_sequence,
+                          sample_plan=self.sample_plan)
+
+    def test_add_single_sequence_error_sample_plan(self):
+        wrong_sample_plan = 'This is not a sample plan'
+        self.assertRaises(TypeError, self.design.add_single_sequence_plan, treatment_sequence=self.test_sequence,
+                          sample_plan=wrong_sample_plan)
+
+    def test_sequences_plan_property(self):
+        other_test_sequence = TreatmentSequence(ranked_treatments=[(self.first_treatment, 2), (self.second_treatment, 1)])
+        other_sample_plan = SampleAssayPlan(group_size=12)
+        sequences_plan = {
+            self.test_sequence: self.sample_plan,
+            other_test_sequence: other_sample_plan
+        }
+        self.design.sequences_plan = sequences_plan
+        self.assertEqual(self.design.sequences_plan, sequences_plan)
+
+    def test_sequences_plan_properties(self):
+        not_a_sequences_plan_object = [self.test_sequence, self.sample_plan]
+        self.assertRaises(TypeError, self.design.sequences_plan, not_a_sequences_plan_object)
+
+    def test_sample_types_property(self):
+        pass
+
+
+
 
 

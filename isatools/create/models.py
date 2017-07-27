@@ -27,7 +27,7 @@ BASE_FACTORS = [
     )
 ]
 
-
+""" DEPRECATED
 class SamplePlan(object):
 
     def __init__(self, group_size=0, sample_type_map=None):
@@ -59,7 +59,7 @@ class SamplePlan(object):
             self.add_sample_type_sampling_plan(sample_type, sampling_size)
 
     def add_sample_type_sampling_plan(self, sample_type, sampling_size=0):
-        """
+        
         
         :param sample_type: (Characteristic/str) a sample type
         :param sampling_size: (int/tuple of int) for the provided sample type how many sampling events happen for a single
@@ -67,7 +67,7 @@ class SamplePlan(object):
                                                  a single integer value, or with a tuple of value, each value for an 
                                                  epoch. Missing values will be considered as zero (no sampling.
         :return: 
-        """
+        
         if not isinstance(sampling_size, int) and not isinstance(sampling_size, tuple):
             raise TypeError('sampling_size must be a natural number or a tuple of natural numbers')
         if isinstance(sampling_size, int) and sampling_size < 0:
@@ -86,6 +86,7 @@ class SamplePlan(object):
     @property
     def sample_types(self):
         return {sample_type for sample_type in self.__sample_types_map}
+"""
 
 
 class Treatment(object):
@@ -449,7 +450,7 @@ class AssayTopologyModifiers(object):
                and self.pulse_sequences == other.pulse_sequences \
                and self.technical_replicates == other.technical_replicates
 
-
+"""
 class AssayPlan(object):
 
     def __init__(self, sample_plan=SamplePlan()):
@@ -515,18 +516,25 @@ class AssayPlan(object):
             self.__assay_topologies_map[assay_type] = assay_topology_modifiers
         else:
             raise TypeError('invalid assay_topology_modifiers type {0}'.format(assay_topology_modifiers))
+"""
 
 
-class StudyPlan(object):
-    def __init__(self, group_size=0):
+class SampleAssayPlan(object):
+    def __init__(self, group_size=0, sample_plan={}, assay_plan=set()):
+        # TODO test initialization from sample_plan and assay_plan!!
         self.__group_size = 0
         self.__sample_types = set()
         self.__assay_types = set()
-
         self.__sample_plan = {}
         self.__assay_plan = set()
 
         self.group_size = group_size
+        if sample_plan is not None:
+            self.sample_types = {key for key in sample_plan}
+            self.sample_plan = sample_plan
+        if assay_plan is not None:
+            self.assay_types = {value for key, value in assay_plan}
+            self.assay_plan = assay_plan
 
     @property
     def group_size(self):
@@ -656,6 +664,6 @@ class InterventionStudyDesign(BaseStudyDesign):
         if not isinstance(treatment_sequence, TreatmentSequence):
             raise TypeError('Please provide a valid TreatmentSequence. '
                             '{0} not a valid Treatment Sequence.'.format([treatment_sequence]))
-        if not isinstance(study_plan, StudyPlan):
-            raise TypeError('Please provide a valid SamplePlan. {0} not a valid Sample Plan.'.format(study_plan))
+        if not isinstance(study_plan, SampleAssayPlan):
+            raise TypeError('Please provide a valid SampleAssayPlan. {0} not a valid SampleAssayPlan.'.format(study_plan))
         self.__sequences_plan[treatment_sequence] = study_plan
