@@ -270,7 +270,8 @@ class TreatmentSequence:
 
 class AssayType(object):
 
-    def __init__(self, measurement_type=None, technology_type=None):
+    def __init__(self, measurement_type=None, technology_type=None,
+                 topology_modifiers=None):
         if isinstance(measurement_type, OntologyAnnotation):
             self.__measurement_type = measurement_type
         elif isinstance(measurement_type, str):
@@ -281,6 +282,7 @@ class AssayType(object):
             raise TypeError('{0} is an invalid value for measurement_type. '
                             'Please provide an OntologyAnnotation or string.'
                             .format(measurement_type))
+        
         if isinstance(technology_type, OntologyAnnotation):
             self.__technology_type = technology_type
         elif isinstance(technology_type, str):
@@ -291,6 +293,15 @@ class AssayType(object):
             raise TypeError('{0} is an invalid value for technology_type. '
                             'Please provide an OntologyAnnotation or string.'
                             .format(technology_type))
+        
+        if isinstance(topology_modifiers, AssayTopologyModifiers):
+            self.__topology_modifiers = topology_modifiers
+        elif topology_modifiers is None:
+            self.__topology_modifiers = None
+        else:
+            raise TypeError('{0} is an invalid value for topology_modifiers. '
+                            'Please provide a AssayTopologyModifiers object.'
+                            .format(topology_modifiers))
 
     @property
     def measurement_type(self):
@@ -326,6 +337,21 @@ class AssayType(object):
                             'Please provide an OntologyAnnotation or string.'
                             .format(technology_type))
 
+    @property
+    def topology_modifiers(self):
+        return self.__topology_modifiers
+
+    @topology_modifiers.setter
+    def topology_modifiers(self, topology_modifiers):
+        if isinstance(topology_modifiers, AssayTopologyModifiers):
+            self.__topology_modifiers = topology_modifiers
+        elif topology_modifiers is None:
+            self.__topology_modifiers = None
+        else:
+            raise TypeError('{0} is an invalid value for measurement_type. '
+                            'Please provide a AssayTopologyModifiers object.'
+                            .format(topology_modifiers))
+
     def __repr__(self):
         return 'AssayType(mt={0}, tt={1})'.format(self.measurement_type,
                                                   self.technology_type)
@@ -345,8 +371,8 @@ class AssayType(object):
 class AssayTopologyModifiers(object):
 
     def __init__(self, distinct_libraries=0, distinct_array_designs=0,
-                 injection_modes=0, acquisition_modes=0,
-                 pulse_sequences=0, technical_replicates=0):
+                 injection_modes=0, acquisition_modes=0, pulse_sequences=0,
+                 technical_replicates=0):
         self.__distinct_libraries = distinct_libraries
         self.__distinct_array_designs = distinct_array_designs
         self.__injection_modes = injection_modes
