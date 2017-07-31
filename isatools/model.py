@@ -17,6 +17,7 @@ import abc
 import networkx as nx
 
 from isatools.errors import ISAModelAttributeError
+from isatools.net import pubmed
 
 
 def _build_assay_graph(process_sequence=list()):
@@ -318,6 +319,17 @@ class MetadataMixin(metaclass=abc.ABCMeta):
                 '{0}.publications must be iterable containing Publications'
                 .format(type(self).__name__))
 
+    def add_publication(self, pubmed_id=None):
+        """Adds a new publication to the publications list based by PubMed ID,
+        and sets other fields based on a query to Entrez.
+
+        Args:
+            pubmed_id: Publication PubMed ID
+        """
+        p = Publication(pubmed_id=pubmed_id)
+        pubmed.set_pubmed_article(p)
+        self.publications.append(p)
+
     @property
     def contacts(self):
         """:obj:`list` of :obj:`Person`: Container for ISA contacts"""
@@ -396,6 +408,71 @@ class Investigation(Commentable, MetadataMixin, object):
             raise ISAModelAttributeError(
                 'Investigation.ontology_source_references must be iterable '
                 'containing OntologySource objects')
+
+    def add_ontology_source_reference(self, name='', version='', description='',
+                                      file='', comments=None):
+        """Adds a new ontology_source_reference to the ontology_source_reference list.
+
+        Args:
+            name: OntologySource name
+            version: OntologySource version
+            description: OntologySource description
+            file: OntologySource file
+        """
+        c = OntologySource(name=name, version=version, description=description,
+                           file=file, comments=comments)
+        self.ontology_source_references.append(c)
+
+    def yield_ontology_source_references(self, name=None):
+        """Gets an iterator of matching ontology_source_references for a given
+        name.
+
+        Args:
+            name: OntologySource name
+
+        Returns:
+            :obj:`filter` of :obj:`OntologySources` that can be iterated on.
+        """
+        if name is None:
+            return filter(True, self.ontology_source_references)
+        else:
+            return filter(lambda x: x.name == name,
+                          self.ontology_source_references)
+
+    def get_ontology_source_references(self):
+        """Gets a list of all ontology_source_references.
+
+        Returns:
+            :obj:`list` of :obj:`OntologySource` of all
+            ontology_source_references, if any
+        """
+        return self.ontology_source_references
+
+    def get_ontology_source_reference(self, name):
+        """Gets the first matching ontology_source_reference for a given name
+
+        Args:
+            name: OntologySource name
+
+        Returns:
+            :obj:`OntologySource` matching the name. Only returns the first
+            found.
+
+        """
+        clist = list(self.yield_ontology_source_references(name=name))
+        if len(clist) > 0:
+            return clist[-1]
+        else:
+            return None
+
+    def get_ontology_source_reference_names(self):
+        """Gets all of the ontology_source_reference names
+
+        Returns:
+            :obj:`list` of str.
+
+        """
+        return [x.name for x in self.ontology_source_references]
 
     @property
     def studies(self):
@@ -1028,6 +1105,92 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                 '{}.sources must be iterable containing Sources'
                 .format(type(self).__name__))
 
+    def add_source(self, name='', characteristics=None, comments=None):
+        """Adds a new source to the source materials list.
+
+        Args:
+            name: Source name
+            characteristics: Source characteristics
+            comments: Source comments
+        """
+        s = Source(name=name, characteristics=characteristics,
+                   comments=comments)
+        self.materials['sources'].append(s)
+
+    def yield_sources(self, name=None):
+        """Gets an iterator of matching sources for a given name.
+
+        Args:
+            name: Source name
+
+        Returns:
+            :obj:`filter` of :obj:`Source` that can be iterated on.  If name is
+                None, yields all sources.
+        """
+        if name is None:
+            return filter(True, self.materials['sources'])
+        else:
+            return filter(lambda x: x.name == name, self.materials['sources'])
+
+    def get_source(self, name):
+        """Gets the first matching source material for a given name.
+
+        Args:
+            name: Source name
+
+        Returns:
+            :obj:`Source` matching the name. Only returns the first found.
+
+        """
+        slist = list(self.yield_sources(name=name))
+        if len(slist) > 0:
+            return slist[-1]
+        else:
+            return None
+
+    def yield_sources_by_characteristic(self, characteristic=None):
+        """Gets an iterator of matching sources for a given characteristic.
+
+        Args:
+            characteristic: Source characteristic
+
+        Returns:
+            :obj:`filter` of :obj:`Source` that can be iterated on. If
+                characteristic is None, yields all sources.
+        """
+        if characteristic is None:
+            return filter(True, self.materials['sources'])
+        else:
+            return filter(lambda x: characteristic in x.characteristics,
+                          self.materials['sources'])
+
+    def get_source_by_characteristic(self, characteristic):
+        """Gets the first matching source material for a given characteristic.
+
+        Args:
+            characteristic: Source characteristic
+
+        Returns:
+            :obj:`Source` matching the characteristic. Only returns the first
+                found.
+
+        """
+        slist = list(self.yield_sources_by_characteristic(characteristic=
+                                                          characteristic))
+        if len(slist) > 0:
+            return slist[-1]
+        else:
+            return None
+
+    def get_source_names(self):
+        """Gets all of the source names.
+
+        Returns:
+            :obj:`list` of str.
+
+        """
+        return [x.name for x in self.materials['sources']]
+
     @property
     def samples(self):
         """:obj:`list` of :obj:`Sample`: Container for study samples"""
@@ -1042,6 +1205,128 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
             raise ISAModelAttributeError(
                 '{}.samples must be iterable containing Samples'
                 .format(type(self).__name__))
+
+    def add_sample(self, name='', characteristics=None, factor_values=None, 
+                   derives_from=None, comments=None):
+        """Adds a new sample to the sample materials list.
+
+        Args:
+            name: Source name
+            characteristics: Source characteristics
+            comments: Source comments
+        """
+        s = Sample(name=name, characteristics=characteristics, 
+                   factor_values=factor_values, derives_from=derives_from,
+                   comments=comments)
+        self.materials['samples'].append(s)
+
+    def yield_samples(self, name=None):
+        """Gets an iterator of matching samples for a given name.
+
+        Args:
+            name: Sample name
+
+        Returns:
+            :obj:`filter` of :obj:`Source` that can be iterated on.  If name is
+                None, yields all samples.
+        """
+        if name is None:
+            return filter(True, self.materials['samples'])
+        else:
+            return filter(lambda x: x.name == name, self.materials['samples'])
+
+    def get_sample(self, name):
+        """Gets the first matching sample material for a given name.
+
+        Args:
+            name: Sample name
+
+        Returns:
+            :obj:`Sample` matching the name. Only returns the first found.
+
+        """
+        slist = list(self.yield_samples(name=name))
+        if len(slist) > 0:
+            return slist[-1]
+        else:
+            return None
+
+    def yield_samples_by_characteristic(self, characteristic=None):
+        """Gets an iterator of matching samples for a given characteristic.
+
+        Args:
+            characteristic: Sample characteristic
+
+        Returns:
+            :obj:`filter` of :obj:`Sample` that can be iterated on. If
+                characteristic is None, yields all samples.
+        """
+        if characteristic is None:
+            return filter(True, self.materials['samples'])
+        else:
+            return filter(lambda x: characteristic in x.characteristics,
+                          self.materials['samples'])
+
+    def get_sample_by_characteristic(self, characteristic):
+        """Gets the first matching sample material for a given characteristic.
+
+        Args:
+            characteristic: Sample characteristic
+
+        Returns:
+            :obj:`Sample` matching the characteristic. Only returns the first
+                found.
+
+        """
+        slist = list(self.yield_samples_by_characteristic(characteristic=
+                                                          characteristic))
+        if len(slist) > 0:
+            return slist[-1]
+        else:
+            return None
+
+    def yield_samples_by_factor_value(self, factor_value=None):
+        """Gets an iterator of matching samples for a given factor_value.
+
+        Args:
+            factor_value: Sample factor value
+
+        Returns:
+            :obj:`filter` of :obj:`Sample` that can be iterated on. If
+                factor_value is None, yields all samples.
+        """
+        if factor_value is None:
+            return filter(True, self.materials['samples'])
+        else:
+            return filter(lambda x: factor_value in x.factor_values,
+                          self.materials['samples'])
+
+    def get_sample_by_factor_value(self, factor_value):
+        """Gets the first matching sample material for a given factor_value.
+
+        Args:
+            factor_value: Sample factor value
+
+        Returns:
+            :obj:`Sample` matching the factor_value. Only returns the first
+                found.
+
+        """
+        slist = list(self.yield_samples_by_factor_value(factor_value=
+                                                        factor_value))
+        if len(slist) > 0:
+            return slist[-1]
+        else:
+            return None
+
+    def get_sample_names(self):
+        """Gets all of the sample names.
+
+        Returns:
+            :obj:`list` of str.
+
+        """
+        return [x.name for x in self.materials['samples']]
 
     @property
     def other_material(self):
@@ -1058,6 +1343,40 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
             raise ISAModelAttributeError(
                 '{}.other_material must be iterable containing Materials'
                 .format(type(self).__name__))
+
+    def yield_materials_by_characteristic(self, characteristic=None):
+        """Gets an iterator of matching materials for a given characteristic.
+
+        Args:
+            characteristic: Material characteristic
+
+        Returns:
+            :obj:`filter` of :obj:`Material` that can be iterated on. If
+                characteristic is None, yields all materials.
+        """
+        if characteristic is None:
+            return filter(True, self.materials['other_material'])
+        else:
+            return filter(lambda x: characteristic in x.characteristics,
+                          self.materials['other_materials'])
+
+    def get_material_by_characteristic(self, characteristic):
+        """Gets the first matching material material for a given characteristic.
+
+        Args:
+            characteristic: Material characteristic
+
+        Returns:
+            :obj:`Material` matching the characteristic. Only returns the first
+                found.
+
+        """
+        mlist = list(self.yield_materials_by_characteristic(characteristic=
+                                                            characteristic))
+        if len(mlist) > 0:
+            return mlist[-1]
+        else:
+            return None
 
     @property
     def materials(self):
