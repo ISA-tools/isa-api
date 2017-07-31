@@ -17,7 +17,6 @@ import abc
 import networkx as nx
 
 from isatools.errors import ISAModelAttributeError
-from isatools.net import pubmed
 
 
 def _build_assay_graph(process_sequence=list()):
@@ -318,17 +317,6 @@ class MetadataMixin(metaclass=abc.ABCMeta):
             raise ISAModelAttributeError(
                 '{0}.publications must be iterable containing Publications'
                 .format(type(self).__name__))
-
-    def add_publication(self, pubmed_id=None):
-        """Adds a new publication to the publications list based by PubMed ID,
-        and sets other fields based on a query to Entrez.
-
-        Args:
-            pubmed_id: Publication PubMed ID
-        """
-        p = Publication(pubmed_id=pubmed_id)
-        pubmed.set_pubmed_article(p)
-        self.publications.append(p)
 
     @property
     def contacts(self):
