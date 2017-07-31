@@ -1,22 +1,31 @@
+"""Functions for retrieving metadata from MetaboLights.
+
+This module connects to the European Bioinformatics Institute's
+MetaboLights database. If you have problems with it, check that
+it's working at http://www.ebi.ac.uk/metabolights/
+"""
+from __future__ import absolute_import
 import ftplib
+import glob
 import logging
 import os
+import pandas as pd
 import tempfile
 import shutil
 import re
-import glob
-from isatools.convert import isatab2json
-from isatools import isatab
-from isatools.model.v1 import OntologyAnnotation, Process, ParameterValue
-import networkx as nx
-import pandas as pd
 
-MTBLS_FTP_SERVER = 'ftp.ebi.ac.uk'
+from isatools import config
+from isatools import isatab
+from isatools.convert import isatab2json
+from isatools.model import OntologyAnnotation
+
+
+EBI_FTP_SERVER = 'ftp.ebi.ac.uk'
 MTBLS_BASE_DIR = '/pub/databases/metabolights/studies/public'
 INVESTIGATION_FILENAME = 'i_Investigation.txt'
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=config.log_level)
+log = logging.getLogger(__name__)
 
 # REGEXES
 _RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
@@ -33,8 +42,8 @@ def get(mtbls_study_id, target_dir=None):
     Example usage:
         isa_json = MTBLS.get_study('MTBLS1', '/tmp/mtbls')
     """
-    logging.info("Setting up ftp with {}".format(MTBLS_FTP_SERVER))
-    ftp = ftplib.FTP(MTBLS_FTP_SERVER)
+    logging.info("Setting up ftp with {}".format(EBI_FTP_SERVER))
+    ftp = ftplib.FTP(EBI_FTP_SERVER)
     logging.info("Logging in as anonymous user...")
     response = ftp.login()
     if '230' in response:  # 230 means Login successful
@@ -45,30 +54,32 @@ def get(mtbls_study_id, target_dir=None):
             if target_dir is None:
                 target_dir = tempfile.mkdtemp()
             logging.info("Using directory '{}'".format(target_dir))
-            out_file = open(os.path.join(target_dir, INVESTIGATION_FILENAME), 'wb')
-            logging.info("Retrieving file '{}'".format(MTBLS_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + INVESTIGATION_FILENAME))
-            ftp.retrbinary('RETR ' + INVESTIGATION_FILENAME, out_file.write)
+            with open(os.path.join(target_dir, INVESTIGATION_FILENAME), 'wb') as out_file:
+                logging.info("Retrieving file '{}'".format(EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + INVESTIGATION_FILENAME))
+                ftp.retrbinary('RETR ' + INVESTIGATION_FILENAME, out_file.write)
             with open(out_file.name, encoding='utf-8') as i_fp:
                 i_bytes = i_fp.read()
                 lines = i_bytes.splitlines()
                 s_filenames = [l.split('\t')[1][1:-1] for l in lines if 'Study File Name' in l]
                 for s_filename in s_filenames:
-                    out_file = open(os.path.join(target_dir, s_filename), 'wb')
-                    logging.info("Retrieving file '{}'".format(
-                        MTBLS_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + s_filename))
-                    ftp.retrbinary('RETR ' + s_filename, out_file.write)
+                    with open(os.path.join(target_dir, s_filename), 'wb') as out_file:
+                        logging.info("Retrieving file '{}'".format(
+                            EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + s_filename))
+                        ftp.retrbinary('RETR ' + s_filename, out_file.write)
                 a_filenames_lines = [l.split('\t') for l in lines if 'Study Assay File Name' in l]
                 for a_filename_line in a_filenames_lines:
                     for a_filename in [f[1:-1] for f in a_filename_line[1:]]:
-                        out_file = open(os.path.join(target_dir, a_filename), 'wb')
-                        logging.info("Retrieving file '{}'".format(
-                            MTBLS_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + a_filename))
-                        ftp.retrbinary('RETR ' + a_filename, out_file.write)
+                        with open(os.path.join(target_dir, a_filename), 'wb') as out_file:
+                            logging.info("Retrieving file '{}'".format(
+                                EBI_FTP_SERVER + MTBLS_BASE_DIR + '/' + mtbls_study_id + '/' + a_filename))
+                            ftp.retrbinary('RETR ' + a_filename, out_file.write)
         except ftplib.error_perm as ftperr:
-            logger.fatal("Could not retrieve MetaboLights study '{study}': {error}".format(study=mtbls_study_id, error=ftperr))
+            log.fatal("Could not retrieve MetaboLights study '{study}': {error}".format(study=mtbls_study_id, error=ftperr))
         finally:
+            ftp.close()
             return target_dir
     else:
+        ftp.close()
         raise ConnectionError("There was a problem connecting to MetaboLights: " + response)
 
 
@@ -108,11 +119,11 @@ def slice_data_files(dir, factor_selection=None):
     filtered by factor value (currently by matching on exactly 1 factor value)
 
     :param mtbls_study_id: Study identifier for MetaboLights study to get, as a str (e.g. MTBLS1)
-    :param factor_selection: Selected factor values to filter on samples
+    :param factor_selection: A list of selected factor values to filter on samples
     :return: A list of dicts {sample_name, list of data_files} containing sample names with associated data filenames
 
     Example usage:
-        samples_and_data = mtbls.get_data_files('MTBLS1', {'Gender': 'Male'})
+        samples_and_data = mtbls.get_data_files('MTBLS1', [{'Gender': 'Male'}])
 
     TODO:  Need to work on more complex filters e.g.:
         {"gender": ["male", "female"]} selects samples matching "male" or "female" factor value
@@ -131,7 +142,7 @@ def slice_data_files(dir, factor_selection=None):
     results = list()
     # first collect matching samples
     for table_file in glob.iglob(os.path.join(dir, '[a|s]_*')):
-        logger.info("Loading {}".format(table_file))
+        log.info("Loading {}".format(table_file))
         with open(table_file, encoding='utf-8') as fp:
             df = isatab.load_table(fp)
             if factor_selection is None:
@@ -191,7 +202,6 @@ def get_factor_names(mtbls_study_id):
         factor_names = get_factor_names('MTBLS1')
     """
     tmp_dir = get(mtbls_study_id)
-    from isatools import isatab
     factors = set()
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
@@ -214,7 +224,6 @@ def get_factor_values(mtbls_study_id, factor_name):
         factor_values = get_factor_values('MTBLS1', 'genotype')
     """
     tmp_dir = get(mtbls_study_id)
-    from isatools import isatab
     fvs = set()
     for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
         with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
@@ -275,7 +284,8 @@ def get_factors_summary(mtbls_study_id):
     samples_and_fvs = []
     for sample in all_samples:
         sample_and_fvs = {
-                "name": sample.name
+                "sources": ';'.join([x.name for x in sample.derives_from]),
+                "sample": sample.name,
             }
         for fv in sample.factor_values:
             if isinstance(fv.value, (str, int, float)):
@@ -289,6 +299,51 @@ def get_factors_summary(mtbls_study_id):
     cols_to_drop = nunique[nunique == 1].index
     df = df.drop(cols_to_drop, axis=1)
     return df.to_dict(orient='records')
+
+
+def get_study_groups(mtbls_study_id):
+    factors_summary = get_factors_summary(mtbls_study_id=mtbls_study_id)
+    study_groups = {}
+    for factors_item in factors_summary:
+        fvs = tuple(factors_item[k] for k in factors_item.keys() if k != 'name')
+        if fvs in study_groups.keys():
+            study_groups[fvs].append(factors_item['name'])
+        else:
+            study_groups[fvs] = [factors_item['name']]
+    return study_groups
+
+
+def get_study_groups_samples_sizes(mtbls_study_id):
+    study_groups = get_study_groups(mtbls_study_id=mtbls_study_id)
+    return list(map(lambda x: (x[0], len(x[1])), study_groups.items()))
+
+
+def get_sources_for_sample(mtbls_study_id, sample_name):
+    ISA = load(mtbls_study_id=mtbls_study_id)
+    hits = []
+    for study in ISA.studies:
+        for sample in study.materials['samples']:
+            if sample.name == sample_name:
+                print('found a hit ', sample.name)
+                for source in sample.derives_from:
+                    hits.append(source.name)
+    return hits
+
+
+def get_data_for_sample(mtbls_study_id, sample_name):
+    ISA = load(mtbls_study_id=mtbls_study_id)
+    hits = []
+    for study in ISA.studies:
+        for assay in study.assays:
+            for data in assay.data_files:
+                if data.generated_from.name == sample_name:
+                    print('found a hit ', data.filename)
+    return hits
+
+
+def get_study_groups_data_sizes(mtbls_study_id):
+    study_groups = get_study_groups(mtbls_study_id=mtbls_study_id)
+    return list(map(lambda x: (x[0], len(x[1])), study_groups.items()))
 
 
 def get_characteristics_summary(mtbls_study_id):
@@ -398,7 +453,7 @@ def get_study_variable_summary(mtbls_study_id):
     samples_and_variables = []
     for sample in all_samples:
         sample_and_vars = {
-            "name": sample.name
+            "sample_name": sample.name
         }
         for fv in sample.factor_values:
             if isinstance(fv.value, (str, int, float)):
@@ -407,6 +462,7 @@ def get_study_variable_summary(mtbls_study_id):
                 fv_value = fv.value.term
             sample_and_vars[fv.factor_name.name] = fv_value
         for source in sample.derives_from:
+            sample_and_vars["source_name"] = source.name
             for c in source.characteristics:
                 if isinstance(c.value, (str, int, float)):
                     c_value = c.value
@@ -443,3 +499,86 @@ def get_study_variable_summary(mtbls_study_id):
     cols_to_drop = nunique[nunique == 1].index
     df = df.drop(cols_to_drop, axis=1)
     return df.to_dict(orient='records')
+
+
+def get_study_group_factors(mtbls_study_id):
+    factors_list = []
+    tmp_dir = get(mtbls_study_id)
+    if tmp_dir is None:
+        raise FileNotFoundError("Could not download {}".format(mtbls_study_id))
+    for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
+        with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
+            df = isatab.load_table(fp)
+            factor_columns = [x for x in df.columns if x.startswith("Factor Value")]
+            if len(factor_columns) > 0:
+                factors_list = df[factor_columns].drop_duplicates()\
+                    .to_dict(orient='records')
+    return factors_list
+
+
+def get_filtered_df_on_factors_list(mtbls_study_id):
+    factors_list = get_study_group_factors(mtbls_study_id=mtbls_study_id)
+    queries = []
+    for item in factors_list:
+        query_str = []
+        for k, v in item.items():
+            k = k.replace(' ', '_').replace('[', '_').replace(']', '_')
+            if isinstance(v, str):
+                v = v.replace(' ', '_').replace('[', '_').replace(']', '_')
+                query_str.append("{0} == '{1}' and ".format(k, v))
+        query_str = ''.join(query_str)[:-4]
+        queries.append(query_str)
+    tmp_dir = get(mtbls_study_id)
+    for table_file in glob.iglob(os.path.join(tmp_dir, '[a|s]_*')):
+        with open(os.path.join(tmp_dir, table_file), encoding='utf-8') as fp:
+            df = isatab.load_table(fp)
+            cols = df.columns
+            cols = cols.map(lambda x: x.replace(' ', '_') if isinstance(x, str) else x)
+            df.columns = cols
+            cols = df.columns
+            cols = cols.map(lambda x: x.replace('[', '_') if isinstance(x, str) else x)
+            df.columns = cols
+            cols = df.columns
+            cols = cols.map(lambda x: x.replace(']', '_') if isinstance(x, str) else x)
+            df.columns = cols
+        from pandas.computation.ops import UndefinedVariableError
+        for query in queries:
+            try:
+                df2 = df.query(query)  # query uses pandas.eval, which evaluates queries like pure Python notation
+                if "Sample_Name" in df.columns:
+                    print("Group: {} / Sample_Name: {}".format(query, list(df2["Sample_Name"])))
+                if "Source_Name" in df.columns:
+                    print("Group: {} / Sources_Name: {}".format(query, list(df2["Source_Name"])))
+                if "Raw_Spectral_Data_File" in df.columns:
+                    print("Group: {} / Raw_Spectral_Data_File: {}".format(query[13:-2],
+                                                                          list(df2["Raw_Spectral_Data_File"])))
+            except UndefinedVariableError:
+                pass
+    return queries
+
+
+def get_mtbls_list():
+    logging.info("Setting up ftp with {}".format(EBI_FTP_SERVER))
+    ftp = ftplib.FTP(EBI_FTP_SERVER)
+    logging.info("Logging in as anonymous user...")
+    response = ftp.login()
+    mtbls_list = []
+    if '230' in response:  # 230 means Login successful
+        logging.info("Log in successful!")
+        try:
+            ftp.cwd('{base_dir}'.format(base_dir=MTBLS_BASE_DIR))
+            mtbls_list = ftp.nlst()
+        except ftplib.error_perm as ftperr:
+            log.error("Could not get MTBLS directory list. Error: {}".format(ftperr))
+    return mtbls_list
+
+
+def dl_all_mtbls_isatab(target_dir):
+    download_count = 0
+    for i, mtblsid in enumerate(get_mtbls_list()):
+        target_mtbls_subdir = os.path.join(target_dir, mtblsid)
+        if not os.path.exists(target_mtbls_subdir):
+            os.makedirs(target_mtbls_subdir)
+        get(mtblsid, target_mtbls_subdir)
+        download_count = i
+    print("Downloaded {} ISA-Tab studies from MetaboLights".format(download_count))

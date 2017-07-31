@@ -28,15 +28,16 @@ class TestNewSraExport(TestCase):
         study_id = 'BII-S-7'
         self._inv_obj = isajson.load(open(os.path.join(self._json_data_dir, study_id, study_id + '.json')))
         self._study_sra_data_dir = os.path.join(self._sra_data_dir, study_id)
-        self._expected_submission_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'submission.xml'), 'rb').read())
-        self._expected_project_set_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'project_set.xml'),
-                                                                 'rb').read())
-        self._expected_sample_set_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'sample_set.xml'),
-                                                                 'rb').read())
-        self._expected_exp_set_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'experiment_set.xml'),
-                                                                  'rb').read())
-        self._expected_run_set_xml_obj = etree.fromstring(open(os.path.join(self._study_sra_data_dir, 'run_set.xml'),
-                                                               'rb').read())
+        with open(os.path.join(self._study_sra_data_dir, 'submission.xml'), 'rb') as sub_fp:
+            self._expected_submission_xml_obj = etree.fromstring(sub_fp.read())
+        with open(os.path.join(self._study_sra_data_dir, 'project_set.xml'), 'rb') as ps_fp:
+            self._expected_project_set_xml_obj = etree.fromstring(ps_fp.read())
+        with open(os.path.join(self._study_sra_data_dir, 'sample_set.xml'), 'rb') as ss_fp:
+            self._expected_sample_set_xml_obj = etree.fromstring(ss_fp.read())
+        with open(os.path.join(self._study_sra_data_dir, 'experiment_set.xml'), 'rb') as es_fp:
+            self._expected_exp_set_xml_obj = etree.fromstring(es_fp.read())
+        with open(os.path.join(self._study_sra_data_dir, 'run_set.xml'), 'rb') as rs_fp:
+            self._expected_run_set_xml_obj = etree.fromstring(rs_fp.read())
 
         self._sra_default_config = {
             "sra_broker": "",
@@ -53,28 +54,33 @@ class TestNewSraExport(TestCase):
 
     def test_sra_export_submission_xml(self):
         sra.export(self._inv_obj, self._tmp_dir, sra_settings=self._sra_default_config)
-        actual_submission_xml_obj = etree.fromstring(open(os.path.join(self._tmp_dir, 'submission.xml'), 'rb').read())
-        self.assertTrue(utils.assert_xml_equal(self._expected_submission_xml_obj, actual_submission_xml_obj))
+        with open(os.path.join(self._tmp_dir, 'submission.xml'), 'rb') as out_fp:
+            actual_submission_xml_obj = etree.fromstring(out_fp.read())
+            self.assertTrue(utils.assert_xml_equal(self._expected_submission_xml_obj, actual_submission_xml_obj))
 
     def test_sra_export_sample_set_xml(self):
         sra.export(self._inv_obj, self._tmp_dir, sra_settings=self._sra_default_config)
-        actual_sample_set_xml_obj = etree.fromstring(open(os.path.join(self._tmp_dir, 'sample_set.xml'), 'rb').read())
-        self.assertTrue(utils.assert_xml_equal(self._expected_sample_set_xml_obj, actual_sample_set_xml_obj))
+        with open(os.path.join(self._tmp_dir, 'sample_set.xml'), 'rb') as out_fp:
+            actual_sample_set_xml_obj = etree.fromstring(out_fp.read())
+            self.assertTrue(utils.assert_xml_equal(self._expected_sample_set_xml_obj, actual_sample_set_xml_obj))
 
     def test_sra_export_experiment_set_xml(self):
         sra.export(self._inv_obj, self._tmp_dir, sra_settings=self._sra_default_config)
-        actual_exp_set_xml_obj = etree.fromstring(open(os.path.join(self._tmp_dir, 'experiment_set.xml'), 'rb').read())
-        self.assertTrue(utils.assert_xml_equal(self._expected_exp_set_xml_obj, actual_exp_set_xml_obj))
+        with open(os.path.join(self._tmp_dir, 'experiment_set.xml'), 'rb') as out_fp:
+            actual_exp_set_xml_obj = etree.fromstring(out_fp.read())
+            self.assertTrue(utils.assert_xml_equal(self._expected_exp_set_xml_obj, actual_exp_set_xml_obj))
 
     def test_sra_export_run_set_xml(self):
         sra.export(self._inv_obj, self._tmp_dir, sra_settings=self._sra_default_config)
-        actual_run_set_xml_obj = etree.fromstring(open(os.path.join(self._tmp_dir, 'run_set.xml'), 'rb').read())
-        self.assertTrue(utils.assert_xml_equal(self._expected_run_set_xml_obj, actual_run_set_xml_obj))
+        with open(os.path.join(self._tmp_dir, 'run_set.xml'), 'rb') as out_fp:
+            actual_run_set_xml_obj = etree.fromstring(out_fp.read())
+            self.assertTrue(utils.assert_xml_equal(self._expected_run_set_xml_obj, actual_run_set_xml_obj))
 
     def test_sra_export_project_set_xml(self):
         sra.export(self._inv_obj, self._tmp_dir, sra_settings=self._sra_default_config)
-        actual_project_set_xml_obj = etree.fromstring(open(os.path.join(self._tmp_dir, 'project_set.xml'), 'rb').read())
-        self.assertTrue(utils.assert_xml_equal(self._expected_project_set_xml_obj, actual_project_set_xml_obj))
+        with open(os.path.join(self._tmp_dir, 'project_set.xml'), 'rb') as out_fp:
+            actual_project_set_xml_obj = etree.fromstring(out_fp.read())
+            self.assertTrue(utils.assert_xml_equal(self._expected_project_set_xml_obj, actual_project_set_xml_obj))
 
     def test_create_datafile_hashes_success(self):
         datafilehashes = sra.create_datafile_hashes(os.path.join(utils.TAB_DATA_DIR, 'BII-S-7'), ['1EU.sff'])

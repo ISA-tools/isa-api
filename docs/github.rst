@@ -16,7 +16,7 @@ use it.
 
 .. code-block:: python
 
-    from isatools.io.storage_adapter import IsaGitHubStorageAdapter
+    from isatools.net.storage_adapter import IsaGitHubStorageAdapter
     from zipfile import ZipFile
     adapter = IsaGitHubStorageAdapter()
     adapter.retrieve('tests/data/BII-I-1', 'test_out_dir', owner='ISA-tools', repository='isa-api')

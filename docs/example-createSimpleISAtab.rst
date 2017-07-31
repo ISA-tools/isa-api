@@ -8,7 +8,7 @@ An example of using the ISA model classes to create an ISA-Tab set of files.
 
     #!/usr/bin/env python
 
-    from isatools.model.v1 import *
+    from isatools.model import *
 
 
     def create_descriptor():
@@ -160,7 +160,7 @@ An example of using the ISA model classes to create an ISA-Tab set of files.
             sequencing_process.outputs.append(datafile)
 
             # Ensure Processes are linked forward and backward. plink(from_process, to_process) is a function to set
-            # these links for you. It is found in the isatools.model.v1 package
+            # these links for you. It is found in the isatools.model package
 
             plink(extraction_process, sequencing_process)
 

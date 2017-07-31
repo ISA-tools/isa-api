@@ -1,6 +1,6 @@
 from itertools import product
 from itertools import permutations
-from isatools.model.v1 import *
+from isatools.model import *
 from isatools import isatab
 from isatools.isatab import dump
 from isatools.isatab import write_study_table_files

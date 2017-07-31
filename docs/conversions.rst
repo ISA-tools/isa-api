@@ -2,8 +2,8 @@
 ISA Conversions
 ###############
 
-The ISA API includes a set of functions to allow you to convert between ISA formats, as well as between ISA formats and
-other formats such as SRA. These converters can be found in the ``isatools.convert`` package.
+The ISA API includes a set of functions to allow you to convert between ISA formats, as well as between ISA formats.
+These converters can be found in the ``isatools.convert`` package.
 
 Converting from ISA-Tab to ISA JSON
 -----------------------------------
@@ -32,3 +32,7 @@ To convert from a ISA JSON file ``isa.json`` directory to write out ISA-Tab file
        json2isatab.convert(file_pointer, './outdir/')
 
 To turn off pre-conversion validation, use `validate_first=False`. By default it is set to `validate_first=True`.
+
+The ISA API can also convert to and from other formats for import/export to relevant databases and services. For more
+on those conversions, please read the sections on `Importing data in ISA formats </importdata>` and
+`Exporting data in ISA formats </exportdata>`.

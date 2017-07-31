@@ -9,15 +9,21 @@ import json
 import os
 import pathlib
 import base64
-import pdb
+import logging
+
+from isatools import config
+
+logging.basicConfig(level=config.log_level)
+log = logging.getLogger(__name__)
 
 __author__ = 'massi'
 
 DIR_NAME = os.path.dirname(__file__)
 
-INVESTIGATION_SCHEMA_FILE = os.path.abspath(os.path.join(DIR_NAME, '..', 'schemas', 'isa_model_version_1_0_schemas',
-                                                         'core', 'investigation_schema.json'))
-CONFIGURATION_SCHEMA_FILE = os.path.join(DIR_NAME, '..', 'schemas', 'isatab_configurator.xsd')
+INVESTIGATION_SCHEMA_FILE = os.path.abspath(os.path.join(DIR_NAME, '..', 'resources', 'schemas',
+                                                         'isa_model_version_1_0_schemas', 'core',
+                                                         'investigation_schema.json'))
+CONFIGURATION_SCHEMA_FILE = os.path.join(DIR_NAME, '..', 'resources', 'schemas', 'isatab_configurator.xsd')
 
 GITHUB_API_BASE_URL = 'https://api.github.com'
 GITHUB_RAW_MEDIA_TYPE = 'application/vnd.github.VERSION.raw'
@@ -167,7 +173,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
             'accept': 'application/json'
         }
         r = requests.delete(self.authorization_uri, headers=headers, auth=(self._username, self._password))
-        print(r)
+        log.debug(r)
         return r.raise_for_status()
 
     def download(self, source, destination='isa-target', owner='ISA-tools', repository='isa-api', validate_json=False):
@@ -229,7 +235,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                 except etree.XMLSyntaxError:
                     return False
         else:
-            print("The request was not successfully fulfilled: ", res.status_code)
+            log.warn("The request was not successfully fulfilled: ", res.status_code)
             return False
 
     def retrieve(self, source, destination='isa-target', owner='ISA-tools', repository='isa-api', ref='master',

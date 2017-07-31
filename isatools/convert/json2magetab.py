@@ -1,8 +1,11 @@
-from isatools import isajson, magetab
 import logging
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
+from isatools import config
+from isatools import isajson
+from isatools import magetab
+
+logging.basicConfig(level=config.log_level)
+log = logging.getLogger(__name__)
 
 
 def convert(source_json_fp, out_path):
@@ -10,5 +13,7 @@ def convert(source_json_fp, out_path):
     :param source_json_fp: File descriptor of input ISA JSON file
     :param out_path: Output path to write output MAGE-Tab to
     """
+    log.info("loading isajson %s", source_json_fp.name)
     ISA = isajson.load(source_json_fp)
+    log.info("dumping magetab %s", out_path)
     magetab.dump(ISA, out_path)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from isatools.model.v1 import *
+from isatools.model import *
 
 
 def create_descriptor():

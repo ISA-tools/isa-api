@@ -1,9 +1,11 @@
-from isatools import sampletab
-from isatools.isajson import ISAJSONEncoder
 import json
 import logging
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+from isatools import config
+from isatools import sampletab
+from isatools.isajson import ISAJSONEncoder
+
+logging.basicConfig(level=config.log_level)
 logger = logging.getLogger(__name__)
 
 

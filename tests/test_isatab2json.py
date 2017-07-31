@@ -32,7 +32,8 @@ class TestIsaTab2JsonNewParser(unittest.TestCase):
         actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
                                           validate_first=False,
                                           use_new_parser=True)
-        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json'), 'w') as out_fp:
+            json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
             report = isajson.validate(actual_json)
             self.assertEqual(len(report['errors']), 0)
@@ -42,7 +43,8 @@ class TestIsaTab2JsonNewParser(unittest.TestCase):
         actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
                                           validate_first=False,
                                           use_new_parser=True)
-        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json'), 'w') as out_fp:
+            json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
             report = isajson.validate(actual_json)
             self.assertEqual(len(report['errors']), 0)
@@ -52,7 +54,8 @@ class TestIsaTab2JsonNewParser(unittest.TestCase):
         actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
                                           validate_first=False,
                                           use_new_parser=True)
-        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json'), 'w') as out_fp:
+            json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
             report = isajson.validate(actual_json)
             self.assertEqual(len(report['errors']), 0)
@@ -62,7 +65,8 @@ class TestIsaTab2JsonNewParser(unittest.TestCase):
         actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
                                           validate_first=False,
                                           use_new_parser=True)
-        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json'), 'w') as out_fp:
+            json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
             report = isajson.validate(actual_json)
             self.assertEqual(len(report['errors']), 0)
@@ -72,7 +76,8 @@ class TestIsaTab2JsonNewParser(unittest.TestCase):
         actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
                                           validate_first=False,
                                           use_new_parser=True)
-        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json'), 'w') as out_fp:
+            json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
             report = isajson.validate(actual_json)
             self.assertEqual(len(report['errors']), 0)
@@ -82,7 +87,8 @@ class TestIsaTab2JsonNewParser(unittest.TestCase):
         actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
                                           validate_first=False,
                                           use_new_parser=True)
-        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json'), 'w') as out_fp:
+            json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
             report = isajson.validate(actual_json)
             self.assertEqual(len(report['errors']), 0)
@@ -92,7 +98,8 @@ class TestIsaTab2JsonNewParser(unittest.TestCase):
         actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
                                           validate_first=False,
                                           use_new_parser=True)
-        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json'), 'w') as out_fp:
+            json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
             report = isajson.validate(actual_json)
             self.assertEqual(len(report['errors']), 0)
@@ -102,7 +109,8 @@ class TestIsaTab2JsonNewParser(unittest.TestCase):
         actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
                                           validate_first=False,
                                           use_new_parser=True)
-        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json'), 'w') as out_fp:
+            json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
             report = isajson.validate(actual_json)
             self.assertEqual(len(report['errors']), 0)
@@ -112,7 +120,8 @@ class TestIsaTab2JsonNewParser(unittest.TestCase):
         actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
                                           validate_first=False,
                                           use_new_parser=True)
-        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json'), 'w') as out_fp:
+            json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
             report = isajson.validate(actual_json)
             self.assertEqual(len(report['errors']), 0)
@@ -122,7 +131,8 @@ class TestIsaTab2JsonNewParser(unittest.TestCase):
         actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
                                           validate_first=False,
                                           use_new_parser=True)
-        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json'), 'w') as out_fp:
+            json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
             report = isajson.validate(actual_json)
             self.assertEqual(len(report['errors']), 0)
@@ -132,7 +142,8 @@ class TestIsaTab2JsonNewParser(unittest.TestCase):
         actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
                                           validate_first=False,
                                           use_new_parser=True)
-        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json'), 'w') as out_fp:
+            json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
             report = isajson.validate(actual_json)
             self.assertEqual(len(report['errors']), 0)
@@ -142,7 +153,8 @@ class TestIsaTab2JsonNewParser(unittest.TestCase):
         actual_json = isatab2json.convert(os.path.join(self._tab_data_dir, test_case),
                                           validate_first=False,
                                           use_new_parser=True)
-        json.dump(actual_json, open(os.path.join(self._tmp_dir, 'isa.json'), 'w'))
+        with open(os.path.join(self._tmp_dir, 'isa.json'), 'w') as out_fp:
+            json.dump(actual_json, out_fp)
         with open(os.path.join(self._tmp_dir, 'isa.json')) as actual_json:
             report = isajson.validate(actual_json)
             self.assertEqual(len(report['errors']), 0)

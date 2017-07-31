@@ -12,7 +12,7 @@ Firstly, we need to import the ISA API's model classes from the ``isatools`` PyP
 
 .. code-block:: python
 
-    from isatools.model.v1 import *
+    from isatools.model import *
 
 Next, we build our descriptor encapsulated in a single Python function to simplify the example code. In a real
 application or script, you might decompose the functionality and hook it up to interactive components to solicit
@@ -169,7 +169,7 @@ feedback from a user on-the-fly.
             sequencing_process.outputs.append(datafile)
 
             # Ensure Processes are linked forward and backward. plink(from_process, to_process) is a function to set
-            # these links for you. It is found in the isatools.model.v1 package
+            # these links for you. It is found in the isatools.model package
 
             plink(extraction_process, sequencing_process)
 

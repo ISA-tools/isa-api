@@ -3,6 +3,12 @@ from pandas.util.testing import assert_frame_equal
 from isatools.isatab import read_investigation_file
 import os
 import re
+import logging
+from isatools import config
+
+logging.basicConfig(level=config.log_level)
+log = logging.getLogger(__name__)
+
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
@@ -49,7 +55,7 @@ def assert_tab_content_equal(fp_x, fp_y):
             assert_frame_equal(x.sort_values(by=x.columns[0]), y.sort_values(by=y.columns[0]))
             return True
         except AssertionError as e:
-            print(e)
+            log.error(e)
             return False
 
     from os.path import basename
@@ -71,7 +77,7 @@ def assert_tab_content_equal(fp_x, fp_y):
                             eq = False
                             break
                 except ValueError as e:
-                    print(e)
+                    log.error(e)
         return eq
     else:
 
@@ -93,9 +99,9 @@ def assert_tab_content_equal(fp_x, fp_y):
 
             is_cols_equal = set([x.split('.', 1)[0] for x in df_x.columns]) == set([x.split('.', 1)[0] for x in df_y.columns])
             if not is_cols_equal:
-                print('x: ' + str(df_x.columns))
-                print('y: ' + str(df_y.columns))
-                print(diff(df_x.columns, df_y.columns))
+                log.debug('x: ' + str(df_x.columns))
+                log.debug('y: ' + str(df_y.columns))
+                log.debug(diff(df_x.columns, df_y.columns))
                 raise AssertionError("Columns in x do not match those in y")
 
             # reindex to add contexts for duplicate named columns (i.e. Term Accession Number, Unit, etc.)
@@ -141,13 +147,12 @@ def assert_tab_content_equal(fp_x, fp_y):
             for colx in df_x.columns:
                 for eachx, eachy in zip(df_x.sort_values(by=colx)[colx], df_y.sort_values(by=colx)[colx]):
                     if eachx != eachy:
-                        print(df_x[colx])
-                        print(df_y[colx])
+                        log.debug(df_x[colx])
+                        log.debug(df_y[colx])
                         raise AssertionError("Value: " + str(eachx) + ", does not match: " + str(eachy))
-            # print("Well, you got here so the files must be same-ish... well done, you!")
             return True
         except AssertionError as e:
-            print(str(e))
+            log.error(str(e))
             return False
 
 
@@ -177,7 +182,7 @@ def assert_json_equal(jx, jy):
         return True
     else:
         from deepdiff import DeepDiff
-        print('DeepDiff={}'.format(DeepDiff(jx, jy)))
+        log.debug('DeepDiff={}'.format(DeepDiff(jx, jy)))
         return False
 
 
@@ -193,14 +198,14 @@ def assert_xml_equal(x1, x2):
     x1tags = collect_tags(x1)
     x2tags = collect_tags(x2)
     if len(x1tags - x2tags) > 0 or len(x2tags - x1tags) > 0:
-        print("Collected tags don't match: ", x1tags, x2tags)
+        log.debug("Collected tags don't match: ", x1tags, x2tags)
         return False
     else:
         for tag in x1tags:
             tagcount1 = x1.xpath('count(//{})'.format(tag))
             tagcount2 = x2.xpath('count(//{})'.format(tag))
             if tagcount1 != tagcount2:
-                print("Counts of {0} tag do not match {1}:{2}".format(tag, int(tagcount1), int(tagcount2)))
+                log.debug("Counts of {0} tag do not match {1}:{2}".format(tag, int(tagcount1), int(tagcount2)))
                 return False
         return True
 

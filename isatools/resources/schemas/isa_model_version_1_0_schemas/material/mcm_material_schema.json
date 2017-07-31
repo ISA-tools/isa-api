@@ -1,0 +1,75 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Material",
+	"description": "Definition of Material (or Substance)",
+	"type": "object",	
+	"properties":{
+		"@id": { "type": "string", "format": "uri" },		
+		"lotIdentifier": {"type": "string" },
+		"name": { 
+			"type": "string",
+			"description":"Material name"
+		},		
+		"sourceName": { "type": "string" },		
+		"root": {
+			"type": "string", 
+			"description": "Root constituent"
+		},		
+		"constituents":{
+			"type": "array",
+			"items" : {
+				"$ref" : "constituent_schema.json#"
+			}
+		},		
+		"description":{"type": "string" },		
+		"synthesis":{"type": "string" },		
+		"designRationale":{"type": "string" },
+		"intendedApplication":{
+			"type" : "object",
+			"properties": {
+				"name" : {"type" : "string"},
+				"ontologyAnnotation" : {
+					"$ref": "ontology_annotation_schema.json#"
+				}
+			}
+		},
+		"characteristics" : {
+			"type" : "array",
+			"items" :  {
+				"$ref": "material_attribute_value_schema.json#"
+			}
+		},
+		"mcmType":{
+			"type" : "object",
+			"properties": {
+				"name" : {"type" : "string"},
+				"ontologyAnnotation" : {
+					"$ref": "ontology_annotation_schema.json#"
+				}
+			}
+		},
+		"chemicalName":{
+			"type" : "object",
+			"properties": {
+				"name" : {"type" : "string"},
+				"ontologyAnnotation" : {
+					"$ref": "ontology_annotation_schema.json#"
+				}
+			}
+		},
+		"dataFiles":{
+			"type": "array",
+            "items": {
+				"type": "object",
+				"properties": {
+					"name": {"type": "string" },
+					"type": {"type": "string" },
+					"description": {"type": "string" },
+					"ontologyAnnotation": {
+						"$ref": "ontology_annotation_schema.json#"
+					}
+				}
+			}
+		}
+	}
+}

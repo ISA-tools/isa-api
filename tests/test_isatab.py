@@ -2,7 +2,7 @@ import unittest
 import os
 import shutil
 from tests.utils import assert_tab_content_equal
-from isatools.model.v1 import *
+from isatools.model import *
 from tests import utils
 import tempfile
 from isatools import isatab
@@ -333,13 +333,13 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(ISA.studies[0].assays[0].data_files), 2)
             self.assertEqual(len(ISA.studies[0].assays[0].process_sequence), 11)
 
-    def test_isatab_load_issue201(self):
-        with open(os.path.join(self._tab_data_dir, 'sdata201411-isa1', 'i_Investigation.txt')) as fp:
-            try:
-                isatab.load(fp, skip_load_tables=True)
-            except Exception as ex:
-                self.assertIsInstance(ex, IOError)
-                self.assertIn("There was a problem parsing the investigation section:", str(ex))
+    # def test_isatab_load_issue201(self):  # issue now not relevant due to changes in parser
+    #     with open(os.path.join(self._tab_data_dir, 'sdata201411-isa1-parsererror', 'i_Investigation.txt')) as fp:
+    #         try:
+    #             self.assertRaises(isatab.load(fp, skip_load_tables=True), IOError)
+    #         except Exception as ex:  # This now doesn't fail as section loader is now more resilient
+    #             self.assertIsInstance(ex, IOError)
+    #             self.assertIn("There was a problem parsing the investigation section:", str(ex))
 
     def test_isatab_load_sdata201414_isa1(self):
         with open(os.path.join(self._tab_data_dir, 'sdata201414-isa1', 'i_Investigation.txt')) as fp:
@@ -457,15 +457,6 @@ class TestIsaTabLoad(unittest.TestCase):
             self.assertEqual(len(assay_gx.materials['other_material']), 29)  # 29 other materials in a_matteo-assay-Gx.txt
             self.assertEqual(len(assay_gx.data_files), 29)  # 29 data files  in a_matteo-assay-Gx.txt
             self.assertEqual(len(assay_gx.process_sequence), 116)  # 116 processes in in a_matteo-assay-Gx.txt
-
-    # def test_isatab_load__flower(self):  # don't commit this as it takes 2 minutes to run on local machine
-    #     with open(os.path.join(self._tab_data_dir, 'Flower_Study', 'i_Investigation.txt')) as fp:
-    #         ISA = isatab.load(fp)
-    #
-    # def test_isatab_load__dump_flower(self):  # don't commit this as it takes 3 minutes to run on local machine
-    #     with open(os.path.join(self._tab_data_dir, 'Flower_Study', 'i_Investigation.txt')) as fp:
-    #         ISA = isatab.load(fp)
-    #         print(isatab.dumps(ISA))
 
 
 class UnitTestIsaTabDump(unittest.TestCase):

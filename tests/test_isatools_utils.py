@@ -1,15 +1,23 @@
-import unittest
-import os
-import json
-from isatools import isajson
-from isatools.io import mtbls as MTBLS
+"""Tests on isatools.utils package"""
+from __future__ import absolute_import
 from io import StringIO
+import json
 from jsonschema.exceptions import ValidationError
-from tests import utils as test_utils
-from isatools import utils
-from isatools.model.v1 import OntologySource, OntologyAnnotation
-import tempfile
+import logging
+import os
 import shutil
+import tempfile
+import unittest
+
+from isatools import isajson
+from isatools.net import mtbls as MTBLS
+from isatools.model import Publication, Comment, OntologySource, OntologyAnnotation
+from isatools.net import pubmed, ols
+from isatools import utils
+from tests import utils as test_utils
+
+
+log = logging.getLogger(__name__)
 
 
 def setUpModule():
@@ -23,48 +31,44 @@ def setUpModule():
 class TestIsaGraph(unittest.TestCase):
 
     def test_detect_graph_process_pooling(self):
-        ISA = isajson.load(open(os.path.join(test_utils.JSON_DATA_DIR, 'MTBLS1', 'MTBLS1.json')))
-        for study in ISA.studies:
-            print("Checking {}".format(study.filename))
-            utils.detect_graph_process_pooling(study.graph)
-            for assay in study.assays:
-                print("Checking {}".format(assay.filename))
-                pooling_list = utils.detect_graph_process_pooling(assay.graph)
-                self.assertListEqual(sorted(pooling_list),
-                                     sorted(['#process/Extraction1', '#process/NMR_assay1']))
+        with open(os.path.join(test_utils.JSON_DATA_DIR, 'MTBLS1', 'MTBLS1.json')) as isajson_fp:
+            ISA = isajson.load(isajson_fp)
+            for study in ISA.studies:
+                utils.detect_graph_process_pooling(study.graph)
+                for assay in study.assays:
+                    pooling_list = utils.detect_graph_process_pooling(assay.graph)
+                    self.assertListEqual(sorted(pooling_list),
+                                         sorted(['#process/Extraction1', '#process/NMR_assay1']))
 
     def test_detect_graph_process_pooling_batch_on_mtbls(self):
         for i in range(1, 1):
             try:
-                print("Loading MTBLS{}".format(i))
                 J = MTBLS.getj("MTBLS{}".format(i))
                 ISA = isajson.load(StringIO(json.dumps(J)))
                 for study in ISA.studies:
-                    print("Checking {}".format(study.filename))
                     utils.detect_graph_process_pooling(study.graph)
                     for assay in study.assays:
-                        print("Checking {}".format(assay.filename))
                         utils.detect_graph_process_pooling(assay.graph)
             except IOError:
-                print("IO Error, skipping...")
+                log.error("IO Error, skipping...")
             except KeyError:
-                print("KeyError, skipping...")
+                log.error("KeyError, skipping...")
             except AttributeError:
-                print("AttributeError, skipping...")
+                log.error("AttributeError, skipping...")
             except ValidationError:
-                print("jsonschema ValidationError, skipping...")
+                log.error("jsonschema ValidationError, skipping...")
 
 
 class TestOlsSearch(unittest.TestCase):
 
     def test_get_ontologies(self):
-        ontology_sources = utils.get_ols_ontologies()
+        ontology_sources = ols.get_ols_ontologies()
         self.assertGreater(len(ontology_sources), 0)
         self.assertIsInstance(ontology_sources, list)
         self.assertIsInstance(ontology_sources[0], OntologySource)
 
     def test_get_ontology(self):
-        ontology_source = utils.get_ols_ontology("efo")
+        ontology_source = ols.get_ols_ontology("efo")
         self.assertIsInstance(ontology_source, OntologySource)
         self.assertEqual(ontology_source.name, "efo")
         self.assertEqual(ontology_source.file, None)
@@ -72,8 +76,8 @@ class TestOlsSearch(unittest.TestCase):
         self.assertEqual(ontology_source.description, "Experimental Factor Ontology")
 
     def test_search_for_term(self):
-        ontology_source = utils.get_ols_ontology("efo")
-        ontology_annotations = utils.search_ols("cell type", ontology_source)
+        ontology_source = ols.get_ols_ontology("efo")
+        ontology_annotations = ols.search_ols("cell type", ontology_source)
         self.assertIsInstance(ontology_annotations, list)
         self.assertGreater(len(ontology_annotations), 0)
         ontology_anotation = [oa for oa in ontology_annotations if oa.term == "cell type"][0]  # always do a search, as order is not immutable
@@ -128,7 +132,7 @@ class TestISArchiveExport(unittest.TestCase):
 class TestPubMedIDUtil(unittest.TestCase):
 
     def test_get_pubmed_article(self):
-        J = utils.get_pubmed_article("25520553")
+        J = pubmed.get_pubmed_article("25520553")
         self.assertEqual(J["doi"], "10.4137/CIN.S13895")
         self.assertEqual(J["authors"], ['Johnson D', 'Connor AJ', 'McKeever S', 'Wang Z', 'Deisboeck TS', 'Quaiser T', 'Shochat E'])
         self.assertEqual(J["year"], "2014")
@@ -136,9 +140,8 @@ class TestPubMedIDUtil(unittest.TestCase):
         self.assertEqual(J["title"], "Semantically linking in silico cancer models.")
 
     def test_set_pubmed_article(self):
-        from isatools.model.v1 import Publication, Comment
         p = Publication(pubmed_id="25520553")
-        utils.set_pubmed_article(p)
+        pubmed.set_pubmed_article(p)
         self.assertEqual(p.doi, "10.4137/CIN.S13895")
         self.assertEqual(p.author_list, "Johnson D, Connor AJ, McKeever S, Wang Z, Deisboeck TS, Quaiser T, Shochat E")
         self.assertEqual(p.title, "Semantically linking in silico cancer models.")

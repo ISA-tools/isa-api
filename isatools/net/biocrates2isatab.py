@@ -14,6 +14,8 @@ import os
 import sys
 import bs4
 
+from isatools import config
+
 
 sys.modules['BeautifulSoup'] = bs4
 
@@ -29,7 +31,7 @@ INPUT_FILE = os.path.join(BIOCRATES_DIR, 'biocrates-shorter-testfile.xml')
 BIOCRATES_META_XSL_FILE = os.path.join(BIOCRATES_DIR, 'ISA-Team-Biocrates2ISATAB-refactor.xsl')
 BIOCRATES_DATA_XSL_FILE = os.path.join(BIOCRATES_DIR, 'ISA-Team-Biocrates2MAF.xsl')
 
-# logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=config.log_level)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 

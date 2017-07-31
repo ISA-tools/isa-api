@@ -1,17 +1,22 @@
-from isatools import isatab
-import tempfile
-from .model.v1 import *
-import os
-import logging
+"""Functions for reading and writing MAGE-TAB."""
+from __future__ import absolute_import
+import copy
 import csv
+import logging
+import tempfile
 import numpy as np
+import os
 import pandas as pd
+import re
 from io import StringIO
 from itertools import zip_longest
 
+from isatools import config
+from isatools import isatab
+from isatools.model import *
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=config.log_level)
+log = logging.getLogger(__name__)
 
 
 def _get_sdrf_filenames(ISA):
@@ -320,7 +325,7 @@ def write_sdrf_table_files(i, output_path):
     for study in i.studies:
         for assay in [x for x in study.assays if x.technology_type.term.lower() == "dna microarray"]:
             sdrf_filename = study.filename[2:-3] + assay.filename[2:-3] + "sdrf.txt"
-            print("Writing {}".format(sdrf_filename))
+            log.debug("Writing {}".format(sdrf_filename))
             try:
                 isatab.merge_study_with_assay_tables(os.path.join(tmp, study.filename),
                                                      os.path.join(tmp, assay.filename),
@@ -340,35 +345,6 @@ def dump(inv_obj, output_path):
     else:
         raise IOError("Input must contain at least one assay of type DNA microarray, halt writing MAGE-TAB")
     return inv_obj
-
-
-def load(FP):  # loads IDF file
-    # first cast to IDF
-    inv_fp = cast_idf_to_inv(FP)
-    df = pd.read_csv(inv_fp, names=range(0, 128), sep='\t', engine='python', encoding='utf-8', comment='#').dropna(axis=1, how='all')
-    df = df.T  # transpose
-    df.reset_index(inplace=True)  # Reset index so it is accessible as column
-    df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
-    # second set output s_ and a_ files
-    sdrf_file = df["Study File Name"].iloc[1]
-    study_df, assay_df = split_tables(sdrf_path=os.path.join(os.path.dirname(FP.name), sdrf_file))
-    study_df.columns = study_df.isatab_header
-    assay_df.columns = assay_df.isatab_header
-    # write out ISA files
-    tmp = "/Users/dj/PycharmProjects/isa-api/tests/data/tmp"
-    inv_fp.seek(0)
-    # print("Writing i_investigation.txt to {}".format(tmp))
-    print("Writing s_{0} to {1}".format(tmp, os.path.basename(sdrf_file)))
-    with open(os.path.join(tmp, "s_" + os.path.basename(sdrf_file)), "w") as s_fp:
-        study_df.to_csv(path_or_buf=s_fp, mode='a', sep='\t', encoding='utf-8', index=False,)
-    print("Writing a_{0} to {1}".format(tmp, os.path.basename(sdrf_file)))
-    with open(os.path.join(tmp, "a_" + os.path.basename(sdrf_file)), "w") as a_fp:
-        assay_df.to_csv(path_or_buf=a_fp, mode='a', sep='\t', encoding='utf-8', index=False,)
-    # with open(os.path.join(tmp, "i_investigation.txt")) as tmp_inv_fp:
-    ISA = isatab.load(inv_fp)
-    ISA.studies[0].filename = "s_" + os.path.basename(sdrf_file)
-    ISA.studies[0].assays = [Assay(filename="a_" + os.path.basename(sdrf_file))]
-    return ISA
 
 
 inv_to_idf_map = {
@@ -436,281 +412,6 @@ def cast_inv_to_idf(FP):
     return idf_FP
 
 
-def cast_idf_to_inv(FP):
-    # Cast relevant sections from IDF file into comments
-    # insert Additional Investigation file labels
-    idf_FP = StringIO()
-    idf_dict = {}
-    for line in FP:
-        if line.startswith(tuple(inv_to_idf_map.values())) or line.startswith("Comment["):
-            for k, v in inv_to_idf_map.items():
-                line = line.replace(v, k)  # note k-v is reversed
-        else:
-            first_token = line[:line.index('\t')]
-            line = line.replace(first_token, "Comment[{}]".format(first_token))
-        # idf_FP.write(line)
-        idf_dict[line[:line.index('\t')]] = line
-    # idf_FP.seek(0)
-    idf_FP.name = FP.name
-    with open(os.path.join(os.path.dirname(__file__), 'resources', 'tab_templates', 'i_mage_template.txt')) as i_template_FP:
-        for line in i_template_FP:
-            try:
-                try:
-                    line = idf_dict[line[:line.index('\t')]]
-                except ValueError:
-                    line = idf_dict[line[:line.index('\n')]]
-            except KeyError:
-                pass
-            idf_FP.write(line)
-    # for key in [x for x in idf_dict.keys() if x.startswith("Comment[")]:
-    #     idf_FP.write(idf_dict[key])
-    idf_FP.seek(0)
-    return idf_FP
-
-
-def export_to_isatab(FP, output_dir):
-    # Load and write the investigation section somewhere
-    df = pd.read_csv(FP, names=range(0, 128), sep='\t', engine='python', encoding='utf-8', comment='#').dropna(axis=1, how='all')
-    df = df.T  # transpose
-    df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
-    df.reset_index(inplace=True)  # Reset index so it is accessible as column
-    df.columns = df.iloc[0]  # If all was OK, promote this row to the column headers
-    df = df.reindex(df.index.drop(0))  # Reindex the DataFrame
-    sdrf_filename = df.iloc[0]['SDRF File']
-    sdrf_path = os.path.join(os.path.dirname(FP.name), sdrf_filename)
-    study_df, assay_df = split_tables(sdrf_path=sdrf_path)
-    with open(os.path.join(output_dir, "s_" + os.path.basename(sdrf_path)), 'w') as study_fp:
-        study_df.to_csv(study_fp, sep='\t', index=False, header=study_df.isatab_header)
-    with open(os.path.join(output_dir, "a_" + os.path.basename(sdrf_path)), 'w') as assay_fp:
-        assay_df.to_csv(assay_fp, sep='\t', index=False, header=assay_df.isatab_header)
-
-
-def split_tables(sdrf_path):
-    sdrf_df = isatab.read_tfile(sdrf_path)
-    sdrf_df_isatab_header = sdrf_df.isatab_header
-    sample_name_index = list(sdrf_df.columns).index("Sample Name")
-    study_df = sdrf_df[sdrf_df.columns[0:sample_name_index+1]].drop_duplicates()
-    study_df.isatab_header = sdrf_df_isatab_header[0:sample_name_index+1]
-    assay_df = sdrf_df[sdrf_df.columns[sample_name_index:]]
-    assay_df.isatab_header = sdrf_df_isatab_header[sample_name_index:]
-    return study_df, assay_df
-
-
-idf_map = {
-    "MAGE-TAB Version": "magetab_version",
-    "Investigation Title": "investigation_title",
-    "Investigation Accession": "investigation_accession",
-    "Investigation Accession Term Source REF": "investigation_accession_term_source_ref",
-    "Experimental Design": "experimental_design",
-    "Experimental Design Term Source REF": "experimental_design_term_source_ref",
-    "Experimental Design Term Accession Number": "experimental_design_term_accession_number",
-    "Experimental Factor Name": "experimental_factor",
-    "Experimental Factor Term Source REF": "experimental_factor_term_source_ref",
-    "Experimental Factor Term Accession Number": "experimental_factor_term_accession_number",
-
-    "Person Last Name": "person_last_name",
-    "Person First Name": "person_first_name",
-    "Person Mid Initials": "person_mid_initials",
-    "Person Email": "person_email",
-    "Person Phone": "person_phone",
-    "Person Fax": "person_fax",
-    "Person Address": "person_address",
-    "Person Affiliation": "person_affiliation",
-    "Person Roles": "person_roles",
-    "Person Roles Term Source REF": "person_roles_term_source_ref",
-    "Person Roles Term Accession Number": "person_roles_term_accession_number",
-
-    "Quality Control Type": "quality_control_type",
-    "Quality Control Term Source REF": "quality_control_term_source_ref",
-    "Quality Control Term Accession Number": "quality_control_term_accession_number",
-    "Replicate Type": "replicate_type",
-    "Replicate Term Source REF": "replicate_term_source_ref",
-    "Replicate Term Accession Number": "replicate_term_accession_number",
-    "Normalization Type": "normalization_type",
-    "Normalization Term Source REF": "normalization_term_source_ref",
-    "Normalization Term Accession Number": "normalization_term_accession_number",
-
-    "Date of Experiment": "date_of_experiment",
-    "Public Release Date": "public_release_date",
-
-    "PubMed ID": "publication_pubmed_id",
-    "Publication DOI": "publication_doi",
-    "Publication Author List": "publication_author_list",
-    "Publication Title": "publication_title",
-    "Publication Status": "publication_status",
-    "Publication Status Term Source REF": "publication_status_term_source_ref",
-    "Publication Status Term Accession Number": "publication_status_term_accession_number",
-
-    "Experimental Description": "experimental_description",
-
-    "Protocol Name": "protocol_name",
-    "Protocol Type": "protocol_type",
-    "Protocol Term Source REF": "protocol_term_source_ref",
-    "Protocol Term Accession Number": "protocol_term_accession_number",
-    "Protocol Description": "protocol_description",
-    "Protocol Parameters": "protocol_parameters",
-    "Protocol Hardware": "protocol_hardware",
-    "Protocol Software": "protocol_software",
-    "Protocol Contact": "protocol_contact",
-
-    "SDRF File": "sdrf_file",
-
-    "Term Source Name": "term_source_name",
-    "Term Source File": "term_source_file",
-    "Term Source Version": "term_source_version",
-
-}
-
-
-def parse(magetab_idf_path, technology_type, measurement_type):
-    idf_dict = {}
-
-    with open(magetab_idf_path, "r", encoding="utf-8") as magetab_idf_file:
-        magetab_idf_reader = csv.reader(filter(lambda r: r[0] != '#', magetab_idf_file), dialect='excel-tab')
-
-        for row in magetab_idf_reader:
-            if not row[0].startswith("Comment["):
-                try:
-                    idf_dict[idf_map[row[0]]] = row[1:]
-                except KeyError:
-                    pass
-
-    ISA = Investigation(identifier="Investigation")
-
-    ontology_source_dict = {}
-
-    v = idf_dict['term_source_name']
-    for i in range(0, len(v)):
-        ontology_source = OntologySource(name=v[i])
-        ontology_source.file = idf_dict['term_source_file'][i]
-        ontology_source.version = idf_dict['term_source_version'][i]
-        ISA.ontology_source_references.append(ontology_source)
-        ontology_source_dict[ontology_source.name] = ontology_source
-
-    S = Study(identifier="Study")
-
-    for k, v in idf_dict.items():
-        if k == 'investigation_title' and len([x for x in v if x != '']) == 1:
-            ISA.title = v[0]
-            S.title = v[0]
-        if k == 'experimental_description' and len([x for x in v if x != '']) == 1:
-            ISA.description = v[0]
-        elif k in ('investigation_accession',
-                   'investigation_accession_term_source_ref',
-                   'date_of_experiment',
-                   'magetab_version') and len([x for x in v if x != '']) == 1:
-            S.comments.append(Comment(name=k, value=v[0]))
-        elif k == 'experimental_design':
-            experimental_design_comment = Comment(name="Experimental Design")
-            experimental_design_term_source_ref_comment = Comment(name="Experimental Design Term Source REF")
-            experimental_factor_term_accession_number_comment = Comment(
-                name="Experimental Design Term Accession Number")
-            experimental_design_comment.value += ';'.join(idf_dict['experimental_design'])
-            experimental_design_term_source_ref_comment.value = ';'.join(
-                idf_dict['experimental_design_term_source_ref'])
-            if 'experimental_design_term_accession_number' in idf_dict.keys():
-                experimental_factor_term_accession_number_comment.value = ';'.join(
-                    idf_dict['experimental_design_term_accession_number'])
-            S.comments.append(experimental_design_comment)
-            S.comments.append(experimental_design_term_source_ref_comment)
-            S.comments.append(experimental_factor_term_accession_number_comment)
-
-        elif k == 'public_release_date':
-            ISA.public_release_date = v[0]
-            S.public_release_date = v[0]
-        elif k == 'person_last_name' and len(v) > 0:
-            for i in range(0, len(v)):
-                p = Person()
-                p.last_name = v[i]
-                p.first_name = idf_dict['person_first_name'][i]
-                p.last_name = idf_dict['person_last_name'][i]
-                try:
-                    p.mid_initials = idf_dict['person_mid_initials'][i]
-                except IndexError:
-                    pass
-                p.email = idf_dict['person_email'][i]
-                p.phone = idf_dict['person_phone'][i]
-                p.fax = idf_dict['person_fax'][i]
-                p.address = idf_dict['person_address'][i]
-                p.affiliation = idf_dict['person_affiliation'][i]
-                roles_list = idf_dict['person_roles'][i].split(';')
-                roles_term_source_ref_list = idf_dict['person_roles_term_source_ref'][i].split(';')
-                if 'person_roles_term_accession_number' in idf_dict.keys():
-                    roles_term_accession_number_list = idf_dict['person_roles_term_accession_number'][i].split(';')
-                for j, term in enumerate([x for x in roles_list if x != '']):
-                    role = OntologyAnnotation(term=term)
-                    role_term_source_ref = roles_term_source_ref_list[j]
-                    if role_term_source_ref != '':
-                        role.term_source = ontology_source_dict[role_term_source_ref]
-                    if 'person_roles_term_accession_number' in idf_dict.keys():
-                        role.term_accession = roles_term_accession_number_list[j]
-                    p.roles.append(role)
-                S.contacts.append(p)
-        elif k == 'publication_pubmed_id' and len(v) > 0:
-            for i in range(0, len(v)):
-                p = Publication()
-                p.pubmed_id = v[i]
-                p.doi = idf_dict['publication_doi'][i]
-                p.author_list = idf_dict['publication_author_list'][i]
-                p.title = idf_dict['publication_title'][i]
-                p.doi = idf_dict['publication_doi'][i]
-                status = OntologyAnnotation(term=idf_dict['publication_status'][i])
-                if 'publication_status_term_source_ref' in idf_dict.keys():
-                    try:
-                        status.term_source = ontology_source_dict[idf_dict['publication_status_term_source_ref'][i]]
-                    except IndexError:
-                        pass
-                    except KeyError:
-                        pass
-                if 'publication_status_term_accession_number' in idf_dict.keys():
-                    status.term_accession = idf_dict['publication_status_term_accession_number'][i]
-                p.status = status
-                S.publications.append(p)
-        elif k == 'protocol_name' and len(v) > 0:
-            for i in range(0, len(v)):
-                p = Protocol()
-                p.name = v[i]
-                protocol_type = OntologyAnnotation(term=idf_dict['protocol_type'][i])
-                if 'publication_status_term_source_ref' in idf_dict.keys():
-                    try:
-                        protocol_type.term_source = ontology_source_dict[idf_dict['protocol_term_source_ref'][i]]
-                    except IndexError:
-                        pass
-                    except KeyError:
-                        pass
-                if 'publication_status_term_accession_number' in idf_dict.keys():
-                    protocol_type.term_accession = idf_dict['protocol_term_accession_number'][i]
-                p.protocol_type = protocol_type
-                p.description = idf_dict['protocol_description'][i]
-                if 'protocol_parameters' in idf_dict.keys():
-                    parameters_list = idf_dict['protocol_parameters'][i].split(';')
-                    for item in parameters_list:
-                        if item != '':
-                            protocol_parameter = ProtocolParameter(parameter_name=OntologyAnnotation(term=item))
-                            p.parameters.append(protocol_parameter)
-                S.protocols.append(p)
-        elif k == 'sdrf_file':
-            S.filename = 's_{}'.format(v[0])
-            S.assays = [
-                Assay(filename='a_{}'.format(v[0]),
-                      technology_type=OntologyAnnotation(term=technology_type),
-                      measurement_type=OntologyAnnotation(term=measurement_type))
-            ]
-        ISA.studies = [S]
-    return ISA
-
-
-def transposed_tsv_to_dict(file_path):
-    with open(file_path, encoding='utf-8') as tsvfile:
-        tsvreader = csv.reader(filter(lambda r: r[0] != '#', tsvfile), dialect='excel-tab')
-        table_dict = {}
-        for row in tsvreader:
-            while row and row[-1] is '':  # transpose
-                row.pop()
-            table_dict[row[0]] = row[1:]  # build dict of label key: list of values
-    return table_dict
-
-
 class MageTabParserException(Exception):
     pass
 
@@ -721,6 +422,8 @@ def squashstr(string):
 
 
 def get_squashed(key):  # for MAGE-TAB spec 2.1.7, deal with variants on labels
+    if key is None:
+        return ''
     try:
         if squashstr(key[:key.index('[')]) == 'comment':
             return 'comment' + key[key.index('['):]
@@ -730,457 +433,476 @@ def get_squashed(key):  # for MAGE-TAB spec 2.1.7, deal with variants on labels
         return squashstr(key)
 
 
-def parse_idf(file_path, technology_type=None, measurement_type=None):
+class MageTabParser(object):
+    """ The MAGE-TAB parser
+    This parses MAGE-TAB IDF and SDRF files into the Python ISA model. It does some best-effort inferences on missing
+    metadata required by ISA, but note that outputs may still be incomplete and flag warnings and errors in the ISA
+    validators. """
 
-    def get_single(values):
-        stripped_values = [x for x in values if x != '']
-        if len(stripped_values) > 0:
-            if len(stripped_values) > 1:
-                print("Warning: more than one value found, selecting first in value list")
-            return stripped_values[0]
+    def __init__(self):
+        self.ISA = Investigation(studies=[Study()])
+        self._idfdict = {}
+        self._ts_dict = {}
 
-    table_dict = transposed_tsv_to_dict(file_path=file_path)
-
-    squashed_table_dict = {}
-
-    for k, v in table_dict.items():
-        squashed_table_dict[get_squashed(k)] = v
-
-    ISA = Investigation()
-    S = Study()
-
-    ts_dict = {}
-
-    # Term Source section of IDF
-
-    ts_names = []
-    ts_files = []
-    ts_versions = []
-
-    try:
-        ts_names = squashed_table_dict["termsourcename"]
-    except KeyError:
-        pass
-    try:
-        ts_files = squashed_table_dict["termsourcefile"]
-    except KeyError:
-        pass
-    try:
-        ts_versions = squashed_table_dict["termsourceversion"]
-    except KeyError:
-        pass
-
-    for name, file, version in zip_longest(ts_names, ts_files, ts_versions):
-        os = OntologySource(name=name, file=file, version=version)
-        ISA.ontology_source_references.append(os)
-        ts_dict[name] = os
-
-    # Header section of IDF
-
-    try:
-        magetab_version = get_single(values=squashed_table_dict["mage-tabversion"])
-        S.comments.append(Comment(name="MAGE-TAB Version", value=magetab_version))
-    except KeyError:
-        print("WARNING: The field MAGE-TAB Version is compulsory but not found")
-    try:
-        S.title = get_single(values=squashed_table_dict["investigationtitle"])
-    except KeyError:
-        pass
-    try:
-        investigation_accession = get_single(values=squashed_table_dict["investigationaccession"])
-        S.comments.append(Comment(name="Investigation Accession", value=investigation_accession))
-    except KeyError:
-        pass
-    try:
-        investigation_accession_tsr = get_single(values=squashed_table_dict["investigationaccessiontermsourceref"])
-        S.comments.append(Comment(name="Investigation Accession Term Source REF", value=investigation_accession_tsr))
-    except KeyError:
-        pass
-
-    # Experimental Design section of IDF
-
-    experimental_designs = []
-    experimental_design_tsrs = []
-    experimental_design_tans = []
-
-    try:
-        experimental_designs = squashed_table_dict["experimentaldesign"]
-    except KeyError:
-        pass
-    try:
-        experimental_design_tsrs = squashed_table_dict["experimentaldesigntermsourceref"]
-    except KeyError:
-        pass
-    try:
-        experimental_design_tans = squashed_table_dict["experimentaldesigntermaccessionnumber"]
-    except KeyError:
-        pass
-
-    if len(experimental_designs) > 0:
-        S.comments.append(Comment(name="Experimental Design", value=';'.join(experimental_designs)))
-    if len(experimental_design_tsrs) > 0:
-        S.comments.append(Comment(name="Experimental Design Term Source REF", value=';'.join(experimental_design_tsrs)))
-    if len(experimental_design_tans) > 0:
-        S.comments.append(Comment(name="Experimental Design Term Accession Number", value=';'.join(experimental_design_tans)))
-
-    # Experimental Factor section of IDF
-
-    factor_names = []
-    factor_types = []
-    factor_tsrs = []
-    factor_tans = []
-
-    try:
-        factor_names = squashed_table_dict["experimentalfactorname"]
-    except KeyError:
-        pass
-    try:
-        factor_types = squashed_table_dict["experimentalfactortype"]
-    except KeyError:
-        pass
-    try:
-        factor_tsrs = squashed_table_dict["experimentalfactortermsourceref"]
-    except KeyError:
-        pass
-    try:
-        factor_tans = squashed_table_dict["experimentalfactortermaccessionnumber"]
-    except KeyError:
-        pass
-
-    for name, type, tsr, tan in zip_longest(factor_names, factor_types, factor_tsrs, factor_tans):
+    def parse_idf(self, in_filename):
+        self.load_into_idfdict(in_filename=in_filename)
+        # Parse the ontology sources first, as we need to reference these later
+        self.parse_ontology_sources(self._idfdict.get('termsourcename', []),
+                                    self._idfdict.get('termsourcefile', []),
+                                    self._idfdict.get('termsourceversion', []))
+        # Then parse the rest of the sections in blocks; follows order of MAGE-TAB v1.1 2011-07-28 specification
+        self.parse_investigation(self._idfdict.get('investigationtitle', []),
+                                 self._idfdict.get('investigationaccession', []),
+                                 self._idfdict.get('investigationaccessiontermsourceref', []))
+        self.parse_experimental_designs(self._idfdict.get('experimentaldesign', []),
+                                        self._idfdict.get('experimentaldesigntermsourceref', []),
+                                        self._idfdict.get('experimentaldesigntermaccessionnumber', []))
+        self.parse_experimental_factors(self._idfdict.get('experimentalfactorname', []),
+                                        self._idfdict.get('experimentalfactortype', []),
+                                        self._idfdict.get('experimentalfactortypetermsourceref', []),
+                                        self._idfdict.get('experimentalfactortypetermaccessionnumber', []))
+        self.parse_people(self._idfdict.get('personlastname', []),
+                          self._idfdict.get('personfirstname', []),
+                          self._idfdict.get('personmidinitials', []),
+                          self._idfdict.get('personemail', []),
+                          self._idfdict.get('personphone', []),
+                          self._idfdict.get('personfax', []),
+                          self._idfdict.get('personaddress', []),
+                          self._idfdict.get('personaffiliation', []),
+                          self._idfdict.get('personroles', []),
+                          self._idfdict.get('personrolestermsourceref', []),
+                          self._idfdict.get('personrolestermaccessionnumber', []))
+        self.parse_dates(self._idfdict.get('dateofexperiment', []), self._idfdict.get('publicreleasedate', []))
+        self.parse_publications(self._idfdict.get('pubmedid', []),
+                                self._idfdict.get('publicationdoi', []),
+                                self._idfdict.get('publicationauthorlist', []),
+                                self._idfdict.get('publicationtitle', []),
+                                self._idfdict.get('publicationstatus', []),
+                                self._idfdict.get('publicationstatustermsourceref', []),
+                                self._idfdict.get('publicationstatustermaccessionnumber', []))
+        self.parse_experiment_description(self._idfdict.get('experimentdescription'))
+        self.parse_protocols(self._idfdict.get('protocolname', []),
+                             self._idfdict.get('protocoltype', []),
+                             self._idfdict.get('protocoltermsourceref', []),
+                             self._idfdict.get('protocoltermaccessionnumber', []),
+                             self._idfdict.get('protocoldescription', []),
+                             self._idfdict.get('protocolparameters', []),
+                             self._idfdict.get('protocolhardware', []),
+                             self._idfdict.get('protocolsoftware', []),
+                             self._idfdict.get('protocolcontact', []))
+        self.parse_sdrf_file(self._idfdict.get('sdrffile', []))
+        self.parse_comments({key: self._idfdict[key] for key in [x for x in self._idfdict.keys() if x.startswith('comment[')]})
+        self.infer_missing_metadata()
+        return self.ISA
+    
+    def load_into_idfdict(self, in_filename):
         try:
-            ts = ts_dict[tsr]
-        except KeyError:
-            ts = None
-        S.factors.append(StudyFactor(name=name, factor_type=OntologyAnnotation(term=type, term_source=ts,
-                                                                               term_accession=tan)))
+            with open(in_filename) as unicode_file:
+                tabreader = csv.reader(filter(lambda r: r[0] != '#', unicode_file), dialect='excel-tab')
+                for row in tabreader:
+                    key = get_squashed(key=row[0])
+                    self._idfdict[key] = row[1:]
+        except UnicodeDecodeError:
+            with open(in_filename, encoding='ISO8859-2') as latin2_file:
+                tabreader = csv.reader(filter(lambda r: r[0] != '#', latin2_file), dialect='excel-tab')
+                for row in tabreader:
+                    key = get_squashed(key=row[0])
+                    self._idfdict[key] = row[1:]
 
-    # Person section of IDF
+    def parse_ontology_sources(self, names, files, versions):
+        for name, file, version in zip_longest(names, files, versions, fillvalue=''):
+            if name != '':  # only add if the OS has a name and therefore can be referenced
+                os = OntologySource(name=name, file=file, version=version)
+                self.ISA.ontology_source_references.append(os)
+                self._ts_dict[name] = os
 
-    person_last_names = []
-    person_first_names = []
-    person_mid_initials = []
-    person_emails = []
-    person_phones = []
-    person_addresses = []
-    person_affiliations = []
-    person_roles = []
-    person_roles_tsrs = []
-    person_roles_tans = []
+    def parse_investigation(self, titles, accessions, accessiontsrs):
+        for title, accession, accessiontsr in zip_longest(titles, accessions, accessiontsrs, fillvalue=''):
+            self.ISA.identifier = accession
+            self.ISA.title = title
+            self.ISA.studies[-1].title = title
+            self.ISA.studies[-1].identifier = accession
+            if accessiontsr is not None:
+                self.ISA.comments.append(Comment(name="Investigation Accession Term Source REF", value=accessiontsr))
+            break  # because there should only be one or zero rows
 
-    try:
-        person_last_names = squashed_table_dict["personlastname"]
-    except KeyError:
-        pass
-    try:
-        person_first_names = squashed_table_dict["personfirstname"]
-    except KeyError:
-        pass
-    try:
-        person_mid_initials = squashed_table_dict["personmidinitials"]
-    except KeyError:
-        pass
-    try:
-        person_emails = squashed_table_dict["personemail"]
-    except KeyError:
-        pass
-    try:
-        person_phones = squashed_table_dict["personphone"]
-    except KeyError:
-        pass
-    try:
-        person_addresses = squashed_table_dict["personaddress"]
-    except KeyError:
-        pass
-    try:
-        person_affiliations = squashed_table_dict["personaffiliation"]
-    except KeyError:
-        pass
-    try:
-        person_roles = squashed_table_dict["personroles"]
-    except KeyError:
-        pass
-    try:
-        person_roles_tsrs = squashed_table_dict["personrolestermsourceref"]
-    except KeyError:
-        pass
-    try:
-        person_roles_tans = squashed_table_dict["personrolestermaccessionnumber"]
-    except KeyError:
-        pass
+    def parse_experimental_designs(self, designs, tsrs, tans):
+        for design, tsr, tan in zip_longest(designs, tsrs, tans, fillvalue=''):
+            design_descriptor = OntologyAnnotation(term=design, term_source=self._ts_dict.get(tsr), term_accession=tan)
+            if design_descriptor.term != '':  # only add if the DD has a term
+                self.ISA.studies[-1].design_descriptors.append(design_descriptor)
 
-    for fname, lname, initials, email, phone, address, affiliation, rolesterm, rolestsrs, rolestans in zip_longest(
-            person_last_names, person_first_names, person_mid_initials, person_emails, person_phones, person_addresses,
-            person_affiliations, person_roles, person_roles_tsrs, person_roles_tans):
+    def parse_experimental_factors(self, factors, factortypes, tsrs, tans):
+        for factor, factortype, tsr, tan in zip_longest(factors, factortypes, tsrs, tans, fillvalue=''):
+            if factor != '':  # only add if there's a factor name
+                factortype_oa = OntologyAnnotation(term=factortype, term_source=self._ts_dict.get(tsr), term_accession=tan)
+                study_factor = StudyFactor(name=factor, factor_type=factortype_oa)
+                self.ISA.studies[-1].factors.append(study_factor)
 
-        roles = []
+    def parse_people(self, lastnames, firstnames, midinitialss, emails, phones, faxes, addresses, affiliations, roles,
+                     roletans, roletrs):
+        for lastname, firstname, midinitials, email, phone, fax, address, affiliation, role, roletan, roletsr in \
+                zip_longest(lastnames, firstnames, midinitialss, emails, phones, faxes, addresses, affiliations, roles,
+                            roletans, roletrs, fillvalue=''):
+            rolesoa = OntologyAnnotation(term=role, term_source=self._ts_dict.get(roletsr), term_accession=roletan)
+            person = Person(last_name=lastname, first_name=firstname, mid_initials=midinitials, email=email,
+                            phone=phone, fax=fax, address=address, affiliation=affiliation, roles=[rolesoa])
+            self.ISA.studies[-1].contacts.append(person)
 
-        for role, roletsr, roletan in zip_longest(rolesterm.split(';') if rolesterm is not None else [],
-                                                  rolestsrs.split(';') if rolestsrs is not None else [],
-                                                  rolestans.split(';') if rolestans is not None else[]):
-            try:
-                rolets = ts_dict[roletsr]
-            except KeyError:
-                rolets = None
-            roles.append(OntologyAnnotation(term=role, term_source=rolets, term_accession=roletan))  # FIXME roletsr
+    def parse_dates(self, dateofexperiments, publicreleasedates):
+        for dateofexperiment, publicreleasedate in zip_longest(dateofexperiments, publicreleasedates, fillvalue=''):
+            self.ISA.public_release_date = publicreleasedate
+            self.ISA.studies[-1].public_release_date = publicreleasedate
+            self.ISA.studies[-1].comments.append(Comment(name="Date of Experiment", value=dateofexperiment))
+            break  # because there should only be one or zero rows
 
-        S.contacts.append(Person(first_name=fname, last_name=lname, mid_initials=initials, email=email, phone=phone,
-                                 address=address, affiliation=affiliation, roles=roles))
+    def parse_publications(self, pubmedids, dois, authorlists, titles, statuses, statustans, statustsrs):
+        for pubmedid, doi, authorlist, title, status, statustsr, statustan in \
+                zip_longest(pubmedids, dois, authorlists, titles, statuses, statustans, statustsrs, fillvalue=''):
+            if pubmedid != '' or doi != '' or title != '':  # only add if there's a pubmed ID, DOI or title
+                statusoa = OntologyAnnotation(term=status, term_source=self._ts_dict.get(statustsr),
+                                              term_accession=statustan)
+                publication = Publication(pubmed_id=pubmedid, doi=doi, author_list=authorlist, title=title, status=statusoa)
+                self.ISA.studies[-1].publications.append(publication)
 
-    # Quality Control Type section of IDF
+    def parse_experiment_description(self, descriptions):
+        for description in zip_longest(descriptions, fillvalue=''):
+            self.ISA.studies[-1].description = description[-1]
+            break  # because there should only be one or zero rows
 
-    qc_types = []
-    qc_tsrs = []
-    qc_tans = []
+    def parse_protocols(self, names, ptypes, tsrs, tans, descriptions, parameterslists, hardwares, softwares, contacts):
+        for name, ptype, tsr, tan, description, parameterslist, hardware, software, contact in \
+                zip_longest(names, ptypes, tsrs, tans, descriptions, parameterslists, hardwares, softwares, contacts,
+                            fillvalue=''):
+            if name != '':  # only add if there's a name
+                protocoltype_oa = OntologyAnnotation(term=ptype, term_source=self._ts_dict.get(tsr), term_accession=tan)
+                protocol = Protocol(name=name, protocol_type=protocoltype_oa, description=description,
+                                    parameters=list(map(lambda x: ProtocolParameter(
+                                        parameter_name=OntologyAnnotation(term=x)),
+                                                        parameterslist.split(';')
+                                                        if parameterslist is not None else '')))
+                protocol.comments = [Comment(name="Protocol Hardware", value=hardware),
+                                     Comment(name="Protocol Software", value=software),
+                                     Comment(name="Protocol Contact", value=contact)]
+                self.ISA.studies[-1].protocols.append(protocol)
 
-    try:
-        qc_types = squashed_table_dict["qualitycontroltype"]
-    except KeyError:
-        pass
-    try:
-        qc_tsrs = squashed_table_dict["qualitycontroltermsourceref"]
-    except KeyError:
-        pass
-    try:
-        qc_tans = squashed_table_dict["qualitycontroltermaccessionnumber"]
-    except KeyError:
-        pass
+    def parse_sdrf_file(self, sdrffiles):
+        sdrffiles_no_empty = [x for x in sdrffiles if x != '']
+        if len(sdrffiles_no_empty) > 0:
+            if len(sdrffiles_no_empty) > 1:
+                self.ISA.studies[-1].comments.append(Comment(name="SDRF File", value=';'.join(sdrffiles_no_empty)))
+            else:
+                self.ISA.studies[-1].comments.append(Comment(name="SDRF File", value=sdrffiles_no_empty[0]))
 
-    if len(qc_types) > 0:
-        S.comments.append(Comment(name="Quality Control Type", value=';'.join(qc_types)))
-    if len(qc_tsrs) > 0:
-        S.comments.append(Comment(name="Quality Control Term Source REF", value=';'.join(qc_tsrs)))
-    if len(qc_tans) > 0:
-        S.comments.append(Comment(name="Quality Control Term Accession Number", value=';'.join(qc_tans)))
+    def parse_comments(self, commentsdict):
+        for k, v in commentsdict.items():
+            v_no_empty = [x for x in v if x != '']
+            if len(v_no_empty) > 0:
+                if len(v_no_empty) > 1:
+                    v = ';'.join(v_no_empty)
+                else:
+                    v = v_no_empty[0]
+                self.ISA.studies[-1].comments.append(Comment(name=k[8:-1], value=v))
 
-    # Replicate Type section of IDF
+    def infer_missing_metadata(self):
+        I = self.ISA
+        S = I.studies[-1]
 
-    rt_types = []
-    rt_tsrs = []
-    rt_tans = []
-    try:
-        rt_types = squashed_table_dict["replicatetype"]
-    except KeyError:
-        pass
-    try:
-        rt_tsrs = squashed_table_dict["replicatetermsourceref"]
-    except KeyError:
-        pass
-    try:
-        rt_tans = squashed_table_dict["replicatetermaccessionnumber"]
-    except KeyError:
-        pass
+        defaultassay = None
+        # first let's try and infer the MT/TT from the study design descriptors, only checks first one
+        if len(S.design_descriptors) > 0:
+            defaultassay = self._get_measurement_and_tech(S.design_descriptors[0].term)
 
-    if len(rt_types) > 0:
-        S.comments.append(Comment(name="Replicate Type", value=';'.join(rt_types)))
-    if len(rt_tsrs) > 0:
-        S.comments.append(Comment(name="Replicate Term Source REF", value=';'.join(rt_tsrs)))
-    if len(rt_tans) > 0:
-        S.comments.append(Comment(name="Replicate Term Accession Number", value=';'.join(rt_tans)))
+        # next, go through the loaded comments to see what we can find
+        for comment in S.comments:
+            commentkey = get_squashed(comment.name)
+            # ArrayExpress specific comments
+            # (1) if there is no default assay yet, try use AEExperimentType
+            if commentkey == 'aeexperimenttype' and defaultassay is None:
+                defaultassay = self._get_measurement_and_tech(comment.value)
+            # (2) if there is no identifier set, try use ArrayExpressAccession
+            if commentkey == 'arrayexpressaccession':
+                if I.identifier == '':
+                    I.identifier = comment.value
+                if S.identifier == '':
+                    S.identifier = comment.value
+            # (3) if there is no submission date set, try use ArrayExpressSubmissionDate
+            if commentkey == 'arrayexpresssubmissiondate':
+                if I.submission_date == '':
+                    I.submission_date = comment.value
+                if S.submission_date == '':
+                    S.submission_date = comment.value
 
-    # Normalization Type section of IDF
+        # if there is STILL no defaultassay set, try infer from study title
+        if defaultassay is None \
+                and ('transcriptionprof' in get_squashed(S.title) or 'geneexpressionprof' in get_squashed(S.title)):
+            defaultassay = Assay(measurement_type=OntologyAnnotation(term='transcription profiling'),
+                                 technology_type=OntologyAnnotation(term='DNA microarray'),
+                                 technology_platform='GeneChip')
 
-    norm_types = []
-    norm_tsrs = []
-    norm_tans = []
+        if defaultassay is None:
+            defaultassay = Assay()
 
-    try:
-        norm_types = squashed_table_dict["normalizationtype"]
-    except KeyError:
-        pass
-    try:
-        norm_tsrs = squashed_table_dict["normalizationtermsourceref"]
-    except KeyError:
-        pass
-    try:
-        norm_tans = squashed_table_dict["normalizationtermaccessionnumber"]
-    except KeyError:
-        pass
+        # set file names if identifiers are available
+        I.filename = 'i_{0}investigation.txt'.format(I.identifier + '_' if I.identifier != '' else I.identifier)
+        S.filename = 's_{0}study.txt'.format(S.identifier + '_' if S.identifier != '' else S.identifier)
+        defaultassay.filename = 'a_{0}assay.txt'.format(S.identifier + '_' if S.identifier != '' else S.identifier)
 
-    if len(norm_types) > 0:
-        S.comments.append(Comment(name="Normalization Type", value=';'.join(norm_types)))
-    if len(norm_tsrs) > 0:
-        S.comments.append(Comment(name="Normalization Term Source REF", value=';'.join(norm_tsrs)))
-    if len(norm_tans) > 0:
-        S.comments.append(Comment(name="Normalization Term Accession Number", value=';'.join(norm_tans)))
+        S.assays = [defaultassay]
 
-    # Dates section of IDF
-    try:
-        S.comments.append(Comment(name="Date of Experiment",
-                                  value=get_single(values=squashed_table_dict["dateofexperiment"])))
-    except KeyError:
-        pass
-    try:
-        S.public_release_date = get_single(values=squashed_table_dict["publicreleasedate"])
-    except KeyError:
-        pass
+    @staticmethod
+    def _get_measurement_and_tech(design_type):
+        assay = None
+        if re.match('(?i).*ChIP-Chip.*', design_type):
+            assay = Assay(measurement_type=OntologyAnnotation(term='protein-DNA binding site identification'),
+                          technology_type=OntologyAnnotation(term='DNA microarray'),
+                          technology_platform='ChIP-Chip')
+        if re.match('(?i).*RNA-seq.*', design_type) or re.match('(?i).*RNA-Seq.*', design_type) or re.match(
+                '(?i).*transcription profiling by high throughput sequencing.*', design_type):
+            assay = Assay(measurement_type=OntologyAnnotation(term='transcription profiling'),
+                          technology_type=OntologyAnnotation(term='nucleotide sequencing'),
+                          technology_platform='RNA-Seq')
+        if re.match('.*transcription profiling by array.*', design_type) or re.match('dye_swap_design',
+                                                                                     design_type):
+            assay = Assay(measurement_type=OntologyAnnotation(term='transcription profiling'),
+                          technology_type=OntologyAnnotation(term= 'DNA microarray'),
+                          technology_platform='GeneChip')
+        if re.match('(?i).*methylation profiling by array.*', design_type):
+            assay = Assay(measurement_type=OntologyAnnotation(term='DNA methylation profiling'),
+                          technology_type=OntologyAnnotation(term='DNA microarray'),
+                          technology_platform='Me-Chip')
+        if re.match('(?i).*comparative genomic hybridization by array.*', design_type):
+            assay = Assay(measurement_type=OntologyAnnotation(term='comparative genomic hybridization'),
+                          technology_type=OntologyAnnotation(term='DNA microarray'),
+                          technology_platform='CGH-Chip')
+        if re.match('.*genotyping by array.*', design_type):
+            assay = Assay(measurement_type=OntologyAnnotation(term='SNP analysis'),
+                          technology_type=OntologyAnnotation(term='DNA microarray'),
+                          technology_platform='SNPChip')
+        if re.match('(?i).*ChIP-Seq.*', design_type) or re.match('(?i).*chip-seq.*', design_type):
+            assay = Assay(measurement_type=OntologyAnnotation(term='protein-DNA binding site identification'),
+                          technology_type=OntologyAnnotation(term='nucleotide sequencing'),
+                          technology_platform='ChIP-Seq')
+        if assay is not None:
+            assay._design_type = design_type
+        return assay
 
-    # Publications section of IDF
+    def parse_sdrf_to_isa_table_files(self, in_filename):
+        """ Parses MAGE-TAB SDRF file into ISA-Tab study and assay tables as pandas dataframes"""
+        with open(in_filename) as in_fp:
+            with strip_comments(in_fp) as fp:
+                df = pd.read_csv(fp, dtype=str, sep='\t', encoding='utf-8').fillna('')
+            # do some preliminary cleanup of the table
+            columns_to_keep = []
+            for i, col in enumerate(df.columns):
+                if col.lower().startswith('term source ref') and df.columns[i-1].lower().startswith('protocol ref'):
+                    pass  # drop term source ref column that appears after protocol ref
+                elif col.lower().startswith('term source ref') and df.columns[i-1].lower().startswith('array design ref'):
+                    pass  # drop term source ref column that appears after array design ref
+                elif col.lower().startswith('technology type'):
+                    pass  # drop technology type column / in java code it moves it 1 to the right of assay name column
+                elif col.lower().startswith('provider'):
+                    pass  # drop provider column
+                else:
+                    columns_to_keep.append(col)
+            df = df[columns_to_keep]  # reset dataframe with only columns we are interested in
+            #  TODO: Do we need to replicate what CleanupRunner.java does?
 
-    pub_pmids = []
-    pub_dois = []
-    pub_author_list = []
-    pub_titles = []
-    pub_statuses = []
-    pub_status_tsrs = []
-    pub_status_tans = []
+            # now find the first index to split the SDRF into sfile and afile(s)
+            cols = [x.lower() for x in list(df.columns)]  # columns all lowered
+            if 'sample name' not in cols:  # if we can't find the sample name, we need to insert it somewhere
+                first_node_index = -1
+                if 'extract name' in cols:
+                    first_node_index = cols.index('extract name')
+                elif 'labeled extract name' in cols:
+                    first_node_index = cols.index('labeled extract name')
+                elif 'labeled extract name' in cols:
+                    first_node_index = cols.index('hybridization name')
+                if first_node_index > 0:  # do Sample Name insertion here
+                    cols_ = list(df.columns)
+                    df["Sample Name"] = df[cols_[first_node_index]]  # add Sample Name column where first indexed col is
+                    cols_.insert(first_node_index, "Sample Name")  # insert to the column index where Sample Name should occur
+                    df = df[cols_]  # reset the dataframe with the new order of columns
 
-    try:
-        pub_pmids = squashed_table_dict["pubmedid"]
-    except KeyError:
-        pass
-    try:
-        pub_dois = squashed_table_dict["publicationdoi"]
-    except KeyError:
-        pass
-    try:
-        pub_author_list = squashed_table_dict["publicationauthorlist"]
-    except KeyError:
-        pass
-    try:
-        pub_titles = squashed_table_dict["publicationtitle"]
-    except KeyError:
-        pass
-    try:
-        pub_statuses = squashed_table_dict["publicationstatus"]
-    except KeyError:
-        pass
-    try:
-        pub_status_tsrs = squashed_table_dict["publicationstatustermsourceref"]
-    except KeyError:
-        pass
-    try:
-        pub_status_tans = squashed_table_dict["publicationstatustermaccessionnumber"]
-    except KeyError:
-        pass
+            # before splitting, let's rename columns where necessary
 
-    for pmid, doi, authors, title, statusterm, statustsr, statustan in zip_longest(pub_pmids, pub_dois, pub_author_list,
-                                                                                   pub_titles, pub_statuses,
-                                                                                   pub_status_tsrs, pub_status_tans):
-        try:
-            statusts = ts_dict[statustsr]
-        except KeyError:
-            statusts = None
-        status = OntologyAnnotation(term=statusterm, term_source=statusts, term_accession=statustan)
-        S.publications.append(Publication(pubmed_id=pmid, doi=doi, author_list=authors, title=title, status=status))
+            df = df.rename(columns={
+                "Material Type": "Characteristic[material]",
+                "Technology Type": "Comment[technology type]",
+                "Hybridization Name": "Hybridization Assay Name"
+            })
 
-    # Description section of IDF
+            # now do the slice
+            cols = list(df.columns)
+            sample_name_index = cols.index("Sample Name")
+            study_df = df[df.columns[0:sample_name_index + 1]].drop_duplicates()
+            assay_df = df[df.columns[sample_name_index:]]
 
-    try:
-        S.description = get_single(values=squashed_table_dict["experimentdescription"])
-    except KeyError:
-        pass
+            table_files = []
+            with StringIO() as assay_fp:
+                columns = [x[:x.rindex('.')] if '.' in x else x for x in list(assay_df.columns)]
+                assay_df.columns = columns
+                assay_df.to_csv(path_or_buf=assay_fp, mode='a', sep='\t', encoding='utf-8', index=False)
+                log.info("Trying to split assay file extracted from %s", in_filename)
+                assay_fp.seek(0)
+                assay_files = self.split_assay(assay_fp)
+                log.info("We have %s assays", len(assay_files))
 
-    # Protocols section of IDF
+            study_fp = StringIO()
+            study_fp.name = self.ISA.studies[-1].filename
+            columns = [x[:x.rindex('.')] if '.' in x else x for x in list(study_df.columns)]
+            study_df.columns = columns
+            study_df.to_csv(path_or_buf=study_fp, mode='a', sep='\t', encoding='utf-8', index=False)
+            study_fp.seek(0)
+            table_files.append(study_fp)
+            table_files.extend(assay_files)
+            return table_files
 
-    prot_names = []
-    prot_types = []
-    prot_tsrs = []
-    prot_tans = []
-    prot_descriptions = []
-    prot_params = []
-    prot_hardware = []
-    prot_software = []
-    prot_contacts = []
+    def split_assay(self, fp):
+        assay_files = []
+        header = fp.readline()
+        chip_seq_records = [header]
+        rna_seq_records = [header]
+        me_seq_records = [header]
+        tf_seq_records = [header]
+        genechip_records = [header]
+        chipchip_records = [header]
 
-    try:
-        prot_names = squashed_table_dict["protocolname"]
-    except KeyError:
-        pass
-    try:
-        prot_types = squashed_table_dict["protocoltype"]
-    except KeyError:
-        pass
-    try:
-        prot_tsrs = squashed_table_dict["protocoltermsourceref"]
-    except KeyError:
-        pass
-    try:
-        prot_tans = squashed_table_dict["protocoltermaccessionnumber"]
-    except KeyError:
-        pass
-    try:
-        prot_descriptions = squashed_table_dict["protocoldescription"]
-    except KeyError:
-        pass
-    try:
-        prot_params = squashed_table_dict["protocolparameters"]
-    except KeyError:
-        pass
-    try:
-        prot_hardware = squashed_table_dict["protocolhardware"]
-    except KeyError:
-        pass
-    try:
-        prot_software = squashed_table_dict["protocolsoftware"]
-    except KeyError:
-        pass
-    try:
-        prot_contacts = squashed_table_dict["protocolcontact"]
-    except KeyError:
-        pass
+        default_records = [header]
 
-    for name, prottypeterm, prottsr, prottan, desc, protparams, hard, soft, contact in zip_longest(prot_names,
-                                                                                                   prot_types,
-                                                                                                   prot_tsrs, prot_tans,
-                                                                                                   prot_descriptions,
-                                                                                                   prot_params,
-                                                                                                   prot_hardware,
-                                                                                                   prot_software,
-                                                                                                   prot_contacts):
-        try:
-            protts = ts_dict[prottsr]
-        except KeyError:
-            protts = None
-        prottype = OntologyAnnotation(term=prottypeterm, term_source=protts, term_accession=prottan)
-        params = list(map(lambda x: ProtocolParameter(parameter_name=OntologyAnnotation(term=x)),
-                          [x for x in protparams.split(';') if x != ''] if protparams is not None else []))
-        protcomments = [
-            Comment(name="Protocol Hardware", value=hard),
-            Comment(name="Protocol Software", value=hard),
-            Comment(name="Protocol Contact", value=contact)
-        ]
-        S.protocols.append(Protocol(name=name, protocol_type=prottype, description=desc, parameters=params,
-                                    comments=protcomments))
+        assay_types = set()
 
-    # SDRF file section of IDF
-    sdrf_file = None
-    try:
-        sdrf_file = get_single(values=squashed_table_dict["sdrffile"])
-        S.comments.append(Comment(name="SDRF File", value=sdrf_file))
-    except KeyError:
-        pass
+        is_hybridization_assay = 'hybridization' in get_squashed(header)
+        contains_antibody_in_header = 'antibody' in get_squashed(header)
 
-    # Comments in IDF
+        A = self.ISA.studies[-1].assays[-1]
 
-    comment_keys = [x for x in squashed_table_dict.keys() if x.startswith("comment")]
+        log.info("Reading assay memory file; mt=%s, tt=%s", A.measurement_type.term, A.technology_type.term)
+        for line in fp.readlines():
+            sqline = get_squashed(line)
+            if A.measurement_type and A.technology_type:
+                if 'sequencing' in get_squashed(A.technology_type.term) \
+                        and 'protein-dnabindingsiteidentification' == get_squashed(A.measurement_type.term):
+                    if not is_hybridization_assay and 'chip-seq' in sqline or 'chipseq' in sqline:
+                        assay_types.add('ChIP-Seq')
+                        chip_seq_records.append(line)
+                    if 'bisulfite-seq' in sqline or 'mre-seq' in sqline or 'mbd-seq' in sqline or 'medip-seq' in sqline:
+                        assay_types.add('ME-Seq')
+                        me_seq_records.append(line)
+                    if 'dnase-hypersensitivity' in sqline or 'mnase-seq' in sqline:
+                        assay_types.add('Chromatin-Seq')
+                        tf_seq_records.append(line)
 
-    for key in comment_keys:
-        c = Comment(name=key[8:-1], value=get_single(squashed_table_dict[key]))
-        if c.name == "ArrayExpressAccession":
-            S.identifier = c.value  # ArrayExpress adds this comment, so use it as the study ID if it's available
-        S.comments.append(c)
+            if is_hybridization_assay and ('genomicdna' in sqline or 'genomic_dna' in sqline) and 'mnase-seq' not in sqline:
+                assay_types.add('ChIP-Seq')
+                chip_seq_records.append(line)
 
-    protocol_types = [x.protocol_type for x in S.protocols]
-    hyb_prots_used = {"nucleic acid hybridization",
-                      "hybridization"}.intersection({squashstr(x.term) for x in protocol_types})
-    if sdrf_file is not None:
-        S.filename = "s_{}".format(sdrf_file)
-        a_filename = "a_{}".format(sdrf_file)
-        ttoa = None
-        if technology_type is not None:
-            ttoa = OntologyAnnotation(term=technology_type)
-        elif technology_type is None and len(hyb_prots_used) > 0:
-            print("Detected probable DNA microarray technology type")
-            ttoa = OntologyAnnotation(term="DNA microarray")
-        mtoa = None
-        if measurement_type is not None:
-            mtoa = OntologyAnnotation(term=measurement_type)
-        S.assays = [
-            Assay(filename=a_filename, technology_type=ttoa, measurement_type=mtoa)
-        ]
+            if hasattr(A, '_design_type'):
+                if 'dye_swap_design' == get_squashed(A._design_type):
+                    assay_types.add('Hybridization')
+                    genechip_records.append(line)
 
-    ISA.identifier = S.identifier
-    ISA.title = S.title
-    ISA.studies = [S]
-    return ISA
+                if 'chip-chipbytilingarray' in get_squashed(A._design_type):
+                    assay_types.add('ChIP-chip by tiling array')
+                    chipchip_records.append(line)
+
+            if (is_hybridization_assay and not contains_antibody_in_header) and 'rna' in sqline \
+                    or 'genomicdna' in sqline:
+                assay_types.add('transcription profiling by array')
+                genechip_records.append(line)
+
+            if (not is_hybridization_assay and ('genomicdna' in sqline or 'genomic_dna' in sqline)) \
+                    and 'mnase-seq' in sqline:
+                assay_types.add('ChIP-Seq')
+                chip_seq_records.append(line)
+
+            if not is_hybridization_assay and ('rna-seq' in sqline or 'totalrna' in sqline):
+                assay_types.add('RNA-Seq')
+                rna_seq_records.append(line)
+
+            if is_hybridization_assay and contains_antibody_in_header and ('genomicdna' in sqline or 'chip' in sqline):
+                assay_types.add('ChIP-chip')
+                chipchip_records.append(line)
+            else:
+                default_records.append(line)
+
+        log.info("assay_types found: %s", assay_types)
+
+        if len(assay_types) > 0:
+            self.ISA.studies[-1].assays = []  # reset the assays list to load new split ones
+            for assay_type in assay_types:
+                new_A = copy.copy(A)
+                if 'transcription profiling by array' in assay_type:
+                    new_A.filename = '{0}-{1}.txt'.format(A.filename[:A.filename.rindex('.')], assay_type)
+                    new_A.technology_platform = assay_type
+                    a_fp = StringIO()
+                    a_fp.writelines(genechip_records)
+                    a_fp.name = new_A.filename
+                    a_fp.seek(0)
+                    self.ISA.studies[-1].assays.append(new_A)
+                    assay_files.append(a_fp)
+                if 'ChIP-chip' in assay_type:
+                    new_A.filename = '{0}-{1}.txt'.format(A.filename[:A.filename.rindex('.')], assay_type)
+                    new_A.technology_platform = assay_type
+                    a_fp = StringIO()
+                    a_fp.writelines(chipchip_records)
+                    a_fp.name = new_A.filename
+                    a_fp.seek(0)
+                    self.ISA.studies[-1].assays.append(new_A)
+                    assay_files.append(a_fp)
+                if 'ChIP-Seq' in assay_type:
+                    new_A.filename = '{0}-{1}.txt'.format(A.filename[:A.filename.rindex('.')], assay_type)
+                    new_A.technology_platform = assay_type
+                    a_fp = StringIO()
+                    a_fp.writelines(chip_seq_records)
+                    a_fp.name = new_A.filename
+                    a_fp.seek(0)
+                    self.ISA.studies[-1].assays.append(new_A)
+                    assay_files.append(a_fp)
+                if 'RNA-Seq' in assay_type:
+                    new_A.filename = '{0}-{1}.txt'.format(A.filename[:A.filename.rindex('.')], assay_type)
+                    new_A.technology_platform = assay_type
+                    a_fp = StringIO()
+                    a_fp.writelines(rna_seq_records)
+                    a_fp.name = new_A.filename
+                    a_fp.seek(0)
+                    self.ISA.studies[-1].assays.append(new_A)
+                    assay_files.append(a_fp)
+                if 'ME-Seq' in assay_type:
+                    new_A.filename = '{0}-{1}.txt'.format(A.filename[:A.filename.rindex('.')], assay_type)
+                    new_A.technology_platform = assay_type
+                    a_fp = StringIO()
+                    a_fp.writelines(me_seq_records)
+                    a_fp.name = new_A.filename
+                    a_fp.seek(0)
+                    self.ISA.studies[-1].assays.append(new_A)
+                    assay_files.append(a_fp)
+                if 'Chromatin-Seq' in assay_type:
+                    new_A.filename = '{0}-{1}.txt'.format(A.filename[:A.filename.rindex('.')], assay_type)
+                    new_A.technology_platform = assay_type
+                    a_fp = StringIO()
+                    a_fp.writelines(tf_seq_records)
+                    a_fp.name = new_A.filename
+                    a_fp.seek(0)
+                    self.ISA.studies[-1].assays.append(new_A)
+                    assay_files.append(a_fp)
+        else:
+            a_fp = StringIO()
+            a_fp.writelines(default_records)
+            a_fp.name = A.filename
+            a_fp.seek(0)
+            assay_files.append(a_fp)
+        return assay_files
+
+
+def strip_comments(in_fp):
+    out_fp = StringIO()
+    if not isinstance(in_fp, StringIO):
+        out_fp.name = in_fp.name
+    for line in in_fp.readlines():
+        if line.lstrip().startswith('#'):
+            pass
+        else:
+            out_fp.write(line)
+    out_fp.seek(0)
+    return out_fp

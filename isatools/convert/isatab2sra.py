@@ -4,7 +4,13 @@ from zipfile import ZipFile
 import logging
 import json
 from io import StringIO
-from isatools.convert import isatab2json, json2sra
+
+from isatools import config
+from isatools.convert import isatab2json
+from isatools.convert import json2sra
+
+logging.basicConfig(level=config.log_level)
+log = logging.getLogger(__name__)
 
 
 def zipdir(path, zip_file):
@@ -21,20 +27,21 @@ default_config_dir = os.path.join(BASE_DIR, '..', 'config', 'xml')
 
 
 def convert(source_path, dest_path, sra_settings=None, validate_first=True):
+    log.info("Converting ISA-Tab to JSON for %s", source_path)
     isa_json = isatab2json.convert(source_path, validate_first=validate_first)
+    log.debug("Writing JSON to memory file")
     isa_json_fp = StringIO(json.dumps(isa_json))
     isa_json_fp.name = "BII-S-3.json"
+    log.info("Converting JSON to SRA, writing to %s", dest_path)
+    log.info("Using SRA settings %s", sra_settings)
     json2sra.convert(isa_json_fp, dest_path, sra_settings=sra_settings, validate_first=False)
-    logging.info("Conversion complete...")
+    log.info("Conversion from ISA-Tab to SRA complete")
     buffer = BytesIO()
     if os.path.isdir(dest_path):
+        log.info("Zipping SRA files")
         with ZipFile(buffer, 'w') as zip_file:
-            # use relative dir_name to avoid absolute path on file names
             zipdir(dest_path, zip_file)
-            print(zip_file.namelist())
-
-            # clean up the target directory after the ZIP file has been closed
-            # rmtree(sra_dir)
-
+            log.debug("Zipped %s", zip_file.namelist())
         buffer.seek(0)
+        log.info("Returning zipped files as memory file")
         return buffer

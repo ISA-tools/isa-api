@@ -1,5 +1,4 @@
-__author__ = 'agbeltran'
-
+from __future__ import absolute_import
 import json
 import os
 from uuid import uuid4
@@ -8,12 +7,15 @@ from os.path import isdir, join
 from jsonschema import RefResolver, Draft4Validator
 from jsonschema.exceptions import ValidationError
 
-#from bcbio.isatab.parser import InvestigationParser
-from isatools.io.isatab_parser import parse
+from isatools.io import isatab_parser
 
-CEDAR_SCHEMA_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../schemas/cedar")
+__author__ = 'agbeltran'
 
-class ISATab2CEDAR():
+
+CEDAR_SCHEMA_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../resources/schemas/cedar")
+
+
+class ISATab2CEDAR(object):
 
     def __init__(self, primary_source):
         self.primary_source = primary_source
@@ -26,15 +28,17 @@ class ISATab2CEDAR():
         for folder in folders:
             self.createCEDARjson(CEDAR_SCHEMA_PATH, join(path,folder), json_dir, inv_identifier)
 
-
     def createCEDARjson(self, work_dir, json_dir, inv_identifier):
         print("Converting ISA to CEDAR model for ", work_dir)
         schema_file = "investigation_template.json"
-        schema = json.load(open(join(CEDAR_SCHEMA_PATH,schema_file)))
+        with open(join(CEDAR_SCHEMA_PATH,schema_file)) as json_fp:
+            schema = json.load(json_fp)
+        if schema is None:
+            raise IOError("Could not load schema from {}".format(join(CEDAR_SCHEMA_PATH,schema_file)))
         resolver = RefResolver('file://'+join(CEDAR_SCHEMA_PATH, schema_file), schema)
         validator = Draft4Validator(schema, resolver=resolver)
 
-        isa_tab = parse(work_dir)
+        isa_tab = isatab_parser.parse(work_dir)
         # parser_file_name = os.path.join(json_dir, "parser.log")
         # with open(parser_file_name, "w") as parserfile:
         #                 parserfile.write(str(isa_tab))

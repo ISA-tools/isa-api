@@ -1,10 +1,11 @@
-from mzml2isa.parsing import convert as mzml_convert
-from isatools import isatab
-
 import logging
 import os
+from mzml2isa.parsing import convert as mzml_convert
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+from isatools import config
+from isatools import isatab
+
+logging.basicConfig(level=config.log_level)
 logger = logging.getLogger(__name__)
 
 

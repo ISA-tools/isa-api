@@ -1,7 +1,10 @@
-from isatools import sampletab, isatab
 import logging
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
+from isatools import config
+from isatools import isatab
+from isatools import sampletab
+
+logging.basicConfig(level=config.log_level)
 logger = logging.getLogger(__name__)
 
 

@@ -2,7 +2,7 @@ import unittest
 from tests import utils
 from isatools import sampletab
 import os
-from isatools.model.v1 import *
+from isatools.model import *
 import tempfile
 import shutil
 

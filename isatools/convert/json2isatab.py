@@ -1,11 +1,13 @@
-from isatools import isajson
-from isatools import isatab
 import os
 import shutil
 import logging
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger(__name__)
+from isatools import config
+from isatools import isajson
+from isatools import isatab
+
+logging.basicConfig(level=config.log_level)
+log = logging.getLogger(__name__)
 
 
 def convert(json_fp, path, i_file_name='i_investigation.txt', config_dir=isajson.default_config_dir,
@@ -28,21 +30,23 @@ def convert(json_fp, path, i_file_name='i_investigation.txt', config_dir=isajson
 
     """
     if validate_first:
-        logger.info("Validating input JSON before conversion")
+        log.info("Validating input JSON before conversion")
         report = isajson.validate(fp=json_fp, config_dir=config_dir, log_level=logging.ERROR)
         if len(report['errors']) > 0:
-            logger.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
+            log.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log.")
             return
         json_fp.seek(0)  # reset file pointer after validation
-    logger.info("Loading source ISA JSON...")
+    log.info("Loading ISA-JSON from %s", json_fp.name)
     isa_obj = isajson.load(fp=json_fp)
-    logger.info("Dumping target ISA-Tab...")
+    log.info("Dumping ISA-Tab to %s", path)
+    log.debug("Using configuration from %s", config_dir)
     isatab.dump(isa_obj=isa_obj, output_path=path, i_file_name=i_file_name)
     #  copy data files across from source directory where JSON is located
-    logger.info("Copying data files from source to target...")
+    log.info("Copying data files from source to target")
     for file in [f for f in os.listdir(os.path.dirname(json_fp.name))
                  if not (f.endswith('.txt') and (f.startswith('i_') or f.startswith('s_') or f.startswith('a_'))) and
                  not (f.endswith('.json'))]:
         filepath = os.path.join(os.path.dirname(json_fp.name), file)
         if os.path.isfile(filepath):
+            log.debug("Copying %s to %s", filepath, path)
             shutil.copy(filepath, path)

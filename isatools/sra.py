@@ -1,17 +1,22 @@
-import logging
-import os
-import iso8601
-import jinja2
-import html
+"""Functions for reading and writing SRA-XML."""
 import datetime
 import hashlib
+import html
+import iso8601
+import jinja2
+import logging
+import os
+import xml.dom.minidom
 from functools import partial
 from lxml import etree
-import xml.dom.minidom
-from isatools.model.v1 import Sample, OntologyAnnotation, DataFile
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+from isatools import config
+from isatools.model import DataFile
+from isatools.model import OntologyAnnotation
+from isatools.model import Sample
+
+logging.basicConfig(level=config.log_level)
+log = logging.getLogger(__name__)
 
 supported_sra_assays = [
     ('genome sequencing', 'nucleotide sequencing'),
@@ -70,7 +75,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
         # sra_submission_action = sra_settings['sra_submission_action']
         # sra_center_prj_name = sra_settings['sra_center_prj_name']
 
-    logger.info("isatools.sra.export()")
+    log.info("isatools.sra.export()")
     for istudy in investigation.studies:
         is_sra = False
         for iassay in istudy.assays:
@@ -78,11 +83,11 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                 is_sra = True
                 break
         if not is_sra:
-            logger.info("No SRA assay found, skipping processing")
+            log.info("No SRA assay found, skipping processing")
             continue
 
         study_acc = istudy.identifier
-        logger.debug("sra exporter, working on " + study_acc)
+        log.debug("sra exporter, working on " + study_acc)
 
         # Flag SRA contacts for template
         has_sra_contact = False
@@ -132,13 +137,13 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                 for assay_seq_process in assay_seq_processes:
                     do_export = True
                     if get_comment(assay_seq_process, 'export') is not None:
-                        logger.debug("HAS EXPORT COMMENT IN ASSAY")
+                        log.debug("HAS EXPORT COMMENT IN ASSAY")
                         export = get_comment(assay_seq_process, 'export').value
-                        logger.debug("export is " + export)
+                        log.debug("export is " + export)
                         do_export = export.lower() != 'no'
                     else:
-                        logger.debug("NO EXPORT COMMENT FOUND")
-                    logger.debug("Perform export? " + str(do_export))
+                        log.debug("NO EXPORT COMMENT FOUND")
+                    log.debug("Perform export? " + str(do_export))
                     if do_export:
                         sample = None
                         curr_process = assay_seq_process
@@ -191,19 +196,19 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             library_source = get_pv(assay_to_export['library construction'],
                                                       'library source')
                             if library_source.upper() not in ['GENOMIC', 'GENOMIC SINGLE CELL', 'METAGENOMIC', 'OTHER']:
-                                logger.warn("ERROR:value supplied is not compatible with SRA1.5 schema " + library_source)
+                                log.warning("ERROR:value supplied is not compatible with SRA1.5 schema " + library_source)
                                 library_source = 'OTHER'
 
                             library_strategy = get_pv(assay_to_export['library construction'],
                                                       'library strategy')
                             if library_strategy.upper() not in ['WGS', 'OTHER']:
-                                logger.warn("ERROR:value supplied is not compatible with SRA1.5 schema " + library_strategy)
+                                log.warning("ERROR:value supplied is not compatible with SRA1.5 schema " + library_strategy)
                                 library_strategy = 'OTHER'
 
                             library_selection = get_pv(assay_to_export['library construction'],
                                                        'library selection')
                             if library_selection not in ['RANDOM', 'UNSPECIFIED']:
-                                logger.warn("ERROR:value supplied is not compatible with SRA1.5 schema " + library_selection)
+                                log.warning("ERROR:value supplied is not compatible with SRA1.5 schema " + library_selection)
                                 library_selection = 'unspecified'
 
                             protocol = "\n protocol_description: " \
@@ -270,14 +275,14 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             library_strategy = get_pv(assay_to_export['library construction'],
                                                       'library strategy')
                             if library_strategy.upper() not in ['WGS', 'OTHER']:
-                                logger.warn(
+                                log.warning(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_strategy)
                                 library_strategy = 'OTHER'
 
                             library_selection = get_pv(assay_to_export['library construction'],
                                                        'library selection')
                             if library_selection not in ['RANDOM', 'UNSPECIFIED']:
-                                logger.warn(
+                                log.warning(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_selection)
                                 library_selection = 'unspecified'
 
@@ -304,7 +309,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
 
                             if library_source.upper() not in ['TRANSCRIPTOMIC', 'TRANSCRIPTOMIC SINGLE CELL',
                                                               'METATRANSCRIPTOMIC', 'OTHER']:
-                                logger.warn(
+                                log.warning(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_source)
                                 library_source = 'OTHER'
 
@@ -312,7 +317,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                                       'library strategy')
                             if library_strategy not in ['RNA-Seq', 'ssRNA-Seq', 'miRNA-Seq', 'ncRNA-Seq', 'FL-cDNA',
                                                         'EST', 'OTHER']:
-                                logger.warn(
+                                log.warning(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_strategy)
                                 library_strategy = 'OTHER'
 
@@ -321,7 +326,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             if library_selection not in ['RT-PCR', 'cDNA', "cDNA_randomPriming", "cDNA_oligo_dT",
                                                          "PolyA", "Oligo-dT", "Inverse rRNA", "Inverse rRNA selection",
                                                          "CAGE", "RACE", "other"]:
-                                logger.warn(
+                                log.warning(
                                     "ERROR:value supplied is not compatible with SRA1.5 schema " + library_selection)
                                 library_selection = 'other'
 
@@ -336,14 +341,14 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             assay_to_export['library_layout'] = library_layout.lower()
                         # END transciption profiling library selection
                         else:
-                            logger.error("ERROR:Unsupported measurement type: " + iassay.measurement_type.term)
+                            log.error("ERROR:Unsupported measurement type: " + iassay.measurement_type.term)
                         mid_pv = get_pv(assay_to_export['library construction'], 'mid')
                         assay_to_export['poolingstrategy'] = mid_pv
                         assay_to_export['platform'] = get_pv(assay_to_export['nucleic acid sequencing'],
                                                              'sequencing instrument')
                         assays_to_export.append(assay_to_export)
             else:
-                logger.error("ERROR:Unsupported measurement/technology type {0}/{1}, skipping assays".format(iassay.measurement_type.term, iassay.technology_type.term))
+                log.error("ERROR:Unsupported measurement/technology type {0}/{1}, skipping assays".format(iassay.measurement_type.term, iassay.technology_type.term))
 
         xexp_set_template = env.get_template('experiment_set.xml')
         xexp_set = xexp_set_template.render(assays_to_export=assays_to_export, study=istudy,
@@ -360,7 +365,7 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
         xsample_set_template = env.get_template('sample_set.xml')
         xsample_set = xsample_set_template.render(assays_to_export=samples_to_export, study=istudy,
                                             sra_center_name=sra_center_name, sra_broker_name=sra_broker_name)
-        logger.debug("SRA exporter: writing SRA XML files for study " + study_acc)
+        log.debug("SRA exporter: writing SRA XML files for study " + study_acc)
 
         # blitz out whitespaces with etree and format nicely with minidom
         def prettify(xmlstr):
@@ -380,9 +385,9 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                         try:
                             schema.assertValid(doc)
                         except etree.DocumentInvalid as e:
-                            logger.error("Schema validation failed on " + docpath + ':\n' + str(e))
+                            log.error("Schema validation failed on " + docpath + ':\n' + str(e))
                 except etree.XMLSchemaParseError as e:
-                    logger.error(e)
+                    log.error(e)
 
         if os.path.exists(export_path):
             with open(os.path.join(export_path, 'submission.xml'), 'w') as xsub_file:

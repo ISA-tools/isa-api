@@ -1,7 +1,7 @@
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from isatools import isatab
-from isatools.model.v1 import *
+from isatools.model import *
 from datetime import date
 from collections import defaultdict
 import urllib
@@ -83,12 +83,19 @@ def generate_maf_file(write_dir,mw_study_id, mw_analysis_id):
         metabolites_url = "http://www.metabolomicsworkbench.org/rest/study/study_id/" + mw_study_id + "/metabolites"
 
         with urllib.request.urlopen(data_url) as url:
-            data_response = url.read().decode('utf8')
-            data = json.loads(data_response)
+            try:
+                data_response = url.read().decode('utf8')
+                data = json.loads(data_response)
+            except urllib.error.HTTPError as error:
+                data = error.read()
+
 
         with urllib.request.urlopen(metabolites_url) as url:
-            metabolites_response = url.read().decode('utf8')
-            metabolites = json.loads(metabolites_response)
+            try:
+                metabolites_response = url.read().decode('utf8')
+                metabolites = json.loads(metabolites_response)
+            except urllib.error.HTTPError as error:
+                data = error.read()
 
         dd = defaultdict(list)
         if len(metabolites) != 0 or len(data) != 0:
@@ -96,82 +103,90 @@ def generate_maf_file(write_dir,mw_study_id, mw_analysis_id):
             for d in (metabolites, data):
                 # you can list as many input dicts as you want here
                 for key, value in d.items():
+                    # print("KEY: ",key, ": ",value)
                     dd[key].append(value)
 
             # merging the 2 json feeds and removing duplicated key, since values are always the same
             for k, v in dd.items():
                 # print({k: {i: j for x in v for i, j in x.items()}})
                 dd[k] = {i: j for x in v for i, j in x.items()}
+            try:
+                if not isinstance(dd["1"]["DATA"],list):
 
-            if "other_id" in dd.items():
-                data_rec_header = "metabolite number" + "\t" + "metabolite name" \
-                                  + "\t" + "metabolite identifier" \
-                                  + "\t" + "pubchem identifier" \
-                                  + "\t" + "other id" \
-                                  + "\t" + "other id type" \
-                                  + '\t' + \
-                                  ("(" + dd["1"]["units"] + ')\t').join(dd["1"]["DATA"].keys()) \
-                                  + ("(" + dd["1"]["units"] + ")")
-
-            elif "pubchem_id" in dd.items() :
-                data_rec_header = "metabolite number" + "\t" + "metabolite name" \
-                                  + "\t" + "metabolite identifier" \
-                                  + "\t" + "pubchem identifier" \
-                                  + '\t' + \
-                                  ("(" + dd["1"]["units"] + ')\t').join(dd["1"]["DATA"].keys()) \
-                                  + ("(" + dd["1"]["units"] + ")")
-
-            else:
-                data_rec_header = "metabolite number" + "\t" + "metabolite name" \
-                                  + "\t" + "metabolite identifier" \
-                                  + '\t' + \
-                                  ("(" + dd["1"]["units"] + ')\t').join(dd["1"]["DATA"].keys()) \
-                                  + ("(" + dd["1"]["units"] + ")")
-
-            fh = open(write_dir + "/" + mw_study_id + "/data/" + mw_study_id + "_" + mw_analysis_id + "-maf-data-jsonparsing.txt", "w")
-            # print("writing 'maf file document' to file from 'generate_maf_file' method:...")
-            fh.writelines(data_rec_header)
-            fh.writelines("\n")
-
-            for key in dd:
-                # print(dd[key]["analysis_id"])
-                if dd[key]["analysis_id"] == mw_analysis_id:
                     if "other_id" in dd.items():
-                        record_values = key + '\t' + dd[key]["metabolite_name"] + "\t" + dd[key]["metabolite_id"] \
-                                        + "\t" + dd[key]["pubchem_id"] + "\t" + dd[key]["other_id"] + "\t" + dd[key][
-                                            "other_id_type"]
+                        data_rec_header = "metabolite number" + "\t" + "metabolite name" \
+                                          + "\t" + "metabolite identifier" \
+                                          + "\t" + "pubchem identifier" \
+                                          + "\t" + "other id" \
+                                          + "\t" + "other id type" \
+                                          + '\t' + \
+                                          ("(" + dd["1"]["units"] + ')\t').join(dd["1"]["DATA"].keys()) \
+                                          + ("(" + dd["1"]["units"] + ")")
 
-                        for value in dd[key]["DATA"].values():
-                            record_values = record_values + "\t" + str(value)
-                        fh.writelines(record_values)
-                        fh.writelines("\n")
-                    elif "pubchem_id" in dd.items():
-                        record_values = key + '\t' + dd[key]["metabolite_name"] + "\t" + dd[key]["metabolite_id"] \
-                                        + "\t" + dd[key]["pubchem_id"] + "\t" + dd[key]["other_id"] + "\t" + dd[key][
-                                            "other_id_type"]
+                    elif "pubchem_id" in dd.items() :
+                        data_rec_header = "metabolite number" + "\t" + "metabolite name" \
+                                          + "\t" + "metabolite identifier" \
+                                          + "\t" + "pubchem identifier" \
+                                          + '\t' + \
+                                          ("(" + dd["1"]["units"] + ')\t').join(dd["1"]["DATA"].keys()) \
+                                          + ("(" + dd["1"]["units"] + ")")
 
-                        for value in dd[key]["DATA"].values():
-                            record_values = record_values + "\t" + str(value)
-                        fh.writelines(record_values)
-                        fh.writelines("\n")
                     else:
-                        record_values = key + '\t' + dd[key]["metabolite_name"] + "\t" + dd[key]["metabolite_id"]
+                        data_rec_header = "metabolite number" + "\t" + "metabolite name" \
+                                          + "\t" + "metabolite identifier" \
+                                          + '\t' + \
+                                          ("(" + dd["1"]["units"] + ')\t').join(dd["1"]["DATA"].keys()) \
+                                          + ("(" + dd["1"]["units"] + ")")
 
-                        for value in dd[key]["DATA"].values():
-                            record_values = record_values + "\t" + str(value)
-                        fh.writelines(record_values)
-                        fh.writelines("\n")
+                    fh = open(write_dir + "/" + mw_study_id + "/data/" + mw_study_id + "_" + mw_analysis_id + "-maf-data-jsonparsing.txt", "w")
+                    # print("writing 'maf file document' to file from 'generate_maf_file' method:...")
+                    fh.writelines(data_rec_header)
+                    fh.writelines("\n")
 
-            # Output resulting json to file [Action Dissabled]
-            # open("output.json", "w").write(
-            #     json.dumps(dd, sort_keys=True, indent=4, separators=(',', ': '))
-            # )
+                    for key in dd:
+                        # print(dd[key]["analysis_id"])
+                        if dd[key]["analysis_id"] == mw_analysis_id:
+                            if "other_id" in dd.items():
+                                record_values = key + '\t' + dd[key]["metabolite_name"] + "\t" + dd[key]["metabolite_id"] \
+                                                + "\t" + dd[key]["pubchem_id"] + "\t" + dd[key]["other_id"] + "\t" + dd[key][
+                                                    "other_id_type"]
+
+                                for value in dd[key]["DATA"].values():
+                                    record_values = record_values + "\t" + str(value)
+                                fh.writelines(record_values)
+                                fh.writelines("\n")
+                            elif "pubchem_id" in dd.items():
+                                record_values = key + '\t' + dd[key]["metabolite_name"] + "\t" + dd[key]["metabolite_id"] \
+                                                + "\t" + dd[key]["pubchem_id"] + "\t" + dd[key]["other_id"] + "\t" + dd[key][
+                                                    "other_id_type"]
+
+                                for value in dd[key]["DATA"].values():
+                                    record_values = record_values + "\t" + str(value)
+                                fh.writelines(record_values)
+                                fh.writelines("\n")
+                            else:
+                                record_values = key + '\t' + dd[key]["metabolite_name"] + "\t" + dd[key]["metabolite_id"]
+
+                                for value in dd[key]["DATA"].values():
+                                    record_values = record_values + "\t" + str(value)
+                                fh.writelines(record_values)
+                                fh.writelines("\n")
+
+                                # Output resulting json to file [Action Dissabled]
+                                # open("output.json", "w").write(
+                                #     json.dumps(dd, sort_keys=True, indent=4, separators=(',', ': '))
+                                # )
+                else:
+                    print("Dictionary expected, List Found, error in MW REST API")
+                    #TODO: need feedback from NIH Metabolomics Workbench to implement a fallback position
+            except IOError:
+                print("input not recognized")
 
         else:
-            if len(data) == 0:
-                print("no json feed for data!")
-            if len(metabolites) == 0:
-                print("no json feed for metabolites!")
+                if len(data) == 0:
+                    print("no json feed for data!")
+                if len(metabolites) == 0:
+                    print("no json feed for metabolites!")
 
     except IOError:
         print("Error: in generate_maf_file() method, situation not recognized")

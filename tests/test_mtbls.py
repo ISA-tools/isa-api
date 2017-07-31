@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, mock_open
-from isatools.io import mtbls as MTBLS
+from isatools.net import mtbls as MTBLS
 import shutil
 import os
 
@@ -58,3 +58,8 @@ class TestMtblsIO(unittest.TestCase):
         results = MTBLS.get_data_files('MTBLS2', factor_selection)
         self.assertEqual(len(results), 8)
         self.assertEqual(len(results[0]['data_files']), 1)
+
+    def test_get_factors_summary(self):  # Test for issue #221
+        factors_summary = MTBLS.get_factors_summary('MTBLS26')
+        self.assertIsInstance(factors_summary, list)
+        self.assertEqual(len(factors_summary), 18)
