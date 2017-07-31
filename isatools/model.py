@@ -81,6 +81,9 @@ class Comment(object):
     def __repr__(self):
         return 'Comment(name="{0.name}", value="{0.value}")'.format(self)
 
+    def __str__(self):
+        return 'Comment[{0.name}]\t{0.value}'.format(self)
+
     def __hash__(self):
         return hash(repr(self))
 
@@ -414,7 +417,7 @@ class Investigation(Commentable, MetadataMixin, object):
                'filename="{0.filename}", title="{0.title}", ' \
                'submission_date="{0.submission_date}", ' \
                'public_release_date="{0.public_release_date}"), ' \
-               'ontology_source_references={0.ontology_source_reference}, ' \
+               'ontology_source_references={0.ontology_source_references}, ' \
                'publications={0.publications}, contacts={0.contacts}, ' \
                'studies={0.studies}, comments={0.comments}'.format(self)
 
