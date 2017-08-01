@@ -367,8 +367,8 @@ class AssayType(object):
                             .format(topology_modifiers))
 
     def __repr__(self):
-        return 'AssayType(mt={0}, tt={1})'.format(self.measurement_type,
-                                                  self.technology_type)
+        return 'AssayType(measurement_type={0}, technology_type={1})' \
+               .format(self.measurement_type, self.technology_type)
 
     def __hash__(self):
         return hash(repr(self))

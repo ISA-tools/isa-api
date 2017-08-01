@@ -2,7 +2,7 @@
 import unittest
 
 from isatools.create.models import AssayType, AssayTopologyModifiers
-from isatools.model.v1 import OntologyAnnotation
+from isatools.model import OntologyAnnotation
 
 MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING = 'transcription profiling'
 TECHNOLOGY_TYPE_DNA_MICROARRAY = 'DNA microarray'
@@ -24,19 +24,23 @@ class AssayTypeTest(unittest.TestCase):
         )
 
     def test_repr(self):
-        self.assertEqual('AssayType(mt=OntologyAnnotation(term={0}, '
-                         'term_source=None, term_accession=None), '
-                         'tt=OntologyAnnotation(term={1}, term_source=None, '
-                         'term_accession=None))'.format(
-            MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING,
-            TECHNOLOGY_TYPE_DNA_MICROARRAY), repr(self.assay_type))
+        self.assertEqual('AssayType(measurement_type=OntologyAnnotation('
+                         'term="{0}", term_source=None, term_accession="", '
+                         'comments=[]), '
+                         'technology_type=OntologyAnnotation(term="{1}", '
+                         'term_source=None, term_accession="", comments=[]))'
+                         .format(MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING,
+                                 TECHNOLOGY_TYPE_DNA_MICROARRAY),
+                         repr(self.assay_type))
 
-        self.assertEqual('AssayType(mt=OntologyAnnotation(term={0}, '
-                         'term_source=None, term_accession=None), '
-                         'tt=OntologyAnnotation(term={1}, term_source=None, '
-                         'term_accession=None))'.format(
-            MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING,
-            TECHNOLOGY_TYPE_DNA_MICROARRAY), repr(self.assay_type_with_oa))
+        self.assertEqual('AssayType(measurement_type=OntologyAnnotation('
+                         'term="{0}", term_source=None, term_accession="", '
+                         'comments=[]), technology_type=OntologyAnnotation('
+                         'term="{1}", term_source=None, term_accession="", '
+                         'comments=[]))'.format(
+                          MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING,
+                          TECHNOLOGY_TYPE_DNA_MICROARRAY), repr(
+                          self.assay_type_with_oa))
 
     def test_eq(self):
         expected_assay_type = AssayType(

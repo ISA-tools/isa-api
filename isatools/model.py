@@ -2330,7 +2330,7 @@ class FactorValue(Commentable):
             self.__unit = val
 
     def __repr__(self):
-        return 'FactorValue(factor_name="{0.factor_name}", value={0.value}, ' \
+        return 'FactorValue(factor_name={0.factor_name}, value={0.value}, ' \
                'unit={0.unit})'.format(self)
 
     def __hash__(self):

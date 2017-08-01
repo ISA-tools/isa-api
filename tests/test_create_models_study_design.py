@@ -1,6 +1,6 @@
 import unittest
 from collections import OrderedDict
-from isatools.model.v1 import StudyFactor, FactorValue, OntologyAnnotation
+from isatools.model import StudyFactor, FactorValue, OntologyAnnotation
 from isatools.create.models import InterventionStudyDesign, Treatment, Characteristic, TreatmentFactory, \
     TreatmentSequence, AssayType, SampleAssayPlan, INTERVENTIONS, BASE_FACTORS
 
@@ -339,15 +339,36 @@ class TreatmentSequenceTest(unittest.TestCase):
             )), 2)
         ]
         new_sequence = TreatmentSequence(ranked_treatments=treatments)
-        self.assertEqual(repr(new_sequence), 'TreatmentSequence([(Treatment(factor_type=chemical intervention, '
-                                             'factor_values=(FactorValue(factor_name=StudyFactor(name=AGENT), '
-                                             'value=crack, unit=None), FactorValue(factor_name=StudyFactor(name=INTENSITY), '
-                                             'value=low, unit=None), FactorValue(factor_name=StudyFactor(name=DURATION), '
-                                             'value=short, unit=None))), 1), (Treatment(factor_type=chemical intervention, '
-                                             'factor_values=(FactorValue(factor_name=StudyFactor(name=AGENT), value=crack, '
-                                             'unit=None), FactorValue(factor_name=StudyFactor(name=INTENSITY), value=low, '
-                                             'unit=None), FactorValue(factor_name=StudyFactor(name=DURATION), value=long, '
-                                             'unit=None))), 2)])')
+        print(repr(new_sequence))
+        self.assertEqual('TreatmentSequence([(Treatment(factor_type=chemical '
+                         'intervention, factor_values=(FactorValue(factor_name='
+                         'StudyFactor(name="AGENT", factor_type='
+                         'OntologyAnnotation(term="perturbation agent", '
+                         'term_source=None, term_accession="", comments=[]), '
+                         'comments=[]), value=crack, unit=None), FactorValue('
+                         'factor_name=StudyFactor(name="INTENSITY", '
+                         'factor_type=OntologyAnnotation(term="intensity", '
+                         'term_source=None, term_accession="", comments=[]), '
+                         'comments=[]), value=low, unit=None), FactorValue('
+                         'factor_name=StudyFactor(name="DURATION", '
+                         'factor_type=OntologyAnnotation(term="time", '
+                         'term_source=None, term_accession="", comments=[]), '
+                         'comments=[]), value=short, unit=None))), 1), ('
+                         'Treatment(factor_type=chemical intervention, '
+                         'factor_values=(FactorValue(factor_name=StudyFactor('
+                         'name="AGENT", factor_type=OntologyAnnotation('
+                         'term="perturbation agent", term_source=None, '
+                         'term_accession="", comments=[]), comments=[]), '
+                         'value=crack, unit=None), FactorValue(factor_name='
+                         'StudyFactor(name="INTENSITY", factor_type='
+                         'OntologyAnnotation(term="intensity", '
+                         'term_source=None, term_accession="", comments=[]), '
+                         'comments=[]), value=low, unit=None), FactorValue('
+                         'factor_name=StudyFactor(name="DURATION", '
+                         'factor_type=OntologyAnnotation(term="time", '
+                         'term_source=None, term_accession="", comments=[]), '
+                         'comments=[]), value=long, unit=None))), 2)])',
+                         repr(new_sequence))
 
     def test_eq(self):
         treatments = [
