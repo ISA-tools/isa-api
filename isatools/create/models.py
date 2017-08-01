@@ -1,8 +1,22 @@
+"""Model objects for storing study design settings, for consumption by
+function or factory to create ISA model objects.
+"""
+from __future__ import absolute_import
 import itertools
+import logging
+import uuid
+from collections import Iterable
+from collections import OrderedDict
 from operator import itemgetter
 from numbers import Number
-from collections import OrderedDict, Iterable
-from isatools.model.v1 import StudyFactor, FactorValue, OntologyAnnotation, Characteristic
+
+from isatools import config
+from isatools.errors import IsaValueTypeError
+from isatools.model import *
+
+
+logging.basicConfig(level=config.log_level)
+log = logging.getLogger(__name__)
 
 __author__ = 'massi'
 
@@ -643,6 +657,8 @@ class SampleAssayPlan(object):
             if sample_type not in [x.value.term for x in self.sample_types]:
                 raise TypeError(
                     'nonexistent sample type: {0}'.format(sample_type))
+            sample_type = [x for x in self.sample_types if x.value.term
+                           == sample_type][-1]
         elif sample_type not in self.sample_types:
             raise TypeError('nonexistent sample type: {0}'.format(sample_type))
         if not isinstance(sampling_size, int) \
@@ -727,3 +743,28 @@ class InterventionStudyDesign(BaseStudyDesign):
         if not isinstance(study_plan, SampleAssayPlan):
             raise TypeError('Please provide a valid SampleAssayPlan. {0} not a valid SampleAssayPlan.'.format(study_plan))
         self.__sequences_plan[treatment_sequence] = study_plan
+
+
+class IsaModelObjectFactory(object):
+
+    @staticmethod
+    def create_samples_from_plan(sample_assay_plan=None):
+        if not isinstance(sample_assay_plan, SampleAssayPlan):
+            raise IsaValueTypeError('sample_assay_plan must be of type '
+                                    'SampleAssayPlan')
+
+        group_size = sample_assay_plan.group_size
+        sample_plan = sample_assay_plan.sample_plan
+
+        samples = []
+
+        for gn in range(group_size):
+            group_uuid = uuid.uuid4()
+            for sample_type, sampling_size in sample_plan.items():
+                for sn in range(0, sampling_size):
+                    sample = Sample('studygroup_{0}_subject#{1}'.format(
+                        group_uuid, sn))
+                    sample.characteristics = [sample_type]
+                    samples.append(sample)
+
+        return samples

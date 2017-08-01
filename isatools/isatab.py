@@ -14,7 +14,8 @@ import numpy as np
 import os
 import pandas as pd
 import re
-from bisect import bisect_left, bisect_right
+from bisect import bisect_left
+from bisect import bisect_right
 from io import StringIO
 from itertools import tee
 from itertools import zip_longest
