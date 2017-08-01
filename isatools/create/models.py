@@ -748,7 +748,7 @@ class InterventionStudyDesign(BaseStudyDesign):
 class IsaModelObjectFactory(object):
 
     @staticmethod
-    def create_samples_from_plan(sample_assay_plan=None):
+    def create_study_from_plan(sample_assay_plan=None):
         if not isinstance(sample_assay_plan, SampleAssayPlan):
             raise IsaValueTypeError('sample_assay_plan must be of type '
                                     'SampleAssayPlan')
@@ -757,10 +757,16 @@ class IsaModelObjectFactory(object):
         sample_plan = sample_assay_plan.sample_plan
 
         groups_ids = [uuid.uuid4()]
+        sources = []
         samples = []
+        process_sequence = []
 
         for group_id in groups_ids:
             for subjn in range(group_size):
+                source = Source('studygroup_{0}'
+                                'subject#{1}'
+                                .format(group_id, subjn))
+                sources.append(source)
                 for sample_type, sampling_size in sample_plan.items():
                     for sampn in range(0, sampling_size):
                         sample = Sample('studygroup_{0}'
@@ -770,6 +776,9 @@ class IsaModelObjectFactory(object):
                                         .format(group_id, subjn, sampn,
                                                 sample_type.value.term))
                         sample.characteristics = [sample_type]
+                        sample.derives_from = [source]
                         samples.append(sample)
-
-        return samples
+                        process = Process(executes_protocol=None,
+                                          inputs=[source], outputs=[sample])
+                        process_sequence.append(process)
+        return sources, samples, process_sequence
