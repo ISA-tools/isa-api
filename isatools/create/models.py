@@ -756,15 +756,20 @@ class IsaModelObjectFactory(object):
         group_size = sample_assay_plan.group_size
         sample_plan = sample_assay_plan.sample_plan
 
+        groups_ids = [uuid.uuid4()]
         samples = []
 
-        for gn in range(group_size):
-            group_uuid = uuid.uuid4()
-            for sample_type, sampling_size in sample_plan.items():
-                for sn in range(0, sampling_size):
-                    sample = Sample('studygroup_{0}_subject#{1}'.format(
-                        group_uuid, sn))
-                    sample.characteristics = [sample_type]
-                    samples.append(sample)
+        for group_id in groups_ids:
+            for subjn in range(group_size):
+                for sample_type, sampling_size in sample_plan.items():
+                    for sampn in range(0, sampling_size):
+                        sample = Sample('studygroup_{0}'
+                                        'subject#{1}_'
+                                        'sample#{2}_'
+                                        '{3}'
+                                        .format(group_id, subjn, sampn,
+                                                sample_type.value.term))
+                        sample.characteristics = [sample_type]
+                        samples.append(sample)
 
         return samples
