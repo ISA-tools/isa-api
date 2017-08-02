@@ -747,38 +747,55 @@ class InterventionStudyDesign(BaseStudyDesign):
 
 class IsaModelObjectFactory(object):
 
-    @staticmethod
-    def create_study_from_plan(sample_assay_plan=None):
-        if not isinstance(sample_assay_plan, SampleAssayPlan):
-            raise IsaValueTypeError('sample_assay_plan must be of type '
-                                    'SampleAssayPlan')
+    def __init__(self, sample_assay_plan):
+        self.__sample_assay_plan = sample_assay_plan
 
-        group_size = sample_assay_plan.group_size
-        sample_plan = sample_assay_plan.sample_plan
+    @property
+    def sample_assay_plan(self):
+        return self.__sample_assay_plan
+
+    @sample_assay_plan.setter
+    def sample_assay_plan(self, sample_assay_plan):
+        if not isinstance(sample_assay_plan, SampleAssayPlan):
+            raise ISAModelAttributeError('sample_assay_plan must be an object'
+                                         'of type SampleAssayPlan')
+        else:
+            self.__sample_assay_plan = sample_assay_plan
+
+    def create_study_from_plan(self):
+        if self.sample_assay_plan is None:
+            raise ISAModelAttributeError('sample_assay_plan must be set to '
+                                         'create model objects in factory')
+
+        group_size = self.sample_assay_plan.group_size
+        sample_plan = self.sample_assay_plan.sample_plan
 
         groups_ids = [uuid.uuid4()]
         sources = []
         samples = []
         process_sequence = []
-
+        study = Study(filename='study.txt')
+        study.protocols = [Protocol(name='sample collection', protocol_type=
+                                    OntologyAnnotation(term='sample collection')
+                                    )]
         for group_id in groups_ids:
             for subjn in range(group_size):
-                source = Source('studygroup_{0}'
-                                'subject#{1}'
-                                .format(group_id, subjn))
+                source = Source(name='studygroup_{0}subject#{1}'.format(
+                    group_id, subjn))
                 sources.append(source)
                 for sample_type, sampling_size in sample_plan.items():
                     for sampn in range(0, sampling_size):
-                        sample = Sample('studygroup_{0}'
-                                        'subject#{1}_'
-                                        'sample#{2}_'
-                                        '{3}'
-                                        .format(group_id, subjn, sampn,
-                                                sample_type.value.term))
+                        sample = Sample(name='studygroup_{0}subject#{1}_'
+                                             'sample#{2}_{3}'.format(
+                                              group_id, subjn, sampn,
+                                              sample_type.value.term))
                         sample.characteristics = [sample_type]
                         sample.derives_from = [source]
                         samples.append(sample)
-                        process = Process(executes_protocol=None,
+                        process = Process(executes_protocol=study.protocols[-1],
                                           inputs=[source], outputs=[sample])
                         process_sequence.append(process)
-        return sources, samples, process_sequence
+        study.sources = sources
+        study.samples = samples
+        study.process_sequence = process_sequence
+        return study

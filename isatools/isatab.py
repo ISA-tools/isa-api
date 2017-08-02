@@ -19,7 +19,7 @@ from bisect import bisect_right
 from io import StringIO
 from itertools import tee
 from itertools import zip_longest
-from pandas.parser import CParserError
+from pandas.io.parsers import ParserError
 from progressbar import ProgressBar
 from progressbar import SimpleProgress
 from progressbar import Bar
@@ -2618,7 +2618,7 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
                     pass
         log.info("Finished validation...")
         validation_finished = True
-    except CParserError as cpe:
+    except ParserError as cpe:
         errors.append({
             "message": "Unknown/System Error",
             "supplemental": "The validator could not identify what the error is: {}".format(str(cpe)),

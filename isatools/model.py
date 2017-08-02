@@ -416,10 +416,10 @@ class Investigation(Commentable, MetadataMixin, object):
         return 'Investigation(identifier="{0.identifier}", ' \
                'filename="{0.filename}", title="{0.title}", ' \
                'submission_date="{0.submission_date}", ' \
-               'public_release_date="{0.public_release_date}"), ' \
+               'public_release_date="{0.public_release_date}", ' \
                'ontology_source_references={0.ontology_source_references}, ' \
                'publications={0.publications}, contacts={0.contacts}, ' \
-               'studies={0.studies}, comments={0.comments}'.format(self)
+               'studies={0.studies}, comments={0.comments})'.format(self)
 
     def __hash__(self):
         return hash(repr(self))
