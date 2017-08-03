@@ -2,6 +2,7 @@
 function or factory to create ISA model objects.
 """
 from __future__ import absolute_import
+import datetime
 import itertools
 import logging
 import uuid
@@ -11,7 +12,6 @@ from operator import itemgetter
 from numbers import Number
 
 from isatools import config
-from isatools.errors import IsaValueTypeError
 from isatools.model import *
 
 
@@ -26,7 +26,7 @@ INTERVENTIONS = dict(CHEMICAL='chemical intervention', BEHAVIOURAL='behavioural 
 
 FACTOR_TYPES = dict(AGENT_VALUES='agent values', INTENSITY_VALUES='intensity values', DURATION_VALUES='duration values')
 
-BASE_FACTORS = [
+BASE_FACTORS_ = [
     dict(
         name='AGENT', type=OntologyAnnotation(term="perturbation agent"), display_singular='AGENT VALUE',
         display_plural='AGENT VALUES', values=set()
@@ -39,6 +39,12 @@ BASE_FACTORS = [
         name='DURATION', type=OntologyAnnotation(term="time"), display_singular='DURATION VALUE',
         display_plural='DURATION VALUES', values=set()
     )
+]
+
+BASE_FACTORS = [
+    StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0].get('type', None)),
+    StudyFactor(name=BASE_FACTORS_[1]['name'], factor_type=BASE_FACTORS_[1].get('type', None)),
+    StudyFactor(name=BASE_FACTORS_[2]['name'], factor_type=BASE_FACTORS_[2].get('type', None)),
 ]
 
 """ DEPRECATED
@@ -166,8 +172,7 @@ class TreatmentFactory(object):
             raise ValueError('invalid treatment type provided: ')
 
         self.__intervention_type = intervention_type
-        self.__factors = OrderedDict([(StudyFactor(name=factor.get('name'), factor_type=factor.get('type')), set())
-                                      for factor in factors])
+        self.__factors = OrderedDict([(factor, set()) for factor in factors])
 
         # self._factorial_design = set()
 
@@ -182,7 +187,7 @@ class TreatmentFactory(object):
     def add_factor_value(self, factor, factor_value):
         """
         Add a single factor value or a list of factor value to the relevant set set
-        :param factor: isatools.model.v1.StudyFactor
+        :param factor: isatools.model.StudyFactor
         :param factor_value: string/list
         :return: None
         """
@@ -199,14 +204,15 @@ class TreatmentFactory(object):
         """
         Computes the ful factorial design on the basis of the stored factor and factor values.
         If one of the factors has no associated values an empty set is returned
-        :return: set - the ful factorial design as a set of Treatments 
+        :return: set - the full factorial design as a set of Treatments
         """
         factor_values = [
             [FactorValue(factor_name=factor_name, value=value, unit=None) for value in values]
             for factor_name, values in self.factors.items()
         ]
         if set() not in self.factors.values():
-            return {Treatment(treatment_type=self.intervention_type,  factor_values=treatment_factors)
+            return {Treatment(treatment_type=self.intervention_type,
+                              factor_values=treatment_factors)
                     for treatment_factors in itertools.product(*factor_values)}
         else:
             return set()
@@ -296,7 +302,7 @@ class AssayType(object):
             raise TypeError('{0} is an invalid value for measurement_type. '
                             'Please provide an OntologyAnnotation or string.'
                             .format(measurement_type))
-        
+
         if isinstance(technology_type, OntologyAnnotation):
             self.__technology_type = technology_type
         elif isinstance(technology_type, str):
@@ -307,7 +313,7 @@ class AssayType(object):
             raise TypeError('{0} is an invalid value for technology_type. '
                             'Please provide an OntologyAnnotation or string.'
                             .format(technology_type))
-        
+
         if isinstance(topology_modifiers, AssayTopologyModifiers):
             self.__topology_modifiers = topology_modifiers
         elif topology_modifiers is None:
@@ -682,7 +688,7 @@ class SampleAssayPlan(object):
     def sample_plan(self, sample_plan):
         for sample_type, sampling_size in sample_plan.items():
             self.add_sample_plan_record(sample_type, sampling_size)
-            
+
     def add_assay_plan_record(self, sample_type, assay_type):
         if isinstance(sample_type, str):
             sample_type = Characteristic(category=OntologyAnnotation(
@@ -747,18 +753,22 @@ class InterventionStudyDesign(BaseStudyDesign):
 
 class IsaModelObjectFactory(object):
 
-    def __init__(self, sample_assay_plan):
+    def __init__(self, sample_assay_plan, treatment_sequence=None):
         self.__sample_assay_plan = sample_assay_plan
+        if treatment_sequence is None:
+            self.__treatment_sequence = set()
+        else:
+            self.__treatment_sequence = treatment_sequence
 
-    def idgen(self, gid='', subn='', samn='', samt=''):
+    def _idgen(self, gid='', subn='', samn='', samt=''):
         idarr = []
         if gid != '':
             idarr.append('studygroup_{}'.format(gid))
         if subn != '':
             idarr.append('subject#{}'.format(subn))
-        if gid != '':
+        if samn != '':
             idarr.append('sample#{}'.format(samn))
-        if gid != '':
+        if samt != '':
             idarr.append(samt)
         return '_'.join(idarr)
 
@@ -774,12 +784,24 @@ class IsaModelObjectFactory(object):
         else:
             self.__sample_assay_plan = sample_assay_plan
 
+    @property
+    def treatment_sequence(self):
+        return self.__treatment_sequence
+
+    @treatment_sequence.setter
+    def treatment_sequence(self, treatment_sequence):
+        if not isinstance(treatment_sequence, set):
+            raise ISAModelAttributeError('treatment_sequence must be a set '
+                                         'of tuples of type (Treatment, int)')
+        else:
+            self.__treatment_sequence = treatment_sequence
+
     def create_study_from_plan(self):
         if self.sample_assay_plan is None:
             raise ISAModelAttributeError('sample_assay_plan must be set to '
                                          'create model objects in factory')
 
-        if self.sample_assay_plan < 1:
+        if len(self.sample_assay_plan.sample_plan) < 1:
             raise ISAModelAttributeError('group_size cannot be less than 1')
         group_size = self.sample_assay_plan.group_size
 
@@ -787,7 +809,11 @@ class IsaModelObjectFactory(object):
             raise ISAModelAttributeError('sample_plan is not defined')
         sample_plan = self.sample_assay_plan.sample_plan
 
-        groups_ids = [uuid.uuid4()]  # 1 group at the moment
+        groups_ids = [(uuid.uuid4(), x.factor_values, y) for x, y in
+                      self.treatment_sequence.ranked_treatments]
+
+        if len(groups_ids) == 0:
+            groups_ids = ['']
         sources = []
         samples = []
         process_sequence = []
@@ -795,19 +821,33 @@ class IsaModelObjectFactory(object):
         study.protocols = [Protocol(name='sample collection', protocol_type=
                                     OntologyAnnotation(term='sample collection')
                                     )]
-        for group_id in groups_ids:
+        collection_event_rank_characteristic = OntologyAnnotation(
+            term='collection_event_rank_characteristic')
+        study.characteristic_categories.append(
+            collection_event_rank_characteristic)
+        for group_id, fvs, rank in groups_ids:
+            collection_event_rank = Characteristic(
+                category=collection_event_rank_characteristic,
+                value=rank)
             for subjn in range(group_size):
-                source = Source(name=self.idgen(group_id, subjn))
+                source = Source(name=self._idgen(group_id, subjn))
                 sources.append(source)
                 for sample_type, sampling_size in sample_plan.items():
                     for sampn in range(0, sampling_size):
-                        sample = Sample(name=self.idgen(
-                            group_id, subjn, sampn, sample_type.value.term))
-                        sample.characteristics = [sample_type]
+                        sample = Sample(name=self._idgen(
+                            group_id, subjn, sampn, sample_type.value.term),
+                            factor_values=fvs)
+                        sample.characteristics = [sample_type,
+                                                  collection_event_rank]
                         sample.derives_from = [source]
                         samples.append(sample)
+
                         process = Process(executes_protocol=study.protocols[-1],
-                                          inputs=[source], outputs=[sample])
+                                          inputs=[source], outputs=[sample],
+                                          performer='bob', date_=
+                                          datetime.date.isoformat(
+                                              datetime.datetime.now()
+                                          ))
                         process_sequence.append(process)
         study.sources = sources
         study.samples = samples
