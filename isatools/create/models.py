@@ -750,6 +750,18 @@ class IsaModelObjectFactory(object):
     def __init__(self, sample_assay_plan):
         self.__sample_assay_plan = sample_assay_plan
 
+    def idgen(self, gid='', subn='', samn='', samt=''):
+        idarr = []
+        if gid != '':
+            idarr.append('studygroup_{}'.format(gid))
+        if subn != '':
+            idarr.append('subject#{}'.format(subn))
+        if gid != '':
+            idarr.append('sample#{}'.format(samn))
+        if gid != '':
+            idarr.append(samt)
+        return '_'.join(idarr)
+
     @property
     def sample_assay_plan(self):
         return self.__sample_assay_plan
@@ -767,10 +779,15 @@ class IsaModelObjectFactory(object):
             raise ISAModelAttributeError('sample_assay_plan must be set to '
                                          'create model objects in factory')
 
+        if self.sample_assay_plan < 1:
+            raise ISAModelAttributeError('group_size cannot be less than 1')
         group_size = self.sample_assay_plan.group_size
+
+        if self.sample_assay_plan.sample_plan == {}:
+            raise ISAModelAttributeError('sample_plan is not defined')
         sample_plan = self.sample_assay_plan.sample_plan
 
-        groups_ids = [uuid.uuid4()]
+        groups_ids = [uuid.uuid4()]  # 1 group at the moment
         sources = []
         samples = []
         process_sequence = []
@@ -780,15 +797,12 @@ class IsaModelObjectFactory(object):
                                     )]
         for group_id in groups_ids:
             for subjn in range(group_size):
-                source = Source(name='studygroup_{0}subject#{1}'.format(
-                    group_id, subjn))
+                source = Source(name=self.idgen(group_id, subjn))
                 sources.append(source)
                 for sample_type, sampling_size in sample_plan.items():
                     for sampn in range(0, sampling_size):
-                        sample = Sample(name='studygroup_{0}subject#{1}_'
-                                             'sample#{2}_{3}'.format(
-                                              group_id, subjn, sampn,
-                                              sample_type.value.term))
+                        sample = Sample(name=self.idgen(
+                            group_id, subjn, sampn, sample_type.value.term))
                         sample.characteristics = [sample_type]
                         sample.derives_from = [source]
                         samples.append(sample)
