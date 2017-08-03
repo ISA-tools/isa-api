@@ -1,8 +1,15 @@
 import unittest
 from collections import OrderedDict
-from isatools.model import StudyFactor, FactorValue, OntologyAnnotation
-from isatools.create.models import InterventionStudyDesign, Treatment, Characteristic, TreatmentFactory, \
-    TreatmentSequence, AssayType, SampleAssayPlan, INTERVENTIONS, BASE_FACTORS
+
+from isatools import isatab
+from isatools.model import (Investigation, StudyFactor, FactorValue,
+                            OntologyAnnotation)
+from isatools.create.models import (InterventionStudyDesign, Treatment,
+                                    Characteristic, TreatmentFactory,
+                                    TreatmentSequence, AssayType,
+                                    SampleAssayPlan, INTERVENTIONS,
+                                    BASE_FACTORS_ as BASE_FACTORS,
+                                    IsaModelObjectFactory)
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitoglycerin'
@@ -604,6 +611,39 @@ class InterventionStudyDesignTest(unittest.TestCase):
         pass
 
 
+class IsaModelObjectFactoryTest(unittest.TestCase):
 
+    def setUp(self):
+        self.investigation = Investigation(identifier='I1')
+        self.f1 = StudyFactor(name='AGENT', factor_type=OntologyAnnotation(
+            term='pertubation agent'))
+        self.f2 = StudyFactor(name='INTENSITY',
+                              factor_type=OntologyAnnotation(term='intensity'))
+        self.f3 = StudyFactor(name='DURATION',
+                              factor_type=OntologyAnnotation(term='time'))
 
-
+    def test_create_study_from_plan(self):
+        plan = SampleAssayPlan()
+        plan.add_sample_type('liver')
+        plan.add_sample_plan_record('liver', 5)
+        plan.add_sample_type('blood')
+        plan.add_sample_plan_record('blood', 3)
+        plan.group_size = 2
+        treatment_factory = TreatmentFactory(
+            factors=[self.f1, self.f2, self.f3])
+        treatment_factory.add_factor_value(
+            self.f1, {'cocaine', 'crack', 'aether'})
+        treatment_factory.add_factor_value(self.f2, {'low', 'medium', 'high'})
+        treatment_factory.add_factor_value(self.f3, {'short', 'long'})
+        ffactorial_design_treatments = \
+            treatment_factory.compute_full_factorial_design()
+        treatment_sequence = TreatmentSequence(
+            ranked_treatments={(x, i) for i, x in enumerate(ffactorial_design_treatments)})
+        # makes each study group ranked in sequence
+        study = IsaModelObjectFactory(plan,
+                                      treatment_sequence).create_study_from_plan()
+        study.filename = 's_study.txt'
+        self.investigation.studies = [study]
+        print(isatab.dumps(self.investigation))
+        self.assertEqual(36, len(study.sources))
+        self.assertEqual(288, len(study.samples))
