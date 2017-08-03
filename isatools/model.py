@@ -15,6 +15,7 @@ Todo:
 from __future__ import absolute_import
 import abc
 import networkx as nx
+import warnings
 
 from isatools.errors import ISAModelAttributeError
 
@@ -1063,6 +1064,11 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
     def materials(self):
         """:obj:`dict` of :obj:`list`: Container for sources, samples and
         other_material"""
+        warnings.warn(
+            "the `materials` dict property is being deprecated in favour of "
+            "`sources`, `samples`, and `other_material` properties.",
+            DeprecationWarning
+        )
         return self.__materials
 
     @property
