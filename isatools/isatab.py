@@ -24,6 +24,8 @@ from progressbar import ProgressBar
 from progressbar import SimpleProgress
 from progressbar import Bar
 from progressbar import ETA
+import shutil
+import tempfile
 
 from isatools import config
 from isatools.model import *
@@ -2692,8 +2694,6 @@ def batch_validate(tab_dir_list):
 
 
 def dumps(isa_obj, skip_dump_tables=False):
-    import tempfile
-    import shutil
     tmp = None
     output = str()
     try:
@@ -2712,6 +2712,22 @@ def dumps(isa_obj, skip_dump_tables=False):
                 output += "--------\n"
                 output += a_file + '\n'
                 output += a_fp.read()
+    finally:
+        if tmp is not None:
+            shutil.rmtree(tmp)
+    return output
+
+
+def dump_tables_to_dataframes(isa_obj):
+    tmp = None
+    output = dict()
+    try:
+        tmp = tempfile.mkdtemp()
+        dump(isa_obj=isa_obj, output_path=tmp, skip_dump_tables=False)
+        for s_file in glob.iglob(os.path.join(tmp, 's_*')):
+            output[os.path.basename(s_file)] = read_tfile(s_file)
+        for a_file in glob.iglob(os.path.join(tmp, 'a_*')):
+            output[os.path.basename(a_file)] = read_tfile(a_file)
     finally:
         if tmp is not None:
             shutil.rmtree(tmp)

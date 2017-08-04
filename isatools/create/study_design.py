@@ -56,11 +56,11 @@ def use_default_inv():
         investigation.submission_date = ""
         investigation.public_release_date = ""
         study = Study(filename="s_study.txt", comments=[])
-        study.identifier = uuid.uuid4()
+        study.identifier = str(uuid.uuid4())
         study.title = "boilerplate title"
         study.description = "boilerplate study description (testing purpose)"
-        study.submission_date = datetime.date.today()
-        study.public_release_date = datetime.date.today() + datetime.timedelta(days=30)
+        study.submission_date = str(datetime.date.today())
+        study.public_release_date = str(datetime.date.today() + datetime.timedelta(days=30))
 
         sample_collection_protocol = Protocol(name="sample collection",
                                               protocol_type=OntologyAnnotation(term="sample collection"))

@@ -602,8 +602,8 @@ class SampleAssayPlan(object):
     @group_size.setter
     def group_size(self, group_size):
         if not isinstance(group_size, int):
-            raise TypeError('{0} is not a valid value for group_size. Please '
-                            'provide an integer.')
+            raise TypeError('{} is not a valid value for group_size. Please '
+                            'provide an integer.'.format(group_size))
         if group_size < 0:
             raise ValueError('group_size must be greater than 0.')
         self.__group_size = group_size
@@ -801,7 +801,7 @@ class IsaModelObjectFactory(object):
             raise ISAModelAttributeError('sample_assay_plan must be set to '
                                          'create model objects in factory')
 
-        if len(self.sample_assay_plan.sample_plan) < 1:
+        if self.sample_assay_plan.group_size < 1:
             raise ISAModelAttributeError('group_size cannot be less than 1')
         group_size = self.sample_assay_plan.group_size
 
