@@ -28,7 +28,8 @@ class AssayTypeTest(unittest.TestCase):
                          'term="{0}", term_source=None, term_accession="", '
                          'comments=[]), '
                          'technology_type=OntologyAnnotation(term="{1}", '
-                         'term_source=None, term_accession="", comments=[]))'
+                         'term_source=None, term_accession="", comments=[]), '
+                         'topology_modifiers=None)'
                          .format(MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING,
                                  TECHNOLOGY_TYPE_DNA_MICROARRAY),
                          repr(self.assay_type))
@@ -37,7 +38,7 @@ class AssayTypeTest(unittest.TestCase):
                          'term="{0}", term_source=None, term_accession="", '
                          'comments=[]), technology_type=OntologyAnnotation('
                          'term="{1}", term_source=None, term_accession="", '
-                         'comments=[]))'.format(
+                         'comments=[]), topology_modifiers=None)'.format(
                           MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING,
                           TECHNOLOGY_TYPE_DNA_MICROARRAY), repr(
                           self.assay_type_with_oa))

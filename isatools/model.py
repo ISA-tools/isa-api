@@ -1144,7 +1144,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         protocols: Protocols used within the ISA artifact.
         assays: An Assay represents a portion of the experimental design.
         materials: Materials associated with the study, contains lists of
-            'sources', 'samples' and 'other_material'.
+            'sources', 'samples' and 'other_material'. DEPRECATED.
         sources: Sources associated with the study, is equivalent to
             materials['sources'].
         samples: Samples associated with the study, is equivalent to
@@ -1232,6 +1232,9 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             raise ISAModelAttributeError(
                 '{}.protocols must be iterable containing Protocol'
                 .format(type(self).__name__))
+
+    def get_prot(self, protocol_name):
+        return next(x for x in self.protocols if x.name == protocol_name)
         
     @property
     def assays(self):
@@ -2120,6 +2123,12 @@ class Sample(Commentable):
             raise ISAModelAttributeError(
                 'Sample.characteristics must be iterable containing '
                 'Characteristics')
+
+    def has_char(self, char):
+        if isinstance(char, str):
+            char = Characteristic(category=OntologyAnnotation(term=char))
+        if isinstance(char, Characteristic):
+            return char in self.characteristics
 
     @property
     def derives_from(self):

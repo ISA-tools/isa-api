@@ -373,8 +373,10 @@ class AssayType(object):
                             .format(topology_modifiers))
 
     def __repr__(self):
-        return 'AssayType(measurement_type={0}, technology_type={1})' \
-               .format(self.measurement_type, self.technology_type)
+        return 'AssayType(measurement_type={0}, technology_type={1}, ' \
+               'topology_modifiers={2})' \
+               .format(self.measurement_type, self.technology_type,
+                       self.topology_modifiers)
 
     def __hash__(self):
         return hash(repr(self))
@@ -449,7 +451,7 @@ class AssayTopologyModifiers(object):
             raise TypeError('{0} is an invalid value for acquisition_modes. '
                             'Please provide an integer.')
         if acquisition_modes < 0:
-            raise ValueError('injection_modes must be greater than 0.')
+            raise ValueError('acquisition_modes must be greater than 0.')
         self.__acquisition_modes = acquisition_modes
 
     @property
@@ -663,8 +665,8 @@ class SampleAssayPlan(object):
             if sample_type not in [x.value.term for x in self.sample_types]:
                 raise TypeError(
                     'nonexistent sample type: {0}'.format(sample_type))
-            sample_type = [x for x in self.sample_types if x.value.term
-                           == sample_type][-1]
+            sample_type = next(x for x in self.sample_types if x.value.term
+                               == sample_type)
         elif sample_type not in self.sample_types:
             raise TypeError('nonexistent sample type: {0}'.format(sample_type))
         if not isinstance(sampling_size, int) \
@@ -700,7 +702,8 @@ class SampleAssayPlan(object):
                              .format(sample_type, self.sample_types))
         if isinstance(assay_type, str):
             assay_type = AssayType(measurement_type=assay_type)
-        if assay_type not in self.assay_types:
+        if assay_type.measurement_type not in \
+                [x.measurement_type for x in self.assay_types]:
             raise ValueError('nonexistent assay type: {0}. These are the assay '
                              'types available in the plan: {1}'
                              .format(assay_type, self.assay_types))
@@ -842,14 +845,53 @@ class IsaModelObjectFactory(object):
                         sample.derives_from = [source]
                         samples.append(sample)
 
-                        process = Process(executes_protocol=study.protocols[-1],
-                                          inputs=[source], outputs=[sample],
-                                          performer='bob', date_=
-                                          datetime.date.isoformat(
-                                              datetime.datetime.now()
-                                          ))
+                        process = Process(executes_protocol=study.get_prot(
+                            'sample collection'), inputs=[source],
+                            outputs=[sample], performer='bob', date_=
+                            datetime.date.isoformat(datetime.datetime.now()))
                         process_sequence.append(process)
         study.sources = sources
         study.samples = samples
         study.process_sequence = process_sequence
+        return study
+
+    def create_assays_from_plan(self):
+        study = self.create_study_from_plan()
+        study.protocols.append(Protocol(name='metabolite extraction',
+                                        protocol_type=OntologyAnnotation(
+                                            term='extraction')))
+        study.protocols.append(Protocol(name='mass spectrometry',
+                                        protocol_type=OntologyAnnotation(
+                                            term='mass spectrometry'
+                                        )))
+        if self.sample_assay_plan.assay_plan == {}:
+            raise ISAModelAttributeError('assay_plan is not defined')
+        for stype, atype in self.sample_assay_plan.assay_plan:
+            # first get all samples of stype
+            samples_stype = [x for x in study.samples if
+                             stype in x.characteristics]
+            assay = Assay(measurement_type=atype.measurement_type,
+                          technology_type=atype.technology_type,
+                          filename='a_assay.txt')
+            for i, samp in enumerate(samples_stype): # do we really need count?
+                # build assay path
+                extr = Extract(name='{0}_extract-{1}'.format(samp.name, i))
+                eproc = Process(executes_protocol=study
+                                .get_prot('metabolite extraction'),
+                                inputs=[samp], outputs=[extr], performer='bob',
+                                date_=datetime.date.isoformat(
+                                    datetime.datetime.now()))
+                assay.process_sequence.append(eproc)
+                for j in range(atype.topology_modifiers.technical_replicates):
+                    aproc = Process(executes_protocol=study
+                                    .get_prot('mass spectrometry'),
+                                    name='assay-name-{0}_run-{1}'.format(i, j),
+                                    inputs=[extr])
+                    plink(eproc, aproc)
+                    dfile = RawSpectralDataFile(filename='{0}{1}'
+                                                .format(aproc.name, '.mzml.gz'))
+                    aproc.outputs = [dfile]
+                    assay.process_sequence.append(aproc)
+
+            study.assays.append(assay)
         return study
