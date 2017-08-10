@@ -434,11 +434,15 @@ class AssayTopologyModifiers(object):
 
     @injection_modes.setter
     def injection_modes(self, injection_modes):
-        if not isinstance(injection_modes, int):
+        if not isinstance(injection_modes, set):
             raise TypeError('{0} is an invalid value for injection_modes. '
-                            'Please provide an integer.')
-        if injection_modes < 0:
-            raise ValueError('injection_modes must be greater than 0.')
+                            'Please provide an set of string.')
+        if not all(isinstance(x, str) for x in injection_modes):
+            raise ValueError('all injection modes need to be of type string')
+        if not all(x in ('positive mode', 'negative mode') for x in
+                   injection_modes):
+            raise ValueError('injection modes must be one of positive or '
+                             'negative mode')
         self.__injection_modes = injection_modes
 
     @property
@@ -857,13 +861,6 @@ class IsaModelObjectFactory(object):
 
     def create_assays_from_plan(self):
         study = self.create_study_from_plan()
-        study.protocols.append(Protocol(name='metabolite extraction',
-                                        protocol_type=OntologyAnnotation(
-                                            term='extraction')))
-        study.protocols.append(Protocol(name='mass spectrometry',
-                                        protocol_type=OntologyAnnotation(
-                                            term='mass spectrometry'
-                                        )))
         if self.sample_assay_plan.assay_plan == {}:
             raise ISAModelAttributeError('assay_plan is not defined')
         for stype, atype in self.sample_assay_plan.assay_plan:
@@ -873,8 +870,25 @@ class IsaModelObjectFactory(object):
             assay = Assay(measurement_type=atype.measurement_type,
                           technology_type=atype.technology_type,
                           filename='a_assay.txt')
-            for i, samp in enumerate(samples_stype): # do we really need count?
+            for i, samp in enumerate(samples_stype):  # do we really need count?
                 # build assay path
+
+                if atype.technology_type.term == 'mass spectrometry':
+                    try:
+                        study.add_prot(protocol_name='metabolite extraction',
+                                       protocol_type='extraction')
+                    except ISAModelAttributeError:
+                        pass  # if protocol already exists
+                    try:
+                        study.add_prot(protocol_name='mass spectrometry',
+                                       protocol_type='mass spectrometry')
+                        study.get_prot(protocol_name='mass spectrometry')\
+                            .protocol_parameters = [
+                            ProtocolParameter(
+                                parameter_name=OntologyAnnotation(
+                                    term='scan polarity'))]
+                    except ISAModelAttributeError:
+                        pass  # if protocol already exists
                 extr = Extract(name='{0}_extract-{1}'.format(samp.name, i))
                 eproc = Process(executes_protocol=study
                                 .get_prot('metabolite extraction'),
@@ -883,15 +897,45 @@ class IsaModelObjectFactory(object):
                                     datetime.datetime.now()))
                 assay.process_sequence.append(eproc)
                 for j in range(atype.topology_modifiers.technical_replicates):
-                    aproc = Process(executes_protocol=study
-                                    .get_prot('mass spectrometry'),
-                                    name='assay-name-{0}_run-{1}'.format(i, j),
-                                    inputs=[extr])
-                    plink(eproc, aproc)
-                    dfile = RawSpectralDataFile(filename='{0}{1}'
-                                                .format(aproc.name, '.mzml.gz'))
-                    aproc.outputs = [dfile]
-                    assay.process_sequence.append(aproc)
-
+                    params = []
+                    if len(atype.topology_modifiers.acquisition_modes) > 1:
+                        for scan_pol in atype.topology_modifiers \
+                                .acquisition_modes:
+                            scan_polarity_param = ParameterValue(
+                                category=study.get_prot('mass spectrometry')
+                                .get_param('scan polarity'), value=scan_pol)
+                            params.append(scan_polarity_param)
+                            aproc = Process(executes_protocol=study
+                                            .get_prot('mass spectrometry'),
+                                            name='assay-name-{0}_run-{1}'
+                                            .format(i, j),
+                                            inputs=[extr],
+                                            parameter_values=params)
+                            plink(eproc, aproc)
+                            dfile = RawSpectralDataFile(filename='{0}{1}'
+                                                        .format(aproc.name,
+                                                                '.mzml.gz'))
+                            aproc.outputs = [dfile]
+                            assay.process_sequence.append(aproc)
+                    else:
+                        if len(atype.topology_modifiers.acquisition_modes) == 1:
+                            scan_polarity_param = ParameterValue(
+                                category=study.get_prot('mass spectrometry')
+                                .get_param('scan polarity'), value=
+                                next(iter(atype.topology_modifiers
+                                          .acquisition_modes)))
+                            params.append(scan_polarity_param)
+                        aproc = Process(executes_protocol=study
+                                        .get_prot('mass spectrometry'),
+                                        name='assay-name-{0}_run-{1}'
+                                        .format(i, j),
+                                        inputs=[extr],
+                                        parameter_values=params)
+                        plink(eproc, aproc)
+                        dfile = RawSpectralDataFile(filename='{0}{1}'
+                                                    .format(aproc.name,
+                                                            '.mzml.gz'))
+                        aproc.outputs = [dfile]
+                        assay.process_sequence.append(aproc)
             study.assays.append(assay)
         return study

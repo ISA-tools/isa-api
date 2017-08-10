@@ -1233,8 +1233,24 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                 '{}.protocols must be iterable containing Protocol'
                 .format(type(self).__name__))
 
+    def add_prot(self, protocol_name='', protocol_type=None):
+        if self.get_prot(protocol_name=protocol_name) is not None:
+            raise ISAModelAttributeError('A protocol with name "{}" has '
+                                         'already been declared in the study'
+                                         .format(protocol_name))
+        else:
+            if isinstance(protocol_type, str):
+                protocol_type = OntologyAnnotation(term=protocol_type)
+            self.protocols.append(Protocol(name=protocol_name,
+                                           protocol_type=protocol_type))
+
     def get_prot(self, protocol_name):
-        return next(x for x in self.protocols if x.name == protocol_name)
+        prot = None
+        try:
+            prot = next(x for x in self.protocols if x.name == protocol_name)
+        except StopIteration:
+            pass
+        return prot
         
     @property
     def assays(self):
@@ -1653,6 +1669,15 @@ class Protocol(Commentable):
         else:
             raise ISAModelAttributeError('Protocol.parameters must be iterable '
                                          'containing ProtocolParameters')
+
+    def get_param(self, parameter_name):
+        param = None
+        try:
+            param = next(x for x in self.parameters if
+                         x.category.parameter_name.term == parameter_name)
+        except StopIteration:
+            pass
+        return param
         
     @property
     def components(self):
