@@ -5,6 +5,7 @@ from __future__ import absolute_import
 import datetime
 import itertools
 import logging
+import random
 import uuid
 from collections import Iterable
 from collections import OrderedDict
@@ -439,10 +440,9 @@ class AssayTopologyModifiers(object):
                             'Please provide an set of string.')
         if not all(isinstance(x, str) for x in injection_modes):
             raise ValueError('all injection modes need to be of type string')
-        if not all(x in ('positive mode', 'negative mode') for x in
+        if not all(x in ('FIA', 'GC', 'LC') for x in
                    injection_modes):
-            raise ValueError('injection modes must be one of positive or '
-                             'negative mode')
+            raise ValueError('injection modes must be one of FIA, GC or LC')
         self.__injection_modes = injection_modes
 
     @property
@@ -451,11 +451,15 @@ class AssayTopologyModifiers(object):
 
     @acquisition_modes.setter
     def acquisition_modes(self, acquisition_modes):
-        if not isinstance(acquisition_modes, int):
+        if not isinstance(acquisition_modes, set):
             raise TypeError('{0} is an invalid value for acquisition_modes. '
-                            'Please provide an integer.')
-        if acquisition_modes < 0:
-            raise ValueError('acquisition_modes must be greater than 0.')
+                            'Please provide an set of string.')
+        if not all(isinstance(x, str) for x in acquisition_modes):
+            raise ValueError('all acquisition modes need to be of type string')
+        if not all(x in ('positive', 'negative') for x in
+                   acquisition_modes):
+            raise ValueError('injection modes must be one of positive or '
+                             'negative mode')
         self.__acquisition_modes = acquisition_modes
 
     @property
@@ -732,7 +736,7 @@ class BaseStudyDesign(object):
 
 class InterventionStudyDesign(BaseStudyDesign):
 
-    def __init__(self, sequences_plan=[]):
+    def __init__(self):
         super().__init__()
         self.__sequences_plan = {}
         # self.sequences = sequences
@@ -744,7 +748,8 @@ class InterventionStudyDesign(BaseStudyDesign):
     @sequences_plan.setter
     def sequences_plan(self, sequences_plan):
         if not isinstance(sequences_plan, dict):
-            raise TypeError('{0} is not a valid input. please provide a dictionary mapping Treatment Sequences to'
+            raise TypeError('{0} is not a valid input. please provide a '
+                            'dictionary mapping Treatment Sequences to'
                             'Sample Plans')
         for treatment_sequence, sample_plan in sequences_plan.items():
             self.add_single_sequence_plan(treatment_sequence, sample_plan)
@@ -752,9 +757,11 @@ class InterventionStudyDesign(BaseStudyDesign):
     def add_single_sequence_plan(self, treatment_sequence, study_plan):
         if not isinstance(treatment_sequence, TreatmentSequence):
             raise TypeError('Please provide a valid TreatmentSequence. '
-                            '{0} not a valid Treatment Sequence.'.format([treatment_sequence]))
+                            '{0} not a valid Treatment Sequence.'
+                            .format([treatment_sequence]))
         if not isinstance(study_plan, SampleAssayPlan):
-            raise TypeError('Please provide a valid SampleAssayPlan. {0} not a valid SampleAssayPlan.'.format(study_plan))
+            raise TypeError('Please provide a valid SampleAssayPlan. {0} not a '
+                            'valid SampleAssayPlan.'.format(study_plan))
         self.__sequences_plan[treatment_sequence] = study_plan
 
 
@@ -867,75 +874,122 @@ class IsaModelObjectFactory(object):
             # first get all samples of stype
             samples_stype = [x for x in study.samples if
                              stype in x.characteristics]
-            assay = Assay(measurement_type=atype.measurement_type,
-                          technology_type=atype.technology_type,
-                          filename='a_assay.txt')
-            for i, samp in enumerate(samples_stype):  # do we really need count?
-                # build assay path
+            for inj_mode, acq_mode in itertools.product(
+                    atype.topology_modifiers.injection_modes,
+                    atype.topology_modifiers.acquisition_modes):
+                assay = Assay(measurement_type=atype.measurement_type,
+                              technology_type=atype.technology_type,
+                              filename='a_{0}_{1}_assay.txt'.format(inj_mode,
+                                                                    acq_mode))
+
+                ms_protocol_name = '{0}-{1} mass spectrometry' \
+                    .format(inj_mode, acq_mode)
 
                 if atype.technology_type.term == 'mass spectrometry':
                     try:
                         study.add_prot(protocol_name='metabolite extraction',
                                        protocol_type='extraction')
                     except ISAModelAttributeError:
-                        pass  # if protocol already exists
+                        pass
                     try:
-                        study.add_prot(protocol_name='mass spectrometry',
-                                       protocol_type='mass spectrometry')
-                        study.get_prot(protocol_name='mass spectrometry')\
-                            .protocol_parameters = [
-                            ProtocolParameter(
-                                parameter_name=OntologyAnnotation(
-                                    term='scan polarity'))]
+                        study.add_prot(protocol_name=ms_protocol_name,
+                                       protocol_type='mass spectrometry',
+                                       use_default_params=True)
                     except ISAModelAttributeError:
-                        pass  # if protocol already exists
-                extr = Extract(name='{0}_extract-{1}'.format(samp.name, i))
-                eproc = Process(executes_protocol=study
-                                .get_prot('metabolite extraction'),
-                                inputs=[samp], outputs=[extr], performer='bob',
-                                date_=datetime.date.isoformat(
-                                    datetime.datetime.now()))
-                assay.process_sequence.append(eproc)
-                for j in range(atype.topology_modifiers.technical_replicates):
-                    params = []
-                    if len(atype.topology_modifiers.acquisition_modes) > 1:
-                        for scan_pol in atype.topology_modifiers \
-                                .acquisition_modes:
-                            scan_polarity_param = ParameterValue(
-                                category=study.get_prot('mass spectrometry')
-                                .get_param('scan polarity'), value=scan_pol)
-                            params.append(scan_polarity_param)
-                            aproc = Process(executes_protocol=study
-                                            .get_prot('mass spectrometry'),
+                        pass
+
+                    ms_prot = study.get_prot(ms_protocol_name)
+                    try:
+                        ms_prot.add_param('randomized run order')
+                    except ISAModelAttributeError:
+                        pass
+                    try:
+                        ms_prot.add_param('injection mode')
+                    except ISAModelAttributeError:
+                        pass
+                    try:
+                        ms_prot.add_param('scan polarity')
+                    except ISAModelAttributeError:
+                        pass
+                    if inj_mode in ('LC', 'GC'):
+                        try:
+                            ms_prot.add_param('chromatography instrument')
+                        except ISAModelAttributeError:
+                            pass
+                        try:
+                            ms_prot.add_param('chromatography column')
+                        except ISAModelAttributeError:
+                            pass
+                        try:
+                            ms_prot.add_param('elution program')
+                        except ISAModelAttributeError:
+                            pass
+
+                    num_samples_in_stype = len(samples_stype)
+                    technical_repeats = \
+                        atype.topology_modifiers.technical_replicates
+                    total_expected_runs = \
+                        num_samples_in_stype * technical_repeats
+                    run_order = list(range(0, total_expected_runs))
+                    random.shuffle(run_order)  # does random shuffle in place
+                    run_counter = 0
+                    for i, samp in enumerate(samples_stype):  # do we really need count?
+                        # build assay path
+                        assay.samples.append(samp)
+
+                        extr = Extract(name='{0}_extract-{1}'.format(samp.name, i))
+                        assay.other_material.append(extr)
+                        eproc = Process(executes_protocol=study
+                                        .get_prot('metabolite extraction'),
+                                        inputs=[samp], outputs=[extr], performer='bob',
+                                        date_=datetime.date.isoformat(
+                                            datetime.datetime.now()))
+                        assay.process_sequence.append(eproc)
+                        for j in range(0, technical_repeats):
+                            ms_prot = study.get_prot(ms_protocol_name)
+                            aproc = Process(executes_protocol=ms_prot,
                                             name='assay-name-{0}_run-{1}'
                                             .format(i, j),
                                             inputs=[extr],
-                                            parameter_values=params)
+                                            performer='louis',
+                                            date_=datetime.datetime.now())
+                            aproc.parameter_values = [
+                                ParameterValue(category=ms_prot.get_param(
+                                    'randomized run order'),
+                                    value=str(run_counter)),
+                                ParameterValue(category=ms_prot.get_param(
+                                    'injection mode'), value=inj_mode),
+                                ParameterValue(category=ms_prot.get_param(
+                                    'instrument'), value='Agilent QTOF'),
+                                ParameterValue(category=ms_prot.get_param(
+                                    'scan polarity'), value=acq_mode),
+                            ]
+                            if inj_mode in ('LC', 'GC'):
+                                aproc.parameter_values.append(
+                                    ParameterValue(category=ms_prot.get_param(
+                                        'chromatography instrument'),
+                                                   value='Agilent Q12324A')
+                                )
+                                aproc.parameter_values.append(
+                                    ParameterValue(category=ms_prot.get_param(
+                                        'chromatography column'),
+                                        value='AB Hydroxyapatite')
+                                )
+                                aproc.parameter_values.append(
+                                    ParameterValue(category=ms_prot.get_param(
+                                        'elution program'),
+                                        value='Acetonitrile 90%, water 10% for '
+                                              '30 min, flow rate: 1ml/min')
+                                )
+                            run_counter += 1
                             plink(eproc, aproc)
-                            dfile = RawSpectralDataFile(filename='{0}{1}'
-                                                        .format(aproc.name,
-                                                                '.mzml.gz'))
+                            dfile = RawSpectralDataFile(
+                                filename=
+                                'acquired-data-{0}_platform-{1}_{2}_run-{3}'
+                                '.mzml.gz'.format(i, inj_mode, acq_mode, j))
+                            assay.data_files.append(dfile)
                             aproc.outputs = [dfile]
                             assay.process_sequence.append(aproc)
-                    else:
-                        if len(atype.topology_modifiers.acquisition_modes) == 1:
-                            scan_polarity_param = ParameterValue(
-                                category=study.get_prot('mass spectrometry')
-                                .get_param('scan polarity'), value=
-                                next(iter(atype.topology_modifiers
-                                          .acquisition_modes)))
-                            params.append(scan_polarity_param)
-                        aproc = Process(executes_protocol=study
-                                        .get_prot('mass spectrometry'),
-                                        name='assay-name-{0}_run-{1}'
-                                        .format(i, j),
-                                        inputs=[extr],
-                                        parameter_values=params)
-                        plink(eproc, aproc)
-                        dfile = RawSpectralDataFile(filename='{0}{1}'
-                                                    .format(aproc.name,
-                                                            '.mzml.gz'))
-                        aproc.outputs = [dfile]
-                        assay.process_sequence.append(aproc)
-            study.assays.append(assay)
+                if assay is not None:
+                    study.assays.append(assay)
         return study

@@ -1233,16 +1233,44 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                 '{}.protocols must be iterable containing Protocol'
                 .format(type(self).__name__))
 
-    def add_prot(self, protocol_name='', protocol_type=None):
+    @staticmethod
+    def __get_default_protocol(protocol_type):
+        """Return default Protocol object based on protocol_type and from
+        isaconfig_v2015-07-02"""
+        default_protocol = Protocol(protocol_type=
+                                    OntologyAnnotation(term=protocol_type))
+        parameter_list = []
+        if protocol_type == 'mass spectrometry':
+            parameter_list = ['instrument',
+                              'ion source',
+                              'detector',
+                              'analyzer']
+        elif protocol_type == 'NMR spectroscopy':
+            parameter_list = ['instrument',
+                              'NMR probe',
+                              'number of acquisition',
+                              'magnetic field strength']
+        default_protocol.parameters = [
+            ProtocolParameter(parameter_name=OntologyAnnotation(term=x))
+            for x in parameter_list]
+        # TODO: Implement this for other defaults OR generate from config #51
+        return default_protocol
+
+    def add_prot(self, protocol_name='', protocol_type=None,
+                 use_default_params=True):
         if self.get_prot(protocol_name=protocol_name) is not None:
             raise ISAModelAttributeError('A protocol with name "{}" has '
                                          'already been declared in the study'
                                          .format(protocol_name))
         else:
-            if isinstance(protocol_type, str):
-                protocol_type = OntologyAnnotation(term=protocol_type)
-            self.protocols.append(Protocol(name=protocol_name,
-                                           protocol_type=protocol_type))
+            if isinstance(protocol_type, str) and use_default_params:
+                default_protocol = self.__get_default_protocol(protocol_type)
+                default_protocol.name = protocol_name
+                self.protocols.append(default_protocol)
+            else:
+                self.protocols.append(Protocol(name=protocol_name,
+                                               protocol_type=OntologyAnnotation(
+                                                   term=protocol_type)))
 
     def get_prot(self, protocol_name):
         prot = None
@@ -1670,11 +1698,24 @@ class Protocol(Commentable):
             raise ISAModelAttributeError('Protocol.parameters must be iterable '
                                          'containing ProtocolParameters')
 
+    def add_param(self, parameter_name=''):
+        if self.get_param(parameter_name=parameter_name) is not None:
+            raise ISAModelAttributeError('A parameter with name "{0}" has '
+                                         'already been declared in the protocol'
+                                         '"{1}"'
+                                         .format(parameter_name, self.name))
+        else:
+            if isinstance(parameter_name, str):
+                self.parameters.append(ProtocolParameter(
+                    parameter_name=OntologyAnnotation(term=parameter_name)))
+            else:
+                raise ISAModelAttributeError('Parameter name must be a string')
+
     def get_param(self, parameter_name):
         param = None
         try:
             param = next(x for x in self.parameters if
-                         x.category.parameter_name.term == parameter_name)
+                         x.parameter_name.term == parameter_name)
         except StopIteration:
             pass
         return param
@@ -1750,7 +1791,7 @@ class ProtocolParameter(Commentable):
             self.__parameter_name = val
 
     def __repr__(self):
-        return 'ProtocolParameter(parameter_name="{0.parameter_name}", ' \
+        return 'ProtocolParameter(parameter_name={0.parameter_name}, ' \
                'comments={0.comments})'.format(self)
 
     def __hash__(self):
