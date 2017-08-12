@@ -589,18 +589,18 @@ class AssayPlan(object):
 
 
 class SampleAssayPlan(object):
-    def __init__(self, group_size=0, sample_plan={}, assay_plan=set()):
+    def __init__(self, group_size=0, sample_plan=None, assay_plan=set()):
         # TODO test initialization from sample_plan and assay_plan!!
         self.__group_size = 0
         self.__sample_types = set()
         self.__assay_types = set()
-        self.__sample_plan = {}
-        self.__assay_plan = set()
-
-        self.group_size = group_size
-        if sample_plan is not None:
+        if sample_plan is None:
+            self.__sample_plan = {}
+        else:
             self.sample_types = {key for key in sample_plan}
             self.sample_plan = sample_plan
+        self.__assay_plan = set()
+        self.group_size = group_size
         if assay_plan is not None:
             self.assay_types = {value for key, value in assay_plan}
             self.assay_plan = assay_plan
