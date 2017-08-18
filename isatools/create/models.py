@@ -1133,6 +1133,7 @@ class IsaModelObjectFactory(object):
 
                             array_data_file = ArrayDataFile(
                                 filename='output-file-{}.sff'.format(run_count))
+                            assay.data_files.append(array_data_file)
                             seq_process = Process(
                                 executes_protocol=study.get_prot(
                                     'nucleic acid sequencing'))
@@ -1166,6 +1167,7 @@ class IsaModelObjectFactory(object):
 
                             array_data_file = ArrayDataFile(
                                 filename='output-file-{}.sff'.format(run_count))
+                            assay.data_files.append(array_data_file)
                             seq_process = Process(
                                 executes_protocol=study.get_prot(
                                     'nucleic acid sequencing'))
