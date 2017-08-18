@@ -903,22 +903,35 @@ class IsaModelObjectFactory(object):
                                       inj_mode, acq_mode))
                     mp_protocol_name = None
                     if atype.technology_type.term == 'mass spectrometry':
-                        mp_protocol_name = '{0}-{1} mass spectrometry' \
-                            .format(inj_mode, acq_mode)
-
                         try:
                             study.add_prot(
                                 protocol_name='metabolite extraction',
                                 protocol_type='extraction')
                         except ISAModelAttributeError:
                             pass
+                        ext_protocol = study.get_prot('metabolite extraction')
+                        if inj_mode in ('LC', 'GC'):
+                            try:
+                                ext_protocol.add_param('chromatography instrument')
+                            except ISAModelAttributeError:
+                                pass
+                            try:
+                                ext_protocol.add_param('chromatography column')
+                            except ISAModelAttributeError:
+                                pass
+                            try:
+                                ext_protocol.add_param('elution program')
+                            except ISAModelAttributeError:
+                                pass
+
+                        mp_protocol_name = '{0}-{1} mass spectrometry' \
+                            .format(inj_mode, acq_mode)
                         try:
                             study.add_prot(protocol_name=mp_protocol_name,
                                            protocol_type='mass spectrometry',
                                            use_default_params=True)
                         except ISAModelAttributeError:
                             pass
-
                         ms_prot = study.get_prot(mp_protocol_name)
                         try:
                             ms_prot.add_param('randomized run order')
@@ -932,37 +945,37 @@ class IsaModelObjectFactory(object):
                             ms_prot.add_param('scan polarity')
                         except ISAModelAttributeError:
                             pass
-                        if inj_mode in ('LC', 'GC'):
-                            try:
-                                ms_prot.add_param('chromatography instrument')
-                            except ISAModelAttributeError:
-                                pass
-                            try:
-                                ms_prot.add_param('chromatography column')
-                            except ISAModelAttributeError:
-                                pass
-                            try:
-                                ms_prot.add_param('elution program')
-                            except ISAModelAttributeError:
-                                pass
 
                     elif atype.technology_type.term == 'nmr spectroscopy':
-                        mp_protocol_name = '{0}-{1} nmr spectroscopy' \
-                            .format(inj_mode, acq_mode)
-
                         try:
                             study.add_prot(
                                 protocol_name='metabolite extraction',
                                 protocol_type='extraction')
                         except ISAModelAttributeError:
                             pass
+                        ext_protocol = study.get_prot('metabolite extraction')
+                        if inj_mode in ('LC', 'GC'):
+                            try:
+                                ext_protocol.add_param('chromatography instrument')
+                            except ISAModelAttributeError:
+                                pass
+                            try:
+                                ext_protocol.add_param('chromatography column')
+                            except ISAModelAttributeError:
+                                pass
+                            try:
+                                ext_protocol.add_param('elution program')
+                            except ISAModelAttributeError:
+                                pass
+
+                        mp_protocol_name = '{0}-{1} nmr spectroscopy' \
+                            .format(inj_mode, acq_mode)
                         try:
                             study.add_prot(protocol_name=mp_protocol_name,
                                            protocol_type='nmr spectroscopy',
                                            use_default_params=True)
                         except ISAModelAttributeError:
                             pass
-
                         ms_prot = study.get_prot(mp_protocol_name)
                         try:
                             ms_prot.add_param('randomized run order')
@@ -976,19 +989,6 @@ class IsaModelObjectFactory(object):
                             ms_prot.add_param('scan polarity')
                         except ISAModelAttributeError:
                             pass
-                        if inj_mode in ('LC', 'GC'):
-                            try:
-                                ms_prot.add_param('chromatography instrument')
-                            except ISAModelAttributeError:
-                                pass
-                            try:
-                                ms_prot.add_param('chromatography column')
-                            except ISAModelAttributeError:
-                                pass
-                            try:
-                                ms_prot.add_param('elution program')
-                            except ISAModelAttributeError:
-                                pass
 
                     num_samples_in_stype = len(samples_stype)
                     technical_replicates = \
@@ -1012,6 +1012,29 @@ class IsaModelObjectFactory(object):
                                         performer=self.ops[1],
                                         date_=datetime.date.isoformat(
                                             datetime.date.today()))
+                        if inj_mode in ('LC', 'GC'):
+                            eproc.parameter_values.append(
+                                # TODO: defaults into ProtocolParameter level, if writing out in 'expandded' or 'template' mode write out all possible columns even if empty
+                                ParameterValue(
+                                    category=ext_protocol.get_param(
+                                        'chromatography instrument'),
+                                    # TODO: Topology modifier?
+                                    value='Agilent Q12324A')
+                            )
+                            eproc.parameter_values.append(
+                                ParameterValue(
+                                    category=ext_protocol.get_param(
+                                        'chromatography column'),
+                                    value='AB Hydroxyapatite')
+                            )
+                            eproc.parameter_values.append(
+                                ParameterValue(
+                                    category=ext_protocol.get_param(
+                                        'elution program'),
+                                    value='Acetonitrile 90%, water 10% '
+                                          'for 30 min, flow rate: '
+                                          '1ml/min')
+                            )
                         assay.process_sequence.append(eproc)
                         for j in range(0, technical_replicates):
                             ms_prot = study.get_prot(mp_protocol_name)
@@ -1033,27 +1056,6 @@ class IsaModelObjectFactory(object):
                                 ParameterValue(category=ms_prot.get_param(
                                     'scan polarity'), value=acq_mode),
                             ]
-                            if inj_mode in ('LC', 'GC'):
-                                aproc.parameter_values.append(  # TODO: defaults into ProtocolParameter level, if writing out in 'expandded' or 'template' mode write out all possible columns even if empty
-                                    ParameterValue(
-                                        category=ms_prot.get_param(
-                                            'chromatography instrument'),  # TODO: Topology modifier?
-                                        value='Agilent Q12324A')
-                                )
-                                aproc.parameter_values.append(
-                                    ParameterValue(
-                                        category=ms_prot.get_param(
-                                            'chromatography column'),
-                                        value='AB Hydroxyapatite')
-                                )
-                                aproc.parameter_values.append(
-                                    ParameterValue(
-                                        category=ms_prot.get_param(
-                                            'elution program'),
-                                        value='Acetonitrile 90%, water 10% '
-                                              'for 30 min, flow rate: '
-                                              '1ml/min')
-                                )
                             run_counter += 1
                             plink(eproc, aproc)
                             dfile = RawSpectralDataFile(
@@ -1083,8 +1085,7 @@ class IsaModelObjectFactory(object):
                 study.add_prot('RNA extraction', 'RNA extraction')
                 study.add_prot('nucleic acid hybridization',
                                'nucleic acid hybridization')
-                study.add_prot('nucleic acid sequencing',
-                               'data collection')
+                study.add_prot('data collection', 'data collection')
 
                 run_count = 0
                 for i, sample in enumerate(samples_filtered_on_stype):
