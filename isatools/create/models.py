@@ -1149,6 +1149,7 @@ class IsaModelObjectFactory(object):
                             assay.process_sequence.append(hyb_process)
                             assay.process_sequence.append(seq_process)
                     elif len(atype.topology_modifiers.array_designs) == 0:
+                        assay.filename = 'a_tp_assay.txt'
                         for technical_replicate_num in \
                                 range(0, atype.topology_modifiers.technical_replicates):
                             run_count += 1
