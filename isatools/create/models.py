@@ -1137,7 +1137,7 @@ class IsaModelObjectFactory(object):
                             assay.data_files.append(array_data_file)
                             seq_process = Process(
                                 executes_protocol=study.get_prot(
-                                    'nucleic acid sequencing'))
+                                    'data collection'))
                             seq_process.outputs = [array_data_file]
                             seq_process.performer = self.ops[3]
                             seq_process.date = datetime.date.isoformat(
@@ -1149,40 +1149,9 @@ class IsaModelObjectFactory(object):
                             assay.process_sequence.append(extraction_process)
                             assay.process_sequence.append(hyb_process)
                             assay.process_sequence.append(seq_process)
-                    elif len(atype.topology_modifiers.array_designs) == 0:
-                        assay.filename = 'a_tp_assay.txt'
-                        for technical_replicate_num in \
-                                range(0, atype.topology_modifiers.technical_replicates):
-                            run_count += 1
-
-                            extract = Extract(name='{0}_extract-{1}'.format(
-                                sample.name, i))
-                            assay.other_material.append(extract)
-                            extraction_process = Process(
-                                executes_protocol=study.get_prot(
-                                    'RNA extraction'))
-                            extraction_process.inputs = [sample]
-                            extraction_process.output = [extract]
-                            extraction_process.performer = self.ops[1]
-                            extraction_process.date = datetime.date.isoformat(
-                                datetime.date.today())
-
-                            array_data_file = ArrayDataFile(
-                                filename='output-file-{}.sff'.format(run_count))
-                            assay.data_files.append(array_data_file)
-                            seq_process = Process(
-                                executes_protocol=study.get_prot(
-                                    'nucleic acid sequencing'))
-                            seq_process.outputs = [array_data_file]
-                            seq_process.performer = self.ops[3]
-                            seq_process.date = datetime.date.isoformat(
-                                datetime.date.today())
-                            seq_process.name = '{0}_Scan{1}'.format(extract.name, i)
-
-                            plink(extraction_process, seq_process)
-
-                            assay.process_sequence.append(extraction_process)
-                            assay.process_sequence.append(seq_process)
+                    else:
+                        raise ISAModelAttributeError('At least one array '
+                                                     'design must be specified')
 
                 study.assays.append(assay)
         return study
