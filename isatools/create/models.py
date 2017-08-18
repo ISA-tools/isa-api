@@ -395,7 +395,7 @@ class AssayTopologyModifiers(object):
 
     def __init__(self, distinct_libraries=0, array_designs=None,
                  injection_modes=None, acquisition_modes=0, pulse_sequences=0,
-                 technical_replicates=1):
+                 technical_replicates=1, instruments=None):
         self.__distinct_libraries = distinct_libraries
         if array_designs is None:
             self.__array_designs = set()
@@ -408,6 +408,10 @@ class AssayTopologyModifiers(object):
         self.__acquisition_modes = acquisition_modes
         self.__pulse_sequences = pulse_sequences
         self.__technical_replicates = technical_replicates
+        if instruments is None:
+            self.__instruments = set()
+        else:
+            self.__instruments = instruments
 
     @property
     def distinct_libraries(self):
@@ -495,6 +499,22 @@ class AssayTopologyModifiers(object):
         if technical_replicates < 1:
             raise ValueError('injection_modes must be greater than 0.')
         self.__technical_replicates = technical_replicates
+
+    @property
+    def instruments(self):
+        return self.__instruments
+
+    @instruments.setter
+    def instruments(self, val):
+        if not isinstance(val, set):
+            raise TypeError('{0} is an invalid value for acquisition_modes. '
+                            'Please provide an set of string.')
+        if not all(isinstance(x, str) for x in val):
+            raise ValueError('all acquisition modes need to be of type string')
+        if not all(x in ('positive', 'negative') for x in val):
+            raise ValueError('instruments must be one of '.format(
+                self.instrument_types))
+        self.__acquisition_modes = acquisition_modes
 
     def __repr__(self):
         return 'AssayTopologyModifiers(' \
@@ -1152,6 +1172,93 @@ class IsaModelObjectFactory(object):
                     else:
                         raise ISAModelAttributeError('At least one array '
                                                      'design must be specified')
+
+                study.assays.append(assay)
+        return study
+
+    def create_assays_from_plan_dna_seq(self):
+        study = self.create_study_from_plan()
+        if self.sample_assay_plan.assay_plan == {}:
+            raise ISAModelAttributeError('assay_plan is not defined')
+        for stype, atype in self.sample_assay_plan.assay_plan:
+            # first get all samples of stype
+            samples_filtered_on_stype = [x for x in study.samples if
+                             stype in x.characteristics]
+
+            if atype.technology_type.term == 'nucleotide sequencing':
+                assay = Assay(measurement_type=atype.measurement_type,
+                              technology_type=atype.technology_type)
+
+                study.add_prot('nucleic acid extraction',
+                               'nucleic acid extraction')
+                study.add_prot('library construction', 'library construction')
+                study.add_prot('nucleic acid sequencing',
+                               'nucleic acid sequencing')
+
+                run_count = 0
+                for i, sample in enumerate(samples_filtered_on_stype):
+                    assay.samples.append(sample)
+
+                    if len(atype.topology_modifiers.array_designs) > 0:
+                        assay.filename = 'a_ngs_{0}_assay.txt'\
+                            .format('_'.join(atype.topology_modifiers.instruments))
+                        for instrument, technical_replicate_num in \
+                                itertools.product(
+                                    atype.topology_modifiers.instruments,
+                                    range(0, atype.topology_modifiers.technical_replicates)):
+                            run_count += 1
+
+                            extract = Extract(name='{0}_extract-{1}'.format(
+                                sample.name, i))
+                            assay.other_material.append(extract)
+                            extraction_process = Process(
+                                executes_protocol=study.get_prot(
+                                    'nucleic acid extraction'))
+                            extraction_process.inputs = [sample]
+                            extraction_process.output = [extract]
+                            extraction_process.performer = self.ops[1]
+                            extraction_process.date = datetime.date.isoformat(
+                                datetime.date.today())
+
+                            lib_protocol = study.get_prot(
+                                'library construction')
+                            lib_process = Process(
+                                executes_protocol=lib_protocol)
+                            lib_process.inputs = [extract]
+                            lib_process.performer = self.ops[2]
+                            lib_process.date = datetime.date.isoformat(
+                                datetime.date.today())
+
+                            plink(extraction_process, lib_process)
+
+                            raw_data_file = RawDataFile(
+                                filename='output-file-{}.sff'.format(run_count))
+                            assay.data_files.append(raw_data_file)
+                            seq_protocol = study.get_prot('data collection')
+                            seq_process = Process(
+                                executes_protocol=seq_protocol)
+                            seq_process.outputs = [raw_data_file]
+                            seq_process.performer = self.ops[3]
+                            seq_process.date = datetime.date.isoformat(
+                                datetime.date.today())
+                            seq_process.name = '{0}_Scan{1}'.format(
+                                extract.name, i)
+                            seq_process.parameter_values.append(
+                                    ParameterValue(
+                                        category=seq_protocol.get_param(
+                                            'sequencing instrument'),
+                                        value=instrument
+                                    )
+                                )
+
+                            plink(lib_process, seq_process)
+
+                            assay.process_sequence.append(extraction_process)
+                            assay.process_sequence.append(lib_process)
+                            assay.process_sequence.append(seq_process)
+                    else:
+                        raise ISAModelAttributeError('At least one instrument '
+                                                     'must be specified')
 
                 study.assays.append(assay)
         return study
