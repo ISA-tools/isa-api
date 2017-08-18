@@ -393,12 +393,18 @@ class AssayType(object):
 
 class AssayTopologyModifiers(object):
 
-    def __init__(self, distinct_libraries=0, distinct_array_designs=0,
-                 injection_modes=0, acquisition_modes=0, pulse_sequences=0,
-                 technical_replicates=0):
+    def __init__(self, distinct_libraries=0, array_designs=None,
+                 injection_modes=None, acquisition_modes=0, pulse_sequences=0,
+                 technical_replicates=1):
         self.__distinct_libraries = distinct_libraries
-        self.__distinct_array_designs = distinct_array_designs
-        self.__injection_modes = injection_modes
+        if array_designs is None:
+            self.__array_designs = set()
+        else:
+            self.array_designs = array_designs
+        if injection_modes is None:
+            self.__injection_modes = set()
+        else:
+            self.injection_modes = injection_modes
         self.__acquisition_modes = acquisition_modes
         self.__pulse_sequences = pulse_sequences
         self.__technical_replicates = technical_replicates
@@ -417,17 +423,17 @@ class AssayTopologyModifiers(object):
         self.__distinct_libraries = distinct_libraries
 
     @property
-    def distinct_array_designs(self):
-        return self.__distinct_array_designs
+    def array_designs(self):
+        return self.__array_designs
 
-    @distinct_array_designs.setter
-    def distinct_array_designs(self, distinct_array_designs):
-        if not isinstance(distinct_array_designs, int):
-            raise TypeError('{0} is an invalid value for distinct_array_'
-                            'designs. Please provide an integer.')
-        if distinct_array_designs < 0:
-            raise ValueError('distinct_array_designs must be greater than 0.')
-        self.__distinct_array_designs = distinct_array_designs
+    @array_designs.setter
+    def array_designs(self, val):
+        if not isinstance(val, set):
+            raise TypeError('{0} is an invalid value for array_designs. '
+                            'Please provide an set of string.')
+        if not all(isinstance(x, str) for x in val):
+            raise ValueError('all array designs need to be of type string')
+        self.__array_designs = val
 
     @property
     def injection_modes(self):
@@ -435,14 +441,16 @@ class AssayTopologyModifiers(object):
 
     @injection_modes.setter
     def injection_modes(self, injection_modes):
+        injection_mode_values = ('FIA', 'GC', 'LC')
         if not isinstance(injection_modes, set):
             raise TypeError('{0} is an invalid value for injection_modes. '
                             'Please provide an set of string.')
         if not all(isinstance(x, str) for x in injection_modes):
             raise ValueError('all injection modes need to be of type string')
-        if not all(x in ('FIA', 'GC', 'LC') for x in
+        if not all(x in injection_mode_values for x in
                    injection_modes):
-            raise ValueError('injection modes must be one of FIA, GC or LC')
+            raise ValueError('injection modes must be one of {}'.format(
+                injection_mode_values))
         self.__injection_modes = injection_modes
 
     @property
@@ -484,21 +492,21 @@ class AssayTopologyModifiers(object):
         if not isinstance(technical_replicates, int):
             raise TypeError('{0} is an invalid value for technical_replicates. '
                             'Please provide an integer.')
-        if technical_replicates < 0:
+        if technical_replicates < 1:
             raise ValueError('injection_modes must be greater than 0.')
         self.__technical_replicates = technical_replicates
 
     def __repr__(self):
         return 'AssayTopologyModifiers(' \
                'distinct_libraries={0}, ' \
-               'distinct_array_designs={1}, ' \
+               'array_designs={1}, ' \
                'injection_modes={2}, ' \
                'acquisition_modes={3}, ' \
                'pulse_sequences={4}, ' \
                'technical_replicates={5})'.format(
                 self.distinct_libraries,
-                self.distinct_array_designs,
-                self.injection_modes,
+                sorted(self.array_designs),
+                sorted(self.injection_modes),
                 self.acquisition_modes,
                 self.pulse_sequences,
                 self.technical_replicates
@@ -513,7 +521,7 @@ class AssayTopologyModifiers(object):
     def __eq__(self, other):
         return isinstance(other, AssayTopologyModifiers) \
                and self.distinct_libraries == other.distinct_libraries \
-               and self.distinct_array_designs == other.distinct_array_designs \
+               and self.array_designs == other.array_designs \
                and self.injection_modes == other.injection_modes \
                and self.acquisition_modes == other.acquisition_modes \
                and self.pulse_sequences == other.pulse_sequences \
@@ -774,6 +782,9 @@ class IsaModelObjectFactory(object):
         else:
             self.__treatment_sequence = treatment_sequence
 
+        self.__ops = ['Alice', 'Bob', 'Carol', 'Dan', 'Erin', 'Frank']
+        random.shuffle(self.__ops)
+
     def _idgen(self, gid='', subn='', samn='', samt=''):
         idarr = []
         if gid != '':
@@ -785,6 +796,12 @@ class IsaModelObjectFactory(object):
         if samt != '':
             idarr.append(samt)
         return '_'.join(idarr)
+
+    @property
+    def ops(self):
+        """Shuffles every time it is called, so use it once in context if you
+        want to preserve the current order"""
+        return self.__ops
 
     @property
     def sample_assay_plan(self):
@@ -803,7 +820,7 @@ class IsaModelObjectFactory(object):
         return self.__treatment_sequence
 
     @treatment_sequence.setter
-    def treatment_sequence(self, treatment_sequence):
+    def treatment_sequence(self, treatment_sequence):  # TODO: Implement repeated measure writer
         if not isinstance(treatment_sequence, set):
             raise ISAModelAttributeError('treatment_sequence must be a set '
                                          'of tuples of type (Treatment, int)')
@@ -858,7 +875,7 @@ class IsaModelObjectFactory(object):
 
                         process = Process(executes_protocol=study.get_prot(
                             'sample collection'), inputs=[source],
-                            outputs=[sample], performer='bob', date_=
+                            outputs=[sample], performer=self.ops[0], date_=
                             datetime.date.isoformat(datetime.datetime.now()))
                         process_sequence.append(process)
         study.sources = sources
@@ -877,82 +894,134 @@ class IsaModelObjectFactory(object):
             for inj_mode, acq_mode in itertools.product(
                     atype.topology_modifiers.injection_modes,
                     atype.topology_modifiers.acquisition_modes):
-                assay = Assay(measurement_type=atype.measurement_type,
-                              technology_type=atype.technology_type,
-                              filename='a_{0}_{1}_assay.txt'.format(inj_mode,
-                                                                    acq_mode))
+                random.shuffle(self.__ops)
 
-                ms_protocol_name = '{0}-{1} mass spectrometry' \
-                    .format(inj_mode, acq_mode)
+                if atype.measurement_type.term == 'metabolite profiling':
+                    assay = Assay(measurement_type=atype.measurement_type,
+                                  technology_type=atype.technology_type,
+                                  filename='a_mp_{0}_{1}_assay.txt'.format(
+                                      inj_mode, acq_mode))
+                    mp_protocol_name = None
+                    if atype.technology_type.term == 'mass spectrometry':
+                        mp_protocol_name = '{0}-{1} mass spectrometry' \
+                            .format(inj_mode, acq_mode)
 
-                if atype.technology_type.term == 'mass spectrometry':
-                    try:
-                        study.add_prot(protocol_name='metabolite extraction',
-                                       protocol_type='extraction')
-                    except ISAModelAttributeError:
-                        pass
-                    try:
-                        study.add_prot(protocol_name=ms_protocol_name,
-                                       protocol_type='mass spectrometry',
-                                       use_default_params=True)
-                    except ISAModelAttributeError:
-                        pass
-
-                    ms_prot = study.get_prot(ms_protocol_name)
-                    try:
-                        ms_prot.add_param('randomized run order')
-                    except ISAModelAttributeError:
-                        pass
-                    try:
-                        ms_prot.add_param('injection mode')
-                    except ISAModelAttributeError:
-                        pass
-                    try:
-                        ms_prot.add_param('scan polarity')
-                    except ISAModelAttributeError:
-                        pass
-                    if inj_mode in ('LC', 'GC'):
                         try:
-                            ms_prot.add_param('chromatography instrument')
+                            study.add_prot(
+                                protocol_name='metabolite extraction',
+                                protocol_type='extraction')
                         except ISAModelAttributeError:
                             pass
                         try:
-                            ms_prot.add_param('chromatography column')
+                            study.add_prot(protocol_name=mp_protocol_name,
+                                           protocol_type='mass spectrometry',
+                                           use_default_params=True)
+                        except ISAModelAttributeError:
+                            pass
+
+                        ms_prot = study.get_prot(mp_protocol_name)
+                        try:
+                            ms_prot.add_param('randomized run order')
                         except ISAModelAttributeError:
                             pass
                         try:
-                            ms_prot.add_param('elution program')
+                            ms_prot.add_param('injection mode')
                         except ISAModelAttributeError:
                             pass
+                        try:
+                            ms_prot.add_param('scan polarity')
+                        except ISAModelAttributeError:
+                            pass
+                        if inj_mode in ('LC', 'GC'):
+                            try:
+                                ms_prot.add_param('chromatography instrument')
+                            except ISAModelAttributeError:
+                                pass
+                            try:
+                                ms_prot.add_param('chromatography column')
+                            except ISAModelAttributeError:
+                                pass
+                            try:
+                                ms_prot.add_param('elution program')
+                            except ISAModelAttributeError:
+                                pass
+
+                    elif atype.technology_type.term == 'nmr spectroscopy':
+                        mp_protocol_name = '{0}-{1} nmr spectroscopy' \
+                            .format(inj_mode, acq_mode)
+
+                        try:
+                            study.add_prot(
+                                protocol_name='metabolite extraction',
+                                protocol_type='extraction')
+                        except ISAModelAttributeError:
+                            pass
+                        try:
+                            study.add_prot(protocol_name=mp_protocol_name,
+                                           protocol_type='nmr spectroscopy',
+                                           use_default_params=True)
+                        except ISAModelAttributeError:
+                            pass
+
+                        ms_prot = study.get_prot(mp_protocol_name)
+                        try:
+                            ms_prot.add_param('randomized run order')
+                        except ISAModelAttributeError:
+                            pass
+                        try:
+                            ms_prot.add_param('injection mode')
+                        except ISAModelAttributeError:
+                            pass
+                        try:
+                            ms_prot.add_param('scan polarity')
+                        except ISAModelAttributeError:
+                            pass
+                        if inj_mode in ('LC', 'GC'):
+                            try:
+                                ms_prot.add_param('chromatography instrument')
+                            except ISAModelAttributeError:
+                                pass
+                            try:
+                                ms_prot.add_param('chromatography column')
+                            except ISAModelAttributeError:
+                                pass
+                            try:
+                                ms_prot.add_param('elution program')
+                            except ISAModelAttributeError:
+                                pass
 
                     num_samples_in_stype = len(samples_stype)
-                    technical_repeats = \
+                    technical_replicates = \
                         atype.topology_modifiers.technical_replicates
                     total_expected_runs = \
-                        num_samples_in_stype * technical_repeats
+                        num_samples_in_stype * technical_replicates
                     run_order = list(range(0, total_expected_runs))
-                    random.shuffle(run_order)  # does random shuffle in place
+                    random.shuffle(run_order)  # does random shuffle inplace
                     run_counter = 0
-                    for i, samp in enumerate(samples_stype):  # do we really need count?
+
+                    for i, samp in enumerate(samples_stype):
                         # build assay path
                         assay.samples.append(samp)
 
-                        extr = Extract(name='{0}_extract-{1}'.format(samp.name, i))
+                        extr = Extract(name='{0}_extract-{1}'.format(
+                            samp.name, i))
                         assay.other_material.append(extr)
                         eproc = Process(executes_protocol=study
                                         .get_prot('metabolite extraction'),
-                                        inputs=[samp], outputs=[extr], performer='bob',
+                                        inputs=[samp], outputs=[extr],
+                                        performer=self.ops[1],
                                         date_=datetime.date.isoformat(
-                                            datetime.datetime.now()))
+                                            datetime.date.today()))
                         assay.process_sequence.append(eproc)
-                        for j in range(0, technical_repeats):
-                            ms_prot = study.get_prot(ms_protocol_name)
+                        for j in range(0, technical_replicates):
+                            ms_prot = study.get_prot(mp_protocol_name)
                             aproc = Process(executes_protocol=ms_prot,
                                             name='assay-name-{0}_run-{1}'
                                             .format(i, j),
                                             inputs=[extr],
-                                            performer='louis',
-                                            date_=datetime.datetime.now())
+                                            performer=self.ops[2],
+                                            date_=datetime.date.isoformat(
+                                                datetime.date.today()))
                             aproc.parameter_values = [
                                 ParameterValue(category=ms_prot.get_param(
                                     'randomized run order'),
@@ -960,26 +1029,30 @@ class IsaModelObjectFactory(object):
                                 ParameterValue(category=ms_prot.get_param(
                                     'injection mode'), value=inj_mode),
                                 ParameterValue(category=ms_prot.get_param(
-                                    'instrument'), value='Agilent QTOF'),
+                                    'instrument'), value='Agilent QTOF'),  # TODO: See topology modifier
                                 ParameterValue(category=ms_prot.get_param(
                                     'scan polarity'), value=acq_mode),
                             ]
                             if inj_mode in ('LC', 'GC'):
-                                aproc.parameter_values.append(
-                                    ParameterValue(category=ms_prot.get_param(
-                                        'chromatography instrument'),
-                                                   value='Agilent Q12324A')
+                                aproc.parameter_values.append(  # TODO: defaults into ProtocolParameter level, if writing out in 'expandded' or 'template' mode write out all possible columns even if empty
+                                    ParameterValue(
+                                        category=ms_prot.get_param(
+                                            'chromatography instrument'),  # TODO: Topology modifier?
+                                        value='Agilent Q12324A')
                                 )
                                 aproc.parameter_values.append(
-                                    ParameterValue(category=ms_prot.get_param(
-                                        'chromatography column'),
+                                    ParameterValue(
+                                        category=ms_prot.get_param(
+                                            'chromatography column'),
                                         value='AB Hydroxyapatite')
                                 )
                                 aproc.parameter_values.append(
-                                    ParameterValue(category=ms_prot.get_param(
-                                        'elution program'),
-                                        value='Acetonitrile 90%, water 10% for '
-                                              '30 min, flow rate: 1ml/min')
+                                    ParameterValue(
+                                        category=ms_prot.get_param(
+                                            'elution program'),
+                                        value='Acetonitrile 90%, water 10% '
+                                              'for 30 min, flow rate: '
+                                              '1ml/min')
                                 )
                             run_counter += 1
                             plink(eproc, aproc)
@@ -992,4 +1065,120 @@ class IsaModelObjectFactory(object):
                             assay.process_sequence.append(aproc)
                 if assay is not None:
                     study.assays.append(assay)
+        return study
+
+    def create_assays_from_plan_dna_micro(self):
+        study = self.create_study_from_plan()
+        if self.sample_assay_plan.assay_plan == {}:
+            raise ISAModelAttributeError('assay_plan is not defined')
+        for stype, atype in self.sample_assay_plan.assay_plan:
+            # first get all samples of stype
+            samples_filtered_on_stype = [x for x in study.samples if
+                             stype in x.characteristics]
+
+            if atype.technology_type.term == 'DNA microarray':
+                assay = Assay(measurement_type=atype.measurement_type,
+                              technology_type=atype.technology_type)
+
+                study.add_prot('RNA extraction', 'RNA extraction')
+                study.add_prot('nucleic acid hybridization',
+                               'nucleic acid hybridization')
+                study.add_prot('nucleic acid sequencing',
+                               'data collection')
+
+                run_count = 0
+                for i, sample in enumerate(samples_filtered_on_stype):
+                    assay.samples.append(sample)
+
+                    if len(atype.topology_modifiers.array_designs) > 0:
+                        assay.filename = 'a_tp_{0}_assay.txt'\
+                            .format('_'.join(atype.topology_modifiers.array_designs))
+                        for array_design, technical_replicate_num in \
+                                itertools.product(
+                                    atype.topology_modifiers.array_designs,
+                                    range(0, atype.topology_modifiers.technical_replicates)):
+                            run_count += 1
+
+                            extract = Extract(name='{0}_extract-{1}'.format(
+                                sample.name, i))
+                            assay.other_material.append(extract)
+                            extraction_process = Process(
+                                executes_protocol=study.get_prot(
+                                    'RNA extraction'))
+                            extraction_process.inputs = [sample]
+                            extraction_process.output = [extract]
+                            extraction_process.performer = self.ops[1]
+                            extraction_process.date = datetime.date.isoformat(
+                                datetime.date.today())
+
+                            hyb_protocol = study.get_prot(
+                                'nucleic acid hybridization')
+                            hyb_process = Process(
+                                executes_protocol=hyb_protocol)
+                            hyb_process.inputs = [extract]
+                            hyb_process.performer = self.ops[2]
+                            hyb_process.date = datetime.date.isoformat(
+                                datetime.date.today())
+                            # hyb_process.parameter_values.append(
+                            #     ParameterValue(
+                            #         category=hyb_protocol.get_param(
+                            #             'Array Design REF'),
+                            #         value=array_design
+                            #     )
+                            # )  TODO: Fix isatab.dump() to cast Array Design REF PV rather than hard code .array_design_ref
+                            hyb_process.array_design_ref = array_design
+                            hyb_process.name = '{0}_hyb{1}'.format(extract.name, i)
+
+                            plink(extraction_process, hyb_process)
+
+                            array_data_file = ArrayDataFile(
+                                filename='output-file-{}.sff'.format(run_count))
+                            seq_process = Process(
+                                executes_protocol=study.get_prot(
+                                    'nucleic acid sequencing'))
+                            seq_process.outputs = [array_data_file]
+                            seq_process.performer = self.ops[3]
+                            seq_process.date = datetime.date.isoformat(
+                                datetime.date.today())
+                            seq_process.name = '{0}_Scan{1}'.format(hyb_process.name, i)
+
+                            plink(hyb_process, seq_process)
+
+                            assay.process_sequence.append(extraction_process)
+                            assay.process_sequence.append(hyb_process)
+                            assay.process_sequence.append(seq_process)
+                    elif len(atype.topology_modifiers.array_designs) == 0:
+                        for technical_replicate_num in \
+                                range(0, atype.topology_modifiers.technical_replicates):
+                            run_count += 1
+
+                            extract = Extract(name='{0}_extract-{1}'.format(
+                                sample.name, i))
+                            assay.other_material.append(extract)
+                            extraction_process = Process(
+                                executes_protocol=study.get_prot(
+                                    'RNA extraction'))
+                            extraction_process.inputs = [sample]
+                            extraction_process.output = [extract]
+                            extraction_process.performer = self.ops[1]
+                            extraction_process.date = datetime.date.isoformat(
+                                datetime.date.today())
+
+                            array_data_file = ArrayDataFile(
+                                filename='output-file-{}.sff'.format(run_count))
+                            seq_process = Process(
+                                executes_protocol=study.get_prot(
+                                    'nucleic acid sequencing'))
+                            seq_process.outputs = [array_data_file]
+                            seq_process.performer = self.ops[3]
+                            seq_process.date = datetime.date.isoformat(
+                                datetime.date.today())
+                            seq_process.name = '{0}_Scan{1}'.format(extract.name, i)
+
+                            plink(extraction_process, seq_process)
+
+                            assay.process_sequence.append(extraction_process)
+                            assay.process_sequence.append(seq_process)
+
+                study.assays.append(assay)
         return study

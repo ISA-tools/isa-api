@@ -1250,6 +1250,8 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                               'NMR probe',
                               'number of acquisition',
                               'magnetic field strength']
+        elif protocol_type == 'nucleic acid hybridization':
+            parameter_list = ['Array Design REF']
         default_protocol.parameters = [
             ProtocolParameter(parameter_name=OntologyAnnotation(term=x))
             for x in parameter_list]

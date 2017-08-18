@@ -72,8 +72,8 @@ class AssayTopologyModifiersTest(unittest.TestCase):
         self.assay_topology_modifiers_default = AssayTopologyModifiers()
         self.assay_topology_modifiers = AssayTopologyModifiers(
             distinct_libraries=1,
-            distinct_array_designs=2,
-            injection_modes=3,
+            array_designs={'design1', 'design2'},
+            injection_modes={'GC', 'LC'},
             acquisition_modes=4,
             pulse_sequences=5,
             technical_replicates=6
@@ -82,27 +82,27 @@ class AssayTopologyModifiersTest(unittest.TestCase):
     def test_repr(self):
         self.assertEqual('AssayTopologyModifiers('
                          'distinct_libraries=0, '
-                         'distinct_array_designs=0, '
-                         'injection_modes=0, '
+                         'array_designs=[], '
+                         'injection_modes=[], '
                          'acquisition_modes=0, '
                          'pulse_sequences=0, '
-                         'technical_replicates=0)',
+                         'technical_replicates=1)',
                          repr(self.assay_topology_modifiers_default))
-        self.assertEqual('AssayTopologyModifiers('
-                         'distinct_libraries=1, '
-                         'distinct_array_designs=2, '
-                         'injection_modes=3, '
-                         'acquisition_modes=4, '
-                         'pulse_sequences=5, '
-                         'technical_replicates=6)',
+        self.assertEqual("AssayTopologyModifiers("
+                         "distinct_libraries=1, "
+                         "array_designs=['design1', 'design2'], "
+                         "injection_modes=['GC', 'LC'], "
+                         "acquisition_modes=4, "
+                         "pulse_sequences=5, "
+                         "technical_replicates=6)",
                          repr(self.assay_topology_modifiers))
 
     def test_eq(self):
         expected_assay_topology_modifiers_default = AssayTopologyModifiers()
         expected_assay_topology_modifiers = AssayTopologyModifiers(
             distinct_libraries=1,
-            distinct_array_designs=2,
-            injection_modes=3,
+            array_designs={'design1', 'design2'},
+            injection_modes={'GC', 'LC'},
             acquisition_modes=4,
             pulse_sequences=5,
             technical_replicates=6
@@ -116,8 +116,8 @@ class AssayTopologyModifiersTest(unittest.TestCase):
         expected_assay_topology_modifiers_default = AssayTopologyModifiers()
         expected_assay_topology_modifiers = AssayTopologyModifiers(
             distinct_libraries=1,
-            distinct_array_designs=2,
-            injection_modes=3,
+            array_designs={'design1', 'design2'},
+            injection_modes={'GC', 'LC'},
             acquisition_modes=4,
             pulse_sequences=5,
             technical_replicates=6
