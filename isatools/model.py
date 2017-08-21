@@ -1252,6 +1252,10 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                               'magnetic field strength']
         elif protocol_type == 'nucleic acid hybridization':
             parameter_list = ['Array Design REF']
+        elif protocol_type == 'nucleic acid sequencing':
+            parameter_list = ['sequencing instrument',
+                              'quality scorer',
+                              'base caller']
         default_protocol.parameters = [
             ProtocolParameter(parameter_name=OntologyAnnotation(term=x))
             for x in parameter_list]

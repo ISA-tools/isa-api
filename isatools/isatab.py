@@ -910,7 +910,11 @@ def write_value_columns(df_dict, label, x):
 
 
 def get_pv_columns(label, pv):
-    columns = ["{0}.Parameter Value[{1}]".format(label, pv.category.parameter_name.term)]
+    columns = None
+    try:
+        columns = ["{0}.Parameter Value[{1}]".format(label, pv.category.parameter_name.term)]
+    except AttributeError:
+        log.fatal(label, pv)
     columns.extend(get_value_columns(columns[0], pv))
     return columns
 

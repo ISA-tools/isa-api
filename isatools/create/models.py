@@ -1199,7 +1199,7 @@ class IsaModelObjectFactory(object):
                 for i, sample in enumerate(samples_filtered_on_stype):
                     assay.samples.append(sample)
 
-                    if len(atype.topology_modifiers.array_designs) > 0:
+                    if len(atype.topology_modifiers.instruments) > 0:
                         assay.filename = 'a_ngs_{0}_assay.txt'\
                             .format('_'.join(atype.topology_modifiers.instruments))
                         for instrument, technical_replicate_num in \
@@ -1234,7 +1234,8 @@ class IsaModelObjectFactory(object):
                             raw_data_file = RawDataFile(
                                 filename='output-file-{}.sff'.format(run_count))
                             assay.data_files.append(raw_data_file)
-                            seq_protocol = study.get_prot('data collection')
+                            seq_protocol = study.get_prot(
+                                'nucleic acid sequencing')
                             seq_process = Process(
                                 executes_protocol=seq_protocol)
                             seq_process.outputs = [raw_data_file]
