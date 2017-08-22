@@ -74,8 +74,8 @@ class AssayTopologyModifiersTest(unittest.TestCase):
             distinct_libraries=1,
             array_designs={'design1', 'design2'},
             injection_modes={'GC', 'LC'},
-            acquisition_modes=4,
-            pulse_sequences=5,
+            acquisition_modes={'mode1', 'mode2'},
+            pulse_sequences={'TOCSY', 'NOCSY'},
             technical_replicates=6
         )
 
@@ -84,16 +84,16 @@ class AssayTopologyModifiersTest(unittest.TestCase):
                          'distinct_libraries=0, '
                          'array_designs=[], '
                          'injection_modes=[], '
-                         'acquisition_modes=0, '
-                         'pulse_sequences=0, '
+                         'acquisition_modes=[], '
+                         'pulse_sequences=[], '
                          'technical_replicates=1)',
                          repr(self.assay_topology_modifiers_default))
         self.assertEqual("AssayTopologyModifiers("
                          "distinct_libraries=1, "
                          "array_designs=['design1', 'design2'], "
                          "injection_modes=['GC', 'LC'], "
-                         "acquisition_modes=4, "
-                         "pulse_sequences=5, "
+                         "acquisition_modes=['mode1', 'mode2'], "
+                         "pulse_sequences=['NOCSY', 'TOCSY'], "
                          "technical_replicates=6)",
                          repr(self.assay_topology_modifiers))
 
@@ -103,8 +103,8 @@ class AssayTopologyModifiersTest(unittest.TestCase):
             distinct_libraries=1,
             array_designs={'design1', 'design2'},
             injection_modes={'GC', 'LC'},
-            acquisition_modes=4,
-            pulse_sequences=5,
+            acquisition_modes={'mode1', 'mode2'},
+            pulse_sequences={'TOCSY', 'NOCSY'},
             technical_replicates=6
         )
         self.assertEqual(expected_assay_topology_modifiers_default,
@@ -118,8 +118,8 @@ class AssayTopologyModifiersTest(unittest.TestCase):
             distinct_libraries=1,
             array_designs={'design1', 'design2'},
             injection_modes={'GC', 'LC'},
-            acquisition_modes=4,
-            pulse_sequences=5,
+            acquisition_modes={'mode1', 'mode2'},
+            pulse_sequences={'TOCSY', 'NOCSY'},
             technical_replicates=6
         )
         self.assertNotEqual(expected_assay_topology_modifiers,

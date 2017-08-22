@@ -410,8 +410,8 @@ class Investigation(Commentable, MetadataMixin, object):
                 self.__studies = list(val)
         else:
             raise ISAModelAttributeError(
-                'Investigation.studies must be iterable containing '
-                'OntologySource objects')
+                'Investigation.studies must be iterable containing Study '
+                'objects')
 
     def __repr__(self):
         return 'Investigation(identifier="{0.identifier}", ' \
@@ -1245,7 +1245,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                               'ion source',
                               'detector',
                               'analyzer']
-        elif protocol_type == 'NMR spectroscopy':
+        elif protocol_type == 'nmr spectroscopy':
             parameter_list = ['instrument',
                               'NMR probe',
                               'number of acquisition',
