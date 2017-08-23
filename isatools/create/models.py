@@ -396,7 +396,7 @@ class AssayTopologyModifiers(object):
     def __init__(self, distinct_libraries=0, array_designs=None,
                  injection_modes=None, acquisition_modes=None,
                  pulse_sequences=None, technical_replicates=1,
-                 instruments=None):
+                 instruments=None, chromatography_instruments=None):
         
         self.__distinct_libraries = distinct_libraries
         
@@ -415,17 +415,22 @@ class AssayTopologyModifiers(object):
         else:
             self.acquisition_modes = acquisition_modes
         
-        if pulse_sequences is None:
+        if pulse_sequences is None:  # only applies to NMR
             self.__pulse_sequences = set()
         else:
             self.pulse_sequences = pulse_sequences
             
         self.__technical_replicates = technical_replicates
         
-        if instruments is None:
+        if instruments is None:  # scanning instruments
             self.__instruments = set()
         else:
             self.instruments = instruments
+            
+        if chromatography_instruments is None:  # chromatography instruments
+            self.__chromatography_instruments = set()
+        else:
+            self.chromatography_instruments = chromatography_instruments
 
     @property
     def distinct_libraries(self):
@@ -517,11 +522,25 @@ class AssayTopologyModifiers(object):
     @instruments.setter
     def instruments(self, val):
         if not isinstance(val, set):
-            raise TypeError('{0} is an invalid value for acquisition_modes. '
+            raise TypeError('{0} is an invalid value for instruments. '
                             'Please provide an set of string.')
         if not all(isinstance(x, str) for x in val):
-            raise ValueError('all acquisition modes need to be of type string')
+            raise ValueError('all instruments need to be of type string')
         self.__instruments = val
+        
+    @property
+    def chromatography_instruments(self):
+        return self.__chromatography_instruments
+
+    @chromatography_instruments.setter
+    def chromatography_instruments(self, val):
+        if not isinstance(val, set):
+            raise TypeError('{0} is an invalid value for chromatography_'
+                            'instruments. Please provide an set of string.')
+        if not all(isinstance(x, str) for x in val):
+            raise ValueError('all chromatography instruments need to be of '
+                             'type string')
+        self.__chromatography_instruments = val
 
     def __repr__(self):
         return 'AssayTopologyModifiers(' \
@@ -530,13 +549,17 @@ class AssayTopologyModifiers(object):
                'injection_modes={2}, ' \
                'acquisition_modes={3}, ' \
                'pulse_sequences={4}, ' \
-               'technical_replicates={5})'.format(
+               'technical_replicates={5}, ' \
+               'instruments={6}, ' \
+               'chromatography_instruments={7})'.format(
                 self.distinct_libraries,
                 sorted(self.array_designs),
                 sorted(self.injection_modes),
                 sorted(self.acquisition_modes),
                 sorted(self.pulse_sequences),
-                self.technical_replicates
+                self.technical_replicates,
+                sorted(self.instruments),
+                sorted(self.chromatography_instruments)
                 )
 
     def __hash__(self):
@@ -552,7 +575,10 @@ class AssayTopologyModifiers(object):
                and self.injection_modes == other.injection_modes \
                and self.acquisition_modes == other.acquisition_modes \
                and self.pulse_sequences == other.pulse_sequences \
-               and self.technical_replicates == other.technical_replicates
+               and self.technical_replicates == other.technical_replicates \
+               and self.instruments == other.instruments \
+               and self.chromatography_instruments == \
+               other.chromatography_instruments
 
 """
 class AssayPlan(object):
@@ -978,84 +1004,89 @@ class IsaModelObjectFactory(object):
                     except ISAModelAttributeError:
                         pass
 
-                num_samples_in_stype = len(samples_stype)
-                technical_replicates = \
-                    atype.topology_modifiers.technical_replicates
-                total_expected_runs = \
-                    num_samples_in_stype * technical_replicates
-                run_order = list(range(0, total_expected_runs))
-                random.shuffle(run_order)  # does random shuffle inplace
-                run_counter = 0
+                    num_samples_in_stype = len(samples_stype)
+                    technical_replicates = \
+                        atype.topology_modifiers.technical_replicates
+                    total_expected_runs = \
+                        num_samples_in_stype * technical_replicates
+                    run_order = list(range(0, total_expected_runs))
+                    random.shuffle(run_order)  # does random shuffle inplace
+                    run_counter = 0
 
-                for i, samp in enumerate(samples_stype):
-                    # build assay path
-                    assay.samples.append(samp)
+                    for i, samp in enumerate(samples_stype):
+                        # build assay path
+                        assay.samples.append(samp)
 
-                    extr = Extract(name='{0}_extract-{1}'.format(
-                        samp.name, i))
-                    assay.other_material.append(extr)
-                    eproc = Process(executes_protocol=study
-                                    .get_prot('metabolite extraction'),
-                                    inputs=[samp], outputs=[extr],
-                                    performer=self.ops[1],
-                                    date_=datetime.date.isoformat(
-                                        datetime.date.today()))
-                    if inj_mode in ('LC', 'GC'):
-                        eproc.parameter_values.append(
-                            # TODO: defaults into ProtocolParameter level, if writing out in 'expandded' or 'template' mode write out all possible columns even if empty
-                            ParameterValue(
-                                category=ext_protocol.get_param(
-                                    'chromatography instrument'),
-                                # TODO: Topology modifier?
-                                value='Agilent Q12324A')
-                        )
-                        eproc.parameter_values.append(
-                            ParameterValue(
-                                category=ext_protocol.get_param(
-                                    'chromatography column'),
-                                value='AB Hydroxyapatite')
-                        )
-                        eproc.parameter_values.append(
-                            ParameterValue(
-                                category=ext_protocol.get_param(
-                                    'elution program'),
-                                value='Acetonitrile 90%, water 10% '
-                                      'for 30 min, flow rate: '
-                                      '1ml/min')
-                        )
-                    assay.process_sequence.append(eproc)
-                    for j in range(0, technical_replicates):
-                        ms_prot = study.get_prot(mp_protocol_name)
-                        aproc = Process(executes_protocol=ms_prot,
-                                        name='assay-name-{0}_run-{1}'
-                                        .format(i, j),
-                                        inputs=[extr],
-                                        performer=self.ops[2],
+                        extr = Extract(name='{0}_extract-{1}'.format(
+                            samp.name, i))
+                        assay.other_material.append(extr)
+                        eproc = Process(executes_protocol=study
+                                        .get_prot('metabolite extraction'),
+                                        inputs=[samp], outputs=[extr],
+                                        performer=self.ops[1],
                                         date_=datetime.date.isoformat(
                                             datetime.date.today()))
-                        aproc.parameter_values = [
-                            ParameterValue(category=ms_prot.get_param(
-                                'randomized run order'),
-                                value=str(run_counter)),
-                            ParameterValue(category=ms_prot.get_param(
-                                'injection mode'), value=inj_mode),
-                            ParameterValue(category=ms_prot.get_param(
-                                'instrument'), value='Agilent QTOF'),
-                            # TODO: See topology modifier
-                            ParameterValue(category=ms_prot.get_param(
-                                'scan polarity'), value=acq_mode),
-                        ]
-                        run_counter += 1
-                        plink(eproc, aproc)
-                        dfile = RawSpectralDataFile(
-                            filename=
-                            'acquired-data-{0}_platform-{1}_{2}_run-{3}'
-                            '.mzml.gz'.format(i, inj_mode, acq_mode, j))
-                        assay.data_files.append(dfile)
-                        aproc.outputs = [dfile]
-                        assay.process_sequence.append(aproc)
-                if assay is not None:
-                    study.assays.append(assay)
+                        if inj_mode in ('LC', 'GC'):
+                            eproc.parameter_values.append(
+                                ParameterValue(
+                                    category=ext_protocol.get_param(
+                                        'chromatography instrument'),
+                                    value=next(
+                                        iter(atype.topology_modifiers
+                                             .chromatography_instruments))
+                                )
+                            )
+                            eproc.parameter_values.append(
+                                ParameterValue(
+                                    category=ext_protocol.get_param(
+                                        'chromatography column'),
+                                    value='AB Hydroxyapatite'
+                                )
+                            )
+                            eproc.parameter_values.append(
+                                ParameterValue(
+                                    category=ext_protocol.get_param(
+                                        'elution program'),
+                                    value='Acetonitrile 90%, water 10% for 30 '
+                                          'min, flow rate: 1ml/min'
+                                )
+                            )
+                        assay.process_sequence.append(eproc)
+                        for j in range(0, technical_replicates):
+                            ms_prot = study.get_prot(mp_protocol_name)
+                            aproc = Process(executes_protocol=ms_prot,
+                                            name='assay-name-{0}_run-{1}'
+                                            .format(i, j),
+                                            inputs=[extr],
+                                            performer=self.ops[2],
+                                            date_=datetime.date.isoformat(
+                                                datetime.date.today()))
+                            aproc.parameter_values = [
+                                ParameterValue(category=ms_prot.get_param(
+                                    'randomized run order'),
+                                    value=str(run_counter)),
+                                ParameterValue(category=ms_prot.get_param(
+                                    'injection mode'), value=inj_mode),
+                                ParameterValue(
+                                    category=ms_prot.get_param('instrument'),
+                                    value=next(
+                                        iter(atype.topology_modifiers
+                                             .instruments))
+                                ),
+                                ParameterValue(category=ms_prot.get_param(
+                                    'scan polarity'), value=acq_mode),
+                            ]
+                            run_counter += 1
+                            plink(eproc, aproc)
+                            dfile = RawSpectralDataFile(
+                                filename=
+                                'acquired-data-{0}_platform-{1}_{2}_run-{3}'
+                                '.mzml.gz'.format(i, inj_mode, acq_mode, j))
+                            assay.data_files.append(dfile)
+                            aproc.outputs = [dfile]
+                            assay.process_sequence.append(aproc)
+                    if assay is not None:
+                        study.assays.append(assay)
         return study
 
     def create_nmr_assays_from_plan(self):
@@ -1150,7 +1181,9 @@ class IsaModelObjectFactory(object):
                                 ParameterValue(category=nmr_prot.get_param(
                                     'acquisition mode'), value=acq_mode),
                                 ParameterValue(category=nmr_prot.get_param(
-                                    'instrument'), value='Bruker DRX700'),  # TODO: See topology modifier
+                                    'instrument'), value=next(
+                                    iter(atype.topology_modifiers
+                                         .instruments))),
                                 ParameterValue(category=nmr_prot.get_param(
                                     'pulse sequence'), value=pulse_seq),
                             ]
