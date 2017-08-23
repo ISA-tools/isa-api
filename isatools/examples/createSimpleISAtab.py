@@ -169,8 +169,8 @@ def create_descriptor():
 
     study.assays.append(assay)
 
-    from isatools.isatab import dumps
-    return dumps(investigation)  # dumps() writes out the ISA as a string representation of the ISA-Tab
+    from isatools import isatab
+    return isatab.dumps(investigation)  # dumps() writes out the ISA as a string representation of the ISA-Tab
 
 if __name__ == '__main__':
     print(create_descriptor())  # print the result to stdout

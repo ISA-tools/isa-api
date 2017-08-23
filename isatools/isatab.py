@@ -502,7 +502,7 @@ def _all_end_to_end_paths(G, start_nodes):  # we know graphs start with Source o
                 paths += list(nx.algorithms.all_simple_paths(G, start, end))
     log.info("Found {} paths!".format(len(paths)))
     if len(paths) == 0:
-        log.debug([x.name for x in start_nodes])  # TODO: Find out why no paths in BII-I-1
+        log.debug([x.name for x in start_nodes])
     return paths
 
 
