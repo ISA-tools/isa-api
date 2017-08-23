@@ -21,100 +21,51 @@ log = logging.getLogger(__name__)
 
 __author__ = 'massi'
 
-INTERVENTIONS = dict(CHEMICAL='chemical intervention', BEHAVIOURAL='behavioural intervention',
-                     SURGICAL='surgical intervention', BIOLOGICAL='biological intervention',
+INTERVENTIONS = dict(CHEMICAL='chemical intervention',
+                     BEHAVIOURAL='behavioural intervention',
+                     SURGICAL='surgical intervention',
+                     BIOLOGICAL='biological intervention',
                      RADIOLOGICAL='radiological intervention')
 
-FACTOR_TYPES = dict(AGENT_VALUES='agent values', INTENSITY_VALUES='intensity values', DURATION_VALUES='duration values')
+FACTOR_TYPES = dict(AGENT_VALUES='agent values',
+                    INTENSITY_VALUES='intensity values',
+                    DURATION_VALUES='duration values')
 
 BASE_FACTORS_ = [
     dict(
-        name='AGENT', type=OntologyAnnotation(term="perturbation agent"), display_singular='AGENT VALUE',
+        name='AGENT', type=OntologyAnnotation(term="perturbation agent"),
+        display_singular='AGENT VALUE',
         display_plural='AGENT VALUES', values=set()
     ),
     dict(
-        name='INTENSITY', type=OntologyAnnotation(term="intensity"), display_singular='INTENSITY VALUE',
+        name='INTENSITY', type=OntologyAnnotation(term="intensity"),
+        display_singular='INTENSITY VALUE',
         display_plural='INTENSITY VALUES', values=set()
     ),
     dict(
-        name='DURATION', type=OntologyAnnotation(term="time"), display_singular='DURATION VALUE',
+        name='DURATION', type=OntologyAnnotation(term="time"),
+        display_singular='DURATION VALUE',
         display_plural='DURATION VALUES', values=set()
     )
 ]
 
 BASE_FACTORS = [
-    StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0].get('type', None)),
-    StudyFactor(name=BASE_FACTORS_[1]['name'], factor_type=BASE_FACTORS_[1].get('type', None)),
-    StudyFactor(name=BASE_FACTORS_[2]['name'], factor_type=BASE_FACTORS_[2].get('type', None)),
+    StudyFactor(name=BASE_FACTORS_[0]['name'],
+                factor_type=BASE_FACTORS_[0].get('type', None)),
+    StudyFactor(name=BASE_FACTORS_[1]['name'],
+                factor_type=BASE_FACTORS_[1].get('type', None)),
+    StudyFactor(name=BASE_FACTORS_[2]['name'],
+                factor_type=BASE_FACTORS_[2].get('type', None)),
 ]
-
-""" DEPRECATED
-class SamplePlan(object):
-
-    def __init__(self, group_size=0, sample_type_map=None):
-        self.__group_size = group_size if isinstance(group_size, int) and group_size > 0 else 0
-        self.__sample_types_map = {}
-
-        if sample_type_map:
-            self.sample_types_map = sample_type_map
-
-    @property
-    def group_size(self):
-        return self.__group_size
-
-    @group_size.setter
-    def group_size(self, group_size):
-        if not isinstance(group_size, int):
-            raise TypeError('{0} is not a valid value for group_size. Please provide an integer.')
-        if group_size < 0:
-            raise ValueError('group_size must be greater than 0.')
-        self.__group_size = group_size
-
-    @property
-    def sample_types_map(self):
-        return self.__sample_types_map
-
-    @sample_types_map.setter
-    def sample_types_map(self, sample_types_map):
-        for sample_type, sampling_size in sample_types_map.items():
-            self.add_sample_type_sampling_plan(sample_type, sampling_size)
-
-    def add_sample_type_sampling_plan(self, sample_type, sampling_size=0):
-        
-        
-        :param sample_type: (Characteristic/str) a sample type
-        :param sampling_size: (int/tuple of int) for the provided sample type how many sampling events happen for a single
-                                                 source/subject. This can be specified throughout the whole sequence with
-                                                 a single integer value, or with a tuple of value, each value for an 
-                                                 epoch. Missing values will be considered as zero (no sampling.
-        :return: 
-        
-        if not isinstance(sampling_size, int) and not isinstance(sampling_size, tuple):
-            raise TypeError('sampling_size must be a natural number or a tuple of natural numbers')
-        if isinstance(sampling_size, int) and sampling_size < 0:
-            raise ValueError('sampling_size value must be a positive integer')
-        if isinstance(sampling_size, tuple) and not all(isinstance(el, int) and el >= 0 for el in sampling_size):
-            raise ValueError('all values in the sampling_size tuple must be positive integers')
-        if isinstance(sample_type, Characteristic):
-            self.__sample_types_map[sample_type] = sampling_size
-        elif isinstance(sample_type, str):  # TODO should we remove this case?
-            characteristic = Characteristic(category=OntologyAnnotation(term='organism part'),
-                                            value=OntologyAnnotation(term=sample_type))
-            self.__sample_types_map[characteristic] = sampling_size
-        else:
-            raise TypeError('wrong sample type {0}'.format(sample_type))
-
-    @property
-    def sample_types(self):
-        return {sample_type for sample_type in self.__sample_types_map}
-"""
 
 
 class Treatment(object):
     """
-    A Treatment is defined as a tuple of factor values (as defined in the ISA model v1) and a treatment type
+    A Treatment is defined as a tuple of factor values (as defined in the ISA
+    model v1) and a treatment type
     """
-    def __init__(self, treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=()):
+    def __init__(self, treatment_type=INTERVENTIONS['CHEMICAL'],
+                 factor_values=None):
         """
         Creates a new Treatment
         :param factor_values: tuple of isatools.model.v1.FactorValue
@@ -124,18 +75,22 @@ class Treatment(object):
             raise ValueError('invalid treatment type provided: ')
 
         self.__treatment_type = treatment_type
-        self.__factor_values = ()
 
-        self.factor_values = factor_values
+        if factor_values is None:
+            self.__factor_values = ()
+        else:
+            self.factor_values = factor_values
 
     def __repr__(self):
-        return 'Treatment(factor_type={0}, factor_values={1})'.format(self.treatment_type, self.factor_values)
+        return 'Treatment(factor_type={0}, factor_values={1})'.format(
+            self.treatment_type, self.factor_values)
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, Treatment) and self.treatment_type == other.treatment_type \
+        return isinstance(other, Treatment) \
+               and self.treatment_type == other.treatment_type \
                and self.factor_values == other.factor_values
 
     def __ne__(self, other):
@@ -158,16 +113,19 @@ class Treatment(object):
 
     @factor_values.setter
     def factor_values(self, factor_values=()):
-        if isinstance(factor_values, tuple) and all([isinstance(factor_value, FactorValue)
-                                                     for factor_value in factor_values]):
+        if isinstance(factor_values, tuple) \
+                and all([isinstance(factor_value, FactorValue)
+                         for factor_value in factor_values]):
             self.__factor_values = factor_values
         else:
-            raise TypeError('Data supplied is not correctly formatted for Treatment')
+            raise TypeError('Data supplied is not correctly formatted for '
+                            'Treatment')
 
 
 class TreatmentFactory(object):
 
-    def __init__(self, intervention_type=INTERVENTIONS['CHEMICAL'], factors=BASE_FACTORS):
+    def __init__(self, intervention_type=INTERVENTIONS['CHEMICAL'],
+                 factors=BASE_FACTORS):
 
         if intervention_type not in INTERVENTIONS.values():
             raise ValueError('invalid treatment type provided: ')
@@ -187,7 +145,7 @@ class TreatmentFactory(object):
 
     def add_factor_value(self, factor, factor_value):
         """
-        Add a single factor value or a list of factor value to the relevant set set
+        Add a single factor value or a list of factor value to the relevant set
         :param factor: isatools.model.StudyFactor
         :param factor_value: string/list
         :return: None
@@ -199,16 +157,20 @@ class TreatmentFactory(object):
             elif isinstance(factor_value, Iterable):
                 current_factors.update(factor_value)
         else:
-            raise KeyError('The factor {} is not present in the design'.format(factor.name))
+            raise KeyError('The factor {} is not present in the design'.format(
+                factor.name))
 
     def compute_full_factorial_design(self):
         """
-        Computes the ful factorial design on the basis of the stored factor and factor values.
-        If one of the factors has no associated values an empty set is returned
-        :return: set - the full factorial design as a set of Treatments
+        Computes the ful factorial design on the basis of the stored factor and
+        factor values. If one of the factors has no associated values an empty
+        set is returned :return: set - the full factorial design as a set of
+        Treatments
         """
         factor_values = [
-            [FactorValue(factor_name=factor_name, value=value, unit=None) for value in values]
+            [FactorValue(
+                factor_name=factor_name, value=value, unit=None
+            ) for value in values]
             for factor_name, values in self.factors.items()
         ]
         if set() not in self.factors.values():
@@ -226,23 +188,27 @@ class TreatmentSequence:
 
     def __init__(self, ranked_treatments=[], subject_count=10):
         """
-        :param ranked_treatments: Treatment or list of Treatments of list of tuples (Treatment, int) where the second 
-               term represents the  epoch
+        :param ranked_treatments: Treatment or list of Treatments of list of
+               tuples (Treatment, int) where the second term represents the
+               epoch
         """
         self.__ranked_treatments = set()
-        # self.__subject_count = subject_count if isinstance(subject_count, int) and subject_count >= 0 else 0
+        # self.__subject_count = subject_count if isinstance(
+        # subject_count, int) and subject_count >= 0 else 0
         # self.__sample_map = {}
 
         self.add_multiple_treatments(ranked_treatments)
 
     def __repr__(self):
-        return 'TreatmentSequence({0})'.format(sorted(self.ranked_treatments, key=itemgetter(1)))
+        return 'TreatmentSequence({0})'.format(
+            sorted(self.ranked_treatments, key=itemgetter(1)))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, TreatmentSequence) and self.ranked_treatments == other.ranked_treatments
+        return isinstance(other, TreatmentSequence) \
+               and self.ranked_treatments == other.ranked_treatments
 
     def __ne__(self, other):
         return not self == other
@@ -579,74 +545,6 @@ class AssayTopologyModifiers(object):
                and self.instruments == other.instruments \
                and self.chromatography_instruments == \
                other.chromatography_instruments
-
-"""
-class AssayPlan(object):
-
-    def __init__(self, sample_plan=SamplePlan()):
-        self.__sample_plan = set()
-        self.__assay_types_map = {}
-        self.__assay_topologies_map = {}
-
-        self.sample_plan = sample_plan
-
-    @property
-    def sample_plan(self):
-        return self.__sample_plan
-
-    @sample_plan.setter
-    def sample_plan(self, sample_plan):
-        if not isinstance(sample_plan, SamplePlan):
-            raise TypeError('{0} is an invalid value for sample_plan. Please provide a SamplePlan object.')
-        missing_sample_types = { sample_type for sample_type in self.__assay_types_map } - sample_plan.sample_types
-        if missing_sample_types != set():
-            raise ValueError('Some of the sample_types required by the assay plan are not declared in the sample plan'
-                             '{0}'.format(missing_sample_types))
-        self.__sample_plan = sample_plan
-
-    @property
-    def assay_types_map(self):
-        return self.__assay_types_map
-
-    @assay_types_map.setter
-    def assay_types_map(self, assay_types_map):
-        for sample_type, assay_type in assay_types_map.items():
-            self.add_sample_to_assay_type_mapping(sample_type, assay_type)
-
-    def add_sample_to_assay_type_mapping(self, sample_type, assay_type):
-        if not isinstance(sample_type, (Characteristic, str)):
-            raise TypeError('invalid sample_type {0}'.format(sample_type))
-        elif not isinstance(assay_type, AssayType):
-            raise TypeError('invalid assay_type {0}'.format(assay_type))
-        if isinstance(sample_type, str):
-            characteristic = Characteristic(category=OntologyAnnotation(term='organism part'),
-                                            value=OntologyAnnotation(term=sample_type))
-            if characteristic not in self.sample_plan.sample_types_map.keys():
-                print('warning: sample type {0} is not present in the sample plan provided'
-                      .format(repr(characteristic)))
-            self.__assay_types_map[characteristic] = assay_type
-        else:
-            self.__assay_types_map[sample_type] = assay_type
-
-    @property
-    def assay_topologies_map(self):
-        return self.__assay_topologies_map
-
-    @assay_topologies_map.setter
-    def assay_topologies_map(self, assay_topologies_map):
-        for assay_type, assay_topology_modifiers in assay_topologies_map.items():
-            self.set_assay_type_topology(assay_type, assay_topology_modifiers)
-
-    def set_assay_type_topology(self, assay_type, assay_topology_modifiers):
-        if isinstance(assay_type, AssayType) and assay_type in self.assay_types_map.keys():
-            self.__assay_topologies_map[assay_type] = assay_topology_modifiers
-        else:
-            raise TypeError('invalid assay_type {0}'.format(assay_topology_modifiers))
-        if isinstance(assay_topology_modifiers, AssayTopologyModifiers):
-            self.__assay_topologies_map[assay_type] = assay_topology_modifiers
-        else:
-            raise TypeError('invalid assay_topology_modifiers type {0}'.format(assay_topology_modifiers))
-"""
 
 
 class SampleAssayPlan(object):
@@ -1226,11 +1124,13 @@ class IsaModelObjectFactory(object):
 
                     if len(atype.topology_modifiers.array_designs) > 0:
                         assay.filename = 'a_tp_{0}_assay.txt'\
-                            .format('_'.join(atype.topology_modifiers.array_designs))
+                            .format('_'.join(atype.topology_modifiers
+                                             .array_designs))
                         for array_design, technical_replicate_num in \
                                 itertools.product(
                                     atype.topology_modifiers.array_designs,
-                                    range(0, atype.topology_modifiers.technical_replicates)):
+                                    range(0, atype.topology_modifiers
+                                            .technical_replicates)):
                             run_count += 1
 
                             extract = Extract(name='{0}_extract-{1}'.format(
@@ -1253,15 +1153,10 @@ class IsaModelObjectFactory(object):
                             hyb_process.performer = self.ops[2]
                             hyb_process.date = datetime.date.isoformat(
                                 datetime.date.today())
-                            # hyb_process.parameter_values.append(
-                            #     ParameterValue(
-                            #         category=hyb_protocol.get_param(
-                            #             'Array Design REF'),
-                            #         value=array_design
-                            #     )
-                            # )  TODO: Fix isatab.dump() to cast Array Design REF PV rather than hard code .array_design_ref
+
                             hyb_process.array_design_ref = array_design
-                            hyb_process.name = '{0}_hyb{1}'.format(extract.name, i)
+                            hyb_process.name = '{0}_hyb{1}'.format(
+                                extract.name, i)
 
                             plink(extraction_process, hyb_process)
 
@@ -1275,7 +1170,8 @@ class IsaModelObjectFactory(object):
                             seq_process.performer = self.ops[3]
                             seq_process.date = datetime.date.isoformat(
                                 datetime.date.today())
-                            seq_process.name = '{0}_Scan{1}'.format(hyb_process.name, i)
+                            seq_process.name = '{0}_Scan{1}'.format(
+                                hyb_process.name, i)
 
                             plink(hyb_process, seq_process)
 
@@ -1314,11 +1210,13 @@ class IsaModelObjectFactory(object):
 
                     if len(atype.topology_modifiers.instruments) > 0:
                         assay.filename = 'a_ngs_{0}_assay.txt'\
-                            .format('_'.join(atype.topology_modifiers.instruments))
+                            .format('_'.join(atype.topology_modifiers
+                                             .instruments))
                         for instrument, technical_replicate_num in \
                                 itertools.product(
                                     atype.topology_modifiers.instruments,
-                                    range(0, atype.topology_modifiers.technical_replicates)):
+                                    range(0, atype.topology_modifiers
+                                            .technical_replicates)):
                             run_count += 1
 
                             extract = Extract(name='{0}_extract-{1}'.format(
