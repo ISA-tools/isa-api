@@ -111,7 +111,9 @@ class AssayTopologyModifiersTest(unittest.TestCase):
             injection_modes={'GC', 'LC'},
             acquisition_modes={'mode1', 'mode2'},
             pulse_sequences={'TOCSY', 'NOCSY'},
-            technical_replicates=6
+            technical_replicates=6,
+            instruments={'Agilent QTOF'},
+            chromatography_instruments={'Agilent 12345F'}
         )
         self.assertEqual(expected_assay_topology_modifiers_default,
                          self.assay_topology_modifiers_default)
@@ -126,7 +128,9 @@ class AssayTopologyModifiersTest(unittest.TestCase):
             injection_modes={'GC', 'LC'},
             acquisition_modes={'mode1', 'mode2'},
             pulse_sequences={'TOCSY', 'NOCSY'},
-            technical_replicates=6
+            technical_replicates=6,
+            instruments={'Agilent QTOF'},
+            chromatography_instruments={'Agilent 12345F'}
         )
         self.assertNotEqual(expected_assay_topology_modifiers,
                             self.assay_topology_modifiers_default)
