@@ -697,7 +697,7 @@ class InterventionStudyDesign(BaseStudyDesign):
 
     def __init__(self):
         super().__init__()
-        self.__sequences_plan = set()
+        self.__sequences_plan = {}
 
     @property
     def sequences_plan(self):
