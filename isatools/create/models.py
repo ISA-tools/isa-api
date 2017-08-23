@@ -9,6 +9,7 @@ import random
 import uuid
 from collections import Iterable
 from collections import OrderedDict
+from json import JSONEncoder
 from operator import itemgetter
 from numbers import Number
 
@@ -1681,3 +1682,20 @@ class IsaModelObjectFactory(object):
                 if assay is not None:
                     study.assays.append(assay)
         return study
+
+
+class StudyAssayPlanEncoder(JSONEncoder):
+
+    def default(self, o):
+        if isinstance(o, AssayTopologyModifiers):
+            return {
+                'distinct_libraries': o.distinct_libraries,
+                'array_designs': sorted(o.array_designs),
+                'injection_modes': sorted(o.injection_modes),
+                'acquisition_modes': sorted(o.acquisition_modes),
+                'pulse_sequences': sorted(o.pulse_sequences),
+                'technical_replicates': o.technical_replicates,
+                'instruments': sorted(o.instruments),
+                'chromatography_instruments': sorted(
+                    o.chromatography_instruments)
+            }
