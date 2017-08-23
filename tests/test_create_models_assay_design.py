@@ -76,7 +76,9 @@ class AssayTopologyModifiersTest(unittest.TestCase):
             injection_modes={'GC', 'LC'},
             acquisition_modes={'mode1', 'mode2'},
             pulse_sequences={'TOCSY', 'NOCSY'},
-            technical_replicates=6
+            technical_replicates=6,
+            instruments={'Agilent QTOF'},
+            chromatography_instruments={'Agilent 12345F'}
         )
 
     def test_repr(self):
@@ -86,7 +88,9 @@ class AssayTopologyModifiersTest(unittest.TestCase):
                          'injection_modes=[], '
                          'acquisition_modes=[], '
                          'pulse_sequences=[], '
-                         'technical_replicates=1)',
+                         'technical_replicates=1, '
+                         'instruments=[], '
+                         'chromatography_instruments=[])',
                          repr(self.assay_topology_modifiers_default))
         self.assertEqual("AssayTopologyModifiers("
                          "distinct_libraries=1, "
@@ -94,7 +98,9 @@ class AssayTopologyModifiersTest(unittest.TestCase):
                          "injection_modes=['GC', 'LC'], "
                          "acquisition_modes=['mode1', 'mode2'], "
                          "pulse_sequences=['NOCSY', 'TOCSY'], "
-                         "technical_replicates=6)",
+                         "technical_replicates=6, "
+                         "instruments=['Agilent QTOF'], "
+                         "chromatography_instruments=['Agilent 12345F'])",
                          repr(self.assay_topology_modifiers))
 
     def test_eq(self):
