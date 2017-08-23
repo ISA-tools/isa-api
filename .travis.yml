@@ -2,6 +2,7 @@ language: python
 python:
 - '3.4'
 - '3.5'
+- '3.6'
 before_install:
 - git clone -b tests --single-branch http://github.com/ISA-tools/ISAdatasets tests/data
 install:
