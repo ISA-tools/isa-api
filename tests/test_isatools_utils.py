@@ -80,11 +80,12 @@ class TestOlsSearch(unittest.TestCase):
         ontology_annotations = ols.search_ols("cell type", ontology_source)
         self.assertIsInstance(ontology_annotations, list)
         self.assertGreater(len(ontology_annotations), 0)
-        ontology_anotation = [oa for oa in ontology_annotations if oa.term == "cell type"][0]  # always do a search, as order is not immutable
-        self.assertIsInstance(ontology_anotation, OntologyAnnotation)
-        self.assertEqual(ontology_anotation.term, "cell type")
-        self.assertEqual(ontology_anotation.term_accession, "http://www.ebi.ac.uk/efo/EFO_0000324")
-        self.assertEqual(ontology_anotation.term_source, ontology_source)
+        ontology_anotations = [oa for oa in ontology_annotations if oa.term == "cell type"]
+        self.assertIsInstance(ontology_anotations[-1], OntologyAnnotation)
+        self.assertEqual(ontology_anotations[-1].term, "cell type")
+        self.assertIn("http://www.ebi.ac.uk/efo/EFO_0000324",
+                      [oa.term_accession for oa in ontology_anotations])
+        self.assertEqual(ontology_anotations[-1].term_source, ontology_source)
 
 
 class TestISArchiveExport(unittest.TestCase):
