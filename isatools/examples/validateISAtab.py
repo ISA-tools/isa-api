@@ -2,7 +2,7 @@
 
 # Inspired by validateSBML.py example from libSBML Python API
 
-from isatools.isatab import validate
+from isatools import isatab
 import sys
 import os
 
@@ -29,7 +29,7 @@ def main(args):
             numfiles += 1
         else:
             with open(args[i]) as fp:
-                report = validate(fp)
+                report = isatab.validate(fp)
                 numerrors = len(report['errors'])
                 numwarnings = len(report['warnings'])
                 if numerrors > 0:

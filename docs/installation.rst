@@ -2,7 +2,7 @@
 Installation
 ############
 
-**Requires: Python 3.4 or 3.5; additionally Java 1.6+ for validator and SRA conversion**
+**Requires: Python 3.4, 3.5 or 3.6; additionally Java 1.6+ for SRA and Biocrates importers**
 
 Installation from the Python Package Index
 ------------------------------------------
@@ -59,24 +59,3 @@ Thus, the first step for running the tests is to clone that branch under the /te
 After that, you can run the test with the usual command:
 
 ``python setup.py test``
-
-Logging
--------
-
-By default the ISA-API will output error messages to the standard output. To control the logging level, you can set
-the logging level via the `isatools` package as follows:
-
-```
-import isatools
-import logging
-isatools.log_level = logging.INFO  # sets log level to INFO
-
-from isatools import isatab
-"""
-Now do some stuff with the isatab package - logging should output messages at INFO, WARNING, ERROR and FATAL levels
-"""
-ISA = isatab.load(...)
-
-```
-Note that you cannot reset the log level interactively after setting it the first time, so you would need to reload
-your environment (iPython etc.) to change the log level again.

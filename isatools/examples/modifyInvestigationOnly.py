@@ -55,16 +55,16 @@ def modify_investigation(fp):
                                                                       term_accession="http://purl.bioontology.org/ontology/NCBITAXON/9606"))
     prototype_sample.characteristics.append(characteristic_organism)
 
-    study.materials['samples'] = batch_create_materials(prototype_sample, n=3)  # creates a batch of 3 samples
+    study.samples = batch_create_materials(prototype_sample, n=3)  # creates a batch of 3 samples
 
     sample_collection_protocol = Protocol(name="sample collection",
                                           protocol_type=OntologyAnnotation(term="sample collection"))
     study.protocols.append(sample_collection_protocol)
     sample_collection_process = Process(executes_protocol=sample_collection_protocol)
 
-    for src in study.materials['sources']:
+    for src in study.sources:
         sample_collection_process.inputs.append(src)
-    for sam in study.materials['samples']:
+    for sam in study.samples:
         sample_collection_process.outputs.append(sam)
 
     study.process_sequence.append(sample_collection_process)
@@ -75,7 +75,7 @@ def modify_investigation(fp):
     sequencing_protocol = Protocol(name='sequencing', protocol_type=OntologyAnnotation(term="material sequencing"))
     study.protocols.append(sequencing_protocol)
 
-    for i, sample in enumerate(study.materials['samples']):
+    for i, sample in enumerate(study.samples):
         extraction_process = Process(executes_protocol=extraction_protocol)
 
         extraction_process.inputs.append(sample)
@@ -93,8 +93,9 @@ def modify_investigation(fp):
         extraction_process.next_process = sequencing_process
         sequencing_process.prev_process = extraction_process
 
+        assay.samples.append(sample)
         assay.data_files.append(datafile)
-        assay.materials['other_material'].append(material)
+        assay.other_material.append(material)
         assay.process_sequence.append(extraction_process)
         assay.process_sequence.append(sequencing_process)
         assay.measurement_type = OntologyAnnotation(term="gene sequencing")

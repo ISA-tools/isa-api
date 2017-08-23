@@ -4,8 +4,9 @@ Known issues
 
 isatools v0.9 package
 ---------------------
+- Various API packages have been refactored and moved. ``isatools.model.v1`` is now in ``isatools.model``. Packages ``isatools.validate``, ``isatools.config``, ``isatools.schemas`` have been removed. Some items from ``isatools.convert`` and ``isatools.io`` have been split into the ``isatools.io`` or ``isatools.net`` packages, where the latter has been created to distinguish parts of the ISA API that require network access.
 - Issues #153 is still outstanding since version 0.4, as per below; new issue #235 where missing `Protocol REF`s are sometimes incorrectly inserted on loading ISA-Tab
-- New ISA creation functionality from planning objects in `isatools.create.models` currently only support a limited number of technology types (DNA microarray, DNA sequencing, mass spectrometry, and NMR).
+- New ISA creation functionality from planning objects in ``isatools.create.models`` currently only support a limited number of technology types (DNA microarray, DNA sequencing, mass spectrometry, and NMR).
 - SRA/ENA importer and Biocrates importer relies on XSLT2 processing only available with SAXON and requires .jar file to run
 - It has been decided to stop work retrofitting support for Python 2.7 and focus on keeping up to date with the current and future Python versions
 

@@ -114,9 +114,9 @@ feedback from a user on-the-fly.
         #
         # (source_material)->(sample collection)->[(sample_material-0), (sample_material-1), (sample_material-2)]
 
-        for src in study.materials['sources']:
+        for src in study.sources:
             sample_collection_process.inputs.append(src)
-        for sam in study.materials['samples']:
+        for sam in study.samples:
             sample_collection_process.outputs.append(sam)
 
         # Finally, attach the finished Process object to the study process_sequence. This can be done many times to
@@ -144,7 +144,7 @@ feedback from a user on-the-fly.
         # Note that the extraction processes and sequencing processes are distinctly separate instances, where the three
         # graphs are NOT interconnected.
 
-        for i, sample in enumerate(study.materials['samples']):
+        for i, sample in enumerate(study.samples):
 
             # create an extraction process that executes the extraction protocol
 
@@ -176,7 +176,8 @@ feedback from a user on-the-fly.
             # make sure the extract, data file, and the processes are attached to the assay
 
             assay.data_files.append(datafile)
-            assay.materials['other_material'].append(material)
+            assay.samples.append(sample)
+            assay.other_material.append(material)
             assay.process_sequence.append(extraction_process)
             assay.process_sequence.append(sequencing_process)
             assay.measurement_type = OntologyAnnotation(term="gene sequencing")
@@ -190,8 +191,8 @@ To write out the ISA-Tab, you can use the ``isatab.dumps()`` function:
 
 .. code-block:: python
 
-        from isatools.isatab import dumps
-        return dumps(investigation)  # dumps() writes out the ISA as a string representation of the ISA-Tab
+        from isatools import isatab
+        return isatab.dumps(investigation)  # dumps() writes out the ISA as a string representation of the ISA-Tab
 
 The function listed above is designed to return all three files as a single string output for ease of inspection.
 Alternatively you could do something like ``dump(isa_obj=investigation, output_path='./')`` to write the files to

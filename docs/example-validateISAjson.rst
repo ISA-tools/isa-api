@@ -10,7 +10,7 @@ An example program using the ISA-JSON validator to validate one or more ISA-JSON
 
     # Inspired by validateSBML.py example from libSBML Python API
 
-    from isatools.isajson import validate
+    from isatools import isajson
     import sys
     import os
 
@@ -37,7 +37,7 @@ An example program using the ISA-JSON validator to validate one or more ISA-JSON
                 numfiles += 1
             else:
                 with open(args[i]) as fp:
-                    report = validate(fp)
+                    report = isajson.validate(fp)
                     numerrors = len(report['errors'])
                     numwarnings = len(report['warnings'])
                     if numerrors > 0:
