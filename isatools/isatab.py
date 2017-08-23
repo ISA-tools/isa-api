@@ -14,15 +14,18 @@ import numpy as np
 import os
 import pandas as pd
 import re
-from bisect import bisect_left, bisect_right
+from bisect import bisect_left
+from bisect import bisect_right
 from io import StringIO
 from itertools import tee
 from itertools import zip_longest
-from pandas.parser import CParserError
+from pandas.io.parsers import ParserError
 from progressbar import ProgressBar
 from progressbar import SimpleProgress
 from progressbar import Bar
 from progressbar import ETA
+import shutil
+import tempfile
 
 from isatools import config
 from isatools.model import *
@@ -907,7 +910,11 @@ def write_value_columns(df_dict, label, x):
 
 
 def get_pv_columns(label, pv):
-    columns = ["{0}.Parameter Value[{1}]".format(label, pv.category.parameter_name.term)]
+    columns = None
+    try:
+        columns = ["{0}.Parameter Value[{1}]".format(label, pv.category.parameter_name.term)]
+    except AttributeError:
+        log.fatal(label, pv)
     columns.extend(get_value_columns(columns[0], pv))
     return columns
 
@@ -2617,7 +2624,7 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
                     pass
         log.info("Finished validation...")
         validation_finished = True
-    except CParserError as cpe:
+    except ParserError as cpe:
         errors.append({
             "message": "Unknown/System Error",
             "supplemental": "The validator could not identify what the error is: {}".format(str(cpe)),
@@ -2691,8 +2698,6 @@ def batch_validate(tab_dir_list):
 
 
 def dumps(isa_obj, skip_dump_tables=False):
-    import tempfile
-    import shutil
     tmp = None
     output = str()
     try:
@@ -2711,6 +2716,22 @@ def dumps(isa_obj, skip_dump_tables=False):
                 output += "--------\n"
                 output += a_file + '\n'
                 output += a_fp.read()
+    finally:
+        if tmp is not None:
+            shutil.rmtree(tmp)
+    return output
+
+
+def dump_tables_to_dataframes(isa_obj):
+    tmp = None
+    output = dict()
+    try:
+        tmp = tempfile.mkdtemp()
+        dump(isa_obj=isa_obj, output_path=tmp, skip_dump_tables=False)
+        for s_file in glob.iglob(os.path.join(tmp, 's_*')):
+            output[os.path.basename(s_file)] = read_tfile(s_file)
+        for a_file in glob.iglob(os.path.join(tmp, 'a_*')):
+            output[os.path.basename(a_file)] = read_tfile(a_file)
     finally:
         if tmp is not None:
             shutil.rmtree(tmp)

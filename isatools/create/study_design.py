@@ -56,11 +56,11 @@ def use_default_inv():
         investigation.submission_date = ""
         investigation.public_release_date = ""
         study = Study(filename="s_study.txt", comments=[])
-        study.identifier = uuid.uuid4()
+        study.identifier = str(uuid.uuid4())
         study.title = "boilerplate title"
         study.description = "boilerplate study description (testing purpose)"
-        study.submission_date = datetime.date.today()
-        study.public_release_date = datetime.date.today() + datetime.timedelta(days=30)
+        study.submission_date = str(datetime.date.today())
+        study.public_release_date = str(datetime.date.today() + datetime.timedelta(days=30))
 
         sample_collection_protocol = Protocol(name="sample collection",
                                               protocol_type=OntologyAnnotation(term="sample collection"))
@@ -805,7 +805,7 @@ def set_assay_type_topology_modifiers(this_sample_type, this_sampling_event, thi
         sample_assay_plans = []
 
         # for this_assay_type in range(len(this_assay_type_array)):
-        with_typology_params = {"sample type": "",
+        with_topology_params = {"sample type": "",
                            "collection event": "",
                            "assay type": 0,
                            "params": {
@@ -824,12 +824,12 @@ def set_assay_type_topology_modifiers(this_sample_type, this_sampling_event, thi
                 "how many distinct libraries per sample (provide an positive integer, default is 1)?")
             nb_multiplexing_channels = input("how many labels were used (provide an positive integer, default is 1)?")
             nb_technical_rep = input("how many technical replicate for each sample, default is 1?")
-            with_typology_params["sample type"] = this_sample_type
-            with_typology_params["collection event"] = this_sampling_event
-            with_typology_params["assay type"] = 1
-            with_typology_params["params"]["distinct libraries"] = nb_library
-            with_typology_params["params"]["number of channels"] = nb_multiplexing_channels
-            with_typology_params["params"]["number of technical replicates"] = nb_technical_rep
+            with_topology_params["sample type"] = this_sample_type
+            with_topology_params["collection event"] = this_sampling_event
+            with_topology_params["assay type"] = 1
+            with_topology_params["params"]["distinct libraries"] = nb_library
+            with_topology_params["params"]["number of channels"] = nb_multiplexing_channels
+            with_topology_params["params"]["number of technical replicates"] = nb_technical_rep
 
         elif int(this_assay_type) == 2:
 
@@ -838,13 +838,13 @@ def set_assay_type_topology_modifiers(this_sample_type, this_sampling_event, thi
             nb_multiplexing_channels = input("how many labels were used (provide an positive integer, default is 1)?")
             nb_technical_rep = input("how many technical replicate for each sample, default is 1?")
 
-            with_typology_params["sample type"] = this_sample_type
-            with_typology_params["collection event"] = this_sampling_event
-            with_typology_params["assay type"] = 2
-            with_typology_params["params"]["distinct array designs"] = nb_chip_design
-            print("typology:", with_typology_params["params"]["distinct array designs"])
-            with_typology_params["params"]["number of channels"] = nb_multiplexing_channels
-            with_typology_params["params"]["number of technical replicates"] = nb_technical_rep
+            with_topology_params["sample type"] = this_sample_type
+            with_topology_params["collection event"] = this_sampling_event
+            with_topology_params["assay type"] = 2
+            with_topology_params["params"]["distinct array designs"] = nb_chip_design
+            print("typology:", with_topology_params["params"]["distinct array designs"])
+            with_topology_params["params"]["number of channels"] = nb_multiplexing_channels
+            with_topology_params["params"]["number of technical replicates"] = nb_technical_rep
 
         elif this_assay_type == "3":
 
@@ -857,12 +857,12 @@ def set_assay_type_topology_modifiers(this_sample_type, this_sampling_event, thi
             # nb_channels = input("how many labels were used (provide an positive integer, default is 1)?")
             nb_technical_rep = input("how many technical replicate for each sample, default is 1?")
 
-            with_typology_params["sample type"] = this_sample_type
-            with_typology_params["collection event"] = this_sampling_event
-            with_typology_params["assay type"] = 3
-            with_typology_params["params"]["injection modes"] = injection_modes
-            with_typology_params["params"]["number of channels"] = acquisition_modes
-            with_typology_params["params"]["number of technical replicates"] = nb_technical_rep
+            with_topology_params["sample type"] = this_sample_type
+            with_topology_params["collection event"] = this_sampling_event
+            with_topology_params["assay type"] = 3
+            with_topology_params["params"]["injection modes"] = injection_modes
+            with_topology_params["params"]["number of channels"] = acquisition_modes
+            with_topology_params["params"]["number of technical replicates"] = nb_technical_rep
 
         elif this_assay_type == "4":
 
@@ -875,13 +875,13 @@ def set_assay_type_topology_modifiers(this_sample_type, this_sampling_event, thi
             # nb_multiplexing_channels = input("how many labels were used (provide an positive integer, default is 1)?")
             nb_technical_rep = input("how many technical replicate for each sample, default is 1?")
 
-            with_typology_params["sample type"] = this_sample_type
-            with_typology_params["collection event"] = this_sampling_event
-            with_typology_params["assay type"] = 4
-            with_typology_params["params"]["injection modes"] = injection_modes
-            with_typology_params["params"]["pulse sequences"] = acquisition_modes
+            with_topology_params["sample type"] = this_sample_type
+            with_topology_params["collection event"] = this_sampling_event
+            with_topology_params["assay type"] = 4
+            with_topology_params["params"]["injection modes"] = injection_modes
+            with_topology_params["params"]["pulse sequences"] = acquisition_modes
             # typology_params["params"]["number of channels"] = acquisition_modes
-            with_typology_params["params"]["number of technical replicates"] = nb_technical_rep
+            with_topology_params["params"]["number of technical replicates"] = nb_technical_rep
 
         # else:
         #     print("input not recognised in set_assay_type_topology_modifiers() method")
@@ -889,7 +889,7 @@ def set_assay_type_topology_modifiers(this_sample_type, this_sampling_event, thi
 
         # sample_assay_plans.append(typology_params)
 
-        return with_typology_params
+        return with_topology_params
         # nb_chip_design, nb_multiplexing_channels, nb_technical_rep
 
     except IOError:

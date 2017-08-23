@@ -15,6 +15,7 @@ Todo:
 from __future__ import absolute_import
 import abc
 import networkx as nx
+import warnings
 
 from isatools.errors import ISAModelAttributeError
 
@@ -474,17 +475,17 @@ class Investigation(Commentable, MetadataMixin, object):
                 self.__studies = list(val)
         else:
             raise ISAModelAttributeError(
-                'Investigation.studies must be iterable containing '
-                'OntologySource objects')
+                'Investigation.studies must be iterable containing Study '
+                'objects')
 
     def __repr__(self):
         return 'Investigation(identifier="{0.identifier}", ' \
                'filename="{0.filename}", title="{0.title}", ' \
                'submission_date="{0.submission_date}", ' \
-               'public_release_date="{0.public_release_date}"), ' \
+               'public_release_date="{0.public_release_date}", ' \
                'ontology_source_references={0.ontology_source_references}, ' \
                'publications={0.publications}, contacts={0.contacts}, ' \
-               'studies={0.studies}, comments={0.comments}'.format(self)
+               'studies={0.studies}, comments={0.comments})'.format(self)
 
     def __hash__(self):
         return hash(repr(self))
@@ -1370,6 +1371,11 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
     def materials(self):
         """:obj:`dict` of :obj:`list`: Container for sources, samples and
         other_material"""
+        warnings.warn(
+            "the `materials` dict property is being deprecated in favour of "
+            "`sources`, `samples`, and `other_material` properties.",
+            DeprecationWarning
+        )
         return self.__materials
 
     @property
@@ -1445,7 +1451,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         protocols: Protocols used within the ISA artifact.
         assays: An Assay represents a portion of the experimental design.
         materials: Materials associated with the study, contains lists of
-            'sources', 'samples' and 'other_material'.
+            'sources', 'samples' and 'other_material'. DEPRECATED.
         sources: Sources associated with the study, is equivalent to
             materials['sources'].
         samples: Samples associated with the study, is equivalent to
@@ -1533,6 +1539,59 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             raise ISAModelAttributeError(
                 '{}.protocols must be iterable containing Protocol'
                 .format(type(self).__name__))
+
+    @staticmethod
+    def __get_default_protocol(protocol_type):
+        """Return default Protocol object based on protocol_type and from
+        isaconfig_v2015-07-02"""
+        default_protocol = Protocol(protocol_type=
+                                    OntologyAnnotation(term=protocol_type))
+        parameter_list = []
+        if protocol_type == 'mass spectrometry':
+            parameter_list = ['instrument',
+                              'ion source',
+                              'detector',
+                              'analyzer']
+        elif protocol_type == 'nmr spectroscopy':
+            parameter_list = ['instrument',
+                              'NMR probe',
+                              'number of acquisition',
+                              'magnetic field strength']
+        elif protocol_type == 'nucleic acid hybridization':
+            parameter_list = ['Array Design REF']
+        elif protocol_type == 'nucleic acid sequencing':
+            parameter_list = ['sequencing instrument',
+                              'quality scorer',
+                              'base caller']
+        default_protocol.parameters = [
+            ProtocolParameter(parameter_name=OntologyAnnotation(term=x))
+            for x in parameter_list]
+        # TODO: Implement this for other defaults OR generate from config #51
+        return default_protocol
+
+    def add_prot(self, protocol_name='', protocol_type=None,
+                 use_default_params=True):
+        if self.get_prot(protocol_name=protocol_name) is not None:
+            raise ISAModelAttributeError('A protocol with name "{}" has '
+                                         'already been declared in the study'
+                                         .format(protocol_name))
+        else:
+            if isinstance(protocol_type, str) and use_default_params:
+                default_protocol = self.__get_default_protocol(protocol_type)
+                default_protocol.name = protocol_name
+                self.protocols.append(default_protocol)
+            else:
+                self.protocols.append(Protocol(name=protocol_name,
+                                               protocol_type=OntologyAnnotation(
+                                                   term=protocol_type)))
+
+    def get_prot(self, protocol_name):
+        prot = None
+        try:
+            prot = next(x for x in self.protocols if x.name == protocol_name)
+        except StopIteration:
+            pass
+        return prot
         
     @property
     def assays(self):
@@ -1951,6 +2010,28 @@ class Protocol(Commentable):
         else:
             raise ISAModelAttributeError('Protocol.parameters must be iterable '
                                          'containing ProtocolParameters')
+
+    def add_param(self, parameter_name=''):
+        if self.get_param(parameter_name=parameter_name) is not None:
+            raise ISAModelAttributeError('A parameter with name "{0}" has '
+                                         'already been declared in the protocol'
+                                         '"{1}"'
+                                         .format(parameter_name, self.name))
+        else:
+            if isinstance(parameter_name, str):
+                self.parameters.append(ProtocolParameter(
+                    parameter_name=OntologyAnnotation(term=parameter_name)))
+            else:
+                raise ISAModelAttributeError('Parameter name must be a string')
+
+    def get_param(self, parameter_name):
+        param = None
+        try:
+            param = next(x for x in self.parameters if
+                         x.parameter_name.term == parameter_name)
+        except StopIteration:
+            pass
+        return param
         
     @property
     def components(self):
@@ -2023,7 +2104,7 @@ class ProtocolParameter(Commentable):
             self.__parameter_name = val
 
     def __repr__(self):
-        return 'ProtocolParameter(parameter_name="{0.parameter_name}", ' \
+        return 'ProtocolParameter(parameter_name={0.parameter_name}, ' \
                'comments={0.comments})'.format(self)
 
     def __hash__(self):
@@ -2422,6 +2503,12 @@ class Sample(Commentable):
                 'Sample.characteristics must be iterable containing '
                 'Characteristics')
 
+    def has_char(self, char):
+        if isinstance(char, str):
+            char = Characteristic(category=OntologyAnnotation(term=char))
+        if isinstance(char, Characteristic):
+            return char in self.characteristics
+
     @property
     def derives_from(self):
         """:obj:`list` of :obj:`Source`: a list of references from this sample
@@ -2637,7 +2724,7 @@ class FactorValue(Commentable):
             self.__unit = val
 
     def __repr__(self):
-        return 'FactorValue(factor_name="{0.factor_name}", value={0.value}, ' \
+        return 'FactorValue(factor_name={0.factor_name}, value={0.value}, ' \
                'unit={0.unit})'.format(self)
 
     def __hash__(self):
