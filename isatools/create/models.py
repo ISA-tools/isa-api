@@ -1686,21 +1686,25 @@ class IsaModelObjectFactory(object):
 
 class StudyAssayPlanEncoder(JSONEncoder):
 
+    def get_top_mods(self, o):
+        return {
+            'distinct_libraries': o.distinct_libraries,
+            'array_designs': sorted(o.array_designs),
+            'injection_modes': sorted(o.injection_modes),
+            'acquisition_modes': sorted(o.acquisition_modes),
+            'pulse_sequences': sorted(o.pulse_sequences),
+            'technical_replicates': o.technical_replicates,
+            'instruments': sorted(o.instruments),
+            'chromatography_instruments': sorted(
+                o.chromatography_instruments)
+        }
+
     def default(self, o):
         if isinstance(o, AssayTopologyModifiers):
-            return {
-                'distinct_libraries': o.distinct_libraries,
-                'array_designs': sorted(o.array_designs),
-                'injection_modes': sorted(o.injection_modes),
-                'acquisition_modes': sorted(o.acquisition_modes),
-                'pulse_sequences': sorted(o.pulse_sequences),
-                'technical_replicates': o.technical_replicates,
-                'instruments': sorted(o.instruments),
-                'chromatography_instruments': sorted(
-                    o.chromatography_instruments)
-            }
+            return self.get_top_mods(o)
         elif isinstance(o, AssayType):
             return {
                 'measurement_type': o.measurement_type,
-                'technology_type': o.technology_type
+                'technology_type': o.technology_type,
+                'topology_modifiers': self.get_top_mods(o.topology_modifiers)
             }
