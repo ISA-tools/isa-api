@@ -1699,3 +1699,8 @@ class StudyAssayPlanEncoder(JSONEncoder):
                 'chromatography_instruments': sorted(
                     o.chromatography_instruments)
             }
+        elif isinstance(o, AssayType):
+            return {
+                'measurement_type': o.measurement_type,
+                'technology_type': o.technology_type
+            }
