@@ -1699,12 +1699,26 @@ class StudyAssayPlanEncoder(JSONEncoder):
                 o.chromatography_instruments)
         }
 
+    def get_assay_type(self, o):
+        return {
+            'measurement_type': o.measurement_type,
+            'technology_type': o.technology_type,
+            'topology_modifiers': self.get_top_mods(o.topology_modifiers)
+        }
+
     def default(self, o):
         if isinstance(o, AssayTopologyModifiers):
             return self.get_top_mods(o)
         elif isinstance(o, AssayType):
+            return self.get_assay_type(o)
+        elif isinstance(o, SampleAssayPlan):
+
+            def get_sample_plan(sample_plan):
+                return []
+
             return {
-                'measurement_type': o.measurement_type,
-                'technology_type': o.technology_type,
-                'topology_modifiers': self.get_top_mods(o.topology_modifiers)
+                'group_size': o.group_size,
+                'sample_types': sorted([x.term for x in o.sample_types]),
+                'assay_types': sorted([self.get_assay_type(x) for x in o.assay_types]),
+                'sample_plan': get_sample_plan(o.sample_plan),
             }
