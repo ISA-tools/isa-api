@@ -1684,7 +1684,7 @@ class IsaModelObjectFactory(object):
         return study
 
 
-class StudyAssayPlanEncoder(JSONEncoder):
+class SampleAssayPlanEncoder(JSONEncoder):
 
     def get_top_mods(self, o):
         return {
@@ -1701,10 +1701,38 @@ class StudyAssayPlanEncoder(JSONEncoder):
 
     def get_assay_type(self, o):
         return {
-            'measurement_type': o.measurement_type,
-            'technology_type': o.technology_type,
+            'measurement_type': o.measurement_type.term,
+            'technology_type': o.technology_type.term,
             'topology_modifiers': self.get_top_mods(o.topology_modifiers)
+            if o.topology_modifiers else []
         }
+
+    def get_sample_plan(self, sample_plan):
+        sample_plan_record_list = []
+        for k in iter(sample_plan.keys()):
+            sample_type_characteristic = k
+            sampling_size = sample_plan[k]
+            sample_type = sample_type_characteristic.value.term
+            sample_plan_record_list.append(
+                {
+                    'sample_type': sample_type,
+                    'sampling_size': sampling_size
+                }
+            )
+        return sample_plan_record_list
+
+    def get_assay_plan(self, assay_plan):
+        assay_plan_record_list = []
+        for mapping in assay_plan:
+            sample_type = mapping[0]
+            assay_type = mapping[1]
+            assay_plan_record_list.append(
+                {
+                    'sample_type': sample_type.value.term,
+                    'assay_type': self.get_assay_type(assay_type)
+                }
+            )
+        return assay_plan_record_list
 
     def default(self, o):
         if isinstance(o, AssayTopologyModifiers):
@@ -1712,13 +1740,10 @@ class StudyAssayPlanEncoder(JSONEncoder):
         elif isinstance(o, AssayType):
             return self.get_assay_type(o)
         elif isinstance(o, SampleAssayPlan):
-
-            def get_sample_plan(sample_plan):
-                return []
-
             return {
                 'group_size': o.group_size,
-                'sample_types': sorted([x.term for x in o.sample_types]),
+                'sample_types': sorted([x.value.term for x in o.sample_types]),
                 'assay_types': sorted([self.get_assay_type(x) for x in o.assay_types]),
-                'sample_plan': get_sample_plan(o.sample_plan),
+                'sample_plan': self.get_sample_plan(o.sample_plan),
+                'assay_plan': self.get_assay_plan(o.assay_plan)
             }

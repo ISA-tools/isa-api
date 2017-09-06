@@ -3734,7 +3734,7 @@ class IsaTabParser(object):
                                             isecdict.get('termsourceversion', []),
                                             isecdict.get('termsourcedescription'),
                                             {k: isecdict[k] for k in isecdict.keys()
-                                             if k.startswith('ontologysourcereferences.')})
+                                             if k.startswith('ontologysourcereference.')})
         self.parse_investigation_section(isecdict.get('investigationidentifier', []),
                                          isecdict.get('investigationtitle', []),
                                          isecdict.get('investigationdescription', []),
@@ -3834,7 +3834,7 @@ class IsaTabParser(object):
     def parse_study_section(self, identifiers, titles, descriptions, submissiondates, publicreleasedates, filenames):
         for identifier, title, description, submissiondate, publicreleasedate, filename in \
                 zip_longest(identifiers, titles, descriptions, submissiondates, publicreleasedates, filenames):
-            study = Study(identifier=identifier, title=title, description=description, 
+            study = Study(identifier=identifier, title=title, description=description,
                           submission_date=submissiondate, public_release_date=publicreleasedate, filename=filename)
             self.ISA.studies.append(study)
 
