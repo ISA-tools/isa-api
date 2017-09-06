@@ -1701,8 +1701,10 @@ class SampleAssayPlanEncoder(JSONEncoder):
 
     def get_assay_type(self, o):
         return {
-            'measurement_type': o.measurement_type.term,
-            'technology_type': o.technology_type.term,
+            'measurement_type': o.measurement_type.term
+            if o.measurement_type else '',
+            'technology_type': o.technology_type.term
+            if o.technology_type else '',
             'topology_modifiers': self.get_top_mods(o.topology_modifiers)
             if o.topology_modifiers else []
         }
