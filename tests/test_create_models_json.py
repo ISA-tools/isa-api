@@ -38,6 +38,27 @@ class SerializeToJsonTests(unittest.TestCase):
         self.assay_type = AssayType(measurement_type='genome sequencing',
                                     technology_type='DNA microarray')
 
+    def test_serialize_assay_default_topology_modifiers(self):
+        expected = ordered(
+            json.loads("""{
+                "technical_replicates": 1,
+                "instruments": [],
+                "distinct_libraries": 0,
+                "injection_modes": [],
+                "chromatography_instruments": [],
+                "pulse_sequences": [],
+                "array_designs": [],
+                "acquisition_modes": []
+            }""")
+        )
+
+        actual = ordered(
+            json.loads(
+                json.dumps(AssayTopologyModifiers(), cls=SampleAssayPlanEncoder)
+            )
+        )
+        self.assertTrue(expected == actual)
+
     def test_serialize_assay_topology_modifiers(self):
         expected = ordered(
             json.loads("""{
@@ -55,6 +76,22 @@ class SerializeToJsonTests(unittest.TestCase):
         actual = ordered(
             json.loads(
                 json.dumps(self.top_mods, cls=SampleAssayPlanEncoder)
+            )
+        )
+        self.assertTrue(expected == actual)
+
+    def test_serialize_default_assay_type(self):
+        expected = ordered(
+            json.loads("""{
+                "measurement_type": "",
+                "technology_type": "",
+                "topology_modifiers": []
+            }""")
+        )
+
+        actual = ordered(
+            json.loads(
+                json.dumps(AssayType(), cls=SampleAssayPlanEncoder)
             )
         )
         self.assertTrue(expected == actual)
@@ -98,6 +135,24 @@ class SerializeToJsonTests(unittest.TestCase):
         actual = ordered(
             json.loads(
                 json.dumps(self.assay_type, cls=SampleAssayPlanEncoder)
+            )
+        )
+        self.assertTrue(expected == actual)
+
+    def test_serialize_default_sampleassayplan(self):
+        expected = ordered(
+            json.loads("""{
+                "group_size": 0,
+                "assay_types": [],
+                "sample_plan": [],
+                "sample_types": [],
+                "assay_plan": []
+            }""")
+        )
+
+        actual = ordered(
+            json.loads(
+                json.dumps(SampleAssayPlan(), cls=SampleAssayPlanEncoder)
             )
         )
         self.assertTrue(expected == actual)
