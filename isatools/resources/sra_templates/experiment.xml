@@ -12,13 +12,13 @@
         {% include 'experiment_spot_descriptor_454_single.xml' %}
         {% elif '454 GS' in assay.platform and assay.library_layout == 'paired' %}
         {% include 'experiment_spot_descriptor_454_paired.xml' %}
-        {% elif 'illumina' in assay.platform and assay.library_layout == 'single' %}
+        {% elif 'Illumina' in assay.platform and assay.library_layout == 'single' %}
         {% include 'experiment_spot_descriptor_illumina_single.xml' %}
-        {% elif 'illumina' in assay.platform and assay.library_layout == 'paired' %}
+        {% elif 'Illumina' in assay.platform and assay.library_layout == 'paired' %}
         {% include 'experiment_spot_descriptor_illumina_paired.xml' %}
-        {% elif 'solid' in assay.platform and assay.library_layout == 'single' %}
+        {% elif 'SOLiD' in assay.platform and assay.library_layout == 'single' %}
         {% include 'experiment_spot_descriptor_solid_single.xml' %}
-        {% elif 'solid' in assay.platform and assay.library_layout == 'paired' %}
+        {% elif 'SOLiD' in assay.platform and assay.library_layout == 'paired' %}
         {% include 'experiment_spot_descriptor_solid_paired.xml' %}
         {% endif %}
     </DESIGN>

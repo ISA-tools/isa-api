@@ -344,8 +344,8 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             log.error("ERROR:Unsupported measurement type: " + iassay.measurement_type.term)
                         mid_pv = get_pv(assay_to_export['library construction'], 'mid')
                         assay_to_export['poolingstrategy'] = mid_pv
-                        assay_to_export['platform'] = get_pv(assay_to_export['nucleic acid sequencing'],
-                                                             'sequencing instrument')
+                        seq_instrument = get_pv(assay_to_export['nucleic acid sequencing'], 'sequencing instrument')
+                        assay_to_export['platform'] = seq_instrument
                         assays_to_export.append(assay_to_export)
             else:
                 log.error("ERROR:Unsupported measurement/technology type {0}/{1}, skipping assays".format(iassay.measurement_type.term, iassay.technology_type.term))
