@@ -549,19 +549,21 @@ class AssayTopologyModifiers(object):
 
 
 class SampleAssayPlan(object):
-    def __init__(self, group_size=0, sample_plan=None, assay_plan=set()):
+    def __init__(self, group_size=0, sample_plan=None, assay_plan=None):
         # TODO test initialization from sample_plan and assay_plan!!
         self.__group_size = 0
         self.__sample_types = set()
         self.__assay_types = set()
+
+        self.group_size = group_size
         if sample_plan is None:
             self.__sample_plan = {}
         else:
             self.sample_types = {key for key in sample_plan}
             self.sample_plan = sample_plan
-        self.__assay_plan = set()
-        self.group_size = group_size
-        if assay_plan is not None:
+        if assay_plan is None:
+            self.__assay_plan = set()
+        else:
             self.assay_types = {value for key, value in assay_plan}
             self.assay_plan = assay_plan
 
@@ -588,6 +590,9 @@ class SampleAssayPlan(object):
             self.__sample_types.add(characteristic)
         else:
             raise TypeError('Not a valid sample type: {0}'.format(sample_type))
+
+    def add_sample_qc(self, sample_type, interval):
+        pass
 
     @property
     def sample_types(self):
