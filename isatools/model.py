@@ -2316,6 +2316,20 @@ class Source(Commentable):
                 'Source.characteristics must be iterable containing '
                 'Characteristics')
 
+    def has_char(self, char):
+        if isinstance(char, str):
+            char = Characteristic(category=OntologyAnnotation(term=char))
+        if isinstance(char, Characteristic):
+            return char in self.characteristics
+
+    def get_char(self, name):
+        hits = [x for x in self.characteristics if x.category.term == name]
+        try:
+            result = next(iter(hits))
+        except StopIteration:
+            result = None
+        return result
+
     def __repr__(self):
         return 'Source(name="{0.name}", characteristics={0.characteristics}, ' \
                'comments={0.comments})'.format(self)
@@ -2508,6 +2522,14 @@ class Sample(Commentable):
             char = Characteristic(category=OntologyAnnotation(term=char))
         if isinstance(char, Characteristic):
             return char in self.characteristics
+
+    def get_char(self, name):
+        hits = [x for x in self.characteristics if x.category.term == name]
+        try:
+            result = next(iter(hits))
+        except StopIteration:
+            result = None
+        return result
 
     @property
     def derives_from(self):

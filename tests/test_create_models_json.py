@@ -188,7 +188,7 @@ class SerializeToJsonTests(unittest.TestCase):
 
     def test_serialize_sampleplan_with_qc(self):
         self.plan.add_sample_type('water')
-        self.plan.add_sample_qc_record('water', 8)
+        self.plan.add_sample_qc_plan_record('water', 8)
 
         expected = ordered(
             json.loads("""{
@@ -224,7 +224,7 @@ class SerializeToJsonTests(unittest.TestCase):
 
     def test_serialize_sampleassayplan(self):
         self.plan.add_sample_type('water')
-        self.plan.add_sample_qc_record('water', 8)
+        self.plan.add_sample_qc_plan_record('water', 8)
 
         self.assay_type.topology_modifiers = self.top_mods
 

@@ -601,27 +601,25 @@ class SampleAssayPlan(object):
         else:
             raise TypeError('Not a valid sample type: {0}'.format(sample_type))
 
-    def add_sample_qc_record(self, sample_type, injection_interval):
+    def add_sample_qc_plan_record(self, material_type, injection_interval):
         """
-        :param sample_type: (Characteristic/str) a sample type of QC material
+        :param material_type: (Characteristic/str) a sample type of QC material
         :param injection_interval: (int) for the provided sample type how
             often in the run order a QC sampling event should occur.
         :return:
         """
-        if isinstance(sample_type, str):
-            if sample_type not in [x.value.term for x in self.sample_types]:
-                raise TypeError(
-                    'nonexistent sample type for QC: {0}'.format(sample_type))
-            sample_type = next(x for x in self.sample_types if x.value.term
-                               == sample_type)
-        elif sample_type not in self.sample_types:
-            raise TypeError('nonexistent sample type for QC: {0}'
-                                .format(sample_type))
+        if isinstance(material_type, str):
+            material_type = Characteristic(
+                category=OntologyAnnotation(term='Material Type'),
+                value=OntologyAnnotation(term=material_type))
+        elif not material_type.category.term == 'Material Type':
+            raise TypeError('invalid characteristic for QC material type: {0}'
+                            .format(material_type))
         if not isinstance(injection_interval, int):
             raise TypeError('injection_interval must be a natural number')
         if isinstance(injection_interval, int) and injection_interval < 0:
             raise ValueError('injection_interval value must be a positive integer')
-        self.__sample_qc_plan[sample_type] = injection_interval
+        self.__sample_qc_plan[material_type] = injection_interval
 
     @property
     def sample_types(self):
@@ -848,15 +846,57 @@ class IsaModelObjectFactory(object):
             term='collection_event_rank_characteristic')
         study.characteristic_categories.append(
             collection_event_rank_characteristic)
+
+        sample_count = 0
+
         for group_id, fvs, rank in groups_ids:
             collection_event_rank = Characteristic(
                 category=collection_event_rank_characteristic,
                 value=rank)
             for subjn in range(group_size):
+                material_type = Characteristic(
+                    category=OntologyAnnotation(
+                        term='Material Type'),
+                    value=OntologyAnnotation(term='specimen'))
                 source = Source(name=self._idgen(group_id, subjn))
+                source.characteristics = [material_type]
                 sources.append(source)
                 for sample_type, sampling_size in sample_plan.items():
                     for sampn in range(0, sampling_size):
+                        try:
+                            qc_material_type = next(
+                                iter(self.sample_assay_plan
+                                     .sample_qc_plan.keys()))
+
+                            if sample_count % self.sample_assay_plan\
+                                .sample_qc_plan[qc_material_type] == 0:
+                                # insert QC sample collection
+                                qcsource = Source(
+                                    name=self._idgen(group_id, subjn) + '_qc')
+                                qcsource.characteristics = [qc_material_type]
+                                sources.append(qcsource)
+
+                                sample = Sample(
+                                    name=self._idgen(
+                                        group_id, subjn,
+                                        'qc', qc_material_type.value.term))
+                                sample.derives_from = [qcsource]
+                                samples.append(sample)
+
+                                process = Process(executes_protocol=study.get_prot(
+                                    'sample collection'), inputs=[qcsource],
+                                    outputs=[sample], performer=self.ops[0], date_=
+                                    datetime.date.isoformat(
+                                        datetime.datetime.now()),
+                                parameter_values=[ParameterValue(
+                                    category=ProtocolParameter(
+                                        parameter_name=OntologyAnnotation(
+                                            term='Run Order')),
+                                    value=str(sample_count))])
+                                process_sequence.append(process)
+                        except StopIteration:
+                            pass  # if no QC plan
+                        # normal sample collection
                         sample = Sample(name=self._idgen(
                             group_id, subjn, sampn, sample_type.value.term),
                             factor_values=fvs)
@@ -864,11 +904,17 @@ class IsaModelObjectFactory(object):
                                                   collection_event_rank]
                         sample.derives_from = [source]
                         samples.append(sample)
+                        sample_count += 1
 
                         process = Process(executes_protocol=study.get_prot(
                             'sample collection'), inputs=[source],
                             outputs=[sample], performer=self.ops[0], date_=
-                            datetime.date.isoformat(datetime.datetime.now()))
+                            datetime.date.isoformat(datetime.datetime.now()),
+                        parameter_values=[ParameterValue(
+                            category=ProtocolParameter(
+                                parameter_name=OntologyAnnotation(
+                                    term='Run Order')),
+                            value=str(sample_count))])
                         process_sequence.append(process)
         study.sources = sources
         study.samples = samples
