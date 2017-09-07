@@ -1,21 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- INSDC Sequence Read Archive resource Analysis (SRZ/ERZ/DRZ) object XML specification -->
-<!-- $Id: SRA.analysis.xsd,v 1.10 2014/08/06 14:11:28 rajeshr Exp $ -->
+<!-- version:1.5.35 -->
 <xs:schema xmlns:com="SRA.common" xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <xs:import namespace="SRA.common" schemaLocation="SRA.common.xsd"/>
 
     <xs:complexType name="AnalysisFileType">
-
-        <xs:sequence>
-            <xs:element minOccurs="0" name="CHECKLIST">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="0" name="IDENTIFIERS" type="com:IdentifierType"> </xs:element>
-                    </xs:sequence>
-                    <xs:attributeGroup ref="com:NameGroup"/>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
         <xs:attribute name="filename" type="xs:string" use="required">
             <xs:annotation>
                 <xs:documentation>The file name. </xs:documentation>
@@ -27,34 +15,21 @@
             </xs:annotation>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
-                    <xs:enumeration value="tab">
-                        <xs:annotation>
-                            <xs:documentation> A tab delimited text file that can be viewed as a
-                                spreadsheet. The first line should contain column headers.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:enumeration>
-                    <xs:enumeration value="bam">
-                        <xs:annotation>
-                            <xs:documentation> Binary form of the Sequence alignment/map format
-                                for read placements, from the SAM tools project. See
-                                http://sourceforge.net/projects/samtools/ </xs:documentation>
-                        </xs:annotation>
-                    </xs:enumeration>
-                    <xs:enumeration value="bai">
-                        <xs:annotation>
-                            <xs:documentation> Index sorted alignment for fast random  access.See
-                                http://sourceforge.net/projects/samtools/ </xs:documentation>
-                        </xs:annotation>
-                    </xs:enumeration>
+                    <xs:enumeration value="tab"/>
+                    <xs:enumeration value="bam"/>
+                    <xs:enumeration value="bai"/>
                     <xs:enumeration value="cram"/>
+                    <xs:enumeration value="crai"/>
                     <xs:enumeration value="vcf"/>
                     <xs:enumeration value="vcf_aggregate"/>
+                    <xs:enumeration value="bcf"/>
                     <xs:enumeration value="tabix"/>
                     <xs:enumeration value="wig"/>
                     <xs:enumeration value="bed"/>
                     <xs:enumeration value="gff"/>
                     <xs:enumeration value="fasta"/>
+                    <xs:enumeration value="fastq"/>
+                    <xs:enumeration value="flatfile"/>
                     <xs:enumeration value="contig_fasta"/>
                     <xs:enumeration value="contig_flatfile"/>
                     <xs:enumeration value="scaffold_fasta"/>
@@ -69,6 +44,9 @@
                     <xs:enumeration value="sample_list"/>
                     <xs:enumeration value="readme_file"/>
                     <xs:enumeration value="phenotype_file"/>
+                    <xs:enumeration value="BioNano_native"/>
+                    <xs:enumeration value="Kallisto_native"/>
+                    <xs:enumeration value="info"/>
                     <xs:enumeration value="other"/>
                 </xs:restriction>
             </xs:simpleType>
@@ -99,6 +77,11 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="checklist" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>The name of the checklist.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
     </xs:complexType>
     <xs:complexType name="AnalysisSetType">
         <xs:sequence maxOccurs="unbounded" minOccurs="1">
@@ -116,108 +99,108 @@
             <xs:documentation>A SRA analysis object captures sequence analysis results including sequence alignments, sequence variations and sequence annotations.
             </xs:documentation>
         </xs:annotation>
-        <xs:sequence>
-            <xs:element maxOccurs="1" minOccurs="0" name="IDENTIFIERS" type="com:IdentifierType"> </xs:element>
-            <xs:element maxOccurs="1" minOccurs="1" name="TITLE" type="xs:string">
-                <xs:annotation>
-                    <xs:documentation>Title of the analyis object which will be displayed in
-                        database search results. </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element maxOccurs="1" minOccurs="1" name="DESCRIPTION" type="xs:string">
-                <xs:annotation>
-                    <xs:documentation>Describes the analysis in detail.</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="STUDY_REF" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation>Establishes a relationship between the analysis and the
-                        parent study.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="0" name="IDENTIFIERS" type="com:IdentifierType"> </xs:element>
-                    </xs:sequence>
-                    <xs:attributeGroup ref="com:RefNameGroup"/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="SAMPLE_REF" maxOccurs="unbounded" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation>One of more samples associated with the
-                        analysis.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="0" name="IDENTIFIERS" type="com:IdentifierType"> </xs:element>
-                    </xs:sequence>
-                    <xs:attributeGroup ref="com:RefNameGroup"/>
-                    <xs:attribute name="label" type="xs:string">
+        <xs:complexContent>
+            <xs:extension base="com:ObjectType">
+                <xs:sequence>
+                    <xs:element maxOccurs="1" minOccurs="0" name="TITLE" type="xs:string">
                         <xs:annotation>
-                            <xs:documentation>A label associating the sample with BAM (@RG/ID or @RG/SM) or VCF file samples.</xs:documentation>
+                            <xs:documentation>Title of the analysis object which will be displayed in
+                        search results. </xs:documentation>
                         </xs:annotation>
-                    </xs:attribute>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="EXPERIMENT_REF" maxOccurs="unbounded" minOccurs="0">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="0" name="IDENTIFIERS" type="com:IdentifierType"> </xs:element>
-                    </xs:sequence>
-                    <xs:attributeGroup ref="com:RefNameGroup"/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="RUN_REF" maxOccurs="unbounded" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation>One or more runs associated with the
-                        analysis.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="0" name="IDENTIFIERS" type="com:IdentifierType"> </xs:element>
-                    </xs:sequence>
-                    <xs:attributeGroup ref="com:RefNameGroup"/>
-                    <xs:attribute name="label" type="xs:string">
+                    </xs:element>
+                    <xs:element maxOccurs="1" minOccurs="0" name="DESCRIPTION" type="xs:string">
                         <xs:annotation>
-                            <xs:documentation>A label associating the run with BAM (@RG/ID).</xs:documentation>
+                            <xs:documentation>Describes the analysis in detail.</xs:documentation>
                         </xs:annotation>
-                    </xs:attribute>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="ANALYSIS_REF" maxOccurs="unbounded" minOccurs="0">
-                <xs:annotation>
-                    <xs:documentation>One or more runs associated with the
-                        analysis.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="1" minOccurs="0" name="IDENTIFIERS" type="com:IdentifierType"> </xs:element>
-                    </xs:sequence>
-                    <xs:attributeGroup ref="com:RefNameGroup"/>
-                    <xs:attribute name="label" type="xs:string">
+                    </xs:element>
+                    <xs:element name="STUDY_REF" minOccurs="0">
                         <xs:annotation>
-                            <xs:documentation>A label associating the run with BAM (@RG/ID).</xs:documentation>
+                            <xs:documentation>Identifies the parent study.</xs:documentation>
                         </xs:annotation>
-                    </xs:attribute>
-                </xs:complexType>
-            </xs:element>
-            <xs:element maxOccurs="1" minOccurs="1" name="ANALYSIS_TYPE">
-                <xs:annotation>
-                    <xs:documentation>The type of the analysis. </xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:choice>
-                        <xs:element name="REFERENCE_ALIGNMENT" type="com:ReferenceSequenceType">
-                            <xs:annotation>
-                                <xs:documentation/>
-                            </xs:annotation>
-                        </xs:element>
-                        <xs:element name="SEQUENCE_VARIATION">
-                            <xs:complexType>
-                                <xs:complexContent>
-                                    <xs:extension base="com:ReferenceSequenceType">
-                                        <xs:sequence>
-                                            <xs:element name="EXPERIMENT_TYPE" minOccurs="0" maxOccurs="unbounded">
-                                                <xs:simpleType>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="com:RefObjectType"> </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="SAMPLE_REF" maxOccurs="unbounded" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>One of more samples associated with the
+                        analysis.</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="com:RefObjectType">
+                                    <xs:attribute name="label" type="xs:string">
+                                        <xs:annotation>
+                                            <xs:documentation>A label associating the sample with sample references in data files.</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="EXPERIMENT_REF" maxOccurs="unbounded" minOccurs="0">
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="com:RefObjectType"> </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="RUN_REF" maxOccurs="unbounded" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>One or more runs associated with the
+                        analysis.</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="com:RefObjectType">
+                                    <xs:attribute name="label" type="xs:string">
+                                        <xs:annotation>
+                                            <xs:documentation>A label associating the run with run references in data files.</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="ANALYSIS_REF" maxOccurs="unbounded" minOccurs="0">
+                        <xs:annotation>
+                            <xs:documentation>One or more runs associated with the
+                        analysis.</xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:complexContent>
+                                <xs:extension base="com:RefObjectType">
+                                    <xs:attribute name="label" type="xs:string">
+                                        <xs:annotation>
+                                            <xs:documentation>A label associating the analysis with analysis references in data files.</xs:documentation>
+                                        </xs:annotation>
+                                    </xs:attribute>
+                                </xs:extension>
+                            </xs:complexContent>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element maxOccurs="1" minOccurs="1" name="ANALYSIS_TYPE">
+                        <xs:annotation>
+                            <xs:documentation>The type of the analysis. </xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:choice>
+                                <xs:element name="REFERENCE_ALIGNMENT"
+                                    type="com:ReferenceSequenceType">
+                                    <xs:annotation>
+                                        <xs:documentation/>
+                                    </xs:annotation>
+                                </xs:element>
+                                <xs:element name="SEQUENCE_VARIATION">
+                                    <xs:complexType>
+                                        <xs:complexContent>
+                                            <xs:extension base="com:ReferenceSequenceType">
+                                                <xs:sequence>
+                                                  <xs:element name="EXPERIMENT_TYPE" minOccurs="0"
+                                                  maxOccurs="unbounded">
+                                                  <xs:simpleType>
                                                   <xs:restriction base="xs:string">
                                                   <xs:enumeration value="Whole genome sequencing"/>
                                                   <xs:enumeration value="Exome sequencing"/>
@@ -225,94 +208,134 @@
                                                   <xs:enumeration value="transcriptomics"/>
                                                   <xs:enumeration value="Curation"/>
                                                   </xs:restriction>
+                                                  </xs:simpleType>
+                                                  </xs:element>
+                                                  <xs:element minOccurs="0" name="PROGRAM"
+                                                  type="xs:string"/>
+                                                  <xs:element name="PLATFORM" type="xs:string"
+                                                  minOccurs="0"/>
+                                                  <xs:element minOccurs="0" name="IMPUTATION"
+                                                  type="xs:boolean"/>
+                                                </xs:sequence>
+                                            </xs:extension>
+                                        </xs:complexContent>
+                                    </xs:complexType>
+                                </xs:element>
+                                <xs:element name="SEQUENCE_ASSEMBLY">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="NAME" type="xs:string"/>
+                                            <xs:element name="PARTIAL" type="xs:boolean"> </xs:element>
+                                            <xs:element name="COVERAGE" type="xs:string"/>
+                                            <xs:element name="PROGRAM" type="xs:string"/>
+                                            <xs:element name="PLATFORM" type="xs:string"/>
+                                            <xs:element minOccurs="0" name="MIN_GAP_LENGTH"
+                                                type="xs:integer"/>
+                                            <xs:element minOccurs="0" name="MOL_TYPE">
+                                                <xs:simpleType>
+                                                  <xs:restriction base="xs:string">
+                                                  <xs:enumeration value="genomic DNA"/>
+                                                  <xs:enumeration value="genomic RNA"/>
+                                                  <xs:enumeration value="viral cRNA"/>
+                                                  </xs:restriction>
                                                 </xs:simpleType>
                                             </xs:element>
-                                            <xs:element minOccurs="0" name="PROGRAM" type="xs:string"/>
-                                            <xs:element name="PLATFORM" type="xs:string" minOccurs="0"/>
-                                            <xs:element minOccurs="0" name="IMPUTATION" type="xs:boolean"/>
                                         </xs:sequence>
-                                    </xs:extension>
-                                </xs:complexContent>
-                            </xs:complexType>
-                        </xs:element>
-                        <xs:element name="SEQUENCE_ASSEMBLY">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element name="NAME" type="xs:string"/>
-                                    <xs:element name="PARTIAL" type="xs:boolean"> </xs:element>
-                                    <xs:element name="COVERAGE" type="xs:string"/>
-                                    <xs:element name="PROGRAM" type="xs:string"/>
-                                    <xs:element name="PLATFORM" type="xs:string"/>
-                                    <xs:element minOccurs="0" name="MIN_GAP_LENGTH" type="xs:integer"/>
-                                </xs:sequence>
-                            </xs:complexType>
-                        </xs:element>
-                        <xs:element name="SEQUENCE_ANNOTATION">
+                                    </xs:complexType>
+                                </xs:element>
+                                <xs:element name="SEQUENCE_FLATFILE"/>
+                                <xs:element name="SEQUENCE_ANNOTATION">
+                                    <xs:annotation>
+                                        <xs:documentation/>
+                                    </xs:annotation>
+                                    <xs:complexType> </xs:complexType>
+                                </xs:element>
+                                <xs:element name="REFERENCE_SEQUENCE">
+                                    <xs:complexType> </xs:complexType>
+                                </xs:element>
+                                <xs:element name="SAMPLE_PHENOTYPE">
+                                    <xs:annotation>
+                                        <xs:documentation/>
+                                    </xs:annotation>
+                                    <xs:complexType> </xs:complexType>
+                                </xs:element>
+                                <xs:element name="PROCESSED_READS" type="com:ReferenceSequenceType"> </xs:element>
+                                <xs:element name="GENOME_MAP">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="PROGRAM" type="xs:string"/>
+                                            <xs:element name="PLATFORM">
+                                                <xs:simpleType>
+                                                  <xs:restriction base="xs:string">
+                                                  <xs:enumeration value="BioNano"/>
+                                                  </xs:restriction>
+                                                </xs:simpleType>
+                                            </xs:element>
+                                            <xs:element minOccurs="0" name="DESCRIPTION"
+                                                type="xs:string"/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                                <xs:element name="AMR_ANTIBIOGRAM"/>
+                                <xs:element name="PATHOGEN_ANALYSIS"/>
+                                <xs:element name="TRANSCRIPTOME_ASSEMBLY"/>
+                            </xs:choice>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:sequence>
+                        <xs:element name="FILES">
                             <xs:annotation>
-                                <xs:documentation/>
-                            </xs:annotation>
-                            <xs:complexType> </xs:complexType>
-                        </xs:element>
-                        <xs:element name="REFERENCE_SEQUENCE"/>
-                        <xs:element name="SAMPLE_PHENOTYPE">
-                            <xs:annotation>
-                                <xs:documentation/>
-                            </xs:annotation>
-                            <xs:complexType> </xs:complexType>
-                        </xs:element>
-                    </xs:choice>
-                </xs:complexType>
-            </xs:element>
-            <xs:sequence>
-                <xs:element name="FILES">
-                    <xs:annotation>
-                        <xs:documentation>Files associated with the
+                                <xs:documentation>Files associated with the
                                         analysis.</xs:documentation>
-                    </xs:annotation>
-                    <xs:complexType>
+                            </xs:annotation>
+                            <xs:complexType>
 
-                        <xs:sequence>
-                            <xs:element maxOccurs="unbounded" minOccurs="1" name="FILE" type="AnalysisFileType"/>
-                        </xs:sequence>
+                                <xs:sequence>
+                                    <xs:element maxOccurs="unbounded" minOccurs="1" name="FILE"
+                                        type="AnalysisFileType"/>
+                                </xs:sequence>
 
-                    </xs:complexType>
-                </xs:element>
-            </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
 
-            <xs:element maxOccurs="1" minOccurs="0" name="ANALYSIS_LINKS">
-                <xs:annotation>
-                    <xs:documentation> Links to resources related to this analysis.
+                    <xs:element maxOccurs="1" minOccurs="0" name="ANALYSIS_LINKS">
+                        <xs:annotation>
+                            <xs:documentation> Links to resources related to this analysis.
                     </xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence maxOccurs="unbounded" minOccurs="1">
-                        <xs:element name="ANALYSIS_LINK" type="com:LinkType"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element maxOccurs="1" minOccurs="0" name="ANALYSIS_ATTRIBUTES">
-                <xs:annotation>
-                    <xs:documentation>Properties and attributes of an analysis. These can be
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:sequence minOccurs="1">
+                                <xs:element name="ANALYSIS_LINK" type="com:LinkType"
+                                    maxOccurs="unbounded"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element maxOccurs="1" minOccurs="0" name="ANALYSIS_ATTRIBUTES">
+                        <xs:annotation>
+                            <xs:documentation>Properties and attributes of an analysis. These can be
                         entered as free-form tag-value pairs.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                    <xs:sequence maxOccurs="unbounded" minOccurs="1">
-                        <xs:element name="ANALYSIS_ATTRIBUTE" type="com:AttributeType"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-        <xs:attributeGroup ref="com:NameGroup"/>
-        <xs:attribute name="analysis_center" type="xs:string" use="optional">
-            <xs:annotation>
-                <xs:documentation>If applicable, the center name of the institution responsible
+                        </xs:annotation>
+                        <xs:complexType>
+                            <xs:sequence minOccurs="1">
+                                <xs:element name="ANALYSIS_ATTRIBUTE" type="com:AttributeType"
+                                    maxOccurs="unbounded"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+                <xs:attribute name="analysis_center" type="xs:string" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>If applicable, the center name of the institution responsible
                     for this analysis. </xs:documentation>
-            </xs:annotation>
-        </xs:attribute>
-        <xs:attribute name="analysis_date" type="xs:dateTime" use="optional">
-            <xs:annotation>
-                <xs:documentation>The date when this analysis was produced. </xs:documentation>
-            </xs:annotation>
-        </xs:attribute>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="analysis_date" type="xs:dateTime" use="optional">
+                    <xs:annotation>
+                        <xs:documentation>The date when this analysis was produced. </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
     </xs:complexType>
 </xs:schema>
