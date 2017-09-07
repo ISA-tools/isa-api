@@ -146,6 +146,7 @@ class SerializeToJsonTests(unittest.TestCase):
                 "assay_types": [],
                 "sample_plan": [],
                 "sample_types": [],
+                "sample_qc_plan": [],
                 "assay_plan": []
             }""")
         )
@@ -172,9 +173,46 @@ class SerializeToJsonTests(unittest.TestCase):
                         "sampling_size": 5
                     }
                 ],
+                "sample_qc_plan": [],
                 "assay_types": [],
                 "sample_types": ["liver", "tissue"]
             }""")
+        )
+
+        actual = ordered(
+            json.loads(
+                json.dumps(self.plan, cls=SampleAssayPlanEncoder)
+            )
+        )
+        self.assertTrue(expected == actual)
+
+    def test_serialize_sampleplan_with_qc(self):
+        self.plan.add_sample_type('water')
+        self.plan.add_sample_qc_record('water', 8)
+
+        expected = ordered(
+            json.loads("""{
+                        "group_size": 20,
+                        "assay_plan": [],
+                        "sample_plan": [
+                            {
+                                "sample_type": "liver",
+                                "sampling_size": 3
+                            },
+                            {
+                                "sample_type": "tissue",
+                                "sampling_size": 5
+                            }
+                        ],
+                        "sample_qc_plan": [
+                            {
+                                "sample_type": "water",
+                                "injection_interval": 8
+                            }
+                        ],
+                        "assay_types": [],
+                        "sample_types": ["liver", "tissue", "water"]
+                    }""")
         )
 
         actual = ordered(
@@ -192,8 +230,24 @@ class SerializeToJsonTests(unittest.TestCase):
 
         expected = ordered(
             json.loads("""{
-                "sample_types": ["liver", "tissue"],
+                "sample_types": ["liver", "tissue", "water"],
                 "group_size": 20,
+                "sample_plan": [
+                    {
+                        "sampling_size": 3,
+                        "sample_type": "liver"
+                    },
+                    {
+                        "sampling_size": 5,
+                        "sample_type": "tissue"
+                    }
+                ],
+                "sample_qc_plan": [
+                    {
+                        "injection_interval": 8,
+                        "sample_type": "water"
+                    }
+                ],
                 "assay_types": [
                     {
                         "topology_modifiers": {
@@ -208,17 +262,7 @@ class SerializeToJsonTests(unittest.TestCase):
                         }, 
                         "technology_type": "DNA microarray", 
                         "measurement_type": "genome sequencing"
-                    }], 
-                    "sample_plan": [
-                        {
-                            "sampling_size": 3, 
-                            "sample_type": "liver"
-                        },
-                        {
-                            "sampling_size": 5,
-                            "sample_type": "tissue"
-                        }
-                    ],
+                    }],
                 "assay_plan": [
                     {
                         "sample_type": "liver",

@@ -549,23 +549,33 @@ class AssayTopologyModifiers(object):
 
 
 class SampleAssayPlan(object):
-    def __init__(self, group_size=0, sample_plan=None, assay_plan=None):
+    def __init__(self, group_size=0, sample_plan=None, assay_plan=None,
+                 sample_qc_plan=None):
         # TODO test initialization from sample_plan and assay_plan!!
         self.__group_size = 0
         self.__sample_types = set()
         self.__assay_types = set()
 
         self.group_size = group_size
+
         if sample_plan is None:
             self.__sample_plan = {}
         else:
             self.sample_types = {key for key in sample_plan}
             self.sample_plan = sample_plan
+
         if assay_plan is None:
             self.__assay_plan = set()
         else:
             self.assay_types = {value for key, value in assay_plan}
             self.assay_plan = assay_plan
+
+        if sample_qc_plan is None:
+            self.__sample_qc_plan = {}
+        else:
+            for k, v in assay_plan:
+                self.assay_types.add(v)
+            self.__sample_qc_plan = sample_qc_plan
 
     @property
     def group_size(self):
@@ -591,8 +601,27 @@ class SampleAssayPlan(object):
         else:
             raise TypeError('Not a valid sample type: {0}'.format(sample_type))
 
-    def add_sample_qc(self, sample_type, interval):
-        pass
+    def add_sample_qc_record(self, sample_type, injection_interval):
+        """
+        :param sample_type: (Characteristic/str) a sample type of QC material
+        :param injection_interval: (int) for the provided sample type how
+            often in the run order a QC sampling event should occur.
+        :return:
+        """
+        if isinstance(sample_type, str):
+            if sample_type not in [x.value.term for x in self.sample_types]:
+                raise TypeError(
+                    'nonexistent sample type for QC: {0}'.format(sample_type))
+            sample_type = next(x for x in self.sample_types if x.value.term
+                               == sample_type)
+        elif sample_type not in self.sample_types:
+            raise TypeError('nonexistent sample type for QC: {0}'
+                                .format(sample_type))
+        if not isinstance(injection_interval, int):
+            raise TypeError('injection_interval must be a natural number')
+        if isinstance(injection_interval, int) and injection_interval < 0:
+            raise ValueError('injection_interval value must be a positive integer')
+        self.__sample_qc_plan[sample_type] = injection_interval
 
     @property
     def sample_types(self):
@@ -625,7 +654,6 @@ class SampleAssayPlan(object):
 
     def add_sample_plan_record(self, sample_type, sampling_size=0):
         """
-
         :param sample_type: (Characteristic/str) a sample type
         :param sampling_size: (int/tuple of int) for the provided sample type
             how many sampling events happen for a single source/subject. This
@@ -694,6 +722,14 @@ class SampleAssayPlan(object):
         for sample_type, assay_type in assay_plan:
             self.add_assay_plan_record(sample_type, assay_type)
 
+    @property
+    def sample_qc_plan(self):
+        return self.__sample_qc_plan
+
+    @sample_qc_plan.setter
+    def sample_qc_plan(self, val):
+        for sample_type, injection_interval in val.items():
+            self.add_sample_qc_plan_record(sample_type, injection_interval)
 
 class BaseStudyDesign(object):
     pass
@@ -1728,6 +1764,20 @@ class SampleAssayPlanEncoder(JSONEncoder):
             )
         return sample_plan_record_list
 
+    def get_sample_qc_plan(self, sample_qc_plan):
+        sample_qc_plan_record_list = []
+        for k in sample_qc_plan.keys():
+            sample_type_characteristic = k
+            injection_interval = sample_qc_plan[k]
+            sample_type = sample_type_characteristic.value.term
+            sample_qc_plan_record_list.append(
+                {
+                    'sample_type': sample_type,
+                    'injection_interval': injection_interval
+                }
+            )
+        return sample_qc_plan_record_list
+
     def get_assay_plan(self, assay_plan):
         assay_plan_record_list = []
         for mapping in assay_plan:
@@ -1752,5 +1802,6 @@ class SampleAssayPlanEncoder(JSONEncoder):
                 'sample_types': sorted([x.value.term for x in o.sample_types]),
                 'assay_types': sorted([self.get_assay_type(x) for x in o.assay_types]),
                 'sample_plan': self.get_sample_plan(o.sample_plan),
+                'sample_qc_plan': self.get_sample_qc_plan(o.sample_qc_plan),
                 'assay_plan': self.get_assay_plan(o.assay_plan)
             }
