@@ -223,7 +223,11 @@ class SerializeToJsonTests(unittest.TestCase):
         self.assertTrue(expected == actual)
 
     def test_serialize_sampleassayplan(self):
+        self.plan.add_sample_type('water')
+        self.plan.add_sample_qc_record('water', 8)
+
         self.assay_type.topology_modifiers = self.top_mods
+
         self.plan.add_assay_type(self.assay_type)
         self.plan.add_assay_plan_record('liver', self.assay_type)
         self.plan.add_assay_plan_record('tissue', self.assay_type)
