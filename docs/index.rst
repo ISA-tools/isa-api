@@ -20,6 +20,7 @@ flexible way to build and use ISA content, as well as provide utility functions 
 #. :doc:`Validating ISA-Tab and ISA JSON </validation>`
 #. :doc:`Importing data in ISA formats </importdata>`
 #. :doc:`Exporting data in ISA formats </exportdata>`
+#. :doc:`Creating ISA content with a Sample and Assay plan </sampleassayplan>`
 #. :doc:`Known Issues </knownissues>`
 
 License
@@ -45,4 +46,5 @@ This code is licensed under the `CPAL License <https://raw.githubusercontent.com
    Validating ISA-Tab and ISA JSON <validation>
    Importing data in ISA formats <importdata>
    Exporting data from ISA formats <exportdata>
+   Creating ISA content with a Sample and Assay plan </sampleassayplan>
    Known Issues <knownissues>
