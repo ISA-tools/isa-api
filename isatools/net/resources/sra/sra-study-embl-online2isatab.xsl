@@ -48,11 +48,13 @@ SRA schema version considered:
  <xsl:variable name="experiments-sources-strategies">
   <xsl:call-template name="process-lib-strategies-sources">
    <xsl:with-param name="acc-number" select="$acc-number"/>
+   <xsl:with-param name="path" select="'http://www.ebi.ac.uk/ena/data/view/'"/>
   </xsl:call-template>
  </xsl:variable>
  
  <xsl:variable name="distinct-exp-sources-strategies">
   <xsl:call-template name="generate-distinct-exp-sources-strategies">
+   <xsl:with-param name="path" select="'http://www.ebi.ac.uk/ena/data/view/'"/>
    <xsl:with-param name="exp-sources-strategies" select="$experiments-sources-strategies"/>
   </xsl:call-template>
  </xsl:variable>
@@ -60,6 +62,7 @@ SRA schema version considered:
  <xsl:variable name="samples-characteristics">
   <xsl:call-template name="process-samples-attributes">
    <xsl:with-param name="acc-number" select="$acc-number"/>
+   <xsl:with-param name="path" select="'http://www.ebi.ac.uk/ena/data/view/'"/>
   </xsl:call-template>
  </xsl:variable>
  
@@ -406,7 +409,7 @@ SRA schema version considered:
   <xsl:variable name="my-sample" select="./SAMPLE_ATTRIBUTES"/>
   <xsl:for-each select="$distinct-characteristic-terms/terms/term">
    <xsl:variable name="my-term" select="current()"/>
-   <xsl:value-of select="isa:quotes(if ($my-sample/SAMPLE_ATTRIBUTE/TAG[.=$my-term]) then $my-sample/SAMPLE_ATTRIBUTE/TAG[.=$my-term]/following-sibling::VALUE else '')"/>
+   <xsl:value-of select="if ($my-sample/SAMPLE_ATTRIBUTE/TAG[.=$my-term]) then $my-sample/SAMPLE_ATTRIBUTE/TAG[.=$my-term]/following-sibling::VALUE else ''"/>
    <xsl:text>&#9;</xsl:text>
   </xsl:for-each>
  
