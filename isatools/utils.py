@@ -436,8 +436,8 @@ class IsaTabAnalyzer(object):
                 else study.filename
             study_design_report.append({
                 'study_key': study_key,
-                'total_sources': len(study.materials['sources']),
-                'total_samples': len(study.materials['samples']),
+                'total_sources': len(study.sources),
+                'total_samples': len(study.samples),
                 'assays': []
             })
             with open(os.path.join(self.path, study.filename)) as s_fp:
@@ -449,7 +449,7 @@ class IsaTabAnalyzer(object):
                                            assay.technology_platform])
                     assay_report = {
                         'assay_key': assay_key,
-                        'num_sources': len(assay.materials['samples']),
+                        'num_sources': len(assay.samples),
                         'num_samples': len([x for x in assay.data_files
                                             if x.label.startswith(
                                 raw_data_file_prefix)])

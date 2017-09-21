@@ -28,8 +28,8 @@ class UnitSampleTabLoad(unittest.TestCase):
         with open(os.path.join(self._sampletab_data_dir, 'test1.txt')) as fp:
             ISA = sampletab.load(fp)
             self.assertEqual(len(ISA.studies), 1)
-            sources = ISA.studies[0].materials['sources']
-            samples = ISA.studies[0].materials['samples']
+            sources = ISA.studies[0].sources
+            samples = ISA.studies[0].samples
             self.assertEqual(len(sources), 1)
             self.assertEqual(len(samples), 1)
             process = ISA.studies[0].process_sequence[0]
@@ -42,8 +42,8 @@ class UnitSampleTabLoad(unittest.TestCase):
         with open(os.path.join(self._sampletab_data_dir, 'test2.txt')) as fp:
             ISA = sampletab.load(fp)
             self.assertEqual(len(ISA.studies), 1)
-            sources = ISA.studies[0].materials['sources']
-            samples = ISA.studies[0].materials['samples']
+            sources = ISA.studies[0].sources
+            samples = ISA.studies[0].samples
             self.assertEqual(len(sources), 1)
             self.assertEqual(len(samples), 2)
             self.assertEqual(len(ISA.studies[0].process_sequence), 1)
@@ -57,8 +57,8 @@ class UnitSampleTabLoad(unittest.TestCase):
         with open(os.path.join(self._sampletab_data_dir, 'GSB-3.txt')) as fp:
             ISA = sampletab.load(fp)
             self.assertEqual(len(ISA.studies), 1)
-            sources = ISA.studies[0].materials['sources']
-            samples = ISA.studies[0].materials['samples']
+            sources = ISA.studies[0].sources
+            samples = ISA.studies[0].samples
             self.assertEqual(len(sources), 1157)
             self.assertEqual(len(samples), 3858)
             self.assertEqual(len(ISA.studies[0].process_sequence), 1747)
@@ -67,8 +67,8 @@ class UnitSampleTabLoad(unittest.TestCase):
         with open(os.path.join(self._sampletab_data_dir, 'GSB-537.txt')) as fp:
             ISA = sampletab.load(fp)
             self.assertEqual(len(ISA.studies), 1)
-            sources = ISA.studies[0].materials['sources']
-            samples = ISA.studies[0].materials['samples']
+            sources = ISA.studies[0].sources
+            samples = ISA.studies[0].samples
             self.assertEqual(len(sources), 4)
             self.assertEqual(len(samples), 80)
             self.assertEqual(len(ISA.studies[0].process_sequence), 8)
@@ -81,8 +81,8 @@ class UnitSampleTabLoad(unittest.TestCase):
             with open(os.path.join(self._tmp_dir, "out.txt"), "r") as in_fp:
                 ISA = sampletab.load(in_fp)  # load into ISA objects again from dumped SampleTab and check contents
                 self.assertEqual(len(ISA.studies), 1)
-                sources = ISA.studies[0].materials['sources']
-                samples = ISA.studies[0].materials['samples']
+                sources = ISA.studies[0].sources
+                samples = ISA.studies[0].samples
                 self.assertEqual(len(sources), 4)
                 self.assertEqual(len(samples), 80)
                 self.assertEqual(len(ISA.studies[0].process_sequence), 8)
@@ -91,8 +91,8 @@ class UnitSampleTabLoad(unittest.TestCase):
         with open(os.path.join(self._sampletab_data_dir, 'GSB-718.txt')) as fp:
             ISA = sampletab.load(fp)
             self.assertEqual(len(ISA.studies), 1)
-            sources = ISA.studies[0].materials['sources']
-            samples = ISA.studies[0].materials['samples']
+            sources = ISA.studies[0].sources
+            samples = ISA.studies[0].samples
             self.assertEqual(len(sources), 51)
             self.assertEqual(len(samples), 2409)
             self.assertEqual(len(ISA.studies[0].process_sequence), 109)
@@ -143,18 +143,18 @@ class UnitSampleTabDump(unittest.TestCase):
             sample_description_charac,
             derived_from_charac
         ]
-        study.materials['sources'] = [Source(name="sample1", characteristics=[
+        study.sources = [Source(name="sample1", characteristics=[
             Characteristic(category=sample_accession_charac, value="S1"),
             Characteristic(category=sample_description_charac, value="A sample"),
         ])]
-        study.materials['samples'] = [Sample(name="sample2", characteristics=[
+        study.samples = [Sample(name="sample2", characteristics=[
             Characteristic(category=sample_accession_charac, value="S2"),
             Characteristic(category=sample_description_charac, value="Another sample"),
             Characteristic(category=derived_from_charac, value="S1")],
-                                             derives_from=[study.materials['sources'][0]])]
+                                             derives_from=[study.sources[0]])]
         process = Process(executes_protocol=study.protocols[0])
-        process.inputs = [study.materials['sources'][0]]
-        process.outputs = [study.materials['samples'][0]]
+        process.inputs = [study.sources[0]]
+        process.outputs = [study.samples[0]]
         study.process_sequence = [process]
         ISA.studies = [study]
         sampletab_dump = sampletab.dumps(ISA)
@@ -224,24 +224,24 @@ Sample Name	Sample Accession	Sample Description	Derived From	Group Name	Group Ac
             sample_description_charac,
             derived_from_charac
         ]
-        study.materials['sources'] = [Source(name="sample1", characteristics=[
+        study.sources = [Source(name="sample1", characteristics=[
             Characteristic(category=sample_accession_charac, value="S1"),
             Characteristic(category=sample_description_charac, value="A sample"),
         ])]
-        study.materials['samples'] = [Sample(name="sample2", characteristics=[
+        study.samples = [Sample(name="sample2", characteristics=[
             Characteristic(category=sample_accession_charac, value="S2"),
             Characteristic(category=sample_description_charac, value="Another sample"),
             Characteristic(category=derived_from_charac, value="S1")],
-                                             derives_from=[study.materials['sources'][0]]),
+                                             derives_from=[study.sources[0]]),
             Sample(name="sample3", characteristics=[
                 Characteristic(category=sample_accession_charac, value="S3"),
                 Characteristic(category=sample_description_charac, value="Another sample"),
                 Characteristic(category=derived_from_charac, value="S1")],
-                derives_from=[study.materials['sources'][0]])
+                derives_from=[study.sources[0]])
                                       ]
         process = Process(executes_protocol=study.protocols[0])
-        process.inputs = [study.materials['sources'][0]]
-        process.outputs = [study.materials['samples'][0]]
+        process.inputs = [study.sources[0]]
+        process.outputs = [study.samples[0]]
         study.process_sequence = [process]
         ISA.studies = [study]
         sampletab_dump = sampletab.dumps(ISA)

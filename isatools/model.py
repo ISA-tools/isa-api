@@ -1104,7 +1104,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
         """
         s = Source(name=name, characteristics=characteristics,
                    comments=comments)
-        self.materials['sources'].append(s)
+        self.sources.append(s)
 
     def yield_sources(self, name=None):
         """Gets an iterator of matching sources for a given name.
@@ -1117,9 +1117,9 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                 None, yields all sources.
         """
         if name is None:
-            return filter(True, self.materials['sources'])
+            return filter(True, self.sources)
         else:
-            return filter(lambda x: x.name == name, self.materials['sources'])
+            return filter(lambda x: x.name == name, self.sources)
 
     def get_source(self, name):
         """Gets the first matching source material for a given name.
@@ -1148,10 +1148,10 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                 characteristic is None, yields all sources.
         """
         if characteristic is None:
-            return filter(True, self.materials['sources'])
+            return filter(True, self.sources)
         else:
             return filter(lambda x: characteristic in x.characteristics,
-                          self.materials['sources'])
+                          self.sources)
 
     def get_source_by_characteristic(self, characteristic):
         """Gets the first matching source material for a given characteristic.
@@ -1178,7 +1178,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
             :obj:`list` of str.
 
         """
-        return [x.name for x in self.materials['sources']]
+        return [x.name for x in self.sources]
 
     @property
     def samples(self):
@@ -1207,7 +1207,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
         s = Sample(name=name, characteristics=characteristics, 
                    factor_values=factor_values, derives_from=derives_from,
                    comments=comments)
-        self.materials['samples'].append(s)
+        self.samples.append(s)
 
     def yield_samples(self, name=None):
         """Gets an iterator of matching samples for a given name.
@@ -1220,9 +1220,9 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                 None, yields all samples.
         """
         if name is None:
-            return filter(True, self.materials['samples'])
+            return filter(True, self.samples)
         else:
-            return filter(lambda x: x.name == name, self.materials['samples'])
+            return filter(lambda x: x.name == name, self.samples)
 
     def get_sample(self, name):
         """Gets the first matching sample material for a given name.
@@ -1251,10 +1251,10 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                 characteristic is None, yields all samples.
         """
         if characteristic is None:
-            return filter(True, self.materials['samples'])
+            return filter(True, self.samples)
         else:
             return filter(lambda x: characteristic in x.characteristics,
-                          self.materials['samples'])
+                          self.samples)
 
     def get_sample_by_characteristic(self, characteristic):
         """Gets the first matching sample material for a given characteristic.
@@ -1285,10 +1285,10 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                 factor_value is None, yields all samples.
         """
         if factor_value is None:
-            return filter(True, self.materials['samples'])
+            return filter(True, self.samples)
         else:
             return filter(lambda x: factor_value in x.factor_values,
-                          self.materials['samples'])
+                          self.samples)
 
     def get_sample_by_factor_value(self, factor_value):
         """Gets the first matching sample material for a given factor_value.
@@ -1315,7 +1315,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
             :obj:`list` of str.
 
         """
-        return [x.name for x in self.materials['samples']]
+        return [x.name for x in self.samples]
 
     @property
     def other_material(self):
@@ -1344,10 +1344,10 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                 characteristic is None, yields all materials.
         """
         if characteristic is None:
-            return filter(True, self.materials['other_material'])
+            return filter(True, self.other_material)
         else:
             return filter(lambda x: characteristic in x.characteristics,
-                          self.materials['other_materials'])
+                          self.other_materials)
 
     def get_material_by_characteristic(self, characteristic):
         """Gets the first matching material material for a given characteristic.

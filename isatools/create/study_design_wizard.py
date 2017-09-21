@@ -189,15 +189,15 @@ def create_control_element(some_inv, control_type, quantity, frequency):
         if control_type == "1":
             for entity in 1..quantity:
                 control_source = Source(name='solvent blank', id_=entity)
-                some_inv.materials['sources'].append(control_source)
+                some_inv.sources.append(control_source)
         if control_type == "2":
             for entity in 1..quantity:
                 control_source = Source(name='sample preparation blank', id_=entity)
-                some_inv.materials['sources'].append(control_source)
+                some_inv.sources.append(control_source)
         if control_type == "3":
             for entity in 1..quantity:
                 control_source = Source(name='study reference material', id_=entity)
-                some_inv.materials['sources'].append(control_source)
+                some_inv.sources.append(control_source)
         else:
             print('choice not,recognised,please try again')
             # create_control_element()
@@ -468,7 +468,7 @@ def create_study_subjects(group_size, this_study, group_uuid, group_factor_combo
                 source.characteristics.append(characteristic_organism)
                 # print("source: ", source.name, source.characteristics[0].category.term,
                 #       source.characteristics[0].value.term)
-                this_study.studies[0].materials['sources'].append(source)
+                this_study.studies[0].sources.append(source)
 
                 for tissue, number_of_collections in some_sampling_event_plan.items():
 
@@ -484,8 +484,8 @@ def create_study_subjects(group_size, this_study, group_uuid, group_factor_combo
                         sample_template.characteristics.append(characteristic_rk)
                         # print("sample type: " + key, ", number of collection events: " + value + " times.")
 
-                        # this_study.studies[0].materials['samples'] = batch_create_materials(prototype_sample, n=2)
-                        # for sam in this_study.studies[0].materials['samples']:
+                        # this_study.studies[0].samples = batch_create_materials(prototype_sample, n=2)
+                        # for sam in this_study.studies[0].samples:
                         # sample_name = source_name + "_" + "sample#" + str(i)
                         # sample = Sample(name=sample_name, derives_from=[source])
 
@@ -501,7 +501,7 @@ def create_study_subjects(group_size, this_study, group_uuid, group_factor_combo
                                     sample_template.factor_values.append(fv)
 
                         # print("sample: ", sample_template.name)
-                        this_study.studies[0].materials['samples'].append(sample_template)
+                        this_study.studies[0].samples.append(sample_template)
                         process_name = "protocol_" + str(group_uuid)
                         sample_collection_process = Process(name=process_name,
                                                             executes_protocol=this_study.studies[0].protocols[0],
@@ -937,16 +937,16 @@ def set_assay_type_topology_modifiers(this_sample_type, this_sampling_event, thi
 #             index_i = 0
 #             index_j = 0
 #             index_k = 0
-#             # for index_i, sample in enumerate(new_inv.studies[0].materials['samples']):
-#             some_sample_list = [sample for sample in new_inv.studies[0].materials['samples'] if
+#             # for index_i, sample in enumerate(new_inv.studies[0].samples):
+#             some_sample_list = [sample for sample in new_inv.studies[0].samples if
 #                           sample.characteristics[0].value.term == assay_plan[item]["sample type"] and
 #                           sample.characteristics[1].value.term == assay_plan[item]["collection event"]]
 #             print("number of samples: ", len(some_sample_list))
-#             extractlist_before = [ext for ext in new_inv.studies[0].assays[0].materials['other_material'] if
+#             extractlist_before = [ext for ext in new_inv.studies[0].assays[0].other_material if
 #                                   ext.type == "Extract Name"]
 #             # print("number of extracts", len(extractlist_before))
 #
-#             for index_i, sample in enumerate([sample for sample in new_inv.studies[0].materials['samples'] if
+#             for index_i, sample in enumerate([sample for sample in new_inv.studies[0].samples if
 #                                         sample.characteristics[0].value.term == assay_plan[item][
 #                                             "sample type"]]):
 #                 # print("i: ", index_i, "sample: ", sample.characteristics[1].value.term)
@@ -1002,13 +1002,13 @@ def set_assay_type_topology_modifiers(this_sample_type, this_sampling_event, thi
 #
 #                             # make sure extract(library), data file, and the processes are attached to the assay
 #                             this_assay.data_files.append(datafile)
-#                             this_assay.materials['other_material'].append(extract)
-#                             # this_assay.materials['other_material'].append(le)
+#                             this_assay.other_material.append(extract)
+#                             # this_assay.other_material.append(le)
 #                             this_assay.process_sequence.append(extraction_process)
 #                             # this_assay.process_sequence.append(labeling_process)
 #                             this_assay.process_sequence.append(data_acq_process)
 #
-#             # extractlist_after = [ext for ext in new_inv.studies[0].assays[0].materials['other_material'] if
+#             # extractlist_after = [ext for ext in new_inv.studies[0].assays[0].other_material if
 #             #                      ext.type == "Extract Name"]
 #             # print("number of extracts", len(extractlist_after))
 
@@ -1058,7 +1058,7 @@ def main():
                 study_group_dictionaries = compute_study_groups(intervention_list[intervention_type])
                 # print("study groups:", study_group_dictionaries)
                 new_inv, sampling_plan = set_study_arms(study_group_dictionaries, new_inv, repeats)
-                # print("is this correct?" , new_inv.studies[0].materials["sources"][0].name)
+                # print("is this correct?" , new_inv.studies[0].sources[0].name)
 
                 new_inv, assay_plan = define_assay_plan(new_inv, sampling_plan)
 
@@ -1122,14 +1122,14 @@ def main():
                         i = 0
                         j = 0
                         k = 0
-                        # for i, sample in enumerate(new_inv.studies[0].materials['samples']):
-                        samplelist=[sample for sample in new_inv.studies[0].materials['samples'] if
+                        # for i, sample in enumerate(new_inv.studies[0].samples):
+                        samplelist=[sample for sample in new_inv.studies[0].samples if
                          sample.characteristics[0].value.term == assay_plan[item]["sample type"] and sample.characteristics[1].value.term == assay_plan[item]["collection event"]]
                         # print("number of samples: ", len(samplelist))
-                        extractlist_before = [ext for ext in new_inv.studies[0].assays[0].materials['other_material'] if ext.type == "Extract Name"]
+                        extractlist_before = [ext for ext in new_inv.studies[0].assays[0].other_material if ext.type == "Extract Name"]
                         # print("number of extracts", len(extractlist_before))
 
-                        for i, sample in enumerate([sample for sample in new_inv.studies[0].materials['samples'] if
+                        for i, sample in enumerate([sample for sample in new_inv.studies[0].samples if
                                                     sample.characteristics[0].value.term == assay_plan[item][
                                                             "sample type"]]):
                             # print("i: ", i, "sample: ", sample.characteristics[1].value.term)
@@ -1200,13 +1200,13 @@ def main():
 
                                         # make sure extract(library), data file, and the processes are attached to the assay
                                         this_assay.data_files.append(datafile)
-                                        this_assay.materials['other_material'].append(extract)
-                                        this_assay.materials['other_material'].append(le)
+                                        this_assay.other_material.append(extract)
+                                        this_assay.other_material.append(le)
                                         this_assay.process_sequence.append(extraction_process)
                                         this_assay.process_sequence.append(labeling_process)
                                         this_assay.process_sequence.append(data_acq_process)
 
-                        extractlist_after = [ext for ext in new_inv.studies[0].assays[0].materials['other_material'] if
+                        extractlist_after = [ext for ext in new_inv.studies[0].assays[0].other_material if
                                               ext.type == "Extract Name"]
                         print("number of extracts", len(extractlist_after))
 
@@ -1239,8 +1239,8 @@ def main():
                         i = 0
                         j = 0
                         k = 0
-                        # for i, sample in enumerate(new_inv.studies[0].materials['samples']):
-                        for i, sample in enumerate([sample for sample in new_inv.studies[0].materials['samples'] if
+                        # for i, sample in enumerate(new_inv.studies[0].samples):
+                        for i, sample in enumerate([sample for sample in new_inv.studies[0].samples if
                                                    sample.characteristics[0].value.term == assay_plan[item]["sample type"]]):
 
                             if str(sample.characteristics[1].value.term) == str(assay_plan[item]["collection event"]):
@@ -1326,8 +1326,8 @@ def main():
 
                                         # make sure the extract, data file, and the processes are attached to the assay
                                         this_assay.data_files.append(datafile)
-                                        this_assay.materials['other_material'].append(extract)
-                                        this_assay.materials['other_material'].append(le)
+                                        this_assay.other_material.append(extract)
+                                        this_assay.other_material.append(le)
                                         this_assay.process_sequence.append(extraction_process)
                                         this_assay.process_sequence.append(labeling_process)
                                         this_assay.process_sequence.append(data_acq_process)
@@ -1411,22 +1411,22 @@ def main():
                                   index_j = 0
                                   index_k = 0
                                   randomized_order = []
-                                  # for index_i, sample in enumerate(new_inv.studies[0].materials['samples']):
-                                  #some_sample_list = [sample for sample in new_inv.studies[0].materials['samples'] if
+                                  # for index_i, sample in enumerate(new_inv.studies[0].samples):
+                                  #some_sample_list = [sample for sample in new_inv.studies[0].samples if
                                   #                sample.characteristics[0].value.term == assay_plan[item]["sample type"] and
                                   #                sample.characteristics[1].value.term == assay_plan[item]["collection event"]]
                                   #print("number of samples: ", len(some_sample_list))
-                                  #extractlist_before = [ext for ext in new_inv.studies[0].assays[0].materials['other_material'] if
+                                  #extractlist_before = [ext for ext in new_inv.studies[0].assays[0].other_material if
                                   #                        ext.type == "Extract Name"]
                                   # print("number of extracts", len(extractlist_before))
-                                  expected_total_number_run = len([sample for sample in new_inv.studies[0].materials['samples'] if
+                                  expected_total_number_run = len([sample for sample in new_inv.studies[0].samples if
                                                                 sample.characteristics[0].value.term == assay_plan[item][
                                                                     "sample type"]]) \
                                                               * int(
                                       assay_plan[item]["params"]["number of technical replicates"])
                                                      # * len(assay_plan[item]["params"]["number of channels"]) \
 
-                                  print(len([sample for sample in new_inv.studies[0].materials['samples'] if
+                                  print(len([sample for sample in new_inv.studies[0].samples if
                                                                 sample.characteristics[0].value.term == assay_plan[item][
                                                                     "sample type"]]))
                                   print("expected size:", expected_total_number_run)
@@ -1436,7 +1436,7 @@ def main():
 
                                   randomized_order = get_processrun_random_token(expected_total_number_run)
                                   counter = -1
-                                  for index_i, sample in enumerate([sample for sample in new_inv.studies[0].materials['samples'] if
+                                  for index_i, sample in enumerate([sample for sample in new_inv.studies[0].samples if
                                                                 sample.characteristics[0].value.term == assay_plan[item][
                                                                     "sample type"]]):
                                         # print("i: ", index_i, "sample: ", sample.characteristics[1].value.term)
@@ -1519,8 +1519,8 @@ def main():
 
                                                 # make sure extract(library), data file, and the processes are attached to the assay
                                                 this_assay.data_files.append(datafile)
-                                                this_assay.materials['other_material'].append(extract)
-                                                # this_assay.materials['other_material'].append(le)
+                                                this_assay.other_material.append(extract)
+                                                # this_assay.other_material.append(le)
                                                 this_assay.process_sequence.append(extraction_process)
                                                 # this_assay.process_sequence.append(labeling_process)
                                                 this_assay.process_sequence.append(data_acq_process)
@@ -1630,12 +1630,12 @@ def main():
                                     index_i = 0
                                     index_j = 0
                                     index_k = 0
-                                    # for index_i, sample in enumerate(new_inv.studies[0].materials['samples']):
-                                    # some_sample_list = [sample for sample in new_inv.studies[0].materials['samples'] if
+                                    # for index_i, sample in enumerate(new_inv.studies[0].samples):
+                                    # some_sample_list = [sample for sample in new_inv.studies[0].samples if
                                     #                sample.characteristics[0].value.term == assay_plan[item]["sample type"] and
                                     #                sample.characteristics[1].value.term == assay_plan[item]["collection event"]]
                                     # print("number of samples: ", len(some_sample_list))
-                                    # extractlist_before = [ext for ext in new_inv.studies[0].assays[0].materials['other_material'] if
+                                    # extractlist_before = [ext for ext in new_inv.studies[0].assays[0].other_material if
                                     #                        ext.type == "Extract Name"]
                                     # print("number of extracts", len(extractlist_before))
 
@@ -1777,9 +1777,9 @@ def main():
 
                                                 # make sure extract(library), data file, and the processes are attached to the assay
                                                 this_assay.data_files.append(datafile)
-                                                this_assay.materials['other_material'].append(
+                                                this_assay.other_material.append(
                                                     extract)
-                                                # this_assay.materials['other_material'].append(le)
+                                                # this_assay.other_material.append(le)
                                                 this_assay.process_sequence.append(
                                                     extraction_process)
                                                 # this_assay.process_sequence.append(labeling_process)
