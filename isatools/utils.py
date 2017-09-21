@@ -445,6 +445,35 @@ class IsaTabFixer(object):
     def __init__(self, table_file_path):
         self.path = table_file_path
 
+    @staticmethod
+    def clean_isatab_field_names(self, field_names):
+        # iterates field names and drops the postfix enums that pandas adds
+        for i, field_name in enumerate(field_names):
+            if field_name.startswith("Term Source REF"):
+                field_names[i] = "Term Source REF"
+            elif field_name.startswith("Term Accession Number"):
+                field_names[i] = "Term Accession Number"
+            elif field_name.startswith("Unit"):
+                field_names[i] = "Unit"
+            elif "Characteristics[" in field_name:
+                if "material type" in field_name.lower():
+                    field_names[i] = "Material Type"
+                else:
+                    field_names[i] = field_name[field_name.rindex(".") + 1:]
+            elif "Factor Value[" in field_name:
+                field_names[i] = field_name[field_name.rindex(".") + 1:]
+            elif "Parameter Value[" in field_name:
+                field_names[i] = field_name[field_name.rindex(".") + 1:]
+            elif field_name.endswith("Date"):
+                field_names[i] = "Date"
+            elif field_name.endswith("Performer"):
+                field_names[i] = "Performer"
+            elif "Protocol REF" in field_name:
+                field_names[i] = "Protocol REF"
+            elif field_name.startswith("Sample Name."):
+                field_names[i] = "Sample Name"
+        return field_names
+
     def replace_factor_with_source_characteristic(self, factor_name):
         table_file_df = isatab.read_tfile(self.path)
 
@@ -453,10 +482,25 @@ class IsaTabFixer(object):
         factor_index = field_names.index('Factor Value[{}]'.format(factor_name))
         source_name_index = field_names.index('Source Name')
 
-        field_names.insert(source_name_index + 1, field_names[factor_index])
-        del field_names[factor_index]
+        if factor_index < len(field_names) and \
+            'Term Source REF' in field_names[factor_index + 1] and \
+                'Term Accession' in field_names[factor_index + 2]:
+            # move Factor Value and Term Source REF and Term Accession columns
+            field_names.insert(source_name_index + 1, field_names[factor_index])
+            field_names.insert(
+                source_name_index + 2, field_names[factor_index + 1])
+            field_names.insert(
+                source_name_index + 3, field_names[factor_index + 2])
 
-        table_file_df.columns = field_names
+            del field_names[factor_index]
+            del field_names[factor_index + 1]
+            del field_names[factor_index + 2]
+
+        else:  # move only the Factor Value column
+            field_names.insert(source_name_index + 1, field_names[factor_index])
+            del field_names[factor_index]
+
+        table_file_df.columns = self.clean_isatab_field_names(field_names)
 
         with open(self.path, 'w') as out_fp:
             table_file_df.to_csv(path_or_buf=out_fp, index=False, sep='\t',
