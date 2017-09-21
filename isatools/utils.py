@@ -438,3 +438,26 @@ class IsaTabAnalyzer(object):
 
     def pprint_study_design_report(self):
         print(json.dumps(self.generate_study_design_report(), indent=4, sort_keys=True))
+
+
+class IsaTabFixer(object):
+
+    def __init__(self, table_file_path):
+        self.path = table_file_path
+
+    def replace_factor_with_source_characteristic(self, factor_name):
+        table_file_df = isatab.read_tfile(self.path)
+
+        field_names = table_file_df.columns
+
+        factor_index = field_names.index('Factor Value[{}]'.format(factor_name))
+        source_name_index = field_names.index('Source Name')
+
+        field_names.insert(source_name_index + 1, field_names[factor_index])
+        del field_names[factor_index]
+
+        table_file_df.columns = field_names
+
+        with open(self.path, 'w') as out_fp:
+            table_file_df.to_csv(path_or_buf=out_fp, index=False, sep='\t',
+                                 encoding='utf-8')
