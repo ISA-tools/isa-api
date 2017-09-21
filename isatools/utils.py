@@ -446,7 +446,7 @@ class IsaTabFixer(object):
         self.path = table_file_path
 
     @staticmethod
-    def clean_isatab_field_names(self, field_names):
+    def clean_isatab_field_names(field_names):
         # iterates field names and drops the postfix enums that pandas adds
         for i, field_name in enumerate(field_names):
             if field_name.startswith('Term Source REF'):
@@ -459,11 +459,20 @@ class IsaTabFixer(object):
                 if 'material type' in field_name.lower():
                     field_names[i] = 'Material Type'
                 else:
-                    field_names[i] = field_name[field_name.rindex('.') + 1:]
+                    try:
+                        field_names[i] = field_name[field_name.rindex('.') + 1:]
+                    except ValueError:
+                        pass
             elif 'Factor Value[' in field_name:
-                field_names[i] = field_name[field_name.rindex('.') + 1:]
+                try:
+                    field_names[i] = field_name[field_name.rindex('.') + 1:]
+                except ValueError:
+                    pass
             elif 'Parameter Value[' in field_name:
-                field_names[i] = field_name[field_name.rindex('.') + 1:]
+                try:
+                    field_names[i] = field_name[field_name.rindex('.') + 1:]
+                except ValueError:
+                    pass
             elif field_name.endswith('Date'):
                 field_names[i] = 'Date'
             elif field_name.endswith('Performer'):
@@ -477,10 +486,11 @@ class IsaTabFixer(object):
     def replace_factor_with_source_characteristic(self, factor_name):
         table_file_df = isatab.read_tfile(self.path)
 
-        field_names = table_file_df.columns
+        field_names = list(table_file_df.columns)
+        clean_field_names = self.clean_isatab_field_names(field_names)
 
-        factor_index = field_names.index('Factor Value[{}]'.format(factor_name))
-        source_name_index = field_names.index('Source Name')
+        factor_index = clean_field_names.index('Factor Value[{}]'.format(factor_name))
+        source_name_index = clean_field_names.index('Source Name')
 
         if factor_index < len(field_names) and \
             'Term Source REF' in field_names[factor_index + 1] and \
