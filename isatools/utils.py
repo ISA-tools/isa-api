@@ -449,29 +449,29 @@ class IsaTabFixer(object):
     def clean_isatab_field_names(self, field_names):
         # iterates field names and drops the postfix enums that pandas adds
         for i, field_name in enumerate(field_names):
-            if field_name.startswith("Term Source REF"):
-                field_names[i] = "Term Source REF"
-            elif field_name.startswith("Term Accession Number"):
-                field_names[i] = "Term Accession Number"
-            elif field_name.startswith("Unit"):
-                field_names[i] = "Unit"
-            elif "Characteristics[" in field_name:
-                if "material type" in field_name.lower():
-                    field_names[i] = "Material Type"
+            if field_name.startswith('Term Source REF'):
+                field_names[i] = 'Term Source REF'
+            elif field_name.startswith('Term Accession Number'):
+                field_names[i] = 'Term Accession Number'
+            elif field_name.startswith('Unit'):
+                field_names[i] = 'Unit'
+            elif 'Characteristics[' in field_name:
+                if 'material type' in field_name.lower():
+                    field_names[i] = 'Material Type'
                 else:
-                    field_names[i] = field_name[field_name.rindex(".") + 1:]
-            elif "Factor Value[" in field_name:
-                field_names[i] = field_name[field_name.rindex(".") + 1:]
-            elif "Parameter Value[" in field_name:
-                field_names[i] = field_name[field_name.rindex(".") + 1:]
-            elif field_name.endswith("Date"):
-                field_names[i] = "Date"
-            elif field_name.endswith("Performer"):
-                field_names[i] = "Performer"
-            elif "Protocol REF" in field_name:
-                field_names[i] = "Protocol REF"
-            elif field_name.startswith("Sample Name."):
-                field_names[i] = "Sample Name"
+                    field_names[i] = field_name[field_name.rindex('.') + 1:]
+            elif 'Factor Value[' in field_name:
+                field_names[i] = field_name[field_name.rindex('.') + 1:]
+            elif 'Parameter Value[' in field_name:
+                field_names[i] = field_name[field_name.rindex('.') + 1:]
+            elif field_name.endswith('Date'):
+                field_names[i] = 'Date'
+            elif field_name.endswith('Performer'):
+                field_names[i] = 'Performer'
+            elif 'Protocol REF' in field_name:
+                field_names[i] = 'Protocol REF'
+            elif field_name.startswith('Sample Name.'):
+                field_names[i] = 'Sample Name'
         return field_names
 
     def replace_factor_with_source_characteristic(self, factor_name):
@@ -492,13 +492,38 @@ class IsaTabFixer(object):
             field_names.insert(
                 source_name_index + 3, field_names[factor_index + 2])
 
-            del field_names[factor_index]
-            del field_names[factor_index + 1]
-            del field_names[factor_index + 2]
+            del field_names[factor_index]  # del Factor Value[{}]
+            del field_names[factor_index + 1]  # del Term Source REF
+            del field_names[factor_index + 2]  # del Term Accession
+        elif factor_index < len(field_names) and \
+            'Unit' in field_names[factor_index + 1] and \
+                'Term Source REF' in field_names[factor_index + 2] and \
+                'Term Accession' in field_names[factor_index + 3]:
+            # move Factor Value and Unit as ontology annotation
+            field_names.insert(source_name_index + 1, field_names[factor_index])
+            field_names.insert(
+                source_name_index + 2, field_names[factor_index + 1])
+            field_names.insert(
+                source_name_index + 3, field_names[factor_index + 2])
+            field_names.insert(
+                source_name_index + 4, field_names[factor_index + 3])
 
+            del field_names[factor_index]  # del Factor Value[{}]
+            del field_names[factor_index + 1]  # del Unit
+            del field_names[factor_index + 2]  # del Term Source REF
+            del field_names[factor_index + 3]  # del Term Accession
+        elif factor_index < len(field_names) and \
+            'Unit' in field_names[factor_index + 1]:
+            # move Factor Value and Unit columns
+            field_names.insert(source_name_index + 1, field_names[factor_index])
+            field_names.insert(
+                source_name_index + 2, field_names[factor_index + 1])
+
+            del field_names[factor_index]  # del Factor Value[{}]
+            del field_names[factor_index + 1]  # del Unit
         else:  # move only the Factor Value column
             field_names.insert(source_name_index + 1, field_names[factor_index])
-            del field_names[factor_index]
+            del field_names[factor_index]  # del Factor Value[{}]
 
         table_file_df.columns = self.clean_isatab_field_names(field_names)
 
