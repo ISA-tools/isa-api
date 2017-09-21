@@ -207,5 +207,30 @@ class TestIsaTabFixer(unittest.TestCase):
     def test_replace_factor_with_source_characteristic(self):
         fixer = utils.IsaTabFixer(os.path.join(self._tmp_dir, 's_BII-S-1.txt'))
         fixer.replace_factor_with_source_characteristic('limiting nutrient')
+
+        expected_field_names = ['Source Name',
+                                'Factor Value[limiting nutrient]',
+                                'Term Source REF',
+                                'Term Accession Number',
+                                'Characteristics[organism]',
+                                'Term Source REF',
+                                'Term Accession Number',
+                                'Characteristics[strain]',
+                                'Term Source REF',
+                                'Term Accession Number',
+                                'Characteristics[genotype]',
+                                'Term Source REF',
+                                'Term Accession Number',
+                                'Protocol REF',
+                                'Sample Name',
+                                'Factor Value[rate]',
+                                'Unit',
+                                'Term Source REF',
+                                'Term Accession Number']
+
+
         with open(os.path.join(self._tmp_dir, 's_BII-S-1.txt')) as fixed_tab_fp:
-            print(next(fixed_tab_fp))
+            actual_field_names = list(
+                map(lambda field_name: field_name.strip(),
+                    next(fixed_tab_fp).split('\t')))
+            self.assertListEqual(actual_field_names, expected_field_names)
