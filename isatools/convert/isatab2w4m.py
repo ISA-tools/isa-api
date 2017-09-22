@@ -490,10 +490,10 @@ if __name__ == '__main__':
                          all_assays=args_dict['all_assays'])
 
     # Filter NA values TODO
-    if args_dict['samp_na_filering'] is not None:
+    if args_dict['samp_na_filtering'] is not None:
         filter_na_values(assays, table='samp',
                          cols=args_dict['samp_na_filering'])
-    if args_dict['var_na_filering'] is not None:
+    if args_dict['var_na_filtering'] is not None:
         filter_na_values(assays, table='var', cols=args_dict['var_na_filering'])
 
     # Write into files
@@ -501,3 +501,21 @@ if __name__ == '__main__':
                  samp_file=args_dict['sample_output'],
                  var_file=args_dict['variable_output'],
                  mat_file=args_dict['matrix_output'])
+
+
+def convert(input_dir, output_dir, sample_output, variable_output,
+            matrix_output, study_filename=None, assay_filename=None,
+            all_assays=None, samp_na_filtering=None, var_na_filtering=None):
+    assays = convert2w4m(input_dir=input_dir,
+                         study_filename=study_filename,
+                         assay_filename=assay_filename,
+                         all_assays=all_assays)
+
+
+    if samp_na_filtering is not None:
+        filter_na_values(assays, table='samp', cols=samp_na_filtering)
+    if var_na_filtering is not None:
+        filter_na_values(assays, table='var', cols=var_na_filtering)
+
+    write_assays(assays, output_dir=output_dir, samp_file=sample_output,
+                 var_file=variable_output, mat_file=matrix_output)
