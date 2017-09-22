@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='isatools',
-    version='0.9.0',
+    version='0.9.1',
     packages=['isatools',
               'isatools.convert',
               'isatools.io',
@@ -25,8 +25,9 @@ setup(
         'resources/tab_templates/*.txt',
         'net/resources/biocrates/*',
         'net/resources/sra/*.xsl',
-        'net/resources/sra/*.xml'],
-                  '': ['LICENSE.txt', 'README.md']},
+        'net/resources/sra/*.xml',
+        'resources/isatools.ini'],
+        '': ['LICENSE.txt', 'README.md']},
     description='Metadata tracking tools help to manage an increasingly diverse set of life science, environmental and biomedical experiments',
     author='ISA Infrastructure Team',
     author_email='isatools@googlegroups.com',
