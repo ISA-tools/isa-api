@@ -2,17 +2,22 @@
 # vi: fdm=marker
 
 import argparse
-import sys
+import collections
+import glob
+import logging
 import os.path
 import re
-import glob
-import collections
+import sys
 from string import Template
+
+from isatools import config
 from isatools import isatab as ISATAB
 
 # original from https://github.com/workflow4metabolomics/mtbls-dwnld/blob/develop/isatab2w4m.py
-__author__      = 'pkrog (Pierrick Roger)'
+__author__ = 'pkrog (Pierrick Roger)'
 
+logging.basicConfig(level=config.log_level)
+log = logging.getLogger(__name__)
 
 # Check Python version
 if sys.hexversion < 0x03040000:
@@ -27,22 +32,33 @@ class FilenameTemplate(Template):
 ################################################################
 
 def error(msg):
-    print('ERROR: ' + msg, file=sys.stderr)
-    sys.exit(1)
+    err = 'ERROR: {}'.format(msg)
+
+    if __name__ == '__main__':
+        print(err, file=sys.stderr)
+        sys.exit(1)
+    else:
+        raise(IOError(err))
 
 
 # Information message {{{1
 ################################################################
 
 def info(msg):
-    print('INFO: ' + msg)
+    inf = 'INFO: {}'.format(msg)
+
+    if __name__ == '__main__':
+        print(inf)
+    else:
+        log.info(inf)
 
 
 # Read arguments {{{1
 ################################################################
 
 def read_args():
-    s1 = 'You can use it as a template, where %%s will be replaced by the study name and %%a by the assay filename.'
+    s1 = 'You can use it as a template, where %%s will be replaced by the ' \
+         'study name and %%a by the assay filename.'
 
     # Default values
     dft_output_dir = '.'
@@ -51,39 +67,49 @@ def read_args():
     dft_matrix_file = '%s-%a-sample-variable-matrix.tsv'
 
     parser = argparse.ArgumentParser(
-        description='Script for extracting assays from ISATab data and outputing in W4M format.')
+        description='Script for extracting assays from ISATab data and '
+                    'outputing in W4M format.')
     parser.add_argument('-a', help='Extract all assays.', dest='all_assays',
                         required=False, default=False, type=bool)
     parser.add_argument('-i',
                         help='Input directory containing the ISA-Tab files.',
                         dest='input_dir', required=True)
     parser.add_argument('-f',
-                        help='Filename of the assay to extract. If unset, the first assay of the chosen study will be used.',
+                        help='Filename of the assay to extract. If unset, the '
+                             'first assay of the chosen study will be used.',
                         dest='assay_filename', required=False)
     parser.add_argument('-n',
-                        help='Filename of the study to extract. If unset, the first study found will be used.',
+                        help='Filename of the study to extract. If unset, the '
+                             'first study found will be used.',
                         dest='study_filename', required=False)
     parser.add_argument('-d',
-                        help='Set output directory. Default is "' + dft_output_dir + '".',
-                        dest="output_dir", required=False,
-                        default=dft_output_dir)
+                        help='Set output directory. Default is "' +
+                             dft_output_dir + '".', dest="output_dir",
+                        required=False, default=dft_output_dir)
     parser.add_argument('-s',
-                        help='Output file for sample metadata. ' + s1 + ' Default is "' + dft_sample_file.replace(
+                        help='Output file for sample metadata. ' + s1 +
+                             ' Default is "' + dft_sample_file.replace(
                             '%', '%%') + '".', dest="sample_output",
                         required=False, default=dft_sample_file)
     parser.add_argument('-v',
-                        help='Output file for variable metadata. ' + s1 + ' Default is "' + dft_variable_file.replace(
+                        help='Output file for variable metadata. ' + s1 +
+                             ' Default is "' + dft_variable_file.replace(
                             '%', '%%') + '".', dest='variable_output',
                         required=False, default=dft_variable_file)
     parser.add_argument('-m',
-                        help='Output file for sample x variable matrix. ' + s1 + ' Default is "' + dft_matrix_file.replace(
+                        help='Output file for sample x variable matrix. ' +
+                             s1 + ' Default is "' + dft_matrix_file.replace(
                             '%', '%%') + '".', dest='matrix_output',
                         required=False, default=dft_matrix_file)
     parser.add_argument('-S',
-                        help='Filter out NA values in the specified sample metadata columns. The value is a comma separated list of column names.',
+                        help='Filter out NA values in the specified sample '
+                             'metadata columns. The value is a comma separated '
+                             'list of column names.',
                         dest='samp_na_filering', required=False)
     parser.add_argument('-V',
-                        help='Filter out NA values in the specified variable metadata columns. The value is a comma separated list of column names.',
+                        help='Filter out NA values in the specified variable '
+                             'metadata columns. The value is a comma separated '
+                             'list of column names.',
                         dest='var_na_filering', required=False)
     args = parser.parse_args()
     args = vars(args)
@@ -106,7 +132,8 @@ def select_study(investigation_file, study_filename=None):
     # More than one study and no study specified
     if len(investigation.studies) > 1 and study_filename is None:
         error(
-            'The investigation file "' + investigation_file + '" contains more than one study. You need to select one of them.')
+            'The investigation file "{}" contains more than one study. You '
+            'need to select one of them.'.format(investigation_file))
 
     # Search for specified study
     if study_filename is not None:
@@ -120,7 +147,8 @@ def select_study(investigation_file, study_filename=None):
         # Specified study not found
         if study is None:
             error(
-                'Study "' + study_filename + '" not found in investigation file "' + investigation_file + '".')
+                'Study "{0}" not found in investigation file "{1}".'
+                    .format(study_filename, investigation_file))
 
     # Take first one
     if study is None and len(investigation.studies) > 0:
@@ -170,14 +198,14 @@ def get_data_file(assay):
         m = re.match('^m_.*\.(tsv|txt)$', df.filename)
         if m is not None:
             if data_filename is not None:
-                error('Found two data files ("', data_filename, '" and "',
-                      df.filename, '") in assay "', assay.filename, '".')
+                error('Found two data files ("{0}" and "{1}") in assay "{2}".'
+                      .format(data_filename, df.filename, assay.filename))
             info('Found data file "' + df.filename + '".')
             data_filename = df.filename
 
     # No data file
     if data_filename is None:
-        error('Found no data file in assay "', assayfilename, '".')
+        error('Found no data file in assay "{}".'.format(assay.filename))
 
     return data_filename
 
@@ -288,7 +316,7 @@ def get_investigation_file(input_dir):
 
     # File found
     investigation_file = investigation_files[0]
-    info('Found investigation file "' + investigation_file + '".')
+    info('Found investigation file "{}".'.format(investigation_file))
 
     return investigation_file
 
@@ -310,7 +338,11 @@ def get_sample_names(assay, assay_df, measures_df):
     sample_names = [sample.name for sample in assay.materials['samples']]
     measures_cols = measures_df.axes[1]
 
-    # XXX If the column 'Sample Name' of the assay file contains duplicated names, then `assay.materials['samples']]` will return less sample names than there are. It may happen that, as in MTBLS404 with the column 'Extract Name', another column contains "real" sample names that are all different.
+    # XXX If the column 'Sample Name' of the assay file contains duplicated
+    # names, then `assay.materials['samples']]` will return less sample names
+    # than there are. It may happen that, as in MTBLS404 with the column
+    # 'Extract Name', another column contains "real" sample names that are
+    # all different.
     if len(sample_names) != assay_df.shape[0] or any(
             [x not in measures_cols for x in sample_names]):
         # TODO send warning message
@@ -335,7 +367,7 @@ def make_sample_metadata(study_df, assay_df, sample_names, normalize=True):
     sample_metadata = assay_df.merge(study_df, on='Sample.Name', sort=False)
 
     # Normalize
-    if (normalize):
+    if normalize:
         norm_sample_names = make_names(sample_names, uniq=True)
         sample_metadata.insert(0, 'sample.name', norm_sample_names)
         sample_metadata.set_axis(1, make_names(sample_metadata.axes[1].tolist(),
@@ -376,7 +408,8 @@ def make_matrix(measures_df, sample_names, variable_names, normalize=True):
     if sample_variable_matrix is None or len(
             sample_variable_matrix.axes[1]) != len(sample_names):
         raise Exception(
-            'Some or all sample names were not found among the column names of the data array.')
+            'Some or all sample names were not found among the column names of '
+            'the data array.')
 
     # Add variable names as columns
     sample_variable_matrix.insert(0, 'variable.name', variable_names)
@@ -401,7 +434,7 @@ def convert2w4m(input_dir, study_filename=None, assay_filename=None,
     if study is None:
         info('No studies found in investigation file.')
         return
-    info('Processing study "' + study.filename + '".')
+    info('Processing study "{}".'.format(study))
 
     # Select assays
     assays = select_assays(study=study, assay_filename=assay_filename,
@@ -410,7 +443,7 @@ def convert2w4m(input_dir, study_filename=None, assay_filename=None,
     # Loop on all assays
     w4m_assays = []
     for assay in assays:
-        info('Processing assay "' + assay.filename + '".')
+        info('Processing assay "{}".'.format(assay.filename))
         study_df = get_study_df(input_dir, study)
         assay_df = get_assay_df(input_dir, assay)
         measures_df = get_measures_df(input_dir, assay)
@@ -421,10 +454,9 @@ def convert2w4m(input_dir, study_filename=None, assay_filename=None,
                                                assay_df=assay_df,
                                                sample_names=sample_names,
                                                normalize=True)
-        variable_metadata = make_variable_metadata(measures_df=measures_df,
-                                                   sample_names=sample_names,
-                                                   variable_names=variable_names,
-                                                   normalize=True)
+        variable_metadata = make_variable_metadata(
+            measures_df=measures_df, sample_names=sample_names,
+            variable_names=variable_names, normalize=True)
         sample_variable_matrix = make_matrix(measures_df=measures_df,
                                              sample_names=sample_names,
                                              variable_names=variable_names,
@@ -443,7 +475,7 @@ def write_data_frame(df, output_dir, template_filename, study, assay):
     filename = FilenameTemplate(template_filename).substitute(s=study, a=assay)
     if output_dir is not None:
         filename = os.path.join(output_dir, filename)
-    df.to_csv(path_or_buf=filename, sep="\t", na_rep='NA')
+    df.to_csv(path_or_buf=filename, sep='\t', na_rep='NA')
 
 
 # Write assays into files {{{1
@@ -510,7 +542,6 @@ def convert(input_dir, output_dir, sample_output, variable_output,
                          study_filename=study_filename,
                          assay_filename=assay_filename,
                          all_assays=all_assays)
-
 
     if samp_na_filtering is not None:
         filter_na_values(assays, table='samp', cols=samp_na_filtering)
