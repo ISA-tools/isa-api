@@ -10,10 +10,11 @@ install:
 script:
 - coverage run --source=isatools --omit=docs/*,features/*,tests/*,isatools/io/isatab_configurator.py setup.py test
 - behave --no-capture --no-capture-stderr --format=progress features/isa-file-handler.feature
+- tox
 branches:
-  except:
-    - /^feat/
-    - /^enhance/
+  only:
+    - master
+    - develop
 deploy:
   provider: pypi
   user: zigur
