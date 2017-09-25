@@ -5,7 +5,7 @@ import os
 import shutil
 from isatools.convert import isatab2sra
 from lxml import etree
-from tests import utils
+from isatools.tests import utils
 import tempfile
 
 

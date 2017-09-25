@@ -1,5 +1,5 @@
 import unittest
-from tests import utils
+from isatools.tests import utils
 from isatools import sampletab
 import os
 from isatools.model import *

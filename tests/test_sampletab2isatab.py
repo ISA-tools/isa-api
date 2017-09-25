@@ -1,7 +1,7 @@
 import os
 import unittest
 from isatools.convert import sampletab2isatab
-from tests import utils
+from isatools.tests import utils
 import tempfile
 import shutil
 

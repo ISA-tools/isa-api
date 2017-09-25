@@ -314,7 +314,7 @@ def write_idf_file(inv_obj, output_path):
     ], axis=1)
     idf_df = idf_df.set_index("MAGE-TAB Version").T
     idf_df = idf_df.replace('', np.nan)
-    with open(os.path.join(output_path, "{}.idf.txt".format(investigation.identifier if investigation.identifier != "" else investigation.filename[2:-3])), "w") as idf_fp:
+    with open(os.path.join(output_path, "{}.idf.txt".format(investigation.identifier if investigation.identifier != "" else investigation.filename[2:-3])), "w", encoding='utf-8') as idf_fp:
         idf_df.to_csv(path_or_buf=idf_fp, index=True, sep='\t', encoding='utf-8', index_label="MAGE-TAB Version")
 
 
@@ -497,7 +497,7 @@ class MageTabParser(object):
     
     def load_into_idfdict(self, in_filename):
         try:
-            with open(in_filename) as unicode_file:
+            with open(in_filename, encoding='utf-8') as unicode_file:
                 tabreader = csv.reader(filter(lambda r: r[0] != '#', unicode_file), dialect='excel-tab')
                 for row in tabreader:
                     key = get_squashed(key=row[0])
@@ -689,7 +689,7 @@ class MageTabParser(object):
 
     def parse_sdrf_to_isa_table_files(self, in_filename):
         """ Parses MAGE-TAB SDRF file into ISA-Tab study and assay tables as pandas dataframes"""
-        with open(in_filename) as in_fp:
+        with open(in_filename, encoding='utf-8') as in_fp:
             with strip_comments(in_fp) as fp:
                 df = pd.read_csv(fp, dtype=str, sep='\t', encoding='utf-8').fillna('')
             # do some preliminary cleanup of the table

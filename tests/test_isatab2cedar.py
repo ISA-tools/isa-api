@@ -2,7 +2,7 @@ import os
 from isatools.convert.isatab2cedar import ISATab2CEDAR
 import unittest
 import shutil
-from tests import utils
+from isatools.tests import utils
 import json
 import tempfile
 

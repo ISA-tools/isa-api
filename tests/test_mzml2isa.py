@@ -1,8 +1,8 @@
 import unittest
 import shutil
 from isatools.convert import mzml2isa
-from tests.utils import assert_tab_content_equal
-from tests import utils
+from isatools.tests.utils import assert_tab_content_equal
+from isatools.tests import utils
 import tempfile
 import os
 from io import StringIO

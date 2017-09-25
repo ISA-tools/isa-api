@@ -2,7 +2,7 @@ import unittest
 import os
 import shutil
 from isatools.convert import isatab2magetab
-from tests import utils
+from isatools.tests import utils
 import tempfile
 
 

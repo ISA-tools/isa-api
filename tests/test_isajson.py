@@ -1,7 +1,7 @@
 import unittest
 from isatools import isajson
 import json
-from tests import utils
+from isatools.tests import utils
 import os
 
 

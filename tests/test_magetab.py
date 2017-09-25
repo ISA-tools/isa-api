@@ -1,5 +1,5 @@
 import unittest
-from tests.utils import MAGETAB_DATA_DIR
+from isatools.tests.utils import MAGETAB_DATA_DIR
 import os
 from isatools.magetab import MageTabParser
 from isatools.model import Investigation

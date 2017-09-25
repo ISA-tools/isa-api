@@ -1,7 +1,7 @@
 import unittest
 import os
 from isatools import isajson, isatab
-from tests import utils
+from isatools.tests import utils
 import logging
 
 
@@ -120,7 +120,7 @@ class TestIsaTabTestData(unittest.TestCase):
 
     def test_validate_testdata_mtbls1_isatab(self):
         test_case = 'MTBLS1'
-        with open(os.path.join(utils.TAB_DATA_DIR, test_case, 'i_investigation.txt')) as test_case_fp:
+        with open(os.path.join(utils.TAB_DATA_DIR, test_case, 'i_investigation.txt'), encoding='utf-8') as test_case_fp:
             report = isatab.validate(fp=test_case_fp,config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
@@ -128,7 +128,7 @@ class TestIsaTabTestData(unittest.TestCase):
 
     def test_validate_testdata_mtbls2_isatab(self):
         test_case = 'MTBLS2'
-        with open(os.path.join(utils.TAB_DATA_DIR, test_case, 'i_investigation.txt')) as test_case_fp:
+        with open(os.path.join(utils.TAB_DATA_DIR, test_case, 'i_investigation.txt'), encoding='utf-8') as test_case_fp:
             report = isatab.validate(fp=test_case_fp,config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
@@ -136,7 +136,7 @@ class TestIsaTabTestData(unittest.TestCase):
 
     def test_validate_testdata_mtbls3_isatab(self):
         test_case = 'MTBLS3'
-        with open(os.path.join(utils.TAB_DATA_DIR, test_case, 'i_investigation.txt')) as test_case_fp:
+        with open(os.path.join(utils.TAB_DATA_DIR, test_case, 'i_investigation.txt'), encoding='utf-8') as test_case_fp:
             report = isatab.validate(fp=test_case_fp,config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:

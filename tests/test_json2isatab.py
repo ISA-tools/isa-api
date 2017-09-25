@@ -2,8 +2,8 @@ import unittest
 import os
 import shutil
 from isatools.convert import json2isatab
-from tests.utils import assert_tab_content_equal
-from tests import utils
+from isatools.tests.utils import assert_tab_content_equal
+from isatools.tests import utils
 import tempfile
 
 

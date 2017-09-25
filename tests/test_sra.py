@@ -5,7 +5,7 @@ import shutil
 import tempfile
 from lxml import etree
 
-from tests import utils
+from isatools.tests import utils
 
 from isatools import isajson
 from isatools import sra

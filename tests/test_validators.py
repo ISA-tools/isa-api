@@ -1,7 +1,7 @@
 import unittest
 from isatools import isajson, isatab
 import os
-from tests import utils
+from isatools.tests import utils
 import tempfile
 import shutil
 

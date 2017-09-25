@@ -66,6 +66,10 @@ def create_isatab_xslt(sra_acc_numbers, saxon_jar_path=None):
         :returns the output error otherwise (should this me modified?)
 
     """
+    raise DeprecationWarning(
+        'create_isatab_xslt() is deprecated, please use '
+        'sra_to_isatab_batch_convert() instead')
+
     cmd_map = dict(posix='batch_sra2isatab.sh', nt=None, java=None, ce=None)
 
     formatted_sra_acc_numbers = format_acc_numbers(sra_acc_numbers)

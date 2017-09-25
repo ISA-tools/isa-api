@@ -1,6 +1,6 @@
 import unittest
 import os
-from tests import utils
+from isatools.tests import utils
 
 
 def setUpModule():

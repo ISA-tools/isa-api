@@ -1,7 +1,7 @@
 import unittest
 import sys
 from io import StringIO
-from tests import utils
+from isatools.tests import utils
 import os
 
 

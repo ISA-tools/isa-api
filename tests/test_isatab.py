@@ -1,9 +1,9 @@
 import unittest
 import os
 import shutil
-from tests.utils import assert_tab_content_equal
+from isatools.tests.utils import assert_tab_content_equal
 from isatools.model import *
-from tests import utils
+from isatools.tests import utils
 import tempfile
 from isatools import isatab
 from isatools.isatab import ProcessSequenceFactory
@@ -342,7 +342,7 @@ class TestIsaTabLoad(unittest.TestCase):
     #             self.assertIn("There was a problem parsing the investigation section:", str(ex))
 
     def test_isatab_load_sdata201414_isa1(self):
-        with open(os.path.join(self._tab_data_dir, 'sdata201414-isa1', 'i_Investigation.txt')) as fp:
+        with open(os.path.join(self._tab_data_dir, 'sdata201414-isa1', 'i_Investigation.txt'), encoding='utf-8') as fp:
             ISA = isatab.load(fp)
             self.assertEqual(len(ISA.ontology_source_references), 5)  # 5 ontology sources in investigation
             self.assertListEqual([s.filename for s in ISA.studies], ['s_chambers.txt'])  # 1 study in i_investigation.txt
@@ -960,13 +960,13 @@ sample1	extraction	e2	scanning	d2"""
         self.assertEqual(len(pr), 3)
 
     def test_isatab_load_issue210_on_MTBLS30(self):
-        with open(os.path.join(self._tab_data_dir, 'MTBLS30', 'i_Investigation.txt')) as fp:
+        with open(os.path.join(self._tab_data_dir, 'MTBLS30', 'i_Investigation.txt'), encoding='utf-8') as fp:
             ISA = isatab.load(fp)
             self.assertEqual(len(ISA.studies[0].assays[0].data_files), 1)
             self.assertEqual(len(ISA.studies[0].assays[1].data_files), 1)
 
     def test_isatab_load_issue210_on_Sacurine(self):
-        with open(os.path.join(self._tab_data_dir, 'MTBLS404', 'i_sacurine.txt')) as fp:
+        with open(os.path.join(self._tab_data_dir, 'MTBLS404', 'i_sacurine.txt'), encoding='utf-8') as fp:
             ISA = isatab.load(fp)
             self.assertEqual(len([x for x in ISA.studies[0].assays[0].other_material
                                   if x.type == "Labeled Extract Name"]), 0)

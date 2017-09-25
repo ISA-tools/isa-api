@@ -3,7 +3,7 @@ import unittest
 from isatools.convert import isatab2json, json2isatab
 import shutil
 import json
-from tests import utils
+from isatools.tests import utils
 import tempfile
 
 

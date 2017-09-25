@@ -59,7 +59,7 @@ def get(arrayexpress_id, target_dir=None):
                                                            '/' + arrayexpress_id + '/' + idf_filename))
                 ftp.retrbinary('RETR ' + idf_filename, out_file.write)
             try:
-                with open(os.path.join(target_dir, idf_filename)) as unicode_idf_file:
+                with open(os.path.join(target_dir, idf_filename), encoding='utf-8') as unicode_idf_file:
                     reader = csv.reader(filter(lambda r: r.startswith('SDRF File'), unicode_idf_file), dialect='excel-tab')
                     for line in reader:
                         for sdrf_filename in line[1:]:

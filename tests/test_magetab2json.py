@@ -1,7 +1,7 @@
 import unittest
 import os
 from isatools.convert import magetab2json
-from tests import utils
+from isatools.tests import utils
 import json
 from isatools import isajson
 import tempfile

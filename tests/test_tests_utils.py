@@ -1,5 +1,5 @@
 import unittest
-from tests import utils
+from isatools.tests import utils
 import os
 from lxml import etree
 

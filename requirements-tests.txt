@@ -16,3 +16,4 @@ bs4
 mzml2isa
 biopython
 progressbar2
+tox

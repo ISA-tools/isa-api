@@ -11,6 +11,7 @@ setup(
               'isatools.errors',
               'isatools.io',
               'isatools.net',
+              'isatools.tests'
               ],
     package_data={'isatools': [
         'resources/schemas/cedar/*.json',
@@ -57,7 +58,8 @@ setup(
         'bs4',
         'mzml2isa',
         'biopython',
-        'progressbar2'
+        'progressbar2',
+        'deepdiff'
     ],
     test_suite='tests'
 )

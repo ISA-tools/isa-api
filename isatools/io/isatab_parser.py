@@ -114,7 +114,7 @@ def parse(isatab_ref):
         isatab_ref = fnames[0]
     assert os.path.exists(isatab_ref), "Did not find investigation file: %s" % isatab_ref
     i_parser = InvestigationParser()
-    with open(isatab_ref) as in_handle:
+    with open(isatab_ref, encoding='utf-8') as in_handle:
         rec = i_parser.parse(in_handle)
     s_parser = StudyAssayParser(isatab_ref)
     rec = s_parser.parse(rec)
@@ -425,7 +425,7 @@ class StudyAssayParser:
                               'Scan Name',
                               'Hybridization Assay Name',
                               'MS Assay Name'}
-        with open(os.path.join(self._dir, fname)) as in_handle:
+        with open(os.path.join(self._dir, fname), encoding='utf-8') as in_handle:
             reader = csv.reader(in_handle, dialect="excel-tab")
             headers = next(reader)  # get column headings
             process_node_name_indices = [x for x, y in enumerate(headers) if y in process_node_names]

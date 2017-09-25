@@ -18,7 +18,7 @@ from isatools.net import mtbls as MTBLS
 from isatools.net import ols
 from isatools.net import pubmed
 
-from tests import utils as test_utils
+from isatools.tests import utils as test_utils
 
 
 log = logging.getLogger(__name__)

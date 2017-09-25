@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import json
 import os
 import shutil
@@ -13,7 +14,8 @@ def convert(idf_file_path):
     ISA = None
     try:
         magetab2isatab.convert(idf_file_path, output_path=tmp)
-        with open(os.path.join(tmp, "i_investigation.txt")) as isa_inv_fp:
+        with open(os.path.join(
+                tmp, 'i_investigation.txt'), encoding='utf-8') as isa_inv_fp:
             ISA = isatab.load(isa_inv_fp)
     finally:
         shutil.rmtree(tmp)
