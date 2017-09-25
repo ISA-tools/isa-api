@@ -1,3 +1,5 @@
+"""The contents of this module are used solely for testing purposes in the
+isatools test suite that is not packaged with the PyPI distribution"""
 from __future__ import absolute_import
 
 import logging
