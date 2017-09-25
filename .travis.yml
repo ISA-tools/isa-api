@@ -5,10 +5,12 @@ before_install:
 - git clone -b tests --single-branch http://github.com/ISA-tools/ISAdatasets tests/data
 install:
 - pip install --upgrade pip && pip install -r requirements-tests.txt
+- pip install tox-travis
 script:
-- coverage run --source=isatools --omit=docs/*,features/*,tests/*,isatools/io/isatab_configurator.py setup.py test
 - behave --no-capture --no-capture-stderr --format=progress features/isa-file-handler.feature
 - tox
+- coverage run --source isatools -m py.test
+- coverage report -m
 branches:
   only:
     - master
