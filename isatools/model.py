@@ -80,7 +80,7 @@ class Comment(object):
         raise TypeError('Comment.value must be a string')
 
     def __repr__(self):
-        return 'Comment(name="{0.name}", value="{0.value}")'.format(self)
+        return 'isatools.model.Comment(name="{0.name}", value="{0.value}")'.format(self)
 
     def __str__(self):
         return 'Comment[{0.name}]\t{0.value}'.format(self)
