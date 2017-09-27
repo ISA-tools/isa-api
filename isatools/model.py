@@ -77,10 +77,11 @@ class Comment(object):
     def value(self, val):
         if isinstance(val, str):
             self.__value = val
-        raise TypeError('Comment.value must be a string')
+        raise ISAModelAttributeError('Comment.value must be a string')
 
     def __repr__(self):
-        return 'isatools.model.Comment(name="{0.name}", value="{0.value}")'.format(self)
+        return 'isatools.model.Comment(name="{0.name}", value="{0.value}")'\
+            .format(self)
 
     def __str__(self):
         return 'Comment[{0.name}]\t{0.value}'.format(self)
@@ -479,13 +480,27 @@ class Investigation(Commentable, MetadataMixin, object):
                 'objects')
 
     def __repr__(self):
-        return 'Investigation(identifier="{0.identifier}", ' \
+        return 'isatools.model.Investigation(identifier="{0.identifier}", ' \
                'filename="{0.filename}", title="{0.title}", ' \
                'submission_date="{0.submission_date}", ' \
                'public_release_date="{0.public_release_date}", ' \
                'ontology_source_references={0.ontology_source_references}, ' \
                'publications={0.publications}, contacts={0.contacts}, ' \
                'studies={0.studies}, comments={0.comments})'.format(self)
+
+    def __str__(self):
+        return """Investigation(
+    identifier={0.identifier}
+    filename={0.filename}
+    title={0.title}
+    submission_date={0.submission_date}
+    public_release_date={0.public_release_date}
+    ontology_source_references={0.ontology_source_references}
+    publications={0.publications}
+    contacts={0.contacts}
+    studies={0.studies}
+    comments={0.comments}
+)""".format(self)
 
     def __hash__(self):
         return hash(repr(self))
