@@ -700,10 +700,23 @@ class OntologyAnnotation(Commentable):
             self.__term_accession = val
 
     def __repr__(self):
-        return 'OntologyAnnotation(term="{0.term}", ' \
-               'term_source={0.term_source}, ' \
-               'term_accession="{0.term_accession}", comments={0.comments})' \
-                .format(self)
+        return 'isatools.model.OntologyAnnotation(' \
+               'term="{ontology_annotation.term}", ' \
+               'term_source={term_source}, ' \
+               'term_accession="{ontology_annotation.term_accession}", ' \
+               'comments={ontology_annotation.comments})' \
+                .format(ontology_annotation=self,
+                        term_source=repr(self.term_source))
+
+    def __str__(self):
+        return """OntologyAnnotation(
+    term={ontology_annotation.term}
+    term_source={term_source_ref}
+    term_accession={ontology_annotation.term_accession}
+    comments={num_comments} Comment objects
+)""".format(ontology_annotation=self,
+            term_source_ref=self.term_source.name if self.term_source else '',
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))

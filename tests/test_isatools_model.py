@@ -117,7 +117,8 @@ class InvestigationTest(unittest.TestCase):
             submission_date=datetime.datetime(day=2, month=1, year=2017),
             public_release_date=datetime.datetime(day=2, month=1, year=2017))
         self.assertNotEqual(expected_other_investigation, self.investigation)
-        self.assertNotEqual(hash(expected_other_investigation), hash(self.investigation))
+        self.assertNotEqual(
+            hash(expected_other_investigation), hash(self.investigation))
 
 
 class OntologySourceTest(unittest.TestCase):
@@ -162,6 +163,54 @@ class OntologySourceTest(unittest.TestCase):
     def test_ne(self):
         expected_other_ontology_source = OntologySource(
             name='N2', file='F2', version='V2', description='D2', comments=[])
-        self.assertNotEqual(expected_other_ontology_source, self.ontology_source)
+        self.assertNotEqual(
+            expected_other_ontology_source, self.ontology_source)
         self.assertNotEqual(
             hash(expected_other_ontology_source), hash(self.ontology_source))
+
+
+class OntologyAnnotationTest(unittest.TestCase):
+
+    def setUp(self):
+        self.ontology_annotation_default = OntologyAnnotation()
+        self.ontology_annotation = OntologyAnnotation(
+            term='T', term_source=OntologySource('N'), term_accession='A')
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.OntologyAnnotation(term="", '
+                         'term_source=None, term_accession="", comments=[])',
+                         repr(self.ontology_annotation_default))
+        self.assertEqual('isatools.model.OntologyAnnotation(term="T", '
+                         'term_source=isatools.model.OntologySource('
+                         'name="N", file="", version="", description="", '
+                         'comments=[]), term_accession="A", comments=[])',
+                         repr(self.ontology_annotation))
+
+    def test_str(self):
+        self.assertEqual("""OntologyAnnotation(
+    term=
+    term_source=
+    term_accession=
+    comments=0 Comment objects
+)""", str(self.ontology_annotation_default))
+
+        self.assertEqual("""OntologyAnnotation(
+    term=T
+    term_source=N
+    term_accession=A
+    comments=0 Comment objects
+)""", str(self.ontology_annotation))
+
+    def test_eq(self):
+        expected_ontology_annotation = OntologyAnnotation(
+            term='T', term_source=OntologySource(name='N'), term_accession='A')
+        self.assertEqual(
+            hash(expected_ontology_annotation),  hash(self.ontology_annotation))
+
+    def test_ne(self):
+        expected_other_ontology_annotation = OntologyAnnotation(
+            term='T2', term_source=OntologySource(name='N2'),
+            term_accession='A2')
+        self.assertNotEqual(expected_other_ontology_annotation, self.ontology_annotation)
+        self.assertNotEqual(
+            hash(expected_other_ontology_annotation), hash(self.ontology_annotation))
