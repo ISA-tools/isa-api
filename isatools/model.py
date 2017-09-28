@@ -490,17 +490,22 @@ class Investigation(Commentable, MetadataMixin, object):
 
     def __str__(self):
         return """Investigation(
-    identifier={0.identifier}
-    filename={0.filename}
-    title={0.title}
-    submission_date={0.submission_date}
-    public_release_date={0.public_release_date}
-    ontology_source_references={0.ontology_source_references}
-    publications={0.publications}
-    contacts={0.contacts}
-    studies={0.studies}
-    comments={0.comments}
-)""".format(self)
+    identifier={investigation.identifier}
+    filename={investigation.filename}
+    title={investigation.title}
+    submission_date={investigation.submission_date}
+    public_release_date={investigation.public_release_date}
+    ontology_source_references={num_ontology_source_references} OntologySource objects
+    publications={num_publications} Publication objects
+    contacts={num_contacts} Person objects
+    studies={num_studies} Study objects
+    comments={num_comments} Comment objects
+)""".format(investigation=self,
+            num_ontology_source_references=len(self.ontology_source_references),
+            num_publications=len(self.publications),
+            num_contacts=len(self.contacts),
+            num_studies=len(self.studies),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))

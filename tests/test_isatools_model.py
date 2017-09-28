@@ -83,11 +83,11 @@ class InvestigationTest(unittest.TestCase):
     title=
     submission_date=
     public_release_date=
-    ontology_source_references=[]
-    publications=[]
-    contacts=[]
-    studies=[]
-    comments=[]
+    ontology_source_references=0 OntologySource objects
+    publications=0 Publication objects
+    contacts=0 Person objects
+    studies=0 Study objects
+    comments=0 Comment objects
 )""", str(self.investigation_default))
 
         self.assertEqual("""Investigation(
@@ -96,11 +96,11 @@ class InvestigationTest(unittest.TestCase):
     title=T
     submission_date=2017-01-01 00:00:00
     public_release_date=2017-01-01 00:00:00
-    ontology_source_references=[]
-    publications=[]
-    contacts=[]
-    studies=[]
-    comments=[]
+    ontology_source_references=0 OntologySource objects
+    publications=0 Publication objects
+    contacts=0 Person objects
+    studies=0 Study objects
+    comments=0 Comment objects
 )""", str(self.investigation))
 
     def test_eq(self):
