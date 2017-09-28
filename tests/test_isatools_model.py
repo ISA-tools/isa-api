@@ -118,3 +118,50 @@ class InvestigationTest(unittest.TestCase):
             public_release_date=datetime.datetime(day=2, month=1, year=2017))
         self.assertNotEqual(expected_other_investigation, self.investigation)
         self.assertNotEqual(hash(expected_other_investigation), hash(self.investigation))
+
+
+class OntologySourceTest(unittest.TestCase):
+
+    def setUp(self):
+        self.ontology_source_default = OntologySource(name='N')
+        self.ontology_source = OntologySource(name='N', file='F', version='V',
+                                              description='D')
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.OntologySource(name="N", file="", '
+                         'version="", description="", comments=[])',
+                         repr(self.ontology_source_default))
+        self.assertEqual('isatools.model.OntologySource(name="N", file="F", '
+                         'version="V", description="D", comments=[])',
+                         repr(self.ontology_source))
+
+    def test_str(self):
+        self.assertEqual("""OntologySource(
+    name=N
+    file=
+    version=
+    description=
+    comments=0 Comment objects
+)""", str(self.ontology_source_default))
+
+        self.assertEqual("""OntologySource(
+    name=N
+    file=F
+    version=V
+    description=D
+    comments=0 Comment objects
+)""", str(self.ontology_source))
+
+    def test_eq(self):
+        expected_ontology_source = OntologySource(
+            name='N', file='F', version='V', description='D', comments=[])
+        self.assertEqual(expected_ontology_source, self.ontology_source)
+        self.assertEqual(
+            hash(expected_ontology_source),  hash(self.ontology_source))
+
+    def test_ne(self):
+        expected_other_ontology_source = OntologySource(
+            name='N2', file='F2', version='V2', description='D2', comments=[])
+        self.assertNotEqual(expected_other_ontology_source, self.ontology_source)
+        self.assertNotEqual(
+            hash(expected_other_ontology_source), hash(self.ontology_source))

@@ -542,7 +542,8 @@ class OntologySource(Commentable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, name, file='', version='', description='', comments=''):
+    def __init__(self, name, file='', version='', description='',
+                 comments=None):
         super().__init__(comments)
 
         self.__name = name
@@ -607,9 +608,19 @@ class OntologySource(Commentable):
             self.__description = val
 
     def __repr__(self):
-        return 'OntologySource(name="{0.name}", file="{0.file}", ' \
-               'version="{0.version}", description="{0.description}", ' \
-               'comments={0.comments})'.format(self)
+        return 'isatools.model.OntologySource(name="{0.name}", ' \
+               'file="{0.file}", version="{0.version}", ' \
+               'description="{0.description}", comments={0.comments})'\
+                .format(self)
+
+    def __str__(self):
+        return """OntologySource(
+    name={ontology_source.name}
+    file={ontology_source.file}
+    version={ontology_source.version}
+    description={ontology_source.description}
+    comments={num_comments} Comment objects
+)""".format(ontology_source=self, num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
