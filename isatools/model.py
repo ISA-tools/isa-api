@@ -1764,8 +1764,9 @@ class StudyFactor(Commentable):
             self.__factor_type = val
 
     def __repr__(self):
-        return 'StudyFactor(name="{0.name}", factor_type={0.factor_type}, ' \
-               'comments={0.comments})'.format(self)
+        return 'StudyFactor(name="{study_factor.name}", ' \
+               'factor_type={factor_type}, comments={study_factor.comments})'\
+                .format(study_factor=self, factor_type=repr(self.factor_type))
 
     def __hash__(self):
         return hash(repr(self))

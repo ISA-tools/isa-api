@@ -24,19 +24,19 @@ class AssayTypeTest(unittest.TestCase):
         )
 
     def test_repr(self):
-        self.assertEqual('AssayType(measurement_type=OntologyAnnotation('
+        self.assertEqual('AssayType(measurement_type=isatools.model.OntologyAnnotation('
                          'term="{0}", term_source=None, term_accession="", '
                          'comments=[]), '
-                         'technology_type=OntologyAnnotation(term="{1}", '
+                         'technology_type=isatools.model.OntologyAnnotation(term="{1}", '
                          'term_source=None, term_accession="", comments=[]), '
                          'topology_modifiers=None)'
                          .format(MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING,
                                  TECHNOLOGY_TYPE_DNA_MICROARRAY),
                          repr(self.assay_type))
 
-        self.assertEqual('AssayType(measurement_type=OntologyAnnotation('
+        self.assertEqual('AssayType(measurement_type=isatools.model.OntologyAnnotation('
                          'term="{0}", term_source=None, term_accession="", '
-                         'comments=[]), technology_type=OntologyAnnotation('
+                         'comments=[]), technology_type=isatools.model.OntologyAnnotation('
                          'term="{1}", term_source=None, term_accession="", '
                          'comments=[]), topology_modifiers=None)'.format(
                           MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING,
