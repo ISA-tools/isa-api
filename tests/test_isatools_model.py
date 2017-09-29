@@ -214,3 +214,128 @@ class OntologyAnnotationTest(unittest.TestCase):
         self.assertNotEqual(expected_other_ontology_annotation, self.ontology_annotation)
         self.assertNotEqual(
             hash(expected_other_ontology_annotation), hash(self.ontology_annotation))
+
+
+class PublicationTest(unittest.TestCase):
+
+    def setUp(self):
+        self.publication_default = Publication()
+        self.publication = Publication(
+            pubmed_id='1', doi='10', author_list='A. Author', title='T',
+            status=OntologyAnnotation(term='S'))
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.Publication(pubmed_id="", '
+                         'doi="", author_list="", title="", status=None, '
+                         'comments=[])',
+                         repr(self.publication_default))
+        self.assertEqual('isatools.model.Publication(pubmed_id="1", '
+                         'doi="10", author_list="A. Author", title="T", '
+                         'status=isatools.model.OntologyAnnotation(term="S", '
+                         'term_source=None, term_accession="", comments=[]), '
+                         'comments=[])',
+                         repr(self.publication))
+
+    def test_str(self):
+        self.assertEqual("""Publication(
+    pubmed_id=
+    doi=
+    author_list=
+    title=
+    status=
+    comments=0 Comment objects
+)""", str(self.publication_default))
+
+        self.assertEqual("""Publication(
+    pubmed_id=1
+    doi=10
+    author_list=A. Author
+    title=T
+    status=S
+    comments=0 Comment objects
+)""", str(self.publication))
+
+    def test_eq(self):
+        expected_publication = Publication(
+            pubmed_id='1', doi='10', author_list='A. Author', title='T', 
+            status=OntologyAnnotation(term='S'))
+        self.assertEqual(
+            hash(expected_publication),  hash(self.publication))
+
+    def test_ne(self):
+        expected_other_publication = Publication(
+            pubmed_id='2', doi='20', author_list='B. Author', title='T2',
+            status=OntologyAnnotation(term='S2'))
+        self.assertNotEqual(expected_other_publication, self.publication)
+        self.assertNotEqual(
+            hash(expected_other_publication), hash(self.publication))
+
+
+class PersonTest(unittest.TestCase):
+
+    def setUp(self):
+        self.person_default = Person()
+        self.person = Person(last_name='L', first_name='F', mid_initials='M',
+                             email='a@b.com', phone='0', fax='1', address='A',
+                             affiliation='Af',
+                             roles=[OntologyAnnotation(term='R')])
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.Person(last_name="", first_name="", '
+                         'mid_initials="", email="", phone="", fax="", '
+                         'address="", affiliation="", roles=[], comments=[])',
+                         repr(self.person_default))
+        self.assertEqual('isatools.model.Person(last_name="L", first_name="F", '
+                         'mid_initials="M", email="a@b.com", phone="0", '
+                         'fax="1", address="A", affiliation="Af", '
+                         'roles=[isatools.model.OntologyAnnotation(term="R", '
+                         'term_source=None, term_accession="", comments=[])], '
+                         'comments=[])',
+                         repr(self.person))
+
+    def test_str(self):
+        self.assertEqual("""Person(
+    last_name=
+    first_name=
+    mid_initials=
+    email=
+    phone=
+    fax=
+    address=
+    roles=0 OntologyAnnotation objects
+    comments=0 Comment objects
+)""", str(self.person_default))
+
+        self.assertEqual("""Person(
+    last_name=L
+    first_name=F
+    mid_initials=M
+    email=a@b.com
+    phone=0
+    fax=1
+    address=A
+    roles=1 OntologyAnnotation objects
+    comments=0 Comment objects
+)""", str(self.person))
+
+    def test_eq(self):
+        expected_person = Person(last_name='L', first_name='F', 
+                                 mid_initials='M', email='a@b.com', phone='0', 
+                                 fax='1', address='A', affiliation='Af', 
+                                 roles=[OntologyAnnotation(
+                                     term='R', term_source=None, 
+                                     term_accession='', comments=[])], 
+                                 comments=[])
+        self.assertEqual(hash(expected_person),  hash(self.person))
+
+    def test_ne(self):
+        expected_other_person = Person(last_name='F', first_name='L',
+                                 mid_initials='M2', email='c@d.com', phone='1',
+                                 fax='2', address='A2', affiliation='Af2',
+                                 roles=[OntologyAnnotation(
+                                     term='R2', term_source=None,
+                                     term_accession='', comments=[])],
+                                 comments=[])
+        self.assertNotEqual(expected_other_person, self.person)
+        self.assertNotEqual(
+            hash(expected_other_person), hash(self.person))

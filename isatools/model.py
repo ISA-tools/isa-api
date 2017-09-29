@@ -80,11 +80,11 @@ class Comment(object):
         raise ISAModelAttributeError('Comment.value must be a string')
 
     def __repr__(self):
-        return 'isatools.model.Comment(name="{0.name}", value="{0.value}")'\
-            .format(self)
+        return 'isatools.model.Comment(name="{comment.name}", ' \
+               'value="{comment.value}")'.format(comment=self)
 
     def __str__(self):
-        return 'Comment[{0.name}]\t{0.value}'.format(self)
+        return 'Comment[{comment.name}]\t{comment.value}'.format(comment=self)
 
     def __hash__(self):
         return hash(repr(self))
@@ -480,13 +480,18 @@ class Investigation(Commentable, MetadataMixin, object):
                 'objects')
 
     def __repr__(self):
-        return 'isatools.model.Investigation(identifier="{0.identifier}", ' \
-               'filename="{0.filename}", title="{0.title}", ' \
-               'submission_date="{0.submission_date}", ' \
-               'public_release_date="{0.public_release_date}", ' \
-               'ontology_source_references={0.ontology_source_references}, ' \
-               'publications={0.publications}, contacts={0.contacts}, ' \
-               'studies={0.studies}, comments={0.comments})'.format(self)
+        return 'isatools.model.Investigation(' \
+               'identifier="{investigation.identifier}", ' \
+               'filename="{investigation.filename}", ' \
+               'title="{investigation.title}", ' \
+               'submission_date="{investigation.submission_date}", ' \
+               'public_release_date="{investigation.public_release_date}", ' \
+               'ontology_source_references=' \
+               '{investigation.ontology_source_references}, ' \
+               'publications={investigation.publications}, ' \
+               'contacts={investigation.contacts}, ' \
+               'studies={investigation.studies}, ' \
+               'comments={investigation.comments})'.format(investigation=self)
 
     def __str__(self):
         return """Investigation(
@@ -608,10 +613,12 @@ class OntologySource(Commentable):
             self.__description = val
 
     def __repr__(self):
-        return 'isatools.model.OntologySource(name="{0.name}", ' \
-               'file="{0.file}", version="{0.version}", ' \
-               'description="{0.description}", comments={0.comments})'\
-                .format(self)
+        return 'isatools.model.OntologySource(name="{ontology_source.name}", ' \
+               'file="{ontology_source.file}", ' \
+               'version="{ontology_source.version}", ' \
+               'description="{ontology_source.description}", ' \
+               'comments={ontology_source.comments})'\
+                .format(ontology_source=self)
 
     def __str__(self):
         return """OntologySource(
@@ -829,9 +836,24 @@ class Publication(Commentable):
             self.__status = val
 
     def __repr__(self):
-        return 'Publication(pubmed_id="{0.pubmed_id}", doi="{0.doi}", ' \
-               'author_list="{0.author_list}", title="{0.title}", ' \
-               'status={0.status}, comments={0.comments})'.format(self)
+        return 'isatools.model.Publication(' \
+               'pubmed_id="{publication.pubmed_id}", doi="{publication.doi}", ' \
+               'author_list="{publication.author_list}", ' \
+               'title="{publication.title}", status={status}, ' \
+               'comments={publication.comments})'.format(
+                publication=self, status=repr(self.status))
+
+    def __str__(self):
+        return """Publication(
+    pubmed_id={publication.pubmed_id}
+    doi={publication.doi}
+    author_list={publication.author_list}
+    title={publication.title}
+    status={status}
+    comments={num_comments} Comment objects
+)""".format(publication=self,
+            status=self.status.term if self.status else '',
+            num_comments=len(self.comments))
     
     def __hash__(self):
         return hash(repr(self))
@@ -1016,11 +1038,29 @@ class Person(Commentable):
                 .format(type(self).__name__))
 
     def __repr__(self):
-        return 'Person(last_name="{0.last_name}", ' \
-               'first_name="{0.first_name}", ' \
-               'mid_initials="{0.mid_initials}", email="{0.email}", ' \
-               'phone="{0.phone}", fax="{0.fax}", address="{0.address}", ' \
-               'roles={0.roles}, comments={0.comments})'.format(self)
+        return 'isatools.model.Person(last_name="{person.last_name}", ' \
+               'first_name="{person.first_name}", ' \
+               'mid_initials="{person.mid_initials}", ' \
+               'email="{person.email}", phone="{person.phone}", ' \
+               'fax="{person.fax}", address="{person.address}", ' \
+               'affiliation="{person.affiliation}", roles={person.roles}, ' \
+               'comments={person.comments})' \
+                .format(person=self)
+
+    def __str__(self):
+        return """Person(
+    last_name={person.last_name}
+    first_name={person.first_name}
+    mid_initials={person.mid_initials}
+    email={person.email}
+    phone={person.phone}
+    fax={person.fax}
+    address={person.address}
+    roles={num_roles} OntologyAnnotation objects
+    comments={num_comments} Comment objects
+)""".format(person=self,
+            num_roles=len(self.roles),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
