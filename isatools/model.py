@@ -1841,9 +1841,18 @@ class StudyFactor(Commentable):
             self.__factor_type = val
 
     def __repr__(self):
-        return 'StudyFactor(name="{study_factor.name}", ' \
-               'factor_type={factor_type}, comments={study_factor.comments})'\
+        return 'isatools.model.StudyFactor(name="{study_factor.name}", ' \
+               'factor_type={factor_type}, comments={study_factor.comments})' \
                 .format(study_factor=self, factor_type=repr(self.factor_type))
+
+    def __str__(self):
+        return """StudyFactor(
+    name={factor.name}
+    factor_type={factor_type}
+    comments={num_comments} Comment objects
+)""".format(factor=self,
+            factor_type=self.factor_type.term if self.factor_type else '',
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -2868,8 +2877,9 @@ class FactorValue(Commentable):
             self.__unit = val
 
     def __repr__(self):
-        return 'FactorValue(factor_name={0.factor_name}, value={0.value}, ' \
-               'unit={0.unit})'.format(self)
+        return 'FactorValue(factor_name={factor_name}, ' \
+               'value={factor_value.value}, unit={factor_value.unit})' \
+            .format(factor_value=self, factor_name=repr(self.factor_name))
 
     def __hash__(self):
         return hash(repr(self))

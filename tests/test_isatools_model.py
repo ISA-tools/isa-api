@@ -436,3 +436,46 @@ class StudyTest(unittest.TestCase):
             characteristic_categories=[], comments=[], units=[])
         self.assertNotEqual(expected_other_study, self.study)
         self.assertNotEqual(hash(expected_other_study), hash(self.study))
+
+
+class StudyFactorTest(unittest.TestCase):
+
+    def setUp(self):
+        self.factor_default = StudyFactor()
+        self.factor = StudyFactor(name='N', factor_type=OntologyAnnotation('T'))
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.StudyFactor(name="", '
+                         'factor_type=isatools.model.OntologyAnnotation('
+                         'term="", term_source=None, term_accession="", '
+                         'comments=[]), comments=[])',
+                         repr(self.factor_default))
+        self.assertEqual('isatools.model.StudyFactor(name="N", '
+                         'factor_type=isatools.model.OntologyAnnotation('
+                         'term="T", term_source=None, term_accession="", '
+                         'comments=[]), comments=[])',
+                         repr(self.factor))
+
+    def test_str(self):
+        self.assertEqual("""StudyFactor(
+    name=
+    factor_type=
+    comments=0 Comment objects
+)""", str(self.factor_default))
+
+        self.assertEqual("""StudyFactor(
+    name=N
+    factor_type=T
+    comments=0 Comment objects
+)""", str(self.factor))
+
+    def test_eq(self):
+        expected_factor = StudyFactor(
+            name='N', factor_type=OntologyAnnotation(term='T'))
+        self.assertEqual(hash(expected_factor),  hash(self.factor))
+
+    def test_ne(self):
+        expected_other_factor = StudyFactor(
+            name='N2', factor_type=OntologyAnnotation(term='T2'))
+        self.assertNotEqual(expected_other_factor, self.factor)
+        self.assertNotEqual(hash(expected_other_factor), hash(self.factor))
