@@ -1709,19 +1709,56 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                 .format(type(self).__name__))
 
     def __repr__(self):
-        return 'Study(filename="{0.filename}", identifier="{0.identifier}", ' \
-               'title="{0.title}", description="{0.description}", ' \
-               'submission_date="{0.submission_date}", ' \
-               'public_release_date="{0.public_release_date}", ' \
-               'contacts={0.contacts}, ' \
-               'design_descriptors={0.design_descriptors}, ' \
-               'publications={0.publications}, factors={0.factors}, ' \
-               'protocols={0.protocols}, ' \
-               'assays={0.assays}, sources={0.sources}, ' \
-               'samples={0.samples}, process_sequence={0.process_sequence}, ' \
-               'other_material={0.other_material}, ' \
-               'characteristic_categories={0.characteristic_categories}, ' \
-               'comments={0.comments}, units={0.units})'.format(self)
+        return 'isatools.model.Study(filename="{study.filename}", ' \
+               'identifier="{study.identifier}", title="{study.title}", ' \
+               'description="{study.description}", ' \
+               'submission_date="{study.submission_date}", ' \
+               'public_release_date="{study.public_release_date}", ' \
+               'contacts={study.contacts}, ' \
+               'design_descriptors={study.design_descriptors}, ' \
+               'publications={study.publications}, factors={study.factors}, ' \
+               'protocols={study.protocols}, assays={study.assays}, ' \
+               'sources={study.sources}, samples={study.samples}, ' \
+               'process_sequence={study.process_sequence}, ' \
+               'other_material={study.other_material}, ' \
+               'characteristic_categories={study.characteristic_categories}, ' \
+               'comments={study.comments}, units={study.units})'\
+                .format(study=self)
+
+    def __str__(self):
+        return """Study(
+    identifier={study.identifier}
+    filename={study.filename}
+    title={study.title}
+    description={study.description}
+    submission_date={study.submission_date}
+    public_release_date={study.public_release_date}
+    contacts={num_contacts} Person objects
+    design_descriptors={num_design_descriptors} OntologyAnnotation objects
+    publications={num_publications} Publication objects
+    factors={num_study_factors} StudyFactor objects
+    protocols={num_protocols} Protocol objects
+    assays={num_assays} Assay objects
+    sources={num_sources} Source objects
+    samples={num_samples} Sample objects
+    process_sequence={num_processes} Process objects
+    other_material={num_other_material} Material objects
+    characteristic_categories={num_characteristic_categories} Characteristic objects
+    comments={num_comments} Comment objects
+    units={num_units} Unit objects
+)""".format(study=self, num_contacts=len(self.contacts),
+            num_design_descriptors=len(self.design_descriptors),
+            num_publications=len(self.publications),
+            num_study_factors=len(self.factors),
+            num_protocols=len(self.protocols),
+            num_assays=len(self.assays),
+            num_sources=len(self.sources),
+            num_samples=len(self.samples),
+            num_processes=len(self.process_sequence),
+            num_other_material=len(self.other_material),
+            num_characteristic_categories=len(self.characteristic_categories),
+            num_comments=len(self.comments),
+            num_units=len(self.units))
 
     def __hash__(self):
         return hash(repr(self))

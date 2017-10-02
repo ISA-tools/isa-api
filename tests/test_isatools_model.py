@@ -339,3 +339,100 @@ class PersonTest(unittest.TestCase):
         self.assertNotEqual(expected_other_person, self.person)
         self.assertNotEqual(
             hash(expected_other_person), hash(self.person))
+
+
+class StudyTest(unittest.TestCase):
+
+    def setUp(self):
+        self.study_default = Study()
+        self.study = Study(
+            filename='file', identifier='0', title='T', description='D',
+            submission_date=datetime.datetime(day=1, month=1, year=2017),
+            public_release_date=datetime.datetime(day=1, month=1, year=2017))
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.Study(filename="", '
+                         'identifier="", title="", description="", '
+                         'submission_date="", public_release_date="", '
+                         'contacts=[], design_descriptors=[], publications=[], '
+                         'factors=[], protocols=[], assays=[], sources=[], '
+                         'samples=[], process_sequence=[], other_material=[], '
+                         'characteristic_categories=[], comments=[], units=[])',
+                         repr(self.study_default))
+        self.assertEqual('isatools.model.Study(filename="file", '
+                         'identifier="0", title="T", description="D", '
+                         'submission_date="2017-01-01 00:00:00", '
+                         'public_release_date="2017-01-01 00:00:00", '
+                         'contacts=[], design_descriptors=[], publications=[], '
+                         'factors=[], protocols=[], assays=[], sources=[], '
+                         'samples=[], process_sequence=[], other_material=[], '
+                         'characteristic_categories=[], comments=[], units=[])',
+                         repr(self.study))
+
+    def test_str(self):
+        self.assertEqual("""Study(
+    identifier=
+    filename=
+    title=
+    description=
+    submission_date=
+    public_release_date=
+    contacts=0 Person objects
+    design_descriptors=0 OntologyAnnotation objects
+    publications=0 Publication objects
+    factors=0 StudyFactor objects
+    protocols=0 Protocol objects
+    assays=0 Assay objects
+    sources=0 Source objects
+    samples=0 Sample objects
+    process_sequence=0 Process objects
+    other_material=0 Material objects
+    characteristic_categories=0 Characteristic objects
+    comments=0 Comment objects
+    units=0 Unit objects
+)""", str(self.study_default))
+
+        self.assertEqual("""Study(
+    identifier=0
+    filename=file
+    title=T
+    description=D
+    submission_date=2017-01-01 00:00:00
+    public_release_date=2017-01-01 00:00:00
+    contacts=0 Person objects
+    design_descriptors=0 OntologyAnnotation objects
+    publications=0 Publication objects
+    factors=0 StudyFactor objects
+    protocols=0 Protocol objects
+    assays=0 Assay objects
+    sources=0 Source objects
+    samples=0 Sample objects
+    process_sequence=0 Process objects
+    other_material=0 Material objects
+    characteristic_categories=0 Characteristic objects
+    comments=0 Comment objects
+    units=0 Unit objects
+)""", str(self.study))
+
+    def test_eq(self):
+        expected_study = Study(
+            filename='file', identifier='0', title='T', description='D',
+            submission_date=datetime.datetime(day=1, month=1, year=2017),
+            public_release_date=datetime.datetime(day=1, month=1, year=2017),
+            contacts=[], design_descriptors=[], publications=[], factors=[],
+            protocols=[], assays=[], sources=[], samples=[],
+            process_sequence=[], other_material=[],
+            characteristic_categories=[], comments=[], units=[])
+        self.assertEqual(hash(expected_study),  hash(self.study))
+
+    def test_ne(self):
+        expected_other_study = Study(
+            filename='file2', identifier='1', title='T2', description='D2',
+            submission_date=datetime.datetime(day=2, month=1, year=2017),
+            public_release_date=datetime.datetime(day=2, month=1, year=2017),
+            contacts=[], design_descriptors=[], publications=[], factors=[],
+            protocols=[], assays=[], sources=[], samples=[],
+            process_sequence=[], other_material=[],
+            characteristic_categories=[], comments=[], units=[])
+        self.assertNotEqual(expected_other_study, self.study)
+        self.assertNotEqual(hash(expected_other_study), hash(self.study))
