@@ -1791,8 +1791,8 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
 
 class StudyFactor(Commentable):
-    """A Study Factor corresponds to an independent variable manipulated by the 
-    experimentalist with the intention to affect biological systems in a way 
+    """A Study Factor corresponds to an independent variable manipulated by the
+    experimentalist with the intention to affect biological systems in a way
     that can be measured by an assay.
 
     Attributes:
@@ -1875,18 +1875,18 @@ class Assay(Commentable, StudyAssayMixin, object):
     particular experimental workflow described by a particular protocol.
 
     Attributes:
-        measurement_type: An Ontology Annotation to qualify the endpoint, or 
-            what is being measured (e.g. gene expression profiling or protein 
+        measurement_type: An Ontology Annotation to qualify the endpoint, or
+            what is being measured (e.g. gene expression profiling or protein
             identification).
-        technology_type: An Ontology Annotation to identify the technology 
+        technology_type: An Ontology Annotation to identify the technology
             used to perform the measurement.
         technology_platform: Manufacturer and platform name, e.g. Bruker AVANCE.
-        filename: A field to specify the name of the Assay file for 
+        filename: A field to specify the name of the Assay file for
             compatibility with ISA-Tab.
-        materials: Materials associated with the Assay, lists of 'samples' and 
+        materials: Materials associated with the Assay, lists of 'samples' and
             'other_material'.
         units: A list of Units used in the annotation of material units.
-        characteristic_categories: A list of OntologyAnnotation used in the 
+        characteristic_categories: A list of OntologyAnnotation used in the
             annotation of material characteristics in the Assay.
         process_sequence: A list of Process objects representing the
             experimental graphs at the Assay level.
@@ -1920,7 +1920,7 @@ class Assay(Commentable, StudyAssayMixin, object):
             self.__data_files = []
         else:
             self.__data_files = data_files
-            
+
     @property
     def measurement_type(self):
         """:obj:`OntologyAnnotation: an ontology annotation representing the
@@ -1935,7 +1935,7 @@ class Assay(Commentable, StudyAssayMixin, object):
                 'None; got {0}:{1}'.format(val, type(val)))
         else:
             self.__measurement_type = val
-            
+
     @property
     def technology_type(self):
         """:obj:`OntologyAnnotation: an ontology annotation representing the
@@ -1955,7 +1955,7 @@ class Assay(Commentable, StudyAssayMixin, object):
     def technology_platform(self):
         """:obj:`str`: the technology_platform of the assay"""
         return self.__technology_platform
-    
+
     @technology_platform.setter
     def technology_platform(self, val):
         if val is not None and not isinstance(val, str):
@@ -1964,7 +1964,7 @@ class Assay(Commentable, StudyAssayMixin, object):
                 .format(val, type(val)))
         else:
             self.__technology_platform = val
-            
+
     @property
     def data_files(self):
         """:obj:`list` of :obj:`DataFile`: Container for data files"""
@@ -2004,7 +2004,7 @@ class Assay(Commentable, StudyAssayMixin, object):
                and self.process_sequence == other.process_sequence \
                and self.other_material == other.other_material \
                and self.characteristic_categories \
-               == other.faccharacteristic_categoriestors \
+               == other.characteristic_categories \
                and self.comments == other.comments \
                and self.units == other.units
 
@@ -2019,13 +2019,13 @@ class Protocol(Commentable):
         name: The name of the protocol used
         protocol_type: Term to classify the protocol.
         description: A free-text description of the protocol.
-        uri: Pointer to protocol resources externally that can be accessed by 
+        uri: Pointer to protocol resources externally that can be accessed by
             their Uniform Resource Identifier (URI).
         version: An identifier for the version to ensure protocol tracking.
-        parameters: A list of ProtocolParameter describing the list of 
+        parameters: A list of ProtocolParameter describing the list of
             parameters required to execute the protocol.
-        components: A list of OntologyAnnotation describing a protocol's 
-            components; e.g. instrument names, software names, and reagents 
+        components: A list of OntologyAnnotation describing a protocol's
+            components; e.g. instrument names, software names, and reagents
             names.
         comments: Comments associated with instances of this class.
     """
@@ -2033,7 +2033,7 @@ class Protocol(Commentable):
                  description='', version='', parameters=None, components=None,
                  comments=None):
         super().__init__(comments)
-        
+
         self.id = id_
         self.__name = name
 
@@ -2041,16 +2041,16 @@ class Protocol(Commentable):
             self.__protocol_type = OntologyAnnotation()
         else:
             self.__protocol_type = protocol_type
-            
+
         self.__description = description
         self.__uri = uri
         self.__version = version
-        
+
         if parameters is None:
             self.__parameters = []
         else:
             self.__parameters = parameters
-            
+
         if components is None:
             self.__components = []
         else:
@@ -2060,7 +2060,7 @@ class Protocol(Commentable):
     def name(self):
         """:obj:`str`: the name of the protocol"""
         return self.__name
-    
+
     @name.setter
     def name(self, val):
         if val is not None and not isinstance(val, str):
@@ -2126,10 +2126,10 @@ class Protocol(Commentable):
                 .format(val, type(val)))
         else:
             self.__version = val
-            
+
     @property
     def parameters(self):
-        """:obj:`list` of :obj:`ProtocolParameter`: Container for protocol 
+        """:obj:`list` of :obj:`ProtocolParameter`: Container for protocol
         parameters"""
         return self.__parameters
 
@@ -2163,7 +2163,7 @@ class Protocol(Commentable):
         except StopIteration:
             pass
         return param
-        
+
     @property
     def components(self):
         """:obj:`list` of :obj:`OntologyAnnotation`: Container for protocol
@@ -2184,7 +2184,7 @@ class Protocol(Commentable):
                'uri="{0.uri}", version="{0.version}", ' \
                'parameters={0.parameters}, components={0.components}, ' \
                'comments={0.comments})'.format(self)
-    
+
     def __hash__(self):
         return hash(repr(self))
 
@@ -2211,14 +2211,14 @@ class ProtocolParameter(Commentable):
     """
     def __init__(self, id_='', parameter_name=None, comments=None):
         super().__init__(comments)
-        
+
         self.id = id_
-        
+
         if parameter_name is None:
             self.__parameter_name = OntologyAnnotation()
         else:
             self.__parameter_name = parameter_name
-            
+
     @property
     def parameter_name(self):
         """:obj:`OntologyAnnotation`: an ontology annotation representing the
@@ -2263,11 +2263,11 @@ class ParameterValue(object):
     """
     def __init__(self, category=None, value=None, unit=None):
         super().__init__()
-        
+
         self.__category = category
         self.__value = value
         self.__unit = unit
-        
+
     @property
     def category(self):
         """:obj:`ProtocolParameter`: a references to the ProtocolParameter the
@@ -2282,10 +2282,10 @@ class ParameterValue(object):
                 'or None; got {0}:{1}'.format(val, type(val)))
         else:
             self.__category = val
-        
+
     @property
     def value(self):
-        """:obj:`str` or :obj:`int` or :obj:`float` 
+        """:obj:`str` or :obj:`int` or :obj:`float`
         or :obj:`OntologyAnnotation`: a parameter value"""
         return self.__value
 
@@ -2299,7 +2299,7 @@ class ParameterValue(object):
                 .format(val, type(val)))
         else:
             self.__value = val
-            
+
     @property
     def unit(self):
         """ :obj:`OntologyAnnotation`: a unit for the parameter value"""
@@ -2341,10 +2341,10 @@ class ProtocolComponent(Commentable):
     """
     def __init__(self, id_='', name='', component_type=None, comments=None):
         super().__init__(comments)
-        
+
         self.id = id_
         self.__name = name
-        
+
         if component_type is None:
             self.__component_type = OntologyAnnotation()
         else:
@@ -2363,10 +2363,10 @@ class ProtocolComponent(Commentable):
                 .format(val, type(val)))
         else:
             self.__name = val
-            
+
     @property
     def component_type(self):
-        """ :obj:`OntologyAnnotation`: a component_type for the protocol 
+        """ :obj:`OntologyAnnotation`: a component_type for the protocol
         component"""
         return self.__component_type
 
@@ -2383,16 +2383,16 @@ class ProtocolComponent(Commentable):
         return 'ProtocolComponent(name="{0.name}", ' \
                'category={0.component_type}, comments={0.comments})' \
                .format(self)
-    
+
     def __hash__(self):
         return hash(repr(self))
-    
+
     def __eq__(self, other):
         return isinstance(other, ProtocolComponent) \
                and self.name == other.name \
                and self.component_type == other.component_type \
                and self.comments == other.comments
-    
+
     def __ne__(self, other):
         return not self == other
 
@@ -2555,17 +2555,15 @@ class Characteristic(Commentable):
                'unit={unit}, comments={characteristic.comments})'.format(
                 characteristic=self, category=repr(self.category),
                 value=repr(self.value), unit=repr(self.unit))
-    
+
     def __str__(self):
         return """Characteristic(
     category={category}
-    value={value}
+    value={characteristic.value}
     unit={unit}
     comments={num_comments} Comment objects
-)""".format(characteristic=self,
+""".format(characteristic=self,
            category=self.category.term if self.category else '',
-           value=self.value.term if isinstance(
-               self.value, OntologyAnnotation) else self.value,
            unit=self.unit.term if self.unit else '',
            num_comments=len(self.comments))
 
