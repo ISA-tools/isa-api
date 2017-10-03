@@ -204,6 +204,7 @@ class OntologyAnnotationTest(unittest.TestCase):
     def test_eq(self):
         expected_ontology_annotation = OntologyAnnotation(
             term='T', term_source=OntologySource(name='N'), term_accession='A')
+        self.assertEqual(expected_ontology_annotation, self.ontology_annotation)
         self.assertEqual(
             hash(expected_ontology_annotation),  hash(self.ontology_annotation))
 
@@ -259,6 +260,7 @@ class PublicationTest(unittest.TestCase):
         expected_publication = Publication(
             pubmed_id='1', doi='10', author_list='A. Author', title='T', 
             status=OntologyAnnotation(term='S'))
+        self.assertEqual(expected_publication, self.publication)
         self.assertEqual(
             hash(expected_publication),  hash(self.publication))
 
@@ -326,6 +328,7 @@ class PersonTest(unittest.TestCase):
                                      term='R', term_source=None, 
                                      term_accession='', comments=[])], 
                                  comments=[])
+        self.assertEqual(expected_person, self.person)
         self.assertEqual(hash(expected_person),  hash(self.person))
 
     def test_ne(self):
@@ -423,6 +426,7 @@ class StudyTest(unittest.TestCase):
             protocols=[], assays=[], sources=[], samples=[],
             process_sequence=[], other_material=[],
             characteristic_categories=[], comments=[], units=[])
+        self.assertEqual(expected_study, self.study)
         self.assertEqual(hash(expected_study),  hash(self.study))
 
     def test_ne(self):
@@ -472,6 +476,7 @@ class StudyFactorTest(unittest.TestCase):
     def test_eq(self):
         expected_factor = StudyFactor(
             name='N', factor_type=OntologyAnnotation(term='T'))
+        self.assertEqual(expected_factor, self.factor)
         self.assertEqual(hash(expected_factor),  hash(self.factor))
 
     def test_ne(self):
@@ -479,3 +484,60 @@ class StudyFactorTest(unittest.TestCase):
             name='N2', factor_type=OntologyAnnotation(term='T2'))
         self.assertNotEqual(expected_other_factor, self.factor)
         self.assertNotEqual(hash(expected_other_factor), hash(self.factor))
+
+
+class CharacteristicTest(unittest.TestCase):
+
+    def setUp(self):
+        self.characteristic_default = Characteristic()
+        self.characteristic = Characteristic(
+            category=OntologyAnnotation(term='C'), value=0,
+            unit=OntologyAnnotation(term='U') )
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.Characteristic('
+                         'category=isatools.model.OntologyAnnotation('
+                         'term="", term_source=None, term_accession="", '
+                         'comments=[]), '
+                         'value=isatools.model.OntologyAnnotation('
+                         'term="", term_source=None, term_accession="", '
+                         'comments=[]), unit=None, comments=[])',
+                         repr(self.characteristic_default))
+        self.assertEqual('isatools.model.Characteristic('
+                         'category=isatools.model.OntologyAnnotation('
+                         'term="C", term_source=None, term_accession="", '
+                         'comments=[]), value=0, '
+                         'unit=isatools.model.OntologyAnnotation(term="U", '
+                         'term_source=None, term_accession="", comments=[]), '
+                         'comments=[])', repr(self.characteristic))
+
+    def test_str(self):
+        self.assertEqual("""Characteristic(
+    category=
+    value=
+    unit=
+    comments=0 Comment objects
+)""", str(self.characteristic_default))
+
+        self.assertEqual("""Characteristic(
+    category=C
+    value=0
+    unit=U
+    comments=0 Comment objects
+)""", str(self.characteristic))
+
+    def test_eq(self):
+        expected_characteristic = Characteristic(
+            category=OntologyAnnotation(term='C'), value=0,
+            unit=OntologyAnnotation(term='U'))
+        self.assertEqual(expected_characteristic, self.characteristic)
+        self.assertEqual(
+            hash(expected_characteristic), hash(self.characteristic))
+
+    def test_ne(self):
+        expected_other_characteristic = Characteristic(
+            category=OntologyAnnotation(term='C2'), value=1,
+            unit=OntologyAnnotation(term='U2'))
+        self.assertNotEqual(expected_other_characteristic, self.characteristic)
+        self.assertNotEqual(
+            hash(expected_other_characteristic), hash(self.characteristic))

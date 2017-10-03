@@ -1782,7 +1782,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                and self.process_sequence == other.process_sequence \
                and self.other_material == other.other_material \
                and self.characteristic_categories \
-               == other.faccharacteristic_categoriestors \
+               == other.characteristic_categories \
                and self.comments == other.comments \
                and self.units == other.units
 
@@ -2550,8 +2550,24 @@ class Characteristic(Commentable):
             self.__unit = val
 
     def __repr__(self):
-        return 'Characteristic(category="{0.category}", value={0.value}, ' \
-               'unit={0.unit}, comments={0.comments})'.format(self)
+        return 'isatools.model.Characteristic(' \
+               'category={category}, value={value}, ' \
+               'unit={unit}, comments={characteristic.comments})'.format(
+                characteristic=self, category=repr(self.category),
+                value=repr(self.value), unit=repr(self.unit))
+    
+    def __str__(self):
+        return """Characteristic(
+    category={category}
+    value={value}
+    unit={unit}
+    comments={num_comments} Comment objects
+)""".format(characteristic=self,
+           category=self.category.term if self.category else '',
+           value=self.value.term if isinstance(
+               self.value, OntologyAnnotation) else self.value,
+           unit=self.unit.term if self.unit else '',
+           num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
