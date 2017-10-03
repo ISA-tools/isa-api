@@ -2559,11 +2559,13 @@ class Characteristic(Commentable):
     def __str__(self):
         return """Characteristic(
     category={category}
-    value={characteristic.value}
+    value={value}
     unit={unit}
     comments={num_comments} Comment objects
-""".format(characteristic=self,
+)""".format(characteristic=self,
            category=self.category.term if self.category else '',
+           value=self.value.term if isinstance(
+               self.value, OntologyAnnotation) else self.value,
            unit=self.unit.term if self.unit else '',
            num_comments=len(self.comments))
 
