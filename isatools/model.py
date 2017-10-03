@@ -1743,7 +1743,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     samples={num_samples} Sample objects
     process_sequence={num_processes} Process objects
     other_material={num_other_material} Material objects
-    characteristic_categories={num_characteristic_categories} Characteristic objects
+    characteristic_categories={num_characteristic_categories} OntologyAnnotation objects
     comments={num_comments} Comment objects
     units={num_units} Unit objects
 )""".format(study=self, num_contacts=len(self.contacts),
@@ -1981,14 +1981,38 @@ class Assay(Commentable, StudyAssayMixin, object):
                 .format(type(self).__name__))
 
     def __repr__(self):
-        return 'Assay(measurement_type={0.measurement_type}, ' \
-               'technology_type={0.technology_type}, ' \
-               'technology_platform={0.technology_platform}, ' \
-               'filename="{0.filename}", data_files={0.data_files}, ' \
-               'samples={0.samples}, process_sequence={0.process_sequence}, ' \
-               'other_material={0.other_material}, ' \
-               'characteristic_categories={0.characteristic_categories}, ' \
-               'comments={0.comments}, units={0.units})'.format(self)
+        return 'isatools.model.Assay(measurement_type={measurement_type}, ' \
+               'technology_type={technology_type}, ' \
+               'technology_platform="{assay.technology_platform}", ' \
+               'filename="{assay.filename}", data_files={assay.data_files}, ' \
+               'samples={assay.samples}, process_sequence={assay.process_sequence}, ' \
+               'other_material={assay.other_material}, ' \
+               'characteristic_categories={assay.characteristic_categories}, ' \
+               'comments={assay.comments}, units={assay.units})'.format(assay=self, measurement_type=repr(self.measurement_type), technology_type=repr(self.technology_type))
+
+    def __str__(self):
+        return """Assay(
+    measurement_type={measurement_type}
+    technology_type={technology_type}
+    technology_platform={assay.technology_platform}
+    filename={assay.filename}
+    data_files={num_datafiles} DataFile objects
+    samples={num_samples} Sample objects
+    process_sequence={num_processes} Process objects
+    other_material={num_other_material} Material objects
+    characteristic_categories={num_characteristic_categories} OntologyAnnotation objects
+    comments={num_comments} Comment objects
+    units={num_units} Unit objects
+)""".format(assay=self,
+            measurement_type=self.measurement_type.term if
+            self.measurement_type else '',
+            technology_type=self.technology_type.term if
+            self.technology_type else '', num_datafiles=len(self.data_files),
+            num_samples=len(self.samples),
+            num_processes=len(self.process_sequence),
+            num_other_material=len(self.other_material),
+            num_characteristic_categories=len(self.characteristic_categories),
+            num_comments=len(self.comments), num_units=len(self.units))
 
     def __hash__(self):
         return hash(repr(self))

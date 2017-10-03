@@ -390,7 +390,7 @@ class StudyTest(unittest.TestCase):
     samples=0 Sample objects
     process_sequence=0 Process objects
     other_material=0 Material objects
-    characteristic_categories=0 Characteristic objects
+    characteristic_categories=0 OntologyAnnotation objects
     comments=0 Comment objects
     units=0 Unit objects
 )""", str(self.study_default))
@@ -412,7 +412,7 @@ class StudyTest(unittest.TestCase):
     samples=0 Sample objects
     process_sequence=0 Process objects
     other_material=0 Material objects
-    characteristic_categories=0 Characteristic objects
+    characteristic_categories=0 OntologyAnnotation objects
     comments=0 Comment objects
     units=0 Unit objects
 )""", str(self.study))
@@ -541,3 +541,78 @@ class CharacteristicTest(unittest.TestCase):
         self.assertNotEqual(expected_other_characteristic, self.characteristic)
         self.assertNotEqual(
             hash(expected_other_characteristic), hash(self.characteristic))
+
+
+class AssayTest(unittest.TestCase):
+
+    def setUp(self):
+        self.assay_default = Assay()
+        self.assay = Assay(measurement_type=OntologyAnnotation(term='MT'),
+                           technology_type=OntologyAnnotation(term='TT'),
+                           technology_platform='TP', filename='file')
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.Assay(measurement_type='
+                         'isatools.model.OntologyAnnotation(term="", '
+                         'term_source=None, term_accession="", comments=[]), '
+                         'technology_type=isatools.model.OntologyAnnotation('
+                         'term="", term_source=None, term_accession="", '
+                         'comments=[]), technology_platform="", filename="", '
+                         'data_files=[], samples=[], process_sequence=[], '
+                         'other_material=[], characteristic_categories=[], '
+                         'comments=[], units=[])',
+                         repr(self.assay_default))
+        self.assertEqual('isatools.model.Assay(measurement_type='
+                         'isatools.model.OntologyAnnotation(term="MT", '
+                         'term_source=None, term_accession="", comments=[]), '
+                         'technology_type=isatools.model.OntologyAnnotation('
+                         'term="TT", term_source=None, term_accession="", '
+                         'comments=[]), technology_platform="TP", '
+                         'filename="file", data_files=[], samples=[], '
+                         'process_sequence=[], other_material=[], '
+                         'characteristic_categories=[], comments=[], units=[])',
+                         repr(self.assay))
+
+    def test_str(self):
+        self.assertEqual("""Assay(
+    measurement_type=
+    technology_type=
+    technology_platform=
+    filename=
+    data_files=0 DataFile objects
+    samples=0 Sample objects
+    process_sequence=0 Process objects
+    other_material=0 Material objects
+    characteristic_categories=0 OntologyAnnotation objects
+    comments=0 Comment objects
+    units=0 Unit objects
+)""", str(self.assay_default))
+
+        self.assertEqual("""Assay(
+    measurement_type=MT
+    technology_type=TT
+    technology_platform=TP
+    filename=file
+    data_files=0 DataFile objects
+    samples=0 Sample objects
+    process_sequence=0 Process objects
+    other_material=0 Material objects
+    characteristic_categories=0 OntologyAnnotation objects
+    comments=0 Comment objects
+    units=0 Unit objects
+)""", str(self.assay))
+
+    def test_eq(self):
+        expected_assay = Assay(measurement_type=OntologyAnnotation(term='MT'),
+                           technology_type=OntologyAnnotation(term='TT'),
+                           technology_platform='TP', filename='file')
+        self.assertEqual(expected_assay, self.assay)
+        self.assertEqual(hash(expected_assay),  hash(self.assay))
+
+    def test_ne(self):
+        expected_other_assay = Assay(
+            measurement_type=OntologyAnnotation(term='MT2'),
+            technology_type=OntologyAnnotation(term='TT2'),
+            technology_platform='TP2', filename='file2')
+        self.assertNotEqual(expected_other_assay, self.assay)
+        self.assertNotEqual(hash(expected_other_assay), hash(self.assay))
