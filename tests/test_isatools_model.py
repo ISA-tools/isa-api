@@ -616,3 +616,61 @@ class AssayTest(unittest.TestCase):
             technology_platform='TP2', filename='file2')
         self.assertNotEqual(expected_other_assay, self.assay)
         self.assertNotEqual(hash(expected_other_assay), hash(self.assay))
+
+
+class ProtocolTest(unittest.TestCase):
+
+    def setUp(self):
+        self.protocol_default = Protocol()
+        self.protocol = Protocol(
+            name='N', protocol_type=OntologyAnnotation(term='PT'), uri='U',
+            version='1')
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.Protocol(name="", '
+                         'protocol_type=isatools.model.OntologyAnnotation('
+                         'term="", term_source=None, term_accession="", '
+                         'comments=[]), uri="", version="", parameters=[], '
+                         'components=[], comments=[])',
+                         repr(self.protocol_default))
+        self.assertEqual('isatools.model.Protocol(name="N", '
+                         'protocol_type=isatools.model.OntologyAnnotation('
+                         'term="PT", term_source=None, term_accession="", '
+                         'comments=[]), uri="U", version="1", parameters=[], '
+                         'components=[], comments=[])',
+                         repr(self.protocol))
+
+    def test_str(self):
+        self.assertEqual("""Protocol(
+    name=
+    protocol_type=
+    uri=
+    version=
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+)""", str(self.protocol_default))
+
+        self.assertEqual("""Protocol(
+    name=N
+    protocol_type=PT
+    uri=U
+    version=1
+    parameters=0 ProtocolParameter objects
+    components=0 OntologyAnnotation objects
+    comments=0 Comment objects
+)""", str(self.protocol))
+
+    def test_eq(self):
+        expected_protocol = Protocol(
+            name='N', protocol_type=OntologyAnnotation(term='PT'), uri='U',
+            version='1')
+        self.assertEqual(expected_protocol, self.protocol)
+        self.assertEqual(hash(expected_protocol),  hash(self.protocol))
+
+    def test_ne(self):
+        expected_other_protocol = Protocol(
+            name='N2', protocol_type=OntologyAnnotation(term='PT2'), uri='U2',
+            version='2')
+        self.assertNotEqual(expected_other_protocol, self.protocol)
+        self.assertNotEqual(hash(expected_other_protocol), hash(self.protocol))

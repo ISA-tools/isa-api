@@ -2204,10 +2204,28 @@ class Protocol(Commentable):
                                          'containing OntologyAnnotations')
 
     def __repr__(self):
-        return 'Protocol(name="{0.name}", protocol_type={0.protocol_type}, ' \
-               'uri="{0.uri}", version="{0.version}", ' \
-               'parameters={0.parameters}, components={0.components}, ' \
-               'comments={0.comments})'.format(self)
+        return 'isatools.model.Protocol(name="{protocol.name}", ' \
+               'protocol_type={protocol_type}, ' \
+               'uri="{protocol.uri}", version="{protocol.version}", ' \
+               'parameters={protocol.parameters}, ' \
+               'components={protocol.components}, ' \
+               'comments={protocol.comments})'.format(
+            protocol=self, protocol_type=repr(self.protocol_type))
+
+    def __str__(self):
+        return """Protocol(
+    name={protocol.name}
+    protocol_type={protocol_type}
+    uri={protocol.uri}
+    version={protocol.version}
+    parameters={num_parameters} ProtocolParameter objects
+    components={num_components} OntologyAnnotation objects
+    comments={num_comments} Comment objects
+)""".format(protocol=self, protocol_type=
+            self.protocol_type.term if self.protocol_type else '',
+            num_parameters=len(self.parameters),
+            num_components=len(self.components),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
