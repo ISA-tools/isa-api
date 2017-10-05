@@ -2366,8 +2366,20 @@ class ParameterValue(object):
             self.__unit = val
 
     def __repr__(self):
-        return 'ParameterValue(category="{0.category}", value={0.value}, ' \
-               'unit={0.unit})'.format(self)
+        return 'isatools.model.ParameterValue(category={category}, ' \
+               'value={value}, unit={unit})'.format(
+            category=repr(self.category), value=repr(self.value),
+            unit=repr(self.unit))
+
+    def __str__(self):
+        return """ParameterValue(
+    category={category}
+    value={value}
+    unit={unit}
+)""".format(category=self.category.parameter_name.term if self.category else '',
+            value=self.value.term if isinstance(
+            self.value, OntologyAnnotation) else repr(self.value),
+            unit=self.unit.term if self.unit else '')
 
     def __hash__(self):
         return hash(repr(self))

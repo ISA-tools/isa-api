@@ -717,3 +717,56 @@ class ProtocolParameterTest(unittest.TestCase):
             parameter_name=OntologyAnnotation(term='P2'))
         self.assertNotEqual(expected_other_parameter, self.parameter)
         self.assertNotEqual(hash(expected_other_parameter), hash(self.parameter))
+
+
+class ParameterValueTest(unittest.TestCase):
+
+    def setUp(self):
+        self.parameter_value_default = ParameterValue()
+        self.parameter_value = ParameterValue(
+            ProtocolParameter(parameter_name=OntologyAnnotation(term='P')),
+            value=0, unit=OntologyAnnotation(term='U'))
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.ParameterValue(category=None, '
+                         'value=None, unit=None)',
+                         repr(self.parameter_value_default))
+        self.assertEqual('isatools.model.ParameterValue('
+                         'category=isatools.model.ProtocolParameter('
+                         'parameter_name=isatools.model.OntologyAnnotation('
+                         'term="P", term_source=None, term_accession="", '
+                         'comments=[]), comments=[]), value=0, '
+                         'unit=isatools.model.OntologyAnnotation('
+                         'term="U", term_source=None, term_accession="", '
+                         'comments=[]))',
+                         repr(self.parameter_value))
+
+    def test_str(self):
+        self.assertEqual("""ParameterValue(
+    category=
+    value=None
+    unit=
+)""", str(self.parameter_value_default))
+
+        self.assertEqual("""ParameterValue(
+    category=P
+    value=0
+    unit=U
+)""", str(self.parameter_value))
+
+    def test_eq(self):
+        expected_parameter_value = ParameterValue(
+            ProtocolParameter(parameter_name=OntologyAnnotation(term='P')),
+            value=0, unit=OntologyAnnotation(term='U'))
+        self.assertEqual(expected_parameter_value, self.parameter_value)
+        self.assertEqual(
+            hash(expected_parameter_value),  hash(self.parameter_value))
+
+    def test_ne(self):
+        expected_other_parameter_value = ParameterValue(
+            ProtocolParameter(parameter_name=OntologyAnnotation(term='P2')),
+            value=1, unit=OntologyAnnotation(term='U2'))
+        self.assertNotEqual(
+            expected_other_parameter_value, self.parameter_value)
+        self.assertNotEqual(
+            hash(expected_other_parameter_value), hash(self.parameter_value))
