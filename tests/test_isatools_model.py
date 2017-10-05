@@ -674,3 +674,46 @@ class ProtocolTest(unittest.TestCase):
             version='2')
         self.assertNotEqual(expected_other_protocol, self.protocol)
         self.assertNotEqual(hash(expected_other_protocol), hash(self.protocol))
+
+
+class ProtocolParameterTest(unittest.TestCase):
+
+    def setUp(self):
+        self.parameter_default = ProtocolParameter()
+        self.parameter = ProtocolParameter(
+            parameter_name=OntologyAnnotation(term='P'))
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.ProtocolParameter('
+                         'parameter_name=isatools.model.OntologyAnnotation('
+                         'term="", term_source=None, term_accession="", '
+                         'comments=[]), comments=[])',
+                         repr(self.parameter_default))
+        self.assertEqual('isatools.model.ProtocolParameter('
+                         'parameter_name=isatools.model.OntologyAnnotation('
+                         'term="P", term_source=None, term_accession="", '
+                         'comments=[]), comments=[])',
+                         repr(self.parameter))
+
+    def test_str(self):
+        self.assertEqual("""ProtocolParameter(
+    parameter_name=
+    comments=0 Comment objects
+)""", str(self.parameter_default))
+
+        self.assertEqual("""ProtocolParameter(
+    parameter_name=P
+    comments=0 Comment objects
+)""", str(self.parameter))
+
+    def test_eq(self):
+        expected_parameter = ProtocolParameter(
+            parameter_name=OntologyAnnotation(term='P'))
+        self.assertEqual(expected_parameter, self.parameter)
+        self.assertEqual(hash(expected_parameter),  hash(self.parameter))
+
+    def test_ne(self):
+        expected_other_parameter = ProtocolParameter(
+            parameter_name=OntologyAnnotation(term='P2'))
+        self.assertNotEqual(expected_other_parameter, self.parameter)
+        self.assertNotEqual(hash(expected_other_parameter), hash(self.parameter))

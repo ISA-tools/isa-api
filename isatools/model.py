@@ -2277,8 +2277,17 @@ class ProtocolParameter(Commentable):
             self.__parameter_name = val
 
     def __repr__(self):
-        return 'ProtocolParameter(parameter_name={0.parameter_name}, ' \
-               'comments={0.comments})'.format(self)
+        return 'isatools.model.ProtocolParameter(' \
+               'parameter_name={parameter_name}, ' \
+               'comments={parameter.comments})'.format(
+                parameter=self, parameter_name=repr(self.parameter_name))
+
+    def __str__(self):
+        return """ProtocolParameter(
+    parameter_name={parameter_name}
+    comments={num_comments} Comment objects
+)""".format(parameter_name=self.parameter_name.term if
+        self.parameter_name else '', num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
