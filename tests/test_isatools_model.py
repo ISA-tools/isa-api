@@ -977,12 +977,14 @@ class LabeledExtractTest(unittest.TestCase):
     def test_eq(self):
         expected_labeled_extract = LabeledExtract(name='E')
         self.assertEqual(expected_labeled_extract, self.labeled_extract)
-        self.assertEqual(hash(expected_labeled_extract),  hash(self.labeled_extract))
+        self.assertEqual(hash(expected_labeled_extract),
+                         hash(self.labeled_extract))
 
     def test_ne(self):
         expected_other_labeled_extract = LabeledExtract(name='S2')
         self.assertNotEqual(expected_other_labeled_extract, self.labeled_extract)
-        self.assertNotEqual(hash(expected_other_labeled_extract), hash(self.labeled_extract))
+        self.assertNotEqual(hash(expected_other_labeled_extract),
+                            hash(self.labeled_extract))
 
 
 class FactorValueTest(unittest.TestCase):
@@ -1035,3 +1037,476 @@ class FactorValueTest(unittest.TestCase):
             hash(expected_other_factor_value), hash(self.factor_value))
 
 
+class DataFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.data_file_default = DataFile()
+        self.data_file = DataFile(filename='file', label='Data File Name')
+
+    def test_repr(self):
+        self.assertEqual("isatools.model.DataFile(filename='', label='', "
+                         "generated_from=[], comments=[])",
+                         repr(self.data_file_default))
+        self.assertEqual("isatools.model.DataFile(filename='file', "
+                         "label='Data File Name', generated_from=[], "
+                         "comments=[])", repr(self.data_file))
+
+    def test_str(self):
+        self.assertEqual("""DataFile(
+    filename=
+    label=
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file_default))
+
+        self.assertEqual("""DataFile(
+    filename=file
+    label=Data File Name
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file))
+
+    def test_eq(self):
+        expected_data_file = DataFile(filename='file', label='Data File Name')
+        self.assertEqual(expected_data_file, self.data_file)
+        self.assertEqual(hash(expected_data_file),  hash(self.data_file))
+
+    def test_ne(self):
+        expected_other_data_file = DataFile(filename='file2',
+                                            label='Raw Data File')
+        self.assertNotEqual(expected_other_data_file, self.data_file)
+        self.assertNotEqual(hash(expected_other_data_file), hash(self.data_file))
+
+
+class RawDataFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.data_file_default = RawDataFile()
+        self.data_file = RawDataFile(filename='file')
+
+    def test_repr(self):
+        self.assertEqual("isatools.model.RawDataFile(filename='', "
+                         "generated_from=[], comments=[])",
+                         repr(self.data_file_default))
+        self.assertEqual("isatools.model.RawDataFile(filename='file', "
+                         "generated_from=[], comments=[])",
+                         repr(self.data_file))
+
+    def test_str(self):
+        self.assertEqual("""RawDataFile(
+    filename=
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file_default))
+
+        self.assertEqual("""RawDataFile(
+    filename=file
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file))
+
+    def test_eq(self):
+        expected_data_file = RawDataFile(filename='file')
+        self.assertEqual(expected_data_file, self.data_file)
+        self.assertEqual(hash(expected_data_file),  hash(self.data_file))
+
+    def test_ne(self):
+        expected_other_data_file = RawDataFile(filename='file2')
+        self.assertNotEqual(expected_other_data_file, self.data_file)
+        self.assertNotEqual(hash(expected_other_data_file),
+                            hash(self.data_file))
+        
+        
+class DerivedDataFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.data_file_default = DerivedDataFile()
+        self.data_file = DerivedDataFile(filename='file')
+
+    def test_repr(self):
+        self.assertEqual("isatools.model.DerivedDataFile(filename='', "
+                         "generated_from=[], comments=[])",
+                         repr(self.data_file_default))
+        self.assertEqual("isatools.model.DerivedDataFile(filename='file', "
+                         "generated_from=[], comments=[])",
+                         repr(self.data_file))
+
+    def test_str(self):
+        self.assertEqual("""DerivedDataFile(
+    filename=
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file_default))
+
+        self.assertEqual("""DerivedDataFile(
+    filename=file
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file))
+
+    def test_eq(self):
+        expected_data_file = DerivedDataFile(filename='file')
+        self.assertEqual(expected_data_file, self.data_file)
+        self.assertEqual(hash(expected_data_file),  hash(self.data_file))
+
+    def test_ne(self):
+        expected_other_data_file = DerivedDataFile(filename='file2')
+        self.assertNotEqual(expected_other_data_file, self.data_file)
+        self.assertNotEqual(hash(expected_other_data_file),
+                            hash(self.data_file))
+        
+
+class RawSpectralDataFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.data_file_default = RawSpectralDataFile()
+        self.data_file = RawSpectralDataFile(filename='file')
+
+    def test_repr(self):
+        self.assertEqual("isatools.model.RawSpectralDataFile(filename='', "
+                         "generated_from=[], comments=[])",
+                         repr(self.data_file_default))
+        self.assertEqual("isatools.model.RawSpectralDataFile(filename='file', "
+                         "generated_from=[], comments=[])",
+                         repr(self.data_file))
+
+    def test_str(self):
+        self.assertEqual("""RawSpectralDataFile(
+    filename=
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file_default))
+
+        self.assertEqual("""RawSpectralDataFile(
+    filename=file
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file))
+
+    def test_eq(self):
+        expected_data_file = RawSpectralDataFile(filename='file')
+        self.assertEqual(expected_data_file, self.data_file)
+        self.assertEqual(hash(expected_data_file),  hash(self.data_file))
+
+    def test_ne(self):
+        expected_other_data_file = RawSpectralDataFile(filename='file2')
+        self.assertNotEqual(expected_other_data_file, self.data_file)
+        self.assertNotEqual(hash(expected_other_data_file),
+                            hash(self.data_file))
+        
+
+class ArrayDataFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.data_file_default = ArrayDataFile()
+        self.data_file = ArrayDataFile(filename='file')
+
+    def test_repr(self):
+        self.assertEqual("isatools.model.ArrayDataFile(filename='', "
+                         "generated_from=[], comments=[])",
+                         repr(self.data_file_default))
+        self.assertEqual("isatools.model.ArrayDataFile(filename='file', "
+                         "generated_from=[], comments=[])",
+                         repr(self.data_file))
+
+    def test_str(self):
+        self.assertEqual("""ArrayDataFile(
+    filename=
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file_default))
+
+        self.assertEqual("""ArrayDataFile(
+    filename=file
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file))
+
+    def test_eq(self):
+        expected_data_file = ArrayDataFile(filename='file')
+        self.assertEqual(expected_data_file, self.data_file)
+        self.assertEqual(hash(expected_data_file),  hash(self.data_file))
+
+    def test_ne(self):
+        expected_other_data_file = ArrayDataFile(filename='file2')
+        self.assertNotEqual(expected_other_data_file, self.data_file)
+        self.assertNotEqual(hash(expected_other_data_file),
+                            hash(self.data_file))
+        
+
+class DerivedSpectralDataFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.data_file_default = DerivedSpectralDataFile()
+        self.data_file = DerivedSpectralDataFile(filename='file')
+
+    def test_repr(self):
+        self.assertEqual("isatools.model.DerivedSpectralDataFile(filename='', "
+                         "generated_from=[], comments=[])",
+                         repr(self.data_file_default))
+        self.assertEqual("isatools.model.DerivedSpectralDataFile("
+                         "filename='file', generated_from=[], comments=[])",
+                         repr(self.data_file))
+
+    def test_str(self):
+        self.assertEqual("""DerivedSpectralDataFile(
+    filename=
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file_default))
+
+        self.assertEqual("""DerivedSpectralDataFile(
+    filename=file
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file))
+
+    def test_eq(self):
+        expected_data_file = DerivedSpectralDataFile(filename='file')
+        self.assertEqual(expected_data_file, self.data_file)
+        self.assertEqual(hash(expected_data_file),  hash(self.data_file))
+
+    def test_ne(self):
+        expected_other_data_file = DerivedSpectralDataFile(filename='file2')
+        self.assertNotEqual(expected_other_data_file, self.data_file)
+        self.assertNotEqual(hash(expected_other_data_file),
+                            hash(self.data_file))
+        
+        
+class ProteinAssignmentFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.data_file_default = ProteinAssignmentFile()
+        self.data_file = ProteinAssignmentFile(filename='file')
+
+    def test_repr(self):
+        self.assertEqual("isatools.model.ProteinAssignmentFile(filename='', "
+                         "generated_from=[], comments=[])",
+                         repr(self.data_file_default))
+        self.assertEqual("isatools.model.ProteinAssignmentFile("
+                         "filename='file', generated_from=[], comments=[])",
+                         repr(self.data_file))
+
+    def test_str(self):
+        self.assertEqual("""ProteinAssignmentFile(
+    filename=
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file_default))
+
+        self.assertEqual("""ProteinAssignmentFile(
+    filename=file
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file))
+
+    def test_eq(self):
+        expected_data_file = ProteinAssignmentFile(filename='file')
+        self.assertEqual(expected_data_file, self.data_file)
+        self.assertEqual(hash(expected_data_file),  hash(self.data_file))
+
+    def test_ne(self):
+        expected_other_data_file = ProteinAssignmentFile(filename='file2')
+        self.assertNotEqual(expected_other_data_file, self.data_file)
+        self.assertNotEqual(hash(expected_other_data_file),
+                            hash(self.data_file))
+        
+        
+class PeptideAssignmentFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.data_file_default = PeptideAssignmentFile()
+        self.data_file = PeptideAssignmentFile(filename='file')
+
+    def test_repr(self):
+        self.assertEqual("isatools.model.PeptideAssignmentFile(filename='', "
+                         "generated_from=[], comments=[])",
+                         repr(self.data_file_default))
+        self.assertEqual("isatools.model.PeptideAssignmentFile("
+                         "filename='file', generated_from=[], comments=[])",
+                         repr(self.data_file))
+
+    def test_str(self):
+        self.assertEqual("""PeptideAssignmentFile(
+    filename=
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file_default))
+
+        self.assertEqual("""PeptideAssignmentFile(
+    filename=file
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file))
+
+    def test_eq(self):
+        expected_data_file = PeptideAssignmentFile(filename='file')
+        self.assertEqual(expected_data_file, self.data_file)
+        self.assertEqual(hash(expected_data_file),  hash(self.data_file))
+
+    def test_ne(self):
+        expected_other_data_file = PeptideAssignmentFile(filename='file2')
+        self.assertNotEqual(expected_other_data_file, self.data_file)
+        self.assertNotEqual(hash(expected_other_data_file),
+                            hash(self.data_file))
+        
+
+class DerivedArrayDataMatrixFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.data_file_default = DerivedArrayDataMatrixFile()
+        self.data_file = DerivedArrayDataMatrixFile(filename='file')
+
+    def test_repr(self):
+        self.assertEqual("isatools.model.DerivedArrayDataMatrixFile("
+                         "filename='', generated_from=[], comments=[])",
+                         repr(self.data_file_default))
+        self.assertEqual("isatools.model.DerivedArrayDataMatrixFile("
+                         "filename='file', generated_from=[], comments=[])",
+                         repr(self.data_file))
+
+    def test_str(self):
+        self.assertEqual("""DerivedArrayDataMatrixFile(
+    filename=
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file_default))
+
+        self.assertEqual("""DerivedArrayDataMatrixFile(
+    filename=file
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file))
+
+    def test_eq(self):
+        expected_data_file = DerivedArrayDataMatrixFile(filename='file')
+        self.assertEqual(expected_data_file, self.data_file)
+        self.assertEqual(hash(expected_data_file),  hash(self.data_file))
+
+    def test_ne(self):
+        expected_other_data_file = DerivedArrayDataMatrixFile(filename='file2')
+        self.assertNotEqual(expected_other_data_file, self.data_file)
+        self.assertNotEqual(hash(expected_other_data_file),
+                            hash(self.data_file))
+        
+
+class PostTranslationalModificationAssignmentFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.data_file_default = PostTranslationalModificationAssignmentFile()
+        self.data_file = PostTranslationalModificationAssignmentFile(
+            filename='file')
+
+    def test_repr(self):
+        self.assertEqual("isatools.model."
+                         "PostTranslationalModificationAssignmentFile("
+                         "filename='', generated_from=[], comments=[])",
+                         repr(self.data_file_default))
+        self.assertEqual("isatools.model."
+                         "PostTranslationalModificationAssignmentFile("
+                         "filename='file', generated_from=[], comments=[])",
+                         repr(self.data_file))
+
+    def test_str(self):
+        self.assertEqual("""PostTranslationalModificationAssignmentFile(
+    filename=
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file_default))
+
+        self.assertEqual("""PostTranslationalModificationAssignmentFile(
+    filename=file
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file))
+
+    def test_eq(self):
+        expected_data_file = PostTranslationalModificationAssignmentFile(
+            filename='file')
+        self.assertEqual(expected_data_file, self.data_file)
+        self.assertEqual(hash(expected_data_file),  hash(self.data_file))
+
+    def test_ne(self):
+        expected_other_data_file = PostTranslationalModificationAssignmentFile(
+            filename='file2')
+        self.assertNotEqual(expected_other_data_file, self.data_file)
+        self.assertNotEqual(hash(expected_other_data_file),
+                            hash(self.data_file))
+        
+
+class AcquisitionParameterDataFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.data_file_default = AcquisitionParameterDataFile()
+        self.data_file = AcquisitionParameterDataFile(filename='file')
+
+    def test_repr(self):
+        self.assertEqual("isatools.model.AcquisitionParameterDataFile("
+                         "filename='', generated_from=[], comments=[])",
+                         repr(self.data_file_default))
+        self.assertEqual("isatools.model.AcquisitionParameterDataFile("
+                         "filename='file', generated_from=[], comments=[])",
+                         repr(self.data_file))
+
+    def test_str(self):
+        self.assertEqual("""AcquisitionParameterDataFile(
+    filename=
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file_default))
+
+        self.assertEqual("""AcquisitionParameterDataFile(
+    filename=file
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file))
+
+    def test_eq(self):
+        expected_data_file = AcquisitionParameterDataFile(filename='file')
+        self.assertEqual(expected_data_file, self.data_file)
+        self.assertEqual(hash(expected_data_file),  hash(self.data_file))
+
+    def test_ne(self):
+        expected_other_data_file = AcquisitionParameterDataFile(filename='file2')
+        self.assertNotEqual(expected_other_data_file, self.data_file)
+        self.assertNotEqual(hash(expected_other_data_file),
+                            hash(self.data_file))
+        
+
+class FreeInductionDecayDataFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.data_file_default = FreeInductionDecayDataFile()
+        self.data_file = FreeInductionDecayDataFile(filename='file')
+
+    def test_repr(self):
+        self.assertEqual("isatools.model.FreeInductionDecayDataFile("
+                         "filename='', generated_from=[], comments=[])",
+                         repr(self.data_file_default))
+        self.assertEqual("isatools.model.FreeInductionDecayDataFile("
+                         "filename='file', generated_from=[], comments=[])",
+                         repr(self.data_file))
+
+    def test_str(self):
+        self.assertEqual("""FreeInductionDecayDataFile(
+    filename=
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file_default))
+
+        self.assertEqual("""FreeInductionDecayDataFile(
+    filename=file
+    generated_from=0 Sample objects
+    comments=0 Comment objects
+)""", str(self.data_file))
+
+    def test_eq(self):
+        expected_data_file = FreeInductionDecayDataFile(filename='file')
+        self.assertEqual(expected_data_file, self.data_file)
+        self.assertEqual(hash(expected_data_file),  hash(self.data_file))
+
+    def test_ne(self):
+        expected_other_data_file = FreeInductionDecayDataFile(filename='file2')
+        self.assertNotEqual(expected_other_data_file, self.data_file)
+        self.assertNotEqual(hash(expected_other_data_file),
+                            hash(self.data_file))
