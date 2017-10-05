@@ -817,3 +817,83 @@ class ProtocolComponentTest(unittest.TestCase):
         self.assertNotEqual(expected_other_component, self.component)
         self.assertNotEqual(
             hash(expected_other_component), hash(self.component))
+        
+
+class SourceTest(unittest.TestCase):
+
+    def setUp(self):
+        self.source_default = Source()
+        self.source = Source(name='S')
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.Source(name="", characteristics=[], '
+                         'comments=[])',
+                         repr(self.source_default))
+        self.assertEqual('isatools.model.Source(name="S", characteristics=[], '
+                         'comments=[])',
+                         repr(self.source))
+
+    def test_str(self):
+        self.assertEqual("""Source(
+    name=
+    characteristics=0 Characteristic objects
+    comments=0 Comment objects
+)""", str(self.source_default))
+
+        self.assertEqual("""Source(
+    name=S
+    characteristics=0 Characteristic objects
+    comments=0 Comment objects
+)""", str(self.source))
+
+    def test_eq(self):
+        expected_source = Source(name='S')
+        self.assertEqual(expected_source, self.source)
+        self.assertEqual(hash(expected_source),  hash(self.source))
+
+    def test_ne(self):
+        expected_other_source = Source(name='S2')
+        self.assertNotEqual(expected_other_source, self.source)
+        self.assertNotEqual(hash(expected_other_source), hash(self.source))
+
+
+class SampleTest(unittest.TestCase):
+
+    def setUp(self):
+        self.sample_default = Sample()
+        self.sample = Sample(name='S')
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.Sample(name="", characteristics=[], '
+                         'factor_values=[], derives_from=[], comments=[])',
+                         repr(self.sample_default))
+        self.assertEqual('isatools.model.Sample(name="S", characteristics=[], '
+                         'factor_values=[], derives_from=[], comments=[])',
+                         repr(self.sample))
+
+    def test_str(self):
+        self.assertEqual("""Sample(
+    name=
+    characteristics=0 Characteristic objects
+    factor_values=0 FactorValue objects
+    derives_from=0 Source objects
+    comments=0 Comment objects
+)""", str(self.sample_default))
+
+        self.assertEqual("""Sample(
+    name=S
+    characteristics=0 Characteristic objects
+    factor_values=0 FactorValue objects
+    derives_from=0 Source objects
+    comments=0 Comment objects
+)""", str(self.sample))
+
+    def test_eq(self):
+        expected_sample = Sample(name='S')
+        self.assertEqual(expected_sample, self.sample)
+        self.assertEqual(hash(expected_sample),  hash(self.sample))
+
+    def test_ne(self):
+        expected_other_sample = Sample(name='S2')
+        self.assertNotEqual(expected_other_sample, self.sample)
+        self.assertNotEqual(hash(expected_other_sample), hash(self.sample))

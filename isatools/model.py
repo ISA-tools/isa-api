@@ -2534,8 +2534,17 @@ class Source(Commentable):
         return result
 
     def __repr__(self):
-        return 'Source(name="{0.name}", characteristics={0.characteristics}, ' \
-               'comments={0.comments})'.format(self)
+        return 'isatools.model.Source(name="{0.name}", ' \
+               'characteristics={0.characteristics}, comments={0.comments})'\
+                .format(self)
+
+    def __str__(self):
+        return """Source(
+    name={source.name}
+    characteristics={num_characteristics} Characteristic objects
+    comments={num_comments} Comment objects
+)""".format(source=self, num_characteristics=len(self.characteristics),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -2766,10 +2775,23 @@ class Sample(Commentable):
                 'Sample.derives_from must be iterable containing Sources')
 
     def __repr__(self):
-        return 'Sample(name="{0.name}", characteristics={0.characteristics}, ' \
-               'factor_values={0.factor_values}, ' \
-               'derives_from={0.derives_from}, comments={0.comments})'\
-                .format(self)
+        return 'isatools.model.Sample(name="{sample.name}", ' \
+               'characteristics={sample.characteristics}, ' \
+               'factor_values={sample.factor_values}, ' \
+               'derives_from={sample.derives_from}, ' \
+               'comments={sample.comments})'.format(sample=self)
+
+    def __str__(self):
+        return """Sample(
+    name={sample.name}
+    characteristics={num_characteristics} Characteristic objects
+    factor_values={num_factor_values} FactorValue objects
+    derives_from={num_derives_from} Source objects
+    comments={num_comments} Comment objects
+)""".format(sample=self, num_characteristics=len(self.characteristics),
+            num_factor_values=len(self.factor_values),
+            num_derives_from=len(self.derives_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
