@@ -13,16 +13,21 @@ class CommentTest(unittest.TestCase):
         self.comment = Comment(name='N', value='V')
 
     def test_repr(self):
-        self.assertEqual('isatools.model.Comment(name="", value="")',
+        self.assertEqual("isatools.model.Comment(name='', value='')",
                          repr(self.comment_default))
-        self.assertEqual('isatools.model.Comment(name="N", value="V")',
+        self.assertEqual("isatools.model.Comment(name='N', value='V')",
                          repr(self.comment))
 
     def test_str(self):
-        self.assertEqual('Comment[]\t',
-                         str(self.comment_default))
-        self.assertEqual('Comment[N]\tV',
-                         str(self.comment))
+        self.assertEqual("""Comment(
+    name=
+    value=
+)""", str(self.comment_default))
+
+        self.assertEqual("""Comment(
+    name=N
+    value=V
+)""", str(self.comment))
 
     def test_eq(self):
         expected_comment = Comment(name='N', value='V')
@@ -62,18 +67,18 @@ class InvestigationTest(unittest.TestCase):
             public_release_date=datetime.datetime(day=1, month=1, year=2017))
 
     def test_repr(self):
-        self.assertEqual('isatools.model.Investigation(identifier="", '
-                         'filename="", title="", submission_date="", '
-                         'public_release_date="", '
-                         'ontology_source_references=[], publications=[], '
-                         'contacts=[], studies=[], comments=[])',
+        self.assertEqual("isatools.model.Investigation(identifier='', "
+                         "filename='', title='', submission_date='', "
+                         "public_release_date='', "
+                         "ontology_source_references=[], publications=[], "
+                         "contacts=[], studies=[], comments=[])",
                          repr(self.investigation_default))
-        self.assertEqual('isatools.model.Investigation(identifier="id", '
-                         'filename="file", title="T", '
-                         'submission_date="2017-01-01 00:00:00", '
-                         'public_release_date="2017-01-01 00:00:00", '
-                         'ontology_source_references=[], publications=[], '
-                         'contacts=[], studies=[], comments=[])',
+        self.assertEqual("isatools.model.Investigation(identifier='id', "
+                         "filename='file', title='T', "
+                         "submission_date='2017-01-01 00:00:00', "
+                         "public_release_date='2017-01-01 00:00:00', "
+                         "ontology_source_references=[], publications=[], "
+                         "contacts=[], studies=[], comments=[])",
                          repr(self.investigation))
 
     def test_str(self):
@@ -129,11 +134,11 @@ class OntologySourceTest(unittest.TestCase):
                                               description='D')
 
     def test_repr(self):
-        self.assertEqual('isatools.model.OntologySource(name="N", file="", '
-                         'version="", description="", comments=[])',
+        self.assertEqual("isatools.model.OntologySource(name='N', file='', "
+                         "version='', description='', comments=[])",
                          repr(self.ontology_source_default))
-        self.assertEqual('isatools.model.OntologySource(name="N", file="F", '
-                         'version="V", description="D", comments=[])',
+        self.assertEqual("isatools.model.OntologySource(name='N', file='F', "
+                         "version='V', description='D', comments=[])",
                          repr(self.ontology_source))
 
     def test_str(self):
@@ -177,13 +182,13 @@ class OntologyAnnotationTest(unittest.TestCase):
             term='T', term_source=OntologySource('N'), term_accession='A')
 
     def test_repr(self):
-        self.assertEqual('isatools.model.OntologyAnnotation(term="", '
-                         'term_source=None, term_accession="", comments=[])',
+        self.assertEqual("isatools.model.OntologyAnnotation(term='', "
+                         "term_source=None, term_accession='', comments=[])",
                          repr(self.ontology_annotation_default))
-        self.assertEqual('isatools.model.OntologyAnnotation(term="T", '
-                         'term_source=isatools.model.OntologySource('
-                         'name="N", file="", version="", description="", '
-                         'comments=[]), term_accession="A", comments=[])',
+        self.assertEqual("isatools.model.OntologyAnnotation(term='T', "
+                         "term_source=isatools.model.OntologySource("
+                         "name='N', file='', version='', description='', "
+                         "comments=[]), term_accession='A', comments=[])",
                          repr(self.ontology_annotation))
 
     def test_str(self):
@@ -226,15 +231,15 @@ class PublicationTest(unittest.TestCase):
             status=OntologyAnnotation(term='S'))
 
     def test_repr(self):
-        self.assertEqual('isatools.model.Publication(pubmed_id="", '
-                         'doi="", author_list="", title="", status=None, '
-                         'comments=[])',
+        self.assertEqual("isatools.model.Publication(pubmed_id='', "
+                         "doi='', author_list='', title='', status=None, "
+                         "comments=[])",
                          repr(self.publication_default))
-        self.assertEqual('isatools.model.Publication(pubmed_id="1", '
-                         'doi="10", author_list="A. Author", title="T", '
-                         'status=isatools.model.OntologyAnnotation(term="S", '
-                         'term_source=None, term_accession="", comments=[]), '
-                         'comments=[])',
+        self.assertEqual("isatools.model.Publication(pubmed_id='1', "
+                         "doi='10', author_list='A. Author', title='T', "
+                         "status=isatools.model.OntologyAnnotation(term='S', "
+                         "term_source=None, term_accession='', comments=[]), "
+                         "comments=[])",
                          repr(self.publication))
 
     def test_str(self):
@@ -283,16 +288,16 @@ class PersonTest(unittest.TestCase):
                              roles=[OntologyAnnotation(term='R')])
 
     def test_repr(self):
-        self.assertEqual('isatools.model.Person(last_name="", first_name="", '
-                         'mid_initials="", email="", phone="", fax="", '
-                         'address="", affiliation="", roles=[], comments=[])',
+        self.assertEqual("isatools.model.Person(last_name='', first_name='', "
+                         "mid_initials='', email='', phone='', fax='', "
+                         "address='', affiliation='', roles=[], comments=[])",
                          repr(self.person_default))
-        self.assertEqual('isatools.model.Person(last_name="L", first_name="F", '
-                         'mid_initials="M", email="a@b.com", phone="0", '
-                         'fax="1", address="A", affiliation="Af", '
-                         'roles=[isatools.model.OntologyAnnotation(term="R", '
-                         'term_source=None, term_accession="", comments=[])], '
-                         'comments=[])',
+        self.assertEqual("isatools.model.Person(last_name='L', first_name='F', "
+                         "mid_initials='M', email='a@b.com', phone='0', "
+                         "fax='1', address='A', affiliation='Af', "
+                         "roles=[isatools.model.OntologyAnnotation(term='R', "
+                         "term_source=None, term_accession='', comments=[])], "
+                         "comments=[])",
                          repr(self.person))
 
     def test_str(self):
@@ -354,22 +359,22 @@ class StudyTest(unittest.TestCase):
             public_release_date=datetime.datetime(day=1, month=1, year=2017))
 
     def test_repr(self):
-        self.assertEqual('isatools.model.Study(filename="", '
-                         'identifier="", title="", description="", '
-                         'submission_date="", public_release_date="", '
-                         'contacts=[], design_descriptors=[], publications=[], '
-                         'factors=[], protocols=[], assays=[], sources=[], '
-                         'samples=[], process_sequence=[], other_material=[], '
-                         'characteristic_categories=[], comments=[], units=[])',
+        self.assertEqual("isatools.model.Study(filename='', "
+                         "identifier='', title='', description='', "
+                         "submission_date='', public_release_date='', "
+                         "contacts=[], design_descriptors=[], publications=[], "
+                         "factors=[], protocols=[], assays=[], sources=[], "
+                         "samples=[], process_sequence=[], other_material=[], "
+                         "characteristic_categories=[], comments=[], units=[])",
                          repr(self.study_default))
-        self.assertEqual('isatools.model.Study(filename="file", '
-                         'identifier="0", title="T", description="D", '
-                         'submission_date="2017-01-01 00:00:00", '
-                         'public_release_date="2017-01-01 00:00:00", '
-                         'contacts=[], design_descriptors=[], publications=[], '
-                         'factors=[], protocols=[], assays=[], sources=[], '
-                         'samples=[], process_sequence=[], other_material=[], '
-                         'characteristic_categories=[], comments=[], units=[])',
+        self.assertEqual("isatools.model.Study(filename='file', "
+                         "identifier='0', title='T', description='D', "
+                         "submission_date='2017-01-01 00:00:00', "
+                         "public_release_date='2017-01-01 00:00:00', "
+                         "contacts=[], design_descriptors=[], publications=[], "
+                         "factors=[], protocols=[], assays=[], sources=[], "
+                         "samples=[], process_sequence=[], other_material=[], "
+                         "characteristic_categories=[], comments=[], units=[])",
                          repr(self.study))
 
     def test_str(self):
@@ -449,15 +454,15 @@ class StudyFactorTest(unittest.TestCase):
         self.factor = StudyFactor(name='N', factor_type=OntologyAnnotation('T'))
 
     def test_repr(self):
-        self.assertEqual('isatools.model.StudyFactor(name="", '
-                         'factor_type=isatools.model.OntologyAnnotation('
-                         'term="", term_source=None, term_accession="", '
-                         'comments=[]), comments=[])',
+        self.assertEqual("isatools.model.StudyFactor(name='', "
+                         "factor_type=isatools.model.OntologyAnnotation("
+                         "term='', term_source=None, term_accession='', "
+                         "comments=[]), comments=[])",
                          repr(self.factor_default))
-        self.assertEqual('isatools.model.StudyFactor(name="N", '
-                         'factor_type=isatools.model.OntologyAnnotation('
-                         'term="T", term_source=None, term_accession="", '
-                         'comments=[]), comments=[])',
+        self.assertEqual("isatools.model.StudyFactor(name='N', "
+                         "factor_type=isatools.model.OntologyAnnotation("
+                         "term='T', term_source=None, term_accession='', "
+                         "comments=[]), comments=[])",
                          repr(self.factor))
 
     def test_str(self):
@@ -495,21 +500,21 @@ class CharacteristicTest(unittest.TestCase):
             unit=OntologyAnnotation(term='U') )
 
     def test_repr(self):
-        self.assertEqual('isatools.model.Characteristic('
-                         'category=isatools.model.OntologyAnnotation('
-                         'term="", term_source=None, term_accession="", '
-                         'comments=[]), '
-                         'value=isatools.model.OntologyAnnotation('
-                         'term="", term_source=None, term_accession="", '
-                         'comments=[]), unit=None, comments=[])',
+        self.assertEqual("isatools.model.Characteristic("
+                         "category=isatools.model.OntologyAnnotation("
+                         "term='', term_source=None, term_accession='', "
+                         "comments=[]), "
+                         "value=isatools.model.OntologyAnnotation("
+                         "term='', term_source=None, term_accession='', "
+                         "comments=[]), unit=None, comments=[])",
                          repr(self.characteristic_default))
-        self.assertEqual('isatools.model.Characteristic('
-                         'category=isatools.model.OntologyAnnotation('
-                         'term="C", term_source=None, term_accession="", '
-                         'comments=[]), value=0, '
-                         'unit=isatools.model.OntologyAnnotation(term="U", '
-                         'term_source=None, term_accession="", comments=[]), '
-                         'comments=[])', repr(self.characteristic))
+        self.assertEqual("isatools.model.Characteristic("
+                         "category=isatools.model.OntologyAnnotation("
+                         "term='C', term_source=None, term_accession='', "
+                         "comments=[]), value=0, "
+                         "unit=isatools.model.OntologyAnnotation(term='U', "
+                         "term_source=None, term_accession='', comments=[]), "
+                         "comments=[])", repr(self.characteristic))
 
     def test_str(self):
         self.assertEqual("""Characteristic(
@@ -552,25 +557,25 @@ class AssayTest(unittest.TestCase):
                            technology_platform='TP', filename='file')
 
     def test_repr(self):
-        self.assertEqual('isatools.model.Assay(measurement_type='
-                         'isatools.model.OntologyAnnotation(term="", '
-                         'term_source=None, term_accession="", comments=[]), '
-                         'technology_type=isatools.model.OntologyAnnotation('
-                         'term="", term_source=None, term_accession="", '
-                         'comments=[]), technology_platform="", filename="", '
-                         'data_files=[], samples=[], process_sequence=[], '
-                         'other_material=[], characteristic_categories=[], '
-                         'comments=[], units=[])',
+        self.assertEqual("isatools.model.Assay(measurement_type="
+                         "isatools.model.OntologyAnnotation(term='', "
+                         "term_source=None, term_accession='', comments=[]), "
+                         "technology_type=isatools.model.OntologyAnnotation("
+                         "term='', term_source=None, term_accession='', "
+                         "comments=[]), technology_platform='', filename='', "
+                         "data_files=[], samples=[], process_sequence=[], "
+                         "other_material=[], characteristic_categories=[], "
+                         "comments=[], units=[])",
                          repr(self.assay_default))
-        self.assertEqual('isatools.model.Assay(measurement_type='
-                         'isatools.model.OntologyAnnotation(term="MT", '
-                         'term_source=None, term_accession="", comments=[]), '
-                         'technology_type=isatools.model.OntologyAnnotation('
-                         'term="TT", term_source=None, term_accession="", '
-                         'comments=[]), technology_platform="TP", '
-                         'filename="file", data_files=[], samples=[], '
-                         'process_sequence=[], other_material=[], '
-                         'characteristic_categories=[], comments=[], units=[])',
+        self.assertEqual("isatools.model.Assay(measurement_type="
+                         "isatools.model.OntologyAnnotation(term='MT', "
+                         "term_source=None, term_accession='', comments=[]), "
+                         "technology_type=isatools.model.OntologyAnnotation("
+                         "term='TT', term_source=None, term_accession='', "
+                         "comments=[]), technology_platform='TP', "
+                         "filename='file', data_files=[], samples=[], "
+                         "process_sequence=[], other_material=[], "
+                         "characteristic_categories=[], comments=[], units=[])",
                          repr(self.assay))
 
     def test_str(self):
@@ -627,17 +632,17 @@ class ProtocolTest(unittest.TestCase):
             version='1')
 
     def test_repr(self):
-        self.assertEqual('isatools.model.Protocol(name="", '
-                         'protocol_type=isatools.model.OntologyAnnotation('
-                         'term="", term_source=None, term_accession="", '
-                         'comments=[]), uri="", version="", parameters=[], '
-                         'components=[], comments=[])',
+        self.assertEqual("isatools.model.Protocol(name='', "
+                         "protocol_type=isatools.model.OntologyAnnotation("
+                         "term='', term_source=None, term_accession='', "
+                         "comments=[]), uri='', version='', parameters=[], "
+                         "components=[], comments=[])",
                          repr(self.protocol_default))
-        self.assertEqual('isatools.model.Protocol(name="N", '
-                         'protocol_type=isatools.model.OntologyAnnotation('
-                         'term="PT", term_source=None, term_accession="", '
-                         'comments=[]), uri="U", version="1", parameters=[], '
-                         'components=[], comments=[])',
+        self.assertEqual("isatools.model.Protocol(name='N', "
+                         "protocol_type=isatools.model.OntologyAnnotation("
+                         "term='PT', term_source=None, term_accession='', "
+                         "comments=[]), uri='U', version='1', parameters=[], "
+                         "components=[], comments=[])",
                          repr(self.protocol))
 
     def test_str(self):
@@ -684,15 +689,15 @@ class ProtocolParameterTest(unittest.TestCase):
             parameter_name=OntologyAnnotation(term='P'))
 
     def test_repr(self):
-        self.assertEqual('isatools.model.ProtocolParameter('
-                         'parameter_name=isatools.model.OntologyAnnotation('
-                         'term="", term_source=None, term_accession="", '
-                         'comments=[]), comments=[])',
+        self.assertEqual("isatools.model.ProtocolParameter("
+                         "parameter_name=isatools.model.OntologyAnnotation("
+                         "term='', term_source=None, term_accession='', "
+                         "comments=[]), comments=[])",
                          repr(self.parameter_default))
-        self.assertEqual('isatools.model.ProtocolParameter('
-                         'parameter_name=isatools.model.OntologyAnnotation('
-                         'term="P", term_source=None, term_accession="", '
-                         'comments=[]), comments=[])',
+        self.assertEqual("isatools.model.ProtocolParameter("
+                         "parameter_name=isatools.model.OntologyAnnotation("
+                         "term='P', term_source=None, term_accession='', "
+                         "comments=[]), comments=[])",
                          repr(self.parameter))
 
     def test_str(self):
@@ -728,17 +733,17 @@ class ParameterValueTest(unittest.TestCase):
             value=0, unit=OntologyAnnotation(term='U'))
 
     def test_repr(self):
-        self.assertEqual('isatools.model.ParameterValue(category=None, '
-                         'value=None, unit=None)',
+        self.assertEqual("isatools.model.ParameterValue(category=None, "
+                         "value=None, unit=None)",
                          repr(self.parameter_value_default))
-        self.assertEqual('isatools.model.ParameterValue('
-                         'category=isatools.model.ProtocolParameter('
-                         'parameter_name=isatools.model.OntologyAnnotation('
-                         'term="P", term_source=None, term_accession="", '
-                         'comments=[]), comments=[]), value=0, '
-                         'unit=isatools.model.OntologyAnnotation('
-                         'term="U", term_source=None, term_accession="", '
-                         'comments=[]))',
+        self.assertEqual("isatools.model.ParameterValue("
+                         "category=isatools.model.ProtocolParameter("
+                         "parameter_name=isatools.model.OntologyAnnotation("
+                         "term='P', term_source=None, term_accession='', "
+                         "comments=[]), comments=[]), value=0, "
+                         "unit=isatools.model.OntologyAnnotation("
+                         "term='U', term_source=None, term_accession='', "
+                         "comments=[]))",
                          repr(self.parameter_value))
 
     def test_str(self):
@@ -780,15 +785,15 @@ class ProtocolComponentTest(unittest.TestCase):
             name='C', component_type=OntologyAnnotation(term='CT'))
 
     def test_repr(self):
-        self.assertEqual('isatools.model.ProtocolComponent(name="", '
-                         'category=isatools.model.OntologyAnnotation('
-                         'term="", term_source=None, term_accession="", '
-                         'comments=[]), comments=[])',
+        self.assertEqual("isatools.model.ProtocolComponent(name='', "
+                         "category=isatools.model.OntologyAnnotation("
+                         "term='', term_source=None, term_accession='', "
+                         "comments=[]), comments=[])",
                          repr(self.component_default))
-        self.assertEqual('isatools.model.ProtocolComponent(name="C", '
-                         'category=isatools.model.OntologyAnnotation('
-                         'term="CT", term_source=None, term_accession="", '
-                         'comments=[]), comments=[])',
+        self.assertEqual("isatools.model.ProtocolComponent(name='C', "
+                         "category=isatools.model.OntologyAnnotation("
+                         "term='CT', term_source=None, term_accession='', "
+                         "comments=[]), comments=[])",
                          repr(self.component))
 
     def test_str(self):
@@ -826,11 +831,11 @@ class SourceTest(unittest.TestCase):
         self.source = Source(name='S')
 
     def test_repr(self):
-        self.assertEqual('isatools.model.Source(name="", characteristics=[], '
-                         'comments=[])',
+        self.assertEqual("isatools.model.Source(name='', characteristics=[], "
+                         "comments=[])",
                          repr(self.source_default))
-        self.assertEqual('isatools.model.Source(name="S", characteristics=[], '
-                         'comments=[])',
+        self.assertEqual("isatools.model.Source(name='S', characteristics=[], "
+                         "comments=[])",
                          repr(self.source))
 
     def test_str(self):
@@ -864,11 +869,11 @@ class SampleTest(unittest.TestCase):
         self.sample = Sample(name='S')
 
     def test_repr(self):
-        self.assertEqual('isatools.model.Sample(name="", characteristics=[], '
-                         'factor_values=[], derives_from=[], comments=[])',
+        self.assertEqual("isatools.model.Sample(name='', characteristics=[], "
+                         "factor_values=[], derives_from=[], comments=[])",
                          repr(self.sample_default))
-        self.assertEqual('isatools.model.Sample(name="S", characteristics=[], '
-                         'factor_values=[], derives_from=[], comments=[])',
+        self.assertEqual("isatools.model.Sample(name='S', characteristics=[], "
+                         "factor_values=[], derives_from=[], comments=[])",
                          repr(self.sample))
 
     def test_str(self):
@@ -906,12 +911,12 @@ class ExtractTest(unittest.TestCase):
         self.extract = Extract(name='E')
 
     def test_repr(self):
-        self.assertEqual('isatools.model.Extract(name="", type="Extract Name", '
-                         'characteristics=[], comments=[])',
+        self.assertEqual("isatools.model.Extract(name='', type='Extract Name', "
+                         "characteristics=[], comments=[])",
                          repr(self.extract_default))
-        self.assertEqual('isatools.model.Extract(name="E", '
-                         'type="Extract Name", characteristics=[], '
-                         'comments=[])',
+        self.assertEqual("isatools.model.Extract(name='E', "
+                         "type='Extract Name', characteristics=[], "
+                         "comments=[])",
                          repr(self.extract))
 
     def test_str(self):
@@ -947,12 +952,12 @@ class LabeledExtractTest(unittest.TestCase):
         self.labeled_extract = LabeledExtract(name='E')
 
     def test_repr(self):
-        self.assertEqual('isatools.model.LabeledExtract(name="", '
-                         'type="Labeled Extract Name", characteristics=[], '
-                         'comments=[])', repr(self.labeled_extract_default))
-        self.assertEqual('isatools.model.LabeledExtract(name="E", '
-                         'type="Labeled Extract Name", characteristics=[], '
-                         'comments=[])', repr(self.labeled_extract))
+        self.assertEqual("isatools.model.LabeledExtract(name='', "
+                         "type='Labeled Extract Name', characteristics=[], "
+                         "comments=[])", repr(self.labeled_extract_default))
+        self.assertEqual("isatools.model.LabeledExtract(name='E', "
+                         "type='Labeled Extract Name', characteristics=[], "
+                         "comments=[])", repr(self.labeled_extract))
 
     def test_str(self):
         self.assertEqual("""LabeledExtract(
@@ -978,3 +983,55 @@ class LabeledExtractTest(unittest.TestCase):
         expected_other_labeled_extract = LabeledExtract(name='S2')
         self.assertNotEqual(expected_other_labeled_extract, self.labeled_extract)
         self.assertNotEqual(hash(expected_other_labeled_extract), hash(self.labeled_extract))
+
+
+class FactorValueTest(unittest.TestCase):
+
+    def setUp(self):
+        self.factor_value_default = FactorValue()
+        self.factor_value = FactorValue(factor_name=StudyFactor(name='F'),
+            value=0, unit=OntologyAnnotation(term='U'))
+
+    def test_repr(self):
+        self.assertEqual("isatools.model.FactorValue(factor_name=None, "
+                         "value=None, unit=None)",
+                         repr(self.factor_value_default))
+        self.assertEqual("isatools.model.FactorValue("
+                         "factor_name=isatools.model.StudyFactor(name='F', "
+                         "factor_type=isatools.model.OntologyAnnotation("
+                         "term='', term_source=None, term_accession='', "
+                         "comments=[]), comments=[]), value=0, "
+                         "unit=isatools.model.OntologyAnnotation(term='U', "
+                         "term_source=None, term_accession='', comments=[]))",
+                         repr(self.factor_value))
+
+    def test_str(self):
+        self.assertEqual("""FactorValue(
+    factor_name=
+    value=None
+    unit=
+)""", str(self.factor_value_default))
+
+        self.assertEqual("""FactorValue(
+    factor_name=F
+    value=0
+    unit=U
+)""", str(self.factor_value))
+
+    def test_eq(self):
+        expected_factor_value = FactorValue(factor_name=StudyFactor(name='F'),
+            value=0, unit=OntologyAnnotation(term='U'))
+        self.assertEqual(expected_factor_value, self.factor_value)
+        self.assertEqual(
+            hash(expected_factor_value),  hash(self.factor_value))
+
+    def test_ne(self):
+        expected_other_factor_value = FactorValue(
+            factor_name=StudyFactor(name='F2'), value=1,
+            unit=OntologyAnnotation(term='U2'))
+        self.assertNotEqual(
+            expected_other_factor_value, self.factor_value)
+        self.assertNotEqual(
+            hash(expected_other_factor_value), hash(self.factor_value))
+
+

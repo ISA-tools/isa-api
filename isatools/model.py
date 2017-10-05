@@ -80,11 +80,14 @@ class Comment(object):
         raise ISAModelAttributeError('Comment.value must be a string')
 
     def __repr__(self):
-        return 'isatools.model.Comment(name="{comment.name}", ' \
-               'value="{comment.value}")'.format(comment=self)
+        return "isatools.model.Comment(name='{comment.name}', " \
+               "value='{comment.value}')".format(comment=self)
 
     def __str__(self):
-        return 'Comment[{comment.name}]\t{comment.value}'.format(comment=self)
+        return """Comment(
+    name={comment.name}
+    value={comment.value}
+)""".format(comment=self)
 
     def __hash__(self):
         return hash(repr(self))
@@ -480,18 +483,18 @@ class Investigation(Commentable, MetadataMixin, object):
                 'objects')
 
     def __repr__(self):
-        return 'isatools.model.Investigation(' \
-               'identifier="{investigation.identifier}", ' \
-               'filename="{investigation.filename}", ' \
-               'title="{investigation.title}", ' \
-               'submission_date="{investigation.submission_date}", ' \
-               'public_release_date="{investigation.public_release_date}", ' \
-               'ontology_source_references=' \
-               '{investigation.ontology_source_references}, ' \
-               'publications={investigation.publications}, ' \
-               'contacts={investigation.contacts}, ' \
-               'studies={investigation.studies}, ' \
-               'comments={investigation.comments})'.format(investigation=self)
+        return "isatools.model.Investigation(" \
+               "identifier='{investigation.identifier}', " \
+               "filename='{investigation.filename}', " \
+               "title='{investigation.title}', " \
+               "submission_date='{investigation.submission_date}', " \
+               "public_release_date='{investigation.public_release_date}', " \
+               "ontology_source_references=" \
+               "{investigation.ontology_source_references}, " \
+               "publications={investigation.publications}, " \
+               "contacts={investigation.contacts}, " \
+               "studies={investigation.studies}, " \
+               "comments={investigation.comments})".format(investigation=self)
 
     def __str__(self):
         return """Investigation(
@@ -613,11 +616,11 @@ class OntologySource(Commentable):
             self.__description = val
 
     def __repr__(self):
-        return 'isatools.model.OntologySource(name="{ontology_source.name}", ' \
-               'file="{ontology_source.file}", ' \
-               'version="{ontology_source.version}", ' \
-               'description="{ontology_source.description}", ' \
-               'comments={ontology_source.comments})'\
+        return "isatools.model.OntologySource(name='{ontology_source.name}', " \
+               "file='{ontology_source.file}', " \
+               "version='{ontology_source.version}', " \
+               "description='{ontology_source.description}', " \
+               "comments={ontology_source.comments})" \
                 .format(ontology_source=self)
 
     def __str__(self):
@@ -707,11 +710,11 @@ class OntologyAnnotation(Commentable):
             self.__term_accession = val
 
     def __repr__(self):
-        return 'isatools.model.OntologyAnnotation(' \
-               'term="{ontology_annotation.term}", ' \
-               'term_source={term_source}, ' \
-               'term_accession="{ontology_annotation.term_accession}", ' \
-               'comments={ontology_annotation.comments})' \
+        return "isatools.model.OntologyAnnotation(" \
+               "term='{ontology_annotation.term}', " \
+               "term_source={term_source}, " \
+               "term_accession='{ontology_annotation.term_accession}', " \
+               "comments={ontology_annotation.comments})" \
                 .format(ontology_annotation=self,
                         term_source=repr(self.term_source))
 
@@ -836,11 +839,11 @@ class Publication(Commentable):
             self.__status = val
 
     def __repr__(self):
-        return 'isatools.model.Publication(' \
-               'pubmed_id="{publication.pubmed_id}", doi="{publication.doi}", ' \
-               'author_list="{publication.author_list}", ' \
-               'title="{publication.title}", status={status}, ' \
-               'comments={publication.comments})'.format(
+        return "isatools.model.Publication(" \
+               "pubmed_id='{publication.pubmed_id}', doi='{publication.doi}', " \
+               "author_list='{publication.author_list}', " \
+               "title='{publication.title}', status={status}, " \
+               "comments={publication.comments})".format(
                 publication=self, status=repr(self.status))
 
     def __str__(self):
@@ -1038,13 +1041,13 @@ class Person(Commentable):
                 .format(type(self).__name__))
 
     def __repr__(self):
-        return 'isatools.model.Person(last_name="{person.last_name}", ' \
-               'first_name="{person.first_name}", ' \
-               'mid_initials="{person.mid_initials}", ' \
-               'email="{person.email}", phone="{person.phone}", ' \
-               'fax="{person.fax}", address="{person.address}", ' \
-               'affiliation="{person.affiliation}", roles={person.roles}, ' \
-               'comments={person.comments})' \
+        return "isatools.model.Person(last_name='{person.last_name}', " \
+               "first_name='{person.first_name}', " \
+               "mid_initials='{person.mid_initials}', " \
+               "email='{person.email}', phone='{person.phone}', " \
+               "fax='{person.fax}', address='{person.address}', " \
+               "affiliation='{person.affiliation}', roles={person.roles}, " \
+               "comments={person.comments})" \
                 .format(person=self)
 
     def __str__(self):
@@ -1709,20 +1712,20 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                 .format(type(self).__name__))
 
     def __repr__(self):
-        return 'isatools.model.Study(filename="{study.filename}", ' \
-               'identifier="{study.identifier}", title="{study.title}", ' \
-               'description="{study.description}", ' \
-               'submission_date="{study.submission_date}", ' \
-               'public_release_date="{study.public_release_date}", ' \
-               'contacts={study.contacts}, ' \
-               'design_descriptors={study.design_descriptors}, ' \
-               'publications={study.publications}, factors={study.factors}, ' \
-               'protocols={study.protocols}, assays={study.assays}, ' \
-               'sources={study.sources}, samples={study.samples}, ' \
-               'process_sequence={study.process_sequence}, ' \
-               'other_material={study.other_material}, ' \
-               'characteristic_categories={study.characteristic_categories}, ' \
-               'comments={study.comments}, units={study.units})'\
+        return "isatools.model.Study(filename='{study.filename}', " \
+               "identifier='{study.identifier}', title='{study.title}', " \
+               "description='{study.description}', " \
+               "submission_date='{study.submission_date}', " \
+               "public_release_date='{study.public_release_date}', " \
+               "contacts={study.contacts}, " \
+               "design_descriptors={study.design_descriptors}, " \
+               "publications={study.publications}, factors={study.factors}, " \
+               "protocols={study.protocols}, assays={study.assays}, " \
+               "sources={study.sources}, samples={study.samples}, " \
+               "process_sequence={study.process_sequence}, " \
+               "other_material={study.other_material}, " \
+               "characteristic_categories={study.characteristic_categories}, " \
+               "comments={study.comments}, units={study.units})"\
                 .format(study=self)
 
     def __str__(self):
@@ -1841,8 +1844,8 @@ class StudyFactor(Commentable):
             self.__factor_type = val
 
     def __repr__(self):
-        return 'isatools.model.StudyFactor(name="{study_factor.name}", ' \
-               'factor_type={factor_type}, comments={study_factor.comments})' \
+        return "isatools.model.StudyFactor(name='{study_factor.name}', " \
+               "factor_type={factor_type}, comments={study_factor.comments})" \
                 .format(study_factor=self, factor_type=repr(self.factor_type))
 
     def __str__(self):
@@ -1981,14 +1984,18 @@ class Assay(Commentable, StudyAssayMixin, object):
                 .format(type(self).__name__))
 
     def __repr__(self):
-        return 'isatools.model.Assay(measurement_type={measurement_type}, ' \
-               'technology_type={technology_type}, ' \
-               'technology_platform="{assay.technology_platform}", ' \
-               'filename="{assay.filename}", data_files={assay.data_files}, ' \
-               'samples={assay.samples}, process_sequence={assay.process_sequence}, ' \
-               'other_material={assay.other_material}, ' \
-               'characteristic_categories={assay.characteristic_categories}, ' \
-               'comments={assay.comments}, units={assay.units})'.format(assay=self, measurement_type=repr(self.measurement_type), technology_type=repr(self.technology_type))
+        return "isatools.model.Assay(measurement_type={measurement_type}, " \
+               "technology_type={technology_type}, " \
+               "technology_platform='{assay.technology_platform}', " \
+               "filename='{assay.filename}', data_files={assay.data_files}, " \
+               "samples={assay.samples}, " \
+               "process_sequence={assay.process_sequence}, " \
+               "other_material={assay.other_material}, " \
+               "characteristic_categories={assay.characteristic_categories}, " \
+               "comments={assay.comments}, units={assay.units})" \
+                .format(assay=self, 
+                        measurement_type=repr(self.measurement_type), 
+                        technology_type=repr(self.technology_type))
 
     def __str__(self):
         return """Assay(
@@ -2204,12 +2211,12 @@ class Protocol(Commentable):
                                          'containing OntologyAnnotations')
 
     def __repr__(self):
-        return 'isatools.model.Protocol(name="{protocol.name}", ' \
-               'protocol_type={protocol_type}, ' \
-               'uri="{protocol.uri}", version="{protocol.version}", ' \
-               'parameters={protocol.parameters}, ' \
-               'components={protocol.components}, ' \
-               'comments={protocol.comments})'.format(
+        return "isatools.model.Protocol(name='{protocol.name}', " \
+               "protocol_type={protocol_type}, " \
+               "uri='{protocol.uri}', version='{protocol.version}', " \
+               "parameters={protocol.parameters}, " \
+               "components={protocol.components}, " \
+               "comments={protocol.comments})".format(
             protocol=self, protocol_type=repr(self.protocol_type))
 
     def __str__(self):
@@ -2443,9 +2450,9 @@ class ProtocolComponent(Commentable):
             self.__component_type = val
 
     def __repr__(self):
-        return 'isatools.model.ProtocolComponent(name="{component.name}", ' \
-               'category={component_type}, ' \
-               'comments={component.comments})'.format(
+        return "isatools.model.ProtocolComponent(name='{component.name}', " \
+               "category={component_type}, " \
+               "comments={component.comments})".format(
                 component=self, component_type=repr(self.component_type))
 
     def __str__(self):
@@ -2534,9 +2541,9 @@ class Source(Commentable):
         return result
 
     def __repr__(self):
-        return 'isatools.model.Source(name="{0.name}", ' \
-               'characteristics={0.characteristics}, comments={0.comments})'\
-                .format(self)
+        return "isatools.model.Source(name='{source.name}', " \
+               "characteristics={source.characteristics}, " \
+               "comments={source.comments})".format(source=self)
 
     def __str__(self):
         return """Source(
@@ -2775,11 +2782,11 @@ class Sample(Commentable):
                 'Sample.derives_from must be iterable containing Sources')
 
     def __repr__(self):
-        return 'isatools.model.Sample(name="{sample.name}", ' \
-               'characteristics={sample.characteristics}, ' \
-               'factor_values={sample.factor_values}, ' \
-               'derives_from={sample.derives_from}, ' \
-               'comments={sample.comments})'.format(sample=self)
+        return "isatools.model.Sample(name='{sample.name}', " \
+               "characteristics={sample.characteristics}, " \
+               "factor_values={sample.factor_values}, " \
+               "derives_from={sample.derives_from}, " \
+               "comments={sample.comments})".format(sample=self)
 
     def __str__(self):
         return """Sample(
@@ -2880,10 +2887,10 @@ class Extract(Material):
         self.type = 'Extract Name'
 
     def __repr__(self):
-        return 'isatools.model.Extract(name="{extract.name}", ' \
-               'type="{extract.type}", ' \
-               'characteristics={extract.characteristics}, ' \
-               'comments={extract.comments})'.format(extract=self)
+        return "isatools.model.Extract(name='{extract.name}', " \
+               "type='{extract.type}', " \
+               "characteristics={extract.characteristics}, " \
+               "comments={extract.comments})".format(extract=self)
 
     def __str__(self):
         return """Extract(
@@ -2917,10 +2924,10 @@ class LabeledExtract(Material):
         self.type = 'Labeled Extract Name'
 
     def __repr__(self):
-        return 'isatools.model.LabeledExtract(name="{labeled_extract.name}", ' \
-               'type="Labeled Extract Name", ' \
-               'characteristics={labeled_extract.characteristics}, ' \
-               'comments={labeled_extract.comments})'\
+        return "isatools.model.LabeledExtract(name='{labeled_extract.name}', " \
+               "type='Labeled Extract Name', " \
+               "characteristics={labeled_extract.characteristics}, " \
+               "comments={labeled_extract.comments})"\
                 .format(labeled_extract=self)
 
     def __str__(self):
@@ -3008,9 +3015,20 @@ class FactorValue(Commentable):
             self.__unit = val
 
     def __repr__(self):
-        return 'FactorValue(factor_name={factor_name}, ' \
-               'value={factor_value.value}, unit={factor_value.unit})' \
-            .format(factor_value=self, factor_name=repr(self.factor_name))
+        return "isatools.model.FactorValue(factor_name={factor_name}, " \
+               "value={value}, unit={unit})" \
+                .format(factor_name=repr(self.factor_name), 
+                        value=repr(self.value), unit=repr(self.unit))
+
+    def __str__(self):
+        return """FactorValue(
+    factor_name={factor_name}
+    value={value}
+    unit={unit}
+)""".format(factor_name=self.factor_name.name if self.factor_name else '',
+            value=self.value.term if isinstance(
+                self.value, OntologyAnnotation) else repr(self.value),
+            unit=self.unit.term if self.unit else '')
 
     def __hash__(self):
         return hash(repr(self))
@@ -3221,20 +3239,20 @@ class Process(Commentable):
     #            'date="{0.date}", performer="{0.performer}", ' \
     #            'inputs={0.inputs}, outputs={0.outputs})'.format(self)
     #
-    # def __hash__(self):
-    #     return hash(repr(self))
-    #
-    # def __eq__(self, other):
-    #     return isinstance(other, Process) \
-    #            and self.name == other.name \
-    #            and self.executes_protocol == other.executes_protocol \
-    #            and self.date == other.date \
-    #            and self.performer == other.performer \
-    #            and self.inputs == other.inputs \
-    #            and self.outputs == other.outputs
-    #
-    # def __ne__(self, other):
-    #     return not self == other
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Process) \
+               and self.name == other.name \
+               and self.executes_protocol == other.executes_protocol \
+               and self.date == other.date \
+               and self.performer == other.performer \
+               and self.inputs == other.inputs \
+               and self.outputs == other.outputs
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class DataFile(Commentable):
@@ -3305,9 +3323,11 @@ class DataFile(Commentable):
                     type(self).__name__))
 
     def __repr__(self):
-        return 'DataFile(filename="{0.filename}", label="{0.label}", ' \
-               'generated_from={0.generated_from}, comments={0.comments})' \
-               .format(self)
+        return "isatools.model.DataFile(filename='{data_file.filename}', " \
+               "label='{data_file.label}', " \
+               "generated_from={data_file.generated_from}, " \
+               "comments={data_file.comments})" \
+               .format(data_file=self)
 
     def __hash__(self):
         return hash(repr(self))
