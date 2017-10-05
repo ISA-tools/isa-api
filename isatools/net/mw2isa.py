@@ -137,45 +137,44 @@ def generate_maf_file(write_dir,mw_study_id, mw_analysis_id):
                                           + '\t' + \
                                           ("(" + dd["1"]["units"] + ')\t').join(dd["1"]["DATA"].keys()) \
                                           + ("(" + dd["1"]["units"] + ")")
+                    with open(write_dir + "/" + mw_study_id + "/data/" + mw_study_id + "_" + mw_analysis_id + "-maf-data-jsonparsing.txt", "w") as fh:
+                        # print("writing 'maf file document' to file from 'generate_maf_file' method:...")
+                        fh.writelines(data_rec_header)
+                        fh.writelines("\n")
 
-                    fh = open(write_dir + "/" + mw_study_id + "/data/" + mw_study_id + "_" + mw_analysis_id + "-maf-data-jsonparsing.txt", "w")
-                    # print("writing 'maf file document' to file from 'generate_maf_file' method:...")
-                    fh.writelines(data_rec_header)
-                    fh.writelines("\n")
+                        for key in dd:
+                            # print(dd[key]["analysis_id"])
+                            if dd[key]["analysis_id"] == mw_analysis_id:
+                                if "other_id" in dd.items():
+                                    record_values = key + '\t' + dd[key]["metabolite_name"] + "\t" + dd[key]["metabolite_id"] \
+                                                    + "\t" + dd[key]["pubchem_id"] + "\t" + dd[key]["other_id"] + "\t" + dd[key][
+                                                        "other_id_type"]
 
-                    for key in dd:
-                        # print(dd[key]["analysis_id"])
-                        if dd[key]["analysis_id"] == mw_analysis_id:
-                            if "other_id" in dd.items():
-                                record_values = key + '\t' + dd[key]["metabolite_name"] + "\t" + dd[key]["metabolite_id"] \
-                                                + "\t" + dd[key]["pubchem_id"] + "\t" + dd[key]["other_id"] + "\t" + dd[key][
-                                                    "other_id_type"]
+                                    for value in dd[key]["DATA"].values():
+                                        record_values = record_values + "\t" + str(value)
+                                    fh.writelines(record_values)
+                                    fh.writelines("\n")
+                                elif "pubchem_id" in dd.items():
+                                    record_values = key + '\t' + dd[key]["metabolite_name"] + "\t" + dd[key]["metabolite_id"] \
+                                                    + "\t" + dd[key]["pubchem_id"] + "\t" + dd[key]["other_id"] + "\t" + dd[key][
+                                                        "other_id_type"]
 
-                                for value in dd[key]["DATA"].values():
-                                    record_values = record_values + "\t" + str(value)
-                                fh.writelines(record_values)
-                                fh.writelines("\n")
-                            elif "pubchem_id" in dd.items():
-                                record_values = key + '\t' + dd[key]["metabolite_name"] + "\t" + dd[key]["metabolite_id"] \
-                                                + "\t" + dd[key]["pubchem_id"] + "\t" + dd[key]["other_id"] + "\t" + dd[key][
-                                                    "other_id_type"]
+                                    for value in dd[key]["DATA"].values():
+                                        record_values = record_values + "\t" + str(value)
+                                    fh.writelines(record_values)
+                                    fh.writelines("\n")
+                                else:
+                                    record_values = key + '\t' + dd[key]["metabolite_name"] + "\t" + dd[key]["metabolite_id"]
 
-                                for value in dd[key]["DATA"].values():
-                                    record_values = record_values + "\t" + str(value)
-                                fh.writelines(record_values)
-                                fh.writelines("\n")
-                            else:
-                                record_values = key + '\t' + dd[key]["metabolite_name"] + "\t" + dd[key]["metabolite_id"]
+                                    for value in dd[key]["DATA"].values():
+                                        record_values = record_values + "\t" + str(value)
+                                    fh.writelines(record_values)
+                                    fh.writelines("\n")
 
-                                for value in dd[key]["DATA"].values():
-                                    record_values = record_values + "\t" + str(value)
-                                fh.writelines(record_values)
-                                fh.writelines("\n")
-
-                                # Output resulting json to file [Action Dissabled]
-                                # open("output.json", "w").write(
-                                #     json.dumps(dd, sort_keys=True, indent=4, separators=(',', ': '))
-                                # )
+                                    # Output resulting json to file [Action Dissabled]
+                                    # open("output.json", "w").write(
+                                    #     json.dumps(dd, sort_keys=True, indent=4, separators=(',', ': '))
+                                    # )
                 else:
                     print("Dictionary expected, List Found, error in MW REST API")
                     #TODO: need feedback from NIH Metabolomics Workbench to implement a fallback position
