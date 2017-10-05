@@ -897,3 +897,84 @@ class SampleTest(unittest.TestCase):
         expected_other_sample = Sample(name='S2')
         self.assertNotEqual(expected_other_sample, self.sample)
         self.assertNotEqual(hash(expected_other_sample), hash(self.sample))
+        
+
+class ExtractTest(unittest.TestCase):
+
+    def setUp(self):
+        self.extract_default = Extract()
+        self.extract = Extract(name='E')
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.Extract(name="", type="Extract Name", '
+                         'characteristics=[], comments=[])',
+                         repr(self.extract_default))
+        self.assertEqual('isatools.model.Extract(name="E", '
+                         'type="Extract Name", characteristics=[], '
+                         'comments=[])',
+                         repr(self.extract))
+
+    def test_str(self):
+        self.assertEqual("""Extract(
+    name=
+    type=Extract Name
+    characteristics=0 Characteristic objects
+    comments=0 Comment objects
+)""", str(self.extract_default))
+
+        self.assertEqual("""Extract(
+    name=E
+    type=Extract Name
+    characteristics=0 Characteristic objects
+    comments=0 Comment objects
+)""", str(self.extract))
+
+    def test_eq(self):
+        expected_extract = Extract(name='E')
+        self.assertEqual(expected_extract, self.extract)
+        self.assertEqual(hash(expected_extract),  hash(self.extract))
+
+    def test_ne(self):
+        expected_other_extract = Extract(name='S2')
+        self.assertNotEqual(expected_other_extract, self.extract)
+        self.assertNotEqual(hash(expected_other_extract), hash(self.extract))
+
+
+class LabeledExtractTest(unittest.TestCase):
+
+    def setUp(self):
+        self.labeled_extract_default = LabeledExtract()
+        self.labeled_extract = LabeledExtract(name='E')
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.LabeledExtract(name="", '
+                         'type="Labeled Extract Name", characteristics=[], '
+                         'comments=[])', repr(self.labeled_extract_default))
+        self.assertEqual('isatools.model.LabeledExtract(name="E", '
+                         'type="Labeled Extract Name", characteristics=[], '
+                         'comments=[])', repr(self.labeled_extract))
+
+    def test_str(self):
+        self.assertEqual("""LabeledExtract(
+    name=
+    type=LabeledExtract Name
+    characteristics=0 Characteristic objects
+    comments=0 Comment objects
+)""", str(self.labeled_extract_default))
+
+        self.assertEqual("""LabeledExtract(
+    name=E
+    type=LabeledExtract Name
+    characteristics=0 Characteristic objects
+    comments=0 Comment objects
+)""", str(self.labeled_extract))
+
+    def test_eq(self):
+        expected_labeled_extract = LabeledExtract(name='E')
+        self.assertEqual(expected_labeled_extract, self.labeled_extract)
+        self.assertEqual(hash(expected_labeled_extract),  hash(self.labeled_extract))
+
+    def test_ne(self):
+        expected_other_labeled_extract = LabeledExtract(name='S2')
+        self.assertNotEqual(expected_other_labeled_extract, self.labeled_extract)
+        self.assertNotEqual(hash(expected_other_labeled_extract), hash(self.labeled_extract))

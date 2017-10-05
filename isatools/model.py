@@ -2880,9 +2880,19 @@ class Extract(Material):
         self.type = 'Extract Name'
 
     def __repr__(self):
-        return 'Extract(name="{0.name}", type="{0.type}", ' \
-               'characteristics={0.characteristics}, comments={0.comments})' \
-               .format(self)
+        return 'isatools.model.Extract(name="{extract.name}", ' \
+               'type="{extract.type}", ' \
+               'characteristics={extract.characteristics}, ' \
+               'comments={extract.comments})'.format(extract=self)
+
+    def __str__(self):
+        return """Extract(
+    name={extract.name}
+    type={extract.type}
+    characteristics={num_characteristics} Characteristic objects
+    comments={num_comments} Comment objects
+)""".format(extract=self, num_characteristics=len(self.characteristics),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -2907,15 +2917,26 @@ class LabeledExtract(Material):
         self.type = 'Labeled Extract Name'
 
     def __repr__(self):
-        return 'LabeledExtract(name="{0.name}", type="{0.type}", ' \
-               'characteristics={0.characteristics}, comments={0.comments})' \
-            .format(self)
+        return 'isatools.model.LabeledExtract(name="{labeled_extract.name}", ' \
+               'type="Labeled Extract Name", ' \
+               'characteristics={labeled_extract.characteristics}, ' \
+               'comments={labeled_extract.comments})'\
+                .format(labeled_extract=self)
+
+    def __str__(self):
+        return """LabeledExtract(
+    name={labeled_extract.name}
+    type=LabeledExtract Name
+    characteristics={num_characteristics} Characteristic objects
+    comments={num_comments} Comment objects
+)""".format(labeled_extract=self, num_characteristics=len(self.characteristics),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, Extract) \
+        return isinstance(other, LabeledExtract) \
                and self.name == other.name \
                and self.characteristics == other.characteristics \
                and self.type == other.type \
