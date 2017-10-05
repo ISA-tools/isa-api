@@ -770,3 +770,50 @@ class ParameterValueTest(unittest.TestCase):
             expected_other_parameter_value, self.parameter_value)
         self.assertNotEqual(
             hash(expected_other_parameter_value), hash(self.parameter_value))
+
+
+class ProtocolComponentTest(unittest.TestCase):
+
+    def setUp(self):
+        self.component_default = ProtocolComponent()
+        self.component = ProtocolComponent(
+            name='C', component_type=OntologyAnnotation(term='CT'))
+
+    def test_repr(self):
+        self.assertEqual('isatools.model.ProtocolComponent(name="", '
+                         'category=isatools.model.OntologyAnnotation('
+                         'term="", term_source=None, term_accession="", '
+                         'comments=[]), comments=[])',
+                         repr(self.component_default))
+        self.assertEqual('isatools.model.ProtocolComponent(name="C", '
+                         'category=isatools.model.OntologyAnnotation('
+                         'term="CT", term_source=None, term_accession="", '
+                         'comments=[]), comments=[])',
+                         repr(self.component))
+
+    def test_str(self):
+        self.assertEqual("""ProtocolComponent(
+    name=
+    category=
+    comments=0 Comment objects
+)""", str(self.component_default))
+
+        self.assertEqual("""ProtocolComponent(
+    name=C
+    category=CT
+    comments=0 Comment objects
+)""", str(self.component))
+
+    def test_eq(self):
+        expected_component = ProtocolComponent(
+            name='C', component_type=OntologyAnnotation(term='CT'))
+        self.assertEqual(expected_component, self.component)
+        self.assertEqual(
+            hash(expected_component),  hash(self.component))
+
+    def test_ne(self):
+        expected_other_component = ProtocolComponent(
+            name='C2', component_type=OntologyAnnotation(term='CT2'))
+        self.assertNotEqual(expected_other_component, self.component)
+        self.assertNotEqual(
+            hash(expected_other_component), hash(self.component))

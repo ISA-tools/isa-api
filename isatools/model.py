@@ -2443,9 +2443,18 @@ class ProtocolComponent(Commentable):
             self.__component_type = val
 
     def __repr__(self):
-        return 'ProtocolComponent(name="{0.name}", ' \
-               'category={0.component_type}, comments={0.comments})' \
-               .format(self)
+        return 'isatools.model.ProtocolComponent(name="{component.name}", ' \
+               'category={component_type}, ' \
+               'comments={component.comments})'.format(
+                component=self, component_type=repr(self.component_type))
+
+    def __str__(self):
+        return """ProtocolComponent(
+    name={component.name}
+    category={component_type}
+    comments={num_comments} Comment objects
+)""".format(component=self, component_type=self.component_type.term if
+    self.component_type else '', num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
