@@ -3176,7 +3176,8 @@ def find_gt(a, x):
 def preprocess(DF):
     """Check headers, and insert Protocol REF if needed"""
     columns = DF.columns
-    process_node_name_indices = [x for x, y in enumerate(columns) if y in _LABELS_ASSAY_NODES]
+    process_node_name_indices = [
+        x for x, y in enumerate(columns) if y in _LABELS_ASSAY_NODES]
     missing_process_indices = list()
     protocol_ref_cols = [x for x in columns if x.startswith('Protocol REF')]
     num_protocol_refs = len(protocol_ref_cols)
@@ -3187,42 +3188,56 @@ def preprocess(DF):
                          protocol_ref_cols]
 
     for i in process_node_name_indices:
-        if not columns[find_lt(all_cols_indicies, i)].startswith('Protocol REF'):
+        if not columns[
+            find_lt(all_cols_indicies, i)].startswith('Protocol REF'):
             log.info('warning: Protocol REF missing between \'{}\' and \'{}\''
-                     .format(columns[find_lt(all_cols_indicies, i)], columns[i]))
+                     .format(
+                columns[find_lt(all_cols_indicies, i)], columns[i]))
             missing_process_indices.append(i)
 
     # insert Protocol REF columns
     offset = 0
 
     for i in reversed(missing_process_indices):
-        inferred_protocol_type = ""
+        inferred_protocol_type = ''
         leftcol = columns[find_lt(all_cols_indicies, i)]
         rightcol = columns[i]
-        if leftcol == "Source Name" and rightcol == "Sample Name":
-            inferred_protocol_type = "sample collection"
-        elif leftcol == "Sample Name" and rightcol == "Extract Name":
-            inferred_protocol_type = "extraction"
-        elif leftcol == "Extract Name" and rightcol == "Labeled Extract Name":
-            inferred_protocol_type = "labeling"
-        elif leftcol == "Labeled Extract Name" and rightcol in ("Assay Name", "MS Assay Name"):
-            inferred_protocol_type = "library sequencing"
-        elif leftcol == "Extract Name" and rightcol in ("Assay Name", "MS Assay Name"):
-            inferred_protocol_type = "library preparation"
-        elif leftcol == "Scan Name" and rightcol == "Raw Data File":
-            inferred_protocol_type = "data acquisition"
-        elif leftcol == "Assay Name" and rightcol == "Normalization Name":
-            inferred_protocol_type = "normalization"
-        elif leftcol == "Normalization Name" and rightcol == "Data Transformation Name":
-            inferred_protocol_type = "data transformation"
-        elif leftcol == "Raw Data File" and rightcol == "Metabolite Identification File":
-            inferred_protocol_type = "metabolite identification"
-        elif leftcol == "Raw Data File" and rightcol == "Protein Identification File":
-            inferred_protocol_type = "metabolite identification"
-        log.info("Inserting protocol {} in bewteen {} and {}"
-                 .format(inferred_protocol_type if inferred_protocol_type != '' else 'unknown', leftcol, rightcol))
-        DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown' \
-            if inferred_protocol_type == "" else inferred_protocol_type)
+        if leftcol == 'Source Name' and rightcol == 'Sample Name':
+            inferred_protocol_type = 'sample collection'
+        elif leftcol == 'Sample Name' and rightcol == 'Extract Name':
+            inferred_protocol_type = 'extraction'
+        elif leftcol == 'Extract Name' and rightcol == 'Labeled Extract Name':
+            inferred_protocol_type = 'labeling'
+        elif leftcol == 'Labeled Extract Name' and rightcol in (
+                'Assay Name', 'MS Assay Name'):
+            inferred_protocol_type = 'library sequencing'
+        elif leftcol == 'Extract Name' and rightcol in (
+                'Assay Name', 'MS Assay Name'):
+            inferred_protocol_type = 'library preparation'
+        elif leftcol == 'Scan Name' and rightcol == 'Raw Data File':
+            inferred_protocol_type = 'data acquisition'
+        elif leftcol == 'Assay Name' and rightcol == 'Normalization Name':
+            inferred_protocol_type = 'normalization'
+        elif leftcol == 'Normalization Name' and \
+                        rightcol == 'Data Transformation Name':
+            inferred_protocol_type = 'data transformation'
+        elif leftcol == 'Raw Data File' and \
+                        rightcol == 'Metabolite Identification File':
+            inferred_protocol_type = 'metabolite identification'
+        elif leftcol == 'Raw Data File' and \
+                        rightcol == 'Protein Identification File':
+            inferred_protocol_type = 'metabolite identification'
+
+        # Force use of unknown protocol always, until we can insert missing 
+        # protocol from above inferences into study metadata
+        inferred_protocol_type = ''
+        log.info('Inserting protocol {} in between {} and {}'
+                 .format(
+            inferred_protocol_type if inferred_protocol_type != '' else 
+            'unknown', leftcol, rightcol))
+        DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 
+                  'unknown'  if inferred_protocol_type == '' else 
+                  inferred_protocol_type)
         DF.isatab_header.insert(i, 'Protocol REF')
         offset += 1
     return DF
@@ -3230,13 +3245,18 @@ def preprocess(DF):
 
 def get_object_column_map(isatab_header, df_columns):
     if set(isatab_header) == set(df_columns):
-        object_index = [i for i, x in enumerate(df_columns) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
-                        or 'Protocol REF' in x]
+        object_index = [
+            i for i, x in enumerate(
+                df_columns) if x in _LABELS_MATERIAL_NODES +
+                               _LABELS_DATA_NODES or 'Protocol REF' in x]
     else:
-        object_index = [i for i, x in enumerate(isatab_header) if x in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES
-                        + ['Protocol REF']]
+        object_index = [
+            i for i, x in enumerate(
+                isatab_header) if x in _LABELS_MATERIAL_NODES +
+                                  _LABELS_DATA_NODES + ['Protocol REF']]
 
-    # group headers regarding objects delimited by object_index by slicing up the header list
+    # group headers regarding objects delimited by object_index by slicing up
+    # the header list
     object_column_map = []
     prev_i = object_index[0]
 
@@ -3248,13 +3268,15 @@ def get_object_column_map(isatab_header, df_columns):
             object_column_map.append(df_columns[prev_i:curr_i])
         prev_i = curr_i
 
-    object_column_map.append(df_columns[prev_i:])  # finally collect last object's columns
+    # finally collect last object's columns
+    object_column_map.append(df_columns[prev_i:])
     return object_column_map
 
 
 class ProcessSequenceFactory:
 
-    def __init__(self, ontology_sources=None, study_samples=None, study_protocols=None, study_factors=None):
+    def __init__(self, ontology_sources=None, study_samples=None,
+                 study_protocols=None, study_factors=None):
         self.ontology_sources = ontology_sources
         self.samples = study_samples
         self.protocols = study_protocols
@@ -3265,12 +3287,14 @@ class ProcessSequenceFactory:
         DF = preprocess(DF=DF)
 
         if self.ontology_sources is not None:
-            ontology_source_map = dict(map(lambda x: (x.name, x), self.ontology_sources))
+            ontology_source_map = dict(
+                map(lambda x: (x.name, x), self.ontology_sources))
         else:
             ontology_source_map = {}
 
         if self.protocols is not None:
-            protocol_map = dict(map(lambda x: (x.name, x), self.protocols))
+            protocol_map = dict(
+                map(lambda x: (x.name, x), self.protocols))
         else:
             protocol_map = {}
 
@@ -3283,30 +3307,41 @@ class ProcessSequenceFactory:
 
         try:
             sources = dict(map(lambda x: ('Source Name:' + x, Source(name=x)),
-                           [x for x in DF['Source Name'].drop_duplicates() if x != '']))
+                           [x for x in DF['Source Name'].drop_duplicates()
+                            if x != '']))
         except KeyError:
             pass
 
         samples = {}
         try:
             if self.samples is not None:
-                sample_map = dict(map(lambda x: ('Sample Name:' + x.name, x), self.samples))
-                sample_keys = list(map(lambda x: 'Sample Name:' + x,
-                                   [str(x) for x in DF['Sample Name'].drop_duplicates() if x != '']))
+                sample_map = dict(
+                    map(lambda x: ('Sample Name:' + x.name, x), self.samples))
+                sample_keys = list(
+                    map(lambda x: 'Sample Name:' + x,
+                        [str(x) for x in DF['Sample Name'].drop_duplicates()
+                         if x != '']))
                 for k in sample_keys:
                     try:
                         samples[k] = sample_map[k]
                     except KeyError:
-                        log.warn('warning! Did not find sample referenced at assay level in study samples')
+                        log.warning(
+                            'warning! Did not find sample referenced at assay '
+                            'level in study samples')
             else:
-                samples = dict(map(lambda x: ('Sample Name:' + x, Sample(name=x)),
-                               [str(x) for x in DF['Sample Name'].drop_duplicates() if x != '']))
+                samples = dict(
+                    map(lambda x: ('Sample Name:' + x, Sample(name=x)),
+                        [str(x) for x in DF['Sample Name'].drop_duplicates()
+                         if x != '']))
         except KeyError:
             pass
 
         try:
-            extracts = dict(map(lambda x: ('Extract Name:' + x, Material(name=x, type_='Extract Name')),
-                            [x for x in DF['Extract Name'].drop_duplicates() if x != '']))
+            extracts = dict(
+                map(lambda x: ('Extract Name:' + x, Material(
+                    name=x, type_='Extract Name')),
+                    [x for x in DF['Extract Name'].drop_duplicates() if
+                     x != '']))
             other_material.update(extracts)
         except KeyError:
             pass
@@ -3318,30 +3353,43 @@ class ProcessSequenceFactory:
                 except KeyError:
                     category = OntologyAnnotation(term='Label')
                     characteristic_categories['Label'] = category
-                for _, lextract_name in DF['Labeled Extract Name'].drop_duplicates().iteritems():
+                for _, lextract_name in DF[
+                    'Labeled Extract Name'].drop_duplicates().iteritems():
                     if lextract_name != '':
-                        lextract = Material(name=lextract_name, type_='Labeled Extract Name')
+                        lextract = Material(
+                            name=lextract_name, type_='Labeled Extract Name')
                         lextract.characteristics = [
                             Characteristic(
                                 category=category,
-                                value=OntologyAnnotation(term=DF.loc[_, 'Label'])
+                                value=OntologyAnnotation(
+                                    term=DF.loc[_, 'Label'])
                             )
                         ]
-                        other_material['Labeled Extract Name:' + lextract_name] = lextract
+                        other_material[
+                            'Labeled Extract Name:' + lextract_name] = lextract
         except KeyError:
             pass
 
         for data_col in [x for x in DF.columns if x.endswith(" File")]:
             filenames = [x for x in DF[data_col].drop_duplicates() if x != '']
-            data.update(dict(map(lambda x: (':'.join([data_col, x]), DataFile(filename=x, label=data_col)), filenames)))
+            data.update(
+                dict(map(lambda x: (':'.join([data_col, x]),
+                                    DataFile(filename=x, label=data_col)),
+                         filenames)))
 
-        node_cols = [i for i, c in enumerate(DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
-        proc_cols = [i for i, c in enumerate(DF.columns) if c.startswith("Protocol REF")]
+        node_cols = [
+            i for i, c in enumerate(
+                DF.columns) if c in _LABELS_MATERIAL_NODES + _LABELS_DATA_NODES]
+        proc_cols = [
+            i for i, c in enumerate(
+                DF.columns) if c.startswith("Protocol REF")]
 
         try:
-            object_column_map = get_object_column_map(DF.isatab_header, DF.columns)
+            object_column_map = get_object_column_map(
+                DF.isatab_header, DF.columns)
         except AttributeError:
-            object_column_map = get_object_column_map(DF.columns, DF.columns)
+            object_column_map = get_object_column_map(
+                DF.columns, DF.columns)
 
         def get_node_by_label_and_key(l, k):
             n = None
@@ -3364,14 +3412,16 @@ class ProcessSequenceFactory:
             if object_label in _LABELS_MATERIAL_NODES:
 
                 if config.show_pbars:
-                    pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Setting material objects: ',
-                                                                                      SimpleProgress(),
-                                                                                      Bar(left=" |", right="| "),
-                                                                                      ETA()]).start()
+                    pbar = ProgressBar(
+                        min_value=0, max_value=len(DF.index),
+                        widgets=['Setting material objects: ',
+                                 SimpleProgress(), Bar(left=" |", right="| "),
+                                 ETA()]).start()
                 else:
                     pbar = lambda x: x
 
-                for _, object_series in pbar(DF[column_group].drop_duplicates().iterrows()):
+                for _, object_series in pbar(
+                        DF[column_group].drop_duplicates().iterrows()):
                     node_name = str(object_series[object_label])
                     node_key = ":".join([object_label, node_name])
                     material = None
@@ -3393,19 +3443,25 @@ class ProcessSequenceFactory:
 
                     if material is not None:
 
-                        for charac_column in [c for c in column_group if c.startswith('Characteristics[')]:
+                        for charac_column in [
+                            c for c in column_group if c.startswith(
+                                'Characteristics[')]:
 
                             category_key = charac_column[16:-1]
 
                             try:
-                                category = characteristic_categories[category_key]
+                                category = characteristic_categories[
+                                    category_key]
                             except KeyError:
                                 category = OntologyAnnotation(term=category_key)
-                                characteristic_categories[category_key] = category
+                                characteristic_categories[
+                                    category_key] = category
 
                             characteristic = Characteristic(category=category)
 
-                            v, u = get_value(charac_column, column_group, object_series, ontology_source_map, unit_categories)
+                            v, u = get_value(
+                                charac_column, column_group, object_series,
+                                ontology_source_map, unit_categories)
 
                             characteristic.value = v
                             characteristic.unit = u
@@ -3414,64 +3470,89 @@ class ProcessSequenceFactory:
 
                         if isinstance(material, Sample) and self.factors is not None:
 
-                            for fv_column in [c for c in column_group if c.startswith('Factor Value[')]:
+                            for fv_column in [
+                                c for c in column_group if c.startswith(
+                                    'Factor Value[')]:
 
                                 category_key = fv_column[13:-1]
 
-                                factor_hits = [f for f in self.factors if f.name == category_key]
+                                factor_hits = [
+                                    f for f in self.factors if f.name ==
+                                                               category_key]
 
                                 if len(factor_hits) == 1:
                                     factor = factor_hits[0]
                                 else:
-                                    raise ValueError("Could not resolve Study Factor from Factor Value ",
-                                                     category_key)
+                                    raise ValueError(
+                                        'Could not resolve Study Factor from '
+                                        'Factor Value ', category_key)
 
                                 fv = FactorValue(factor_name=factor)
 
-                                v, u = get_value(fv_column, column_group, object_series, ontology_source_map,
-                                                 unit_categories)
+                                v, u = get_value(
+                                    fv_column, column_group, object_series, 
+                                    ontology_source_map, unit_categories)
 
                                 fv.value = v
                                 fv.unit = u
 
                                 material.factor_values.append(fv)
 
-                        for comment_column in [c for c in column_group if c.startswith('Comment[')]:
-                            if comment_column[8:-1] not in [x.name for x in material.comments]:
-                                material.comments.append(Comment(name=comment_column[8:-1],
-                                                         value=str(object_series[comment_column])))
+                        for comment_column in [
+                            c for c in column_group if c.startswith(
+                                'Comment[')]:
+                            if comment_column[8:-1] not in [
+                                x.name for x in material.comments]:
+                                material.comments.append(
+                                    Comment(name=comment_column[8:-1],
+                                            value=str(
+                                                object_series[comment_column])))
 
             elif object_label in _LABELS_DATA_NODES:
                 if config.show_pbars:
-                    pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Setting data objects: ',
-                                                                                      SimpleProgress(),
-                                                                                      Bar(left=" |", right="| "),
-                                                                                      ETA()]).start()
+                    pbar = ProgressBar(
+                        min_value=0, max_value=len(DF.index), widgets=[
+                            'Setting data objects: ', SimpleProgress(),
+                            Bar(left=" |", right="| "), ETA()]).start()
                 else:
                     pbar = lambda x: x
-                for _, object_series in pbar(DF[column_group].drop_duplicates().iterrows()):
+                for _, object_series in pbar(
+                        DF[column_group].drop_duplicates().iterrows()):
                     try:
-                        data_file = get_node_by_label_and_key(object_label, str(object_series[object_label]))
-                        for comment_column in [c for c in column_group if c.startswith('Comment[')]:
-                            if comment_column[8:-1] not in [x.name for x in data_file.comments]:
-                                data_file.comments.append(Comment(name=comment_column[8:-1], value=str(object_series[comment_column])))
+                        data_file = get_node_by_label_and_key(
+                            object_label, str(object_series[object_label]))
+                        for comment_column in [
+                            c for c in column_group if c.startswith(
+                                'Comment[')]:
+                            if comment_column[8:-1] not in [
+                                x.name for x in data_file.comments]:
+                                data_file.comments.append(
+                                    Comment(
+                                        name=comment_column[8:-1], 
+                                        value=str(
+                                            object_series[comment_column])))
                     except KeyError:
                         pass  # skip if object not found
 
             elif object_label.startswith('Protocol REF'):
                 object_label_index = list(DF.columns).index(object_label)
                 if config.show_pbars:
-                    pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Generating process objects: ',
-                                                                                      SimpleProgress(),
-                                                                                      Bar(left=" |", right="| "),
-                                                                                      ETA()]).start()
+                    pbar = ProgressBar(
+                        min_value=0, max_value=len(DF.index), 
+                        widgets=['Generating process objects: ',
+                                 SimpleProgress(), Bar(left=" |", right="| "),
+                                 ETA()]).start()
                 else:
                     pbar = lambda x: x
-                for _, object_series in pbar(DF.iterrows()):  # don't drop duplicates
+                    
+                # don't drop duplicates
+                for _, object_series in pbar(DF.iterrows()): 
                     # if _ == 0:
                     #     print('processing: ', object_series[object_label])
                     protocol_ref = str(object_series[object_label])
-                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
+                    process_key = process_keygen(
+                        protocol_ref, column_group, _cg, DF.columns, 
+                        object_series, _, DF)
 
                     # TODO: Keep process key sequence here to reduce number of passes on Protocol REF columns?
 
@@ -3487,18 +3568,21 @@ class ProcessSequenceFactory:
                     if output_proc_index < output_node_index > -1:
 
                         output_node_label = DF.columns[output_node_index]
-                        output_node_value = str(object_series[output_node_label])
+                        output_node_value = str(
+                            object_series[output_node_label])
 
                         node_key = output_node_value
 
                         output_node = None
 
                         try:
-                            output_node = get_node_by_label_and_key(output_node_label, node_key)
+                            output_node = get_node_by_label_and_key(
+                                output_node_label, node_key)
                         except KeyError:
                             pass  # skip if object not found
 
-                        if output_node is not None and output_node not in process.outputs:
+                        if output_node is not None and \
+                                        output_node not in process.outputs:
                             # print(process_key, 'output', output_node_label, node_key)
                             process.outputs.append(output_node)
 
@@ -3515,57 +3599,76 @@ class ProcessSequenceFactory:
                         input_node = None
 
                         try:
-                            input_node = get_node_by_label_and_key(input_node_label, node_key)
+                            input_node = get_node_by_label_and_key(
+                                input_node_label, node_key)
                         except KeyError:
                             pass  # skip if object not found
 
-                        if input_node is not None and input_node not in process.inputs:
+                        if input_node is not None and \
+                                        input_node not in process.inputs:
                             # print(process_key, 'input', input_node_label, node_key)
                             process.inputs.append(input_node)
 
-                    name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
+                    name_column_hits = [n for n in column_group 
+                                        if n in _LABELS_ASSAY_NODES]
 
                     if len(name_column_hits) == 1:
                         process.name = str(object_series[name_column_hits[0]])
 
-                    for pv_column in [c for c in column_group if c.startswith('Parameter Value[')]:
+                    for pv_column in [c for c in column_group if c.startswith(
+                            'Parameter Value[')]:
 
                         category_key = pv_column[16:-1]
 
-                        if category_key in [x.category.parameter_name.term for x in process.parameter_values]:
+                        if category_key in [x.category.parameter_name.term 
+                                            for x in process.parameter_values]:
                             pass
                         else:
                             try:
                                 protocol = protocol_map[protocol_ref]
                             except KeyError:
-                                raise ValueError("Could not find protocol matching ", protocol_ref)
+                                raise ValueError(
+                                    'Could not find protocol matching ', 
+                                    protocol_ref)
 
-                            param_hits = [p for p in protocol.parameters if p.parameter_name.term == category_key]
+                            param_hits = [
+                                p for p in protocol.parameters 
+                                if p.parameter_name.term == category_key]
 
                             if len(param_hits) == 1:
                                 category = param_hits[0]
                             else:
-                                raise ValueError("Could not resolve Protocol parameter from Parameter Value ", category_key)
+                                raise ValueError(
+                                    'Could not resolve Protocol parameter from '
+                                    'Parameter Value ', category_key)
 
                             parameter_value = ParameterValue(category=category)
-                            v, u = get_value(pv_column, column_group, object_series, ontology_source_map, unit_categories)
+                            v, u = get_value(
+                                pv_column, column_group, object_series,
+                                ontology_source_map, unit_categories)
 
                             parameter_value.value = v
                             parameter_value.unit = u
 
                             process.parameter_values.append(parameter_value)
 
-                    for comment_column in [c for c in column_group if c.startswith('Comment[')]:
-                        if comment_column[8:-1] not in [x.name for x in process.comments]:
-                            process.comments.append(Comment(name=comment_column[8:-1],
-                                                    value=str(object_series[comment_column])))
+                    for comment_column in \
+                            [c for c in column_group
+                             if c.startswith('Comment[')]:
+                        if comment_column[8:-1] not in \
+                                [x.name for x in process.comments]:
+                            process.comments.append(
+                                Comment(name=comment_column[8:-1],
+                                        value=str(
+                                            object_series[comment_column])))
 
         # now go row by row pulling out processes and linking them accordingly
         if config.show_pbars:
-            pbar = ProgressBar(min_value=0, max_value=len(DF.index), widgets=['Linking processes and other nodes in paths: ',
-                                                                              SimpleProgress(),
-                                                                              Bar(left=" |", right="| "),
-                                                                              ETA()]).start()
+            pbar = ProgressBar(
+                min_value=0, max_value=len(DF.index),
+                widgets=['Linking processes and other nodes in paths: ',
+                         SimpleProgress(), Bar(left=" |", right="| "),
+                         ETA()]).start()
         else:
             pbar = lambda x: x
         for _, object_series in pbar(DF.iterrows()):  # don't drop duplicates
@@ -3578,31 +3681,39 @@ class ProcessSequenceFactory:
 
                 if object_label.startswith('Source Name'):
                     try:
-                        source_node_context = get_node_by_label_and_key(object_label, str(object_series[object_label]))
+                        source_node_context = get_node_by_label_and_key(
+                            object_label, str(object_series[object_label]))
                     except KeyError:
                         pass  # skip if object not found
 
                 if object_label.startswith('Sample Name'):
                     try:
-                        sample_node_context = get_node_by_label_and_key(object_label, str(object_series[object_label]))
+                        sample_node_context = get_node_by_label_and_key(
+                            object_label, str(object_series[object_label]))
                     except KeyError:
                         pass  # skip if object not found
                     if source_node_context is not None:
-                        if source_node_context not in sample_node_context.derives_from:
-                            sample_node_context.derives_from.append(source_node_context)
+                        if source_node_context not in \
+                                sample_node_context.derives_from:
+                            sample_node_context.derives_from.append(
+                                source_node_context)
 
                 if object_label.startswith('Protocol REF'):
                     protocol_ref = str(object_series[object_label])
-                    process_key = process_keygen(protocol_ref, column_group, _cg, DF.columns, object_series, _, DF)
+                    process_key = process_keygen(
+                        protocol_ref, column_group, _cg, DF.columns,
+                        object_series, _, DF)
                     process_key_sequence.append(process_key)
 
                 if object_label.endswith(' File'):
                     data_node = None
                     try:
-                        data_node = get_node_by_label_and_key(object_label, str(object_series[object_label]))
+                        data_node = get_node_by_label_and_key(
+                            object_label, str(object_series[object_label]))
                     except KeyError:
                         pass  # skip if object not found
-                    if sample_node_context is not None and data_node is not None:
+                    if sample_node_context is not None and \
+                                    data_node is not None:
                         if sample_node_context not in data_node.generated_from:
                             data_node.generated_from.append(sample_node_context)
 
@@ -3614,7 +3725,8 @@ class ProcessSequenceFactory:
                 r = processes[pair[1]]  # get process on right of pair
                 plink(l, r)
 
-        return sources, samples, other_material, data, processes, characteristic_categories, unit_categories
+        return sources, samples, other_material, data, processes, \
+               characteristic_categories, unit_categories
 
 
 def find_in_between(a, x, y):
@@ -3648,7 +3760,8 @@ def find_in_between(a, x, y):
     return result
 
 
-def merge_study_with_assay_tables(study_file_path, assay_file_path, target_file_path):
+def merge_study_with_assay_tables(study_file_path, assay_file_path,
+                                  target_file_path):
     """
         Utility function to merge a study table file with an assay table file. The merge uses the Sample Name as the
         key, so samples in the assay file must match those in the study file. If there are no matches, the function
@@ -3666,7 +3779,9 @@ def merge_study_with_assay_tables(study_file_path, assay_file_path, target_file_
     merged_DF = pd.merge(study_DF, assay_DF, on='Sample Name')
     log.info("Writing merged DataFrame to file %s", target_file_path)
     with open(target_file_path, 'w', encoding='utf-8') as fp:
-        merged_DF.to_csv(fp, sep='\t', index=False, header=study_DF.isatab_header + assay_DF.isatab_header[1:])
+        merged_DF.to_csv(
+            fp, sep='\t', index=False,
+            header=study_DF.isatab_header + assay_DF.isatab_header[1:])
 
 
 def squashstr(string):
@@ -3714,7 +3829,8 @@ class IsaTabParser(object):
         isecdict = {}
         ssecdicts = []
         with open(in_filename, encoding='utf-8') as in_file:
-            tabreader = csv.reader(filter(lambda r: r[0] != '#', in_file), dialect='excel-tab')
+            tabreader = csv.reader(
+                filter(lambda r: r[0] != '#', in_file), dialect='excel-tab')
             current_section = ''
             for row in tabreader:
                 key = get_squashed(key=row[0])
@@ -3729,97 +3845,115 @@ class IsaTabParser(object):
                 else:
                     isecdict[key] = row[1:]
 
-        self.parse_ontology_sources_section(isecdict.get('termsourcename', []),
-                                            isecdict.get('termsourcefile', []),
-                                            isecdict.get('termsourceversion', []),
-                                            isecdict.get('termsourcedescription'),
-                                            {k: isecdict[k] for k in isecdict.keys()
-                                             if k.startswith('ontologysourcereference.')})
-        self.parse_investigation_section(isecdict.get('investigationidentifier', []),
-                                         isecdict.get('investigationtitle', []),
-                                         isecdict.get('investigationdescription', []),
-                                         isecdict.get('investigationsubmissiondate', []),
-                                         isecdict.get('investigationpublicreleasedate'),
-                                         {k: isecdict[k] for k in isecdict.keys() if k.startswith('investigation.')})
-        self.parse_publications_section(self.ISA,
-                                        isecdict.get('investigationpubmedid', []),
-                                        isecdict.get('investigationpublicationdoi', []),
-                                        isecdict.get('investigationpublicationauthorlist', []),
-                                        isecdict.get('investigationpublicationtitle', []),
-                                        isecdict.get('investigationpublicationstatus', []),
-                                        isecdict.get('investigationpublicationstatustermsourceref', []),
-                                        isecdict.get('investigationpublicationstatustermaccessionnumber'),
-                                        {k: isecdict[k] for k in isecdict.keys()
-                                         if k.startswith('investigationpublications.')})
-        self.parse_people_section(self.ISA,
-                                  isecdict.get('investigationpersonlastname', []),
-                                  isecdict.get('investigationpersonfirstname', []),
-                                  isecdict.get('investigationpersonmidinitials', []),
-                                  isecdict.get('investigationpersonemail', []),
-                                  isecdict.get('investigationpersonphone', []),
-                                  isecdict.get('investigationpersonfax', []),
-                                  isecdict.get('investigationpersonaddress', []),
-                                  isecdict.get('investigationpersonaffiliation', []),
-                                  isecdict.get('investigationpersonroles', []),
-                                  isecdict.get('investigationpersonrolestermaccessionnumber', []),
-                                  isecdict.get('investigationpersonrolestermsourceref'),
-                                  {k: isecdict[k] for k in isecdict.keys() if k.startswith('investigationcontacts.')})
+        self.parse_ontology_sources_section(
+            isecdict.get('termsourcename', []),
+            isecdict.get('termsourcefile', []),
+            isecdict.get('termsourceversion', []),
+            isecdict.get('termsourcedescription'),
+            {k: isecdict[k] for k in isecdict.keys()
+             if k.startswith('ontologysourcereference.')})
+        self.parse_investigation_section(
+            isecdict.get('investigationidentifier', []),
+            isecdict.get('investigationtitle', []),
+            isecdict.get('investigationdescription', []),
+            isecdict.get('investigationsubmissiondate', []),
+            isecdict.get('investigationpublicreleasedate'),
+            {k: isecdict[k] for k in isecdict.keys() if k.startswith('investigation.')})
+        self.parse_publications_section(
+            self.ISA,
+            isecdict.get('investigationpubmedid', []),
+            isecdict.get('investigationpublicationdoi', []),
+            isecdict.get('investigationpublicationauthorlist', []),
+            isecdict.get('investigationpublicationtitle', []),
+            isecdict.get('investigationpublicationstatus', []),
+            isecdict.get('investigationpublicationstatustermsourceref', []),
+            isecdict.get('investigationpublicationstatustermaccessionnumber'),
+            {k: isecdict[k] for k in isecdict.keys()
+             if k.startswith('investigationpublications.')})
+        self.parse_people_section(
+            self.ISA,
+            isecdict.get('investigationpersonlastname', []),
+            isecdict.get('investigationpersonfirstname', []),
+            isecdict.get('investigationpersonmidinitials', []),
+            isecdict.get('investigationpersonemail', []),
+            isecdict.get('investigationpersonphone', []),
+            isecdict.get('investigationpersonfax', []),
+            isecdict.get('investigationpersonaddress', []),
+            isecdict.get('investigationpersonaffiliation', []),
+            isecdict.get('investigationpersonroles', []),
+            isecdict.get('investigationpersonrolestermaccessionnumber', []),
+            isecdict.get('investigationpersonrolestermsourceref'),
+            {k: isecdict[k] for k in isecdict.keys()
+             if k.startswith('investigationcontacts.')})
 
         for ssecdict in ssecdicts:
-            self.parse_study_section(ssecdict.get('studyidentifier', []),
-                                     ssecdict.get('studytitle', []),
-                                     ssecdict.get('studydescription', []),
-                                     ssecdict.get('studysubmissiondate', []),
-                                     ssecdict.get('studypublicreleasedate', []),
-                                     ssecdict.get('studyfilename'))
-            self.parse_study_design_section(self.ISA.studies[-1],
-                                            ssecdict.get('studydesigntype', []),
-                                            ssecdict.get('studydesigntypetermaccessionnumber', []),
-                                            ssecdict.get('studydesigntypetermsourceref'))
-            self.parse_publications_section(self.ISA.studies[-1],
-                                            ssecdict.get('studypubmedid', []),
-                                            ssecdict.get('studypublicationdoi', []),
-                                            ssecdict.get('studypublicationauthorlist', []),
-                                            ssecdict.get('studypublicationtitle', []),
-                                            ssecdict.get('studypublicationstatus', []),
-                                            ssecdict.get('studypublicationstatustermsourceref', []),
-                                            ssecdict.get('studypublicationstatustermaccessionnumber'),
-                                            {k: ssecdict[k] for k in ssecdict.keys()
-                                             if k.startswith('studypublications.')})
-            self.parse_people_section(self.ISA.studies[-1],
-                                      ssecdict.get('studypersonlastname', []),
-                                      ssecdict.get('studypersonfirstname', []),
-                                      ssecdict.get('studypersonmidinitials', []),
-                                      ssecdict.get('studypersonemail', []),
-                                      ssecdict.get('studypersonphone', []),
-                                      ssecdict.get('studypersonfax', []),
-                                      ssecdict.get('studypersonaddress', []),
-                                      ssecdict.get('studypersonaffiliation', []),
-                                      ssecdict.get('studypersonroles', []),
-                                      ssecdict.get('studypersonrolestermaccessionnumber', []),
-                                      ssecdict.get('studypersonrolestermsourceref'),
-                                      {k: ssecdict[k] for k in ssecdict.keys() if k.startswith('studycontacts.')})
-            self.parse_study_factors_section(self.ISA.studies[-1],
-                                             ssecdict.get('studyfactorname', []),
-                                             ssecdict.get('studyfactorntype', []),
-                                             ssecdict.get('studyfactortypetermaccessionnumber', []),
-                                             ssecdict.get('studyfactortypetermsourceref'))
+            self.parse_study_section(
+                ssecdict.get('studyidentifier', []),
+                ssecdict.get('studytitle', []),
+                ssecdict.get('studydescription', []),
+                ssecdict.get('studysubmissiondate', []),
+                ssecdict.get('studypublicreleasedate', []),
+                ssecdict.get('studyfilename'))
+            self.parse_study_design_section(
+                self.ISA.studies[-1],
+                ssecdict.get('studydesigntype', []),
+                ssecdict.get('studydesigntypetermaccessionnumber', []),
+                ssecdict.get('studydesigntypetermsourceref'))
+            self.parse_publications_section(
+                self.ISA.studies[-1],
+                ssecdict.get('studypubmedid', []),
+                ssecdict.get('studypublicationdoi', []),
+                ssecdict.get('studypublicationauthorlist', []),
+                ssecdict.get('studypublicationtitle', []),
+                ssecdict.get('studypublicationstatus', []),
+                ssecdict.get('studypublicationstatustermsourceref', []),
+                ssecdict.get('studypublicationstatustermaccessionnumber'),
+                {k: ssecdict[k] for k in ssecdict.keys()
+                 if k.startswith('studypublications.')})
+            self.parse_people_section(
+                self.ISA.studies[-1],
+                ssecdict.get('studypersonlastname', []),
+                ssecdict.get('studypersonfirstname', []),
+                ssecdict.get('studypersonmidinitials', []),
+                ssecdict.get('studypersonemail', []),
+                ssecdict.get('studypersonphone', []),
+                ssecdict.get('studypersonfax', []),
+                ssecdict.get('studypersonaddress', []),
+                ssecdict.get('studypersonaffiliation', []),
+                ssecdict.get('studypersonroles', []),
+                ssecdict.get('studypersonrolestermaccessionnumber', []),
+                ssecdict.get('studypersonrolestermsourceref'),
+                {k: ssecdict[k] for k in ssecdict.keys()
+                 if k.startswith('studycontacts.')})
+            self.parse_study_factors_section(
+                self.ISA.studies[-1],
+                ssecdict.get('studyfactorname', []),
+                ssecdict.get('studyfactorntype', []),
+                ssecdict.get('studyfactortypetermaccessionnumber', []),
+ssecdict.get('studyfactortypetermsourceref'))
 
-    def parse_ontology_sources_section(self, names, files, versions, descriptions, comments_dict):
+    def parse_ontology_sources_section(self, names, files, versions,
+                                       descriptions, comments_dict):
         i = 0
-        for name, file, version, description in zip_longest(names, files, versions, descriptions):
+        for name, file, version, description in zip_longest(
+                names, files, versions, descriptions):
             i += 1
-            os = OntologySource(name=name, file=file, version=version, description=description)
+            os = OntologySource(
+                name=name, file=file, version=version, description=description)
             for k, v in comments_dict.items():
                 if i < len(v) > 0:
-                    os.comments.append(Comment(name=k[k.index('[')+1:-1], value=v[i]))
+                    os.comments.append(
+                        Comment(name=k[k.index('[')+1:-1], value=v[i]))
             self.ISA.ontology_source_references.append(os)
             self._ts_dict[name] = os
 
-    def parse_investigation_section(self, identifiers, titles, descriptions, submissiondates, publicreleasedates,
-                                    comments_dict):
-        for identifier, title, description, submissiondate, publicreleasedate in \
-                zip_longest(identifiers, titles, descriptions, submissiondates, publicreleasedates):
+    def parse_investigation_section(
+            self, identifiers, titles, descriptions, submissiondates,
+            publicreleasedates, comments_dict):
+        for identifier, title, description, submissiondate, \
+            publicreleasedate in  zip_longest(
+            identifiers, titles, descriptions, submissiondates,
+            publicreleasedates):
             self.ISA.identifier = identifier
             self.ISA.title = title
             self.ISA.description = description
@@ -3827,62 +3961,92 @@ class IsaTabParser(object):
             self.ISA.public_release_date = publicreleasedate
             for k, v in comments_dict.items():
                 if len(v) > 0:
-                    self.ISA.comments.append(Comment(name=k[k.index('[')+1:-1],
-                                                     value=';'.join(v) if len(v) > 1 else v[0]))
+                    self.ISA.comments.append(
+                        Comment(name=k[k.index('[')+1:-1],
+                                value=';'.join(v) if len(v) > 1 else v[0]))
             break  # because there should only be one or zero rows
 
-    def parse_study_section(self, identifiers, titles, descriptions, submissiondates, publicreleasedates, filenames):
-        for identifier, title, description, submissiondate, publicreleasedate, filename in \
-                zip_longest(identifiers, titles, descriptions, submissiondates, publicreleasedates, filenames):
-            study = Study(identifier=identifier, title=title, description=description,
-                          submission_date=submissiondate, public_release_date=publicreleasedate, filename=filename)
+    def parse_study_section(self, identifiers, titles, descriptions,
+                            submissiondates, publicreleasedates, filenames):
+        for identifier, title, description, submissiondate, publicreleasedate,\
+            filename in zip_longest(
+            identifiers, titles, descriptions, submissiondates,
+            publicreleasedates, filenames):
+            study = Study(
+                identifier=identifier, title=title, description=description,
+                submission_date=submissiondate,
+                public_release_date=publicreleasedate, filename=filename)
             self.ISA.studies.append(study)
 
     def parse_study_design_section(self, obj, dtypes, dtypetans, dtypetsrs):
-        for dtype, dtypetan, dtypetsr in zip_longest(dtypes, dtypetans, dtypetsrs):
-            dtypeoa = OntologyAnnotation(term=dtype, term_source=self._ts_dict.get(dtypetsr), term_accession=dtypetan)
+        for dtype, dtypetan, dtypetsr in zip_longest(
+                dtypes, dtypetans, dtypetsrs):
+            dtypeoa = OntologyAnnotation(
+                term=dtype, term_source=self._ts_dict.get(dtypetsr),
+                term_accession=dtypetan)
             obj.design_type = dtypeoa
             break
 
-    def parse_publications_section(self, obj, pubmedids, dois, authorlists, titles, statuses, statustans, statustsrs,
-                                   comments_dict):
+    def parse_publications_section(
+            self, obj, pubmedids, dois, authorlists, titles, statuses,
+            statustans, statustsrs, comments_dict):
         i = 0
         for pubmedid, doi, authorlist, title, status, statustsr, statustan in \
-                zip_longest(pubmedids, dois, authorlists, titles, statuses, statustans, statustsrs):
+                zip_longest(
+                    pubmedids, dois, authorlists, titles, statuses, statustans,
+                    statustsrs):
             i += 1
-            statusoa = OntologyAnnotation(term=status, term_source=self._ts_dict.get(statustsr),
-                                          term_accession=statustan)
-            publication = Publication(pubmed_id=pubmedid, doi=doi, author_list=authorlist, title=title, status=statusoa)
+            statusoa = OntologyAnnotation(
+                term=status, term_source=self._ts_dict.get(statustsr),
+                term_accession=statustan)
+            publication = Publication(
+                pubmed_id=pubmedid, doi=doi, author_list=authorlist,
+                title=title, status=statusoa)
             for k, v in comments_dict.items():
                 if i < len(v) > 0:
-                    publication.comments.append(Comment(name=k[k.index('[')+1:-1], value=v[i]))
+                    publication.comments.append(
+                        Comment(name=k[k.index('[')+1:-1], value=v[i]))
             obj.publications.append(publication)
 
-    def parse_people_section(self, obj, lastnames, firstnames, midinitialss, emails, phones, faxes, addresses,
-                             affiliations, roles, roletans, roletrs, comments_dict):
+    def parse_people_section(
+            self, obj, lastnames, firstnames, midinitialss, emails, phones,
+            faxes, addresses, affiliations, roles, roletans, roletrs,
+            comments_dict):
         i = 0
-        for lastname, firstname, midinitials, email, phone, fax, address, affiliation, role, roletan, roletsr in \
-                zip_longest(lastnames, firstnames, midinitialss, emails, phones, faxes, addresses, affiliations, roles,
-                            roletans, roletrs):
+        for lastname, firstname, midinitials, email, phone, fax, address, \
+            affiliation, role, roletan, roletsr in \
+                zip_longest(
+                    lastnames, firstnames, midinitialss, emails, phones, faxes,
+                    addresses, affiliations, roles, roletans, roletrs):
             i += 1
-            rolesoa = OntologyAnnotation(term=role, term_source=self._ts_dict.get(roletsr), term_accession=roletan)
-            person = Person(last_name=lastname, first_name=firstname, mid_initials=midinitials, email=email,
-                            phone=phone, fax=fax, address=address, affiliation=affiliation, roles=rolesoa)
+            rolesoa = OntologyAnnotation(
+                term=role, term_source=self._ts_dict.get(roletsr),
+                term_accession=roletan)
+            person = Person(
+                last_name=lastname, first_name=firstname,
+                mid_initials=midinitials, email=email, phone=phone, fax=fax,
+                address=address, affiliation=affiliation, roles=rolesoa)
             obj.contacts.append(person)
         for i, contact in enumerate(self.ISA.studies[-1].contacts):
             for k, v in comments_dict.items():
                 if len(v) > 0:
-                    contact.comments.append(Comment(name=k[k.index('[')+1:-1], value=v[i]))
+                    contact.comments.append(
+                        Comment(name=k[k.index('[')+1:-1], value=v[i]))
 
-    def parse_study_factors_section(self, obj, fnames, ftypes, ftypetans, ftypetsrs):
-        for fname, ftype, ftypetan, ftypetsr in zip_longest(fnames, ftypes, ftypetans, ftypetsrs):
-            ftypeoa = OntologyAnnotation(term=ftype, term_source=self._ts_dict.get(ftypetsr), term_accession=ftypetan)
+    def parse_study_factors_section(
+            self, obj, fnames, ftypes, ftypetans, ftypetsrs):
+        for fname, ftype, ftypetan, ftypetsr in zip_longest(
+                fnames, ftypes, ftypetans, ftypetsrs):
+            ftypeoa = OntologyAnnotation(
+                term=ftype, term_source=self._ts_dict.get(ftypetsr),
+                term_accession=ftypetan)
             factor = StudyFactor(name=fname, factor_type=ftypeoa)
             obj.factors.append(factor)
 
 
 def parse_in(in_filename, in_format='isa-tab'):
-    """ Parse the given input file using the in_format and return as ISA objects"""
+    """ Parse the given input file using the in_format and return as ISA
+    objects"""
 
     log.debug("parsing {0} in format {1}".format(in_filename, in_format))
 
