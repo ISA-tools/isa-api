@@ -585,7 +585,7 @@ class InterventionStudyDesignTest(unittest.TestCase):
             FactorValue(factor_name=self.duration, value='medium')
         ))
         self.test_sequence = TreatmentSequence(ranked_treatments=[(self.first_treatment, 1), (self.second_treatment, 2)])
-        self.sample_plan = SampleAssayPlan(group_size=10, sample_plan={}, assay_plan=None)
+        self.sample_plan = SampleAssayPlan(group_size=10)
 
     def test_add_single_sequence_plan(self):
         self.design.add_single_sequence_plan(treatment_sequence=self.test_sequence, study_plan=self.sample_plan)
