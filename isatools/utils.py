@@ -580,6 +580,14 @@ class IsaTabFixer(object):
                 field_names[i] = 'Sample Name'
         return field_names
 
+    def fix_factor(self, factor_name, protocol_ref=''):
+        if protocol_ref == '':
+            self.replace_factor_with_source_characteristic(
+                factor_name=factor_name)
+        else:
+            self.replace_factor_with_protocol_parameter_value(
+                factor_name=factor_name, protocol_ref=protocol_ref)
+
     def replace_factor_with_source_characteristic(self, factor_name):
         table_file_df = isatab.read_tfile(self.path)
 

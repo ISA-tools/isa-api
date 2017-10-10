@@ -266,3 +266,64 @@ class TestIsaTabFixer(unittest.TestCase):
                 map(lambda field_name: field_name.strip(),
                     next(fixed_tab_fp).split('\t')))
             self.assertListEqual(actual_field_names, expected_field_names)
+
+
+    def test_fix_factor_one_arg(self):
+        fixer = utils.IsaTabFixer(os.path.join(self._tmp_dir, 's_BII-S-1.txt'))
+        fixer.fix_factor('limiting nutrient')
+
+        expected_field_names = ['Source Name',
+                                'Characteristics[limiting nutrient]',
+                                'Term Source REF',
+                                'Term Accession Number',
+                                'Characteristics[organism]',
+                                'Term Source REF',
+                                'Term Accession Number',
+                                'Characteristics[strain]',
+                                'Term Source REF',
+                                'Term Accession Number',
+                                'Characteristics[genotype]',
+                                'Term Source REF',
+                                'Term Accession Number',
+                                'Protocol REF',
+                                'Sample Name',
+                                'Factor Value[rate]',
+                                'Unit',
+                                'Term Source REF',
+                                'Term Accession Number']
+
+        with open(os.path.join(self._tmp_dir, 's_BII-S-1.txt')) as fixed_tab_fp:
+            actual_field_names = list(
+                map(lambda field_name: field_name.strip(),
+                    next(fixed_tab_fp).split('\t')))
+            self.assertListEqual(actual_field_names, expected_field_names)
+
+    def test_fix_factor_two_args(self):
+        fixer = utils.IsaTabFixer(os.path.join(self._tmp_dir, 's_BII-S-1.txt'))
+        fixer.fix_factor('limiting nutrient', 'growth protocol')
+
+        expected_field_names = ['Source Name',
+                                'Characteristics[organism]',
+                                'Term Source REF',
+                                'Term Accession Number',
+                                'Characteristics[strain]',
+                                'Term Source REF',
+                                'Term Accession Number',
+                                'Characteristics[genotype]',
+                                'Term Source REF',
+                                'Term Accession Number',
+                                'Protocol REF',
+                                'Parameter Value[limiting nutrient]',
+                                'Term Source REF',
+                                'Term Accession Number',
+                                'Sample Name',
+                                'Factor Value[rate]',
+                                'Unit',
+                                'Term Source REF',
+                                'Term Accession Number']
+
+        with open(os.path.join(self._tmp_dir, 's_BII-S-1.txt')) as fixed_tab_fp:
+            actual_field_names = list(
+                map(lambda field_name: field_name.strip(),
+                    next(fixed_tab_fp).split('\t')))
+            self.assertListEqual(actual_field_names, expected_field_names)
