@@ -646,3 +646,83 @@ class IsaTabFixer(object):
         with open(self.path, 'w') as out_fp:
             table_file_df.to_csv(path_or_buf=out_fp, index=False, sep='\t',
                                  encoding='utf-8')
+
+    def replace_factor_with_protocol_parameter_value(
+            self, factor_name, protocol_ref):
+        table_file_df = isatab.read_tfile(self.path)
+
+        field_names = list(table_file_df.columns)
+        clean_field_names = self.clean_isatab_field_names(field_names)
+
+        factor_index = clean_field_names.index(
+            'Factor Value[{}]'.format(factor_name))
+
+        with open(self.path) as tfile_fp:
+            line1 = next(next(tfile_fp))
+            protocol_ref_index = line1.split('\t').index(protocol_ref)
+
+        if protocol_ref_index < 0:
+            raise IOError(
+                'Could not find protocol ref matching {protocol_ref}'
+                    .format(protocol_ref=protocol_ref))
+
+        if factor_index < len(field_names) and \
+            'Term Source REF' in field_names[factor_index + 1] and \
+                'Term Accession' in field_names[factor_index + 2]:
+            log.debug(
+                'Moving Factor Value[{}] with term columns'.format(factor_name))
+            # move Factor Value and Term Source REF and Term Accession columns
+            field_names.insert(
+                protocol_ref_index + 1, field_names[factor_index])
+            field_names.insert(
+                protocol_ref_index + 2, field_names[factor_index + 1 + 1])
+            field_names.insert(
+                protocol_ref_index + 3, field_names[factor_index + 2 + 2])
+
+            del field_names[factor_index + 3]  # del Factor Value[{}]
+            del field_names[factor_index + 1 + 2]  # del Term Source REF
+            del field_names[factor_index + 2 + 1]  # del Term Accession
+        elif factor_index < len(field_names) and \
+            'Unit' in field_names[factor_index + 1] and \
+                'Term Source REF' in field_names[factor_index + 2] and \
+                'Term Accession' in field_names[factor_index + 3]:
+            log.debug(
+                'Moving Factor Value[{}] with unit term columns'.format(
+                    factor_name))
+            # move Factor Value and Unit as ontology annotation
+            field_names.insert(
+                protocol_ref_index + 1, field_names[factor_index])
+            field_names.insert(
+                protocol_ref_index + 2, field_names[factor_index + 1 + 1])
+            field_names.insert(
+                protocol_ref_index + 3, field_names[factor_index + 2 + 2])
+            field_names.insert(
+                protocol_ref_index + 4, field_names[factor_index + 3 + 3])
+
+            del field_names[factor_index + 4]  # del Factor Value[{}]
+            del field_names[factor_index + 1 + 3]  # del Unit
+            del field_names[factor_index + 2 + 2]  # del Term Source REF
+            del field_names[factor_index + 3 + 1]  # del Term Accession
+        elif factor_index < len(field_names) and \
+            'Unit' in field_names[factor_index + 1]:
+            log.debug(
+                'Moving Factor Value[{}] with unit column'.format(factor_name))
+            # move Factor Value and Unit columns
+            field_names.insert(
+                protocol_ref_index + 1, field_names[factor_index])
+            field_names.insert(
+                protocol_ref_index + 2, field_names[factor_index + 1 + 1])
+
+            del field_names[factor_index + 2]  # del Factor Value[{}]
+            del field_names[factor_index + 1 + 1]  # del Unit
+        else:  # move only the Factor Value column
+            log.debug('Moving Factor Value[{}]'.format(factor_name))
+            field_names.insert(
+                protocol_ref_index + 1, field_names[factor_index])
+            del field_names[factor_index]  # del Factor Value[{}]
+
+        table_file_df.columns = self.clean_isatab_field_names(field_names)
+
+        with open(self.path, 'w') as out_fp:
+            table_file_df.to_csv(path_or_buf=out_fp, index=False, sep='\t',
+                                 encoding='utf-8')
