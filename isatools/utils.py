@@ -643,6 +643,14 @@ class IsaTabFixer(object):
 
         table_file_df.columns = self.clean_isatab_field_names(field_names)
 
+        # Renamce Factor Value column to Characteristics column
+        field_names_modified = list(table_file_df.columns)
+        field_names_modified[source_name_index + 1] = \
+            field_names_modified[source_name_index + 1].replace(
+                'Factor Value', 'Characteristics')
+        table_file_df.columns = self.clean_isatab_field_names(
+            field_names_modified)
+
         with open(self.path, 'w') as out_fp:
             table_file_df.to_csv(path_or_buf=out_fp, index=False, sep='\t',
                                  encoding='utf-8')
@@ -725,6 +733,14 @@ class IsaTabFixer(object):
             del field_names[factor_index]  # del Factor Value[{}]
 
         table_file_df.columns = self.clean_isatab_field_names(field_names)
+
+        # Renamce Factor Value column to Parameter Value column
+        field_names_modified = list(table_file_df.columns)
+        field_names_modified[protocol_ref_index + 1] = \
+            field_names_modified[protocol_ref_index + 1].replace(
+                'Factor Value', 'Parameter Value')
+        table_file_df.columns = self.clean_isatab_field_names(
+            field_names_modified)
 
         with open(self.path, 'w') as out_fp:
             table_file_df.to_csv(path_or_buf=out_fp, index=False, sep='\t',

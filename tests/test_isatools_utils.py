@@ -261,7 +261,6 @@ class TestIsaTabFixer(unittest.TestCase):
                                 'Term Source REF',
                                 'Term Accession Number']
 
-
         with open(os.path.join(self._tmp_dir, 's_BII-S-1.txt')) as fixed_tab_fp:
             actual_field_names = list(
                 map(lambda field_name: field_name.strip(),
