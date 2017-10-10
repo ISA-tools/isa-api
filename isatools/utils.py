@@ -658,8 +658,11 @@ class IsaTabFixer(object):
             'Factor Value[{}]'.format(factor_name))
 
         with open(self.path) as tfile_fp:
-            line1 = next(next(tfile_fp))
-            protocol_ref_index = line1.split('\t').index(protocol_ref)
+            next(tfile_fp)
+            line1 = next(tfile_fp)
+            protocol_ref_index = list(
+                map(lambda x: x[1:-1] if x[0] == '"' and x[-1] == '"' else x,
+                    line1.split('\t'))).index(protocol_ref)
 
         if protocol_ref_index < 0:
             raise IOError(
