@@ -779,6 +779,22 @@ class IsaTabFixer(object):
         table_file_df.columns = self.clean_isatab_field_names(
             field_names_modified)
 
-        with open(self.path, 'w') as out_fp:
+        investigation = isatab.load(
+            os.path.dirname(self.path), skip_load_tables=True)
+        study = investigation.studies[-1]
+        protocol = study.get_prot(protocol_ref)
+        if protocol is None:
+            raise ISAModelAttributeError(
+                'No protocol with name {protocol_ref} was found'.format(
+                    protocol_ref=protocol_ref))
+        protocol.add_param(factor_name)
+
+        isatab.dump(
+            investigation, output_path=os.path.dirname(self.path),
+            i_file_name='i_Investigation.txt.fix', skip_dump_tables=True)
+
+        with open(os.path.join(
+                os.path.dirname(self.path), '{s_filename}.fix'.format(
+                    s_filename=os.path.basename(self.path))), 'w') as out_fp:
             table_file_df.to_csv(path_or_buf=out_fp, index=False, sep='\t',
                                  encoding='utf-8')

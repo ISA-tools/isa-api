@@ -12,6 +12,7 @@ from jsonschema.exceptions import ValidationError
 
 
 from isatools import isajson
+from isatools import isatab
 from isatools import utils
 from isatools.model import *
 from isatools.net import mtbls as MTBLS
@@ -197,16 +198,16 @@ class TestIsaTabFixer(unittest.TestCase):
 
     def setUp(self):
         self._tmp_dir = tempfile.mkdtemp()
-        src_tab = os.path.join(
-            test_utils.TAB_DATA_DIR, 'BII-I-1', 's_BII-S-1.txt')
-        dst_tab = os.path.join(self._tmp_dir, 's_BII-S-1.txt')
-        shutil.copyfile(src_tab, dst_tab)
+        src_tab = os.path.join(test_utils.TAB_DATA_DIR, 'BII-I-1')
+        dst_tab = os.path.join(self._tmp_dir, 'BII-I-1')
+        shutil.copytree(src_tab, dst_tab)
 
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
 
     def test_replace_factor_with_source_characteristic(self):
-        fixer = utils.IsaTabFixer(os.path.join(self._tmp_dir, 's_BII-S-1.txt'))
+        s_table_path = os.path.join(self._tmp_dir, 'BII-I-1', 's_BII-S-1.txt')
+        fixer = utils.IsaTabFixer(s_table_path)
         fixer.replace_factor_with_source_characteristic('limiting nutrient')
 
         expected_field_names = ['Source Name',
@@ -229,15 +230,15 @@ class TestIsaTabFixer(unittest.TestCase):
                                 'Term Source REF',
                                 'Term Accession Number']
 
-
-        with open(os.path.join(self._tmp_dir, 's_BII-S-1.txt')) as fixed_tab_fp:
+        with open(s_table_path) as fixed_tab_fp:
             actual_field_names = list(
                 map(lambda field_name: field_name.strip(),
                     next(fixed_tab_fp).split('\t')))
             self.assertListEqual(actual_field_names, expected_field_names)
 
     def test_replace_factor_with_protocol_parameter_value(self):
-        fixer = utils.IsaTabFixer(os.path.join(self._tmp_dir, 's_BII-S-1.txt'))
+        s_table_path = os.path.join(self._tmp_dir, 'BII-I-1', 's_BII-S-1.txt')
+        fixer = utils.IsaTabFixer(s_table_path)
         fixer.replace_factor_with_protocol_parameter_value(
             'limiting nutrient', 'growth protocol')
 
@@ -261,15 +262,26 @@ class TestIsaTabFixer(unittest.TestCase):
                                 'Term Source REF',
                                 'Term Accession Number']
 
-        with open(os.path.join(self._tmp_dir, 's_BII-S-1.txt')) as fixed_tab_fp:
+        with open(s_table_path + '.fix') as fixed_tab_fp:
             actual_field_names = list(
                 map(lambda field_name: field_name.strip(),
                     next(fixed_tab_fp).split('\t')))
             self.assertListEqual(actual_field_names, expected_field_names)
 
 
+        # check the parameter got added to the protocol
+        with open(os.path.dirname(
+                s_table_path) + '/i_Investigation.txt.fix') as fixed_i_fp:
+            investigation = isatab.load(fixed_i_fp)
+            study = investigation.studies[-1]
+            protocol = study.get_prot('growth protocol')
+            param = protocol.get_param('limiting nutrient')
+            self.assertIsNotNone(param)
+
+
     def test_fix_factor_one_arg(self):
-        fixer = utils.IsaTabFixer(os.path.join(self._tmp_dir, 's_BII-S-1.txt'))
+        s_table_path = os.path.join(self._tmp_dir, 'BII-I-1', 's_BII-S-1.txt')
+        fixer = utils.IsaTabFixer(s_table_path)
         fixer.fix_factor('limiting nutrient')
 
         expected_field_names = ['Source Name',
@@ -292,14 +304,15 @@ class TestIsaTabFixer(unittest.TestCase):
                                 'Term Source REF',
                                 'Term Accession Number']
 
-        with open(os.path.join(self._tmp_dir, 's_BII-S-1.txt')) as fixed_tab_fp:
+        with open(s_table_path) as fixed_tab_fp:
             actual_field_names = list(
                 map(lambda field_name: field_name.strip(),
                     next(fixed_tab_fp).split('\t')))
             self.assertListEqual(actual_field_names, expected_field_names)
 
     def test_fix_factor_two_args(self):
-        fixer = utils.IsaTabFixer(os.path.join(self._tmp_dir, 's_BII-S-1.txt'))
+        s_table_path = os.path.join(self._tmp_dir, 'BII-I-1', 's_BII-S-1.txt')
+        fixer = utils.IsaTabFixer(s_table_path)
         fixer.fix_factor('limiting nutrient', 'growth protocol')
 
         expected_field_names = ['Source Name',
@@ -322,8 +335,18 @@ class TestIsaTabFixer(unittest.TestCase):
                                 'Term Source REF',
                                 'Term Accession Number']
 
-        with open(os.path.join(self._tmp_dir, 's_BII-S-1.txt')) as fixed_tab_fp:
+        # check the columns got moved in the study file
+        with open(s_table_path + '.fix') as fixed_tab_fp:
             actual_field_names = list(
                 map(lambda field_name: field_name.strip(),
                     next(fixed_tab_fp).split('\t')))
             self.assertListEqual(actual_field_names, expected_field_names)
+
+        # check the parameter got added to the protocol
+        with open(os.path.dirname(
+                s_table_path) + '/i_Investigation.txt.fix') as fixed_i_fp:
+            investigation = isatab.load(fixed_i_fp)
+            study = investigation.studies[-1]
+            protocol = study.get_prot('growth protocol')
+            param = protocol.get_param('limiting nutrient')
+            self.assertIsNotNone(param)
