@@ -2844,138 +2844,95 @@ def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigat
     else:
         raise IOError("Cannot resolve input file")
 
-    df_dict = read_investigation_file(FP)
+    try:
+        df_dict = read_investigation_file(FP)
 
-    investigation = Investigation()
+        investigation = Investigation()
 
-    for _, row in df_dict['ontology_sources'].iterrows():
-        ontology_source = OntologySource(name=row['Term Source Name'],
-                                         file=row['Term Source File'],
-                                         version=row['Term Source Version'],
-                                         description=row['Term Source Description'])
-        investigation.ontology_source_references.append(ontology_source)
+        for _, row in df_dict['ontology_sources'].iterrows():
+            ontology_source = OntologySource(name=row['Term Source Name'],
+                                             file=row['Term Source File'],
+                                             version=row['Term Source Version'],
+                                             description=row['Term Source Description'])
+            investigation.ontology_source_references.append(ontology_source)
 
-    ontology_source_map = dict(map(lambda x: (x.name, x), investigation.ontology_source_references))
+        ontology_source_map = dict(map(lambda x: (x.name, x), investigation.ontology_source_references))
 
-    if len(df_dict['investigation'].index) > 0:
-        row = df_dict['investigation'].iloc[0]
-        investigation.identifier = row['Investigation Identifier']
-        investigation.title = row['Investigation Title']
-        investigation.description = row['Investigation Description']
-        investigation.submission_date = row['Investigation Submission Date']
-        investigation.public_release_date = row['Investigation Public Release Date']
-        investigation.publications = get_publications(df_dict['i_publications'])
-        investigation.contacts = get_contacts(df_dict['i_contacts'])
-        investigation.comments = get_comments(df_dict['investigation'])
+        if len(df_dict['investigation'].index) > 0:
+            row = df_dict['investigation'].iloc[0]
+            investigation.identifier = row['Investigation Identifier']
+            investigation.title = row['Investigation Title']
+            investigation.description = row['Investigation Description']
+            investigation.submission_date = row['Investigation Submission Date']
+            investigation.public_release_date = row['Investigation Public Release Date']
+            investigation.publications = get_publications(df_dict['i_publications'])
+            investigation.contacts = get_contacts(df_dict['i_contacts'])
+            investigation.comments = get_comments(df_dict['investigation'])
 
-    for i in range(0, len(df_dict['studies'])):
-        row = df_dict['studies'][i].iloc[0]
-        study = Study()
-        study.identifier = row['Study Identifier']
-        study.title = row['Study Title']
-        study.description = row['Study Description']
-        study.submission_date = row['Study Submission Date']
-        study.public_release_date = row['Study Public Release Date']
-        study.filename = row['Study File Name']
+        for i in range(0, len(df_dict['studies'])):
+            row = df_dict['studies'][i].iloc[0]
+            study = Study()
+            study.identifier = row['Study Identifier']
+            study.title = row['Study Title']
+            study.description = row['Study Description']
+            study.submission_date = row['Study Submission Date']
+            study.public_release_date = row['Study Public Release Date']
+            study.filename = row['Study File Name']
 
-        study.publications = get_publications(df_dict['s_publications'][i])
-        study.contacts = get_contacts(df_dict['s_contacts'][i])
-        study.comments = get_comments(df_dict['studies'][i])
+            study.publications = get_publications(df_dict['s_publications'][i])
+            study.contacts = get_contacts(df_dict['s_contacts'][i])
+            study.comments = get_comments(df_dict['studies'][i])
 
-        for _, row in df_dict['s_design_descriptors'][i].iterrows():
-            design_descriptor = get_oa(row['Study Design Type'],
-                                       row['Study Design Type Term Accession Number'],
-                                       row['Study Design Type Term Source REF'])
-            design_descriptor.comments = get_comments_row(df_dict['s_design_descriptors'][i].columns, row)
-            study.design_descriptors.append(design_descriptor)
+            for _, row in df_dict['s_design_descriptors'][i].iterrows():
+                design_descriptor = get_oa(row['Study Design Type'],
+                                           row['Study Design Type Term Accession Number'],
+                                           row['Study Design Type Term Source REF'])
+                design_descriptor.comments = get_comments_row(df_dict['s_design_descriptors'][i].columns, row)
+                study.design_descriptors.append(design_descriptor)
 
-        for _, row in df_dict['s_factors'][i].iterrows():
-            factor = StudyFactor(name=row['Study Factor Name'])
-            factor.factor_type = get_oa(row['Study Factor Type'],
-                                        row['Study Factor Type Term Accession Number'],
-                                        row['Study Factor Type Term Source REF'])
-            factor.comments = get_comments_row(df_dict['s_factors'][i].columns, row)
-            study.factors.append(factor)
+            for _, row in df_dict['s_factors'][i].iterrows():
+                factor = StudyFactor(name=row['Study Factor Name'])
+                factor.factor_type = get_oa(row['Study Factor Type'],
+                                            row['Study Factor Type Term Accession Number'],
+                                            row['Study Factor Type Term Source REF'])
+                factor.comments = get_comments_row(df_dict['s_factors'][i].columns, row)
+                study.factors.append(factor)
 
-        protocol_map = {}
-        for _, row in df_dict['s_protocols'][i].iterrows():
-            protocol = Protocol()
-            protocol.name = row['Study Protocol Name']
-            protocol.description = row['Study Protocol Description']
-            protocol.uri = row['Study Protocol URI']
-            protocol.version = row['Study Protocol Version']
-            protocol.protocol_type = get_oa(row['Study Protocol Type'],
-                                            row['Study Protocol Type Term Accession Number'],
-                                            row['Study Protocol Type Term Source REF'])
-            params = get_oa_list_from_semi_c_list(
-                row['Study Protocol Parameters Name'], row['Study Protocol Parameters Name Term Accession Number'],
-                row['Study Protocol Parameters Name Term Source REF'])
-            for param in params:
-                protocol_param = ProtocolParameter(parameter_name=param)
-                protocol.parameters.append(protocol_param)
-            protocol.comments = get_comments_row(df_dict['s_protocols'][i].columns, row)
-            study.protocols.append(protocol)
-            protocol_map[protocol.name] = protocol
-        study.protocols = list(protocol_map.values())
-        if skip_load_tables:
-            pass
-        else:
-            study_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), study.filename))
-            sources, samples, _, __, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(
-                ontology_sources=investigation.ontology_source_references, study_protocols=study.protocols,
-                study_factors=study.factors).create_from_df(study_tfile_df)
-            study.sources = list(sources.values())
-            study.samples = list(samples.values())
-            study.samples = list(samples.values())
-            study.process_sequence = list(processes.values())
-            study.characteristic_categories = list(characteristic_categories.values())
-            study.units = list(unit_categories.values())
-
-            for process in study.process_sequence:
-                try:
-                    process.executes_protocol = protocol_map[process.executes_protocol]
-                except KeyError:
-                    try:
-                        unknown_protocol = protocol_map['unknown']
-                    except KeyError:
-                        protocol_map['unknown'] = Protocol(
-                            name="unknown protocol",
-                            description="This protocol was auto-generated where a protocol could not be determined.")
-                        unknown_protocol = protocol_map['unknown']
-                        study.protocols.append(unknown_protocol)
-                    process.executes_protocol = unknown_protocol
-
-        for _, row in df_dict['s_assays'][i].iterrows():
-            assay = Assay()
-            assay.filename = row['Study Assay File Name']
-            assay.measurement_type = get_oa(
-                row['Study Assay Measurement Type'],
-                row['Study Assay Measurement Type Term Accession Number'],
-                row['Study Assay Measurement Type Term Source REF']
-            )
-            assay.technology_type = get_oa(
-                row['Study Assay Technology Type'],
-                row['Study Assay Technology Type Term Accession Number'],
-                row['Study Assay Technology Type Term Source REF']
-            )
-            assay.technology_platform = row['Study Assay Technology Platform']
+            protocol_map = {}
+            for _, row in df_dict['s_protocols'][i].iterrows():
+                protocol = Protocol()
+                protocol.name = row['Study Protocol Name']
+                protocol.description = row['Study Protocol Description']
+                protocol.uri = row['Study Protocol URI']
+                protocol.version = row['Study Protocol Version']
+                protocol.protocol_type = get_oa(row['Study Protocol Type'],
+                                                row['Study Protocol Type Term Accession Number'],
+                                                row['Study Protocol Type Term Source REF'])
+                params = get_oa_list_from_semi_c_list(
+                    row['Study Protocol Parameters Name'], row['Study Protocol Parameters Name Term Accession Number'],
+                    row['Study Protocol Parameters Name Term Source REF'])
+                for param in params:
+                    protocol_param = ProtocolParameter(parameter_name=param)
+                    protocol.parameters.append(protocol_param)
+                protocol.comments = get_comments_row(df_dict['s_protocols'][i].columns, row)
+                study.protocols.append(protocol)
+                protocol_map[protocol.name] = protocol
+            study.protocols = list(protocol_map.values())
             if skip_load_tables:
                 pass
             else:
-                assay_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), assay.filename))
-                _, samples, other, data, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(
-                    ontology_sources=investigation.ontology_source_references,
-                    study_samples=study.samples,
-                    study_protocols=study.protocols,
-                    study_factors=study.factors).create_from_df(assay_tfile_df)
-                assay.samples = list(samples.values())
-                assay.other_material = list(other.values())
-                assay.data_files = list(data.values())
-                assay.process_sequence = list(processes.values())
-                assay.characteristic_categories = list(characteristic_categories.values())
-                assay.units = list(unit_categories.values())
+                study_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), study.filename))
+                sources, samples, _, __, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(
+                    ontology_sources=investigation.ontology_source_references, study_protocols=study.protocols,
+                    study_factors=study.factors).create_from_df(study_tfile_df)
+                study.sources = list(sources.values())
+                study.samples = list(samples.values())
+                study.samples = list(samples.values())
+                study.process_sequence = list(processes.values())
+                study.characteristic_categories = list(characteristic_categories.values())
+                study.units = list(unit_categories.values())
 
-                for process in assay.process_sequence:
+                for process in study.process_sequence:
                     try:
                         process.executes_protocol = protocol_map[process.executes_protocol]
                     except KeyError:
@@ -2989,8 +2946,54 @@ def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigat
                             study.protocols.append(unknown_protocol)
                         process.executes_protocol = unknown_protocol
 
-            study.assays.append(assay)
-        investigation.studies.append(study)
+            for _, row in df_dict['s_assays'][i].iterrows():
+                assay = Assay()
+                assay.filename = row['Study Assay File Name']
+                assay.measurement_type = get_oa(
+                    row['Study Assay Measurement Type'],
+                    row['Study Assay Measurement Type Term Accession Number'],
+                    row['Study Assay Measurement Type Term Source REF']
+                )
+                assay.technology_type = get_oa(
+                    row['Study Assay Technology Type'],
+                    row['Study Assay Technology Type Term Accession Number'],
+                    row['Study Assay Technology Type Term Source REF']
+                )
+                assay.technology_platform = row['Study Assay Technology Platform']
+                if skip_load_tables:
+                    pass
+                else:
+                    assay_tfile_df = read_tfile(os.path.join(os.path.dirname(FP.name), assay.filename))
+                    _, samples, other, data, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(
+                        ontology_sources=investigation.ontology_source_references,
+                        study_samples=study.samples,
+                        study_protocols=study.protocols,
+                        study_factors=study.factors).create_from_df(assay_tfile_df)
+                    assay.samples = list(samples.values())
+                    assay.other_material = list(other.values())
+                    assay.data_files = list(data.values())
+                    assay.process_sequence = list(processes.values())
+                    assay.characteristic_categories = list(characteristic_categories.values())
+                    assay.units = list(unit_categories.values())
+
+                    for process in assay.process_sequence:
+                        try:
+                            process.executes_protocol = protocol_map[process.executes_protocol]
+                        except KeyError:
+                            try:
+                                unknown_protocol = protocol_map['unknown']
+                            except KeyError:
+                                protocol_map['unknown'] = Protocol(
+                                    name="unknown protocol",
+                                    description="This protocol was auto-generated where a protocol could not be determined.")
+                                unknown_protocol = protocol_map['unknown']
+                                study.protocols.append(unknown_protocol)
+                            process.executes_protocol = unknown_protocol
+
+                study.assays.append(assay)
+            investigation.studies.append(study)
+    finally:
+        FP.close()
     return investigation
 
 
