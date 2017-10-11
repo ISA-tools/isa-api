@@ -537,6 +537,35 @@ class IsaTabAnalyzer(object):
                          sort_keys=True))
 
 
+def batch_fix_isatabs(settings):
+    """
+    settings = {
+        "/path/to/MTBLS1/s_MTBLS1.txt": [
+            {
+                "factor": "Metabolic syndrome",
+                "protocol_ref": None
+            },
+            {
+                "factor": "Gender",
+                "protocol_ref": "Sample collection"
+            }
+        ],
+        "/path/to/MTBLS2/s_MTBL2.txt": [
+            {
+                "factor": "genotype",
+                "protocol_ref": None
+            }
+        ]
+    }
+    """
+    for table_file_path in settings.keys():
+        print('Fixing {table_filepath}...'.format(
+            table_file_path=table_file_path))
+        fixer = IsaTabFixer(table_file_path=table_file_path)
+        fixer.fix_factor(factor_name=settings[table_file_path]['factor'],
+                         protocol_ref=settings[table_file_path]['protocol_ref'])
+
+
 class IsaTabFixer(object):
 
     def __init__(self, table_file_path):
@@ -580,8 +609,8 @@ class IsaTabFixer(object):
                 field_names[i] = 'Sample Name'
         return field_names
 
-    def fix_factor(self, factor_name, protocol_ref=''):
-        if protocol_ref == '':
+    def fix_factor(self, factor_name, protocol_ref=None):
+        if protocol_ref is None:
             self.replace_factor_with_source_characteristic(
                 factor_name=factor_name)
         else:
