@@ -632,3 +632,121 @@ class TestIsaTabFixer(unittest.TestCase):
                 'environmental material collection - standard procedure 1')
             param = protocol.get_param('dose')
             self.assertIsNotNone(param)
+
+    def test_batch_fixer(self):
+        s_table_path = os.path.join(self._tmp_dir, 'BII-S-3', 's_BII-S-3.txt')
+        settings = {
+            s_table_path: {
+                        "factor": "dose",
+                        "protocol_ref": "environmental material collection - "
+                                        "standard procedure 1"
+                    }
+                }
+        utils.batch_fix_isatabs(settings)
+
+        expected_field_names = [
+            'Source Name',
+            'Characteristics[organism]',
+            'Term Source REF', 'Term Accession Number',
+            'Characteristics[geographic location (country and/or sea,region)]',
+            'Term Source REF', 'Term Accession Number',
+            'Characteristics[geographic location (longitude)]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[geographic location (latitude)]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[chlorophyll a concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[fucoxanthin concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[peridinin concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[butfucoxanthin concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[hexfucoxanthin concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[alloxanthin concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[zeaxanthin concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[lutein concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[chl-c3 concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[chl-c2 concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[prasinoxanthin concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[neoxanthin concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[violaxanthin concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[diadinoxanthin concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[diatoxanthin concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[divinyl-chl-b concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[chl-b concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[divinyl-chl-a concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[chl-a concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[BB carotene concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[bacteria count]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[synechococcus count]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[small picoeukaryotes count]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[large picoeukaryotes count]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[nanoflagellates count]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[cryptophytes count]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[phosphate concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[nitrate concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[particulate organic nitrogen concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[particulate organic carbon concentration]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[primary production depth integrated production to '
+            '3 m expressed_in mgC m-2 d-1]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[water salinity]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Characteristics[fluorescence]',
+            'Term Source REF', 'Term Accession Number',
+            'Characteristics[water temperature at 3 meter depth]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Protocol REF',
+            'Parameter Value[dose]',
+            'Term Source REF', 'Term Accession Number',
+            'Parameter Value[filter pore size]',
+            'Unit', 'Term Source REF', 'Term Accession Number',
+            'Sample Name',
+            'Factor Value[compound]',
+            'Term Source REF', 'Term Accession Number',
+            'Factor Value[collection time]',
+            'Term Source REF', 'Term Accession Number']
+
+        # check the columns got moved in the study file
+        with open(s_table_path + '.fix') as fixed_tab_fp:
+            actual_field_names = list(
+                map(lambda field_name: field_name.strip(),
+                    next(fixed_tab_fp).split('\t')))
+            self.assertListEqual(actual_field_names, expected_field_names)
+
+        # check the parameter got added to the protocol
+        with open(os.path.dirname(
+                s_table_path) + '/i_Investigation.txt.fix') as fixed_i_fp:
+            investigation = isatab.load(fixed_i_fp)
+            study = investigation.studies[-1]
+            protocol = study.get_prot(
+                'environmental material collection - standard procedure 1')
+            param = protocol.get_param('dose')
+            self.assertIsNotNone(param)

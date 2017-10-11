@@ -559,7 +559,7 @@ def batch_fix_isatabs(settings):
     }
     """
     for table_file_path in settings.keys():
-        print('Fixing {table_filepath}...'.format(
+        print('Fixing {table_file_path}...'.format(
             table_file_path=table_file_path))
         fixer = IsaTabFixer(table_file_path=table_file_path)
         fixer.fix_factor(factor_name=settings[table_file_path]['factor'],
