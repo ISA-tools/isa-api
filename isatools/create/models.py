@@ -745,6 +745,7 @@ class SampleAssayPlan(object):
     def __ne__(self, other):
         return hash(repr(self)) != hash(repr(other))
 
+
 class BaseStudyDesign(object):
     pass
 
@@ -902,7 +903,7 @@ class IsaModelObjectFactory(object):
                                 process = Process(executes_protocol=study.get_prot(
                                     'sample collection'), inputs=[qcsource],
                                     outputs=[sample], performer=self.ops[0], date_=
-                                    datetime.date.isoformat(
+                                    datetime.datetime.isoformat(
                                         datetime.datetime.now()),
                                 parameter_values=[ParameterValue(
                                     category=ProtocolParameter(
@@ -1935,3 +1936,53 @@ class SampleAssayPlanDecoder(object):
             )
 
         return sample_assay_plan
+
+
+class TreatmentSequenceEncoder(json.JSONEncoder):
+
+    def get_factor(self, factor):
+        return {
+            'factor': factor.factor_name.name,
+            'value': factor.value.term if isinstance(
+                factor.value, OntologyAnnotation) else factor.value
+        }
+
+    def get_treatment(self, treatment):
+        return {
+            'treatment_type': treatment.treatment_type,
+            'factor_values' : sorted(
+                [self.get_factor(x) for x in treatment.factor_values])
+        }
+
+    def default(self, o):
+        if isinstance(o, TreatmentSequence):
+            return {
+                'ranked_treatments':[{
+                    'treatment': self.get_treatment(x[0]),
+                    'rank': x[1]
+                } for x in o.ranked_treatments]
+            }
+
+
+class TreatmentSequenceDecoder(object):
+
+    def __init__(self):
+        pass
+
+    def load(self, fp):
+        treatment_sequence_json = json.load(fp)
+
+        treatment_sequence = TreatmentSequence()
+
+        for treatment_tuple in treatment_sequence_json['ranked_treatments']:
+            treatment_json = treatment_tuple[0]
+            treatment = Treatment(
+                treatment_type=treatment_json['treatment_type'])
+            for factor_json in treatment_json['factor_values']:
+                fv = FactorValue(
+                    factor_name=factor_json['factor'],
+                    value=factor_json['value'])
+                treatment.factor_values.append(fv)
+
+            treatment_sequence.add_treatment(treatment, treatment_tuple[1])
+        return treatment_sequence

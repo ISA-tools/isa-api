@@ -2,10 +2,8 @@
 import json
 import unittest
 
-from isatools.create.models import AssayTopologyModifiers
-from isatools.create.models import AssayType
-from isatools.create.models import SampleAssayPlan
-from isatools.create.models import SampleAssayPlanEncoder
+from isatools.model import *
+from isatools.create.models import *
 
 
 def ordered(o):  # to enable comparison of JSONs with lists using ==
@@ -312,6 +310,7 @@ class EncodeToJsonTests(unittest.TestCase):
             )
         )
         self.assertTrue(expected == actual)
+
 
 class DecodeFromJsonTests(unittest.TestCase):
 
