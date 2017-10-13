@@ -1957,10 +1957,10 @@ class TreatmentSequenceEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, TreatmentSequence):
             return {
-                'ranked_treatments':sorted([{
+                'ranked_treatments':[{
                     'treatment': self.get_treatment(x[0]),
                     'rank': x[1]
-                } for x in o.ranked_treatments])
+                } for x in o.ranked_treatments]
             }
 
 
