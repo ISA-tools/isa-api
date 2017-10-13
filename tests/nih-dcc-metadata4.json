@@ -66440,6 +66440,17 @@
       "weight%type": "wet",
       "weight%units": "g"
     },
+    "01_UK49_CA_13C6Glc_slice-cells-protein": {
+      "id": "01_UK49_CA_13C6Glc_slice-cells-protein",
+      "parentID": "01_UK49_CA_13C6Glc_slice-cells",
+      "project.id": "CESB_P01",
+      "protocol.id": "protein_extraction",
+      "study.id": "SIRM_ex_vivo_tissue_slice_study",
+      "type": "protein_extract",
+      "weight": "0.0017800000000001148",
+      "weight%type": "dry",
+      "weight%units": "g"
+    },    
     "01_UK49_CA_13C6Glc_slice-cells-polar-IC-FTMS_A": {
       "expected_reconstitution_volume": "25.464684014869892",
       "expected_reconstitution_volume%units": "uL",
@@ -66455,17 +66466,7 @@
       "weight": "0.1944",
       "weight%units": "g"
     },
-    "01_UK49_CA_13C6Glc_slice-cells-protein": {
-      "id": "01_UK49_CA_13C6Glc_slice-cells-protein",
-      "parentID": "01_UK49_CA_13C6Glc_slice-cells",
-      "project.id": "CESB_P01",
-      "protocol.id": "protein_extraction",
-      "study.id": "SIRM_ex_vivo_tissue_slice_study",
-      "type": "protein_extract",
-      "weight": "0.0017800000000001148",
-      "weight%type": "dry",
-      "weight%units": "g"
-    },
+
     "02_UK49_CA_13C6Glc_slice-cells": {
       "id": "02_UK49_CA_13C6Glc_slice-cells",
       "parentID": "02_UK49_CA_13C6Glc_slice",
@@ -66477,6 +66478,17 @@
       "weight%type": "wet",
       "weight%units": "g"
     },
+    "02_UK49_CA_13C6Glc_slice-cells-protein": {
+      "id": "02_UK49_CA_13C6Glc_slice-cells-protein",
+      "parentID": "02_UK49_CA_13C6Glc_slice-cells",
+      "project.id": "CESB_P01",
+      "protocol.id": "protein_extraction",
+      "study.id": "SIRM_ex_vivo_tissue_slice_study",
+      "type": "protein_extract",
+      "weight": "0.0018299999999999983",
+      "weight%type": "dry",
+      "weight%units": "g"
+    },    
     "02_UK49_CA_13C6Glc_slice-cells-polar-IC-FTMS_A": {
       "expected_reconstitution_volume": "22.118959107806692",
       "expected_reconstitution_volume%units": "uL",
@@ -66492,17 +66504,7 @@
       "weight": "0.1938",
       "weight%units": "g"
     },
-    "02_UK49_CA_13C6Glc_slice-cells-protein": {
-      "id": "02_UK49_CA_13C6Glc_slice-cells-protein",
-      "parentID": "02_UK49_CA_13C6Glc_slice-cells",
-      "project.id": "CESB_P01",
-      "protocol.id": "protein_extraction",
-      "study.id": "SIRM_ex_vivo_tissue_slice_study",
-      "type": "protein_extract",
-      "weight": "0.0018299999999999983",
-      "weight%type": "dry",
-      "weight%units": "g"
-    },
+
     "03_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells": {
       "id": "03_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells",
       "parentID": "03_UK49_CA_13C6Glc_100ug/ml b-glucan_slice",
@@ -66514,6 +66516,17 @@
       "weight%type": "wet",
       "weight%units": "g"
     },
+    "03_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells-protein": {
+      "id": "03_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells-protein",
+      "parentID": "03_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells",
+      "project.id": "CESB_P01",
+      "protocol.id": "protein_extraction",
+      "study.id": "SIRM_ex_vivo_tissue_slice_study",
+      "type": "protein_extract",
+      "weight": "0.0034400000000001096",
+      "weight%type": "dry",
+      "weight%units": "g"
+    },    
     "03_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells-polar-IC-FTMS_A": {
       "expected_reconstitution_volume": "50",
       "expected_reconstitution_volume%units": "uL",
@@ -66529,17 +66542,7 @@
       "weight": "0.1914",
       "weight%units": "g"
     },
-    "03_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells-protein": {
-      "id": "03_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells-protein",
-      "parentID": "03_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells",
-      "project.id": "CESB_P01",
-      "protocol.id": "protein_extraction",
-      "study.id": "SIRM_ex_vivo_tissue_slice_study",
-      "type": "protein_extract",
-      "weight": "0.0034400000000001096",
-      "weight%type": "dry",
-      "weight%units": "g"
-    },
+
     "04_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells": {
       "id": "04_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells",
       "parentID": "04_UK49_CA_13C6Glc_100ug/ml b-glucan_slice",
@@ -66551,6 +66554,17 @@
       "weight%type": "wet",
       "weight%units": "g"
     },
+    "04_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells-protein": {
+      "id": "04_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells-protein",
+      "parentID": "04_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells",
+      "project.id": "CESB_P01",
+      "protocol.id": "protein_extraction",
+      "study.id": "SIRM_ex_vivo_tissue_slice_study",
+      "type": "protein_extract",
+      "weight": "0.0030200000000000227",
+      "weight%type": "dry",
+      "weight%units": "g"
+    },    
     "04_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells-polar-IC-FTMS_A": {
       "expected_reconstitution_volume": "48.51301115241637",
       "expected_reconstitution_volume%units": "uL",
@@ -66566,17 +66580,6 @@
       "weight": "0.1931",
       "weight%units": "g"
     },
-    "04_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells-protein": {
-      "id": "04_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells-protein",
-      "parentID": "04_UK49_CA_13C6Glc_100ug/ml b-glucan_slice-cells",
-      "project.id": "CESB_P01",
-      "protocol.id": "protein_extraction",
-      "study.id": "SIRM_ex_vivo_tissue_slice_study",
-      "type": "protein_extract",
-      "weight": "0.0030200000000000227",
-      "weight%type": "dry",
-      "weight%units": "g"
-    },
     "05_UK21_CA_13C6Glc_slice-cells": {
       "id": "05_UK21_CA_13C6Glc_slice-cells",
       "parentID": "05_UK21_CA_13C6Glc_slice",
@@ -66588,6 +66591,17 @@
       "weight%type": "wet",
       "weight%units": "g"
     },
+     "05_UK21_CA_13C6Glc_slice-cells-protein": {
+      "id": "05_UK21_CA_13C6Glc_slice-cells-protein",
+      "parentID": "05_UK21_CA_13C6Glc_slice-cells",
+      "project.id": "CESB_P01",
+      "protocol.id": "protein_extraction",
+      "study.id": "SIRM_ex_vivo_tissue_slice_study",
+      "type": "protein_extract",
+      "weight": "0.0023400000000000087",
+      "weight%type": "dry",
+      "weight%units": "g"
+    },   
     "05_UK21_CA_13C6Glc_slice-cells-polar-IC-FTMS_A": {
       "expected_reconstitution_volume": "41.4",
       "expected_reconstitution_volume%units": "uL",
@@ -66603,17 +66617,6 @@
       "weight": "0.1909",
       "weight%units": "g"
     },
-    "05_UK21_CA_13C6Glc_slice-cells-protein": {
-      "id": "05_UK21_CA_13C6Glc_slice-cells-protein",
-      "parentID": "05_UK21_CA_13C6Glc_slice-cells",
-      "project.id": "CESB_P01",
-      "protocol.id": "protein_extraction",
-      "study.id": "SIRM_ex_vivo_tissue_slice_study",
-      "type": "protein_extract",
-      "weight": "0.0023400000000000087",
-      "weight%type": "dry",
-      "weight%units": "g"
-    },
     "07_UK21_CA_13C6Glc_100ug/ml b-glucan_slice-cells": {
       "id": "07_UK21_CA_13C6Glc_100ug/ml b-glucan_slice-cells",
       "parentID": "07_UK21_CA_13C6Glc_100ug/ml b-glucan_slice",
@@ -66625,6 +66628,17 @@
       "weight%type": "wet",
       "weight%units": "g"
     },
+    "07_UK21_CA_13C6Glc_100ug/ml b-glucan_slice-cells-protein": {
+      "id": "07_UK21_CA_13C6Glc_100ug/ml b-glucan_slice-cells-protein",
+      "parentID": "07_UK21_CA_13C6Glc_100ug/ml b-glucan_slice-cells",
+      "project.id": "CESB_P01",
+      "protocol.id": "protein_extraction",
+      "study.id": "SIRM_ex_vivo_tissue_slice_study",
+      "type": "protein_extract",
+      "weight": "0.0016599999999999948",
+      "weight%type": "dry",
+      "weight%units": "g"
+    },    
     "07_UK21_CA_13C6Glc_100ug/ml b-glucan_slice-cells-polar-IC-FTMS_A": {
       "expected_reconstitution_volume": "39.6",
       "expected_reconstitution_volume%units": "uL",
@@ -66640,17 +66654,6 @@
       "weight": "0.1907",
       "weight%units": "g"
     },
-    "07_UK21_CA_13C6Glc_100ug/ml b-glucan_slice-cells-protein": {
-      "id": "07_UK21_CA_13C6Glc_100ug/ml b-glucan_slice-cells-protein",
-      "parentID": "07_UK21_CA_13C6Glc_100ug/ml b-glucan_slice-cells",
-      "project.id": "CESB_P01",
-      "protocol.id": "protein_extraction",
-      "study.id": "SIRM_ex_vivo_tissue_slice_study",
-      "type": "protein_extract",
-      "weight": "0.0016599999999999948",
-      "weight%type": "dry",
-      "weight%units": "g"
-    },
     "13_UK21_N_13C6Glc_slice-cells": {
       "id": "13_UK21_N_13C6Glc_slice-cells",
       "parentID": "13_UK21_N_13C6Glc_slice",
@@ -66660,6 +66663,17 @@
       "type": "cells",
       "weight": "0.0156",
       "weight%type": "wet",
+      "weight%units": "g"
+    },
+        "13_UK21_N_13C6Glc_slice-cells-protein": {
+      "id": "13_UK21_N_13C6Glc_slice-cells-protein",
+      "parentID": "13_UK21_N_13C6Glc_slice-cells",
+      "project.id": "CESB_P01",
+      "protocol.id": "protein_extraction",
+      "study.id": "SIRM_ex_vivo_tissue_slice_study",
+      "type": "protein_extract",
+      "weight": "0.003430000000000044",
+      "weight%type": "dry",
       "weight%units": "g"
     },
     "13_UK21_N_13C6Glc_slice-cells-polar-IC-FTMS_A": {
@@ -66677,17 +66691,6 @@
       "weight": "0.1903",
       "weight%units": "g"
     },
-    "13_UK21_N_13C6Glc_slice-cells-protein": {
-      "id": "13_UK21_N_13C6Glc_slice-cells-protein",
-      "parentID": "13_UK21_N_13C6Glc_slice-cells",
-      "project.id": "CESB_P01",
-      "protocol.id": "protein_extraction",
-      "study.id": "SIRM_ex_vivo_tissue_slice_study",
-      "type": "protein_extract",
-      "weight": "0.003430000000000044",
-      "weight%type": "dry",
-      "weight%units": "g"
-    },
     "15_UK21_N_13C6Glc_100ug/ml b-glucan_slice-cells": {
       "id": "15_UK21_N_13C6Glc_100ug/ml b-glucan_slice-cells",
       "parentID": "15_UK21_N_13C6Glc_100ug/ml b-glucan_slice",
@@ -66699,6 +66702,17 @@
       "weight%type": "wet",
       "weight%units": "g"
     },
+    "15_UK21_N_13C6Glc_100ug/ml b-glucan_slice-cells-protein": {
+      "id": "15_UK21_N_13C6Glc_100ug/ml b-glucan_slice-cells-protein",
+      "parentID": "15_UK21_N_13C6Glc_100ug/ml b-glucan_slice-cells",
+      "project.id": "CESB_P01",
+      "protocol.id": "protein_extraction",
+      "study.id": "SIRM_ex_vivo_tissue_slice_study",
+      "type": "protein_extract",
+      "weight": "0.0035000000000000586",
+      "weight%type": "dry",
+      "weight%units": "g"
+    },    
     "15_UK21_N_13C6Glc_100ug/ml b-glucan_slice-cells-polar-IC-FTMS_A": {
       "expected_reconstitution_volume": "40.6",
       "expected_reconstitution_volume%units": "uL",
@@ -66714,17 +66728,6 @@
       "weight": "0.1939",
       "weight%units": "g"
     },
-    "15_UK21_N_13C6Glc_100ug/ml b-glucan_slice-cells-protein": {
-      "id": "15_UK21_N_13C6Glc_100ug/ml b-glucan_slice-cells-protein",
-      "parentID": "15_UK21_N_13C6Glc_100ug/ml b-glucan_slice-cells",
-      "project.id": "CESB_P01",
-      "protocol.id": "protein_extraction",
-      "study.id": "SIRM_ex_vivo_tissue_slice_study",
-      "type": "protein_extract",
-      "weight": "0.0035000000000000586",
-      "weight%type": "dry",
-      "weight%units": "g"
-    },
     "31_UK49_N_13C6Glc_slice-cells": {
       "id": "31_UK49_N_13C6Glc_slice-cells",
       "parentID": "31_UK49_N_13C6Glc_slice",
@@ -66736,6 +66739,17 @@
       "weight%type": "wet",
       "weight%units": "g"
     },
+    "31_UK49_N_13C6Glc_slice-cells-protein": {
+      "id": "31_UK49_N_13C6Glc_slice-cells-protein",
+      "parentID": "31_UK49_N_13C6Glc_slice-cells",
+      "project.id": "CESB_P01",
+      "protocol.id": "protein_extraction",
+      "study.id": "SIRM_ex_vivo_tissue_slice_study",
+      "type": "protein_extract",
+      "weight": "0.0033399999999998986",
+      "weight%type": "dry",
+      "weight%units": "g"
+    },    
     "31_UK49_N_13C6Glc_slice-cells-polar-IC-FTMS_A": {
       "expected_reconstitution_volume": "38.28996282527881",
       "expected_reconstitution_volume%units": "uL",
@@ -66751,17 +66765,6 @@
       "weight": "0.1911",
       "weight%units": "g"
     },
-    "31_UK49_N_13C6Glc_slice-cells-protein": {
-      "id": "31_UK49_N_13C6Glc_slice-cells-protein",
-      "parentID": "31_UK49_N_13C6Glc_slice-cells",
-      "project.id": "CESB_P01",
-      "protocol.id": "protein_extraction",
-      "study.id": "SIRM_ex_vivo_tissue_slice_study",
-      "type": "protein_extract",
-      "weight": "0.0033399999999998986",
-      "weight%type": "dry",
-      "weight%units": "g"
-    },
     "32_UK49_N_13C6Glc_slice-cells": {
       "id": "32_UK49_N_13C6Glc_slice-cells",
       "parentID": "32_UK49_N_13C6Glc_slice",
@@ -66773,6 +66776,17 @@
       "weight%type": "wet",
       "weight%units": "g"
     },
+    "32_UK49_N_13C6Glc_slice-cells-protein": {
+      "id": "32_UK49_N_13C6Glc_slice-cells-protein",
+      "parentID": "32_UK49_N_13C6Glc_slice-cells",
+      "project.id": "CESB_P01",
+      "protocol.id": "protein_extraction",
+      "study.id": "SIRM_ex_vivo_tissue_slice_study",
+      "type": "protein_extract",
+      "weight": "0.0034799999999999276",
+      "weight%type": "dry",
+      "weight%units": "g"
+    },    
     "32_UK49_N_13C6Glc_slice-cells-polar-IC-FTMS_A": {
       "expected_reconstitution_volume": "40.334572490706314",
       "expected_reconstitution_volume%units": "uL",
@@ -66788,17 +66802,6 @@
       "weight": "0.1914",
       "weight%units": "g"
     },
-    "32_UK49_N_13C6Glc_slice-cells-protein": {
-      "id": "32_UK49_N_13C6Glc_slice-cells-protein",
-      "parentID": "32_UK49_N_13C6Glc_slice-cells",
-      "project.id": "CESB_P01",
-      "protocol.id": "protein_extraction",
-      "study.id": "SIRM_ex_vivo_tissue_slice_study",
-      "type": "protein_extract",
-      "weight": "0.0034799999999999276",
-      "weight%type": "dry",
-      "weight%units": "g"
-    },
     "33_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells": {
       "id": "33_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells",
       "parentID": "33_UK49_N_13C6Glc_100ug/ml b-glucan_slice",
@@ -66808,6 +66811,17 @@
       "type": "cells",
       "weight": "0.0233",
       "weight%type": "wet",
+      "weight%units": "g"
+    },
+        "33_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells-protein": {
+      "id": "33_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells-protein",
+      "parentID": "33_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells",
+      "project.id": "CESB_P01",
+      "protocol.id": "protein_extraction",
+      "study.id": "SIRM_ex_vivo_tissue_slice_study",
+      "type": "protein_extract",
+      "weight": "0.003689999999999971",
+      "weight%type": "dry",
       "weight%units": "g"
     },
     "33_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells-polar-IC-FTMS_A": {
@@ -66824,18 +66838,7 @@
       "type": "polar",
       "weight": "0.1896",
       "weight%units": "g"
-    },
-    "33_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells-protein": {
-      "id": "33_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells-protein",
-      "parentID": "33_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells",
-      "project.id": "CESB_P01",
-      "protocol.id": "protein_extraction",
-      "study.id": "SIRM_ex_vivo_tissue_slice_study",
-      "type": "protein_extract",
-      "weight": "0.003689999999999971",
-      "weight%type": "dry",
-      "weight%units": "g"
-    },
+    }, 
     "34_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells": {
       "id": "34_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells",
       "parentID": "34_UK49_N_13C6Glc_100ug/ml b-glucan_slice",
@@ -66847,6 +66850,17 @@
       "weight%type": "wet",
       "weight%units": "g"
     },
+    "34_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells-protein": {
+      "id": "34_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells-protein",
+      "parentID": "34_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells",
+      "project.id": "CESB_P01",
+      "protocol.id": "protein_extraction",
+      "study.id": "SIRM_ex_vivo_tissue_slice_study",
+      "type": "protein_extract",
+      "weight": "0.004349999999999854",
+      "weight%type": "dry",
+      "weight%units": "g"
+    } ,   
     "34_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells-polar-IC-FTMS_A": {
       "expected_reconstitution_volume": "46.84014869888476",
       "expected_reconstitution_volume%units": "uL",
@@ -66862,17 +66876,7 @@
       "weight": "0.1899",
       "weight%units": "g"
     },
-    "34_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells-protein": {
-      "id": "34_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells-protein",
-      "parentID": "34_UK49_N_13C6Glc_100ug/ml b-glucan_slice-cells",
-      "project.id": "CESB_P01",
-      "protocol.id": "protein_extraction",
-      "study.id": "SIRM_ex_vivo_tissue_slice_study",
-      "type": "protein_extract",
-      "weight": "0.004349999999999854",
-      "weight%type": "dry",
-      "weight%units": "g"
-    },
+ 
     "UK21-nontumor": {
       "id": "UK21-nontumor",
       "parentID": "UK21",
@@ -66951,7 +66955,7 @@
       "id": "03_UK49_CA_13C6Glc_100ug/ml b-glucan_slice",
       "parentID": "UK49-tumor",
       "project.id": "CESB_P01",
-      "protocol.id": "13C6Glc_100ug/ml b-glucan",
+      "protocol.id": "13C6Glc",
       "replicate": "1",
       "species": "homo sapiens",
       "study.id": "SIRM_ex_vivo_tissue_slice_study",
@@ -66962,7 +66966,7 @@
       "id": "04_UK49_CA_13C6Glc_100ug/ml b-glucan_slice",
       "parentID": "UK49-tumor",
       "project.id": "CESB_P01",
-      "protocol.id": "13C6Glc_100ug/ml b-glucan",
+      "protocol.id": "13C6Glc",
       "replicate": "2",
       "species": "homo sapiens",
       "study.id": "SIRM_ex_vivo_tissue_slice_study",
@@ -66984,7 +66988,7 @@
       "id": "07_UK21_CA_13C6Glc_100ug/ml b-glucan_slice",
       "parentID": "UK21-tumor",
       "project.id": "CESB_P01",
-      "protocol.id": "13C6Glc_100ug/ml b-glucan",
+      "protocol.id": "13C6Glc",
       "replicate": "1",
       "species": "homo sapiens",
       "study.id": "SIRM_ex_vivo_tissue_slice_study",
@@ -67006,7 +67010,7 @@
       "id": "15_UK21_N_13C6Glc_100ug/ml b-glucan_slice",
       "parentID": "UK21-nontumor",
       "project.id": "CESB_P01",
-      "protocol.id": "13C6Glc_100ug/ml b-glucan",
+      "protocol.id": "13C6Glc",
       "replicate": "1",
       "species": "homo sapiens",
       "study.id": "SIRM_ex_vivo_tissue_slice_study",
@@ -67039,7 +67043,7 @@
       "id": "33_UK49_N_13C6Glc_100ug/ml b-glucan_slice",
       "parentID": "UK49-nontumor",
       "project.id": "CESB_P01",
-      "protocol.id": "13C6Glc_100ug/ml b-glucan",
+      "protocol.id": "13C6Glc",
       "replicate": "2",
       "species": "homo sapiens",
       "study.id": "SIRM_ex_vivo_tissue_slice_study",
@@ -67050,7 +67054,7 @@
       "id": "34_UK49_N_13C6Glc_100ug/ml b-glucan_slice",
       "parentID": "UK49-nontumor",
       "project.id": "CESB_P01",
-      "protocol.id": "13C6Glc_100ug/ml b-glucan",
+      "protocol.id": "13C6Glc",
       "replicate": "1",
       "species": "homo sapiens",
       "study.id": "SIRM_ex_vivo_tissue_slice_study",
