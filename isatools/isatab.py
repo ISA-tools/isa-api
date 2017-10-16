@@ -2969,11 +2969,11 @@ def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigat
                         study_samples=study.samples,
                         study_protocols=study.protocols,
                         study_factors=study.factors).create_from_df(assay_tfile_df)
-                    assay.samples = list(samples.values())
-                    assay.other_material = list(other.values())
-                    assay.data_files = list(data.values())
+                    assay.samples = sorted(list(samples.values()), key=lambda x: x.name, reverse=False)
+                    assay.other_material = sorted(list(other.values()), key=lambda x:x.name, reverse=False)
+                    assay.data_files = sorted(list(data.values()), key=lambda x:x.filename, reverse=False)
                     assay.process_sequence = list(processes.values())
-                    assay.characteristic_categories = list(characteristic_categories.values())
+                    assay.characteristic_categories = sorted(list(characteristic_categories.values()), key=lambda x: x.term, reverse=False)
                     assay.units = list(unit_categories.values())
 
                     for process in assay.process_sequence:
