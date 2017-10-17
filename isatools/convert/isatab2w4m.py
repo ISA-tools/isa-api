@@ -467,10 +467,17 @@ def convert2w4m(input_dir, study_filename=None, assay_filename=None,
 ################################################################
 
 def write_data_frame(df, output_dir, template_filename, study, assay):
+    
+    # NA values are removed by `read_tfile()` and replaced by ''. Put them back here.
+    df_with_na = df.replace(to_replace = '', value = 'NA')
+    
+    # Set filename
     filename = FilenameTemplate(template_filename).substitute(s=study, a=assay)
     if output_dir is not None:
         filename = os.path.join(output_dir, filename)
-    df.to_csv(path_or_buf=filename, sep='\t', na_rep='NA')
+
+    # Write data frame
+    df_with_na.to_csv(path_or_buf=filename, sep='\t', na_rep='NA')
 
 
 # Write assays into files {{{1
