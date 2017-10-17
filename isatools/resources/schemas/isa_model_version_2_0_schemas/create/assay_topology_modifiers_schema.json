@@ -1,0 +1,37 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "title": "ISA model 2.0 Assay Topology Modifiers schema",
+    "description": "JSON-schema representing a set of assay graph topology modifiers in ISA model v2",
+    "properties": {
+        "acquisition_modes": {
+            "items": {"type": "string"},
+            "type": "array"
+        },
+        "array_designs": {
+            "items": {"type": "string"},
+            "type": "array"
+        },
+        "chromatography_instruments": {
+            "items": {"type": "string"},
+            "type": "array"
+        },
+        "distinct_libraries": {"type": "integer"},
+        "injection_modes": {
+            "items": {"type": "string"},
+            "type": "array"
+        },
+        "instruments": {
+            "items": {"type": "string"},
+            "type": "array"
+        },
+        "pulse_sequences": {
+            "items": {
+                "items": {"type": "string"},
+                "type": "array"
+            },
+            "type": "array"
+        },
+        "technical_replicates": {"type": "integer"}
+    },
+    "type": "object"
+}
