@@ -477,7 +477,7 @@ def write_data_frame(df, output_dir, template_filename, study, assay):
         filename = os.path.join(output_dir, filename)
 
     # Write data frame
-    df_with_na.to_csv(path_or_buf=filename, sep='\t', na_rep='NA')
+    df_with_na.to_csv(path_or_buf=filename, sep='\t', na_rep='NA', index = False)
 
 
 # Write assays into files {{{1
