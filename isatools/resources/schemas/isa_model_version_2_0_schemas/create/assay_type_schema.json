@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Assay Type JSON Schema",
+  "name": "Assay Type JSON Schema",
+  "description": "JSON Schema describing an Assay Type",
+  "@context": {
+    "@base": "http://purl.org/isaterms/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "type": "object",
+  "properties": {
+    "measurementType": {
+      "$ref": "ontology_annotation_schema.json#"
+    },
+    "technologyType": {
+      "type": "object",
+      "properties": {
+        "ontologyAnnotation": {
+          "$ref": "ontology_annotation_schema.json#"
+        }
+      }
+    },
+    "technologyPlatform": {
+      "type": "string"
+    },
+    ,
+    "topologyModifiers": {
+      "$ref": "assay_topology_modifiers_schema.json#"
+    }
+  }
+}

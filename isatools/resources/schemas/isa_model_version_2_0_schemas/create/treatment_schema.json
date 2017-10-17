@@ -1,13 +1,13 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema-extension",
     "title": "ISA treatment schema",
-    "description": "JSON-schema representing a study factor, aka an independent variable in the ISA model v2.0",
+    "description": "JSON-schema representing a treatment in the ISA model v2.0",
     "type": "object",
     "properties": {
         "name" : {
             "type" : "string"
         },
-        "treatment_type" : {
+        "treatmentType" : {
             "enum": [ "chemical agent based treatment", "biological agent based treatment", "physical agent based treatment", "behavorial agent based treatment"]
         },
         "isConcomitant" : {
@@ -19,7 +19,7 @@
                 "$ref": "identifier_info_schema.json#"
             }
         },
-        "values" : {
+        "factorValues" : {
             "type" : "array",
             "items" :  {
                 "$ref": "factor_schema.json#"

@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema-extension",
+    "title": "ISA treatment sequence schema",
+    "description": "JSON-schema representing a treatment sequence (treatment plan) in the ISA model v2.0",
+    "type": "object",
+    "properties": {
+        "ranked_treatments": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                    "properties": {
+                        "treatment": {
+                            "$ref": "treatment_schema.json#"
+                        },
+                        "rank": "integer"
+                    }
+            }
+        }
+    }
+}
