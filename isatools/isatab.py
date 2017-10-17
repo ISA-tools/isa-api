@@ -2925,12 +2925,11 @@ def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigat
                 sources, samples, _, __, processes, characteristic_categories, unit_categories = ProcessSequenceFactory(
                     ontology_sources=investigation.ontology_source_references, study_protocols=study.protocols,
                     study_factors=study.factors).create_from_df(study_tfile_df)
-                study.sources = list(sources.values())
-                study.samples = list(samples.values())
-                study.samples = list(samples.values())
+                study.sources = sorted(list(sources.values()), key=lambda x: x.name, reverse=False)
+                study.samples = sorted(list(samples.values()), key=lambda x: x.name, reverse=False)
                 study.process_sequence = list(processes.values())
-                study.characteristic_categories = list(characteristic_categories.values())
-                study.units = list(unit_categories.values())
+                study.characteristic_categories = sorted(list(characteristic_categories.values()), key=lambda x: x.term, reverse=False)
+                study.units = sorted(list(unit_categories.values()), key=lambda x: x.term, reverse=False)
 
                 for process in study.process_sequence:
                     try:
@@ -2974,7 +2973,7 @@ def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigat
                     assay.data_files = sorted(list(data.values()), key=lambda x:x.filename, reverse=False)
                     assay.process_sequence = list(processes.values())
                     assay.characteristic_categories = sorted(list(characteristic_categories.values()), key=lambda x: x.term, reverse=False)
-                    assay.units = list(unit_categories.values())
+                    assay.units = sorted(list(unit_categories.values()), key=lambda x: x.term, reverse=False)
 
                     for process in assay.process_sequence:
                         try:
