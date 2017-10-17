@@ -8,6 +8,8 @@ import logging
 import os.path
 import re
 import sys
+import csv
+import numpy
 from string import Template
 
 from isatools import config
@@ -236,7 +238,7 @@ def get_study_df(input_dir, study):
 # Make names {{{1
 ################################################################
 
-def make_names(u, uniq=False):
+def make_names(u, uniq = False):
     v = u[:]
     j = 0
     for i in range(len(v)):
@@ -469,7 +471,7 @@ def convert2w4m(input_dir, study_filename=None, assay_filename=None,
 def write_data_frame(df, output_dir, template_filename, study, assay):
     
     # NA values are removed by `read_tfile()` and replaced by ''. Put them back here.
-    df_with_na = df.replace(to_replace = '', value = 'NA')
+    df_with_na = df.replace(to_replace = '', value = numpy.nan)
     
     # Set filename
     filename = FilenameTemplate(template_filename).substitute(s=study, a=assay)
@@ -477,7 +479,7 @@ def write_data_frame(df, output_dir, template_filename, study, assay):
         filename = os.path.join(output_dir, filename)
 
     # Write data frame
-    df_with_na.to_csv(path_or_buf=filename, sep='\t', na_rep='NA', index = False)
+    df_with_na.to_csv(path_or_buf=filename, sep='\t', na_rep='NA', index = False, quoting = csv.QUOTE_NONNUMERIC)
 
 
 # Write assays into files {{{1
