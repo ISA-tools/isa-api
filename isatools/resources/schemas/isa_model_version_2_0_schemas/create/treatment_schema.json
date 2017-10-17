@@ -4,25 +4,18 @@
     "description": "JSON-schema representing a treatment in the ISA model v2.0",
     "type": "object",
     "properties": {
-        "name" : {
-            "type" : "string"
+        "treatment_type" : {
+            "enum": [ 
+                "chemical intervention", 
+                "behavioural intervention", 
+                "surgical intervention", 
+                "biological intervention",
+                "radiological intervention"]
         },
-        "treatmentType" : {
-            "enum": [ "chemical agent based treatment", "biological agent based treatment", "physical agent based treatment", "behavorial agent based treatment"]
-        },
-        "isConcomitant" : {
-               "type" : "boolean"
-        },
-        "identifierInfo": {
-            "type": "array",
-            "items": {
-                "$ref": "identifier_info_schema.json#"
-            }
-        },
-        "factorValues" : {
+        "factor_values" : {
             "type" : "array",
             "items" :  {
-                "$ref": "factor_schema.json#"
+                "$ref": "factor_value_schema.json#"
             }
         }
     }
