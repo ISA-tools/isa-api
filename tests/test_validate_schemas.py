@@ -29,7 +29,7 @@ class TestIsaJsonSchemas(unittest.TestCase):
         folder = os.path.join(self._schemas_dir, "isa_model_version_2_0_schemas", "core")
         # self.folder = "../isatools/schemas/isa_model_version_2_0_schemas/core"
         self.validateSchemasInFolder(folder)
-        folder = os.path.join(self._schemas_dir, "isa_model_version_2_0_schemas", "DFT")
+        folder = os.path.join(self._schemas_dir, "isa_model_version_2_0_schemas", "create")
         self.validateSchemasInFolder(folder)
 
     def test_cedar_schemas(self):
