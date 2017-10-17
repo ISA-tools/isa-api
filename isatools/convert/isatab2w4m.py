@@ -335,8 +335,10 @@ def load_investigation(investigation_file):
 
 def get_sample_names(assay, assay_df, measures_df):
     # Get sample names
-    sample_names = [sample.name for sample in assay.materials['samples']]
+    sample_names = [sample.name for sample in assay.samples]
     measures_cols = measures_df.axes[1]
+    if sample_names is not None:
+        raise RuntimeError('SAMPLE_NAMES[0] = ' + sample_names[0])
 
     # XXX If the column 'Sample Name' of the assay file contains duplicated
     # names, then `assay.materials['samples']]` will return less sample names
@@ -349,6 +351,7 @@ def get_sample_names(assay, assay_df, measures_df):
         for col in assay_df.axes[1]:
             n = assay_df.get(col).tolist()
             if len(n) == len(set(n)) and all([x in measures_cols for x in n]):
+                raise RuntimeError('TAKE COL ' + col + ' FOR SAMPLE NAMES')
                 sample_names = n
                 break
 
@@ -434,7 +437,7 @@ def convert2w4m(input_dir, study_filename=None, assay_filename=None,
     if study is None:
         info('No studies found in investigation file.')
         return
-    info('Processing study "{}".'.format(study))
+    info('Processing study "{}".'.format(study.filename))
 
     # Select assays
     assays = select_assays(study=study, assay_filename=assay_filename,
@@ -507,33 +510,8 @@ def filter_na_values(assays, table, cols):
                             inplace=True)
 
 
-# Main {{{1
+# Convert {{{1
 ################################################################
-
-if __name__ == '__main__':
-
-    # Parse command line arguments
-    args_dict = read_args()
-
-    # Convert assays to W4M 3 tables format
-    assays = convert2w4m(input_dir=args_dict['input_dir'],
-                         study_filename=args_dict['study_filename'],
-                         assay_filename=args_dict['assay_filename'],
-                         all_assays=args_dict['all_assays'])
-
-    # Filter NA values TODO
-    if args_dict['samp_na_filtering'] is not None:
-        filter_na_values(assays, table='samp',
-                         cols=args_dict['samp_na_filering'])
-    if args_dict['var_na_filtering'] is not None:
-        filter_na_values(assays, table='var', cols=args_dict['var_na_filering'])
-
-    # Write into files
-    write_assays(assays, output_dir=args_dict['output_dir'],
-                 samp_file=args_dict['sample_output'],
-                 var_file=args_dict['variable_output'],
-                 mat_file=args_dict['matrix_output'])
-
 
 def convert(input_dir, output_dir, sample_output, variable_output,
             matrix_output, study_filename=None, assay_filename=None,
@@ -550,3 +528,30 @@ def convert(input_dir, output_dir, sample_output, variable_output,
 
     write_assays(assays, output_dir=output_dir, samp_file=sample_output,
                  var_file=variable_output, mat_file=matrix_output)
+
+# Main {{{1
+################################################################
+
+if __name__ == '__main__':
+
+    # Parse command line arguments
+    args_dict = read_args()
+
+    # Convert assays to W4M 3 tables format
+    assays = convert2w4m(input_dir=args_dict['input_dir'],
+                         study_filename=args_dict['study_filename'],
+                         assay_filename=args_dict['assay_filename'],
+                         all_assays=args_dict['all_assays'])
+
+    # Filter NA values
+    if args_dict['samp_na_filtering'] is not None:
+        filter_na_values(assays, table='samp',
+                         cols=args_dict['samp_na_filering'])
+    if args_dict['var_na_filtering'] is not None:
+        filter_na_values(assays, table='var', cols=args_dict['var_na_filering'])
+
+    # Write into files
+    write_assays(assays, output_dir=args_dict['output_dir'],
+                 samp_file=args_dict['sample_output'],
+                 var_file=args_dict['variable_output'],
+                 mat_file=args_dict['matrix_output'])
