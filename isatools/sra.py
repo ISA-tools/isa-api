@@ -180,25 +180,29 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                 'exp_alias': '{0}:generic_assay:{1}'.format(
                                     study_acc, '{0}:{1}'.format(
                                         iassay.filename[:-4],
-                                        assay_seq_process.name))
+                                        assay_seq_process.name)),
+                                'data_files': []
                             }
                         datafiles = list(filter(
                             lambda datafile: isinstance(datafile, DataFile),
                             assay_seq_process.outputs
                         ))
-                        checksum = '00000000000000000000000000000000'
-                        if datafilehashes is not None:
-                            checksum = datafilehashes[datafiles[0].filename]
-                            # raises AttributeError if file not found
-                        filetype = datafiles[0].filename[
-                                   datafiles[0].filename.index('.') + 1:]
-                        if filetype.endswith('.gz'):
-                            filetype = filetype[:filetype.index('.')]
-                        assay_to_export['data_file'] = {
-                            'filename': datafiles[0].filename,
-                            'filetype': filetype,
-                            'checksum': checksum
-                        }
+                        for datafile in datafiles:
+                            checksum = '00000000000000000000000000000000'
+                            if datafilehashes is not None:
+                                checksum = datafilehashes[datafile.filename]
+                                # raises AttributeError if file not found
+                            filetype = datafile.filename[
+                                       datafile.filename.index('.') + 1:]
+                            if filetype.endswith('.gz'):
+                                filetype = filetype[:filetype.index('.')]
+                            assay_to_export['data_files'].append(
+                                {
+                                    'filename': datafile.filename,
+                                    'filetype': filetype,
+                                    'checksum': checksum
+                                }
+                            )
                         source = None
                         matching_sources = [
                             p.inputs for p in istudy.process_sequence

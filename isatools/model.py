@@ -80,11 +80,14 @@ class Comment(object):
         raise ISAModelAttributeError('Comment.value must be a string')
 
     def __repr__(self):
-        return 'isatools.model.Comment(name="{comment.name}", ' \
-               'value="{comment.value}")'.format(comment=self)
+        return "isatools.model.Comment(name='{comment.name}', " \
+               "value='{comment.value}')".format(comment=self)
 
     def __str__(self):
-        return 'Comment[{comment.name}]\t{comment.value}'.format(comment=self)
+        return """Comment(
+    name={comment.name}
+    value={comment.value}
+)""".format(comment=self)
 
     def __hash__(self):
         return hash(repr(self))
@@ -480,18 +483,18 @@ class Investigation(Commentable, MetadataMixin, object):
                 'objects')
 
     def __repr__(self):
-        return 'isatools.model.Investigation(' \
-               'identifier="{investigation.identifier}", ' \
-               'filename="{investigation.filename}", ' \
-               'title="{investigation.title}", ' \
-               'submission_date="{investigation.submission_date}", ' \
-               'public_release_date="{investigation.public_release_date}", ' \
-               'ontology_source_references=' \
-               '{investigation.ontology_source_references}, ' \
-               'publications={investigation.publications}, ' \
-               'contacts={investigation.contacts}, ' \
-               'studies={investigation.studies}, ' \
-               'comments={investigation.comments})'.format(investigation=self)
+        return "isatools.model.Investigation(" \
+               "identifier='{investigation.identifier}', " \
+               "filename='{investigation.filename}', " \
+               "title='{investigation.title}', " \
+               "submission_date='{investigation.submission_date}', " \
+               "public_release_date='{investigation.public_release_date}', " \
+               "ontology_source_references=" \
+               "{investigation.ontology_source_references}, " \
+               "publications={investigation.publications}, " \
+               "contacts={investigation.contacts}, " \
+               "studies={investigation.studies}, " \
+               "comments={investigation.comments})".format(investigation=self)
 
     def __str__(self):
         return """Investigation(
@@ -613,11 +616,11 @@ class OntologySource(Commentable):
             self.__description = val
 
     def __repr__(self):
-        return 'isatools.model.OntologySource(name="{ontology_source.name}", ' \
-               'file="{ontology_source.file}", ' \
-               'version="{ontology_source.version}", ' \
-               'description="{ontology_source.description}", ' \
-               'comments={ontology_source.comments})'\
+        return "isatools.model.OntologySource(name='{ontology_source.name}', " \
+               "file='{ontology_source.file}', " \
+               "version='{ontology_source.version}', " \
+               "description='{ontology_source.description}', " \
+               "comments={ontology_source.comments})" \
                 .format(ontology_source=self)
 
     def __str__(self):
@@ -707,11 +710,11 @@ class OntologyAnnotation(Commentable):
             self.__term_accession = val
 
     def __repr__(self):
-        return 'isatools.model.OntologyAnnotation(' \
-               'term="{ontology_annotation.term}", ' \
-               'term_source={term_source}, ' \
-               'term_accession="{ontology_annotation.term_accession}", ' \
-               'comments={ontology_annotation.comments})' \
+        return "isatools.model.OntologyAnnotation(" \
+               "term='{ontology_annotation.term}', " \
+               "term_source={term_source}, " \
+               "term_accession='{ontology_annotation.term_accession}', " \
+               "comments={ontology_annotation.comments})" \
                 .format(ontology_annotation=self,
                         term_source=repr(self.term_source))
 
@@ -836,11 +839,11 @@ class Publication(Commentable):
             self.__status = val
 
     def __repr__(self):
-        return 'isatools.model.Publication(' \
-               'pubmed_id="{publication.pubmed_id}", doi="{publication.doi}", ' \
-               'author_list="{publication.author_list}", ' \
-               'title="{publication.title}", status={status}, ' \
-               'comments={publication.comments})'.format(
+        return "isatools.model.Publication(" \
+               "pubmed_id='{publication.pubmed_id}', doi='{publication.doi}', " \
+               "author_list='{publication.author_list}', " \
+               "title='{publication.title}', status={status}, " \
+               "comments={publication.comments})".format(
                 publication=self, status=repr(self.status))
 
     def __str__(self):
@@ -1038,13 +1041,13 @@ class Person(Commentable):
                 .format(type(self).__name__))
 
     def __repr__(self):
-        return 'isatools.model.Person(last_name="{person.last_name}", ' \
-               'first_name="{person.first_name}", ' \
-               'mid_initials="{person.mid_initials}", ' \
-               'email="{person.email}", phone="{person.phone}", ' \
-               'fax="{person.fax}", address="{person.address}", ' \
-               'affiliation="{person.affiliation}", roles={person.roles}, ' \
-               'comments={person.comments})' \
+        return "isatools.model.Person(last_name='{person.last_name}', " \
+               "first_name='{person.first_name}', " \
+               "mid_initials='{person.mid_initials}', " \
+               "email='{person.email}', phone='{person.phone}', " \
+               "fax='{person.fax}', address='{person.address}', " \
+               "affiliation='{person.affiliation}', roles={person.roles}, " \
+               "comments={person.comments})" \
                 .format(person=self)
 
     def __str__(self):
@@ -1709,20 +1712,20 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                 .format(type(self).__name__))
 
     def __repr__(self):
-        return 'isatools.model.Study(filename="{study.filename}", ' \
-               'identifier="{study.identifier}", title="{study.title}", ' \
-               'description="{study.description}", ' \
-               'submission_date="{study.submission_date}", ' \
-               'public_release_date="{study.public_release_date}", ' \
-               'contacts={study.contacts}, ' \
-               'design_descriptors={study.design_descriptors}, ' \
-               'publications={study.publications}, factors={study.factors}, ' \
-               'protocols={study.protocols}, assays={study.assays}, ' \
-               'sources={study.sources}, samples={study.samples}, ' \
-               'process_sequence={study.process_sequence}, ' \
-               'other_material={study.other_material}, ' \
-               'characteristic_categories={study.characteristic_categories}, ' \
-               'comments={study.comments}, units={study.units})'\
+        return "isatools.model.Study(filename='{study.filename}', " \
+               "identifier='{study.identifier}', title='{study.title}', " \
+               "description='{study.description}', " \
+               "submission_date='{study.submission_date}', " \
+               "public_release_date='{study.public_release_date}', " \
+               "contacts={study.contacts}, " \
+               "design_descriptors={study.design_descriptors}, " \
+               "publications={study.publications}, factors={study.factors}, " \
+               "protocols={study.protocols}, assays={study.assays}, " \
+               "sources={study.sources}, samples={study.samples}, " \
+               "process_sequence={study.process_sequence}, " \
+               "other_material={study.other_material}, " \
+               "characteristic_categories={study.characteristic_categories}, " \
+               "comments={study.comments}, units={study.units})"\
                 .format(study=self)
 
     def __str__(self):
@@ -1841,8 +1844,8 @@ class StudyFactor(Commentable):
             self.__factor_type = val
 
     def __repr__(self):
-        return 'isatools.model.StudyFactor(name="{study_factor.name}", ' \
-               'factor_type={factor_type}, comments={study_factor.comments})' \
+        return "isatools.model.StudyFactor(name='{study_factor.name}', " \
+               "factor_type={factor_type}, comments={study_factor.comments})" \
                 .format(study_factor=self, factor_type=repr(self.factor_type))
 
     def __str__(self):
@@ -1981,14 +1984,18 @@ class Assay(Commentable, StudyAssayMixin, object):
                 .format(type(self).__name__))
 
     def __repr__(self):
-        return 'isatools.model.Assay(measurement_type={measurement_type}, ' \
-               'technology_type={technology_type}, ' \
-               'technology_platform="{assay.technology_platform}", ' \
-               'filename="{assay.filename}", data_files={assay.data_files}, ' \
-               'samples={assay.samples}, process_sequence={assay.process_sequence}, ' \
-               'other_material={assay.other_material}, ' \
-               'characteristic_categories={assay.characteristic_categories}, ' \
-               'comments={assay.comments}, units={assay.units})'.format(assay=self, measurement_type=repr(self.measurement_type), technology_type=repr(self.technology_type))
+        return "isatools.model.Assay(measurement_type={measurement_type}, " \
+               "technology_type={technology_type}, " \
+               "technology_platform='{assay.technology_platform}', " \
+               "filename='{assay.filename}', data_files={assay.data_files}, " \
+               "samples={assay.samples}, " \
+               "process_sequence={assay.process_sequence}, " \
+               "other_material={assay.other_material}, " \
+               "characteristic_categories={assay.characteristic_categories}, " \
+               "comments={assay.comments}, units={assay.units})" \
+                .format(assay=self, 
+                        measurement_type=repr(self.measurement_type), 
+                        technology_type=repr(self.technology_type))
 
     def __str__(self):
         return """Assay(
@@ -2204,10 +2211,28 @@ class Protocol(Commentable):
                                          'containing OntologyAnnotations')
 
     def __repr__(self):
-        return 'Protocol(name="{0.name}", protocol_type={0.protocol_type}, ' \
-               'uri="{0.uri}", version="{0.version}", ' \
-               'parameters={0.parameters}, components={0.components}, ' \
-               'comments={0.comments})'.format(self)
+        return "isatools.model.Protocol(name='{protocol.name}', " \
+               "protocol_type={protocol_type}, " \
+               "uri='{protocol.uri}', version='{protocol.version}', " \
+               "parameters={protocol.parameters}, " \
+               "components={protocol.components}, " \
+               "comments={protocol.comments})".format(
+            protocol=self, protocol_type=repr(self.protocol_type))
+
+    def __str__(self):
+        return """Protocol(
+    name={protocol.name}
+    protocol_type={protocol_type}
+    uri={protocol.uri}
+    version={protocol.version}
+    parameters={num_parameters} ProtocolParameter objects
+    components={num_components} OntologyAnnotation objects
+    comments={num_comments} Comment objects
+)""".format(protocol=self, protocol_type=
+            self.protocol_type.term if self.protocol_type else '',
+            num_parameters=len(self.parameters),
+            num_components=len(self.components),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -2259,8 +2284,17 @@ class ProtocolParameter(Commentable):
             self.__parameter_name = val
 
     def __repr__(self):
-        return 'ProtocolParameter(parameter_name={0.parameter_name}, ' \
-               'comments={0.comments})'.format(self)
+        return 'isatools.model.ProtocolParameter(' \
+               'parameter_name={parameter_name}, ' \
+               'comments={parameter.comments})'.format(
+                parameter=self, parameter_name=repr(self.parameter_name))
+
+    def __str__(self):
+        return """ProtocolParameter(
+    parameter_name={parameter_name}
+    comments={num_comments} Comment objects
+)""".format(parameter_name=self.parameter_name.term if
+        self.parameter_name else '', num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -2339,8 +2373,20 @@ class ParameterValue(object):
             self.__unit = val
 
     def __repr__(self):
-        return 'ParameterValue(category="{0.category}", value={0.value}, ' \
-               'unit={0.unit})'.format(self)
+        return 'isatools.model.ParameterValue(category={category}, ' \
+               'value={value}, unit={unit})'.format(
+            category=repr(self.category), value=repr(self.value),
+            unit=repr(self.unit))
+
+    def __str__(self):
+        return """ParameterValue(
+    category={category}
+    value={value}
+    unit={unit}
+)""".format(category=self.category.parameter_name.term if self.category else '',
+            value=self.value.term if isinstance(
+            self.value, OntologyAnnotation) else repr(self.value),
+            unit=self.unit.term if self.unit else '')
 
     def __hash__(self):
         return hash(repr(self))
@@ -2404,9 +2450,18 @@ class ProtocolComponent(Commentable):
             self.__component_type = val
 
     def __repr__(self):
-        return 'ProtocolComponent(name="{0.name}", ' \
-               'category={0.component_type}, comments={0.comments})' \
-               .format(self)
+        return "isatools.model.ProtocolComponent(name='{component.name}', " \
+               "category={component_type}, " \
+               "comments={component.comments})".format(
+                component=self, component_type=repr(self.component_type))
+
+    def __str__(self):
+        return """ProtocolComponent(
+    name={component.name}
+    category={component_type}
+    comments={num_comments} Comment objects
+)""".format(component=self, component_type=self.component_type.term if
+    self.component_type else '', num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -2486,8 +2541,17 @@ class Source(Commentable):
         return result
 
     def __repr__(self):
-        return 'Source(name="{0.name}", characteristics={0.characteristics}, ' \
-               'comments={0.comments})'.format(self)
+        return "isatools.model.Source(name='{source.name}', " \
+               "characteristics={source.characteristics}, " \
+               "comments={source.comments})".format(source=self)
+
+    def __str__(self):
+        return """Source(
+    name={source.name}
+    characteristics={num_characteristics} Characteristic objects
+    comments={num_comments} Comment objects
+)""".format(source=self, num_characteristics=len(self.characteristics),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -2718,10 +2782,23 @@ class Sample(Commentable):
                 'Sample.derives_from must be iterable containing Sources')
 
     def __repr__(self):
-        return 'Sample(name="{0.name}", characteristics={0.characteristics}, ' \
-               'factor_values={0.factor_values}, ' \
-               'derives_from={0.derives_from}, comments={0.comments})'\
-                .format(self)
+        return "isatools.model.Sample(name='{sample.name}', " \
+               "characteristics={sample.characteristics}, " \
+               "factor_values={sample.factor_values}, " \
+               "derives_from={sample.derives_from}, " \
+               "comments={sample.comments})".format(sample=self)
+
+    def __str__(self):
+        return """Sample(
+    name={sample.name}
+    characteristics={num_characteristics} Characteristic objects
+    factor_values={num_factor_values} FactorValue objects
+    derives_from={num_derives_from} Source objects
+    comments={num_comments} Comment objects
+)""".format(sample=self, num_characteristics=len(self.characteristics),
+            num_factor_values=len(self.factor_values),
+            num_derives_from=len(self.derives_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -2810,9 +2887,19 @@ class Extract(Material):
         self.type = 'Extract Name'
 
     def __repr__(self):
-        return 'Extract(name="{0.name}", type="{0.type}", ' \
-               'characteristics={0.characteristics}, comments={0.comments})' \
-               .format(self)
+        return "isatools.model.Extract(name='{extract.name}', " \
+               "type='{extract.type}', " \
+               "characteristics={extract.characteristics}, " \
+               "comments={extract.comments})".format(extract=self)
+
+    def __str__(self):
+        return """Extract(
+    name={extract.name}
+    type={extract.type}
+    characteristics={num_characteristics} Characteristic objects
+    comments={num_comments} Comment objects
+)""".format(extract=self, num_characteristics=len(self.characteristics),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -2837,15 +2924,26 @@ class LabeledExtract(Material):
         self.type = 'Labeled Extract Name'
 
     def __repr__(self):
-        return 'LabeledExtract(name="{0.name}", type="{0.type}", ' \
-               'characteristics={0.characteristics}, comments={0.comments})' \
-            .format(self)
+        return "isatools.model.LabeledExtract(name='{labeled_extract.name}', " \
+               "type='Labeled Extract Name', " \
+               "characteristics={labeled_extract.characteristics}, " \
+               "comments={labeled_extract.comments})"\
+                .format(labeled_extract=self)
+
+    def __str__(self):
+        return """LabeledExtract(
+    name={labeled_extract.name}
+    type=LabeledExtract Name
+    characteristics={num_characteristics} Characteristic objects
+    comments={num_comments} Comment objects
+)""".format(labeled_extract=self, num_characteristics=len(self.characteristics),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, Extract) \
+        return isinstance(other, LabeledExtract) \
                and self.name == other.name \
                and self.characteristics == other.characteristics \
                and self.type == other.type \
@@ -2917,9 +3015,20 @@ class FactorValue(Commentable):
             self.__unit = val
 
     def __repr__(self):
-        return 'FactorValue(factor_name={factor_name}, ' \
-               'value={factor_value.value}, unit={factor_value.unit})' \
-            .format(factor_value=self, factor_name=repr(self.factor_name))
+        return "isatools.model.FactorValue(factor_name={factor_name}, " \
+               "value={value}, unit={unit})" \
+                .format(factor_name=repr(self.factor_name), 
+                        value=repr(self.value), unit=repr(self.unit))
+
+    def __str__(self):
+        return """FactorValue(
+    factor_name={factor_name}
+    value={value}
+    unit={unit}
+)""".format(factor_name=self.factor_name.name if self.factor_name else '',
+            value=self.value.term if isinstance(
+                self.value, OntologyAnnotation) else repr(self.value),
+            unit=self.unit.term if self.unit else '')
 
     def __hash__(self):
         return hash(repr(self))
@@ -3130,20 +3239,20 @@ class Process(Commentable):
     #            'date="{0.date}", performer="{0.performer}", ' \
     #            'inputs={0.inputs}, outputs={0.outputs})'.format(self)
     #
-    # def __hash__(self):
-    #     return hash(repr(self))
-    #
-    # def __eq__(self, other):
-    #     return isinstance(other, Process) \
-    #            and self.name == other.name \
-    #            and self.executes_protocol == other.executes_protocol \
-    #            and self.date == other.date \
-    #            and self.performer == other.performer \
-    #            and self.inputs == other.inputs \
-    #            and self.outputs == other.outputs
-    #
-    # def __ne__(self, other):
-    #     return not self == other
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Process) \
+               and self.name == other.name \
+               and self.executes_protocol == other.executes_protocol \
+               and self.date == other.date \
+               and self.performer == other.performer \
+               and self.inputs == other.inputs \
+               and self.outputs == other.outputs
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class DataFile(Commentable):
@@ -3214,9 +3323,20 @@ class DataFile(Commentable):
                     type(self).__name__))
 
     def __repr__(self):
-        return 'DataFile(filename="{0.filename}", label="{0.label}", ' \
-               'generated_from={0.generated_from}, comments={0.comments})' \
-               .format(self)
+        return "isatools.model.DataFile(filename='{data_file.filename}', " \
+               "label='{data_file.label}', " \
+               "generated_from={data_file.generated_from}, " \
+               "comments={data_file.comments})" \
+               .format(data_file=self)
+
+    def __str__(self):
+        return """DataFile(
+    filename={data_file.filename}
+    label={data_file.label}
+    generated_from={num_generated_from} Sample objects
+    comments={num_comments} Comment objects
+)""".format(data_file=self, num_generated_from=len(self.generated_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -3241,9 +3361,17 @@ class RawDataFile(DataFile):
         self.label = 'Raw Data File'
 
     def __repr__(self):
-        return 'RawDataFile(filename="{0.filename}" ' \
-               'generated_from={0.generated_from}, comments={0.comments})' \
-               .format(self)
+        return "isatools.model.RawDataFile(filename='{data_file.filename}', " \
+               "generated_from={data_file.generated_from}, " \
+               "comments={data_file.comments})".format(data_file=self)
+
+    def __str__(self):
+        return """RawDataFile(
+    filename={data_file.filename}
+    generated_from={num_generated_from} Sample objects
+    comments={num_comments} Comment objects
+)""".format(data_file=self, num_generated_from=len(self.generated_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -3267,9 +3395,18 @@ class DerivedDataFile(DataFile):
         self.label = 'Derived Data File'
 
     def __repr__(self):
-        return 'DerivedDataFile(filename="{0.filename}" ' \
-               'generated_from={0.generated_from}, comments={0.comments})' \
-               .format(self)
+        return "isatools.model.DerivedDataFile(" \
+               "filename='{data_file.filename}', " \
+               "generated_from={data_file.generated_from}, " \
+               "comments={data_file.comments})".format(data_file=self)
+
+    def __str__(self):
+        return """DerivedDataFile(
+    filename={data_file.filename}
+    generated_from={num_generated_from} Sample objects
+    comments={num_comments} Comment objects
+)""".format(data_file=self, num_generated_from=len(self.generated_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -3293,9 +3430,17 @@ class RawSpectralDataFile(DataFile):
         self.label = 'Raw Spectral Data File'
 
     def __repr__(self):
-        return 'RawSpectralDataFile(filename="{0.filename}" ' \
-               'generated_from={0.generated_from}, comments={0.comments})' \
+        return "isatools.model.RawSpectralDataFile(filename='{0.filename}', " \
+               "generated_from={0.generated_from}, comments={0.comments})" \
             .format(self)
+
+    def __str__(self):
+        return """RawSpectralDataFile(
+    filename={data_file.filename}
+    generated_from={num_generated_from} Sample objects
+    comments={num_comments} Comment objects
+)""".format(data_file=self, num_generated_from=len(self.generated_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -3319,9 +3464,18 @@ class DerivedArrayDataFile(DataFile):
         self.label = 'Derived Array Data File'
 
     def __repr__(self):
-        return 'DerivedArrayDataFile(filename="{0.filename}" ' \
-               'generated_from={0.generated_from}, comments={0.comments})' \
-            .format(self)
+        return "isatools.model.DerivedArrayDataFile(" \
+               "filename='{data_file.filename}' " \
+               "generated_from={data_file.generated_from}, " \
+               "comments={data_file.comments})".format(data_file=self)
+
+    def __str__(self):
+        return """DerivedArrayDataFile(
+    filename={data_file.filename}
+    generated_from={num_generated_from} Sample objects
+    comments={num_comments} Comment objects
+)""".format(data_file=self, num_generated_from=len(self.generated_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -3345,9 +3499,18 @@ class ArrayDataFile(DataFile):
         self.label = 'Array Data File'
 
     def __repr__(self):
-        return 'ArrayDataFile(filename="{0.filename}" ' \
-               'generated_from={0.generated_from}, comments={0.comments})' \
-            .format(self)
+        return "isatools.model.ArrayDataFile(" \
+               "filename='{data_file.filename}', " \
+               "generated_from={data_file.generated_from}, " \
+               "comments={data_file.comments})".format(data_file=self)
+
+    def __str__(self):
+        return """ArrayDataFile(
+    filename={data_file.filename}
+    generated_from={num_generated_from} Sample objects
+    comments={num_comments} Comment objects
+)""".format(data_file=self, num_generated_from=len(self.generated_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -3371,9 +3534,18 @@ class DerivedSpectralDataFile(DataFile):
         self.label = 'Derived Spectral Data File'
 
     def __repr__(self):
-        return 'DerivedSpectralDataFile(filename="{0.filename}" ' \
-               'generated_from={0.generated_from}, comments={0.comments})' \
-            .format(self)
+        return "isatools.model.DerivedSpectralDataFile(" \
+               "filename='{data_file.filename}', " \
+               "generated_from={data_file.generated_from}, " \
+               "comments={data_file.comments})".format(data_file=self)
+
+    def __str__(self):
+        return """DerivedSpectralDataFile(
+    filename={data_file.filename}
+    generated_from={num_generated_from} Sample objects
+    comments={num_comments} Comment objects
+)""".format(data_file=self, num_generated_from=len(self.generated_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -3397,9 +3569,18 @@ class ProteinAssignmentFile(DataFile):
         self.label = 'Protein Assignment File'
 
     def __repr__(self):
-        return 'ProteinAssignmentFile(filename="{0.filename}" ' \
-               'generated_from={0.generated_from}, comments={0.comments})' \
-            .format(self)
+        return "isatools.model.ProteinAssignmentFile(" \
+               "filename='{data_file.filename}', " \
+               "generated_from={data_file.generated_from}, " \
+               "comments={data_file.comments})".format(data_file=self)
+
+    def __str__(self):
+        return """ProteinAssignmentFile(
+    filename={data_file.filename}
+    generated_from={num_generated_from} Sample objects
+    comments={num_comments} Comment objects
+)""".format(data_file=self, num_generated_from=len(self.generated_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -3423,9 +3604,18 @@ class PeptideAssignmentFile(DataFile):
         self.label = 'Peptide Assignment File'
 
     def __repr__(self):
-        return 'PeptideAssignmentFile(filename="{0.filename}" ' \
-               'generated_from={0.generated_from}, comments={0.comments})' \
-            .format(self)
+        return "isatools.model.PeptideAssignmentFile(" \
+               "filename='{data_file.filename}', " \
+               "generated_from={data_file.generated_from}, " \
+               "comments={data_file.comments})".format(data_file=self)
+
+    def __str__(self):
+        return """PeptideAssignmentFile(
+    filename={data_file.filename}
+    generated_from={num_generated_from} Sample objects
+    comments={num_comments} Comment objects
+)""".format(data_file=self, num_generated_from=len(self.generated_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -3449,9 +3639,18 @@ class DerivedArrayDataMatrixFile(DataFile):
         self.label = 'Derived Array Data Matrix File'
 
     def __repr__(self):
-        return 'DerivedArrayDataMatrixFile(filename="{0.filename}" ' \
-               'generated_from={0.generated_from}, comments={0.comments})' \
-            .format(self)
+        return "isatools.model.DerivedArrayDataMatrixFile(" \
+               "filename='{data_file.filename}', " \
+               "generated_from={data_file.generated_from}, " \
+               "comments={data_file.comments})".format(data_file=self)
+
+    def __str__(self):
+        return """DerivedArrayDataMatrixFile(
+    filename={data_file.filename}
+    generated_from={num_generated_from} Sample objects
+    comments={num_comments} Comment objects
+)""".format(data_file=self, num_generated_from=len(self.generated_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -3476,10 +3675,18 @@ class PostTranslationalModificationAssignmentFile(DataFile):
         self.label = 'Post Translational Modification Assignment File'
 
     def __repr__(self):
-        return 'PostTranslationalModificationAssignmentFile(' \
-               'filename="{0.filename}" generated_from={0.generated_from}, ' \
-               'comments={0.comments})' \
-            .format(self)
+        return "isatools.model.PostTranslationalModificationAssignmentFile(" \
+               "filename='{data_file.filename}', " \
+               "generated_from={data_file.generated_from}, " \
+               "comments={data_file.comments})".format(data_file=self)
+
+    def __str__(self):
+        return """PostTranslationalModificationAssignmentFile(
+    filename={data_file.filename}
+    generated_from={num_generated_from} Sample objects
+    comments={num_comments} Comment objects
+)""".format(data_file=self, num_generated_from=len(self.generated_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -3503,9 +3710,18 @@ class AcquisitionParameterDataFile(DataFile):
         self.label = 'Acquisition Parameter Data File'
 
     def __repr__(self):
-        return 'AcquisitionParameterDataFile(filename="{0.filename}" ' \
-               'generated_from={0.generated_from}, comments={0.comments})' \
-               .format(self)
+        return "isatools.model.AcquisitionParameterDataFile(" \
+               "filename='{data_file.filename}', " \
+               "generated_from={data_file.generated_from}, " \
+               "comments={data_file.comments})".format(data_file=self)
+
+    def __str__(self):
+        return """AcquisitionParameterDataFile(
+    filename={data_file.filename}
+    generated_from={num_generated_from} Sample objects
+    comments={num_comments} Comment objects
+)""".format(data_file=self, num_generated_from=len(self.generated_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -3529,9 +3745,18 @@ class FreeInductionDecayDataFile(DataFile):
         self.label = 'Free Induction Decay Data File'
 
     def __repr__(self):
-        return 'FreeInductionDecayDataFile(filename="{0.filename}" ' \
-               'generated_from={0.generated_from}, comments={0.comments})' \
-            .format(self)
+        return "isatools.model.FreeInductionDecayDataFile(" \
+               "filename='{data_file.filename}', " \
+               "generated_from={data_file.generated_from}, " \
+               "comments={data_file.comments})".format(data_file=self)
+
+    def __str__(self):
+        return """FreeInductionDecayDataFile(
+    filename={data_file.filename}
+    generated_from={num_generated_from} Sample objects
+    comments={num_comments} Comment objects
+)""".format(data_file=self, num_generated_from=len(self.generated_from),
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))

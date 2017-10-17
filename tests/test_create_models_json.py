@@ -2,10 +2,8 @@
 import json
 import unittest
 
-from isatools.create.models import AssayTopologyModifiers
-from isatools.create.models import AssayType
-from isatools.create.models import SampleAssayPlan
-from isatools.create.models import SampleAssayPlanEncoder
+from isatools.model import *
+from isatools.create.models import *
 
 
 def ordered(o):  # to enable comparison of JSONs with lists using ==
@@ -17,7 +15,7 @@ def ordered(o):  # to enable comparison of JSONs with lists using ==
         return o
 
 
-class SerializeToJsonTests(unittest.TestCase):
+class EncodeToJsonTests(unittest.TestCase):
 
     def setUp(self):
         self.plan = SampleAssayPlan()
@@ -313,3 +311,111 @@ class SerializeToJsonTests(unittest.TestCase):
         )
         self.assertTrue(expected == actual)
 
+
+class DecodeFromJsonTests(unittest.TestCase):
+
+    def setUp(self):
+        self.plan = SampleAssayPlan()
+        self.plan.group_size = 20
+        self.plan.add_sample_type('liver')
+        self.plan.add_sample_type('tissue')
+        self.plan.add_sample_plan_record('liver', 3)
+        self.plan.add_sample_plan_record('tissue', 5)
+
+        self.top_mods = AssayTopologyModifiers()
+        self.top_mods.technical_replicates = 2
+        self.top_mods.injection_modes = {'LC', 'GC'}
+        self.top_mods.acquisition_modes = {'positive', 'negative'}
+        self.top_mods.chromatography_instruments = {'Agilent Q12324A'}
+        self.top_mods.instruments = {'Agilent QTOF'}
+        self.top_mods.array_designs = {'A-AFFY-27', 'A-AFFY-28'}
+
+        self.assay_type = AssayType(measurement_type='genome sequencing',
+                                    technology_type='DNA microarray')
+
+    def test_decode_sample_assay_plan(self):
+        from isatools.create.models import SampleAssayPlanDecoder
+        decoder = SampleAssayPlanDecoder()
+        from io import StringIO
+        sample_assay_plan = decoder.load(StringIO("""{
+                "sample_types": ["liver", "tissue", "water"],
+                "group_size": 20,
+                "sample_plan": [
+                    {
+                        "sampling_size": 3,
+                        "sample_type": "liver"
+                    },
+                    {
+                        "sampling_size": 5,
+                        "sample_type": "tissue"
+                    }
+                ],
+                "sample_qc_plan": [
+                    {
+                        "injection_interval": 8,
+                        "sample_type": "water"
+                    }
+                ],
+                "assay_types": [
+                    {
+                        "topology_modifiers": {
+                            "distinct_libraries": 0,
+                            "technical_replicates": 2,
+                            "acquisition_modes": ["negative", "positive"],
+                            "instruments": ["Agilent QTOF"],
+                            "injection_modes": ["GC", "LC"],
+                            "array_designs": ["A-AFFY-27", "A-AFFY-28"],
+                            "pulse_sequences": [],
+                            "chromatography_instruments": ["Agilent Q12324A"]
+                        }, 
+                        "technology_type": "DNA microarray", 
+                        "measurement_type": "genome sequencing"
+                    }],
+                "assay_plan": [
+                    {
+                        "sample_type": "liver",
+                        "assay_type": {
+                            "topology_modifiers": {
+                                "distinct_libraries": 0,
+                                "technical_replicates": 2,
+                                "acquisition_modes": ["negative", "positive"],
+                                "instruments": ["Agilent QTOF"],
+                                "injection_modes": ["GC", "LC"],
+                                "array_designs": ["A-AFFY-27", "A-AFFY-28"],
+                                "pulse_sequences": [], 
+                                "chromatography_instruments": ["Agilent Q12324A"]
+                            },
+                            "technology_type": "DNA microarray",
+                            "measurement_type": "genome sequencing"
+                        }
+                    },
+                    {
+                        "sample_type": "tissue",
+                        "assay_type": {
+                            "topology_modifiers": {
+                                "distinct_libraries": 0, 
+                                "technical_replicates": 2, 
+                                "acquisition_modes": ["negative", "positive"], 
+                                "instruments": ["Agilent QTOF"], 
+                                "injection_modes": ["GC", "LC"], 
+                                "array_designs": ["A-AFFY-27", "A-AFFY-28"], 
+                                "pulse_sequences": [], 
+                                "chromatography_instruments": ["Agilent Q12324A"]
+                            }, 
+                            "technology_type": "DNA microarray", 
+                            "measurement_type": "genome sequencing"
+                        }
+                    }
+                ]
+            }"""))
+
+        self.plan.add_sample_type('water')
+        self.plan.add_sample_qc_plan_record('water', 8)
+
+        self.assay_type.topology_modifiers = self.top_mods
+
+        self.plan.add_assay_type(self.assay_type)
+        self.plan.add_assay_plan_record('liver', self.assay_type)
+        self.plan.add_assay_plan_record('tissue', self.assay_type)
+
+        self.assertEqual(sample_assay_plan, self.plan)

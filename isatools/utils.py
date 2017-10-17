@@ -537,6 +537,35 @@ class IsaTabAnalyzer(object):
                          sort_keys=True))
 
 
+def batch_fix_isatabs(settings):
+    """
+    settings = {
+        "/path/to/MTBLS1/s_MTBLS1.txt": [
+            {
+                "factor": "Metabolic syndrome",
+                "protocol_ref": None
+            },
+            {
+                "factor": "Gender",
+                "protocol_ref": "Sample collection"
+            }
+        ],
+        "/path/to/MTBLS2/s_MTBL2.txt": [
+            {
+                "factor": "genotype",
+                "protocol_ref": None
+            }
+        ]
+    }
+    """
+    for table_file_path in settings.keys():
+        print('Fixing {table_file_path}...'.format(
+            table_file_path=table_file_path))
+        fixer = IsaTabFixer(table_file_path=table_file_path)
+        fixer.fix_factor(factor_name=settings[table_file_path]['factor'],
+                         protocol_ref=settings[table_file_path]['protocol_ref'])
+
+
 class IsaTabFixer(object):
 
     def __init__(self, table_file_path):
@@ -579,6 +608,14 @@ class IsaTabFixer(object):
             elif field_name.startswith('Sample Name.'):
                 field_names[i] = 'Sample Name'
         return field_names
+
+    def fix_factor(self, factor_name, protocol_ref=None):
+        if protocol_ref is None:
+            self.replace_factor_with_source_characteristic(
+                factor_name=factor_name)
+        else:
+            self.replace_factor_with_protocol_parameter_value(
+                factor_name=factor_name, protocol_ref=protocol_ref)
 
     def replace_factor_with_source_characteristic(self, factor_name):
         table_file_df = isatab.read_tfile(self.path)
@@ -643,6 +680,121 @@ class IsaTabFixer(object):
 
         table_file_df.columns = self.clean_isatab_field_names(field_names)
 
+        # Renamce Factor Value column to Characteristics column
+        field_names_modified = list(table_file_df.columns)
+        field_names_modified[source_name_index + 1] = \
+            field_names_modified[source_name_index + 1].replace(
+                'Factor Value', 'Characteristics')
+        table_file_df.columns = self.clean_isatab_field_names(
+            field_names_modified)
+
         with open(self.path, 'w') as out_fp:
+            table_file_df.to_csv(path_or_buf=out_fp, index=False, sep='\t',
+                                 encoding='utf-8')
+
+    def replace_factor_with_protocol_parameter_value(
+            self, factor_name, protocol_ref):
+        table_file_df = isatab.read_tfile(self.path)
+
+        field_names = list(table_file_df.columns)
+        clean_field_names = self.clean_isatab_field_names(field_names)
+
+        factor_index = clean_field_names.index(
+            'Factor Value[{}]'.format(factor_name))
+
+        with open(self.path) as tfile_fp:
+            next(tfile_fp)
+            line1 = next(tfile_fp)
+            protocol_ref_index = list(
+                map(lambda x: x[1:-1] if x[0] == '"' and x[-1] == '"' else x,
+                    line1.split('\t'))).index(protocol_ref)
+
+        if protocol_ref_index < 0:
+            raise IOError(
+                'Could not find protocol ref matching {protocol_ref}'
+                    .format(protocol_ref=protocol_ref))
+
+        if factor_index < len(field_names) and \
+            'Term Source REF' in field_names[factor_index + 1] and \
+                'Term Accession' in field_names[factor_index + 2]:
+            log.debug(
+                'Moving Factor Value[{}] with term columns'.format(factor_name))
+            # move Factor Value and Term Source REF and Term Accession columns
+            field_names.insert(
+                protocol_ref_index + 1, field_names[factor_index])
+            field_names.insert(
+                protocol_ref_index + 2, field_names[factor_index + 1 + 1])
+            field_names.insert(
+                protocol_ref_index + 3, field_names[factor_index + 2 + 2])
+
+            del field_names[factor_index + 3]  # del Factor Value[{}]
+            del field_names[factor_index + 1 + 2]  # del Term Source REF
+            del field_names[factor_index + 2 + 1]  # del Term Accession
+        elif factor_index < len(field_names) and \
+            'Unit' in field_names[factor_index + 1] and \
+                'Term Source REF' in field_names[factor_index + 2] and \
+                'Term Accession' in field_names[factor_index + 3]:
+            log.debug(
+                'Moving Factor Value[{}] with unit term columns'.format(
+                    factor_name))
+            # move Factor Value and Unit as ontology annotation
+            field_names.insert(
+                protocol_ref_index + 1, field_names[factor_index])
+            field_names.insert(
+                protocol_ref_index + 2, field_names[factor_index + 1 + 1])
+            field_names.insert(
+                protocol_ref_index + 3, field_names[factor_index + 2 + 2])
+            field_names.insert(
+                protocol_ref_index + 4, field_names[factor_index + 3 + 3])
+
+            del field_names[factor_index + 4]  # del Factor Value[{}]
+            del field_names[factor_index + 1 + 3]  # del Unit
+            del field_names[factor_index + 2 + 2]  # del Term Source REF
+            del field_names[factor_index + 3 + 1]  # del Term Accession
+        elif factor_index < len(field_names) and \
+            'Unit' in field_names[factor_index + 1]:
+            log.debug(
+                'Moving Factor Value[{}] with unit column'.format(factor_name))
+            # move Factor Value and Unit columns
+            field_names.insert(
+                protocol_ref_index + 1, field_names[factor_index])
+            field_names.insert(
+                protocol_ref_index + 2, field_names[factor_index + 1 + 1])
+
+            del field_names[factor_index + 2]  # del Factor Value[{}]
+            del field_names[factor_index + 1 + 1]  # del Unit
+        else:  # move only the Factor Value column
+            log.debug('Moving Factor Value[{}]'.format(factor_name))
+            field_names.insert(
+                protocol_ref_index + 1, field_names[factor_index])
+            del field_names[factor_index]  # del Factor Value[{}]
+
+        table_file_df.columns = self.clean_isatab_field_names(field_names)
+
+        # Renamce Factor Value column to Parameter Value column
+        field_names_modified = list(table_file_df.columns)
+        field_names_modified[protocol_ref_index + 1] = \
+            field_names_modified[protocol_ref_index + 1].replace(
+                'Factor Value', 'Parameter Value')
+        table_file_df.columns = self.clean_isatab_field_names(
+            field_names_modified)
+
+        investigation = isatab.load(
+            os.path.dirname(self.path), skip_load_tables=True)
+        study = investigation.studies[-1]
+        protocol = study.get_prot(protocol_ref)
+        if protocol is None:
+            raise ISAModelAttributeError(
+                'No protocol with name {protocol_ref} was found'.format(
+                    protocol_ref=protocol_ref))
+        protocol.add_param(factor_name)
+
+        isatab.dump(
+            investigation, output_path=os.path.dirname(self.path),
+            i_file_name='i_Investigation.txt.fix', skip_dump_tables=True)
+
+        with open(os.path.join(
+                os.path.dirname(self.path), '{s_filename}.fix'.format(
+                    s_filename=os.path.basename(self.path))), 'w') as out_fp:
             table_file_df.to_csv(path_or_buf=out_fp, index=False, sep='\t',
                                  encoding='utf-8')

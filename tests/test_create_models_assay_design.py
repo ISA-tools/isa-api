@@ -24,21 +24,21 @@ class AssayTypeTest(unittest.TestCase):
         )
 
     def test_repr(self):
-        self.assertEqual('AssayType(measurement_type=isatools.model.OntologyAnnotation('
-                         'term="{0}", term_source=None, term_accession="", '
-                         'comments=[]), '
-                         'technology_type=isatools.model.OntologyAnnotation(term="{1}", '
-                         'term_source=None, term_accession="", comments=[]), '
-                         'topology_modifiers=None)'
+        self.assertEqual("AssayType(measurement_type=isatools.model.OntologyAnnotation("
+                         "term='{0}', term_source=None, term_accession='', "
+                         "comments=[]), "
+                         "technology_type=isatools.model.OntologyAnnotation(term='{1}', "
+                         "term_source=None, term_accession='', comments=[]), "
+                         "topology_modifiers=None)"
                          .format(MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING,
                                  TECHNOLOGY_TYPE_DNA_MICROARRAY),
                          repr(self.assay_type))
 
-        self.assertEqual('AssayType(measurement_type=isatools.model.OntologyAnnotation('
-                         'term="{0}", term_source=None, term_accession="", '
-                         'comments=[]), technology_type=isatools.model.OntologyAnnotation('
-                         'term="{1}", term_source=None, term_accession="", '
-                         'comments=[]), topology_modifiers=None)'.format(
+        self.assertEqual("AssayType(measurement_type=isatools.model.OntologyAnnotation("
+                         "term='{0}', term_source=None, term_accession='', "
+                         "comments=[]), technology_type=isatools.model.OntologyAnnotation("
+                         "term='{1}', term_source=None, term_accession='', "
+                         "comments=[]), topology_modifiers=None)".format(
                           MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING,
                           TECHNOLOGY_TYPE_DNA_MICROARRAY), repr(
                           self.assay_type_with_oa))

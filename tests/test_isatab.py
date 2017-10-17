@@ -1,14 +1,18 @@
+"""Tests on isatab.py package"""
+from __future__ import absolute_import
 import unittest
 import os
-import shutil
-from isatools.tests.utils import assert_tab_content_equal
-from isatools.model import *
-from isatools.tests import utils
-import tempfile
-from isatools import isatab
-from isatools.isatab import ProcessSequenceFactory
-from io import StringIO
 import pandas as pd
+import shutil
+import tempfile
+from io import StringIO
+
+from isatools import isatab
+from isatools.io import isatab_parser
+from isatools.isatab import ProcessSequenceFactory
+from isatools.model import *
+from isatools.tests.utils import assert_tab_content_equal
+from isatools.tests import utils
 
 
 def setUpModule():
@@ -971,3 +975,16 @@ sample1	extraction	e2	scanning	d2"""
             self.assertEqual(len([x for x in ISA.studies[0].assays[0].other_material
                                   if x.type == "Labeled Extract Name"]), 0)
 
+    def test_isatab_preprocess_issue235(self):
+        test_isatab_str = b""""Sample Name"	"Protocol REF"	"Parameter Value[medium]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[serum]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[serum concentration]"	"Unit"	"Term Source REF"	"Term Accession Number"	"Parameter Value[medium volume]"	"Unit"	"Term Source REF"	"Term Accession Number"	"Parameter Value[migration modulator]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[modulator concentration]"	"Unit"	"Term Source REF"	"Term Accession Number"	"Parameter Value[modulator distribution]"	"Term Source REF"	"Term Accession Number"	"Protocol REF"	"Parameter Value[imaging technique]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[imaging technique temporal feature]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[acquisition duration]"	"Unit"	"Term Source REF"	"Term Accession Number"	"Parameter Value[time interval]"	"Unit"	"Term Source REF"	"Term Accession Number"	"Parameter Value[objective type]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[objective magnification]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[objective numerical aperture]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[acquisition channel count]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[reporter]"	"Term Source REF"	"Term Accession Number"	"Parameter Value[voxel size]"	"Unit"	"Term Source REF"	"Term Accession Number"	"Assay Name"	"Raw Data File"	"Protocol REF"	"Parameter Value[software]"	"Term Source REF"	"Term Accession Number"	"Data Transformation Name"	"Derived Data File"
+"culture1"	"migration assay"	"RPMI-1640"	""	""	"Heat Inactivated Fetal Bovine Serum "	""	""	"10"	"%"	"UO"	"http://purl.obolibrary.org/obo/UO_0000165"	"300"	"microliter"	"UO"	"http://purl.obolibrary.org/obo/UO_0000101"	""	""	""	""	""	""	""	"gradient"	""	""	"imaging"	"phase-contrast microscopy"	""	""	"dynamic"	""	""	"6"	"hour"	"UO"	"http://purl.obolibrary.org/obo/UO_0000032"	"15"	"minute"	"UO"	"http://purl.obolibrary.org/obo/UO_0000031"	""	""	""	"20"	""	""	""	""	""	""	""	""	""	""	""	""	""	""	""	"culture1"	""	"data transformation"	"CELLMIA"	""	""	""	""
+"""
+        with tempfile.NamedTemporaryFile() as tmp:
+            tmp.write(test_isatab_str)
+            tmp.seek(0)
+            study_assay_parser = isatab_parser.StudyAssayParser('mock.txt')
+            with study_assay_parser._preprocess(tmp.name) as fixed_fp:
+                header = next(fixed_fp)
+                if """Protocol REF	Data Transformation Name""" in header:
+                    self.fail('Incorrectly inserted Protocol REF before '
+                              'Data Transformation Name')

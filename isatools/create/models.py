@@ -4,12 +4,12 @@ function or factory to create ISA model objects.
 from __future__ import absolute_import
 import datetime
 import itertools
+import json
 import logging
 import random
 import uuid
 from collections import Iterable
 from collections import OrderedDict
-from json import JSONEncoder
 from operator import itemgetter
 from numbers import Number
 
@@ -729,6 +729,23 @@ class SampleAssayPlan(object):
         for sample_type, injection_interval in val.items():
             self.add_sample_qc_plan_record(sample_type, injection_interval)
 
+    def __repr__(self):
+        return 'isatools.create.models.SampleAssayPlan(' \
+               'group_size={sample_assay_plan.group_size}, ' \
+               'sample_plan={sample_plan}, assay_plan={assay_plan}, ' \
+               'sample_qc_plan={sample_qc_plan})'.format(
+                sample_assay_plan=self,
+                sample_plan=set(map(lambda x: x, self.sample_plan)),
+                assay_plan=set(map(lambda x: x, self.assay_plan)),
+                sample_qc_plan=set(map(lambda x: x, self.sample_qc_plan)))
+
+    def __eq__(self, other):
+        return hash(repr(self)) == hash(repr(other))
+
+    def __ne__(self, other):
+        return hash(repr(self)) != hash(repr(other))
+
+
 class BaseStudyDesign(object):
     pass
 
@@ -886,7 +903,7 @@ class IsaModelObjectFactory(object):
                                 process = Process(executes_protocol=study.get_prot(
                                     'sample collection'), inputs=[qcsource],
                                     outputs=[sample], performer=self.ops[0], date_=
-                                    datetime.date.isoformat(
+                                    datetime.datetime.isoformat(
                                         datetime.datetime.now()),
                                 parameter_values=[ParameterValue(
                                     category=ProtocolParameter(
@@ -1771,7 +1788,7 @@ class IsaModelObjectFactory(object):
         return study
 
 
-class SampleAssayPlanEncoder(JSONEncoder):
+class SampleAssayPlanEncoder(json.JSONEncoder):
 
     def get_top_mods(self, o):
         return {
@@ -1846,8 +1863,126 @@ class SampleAssayPlanEncoder(JSONEncoder):
             return {
                 'group_size': o.group_size,
                 'sample_types': sorted([x.value.term for x in o.sample_types]),
-                'assay_types': sorted([self.get_assay_type(x) for x in o.assay_types]),
+                'assay_types': sorted(
+                    [self.get_assay_type(x) for x in o.assay_types]),
                 'sample_plan': self.get_sample_plan(o.sample_plan),
                 'sample_qc_plan': self.get_sample_qc_plan(o.sample_qc_plan),
                 'assay_plan': self.get_assay_plan(o.assay_plan)
             }
+
+
+class SampleAssayPlanDecoder(object):
+
+    def __init__(self):
+        pass
+
+    def load_top_mods(self, top_mods_json):
+        top_mods = AssayTopologyModifiers()
+
+        top_mods.distinct_libraries = top_mods_json['distinct_libraries']
+        top_mods.array_designs = set(
+            map(lambda x: x, top_mods_json['array_designs']))
+        top_mods.injection_modes = set(
+            map(lambda x: x, top_mods_json['injection_modes']))
+        top_mods.acquisition_modes = set(
+            map(lambda x: x, top_mods_json['acquisition_modes']))
+        top_mods.pulse_sequences = set(
+            map(lambda x: x, top_mods_json['pulse_sequences']))
+        top_mods.technical_replicates = top_mods_json['technical_replicates']
+        top_mods.instruments = set(
+            map(lambda x: x, top_mods_json['instruments']))
+        top_mods.chromatography_instruments = set(
+            map(lambda x: x, top_mods_json['chromatography_instruments']))
+        return top_mods
+
+    def load_assay_type(self, assay_type_json):
+        assay_type = AssayType(
+            measurement_type=assay_type_json['measurement_type'],
+            technology_type=assay_type_json['technology_type'],
+            topology_modifiers=self.load_top_mods(
+                assay_type_json['topology_modifiers']
+            )
+        )
+        return assay_type
+
+    def load(self, fp):
+        sample_assay_plan_json = json.load(fp)
+
+        sample_assay_plan = SampleAssayPlan(
+            group_size=sample_assay_plan_json['group_size'],
+        )
+
+        for sample_type in sample_assay_plan_json['sample_types']:
+            sample_assay_plan.add_sample_type(sample_type=sample_type)
+        for sample_plan_record in sample_assay_plan_json['sample_plan']:
+            sample_assay_plan.add_sample_plan_record(
+                sample_type=sample_plan_record['sample_type'],
+                sampling_size=sample_plan_record['sampling_size']
+            )
+
+        for assay_type in sample_assay_plan_json['assay_types']:
+            sample_assay_plan.add_assay_type(
+                assay_type=self.load_assay_type(assay_type))
+        for assay_plan_record in sample_assay_plan_json['assay_plan']:
+            sample_assay_plan.add_assay_plan_record(
+                sample_type=assay_plan_record['sample_type'],
+                assay_type=self.load_assay_type(assay_plan_record['assay_type'])
+            )
+
+        for sample_qc_plan_record in sample_assay_plan_json['sample_qc_plan']:
+            sample_assay_plan.add_sample_qc_plan_record(
+                material_type=sample_qc_plan_record['sample_type'],
+                injection_interval=sample_qc_plan_record['injection_interval']
+            )
+
+        return sample_assay_plan
+
+
+class TreatmentSequenceEncoder(json.JSONEncoder):
+
+    def get_factor(self, factor):
+        return {
+            'factor': factor.factor_name.name,
+            'value': factor.value.term if isinstance(
+                factor.value, OntologyAnnotation) else factor.value
+        }
+
+    def get_treatment(self, treatment):
+        return {
+            'treatment_type': treatment.treatment_type,
+            'factor_values' : sorted(
+                [self.get_factor(x) for x in treatment.factor_values])
+        }
+
+    def default(self, o):
+        if isinstance(o, TreatmentSequence):
+            return {
+                'ranked_treatments':[{
+                    'treatment': self.get_treatment(x[0]),
+                    'rank': x[1]
+                } for x in o.ranked_treatments]
+            }
+
+
+class TreatmentSequenceDecoder(object):
+
+    def __init__(self):
+        pass
+
+    def load(self, fp):
+        treatment_sequence_json = json.load(fp)
+
+        treatment_sequence = TreatmentSequence()
+
+        for treatment_tuple in treatment_sequence_json['ranked_treatments']:
+            treatment_json = treatment_tuple[0]
+            treatment = Treatment(
+                treatment_type=treatment_json['treatment_type'])
+            for factor_json in treatment_json['factor_values']:
+                fv = FactorValue(
+                    factor_name=factor_json['factor'],
+                    value=factor_json['value'])
+                treatment.factor_values.append(fv)
+
+            treatment_sequence.add_treatment(treatment, treatment_tuple[1])
+        return treatment_sequence

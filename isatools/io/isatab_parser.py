@@ -1,13 +1,14 @@
 from __future__ import with_statement
-import os
-import re
+import bisect
+import collections
 import csv
 import glob
-import collections
+import os
 import pprint
-import bisect
-import pandas as pd
+import re
 from io import StringIO
+
+from isatools import isatab
 
 """Parse ISA-Tab structured metadata describing experimental data.
 Works with ISA-Tab (http://isatab.sourceforge.net), which provides a structured
@@ -38,6 +39,21 @@ __author__ = 'brad chapman, agbeltran, djcomlab'
 
 # REGEXES
 _RX_COLLAPSE_ATTRIBUTE = re.compile("[\W]+")
+
+# column labels
+_LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name',
+                          'Labeled Extract Name']
+_LABELS_DATA_NODES = ['Raw Data File', 'Derived Spectral Data File',
+                      'Derived Array Data File', 'Array Data File',
+                      'Protein Assignment File', 'Peptide Assignment File',
+                      'Post Translational Modification Assignment File',
+                      'Acquisition Parameter Data File',
+                      'Free Induction Decay Data File',
+                      'Derived Array Data Matrix File', 'Image File',
+                      'Derived Data File', 'Metabolite Assignment File']
+_LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name',
+                       'Hybridization Assay Name', 'Scan Name',
+                       'Data Transformation Name', 'Normalization Name']
 
 
 def find_lt(a, x):
@@ -419,38 +435,11 @@ class StudyAssayParser:
         return dict([(k, self._finalize_metadata(v)) for k, v in process_nodes.items()])
 
     def _preprocess(self, fname):
-        """Check headers, and insert Protocol REF if needed"""
-        process_node_names = {'Data Transformation Name',
-                              'Normalization Name',
-                              'Scan Name',
-                              'Hybridization Assay Name',
-                              'MS Assay Name'}
-        with open(os.path.join(self._dir, fname), encoding='utf-8') as in_handle:
-            reader = csv.reader(in_handle, dialect="excel-tab")
-            headers = next(reader)  # get column headings
-            process_node_name_indices = [x for x, y in enumerate(headers) if y in process_node_names]
-            missing_process_indices = list()
-            for i in process_node_name_indices:
-                if headers[i - 1] != 'Protocol REF':
-                    print('warning: Protocol REF missing before \'{}\', found \'{}\''.format(headers[i], headers[i - 1]))
-                    missing_process_indices.append(i)
-            # insert Protocol REF columns
-            in_handle.seek(0)
-
-            num_protocol_refs = headers.count('Protocol REF')
-
-            in_handle = strip_comments(in_handle)
-            df = pd.read_csv(in_handle, dtype=str, sep='\t', encoding='utf-8')
-            offset = 0
-            for i in reversed(missing_process_indices):
-                df.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 'unknown')
-                headers.insert(i, 'Protocol REF')
-                print('inserting Protocol REF.{}'.format(num_protocol_refs + offset), 'at position {}'.format(i))
-                offset += 1
-            import io
-            out_handle = io.StringIO()
-            df.to_csv(out_handle, header=headers, sep='\t', index=False)
-            out_handle.seek(0)
+        df = isatab.read_tfile(fname)
+        df = isatab.preprocess(DF=df)
+        out_handle = StringIO()
+        df.to_csv(out_handle, header=df.isatab_header, sep='\t', index=False)
+        out_handle.seek(0)
         return out_handle
 
     def _parse_study(self, fname, node_types):
