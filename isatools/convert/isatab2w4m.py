@@ -333,27 +333,19 @@ def load_investigation(investigation_file):
 # Get sample names {{{1
 ################################################################
 
-def get_sample_names(assay, assay_df, measures_df):
-    # Get sample names
-    sample_names = [sample.name for sample in assay.samples]
+def get_sample_names(assay_df, measures_df):
+    
+    sample_names = None
     measures_cols = measures_df.axes[1]
-    if sample_names is not None:
-        raise RuntimeError('SAMPLE_NAMES[0] = ' + sample_names[0])
-
-    # XXX If the column 'Sample Name' of the assay file contains duplicated
-    # names, then `assay.materials['samples']]` will return less sample names
-    # than there are. It may happen that, as in MTBLS404 with the column
-    # 'Extract Name', another column contains "real" sample names that are
-    # all different.
-    if len(sample_names) != assay_df.shape[0] or any(
-            [x not in measures_cols for x in sample_names]):
-        # TODO send warning message
-        for col in assay_df.axes[1]:
-            n = assay_df.get(col).tolist()
-            if len(n) == len(set(n)) and all([x in measures_cols for x in n]):
-                raise RuntimeError('TAKE COL ' + col + ' FOR SAMPLE NAMES')
-                sample_names = n
-                break
+    
+    # Loop on all assay data frame columns
+    for col in assay_df.axes[1]:
+        n = assay_df.get(col).tolist()
+        
+        # Do you find all values of this column inside the column names of the measure data frame?
+        if len(n) == len(set(n)) and all([x in measures_cols for x in n]):
+            sample_names = n
+            break
 
     return sample_names
 
@@ -451,7 +443,7 @@ def convert2w4m(input_dir, study_filename=None, assay_filename=None,
         assay_df = get_assay_df(input_dir, assay)
         measures_df = get_measures_df(input_dir, assay)
         variable_names = make_variable_names(measures_df)
-        sample_names = get_sample_names(assay=assay, assay_df=assay_df,
+        sample_names = get_sample_names(assay_df=assay_df,
                                         measures_df=measures_df)
         sample_metadata = make_sample_metadata(study_df=study_df,
                                                assay_df=assay_df,
