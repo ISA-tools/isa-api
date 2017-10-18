@@ -40,8 +40,7 @@ SUBMISSION_XSL_FILE = os.path.join(
 STUDY_XSL_FILE = os.path.join(SRA_DIR, 'sra-study-embl-online2isatab.xsl')
 
 logging.basicConfig(level=config.log_level)
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+log = logging.getLogger(__name__)
 
 # REGEXES
 _RX_ACCESSION_VALIDATION = re.compile("^(ERA|SRA|ERP|SRP)([0-9]+)$")
@@ -151,14 +150,16 @@ def sra_to_isatab_batch_convert(
     res = None
     destination_dir = None
 
+    log.info('This function utilises The Saxon XSLT and XQuery Processor from '
+             'Saxonica Limited (http://www.saxonica.com)')
+
     try:
         dir_name = tempfile.mkdtemp()
         formatted_sra_acc_numbers = format_acc_numbers(sra_acc_numbers)
         buffer = BytesIO()
 
         destination_dir = os.path.abspath(dir_name)
-        print('Destination dir is: ' + destination_dir)
-        logger.info('Destination dir is: ' + destination_dir)
+        log.info('Destination dir is: ' + destination_dir)
 
         for acc_number in formatted_sra_acc_numbers:
             try:
@@ -176,7 +177,7 @@ def sra_to_isatab_batch_convert(
                          SUBMISSION_XSL_FILE, 'acc-number='+acc_number,
                          'outputdir='+destination_dir])
 
-                logger.info('Subprocess Saxon exited with code: %d', res)
+                log.info('Subprocess Saxon exited with code: %d', res)
 
                 # post-process concatenation of a_ files written out
                 output_folder = os.path.join(dir_name, acc_number)
@@ -198,10 +199,9 @@ def sra_to_isatab_batch_convert(
                 with ZipFile(buffer, 'w') as zip_file:
                     # use relative dir_name to avoid absolute path on file names
                     zipdir(dir_name, zip_file)
-                    print(zip_file.namelist())
 
             except subprocess.CalledProcessError as err:
-                logger.error(
+                log.error(
                     'isatools.convert.sra2isatab: CalledProcessError caught ',
                     err.returncode)
         # clean up the target directory after the ZIP file has been closed
@@ -209,8 +209,7 @@ def sra_to_isatab_batch_convert(
 
         buffer.seek(0)
     finally:
-        logger.debug('Removing dir' + destination_dir)
-        print('Removing dir' + destination_dir)
+        log.debug('Removing dir' + destination_dir)
         rmtree(destination_dir)
     return buffer
 
