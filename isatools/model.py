@@ -1659,7 +1659,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     def add_prot(self, protocol_name='', protocol_type=None,
                  use_default_params=True):
         if self.get_prot(protocol_name=protocol_name) is not None:
-            raise ISAModelAttributeError('A protocol with name "{}" has '
+            print('A protocol with name "{}" has '
                                          'already been declared in the study'
                                          .format(protocol_name))
         else:

@@ -1,9 +1,11 @@
 """Tests on serializing planning objects in isatools.create.models to JSON"""
 import json
+import os
 import unittest
+from io import StringIO
 
-from isatools.model import *
 from isatools.create.models import *
+from isatools.tests import utils
 
 
 def ordered(o):  # to enable comparison of JSONs with lists using ==
@@ -334,9 +336,7 @@ class DecodeFromJsonTests(unittest.TestCase):
                                     technology_type='DNA microarray')
 
     def test_decode_sample_assay_plan(self):
-        from isatools.create.models import SampleAssayPlanDecoder
         decoder = SampleAssayPlanDecoder()
-        from io import StringIO
         sample_assay_plan = decoder.load(StringIO("""{
                 "sample_types": ["liver", "tissue", "water"],
                 "group_size": 20,
@@ -419,3 +419,19 @@ class DecodeFromJsonTests(unittest.TestCase):
         self.plan.add_assay_plan_record('tissue', self.assay_type)
 
         self.assertEqual(sample_assay_plan, self.plan)
+
+    def test_create_from_decoded_json(self):
+        with open(os.path.join(
+                utils.JSON_DATA_DIR, 'create', 'samplassayplan_test.json')) \
+                as json_fp:
+            sample_assay_plan = SampleAssayPlanDecoder().load(json_fp)
+        with open(
+                os.path.join(utils.JSON_DATA_DIR, 'create',
+                             'treatment_sequence_test.json')) as json_fp:
+            treatment_plan = TreatmentSequenceDecoder().load(json_fp)
+        isa_object_factory = IsaModelObjectFactory(
+            sample_assay_plan, treatment_plan)
+        study = isa_object_factory.create_assays_from_plan()
+        self.assertEqual(len(study.sources), 80)
+        self.assertEqual(len(study.samples), 360)
+        self.assertEqual(len(study.process_sequence), 360)

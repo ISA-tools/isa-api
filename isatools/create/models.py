@@ -69,7 +69,7 @@ class Treatment(object):
                  factor_values=None):
         """
         Creates a new Treatment
-        :param factor_values: tuple of isatools.model.v1.FactorValue
+        :param factor_values: set of isatools.model.v1.FactorValue
         """
 
         if treatment_type not in INTERVENTIONS.values():
@@ -78,7 +78,7 @@ class Treatment(object):
         self.__treatment_type = treatment_type
 
         if factor_values is None:
-            self.__factor_values = ()
+            self.__factor_values = set()
         else:
             self.factor_values = factor_values
 
@@ -1975,14 +1975,14 @@ class TreatmentSequenceDecoder(object):
         treatment_sequence = TreatmentSequence()
 
         for treatment_tuple in treatment_sequence_json['ranked_treatments']:
-            treatment_json = treatment_tuple[0]
+            treatment_json = treatment_tuple['treatment']
             treatment = Treatment(
                 treatment_type=treatment_json['treatment_type'])
             for factor_json in treatment_json['factor_values']:
                 fv = FactorValue(
                     factor_name=factor_json['factor'],
                     value=factor_json['value'])
-                treatment.factor_values.append(fv)
+                treatment.factor_values.add(fv)
 
-            treatment_sequence.add_treatment(treatment, treatment_tuple[1])
+            treatment_sequence.add_treatment(treatment, treatment_tuple['rank'])
         return treatment_sequence
