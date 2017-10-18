@@ -26,7 +26,7 @@ __author__ = 'alfie'
 DESTINATION_DIR = 'output'
 DEFAULT_SAXON_EXECUTABLE = os.path.join(
     os.path.dirname(
-        os.path.abspath(__file__)), 'resources', 'lib', 'saxon9he.jar')
+        os.path.abspath(__file__)), 'resources', 'saxon9', 'saxon9he.jar')
 BIOCRATES_DIR = os.path.join(os.path.dirname(__file__), 'resources', 'biocrates')
 INPUT_FILE = os.path.join(BIOCRATES_DIR, 'biocrates-shorter-testfile.xml')
 BIOCRATES_META_XSL_FILE = os.path.join(BIOCRATES_DIR, 'ISA-Team-Biocrates2ISATAB-refactor.xsl')

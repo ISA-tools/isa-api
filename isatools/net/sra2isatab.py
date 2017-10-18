@@ -32,7 +32,7 @@ __author__ ='massi'
 DESTINATION_DIR = 'output'
 DEFAULT_SAXON_EXECUTABLE = os.path.join(
     os.path.dirname(
-        os.path.abspath(__file__)), 'resources', 'lib', 'saxon9he.jar')
+        os.path.abspath(__file__)), 'resources', 'saxon9', 'saxon9he.jar')
 SRA_DIR = os.path.join(os.path.dirname(__file__), 'resources', 'sra')
 INPUT_FILE = os.path.join(SRA_DIR, 'blank.xml')
 SUBMISSION_XSL_FILE = os.path.join(
