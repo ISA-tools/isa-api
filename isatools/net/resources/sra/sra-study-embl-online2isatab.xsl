@@ -43,18 +43,18 @@ SRA schema version considered:
  <xsl:key name="sampletaglookupid" match="/ROOT/SAMPLE/SAMPLE_ATTRIBUTES/SAMPLE_ATTRIBUTE/TAG" use="."/>
  <xsl:key name="expprotlookupid" match="/ROOT/EXPERIMENT/DESIGN/LIBRARY_DESCRIPTOR/LIBRARY_CONSTRUCTION_PROTOCOL" use="."/>
 
- <xsl:variable name="url" select="concat('http://www.ebi.ac.uk/ena/data/view/', $acc-number, '&amp;display=xml')"/>
+ <xsl:variable name="url" select="concat('https://www.ebi.ac.uk/ena/data/view/', $acc-number, '&amp;display=xml')"/>
  
  <xsl:variable name="experiments-sources-strategies">
   <xsl:call-template name="process-lib-strategies-sources">
    <xsl:with-param name="acc-number" select="$acc-number"/>
-   <xsl:with-param name="path" select="'http://www.ebi.ac.uk/ena/data/view/'"/>
+   <xsl:with-param name="path" select="'https://www.ebi.ac.uk/ena/data/view/'"/>
   </xsl:call-template>
  </xsl:variable>
  
  <xsl:variable name="distinct-exp-sources-strategies">
   <xsl:call-template name="generate-distinct-exp-sources-strategies">
-   <xsl:with-param name="path" select="'http://www.ebi.ac.uk/ena/data/view/'"/>
+   <xsl:with-param name="path" select="'https://www.ebi.ac.uk/ena/data/view/'"/>
    <xsl:with-param name="exp-sources-strategies" select="$experiments-sources-strategies"/>
   </xsl:call-template>
  </xsl:variable>
@@ -62,7 +62,7 @@ SRA schema version considered:
  <xsl:variable name="samples-characteristics">
   <xsl:call-template name="process-samples-attributes">
    <xsl:with-param name="acc-number" select="$acc-number"/>
-   <xsl:with-param name="path" select="'http://www.ebi.ac.uk/ena/data/view/'"/>
+   <xsl:with-param name="path" select="'https://www.ebi.ac.uk/ena/data/view/'"/>
   </xsl:call-template>
  </xsl:variable>
  
@@ -133,7 +133,7 @@ SRA schema version considered:
 "Investigation Person Roles Term Source REF"&#9;""
 "STUDY"
 <xsl:value-of select="isa:single-name-value('Comment[SRA broker]', $broker-name)"/>
-   <xsl:apply-templates select="document(concat('http://www.ebi.ac.uk/ena/data/view/',$study,'&amp;display=xml'))/ROOT/STUDY"/>
+   <xsl:apply-templates select="document(concat('https://www.ebi.ac.uk/ena/data/view/',$study,'&amp;display=xml'))/ROOT/STUDY"/>
    <xsl:text>&#10;"STUDY CONTACTS"&#10;</xsl:text>
    <xsl:value-of select="isa:single-name-value('Comment[SRA broker]', $broker-name)"/>
    <xsl:value-of select="isa:single-name-value('Study Person Last Name', substring-before(CONTACTS/CONTACT/@name,' '))"/>
@@ -156,7 +156,7 @@ SRA schema version considered:
    <xsl:call-template name="generate-study-header"/>
    <xsl:text>"Sample Name"&#10;</xsl:text>
    <xsl:for-each select="tokenize($samples-ids, ',')">
-    <xsl:apply-templates select="document(concat('http://www.ebi.ac.uk/ena/data/view/', . , '&amp;display=xml'))/ROOT/SAMPLE"/>
+    <xsl:apply-templates select="document(concat('https://www.ebi.ac.uk/ena/data/view/', . , '&amp;display=xml'))/ROOT/SAMPLE"/>
    </xsl:for-each>
   </xsl:result-document>
  </xsl:template>
@@ -179,7 +179,7 @@ SRA schema version considered:
  
  <xsl:template match="experiments/experiment" mode="distinct-exp">
   <xsl:result-document href="{concat($outputdir,'/', $acc-number, '/', 'a_', lower-case(@library-strategy), '-', lower-case(@library-source), '.txt')}" method="text">
-   <xsl:variable name="my-exp" select="document(concat('http://www.ebi.ac.uk/ena/data/view/', @acc-number, '&amp;display=xml'))"/>
+   <xsl:variable name="my-exp" select="document(concat('https://www.ebi.ac.uk/ena/data/view/', @acc-number, '&amp;display=xml'))"/>
    <!-- Create the header -->
    <xsl:text>"Sample Name"&#9;</xsl:text>
    <xsl:text>"Protocol REF"&#9;</xsl:text>
@@ -579,7 +579,7 @@ SRA schema version considered:
  </xsl:template>
 
  <!-- If it is more than one line then we concatenate with a semi-colon -->
- <!-- http://www.ebi.ac.uk/ena/data/warehouse/filereport?accession=SRX201979&result=read_run&fields=fastq_ftp,fastq_md5 -->
+ <!-- https://www.ebi.ac.uk/ena/data/warehouse/filereport?accession=SRX201979&result=read_run&fields=fastq_ftp,fastq_md5 -->
  <xsl:template match="EXPERIMENT_LINKS/EXPERIMENT_LINK/XREF_LINK/DB[contains(., 'ENA-FASTQ-FILES')]">
   <xsl:variable name="file" select="following-sibling::ID/."/>
   <xsl:if test="contains($file,'&amp;result=read_run&amp;fields=run_accession,fastq_ftp')">
