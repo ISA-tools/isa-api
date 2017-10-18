@@ -988,3 +988,30 @@ sample1	extraction	e2	scanning	d2"""
                 if """Protocol REF	Data Transformation Name""" in header:
                     self.fail('Incorrectly inserted Protocol REF before '
                               'Data Transformation Name')
+
+
+class TestTransposedTabParser(unittest.TestCase):
+
+    def setUp(self):
+        self.ttable1 = """label1\trow1_value1\trow1_value2\n
+label2\trow2_value1\trow2_value2\n"""
+        _, tmp_path = tempfile.mkstemp()
+        self.tmp_fp = _
+        self.tmp_path = tmp_path
+        with open(tmp_path, 'w') as fp:
+            fp.write(self.ttable1)
+
+    def tearDown(self):
+        os.close(self.tmp_fp)
+        os.remove(self.tmp_path)
+
+    def test_parse(self):
+        parser = isatab.TransposedTabParser()
+        ttable_dict = parser.parse(self.tmp_path)
+        expected_ttable = {
+            'table': {
+                'label1': ['row1_value1', 'row1_value2'],
+                'label2': ['row2_value1', 'row2_value2']},
+            'header': ['label1', 'label2']
+        }
+        self.assertEqual(ttable_dict, expected_ttable)

@@ -14,6 +14,8 @@ import numpy as np
 import os
 import pandas as pd
 import re
+import shutil
+import tempfile
 from bisect import bisect_left
 from bisect import bisect_right
 from io import StringIO
@@ -24,8 +26,6 @@ from progressbar import ProgressBar
 from progressbar import SimpleProgress
 from progressbar import Bar
 from progressbar import ETA
-import shutil
-import tempfile
 
 from isatools import config
 from isatools.model import *
@@ -33,8 +33,137 @@ from isatools.model import *
 logging.basicConfig(level=config.log_level)
 log = logging.getLogger(__name__)
 
-errors = list()
-warnings = list()
+
+def xml_config_contents(filename):
+    config_filepath = os.path.join(
+        os.path.dirname(__file__),
+        'resources',
+        'config',
+        'xml',
+        filename,
+    )
+    with open(config_filepath) as f:
+        return f.read()
+
+
+STUDY_SAMPLE_XML_CONFIG = xml_config_contents('studySample.xml')
+
+
+class _Defaults(object):
+
+    def __init__(self):
+        self._tab_options = {
+            'readCellQuotes': False,  # read cell quotes as part of cell values
+            'writeCellQuotes': True,  # write out cell values enclosed with quotes
+            'forceFitColumns': True,
+            'validateBeforeRead': False,
+            'validateAfterWrite': False
+        }
+        self._show_progressbar = False
+        self._log_level = logging.WARNING
+
+    def set_tab_option(self, optname, optvalue):
+        self._tab_options[optname] = optvalue
+
+    def set_defaults(self, show_progressbar=None, log_level=None):
+        if show_progressbar is not None:
+            self._show_progressbar = show_progressbar
+        if log_level is not None:
+            self._log_level = log_level
+
+    @property
+    def tab_options(self):
+        return self._tab_options
+
+    @property
+    def show_progressbar(self):
+        return self._show_progressbar
+
+    @property
+    def log_level(self):
+        return self._log_level
+
+
+defaults = _Defaults()
+
+
+def set_defaults(show_progressbar=None, log_level=None):
+    """
+    Set the default IsaTab options.
+    """
+    defaults.set_defaults(show_progressbar, log_level)
+
+
+def set_tab_option(optname, optvalue):
+    """
+    Set the default value for one of the options that gets passed into the
+    IsaTabParser or IsaTabWriter constructor.
+    """
+    defaults.tab_options[optname] = optvalue
+
+
+class TransposedTabParser(object):
+    """
+    Parser for transposed tables, such as the ISA-Tab investigation table,
+    or the MAGE-TAB IDF table. The headings are in column 0 with values,
+    perhaps multiple, reading in columns towards the right. These tables do
+    not necessarily have an even shape (row lengths may differ).
+
+    This reads the transposed table into a dictionary where key is heading and
+    value is a list of cell values for the heading. No relations between
+    headings is assumed and the order of values is implied by the order of the
+    cell value lists.
+
+    Does not allow duplicate labels.
+    """
+    def __init__(self, tab_options=None, show_progressbar=None, log_level=None):
+        if tab_options is None:
+            self.tab_options = defaults.tab_options
+        else:
+            self.tab_options=tab_options
+        if show_progressbar is None:
+            self.show_progressbar = defaults.show_progressbar
+        else:
+            self.show_progressbar=show_progressbar
+        if log_level is None:
+            self.log_level = defaults.log_level
+        else:
+            if not isinstance(tab_options, dict):
+                raise TypeError(
+                    'tab_options must be dict, not {tab_options_type}'
+                    .format(tab_options_type=type(tab_options))
+                )
+            self.log_level = log_level
+
+        self._ttable_dict = dict(header=list(), table=dict())
+
+    def parse(self, filename):
+        try:
+            with open(filename, encoding='utf-8') as unicode_file:
+                ttable_reader = csv.reader(
+                    filter(lambda r: r[0] != '#', unicode_file),
+                    dialect='excel-tab')
+                for row in ttable_reader:
+                    if len(row) > 0:
+                        key = get_squashed(key=row[0])
+                        self._ttable_dict['header'].append(key)
+                        self._ttable_dict['table'][key] = row[1:]
+        except UnicodeDecodeError:
+            with open(filename, encoding='ISO8859-2') as latin2_file:
+                ttable_reader = csv.reader(
+                    filter(lambda r: r[0] != '#', latin2_file),
+                    dialect='excel-tab')
+                for row in ttable_reader:
+                    if len(row) > 0:
+                        key = get_squashed(key=row[0])
+                        self._ttable_dict['header'].append(key)
+                        self._ttable_dict['table'][key] = row[1:]
+
+        return self._ttable_dict
+
+
+errors = []
+warnings = []
 
 
 # REGEXES
