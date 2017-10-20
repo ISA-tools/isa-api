@@ -880,13 +880,11 @@ class IsaModelObjectFactory(object):
                 sources.append(source)
                 for sample_type, sampling_size in sample_plan.items():
                     for sampn in range(0, sampling_size):
-                        try:
-                            qc_material_type = next(
-                                iter(self.sample_assay_plan
-                                     .sample_qc_plan.keys()))
+                        for qc_material_type in  self.sample_assay_plan \
+                                .sample_qc_plan.keys():
 
                             if sample_count % self.sample_assay_plan\
-                                .sample_qc_plan[qc_material_type] == 0:
+                                    .sample_qc_plan[qc_material_type] == 0:
                                 # insert QC sample collection
                                 qcsource = Source(
                                     name=self._idgen(group_id, subjn) + '_qc')
@@ -911,8 +909,6 @@ class IsaModelObjectFactory(object):
                                             term='Run Order')),
                                     value=str(sample_count))])
                                 process_sequence.append(process)
-                        except StopIteration:
-                            pass  # if no QC plan
                         # normal sample collection
                         sample = Sample(name=self._idgen(
                             group_id, subjn, sampn, sample_type.value.term),
