@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from configparser import ConfigParser
+from ConfigParser import ConfigParser
 import logging
 import os
 

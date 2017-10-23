@@ -63,7 +63,7 @@ class Comment(object):
 
     @name.setter
     def name(self, val):
-        if val is not None and isinstance(val, str):
+        if val is not None and isinstance(val, (unicode, str, unicode)):
             self.__name = val
         else:
             raise ISAModelAttributeError('Comment.name must be a string')
@@ -75,7 +75,7 @@ class Comment(object):
 
     @value.setter
     def value(self, val):
-        if isinstance(val, str):
+        if isinstance(val, (unicode, str, unicode)):
             self.__value = val
         raise ISAModelAttributeError('Comment.value must be a string')
 
@@ -101,7 +101,7 @@ class Comment(object):
         return not self == other
 
 
-class Commentable(metaclass=abc.ABCMeta):
+class Commentable(object):
     """Abstract class to enable containment of Comments
 
     Attributes:
@@ -195,7 +195,7 @@ class Commentable(metaclass=abc.ABCMeta):
         return [x.value for x in self.comments]
 
 
-class MetadataMixin(metaclass=abc.ABCMeta):
+class MetadataMixin:
     """Abstract mixin class to contain metadata fields found in Investigation
     and Study sections of ISA
 
@@ -237,7 +237,7 @@ class MetadataMixin(metaclass=abc.ABCMeta):
 
     @filename.setter
     def filename(self, val):
-        if val is not None and isinstance(val, str):
+        if val is not None and isinstance(val, (unicode, str, unicode)):
                 self.__filename = val
         else:
             raise ISAModelAttributeError('{0}.filename must be a string'
@@ -250,11 +250,11 @@ class MetadataMixin(metaclass=abc.ABCMeta):
 
     @identifier.setter
     def identifier(self, val):
-        if val is not None and isinstance(val, str):
+        if val is not None and isinstance(val, (unicode, str, unicode)):
                 self.__identifier = val
         else:
-            raise ISAModelAttributeError('{0}.identifier must be a string'
-                                         .format(type(self).__name__))
+            raise ISAModelAttributeError('{0}.identifier must be a string not {1}'
+                                         .format(type(self).__name__, type(val)))
 
     @property
     def title(self):
@@ -263,7 +263,7 @@ class MetadataMixin(metaclass=abc.ABCMeta):
 
     @title.setter
     def title(self, val):
-        if val is not None and isinstance(val, str):
+        if val is not None and isinstance(val, (unicode, str, unicode)):
             self.__title = val
         else:
             raise ISAModelAttributeError('{0}.title must be a string'
@@ -276,7 +276,7 @@ class MetadataMixin(metaclass=abc.ABCMeta):
 
     @description.setter
     def description(self, val):
-        if val is not None and isinstance(val, str):
+        if val is not None and isinstance(val, (unicode, str, unicode)):
             self.__description = val
         else:
             raise ISAModelAttributeError('{0}.description must be a string'
@@ -289,7 +289,7 @@ class MetadataMixin(metaclass=abc.ABCMeta):
 
     @submission_date.setter
     def submission_date(self, val):
-        if val is not None and isinstance(val, str):
+        if val is not None and isinstance(val, (unicode, str, unicode)):
             self.__submission_date = val
         else:
             raise ISAModelAttributeError('{0}.submission_date must be a string'
@@ -302,7 +302,7 @@ class MetadataMixin(metaclass=abc.ABCMeta):
 
     @public_release_date.setter
     def public_release_date(self, val):
-        if val is not None and isinstance(val, str):
+        if val is not None and isinstance(val, (unicode, str, unicode)):
             self.__public_release_date = val
         else:
             raise ISAModelAttributeError('{0}.public_release_date must be a '
@@ -552,7 +552,7 @@ class OntologySource(Commentable):
 
     def __init__(self, name, file='', version='', description='',
                  comments=None):
-        super().__init__(comments)
+        super(OntologySource, self).__init__(comments)
 
         self.__name = name
         self.__file = file
@@ -566,7 +566,7 @@ class OntologySource(Commentable):
 
     @name.setter
     def name(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'OntologySource.name must be a str; got {0}:{1}'
                 .format(val, type(val)))
@@ -580,7 +580,7 @@ class OntologySource(Commentable):
     
     @file.setter
     def file(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'OntologySource.file must be a str; got {0}:{1}'
                 .format(val, type(val)))
@@ -594,7 +594,7 @@ class OntologySource(Commentable):
 
     @version.setter
     def version(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'OntologySource.version must be a str; got {0}:{1}'
                 .format(val, type(val)))
@@ -608,7 +608,7 @@ class OntologySource(Commentable):
 
     @description.setter
     def description(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'OntologySource.description must be a str; got {0}:{1}'
                 .format(val, type(val)))
@@ -660,7 +660,7 @@ class OntologyAnnotation(Commentable):
 
     def __init__(self, term='', term_source=None, term_accession='',
                  comments=None, id_=''):
-        super().__init__(comments)
+        super(OntologyAnnotation, self).__init__(comments)
 
         self.__term = term
         self.__term_source = term_source
@@ -674,7 +674,7 @@ class OntologyAnnotation(Commentable):
 
     @term.setter
     def term(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'OntologyAnnotation.term must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -703,7 +703,7 @@ class OntologyAnnotation(Commentable):
 
     @term_accession.setter
     def term_accession(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'OntologyAnnotation.term_accession must be a str or None')
         else:
@@ -759,7 +759,7 @@ class Publication(Commentable):
 
     def __init__(self, pubmed_id='', doi='', author_list='', title='', 
                  status=None, comments=None):
-        super().__init__(comments)
+        super(Publication, self).__init__(comments)
 
         self.__pubmed_id = pubmed_id
         self.__doi = doi
@@ -774,7 +774,7 @@ class Publication(Commentable):
 
     @pubmed_id.setter
     def pubmed_id(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Publication.pubmed_id must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -788,7 +788,7 @@ class Publication(Commentable):
 
     @doi.setter
     def doi(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Publication.doi must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -802,7 +802,7 @@ class Publication(Commentable):
 
     @author_list.setter
     def author_list(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Publication.author_list must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -816,7 +816,7 @@ class Publication(Commentable):
 
     @title.setter
     def title(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Publication.title must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -895,7 +895,7 @@ class Person(Commentable):
     def __init__(self, last_name='', first_name='', mid_initials='', email='', 
                  phone='', fax='', address='', affiliation='', roles=None, 
                  comments=None, id_=''):
-        super().__init__(comments)
+        super(Person, self).__init__(comments)
 
         self.id = id_
         self.__last_name = last_name
@@ -919,7 +919,7 @@ class Person(Commentable):
     
     @last_name.setter
     def last_name(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Person.last_name must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -933,7 +933,7 @@ class Person(Commentable):
 
     @first_name.setter
     def first_name(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Person.first_name must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -947,7 +947,7 @@ class Person(Commentable):
 
     @mid_initials.setter
     def mid_initials(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Person.mid_initials must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -961,7 +961,7 @@ class Person(Commentable):
 
     @email.setter
     def email(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Person.email must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -975,7 +975,7 @@ class Person(Commentable):
 
     @phone.setter
     def phone(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Person.phone must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -989,7 +989,7 @@ class Person(Commentable):
 
     @fax.setter
     def fax(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Person.fax must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -1003,7 +1003,7 @@ class Person(Commentable):
 
     @address.setter
     def address(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Person.address must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -1017,7 +1017,7 @@ class Person(Commentable):
 
     @affiliation.setter
     def affiliation(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Person.affiliation must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -1085,7 +1085,7 @@ class Person(Commentable):
         return not self == other
 
 
-class StudyAssayMixin(metaclass=abc.ABCMeta):
+class StudyAssayMixin:
     """Abstract mixin class to contain common fields found in Study
     and Assay sections of ISA
 
@@ -1143,7 +1143,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
 
     @filename.setter
     def filename(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 '{0}.filename must be a str or None; got {1}:{2}'
                 .format(type(self).__name__, val, type(val)))
@@ -1804,7 +1804,7 @@ class StudyFactor(Commentable):
         comments: Comments associated with instances of this class.
     """
     def __init__(self, id_='', name='', factor_type=None, comments=None):
-        super().__init__(comments)
+        super(StudyFactor, self).__init__(comments)
 
         self.id = id_
         self.__name = name
@@ -1821,7 +1821,7 @@ class StudyFactor(Commentable):
 
     @name.setter
     def name(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'StudyFactor.name must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -1900,7 +1900,7 @@ class Assay(Commentable, StudyAssayMixin, object):
                  technology_platform='', filename='', process_sequence=None,
                  data_files=None, samples=None, other_material=None,
                  characteristic_categories=None, units=None, comments=None):
-        super().__init__(comments)
+        super(Assay, self).__init__(comments)
         StudyAssayMixin.__init__(self, filename=filename, samples=samples,
                                  other_material=other_material,
                                  process_sequence=process_sequence,
@@ -1961,7 +1961,7 @@ class Assay(Commentable, StudyAssayMixin, object):
 
     @technology_platform.setter
     def technology_platform(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Assay.technology_platform must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -2063,7 +2063,7 @@ class Protocol(Commentable):
     def __init__(self, id_='', name='', protocol_type=None, uri='',
                  description='', version='', parameters=None, components=None,
                  comments=None):
-        super().__init__(comments)
+        super(Protocol, self).__init__(comments)
 
         self.id = id_
         self.__name = name
@@ -2094,7 +2094,7 @@ class Protocol(Commentable):
 
     @name.setter
     def name(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Protocol.name must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -2123,7 +2123,7 @@ class Protocol(Commentable):
 
     @description.setter
     def description(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Protocol.description must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -2137,7 +2137,7 @@ class Protocol(Commentable):
 
     @uri.setter
     def uri(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Protocol.uri must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -2151,7 +2151,7 @@ class Protocol(Commentable):
 
     @version.setter
     def version(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Protocol.version must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -2259,7 +2259,7 @@ class ProtocolParameter(Commentable):
         comments: Comments associated with instances of this class.
     """
     def __init__(self, id_='', parameter_name=None, comments=None):
-        super().__init__(comments)
+        super(ProtocolParameter, self).__init__(comments)
 
         self.id = id_
 
@@ -2320,7 +2320,7 @@ class ParameterValue(object):
         comments: Comments associated with instances of this class.
     """
     def __init__(self, category=None, value=None, unit=None):
-        super().__init__()
+        super(ParameterValue, self).__init__()
 
         self.__category = category
         self.__value = value
@@ -2350,7 +2350,7 @@ class ParameterValue(object):
     @value.setter
     def value(self, val):
         if val is not None \
-                and not isinstance(val, (str, int, float, OntologyAnnotation)):
+                and not isinstance(val, (unicode, str, int, float, OntologyAnnotation)):
             raise ISAModelAttributeError(
                 'ParameterValue.value must be a string, numeric, an '
                 'OntologyAnnotation, or None; got {0}:{1}'
@@ -2410,7 +2410,7 @@ class ProtocolComponent(Commentable):
         comments: Comments associated with instances of this class.
     """
     def __init__(self, id_='', name='', component_type=None, comments=None):
-        super().__init__(comments)
+        super(ProtocolComponent, self).__init__(comments)
 
         self.id = id_
         self.__name = name
@@ -2427,7 +2427,7 @@ class ProtocolComponent(Commentable):
 
     @name.setter
     def name(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'ProtocolComponent.name must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -2486,7 +2486,7 @@ class Source(Commentable):
         comments: Comments associated with instances of this class.
     """
     def __init__(self, name='', id_='', characteristics=None, comments=None):
-        super().__init__(comments)
+        super(Source, self).__init__(comments)
 
         self.id = id_
         self.__name = name
@@ -2503,7 +2503,7 @@ class Source(Commentable):
 
     @name.setter
     def name(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Source.name must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -2577,7 +2577,7 @@ class Characteristic(Commentable):
             numeric).
         """
     def __init__(self, category=None, value=None, unit=None, comments=None):
-        super().__init__(comments)
+        super(Characteristic, self).__init__(comments)
 
         if category is None:
             self.__category = OntologyAnnotation()
@@ -2615,7 +2615,7 @@ class Characteristic(Commentable):
     @value.setter
     def value(self, val):
         if val is not None \
-                and not isinstance(val, (str, int, float, OntologyAnnotation)):
+                and not isinstance(val, (unicode, str, int, float, OntologyAnnotation)):
             raise ISAModelAttributeError(
                 'Characteristic.value must be a string, numeric, an '
                 'OntologyAnnotation, or None; got {0}:{1}'
@@ -2686,7 +2686,7 @@ class Sample(Commentable):
     """
     def __init__(self, name='', id_='', factor_values=None,
                  characteristics=None, derives_from=None, comments=None):
-        super().__init__(comments)
+        super(Sample, self).__init__(comments)
 
         self.id = id_
         self.__name = name
@@ -2713,7 +2713,7 @@ class Sample(Commentable):
 
     @name.setter
     def name(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 'Sample.name must be a str or None; got {0}:{1}'
                 .format(val, type(val)))
@@ -2815,12 +2815,12 @@ class Sample(Commentable):
         return not self == other
 
 
-class Material(Commentable, metaclass=abc.ABCMeta):
+class Material(Commentable):
     """Represents a generic material in an experimental graph.
     """
     def __init__(self, name='', id_='', type_='', characteristics=None,
                  comments=None):
-        super().__init__(comments)
+        super(Material, self).__init__(comments)
 
         self.id = id_
         self.__name = name
@@ -2838,7 +2838,7 @@ class Material(Commentable, metaclass=abc.ABCMeta):
 
     @name.setter
     def name(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 '{0}.name must be a str or None; got {1}:{2}'
                 .format(type(self).__name__, val, type(val)))
@@ -2852,7 +2852,7 @@ class Material(Commentable, metaclass=abc.ABCMeta):
 
     @type.setter
     def type(self, val):
-        if val is not None and not isinstance(val, str) \
+        if val is not None and not isinstance(val, (unicode, str, unicode)) \
                 and val not in ('Extract Name', 'Labeled Extract Name'):
             raise ISAModelAttributeError(
                 '{0}.type must be a str in ("Extract Name", "Labeled Extract '
@@ -2881,8 +2881,9 @@ class Material(Commentable, metaclass=abc.ABCMeta):
 class Extract(Material):
     """Represents a extract material in an experimental graph."""
     def __init__(self, name='', id_='', characteristics=None, comments=None):
-        super().__init__(name=name, id_=id_, characteristics=characteristics,
-                         comments=comments)
+        super(Extract, self).__init__(
+            name=name, id_=id_, characteristics=characteristics,
+            comments=comments)
 
         self.type = 'Extract Name'
 
@@ -2918,8 +2919,9 @@ class Extract(Material):
 class LabeledExtract(Material):
     """Represents a labeled extract material in an experimental graph."""
     def __init__(self, name='', id_='', characteristics=None, comments=None):
-        super().__init__(name=name, id_=id_, characteristics=characteristics,
-                         comments=comments)
+        super(LabeledExtract, self).__init__(
+            name=name, id_=id_, characteristics=characteristics,
+            comments=comments)
 
         self.type = 'Labeled Extract Name'
 
@@ -2963,7 +2965,7 @@ class FactorValue(Commentable):
         comments: Comments associated with instances of this class.
     """
     def __init__(self, factor_name=None, value=None, unit=None, comments=None):
-        super().__init__(comments)
+        super(FactorValue, self).__init__(comments)
         self.__factor_name = factor_name
         self.__value = value
         self.__unit = unit
@@ -2992,7 +2994,7 @@ class FactorValue(Commentable):
     @value.setter
     def value(self, val):
         if val is not None \
-                and not isinstance(val, (str, int, float, OntologyAnnotation)):
+                and not isinstance(val, (unicode, str, int, float, OntologyAnnotation)):
             raise ISAModelAttributeError(
                 'FactorValue.value must be a string, numeric, an '
                 'OntologyAnnotation, or None; got {0}:{1}'
@@ -3068,7 +3070,7 @@ class Process(Commentable):
     def __init__(self, id_='', name='', executes_protocol=None, date_=None,
                  performer=None, parameter_values=None, inputs=None,
                  outputs=None, comments=None):
-        super().__init__(comments)
+        super(Process, self).__init__(comments)
 
         self.id = id_
         self.__name = name
@@ -3106,7 +3108,7 @@ class Process(Commentable):
 
     @name.setter
     def name(self, val):
-        if val is not None and isinstance(val, str):
+        if val is not None and isinstance(val, (unicode, str, unicode)):
             self.__name = val
         else:
             raise ISAModelAttributeError('Process.name must be a string')
@@ -3133,7 +3135,7 @@ class Process(Commentable):
 
     @date.setter
     def date(self, val):
-        if val is not None and isinstance(val, str):
+        if val is not None and isinstance(val, (unicode, str, unicode)):
             self.__date = val
         else:
             raise ISAModelAttributeError('Process.date must be a string')
@@ -3145,7 +3147,7 @@ class Process(Commentable):
 
     @performer.setter
     def performer(self, val):
-        if val is not None and isinstance(val, str):
+        if val is not None and isinstance(val, (unicode, str, unicode)):
             self.__performer = val
         else:
             raise ISAModelAttributeError('Process.performer must be a string')
@@ -3267,7 +3269,7 @@ class DataFile(Commentable):
     """
     def __init__(self, filename='', id_='', label='', generated_from=None, 
                  comments=None):
-        super().__init__(comments)
+        super(DataFile, self).__init__(comments)
         
         self.id = id_
         self.__filename = filename
@@ -3285,7 +3287,7 @@ class DataFile(Commentable):
 
     @filename.setter
     def filename(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 '{0}.name must be a str or None; got {1}:{2}'
                 .format(type(self).__name__, val, type(val)))
@@ -3299,7 +3301,7 @@ class DataFile(Commentable):
 
     @label.setter
     def label(self, val):
-        if val is not None and not isinstance(val, str):
+        if val is not None and not isinstance(val, (unicode, str, unicode)):
             raise ISAModelAttributeError(
                 '{0}.label must be a str or None; got {1}:{2}'
                 .format(type(self).__name__, val, type(val)))
@@ -3355,7 +3357,7 @@ class DataFile(Commentable):
 class RawDataFile(DataFile):
     """Represents a raw data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
+        super(RawDataFile, self).__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
         self.label = 'Raw Data File'
@@ -3389,7 +3391,7 @@ class RawDataFile(DataFile):
 class DerivedDataFile(DataFile):
     """Represents a derived data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
+        super(DerivedDataFile, self).__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
         self.label = 'Derived Data File'
@@ -3424,7 +3426,7 @@ class DerivedDataFile(DataFile):
 class RawSpectralDataFile(DataFile):
     """Represents a raw spectral data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
+        super(RawSpectralDataFile, self).__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
         self.label = 'Raw Spectral Data File'
@@ -3458,7 +3460,7 @@ class RawSpectralDataFile(DataFile):
 class DerivedArrayDataFile(DataFile):
     """Represents a derived array data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
+        super(DerivedArrayDataFile, self).__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
         self.label = 'Derived Array Data File'
@@ -3493,7 +3495,7 @@ class DerivedArrayDataFile(DataFile):
 class ArrayDataFile(DataFile):
     """Represents a array data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
+        super(ArrayDataFile, self).__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
         self.label = 'Array Data File'
@@ -3528,7 +3530,7 @@ class ArrayDataFile(DataFile):
 class DerivedSpectralDataFile(DataFile):
     """Represents a derived spectral data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
+        super(DerivedSpectralDataFile, self).__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
         self.label = 'Derived Spectral Data File'
@@ -3563,7 +3565,7 @@ class DerivedSpectralDataFile(DataFile):
 class ProteinAssignmentFile(DataFile):
     """Represents a protein assignment file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
+        super(ProteinAssignmentFile, self).__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
         self.label = 'Protein Assignment File'
@@ -3598,7 +3600,7 @@ class ProteinAssignmentFile(DataFile):
 class PeptideAssignmentFile(DataFile):
     """Represents a peptide assignment file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
+        super(PeptideAssignmentFile, self).__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
         self.label = 'Peptide Assignment File'
@@ -3633,8 +3635,9 @@ class PeptideAssignmentFile(DataFile):
 class DerivedArrayDataMatrixFile(DataFile):
     """Represents a derived array data matrix file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+        super(DerivedArrayDataMatrixFile, self).__init__(
+            filename=filename, id_=id_, generated_from=generated_from,
+            comments=comments)
 
         self.label = 'Derived Array Data Matrix File'
 
@@ -3669,8 +3672,9 @@ class PostTranslationalModificationAssignmentFile(DataFile):
     """Represents a post translational modification assignment file in an
     experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+        super(PostTranslationalModificationAssignmentFile, self).__init__(
+            filename=filename, id_=id_, generated_from=generated_from,
+            comments=comments)
 
         self.label = 'Post Translational Modification Assignment File'
 
@@ -3704,8 +3708,9 @@ class PostTranslationalModificationAssignmentFile(DataFile):
 class AcquisitionParameterDataFile(DataFile):
     """Represents a acquisition parameter data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+        super(AcquisitionParameterDataFile, self).__init__(
+            filename=filename, id_=id_, generated_from=generated_from,
+            comments=comments)
 
         self.label = 'Acquisition Parameter Data File'
 
@@ -3739,8 +3744,9 @@ class AcquisitionParameterDataFile(DataFile):
 class FreeInductionDecayDataFile(DataFile):
     """Represents a free induction decay data file in an experimental graph."""
     def __init__(self, filename='', id_='', generated_from=None, comments=None):
-        super().__init__(filename=filename, id_=id_,
-                         generated_from=generated_from, comments=comments)
+        super(FreeInductionDecayDataFile, self).__init__(
+            filename=filename, id_=id_, generated_from=generated_from,
+            comments=comments)
 
         self.label = 'Free Induction Decay Data File'
 
@@ -3769,181 +3775,6 @@ class FreeInductionDecayDataFile(DataFile):
 
     def __ne__(self, other):
         return not self == other
-
-
-def batch_create_materials(material=None, n=1):
-    """Creates a batch of material objects (Source, Sample or Material) from a
-    prototype material object
-
-    :param material: existing material object to use as a prototype
-    :param n: Number of material objects to create in the batch
-    :returns: List of material objects
-
-    :Example:
-
-        # Create 10 sample materials derived from one source material
-
-        source = Source(name='source_material')
-        prototype_sample = Sample(name='sample_material', derives_from=source)
-        batch = batch_create_materials(prototype_sample, n=10)
-
-        [Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>, Sample<>,
-        Sample<>, Sample<>, Sample<>, ]
-
-    """
-    material_list = list()
-    if isinstance(material, (Source, Sample, Material)):
-        from copy import deepcopy
-        for x in range(0, n):
-            new_obj = deepcopy(material)
-            new_obj.name = material.name + '-' + str(x)
-
-            if hasattr(material, 'derives_from'):
-                new_obj.derives_from = material.derives_from
-
-            material_list.append(new_obj)
-
-    return material_list
-
-
-def batch_create_assays(*args, n=1):
-    """Creates a batch of assay process sequences (Material->Process->Material)
-    from a prototype sequence (currently works only as flat end-to-end
-    processes of Material->Process->Material->...)
-
-    :param *args: An argument list representing the process sequence prototype
-    :param n: Number of process sequences to create in the batch
-    :returns: List of process sequences replicating the prototype sequence
-
-    :Example:
-
-        # Create 3 assays of (Sample -> Process -> Material -> Process ->
-        LabeledExtract)
-
-        sample = Sample(name='sample')
-        data_acquisition = Process(name='data acquisition')
-        material = Material(name='material')
-        labeling = Process(name='labeling')
-        extract = LabeledExtract(name='lextract')
-        batch = batch_create_assays(sample, data_acquisition, material,
-        labeling, extract, n=3)
-
-        [Process<> Process<>, Process<> Process<>, Process<>, Process<>]
-
-        # Create 3 assays of ([Sample, Sample] -> Process -> [Material,
-        Material])
-
-        sample1 = Sample(name='sample')
-        sample2 = Sample(name='sample')
-        process = Process(name='data acquisition')
-        material1 = Material(name='material')
-        material2 = Material(name='material')
-        batch = batch_create_assays([sample1, sample2], process, [material1,
-        material2], n=3)
-
-    """
-    process_sequence = []
-    materialA = None
-    process = None
-    materialB = None
-    from copy import deepcopy
-    for x in range(0, n):
-        for arg in args:
-            if isinstance(arg, list) and len(arg) > 0:
-                if isinstance(arg[0], (Source, Sample, Material)):
-                    if materialA is None:
-                        materialA = deepcopy(arg)
-                        y = 0
-                        for material in materialA:
-                            material.name = material.name + '-' + str(x) + '-' \
-                                            + str(y)
-                            y += 1
-                    else:
-                        materialB = deepcopy(arg)
-                        y = 0
-                        for material in materialB:
-                            material.name = material.name + '-' + str(x) + '-' \
-                                            + str(y)
-                            y += 1
-                elif isinstance(arg[0], Process):
-                    process = deepcopy(arg)
-                    y = 0
-                    for p in process:
-                        p.name = p.name + '-' + str(x) + '-' + str(y)
-                        y += 1
-            if isinstance(arg, (Source, Sample, Material)):
-                if materialA is None:
-                    materialA = deepcopy(arg)
-                    materialA.name = materialA.name + '-' + str(x)
-                else:
-                    materialB = deepcopy(arg)
-                    materialB.name = materialB.name + '-' + str(x)
-            elif isinstance(arg, Process):
-                process = deepcopy(arg)
-                process.name = process.name + '-' + str(x)
-            if materialA is not None and materialB is not None \
-                    and process is not None:
-                if isinstance(process, list):
-                    for p in process:
-                        if isinstance(materialA, list):
-                            p.inputs = materialA
-                        else:
-                            p.inputs.append(materialA)
-                        if isinstance(materialB, list):
-                            p.outputs = materialB
-                            for material in materialB:
-                                material.derives_from = materialA
-                        else:
-                            p.outputs.append(materialB)
-                            materialB.derives_from = materialA
-                else:
-                    if isinstance(materialA, list):
-                        process.inputs = materialA
-                    else:
-                        process.inputs.append(materialA)
-                    if isinstance(materialB, list):
-                        process.outputs = materialB
-                        for material in materialB:
-                            material.derives_from = materialA
-                    else:
-                        process.outputs.append(materialB)
-                        materialB.derives_from = materialA
-                    process_sequence.append(process)
-                materialA = materialB
-                process = None
-                materialB = None
-    return process_sequence
-
-
-class ISADocument:
-
-
-    valid_isajson = False
-
-    def __init__(self, isa_obj):
-        self._root = None
-        if isinstance(isa_obj, Investigation):
-            self._root = isa_obj
-        elif isinstance(isa_obj, Study):
-            self._root = Investigation(studies=[isa_obj])
-        elif isinstance(isa_obj, Assay):
-            self._root = Investigation(studies=[Study(assays=[isa_obj])])
-
-    @property
-    def valid_isatab(self):
-        if self._root.filename is None or self._root.filename == '':
-            return False
-        for study in self._root.studies:
-            if study.filename is None or study.filename == '':
-                return False
-            for assay in study.assays:
-                if assay.filename is None or assay.filename == '':
-                    return False
-        return True
-
-    @property
-    def valid_isajson(self):
-        return True
 
 
 def plink(p1, p2):

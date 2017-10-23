@@ -1,12 +1,11 @@
 import unittest
 from isatools.tests import utils
 import os
-from lxml import etree
 
 
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
-        raise FileNotFoundError("Could not fine test data directory in {0}. Ensure you have cloned the ISAdatasets "
+        raise IOError("Could not fine test data directory in {0}. Ensure you have cloned the ISAdatasets "
                                 "repository using "
                                 "git clone -b tests --single-branch git@github.com:ISA-tools/ISAdatasets {0}"
                                 .format(utils.DATA_DIR))
@@ -136,6 +135,3 @@ class TestUtils(unittest.TestCase):
         with open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 's_BII-S-1.txt')) as s_tab1:
             with open(os.path.join(utils.TAB_DATA_DIR, 'BII-I-1', 's_BII-S-1.txt')) as s_tab2:
                 self.assertTrue(utils.assert_tab_content_equal(s_tab1, s_tab2))
-
-    def test_assert_xml_equal(self):
-        self.assertTrue(utils.assert_xml_equal(etree.fromstring(self.x1), etree.fromstring(self.x2)))

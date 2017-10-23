@@ -1,14 +1,6 @@
 numpy
 jsonschema
-pandas==0.20.*
+pandas
 networkx
-lxml
-requests
 iso8601
 chardet
-jinja2
-bs4
-mzml2isa
-biopython
-progressbar2
-deepdiff

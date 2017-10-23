@@ -10,7 +10,7 @@ import logging
 import os
 import re
 from json import JSONEncoder
-from jsonschema import Draft4Validator, RefResolver, ValidationError
+from jsonschema import *
 
 from isatools import config
 from isatools.model import *

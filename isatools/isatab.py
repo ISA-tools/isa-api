@@ -4,6 +4,7 @@ Don't forget to read the ISA-Tab spec:
 http://isa-specs.readthedocs.io/en/latest/isatab.html
 """
 from __future__ import absolute_import
+import chardet
 import csv
 import glob
 import io
@@ -14,153 +15,18 @@ import numpy as np
 import os
 import pandas as pd
 import re
-import shutil
-import tempfile
 from bisect import bisect_left
 from bisect import bisect_right
 from io import StringIO
 from itertools import tee
-from itertools import zip_longest
 from pandas.io.parsers import ParserError
-from progressbar import ProgressBar
-from progressbar import SimpleProgress
-from progressbar import Bar
-from progressbar import ETA
+from six.moves import zip_longest
 
 from isatools import config
 from isatools.model import *
 
 logging.basicConfig(level=config.log_level)
 log = logging.getLogger(__name__)
-
-
-def xml_config_contents(filename):
-    config_filepath = os.path.join(
-        os.path.dirname(__file__),
-        'resources',
-        'config',
-        'xml',
-        filename,
-    )
-    with open(config_filepath) as f:
-        return f.read()
-
-
-STUDY_SAMPLE_XML_CONFIG = xml_config_contents('studySample.xml')
-
-
-class _Defaults(object):
-
-    def __init__(self):
-        self._tab_options = {
-            'readCellQuotes': False,  # read cell quotes as part of cell values
-            'writeCellQuotes': True,  # write out cell values enclosed with quotes
-            'forceFitColumns': True,
-            'validateBeforeRead': False,
-            'validateAfterWrite': False
-        }
-        self._show_progressbar = False
-        self._log_level = logging.WARNING
-
-    def set_tab_option(self, optname, optvalue):
-        self._tab_options[optname] = optvalue
-
-    def set_defaults(self, show_progressbar=None, log_level=None):
-        if show_progressbar is not None:
-            self._show_progressbar = show_progressbar
-        if log_level is not None:
-            self._log_level = log_level
-
-    @property
-    def tab_options(self):
-        return self._tab_options
-
-    @property
-    def show_progressbar(self):
-        return self._show_progressbar
-
-    @property
-    def log_level(self):
-        return self._log_level
-
-
-defaults = _Defaults()
-
-
-def set_defaults(show_progressbar=None, log_level=None):
-    """
-    Set the default IsaTab options.
-    """
-    defaults.set_defaults(show_progressbar, log_level)
-
-
-def set_tab_option(optname, optvalue):
-    """
-    Set the default value for one of the options that gets passed into the
-    IsaTabParser or IsaTabWriter constructor.
-    """
-    defaults.tab_options[optname] = optvalue
-
-
-class TransposedTabParser(object):
-    """
-    Parser for transposed tables, such as the ISA-Tab investigation table,
-    or the MAGE-TAB IDF table. The headings are in column 0 with values,
-    perhaps multiple, reading in columns towards the right. These tables do
-    not necessarily have an even shape (row lengths may differ).
-
-    This reads the transposed table into a dictionary where key is heading and
-    value is a list of cell values for the heading. No relations between
-    headings is assumed and the order of values is implied by the order of the
-    cell value lists.
-
-    Does not allow duplicate labels.
-    """
-    def __init__(self, tab_options=None, show_progressbar=None, log_level=None):
-        if tab_options is None:
-            self.tab_options = defaults.tab_options
-        else:
-            self.tab_options=tab_options
-        if show_progressbar is None:
-            self.show_progressbar = defaults.show_progressbar
-        else:
-            self.show_progressbar=show_progressbar
-        if log_level is None:
-            self.log_level = defaults.log_level
-        else:
-            if not isinstance(tab_options, dict):
-                raise TypeError(
-                    'tab_options must be dict, not {tab_options_type}'
-                    .format(tab_options_type=type(tab_options))
-                )
-            self.log_level = log_level
-
-        self._ttable_dict = dict(header=list(), table=dict())
-
-    def parse(self, filename):
-        try:
-            with open(filename, encoding='utf-8') as unicode_file:
-                ttable_reader = csv.reader(
-                    filter(lambda r: r[0] != '#', unicode_file),
-                    dialect='excel-tab')
-                for row in ttable_reader:
-                    if len(row) > 0:
-                        key = get_squashed(key=row[0])
-                        self._ttable_dict['header'].append(key)
-                        self._ttable_dict['table'][key] = row[1:]
-        except UnicodeDecodeError:
-            with open(filename, encoding='ISO8859-2') as latin2_file:
-                ttable_reader = csv.reader(
-                    filter(lambda r: r[0] != '#', latin2_file),
-                    dialect='excel-tab')
-                for row in ttable_reader:
-                    if len(row) > 0:
-                        key = get_squashed(key=row[0])
-                        self._ttable_dict['header'].append(key)
-                        self._ttable_dict['table'][key] = row[1:]
-
-        return self._ttable_dict
-
 
 errors = []
 warnings = []
@@ -179,393 +45,19 @@ _RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
 _RX_INDEXED_COL = re.compile('(.*?)\.\d+')
 
 # column labels
-_LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name', 'Labeled Extract Name']
-_LABELS_DATA_NODES = ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
+_LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name',
+                          'Labeled Extract Name']
+_LABELS_DATA_NODES = ['Raw Data File', 'Derived Spectral Data File',
+                      'Derived Array Data File', 'Array Data File',
                       'Protein Assignment File', 'Peptide Assignment File',
-                      'Post Translational Modification Assignment File', 'Acquisition Parameter Data File',
-                      'Free Induction Decay Data File', 'Derived Array Data Matrix File', 'Image File',
+                      'Post Translational Modification Assignment File',
+                      'Acquisition Parameter Data File',
+                      'Free Induction Decay Data File',
+                      'Derived Array Data Matrix File', 'Image File',
                       'Derived Data File', 'Metabolite Assignment File']
-_LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name', 'Scan Name',
+_LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name',
+                       'Hybridization Assay Name', 'Scan Name',
                        'Data Transformation Name', 'Normalization Name']
-
-
-def dump(isa_obj, output_path, i_file_name='i_investigation.txt', skip_dump_tables=False):
-
-    def _build_roles_str(roles):
-        log.debug('building roles from: %s', roles)
-        if roles is None:
-            roles = list()
-        roles_names = ''
-        roles_accession_numbers = ''
-        roles_source_refs = ''
-        for role in roles:
-            roles_names += (role.term if role.term else '') + ';'
-            roles_accession_numbers += (role.term_accession if role.term_accession else '') + ';'
-            roles_source_refs += (role.term_source.name if role.term_source else '') + ';'
-        if len(roles) > 0:
-            roles_names = roles_names[:-1]
-            roles_accession_numbers = roles_accession_numbers[:-1]
-            roles_source_refs = roles_source_refs[:-1]
-        log.debug('role_names: %s', roles)
-        log.debug('roles_accession_numbers: %s', roles)
-        log.debug('roles_source_refs: %s', roles)
-        return roles_names, roles_accession_numbers, roles_source_refs
-
-    def _build_contacts_section_df(prefix='Investigation', contacts=list()):
-        log.debug('building contacts from: %s', contacts)
-        contacts_df_cols = [prefix + ' Person Last Name',
-                            prefix + ' Person First Name',
-                            prefix + ' Person Mid Initials',
-                            prefix + ' Person Email',
-                            prefix + ' Person Phone',
-                            prefix + ' Person Fax',
-                            prefix + ' Person Address',
-                            prefix + ' Person Affiliation',
-                            prefix + ' Person Roles',
-                            prefix + ' Person Roles Term Accession Number',
-                            prefix + ' Person Roles Term Source REF']
-        if len(contacts) > 0:
-            if contacts[0].comments:
-                for comment in contacts[0].comments:
-                    contacts_df_cols.append('Comment[' + comment.name + ']')
-        contacts_df = pd.DataFrame(columns=tuple(contacts_df_cols))
-        for i, contact in enumerate(contacts):
-            log.debug('%s iteration, item=%s', i, contact)
-            roles_names, roles_accession_numbers, roles_source_refs = _build_roles_str(contact.roles)
-            contacts_df_row = [
-                contact.last_name,
-                contact.first_name,
-                contact.mid_initials,
-                contact.email,
-                contact.phone,
-                contact.fax,
-                contact.address,
-                contact.affiliation,
-                roles_names,
-                roles_accession_numbers,
-                roles_source_refs
-            ]
-            if contact.comments:
-                for comment in contact.comments:
-                    contacts_df_row.append(comment.value)
-            log.debug('row=%s', contacts_df_row)
-            contacts_df.loc[i] = contacts_df_row
-        return contacts_df.set_index(prefix + ' Person Last Name').T
-
-    def _build_publications_section_df(prefix='Investigation', publications=list()):
-        log.debug('building contacts from: %s', publications)
-        publications_df_cols = [prefix + ' PubMed ID',
-                                prefix + ' Publication DOI',
-                                prefix + ' Publication Author List',
-                                prefix + ' Publication Title',
-                                prefix + ' Publication Status',
-                                prefix + ' Publication Status Term Accession Number',
-                                prefix + ' Publication Status Term Source REF']
-        if len(publications) > 0:
-            try:
-                for comment in publications[0].comments:
-                    publications_df_cols.append('Comment[' + comment.name + ']')
-            except TypeError:
-                pass
-        publications_df = pd.DataFrame(columns=tuple(publications_df_cols))
-        for i, publication in enumerate(publications):
-            log.debug('%s iteration, item=%s', i, publication)
-            if publication.status is not None:
-                status_term = publication.status.term
-                status_term_accession = publication.status.term_accession
-                if publication.status.term_source is not None:
-                    status_term_source_name = publication.status.term_source.name
-                else:
-                    status_term_source_name = ''
-            else:
-                status_term = ''
-                status_term_accession = ''
-                status_term_source_name = ''
-            publications_df_row = [
-                publication.pubmed_id,
-                publication.doi,
-                publication.author_list,
-                publication.title,
-                status_term,
-                status_term_accession,
-                status_term_source_name,
-            ]
-            try:
-                for comment in publication.comments:
-                    publications_df_row.append(comment.value)
-            except TypeError:
-                pass
-            log.debug('row=%s', publications_df_row)
-            publications_df.loc[i] = publications_df_row
-        return publications_df.set_index(prefix +' PubMed ID').T
-
-    if not _RX_I_FILE_NAME.match(i_file_name):
-        log.debug('investigation filename=', i_file_name)
-        raise NameError("Investigation file must match pattern i_*.txt")
-
-    if os.path.exists(output_path):
-        fp = open(os.path.join(output_path, i_file_name), 'w', encoding='utf-8')
-    else:
-        log.debug('output_path=', i_file_name)
-        raise FileNotFoundError("Can't find " + output_path)
-
-    if not isinstance(isa_obj, Investigation):
-        log.debug('object type=', type(isa_obj))
-        raise NotImplementedError("Can only dump an Investigation object")
-
-    # Process Investigation object first to write the investigation file
-    investigation = isa_obj
-
-    # Write ONTOLOGY SOURCE REFERENCE section
-    ontology_source_references_df = pd.DataFrame(columns=('Term Source Name',
-                                                          'Term Source File',
-                                                          'Term Source Version',
-                                                          'Term Source Description'
-                                                          )
-                                                 )
-    for i,  ontology_source_reference in enumerate(investigation.ontology_source_references):
-        log.debug('%s iteration, item=%s', i, ontology_source_reference)
-        ontology_source_references_df.loc[i] = [
-            ontology_source_reference.name,
-            ontology_source_reference.file,
-            ontology_source_reference.version,
-            ontology_source_reference.description
-        ]
-        log.debug('ontology_source_reference=%s', ontology_source_references_df.loc[i])
-    ontology_source_references_df = ontology_source_references_df.set_index('Term Source Name').T
-    fp.write('ONTOLOGY SOURCE REFERENCE\n')
-    ontology_source_references_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                         index_label='Term Source Name')  # Need to set index_label as top left cell
-    #
-    #  Write INVESTIGATION section
-    inv_df_cols = ['Investigation Identifier',
-                   'Investigation Title',
-                   'Investigation Description',
-                   'Investigation Submission Date',
-                   'Investigation Public Release Date']
-    for comment in sorted(investigation.comments, key=lambda x: x.name):
-        inv_df_cols.append('Comment[' + comment.name + ']')
-    investigation_df = pd.DataFrame(columns=tuple(inv_df_cols))
-    inv_df_rows = [
-        investigation.identifier,
-        investigation.title,
-        investigation.description,
-        investigation.submission_date,
-        investigation.public_release_date
-    ]
-    for comment in sorted(investigation.comments, key=lambda x: x.name):
-        inv_df_rows.append(comment.value)
-    investigation_df.loc[0] = inv_df_rows
-    investigation_df = investigation_df.set_index('Investigation Identifier').T
-    fp.write('INVESTIGATION\n')
-    investigation_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                            index_label='Investigation Identifier')  # Need to set index_label as top left cell
-
-    # Write INVESTIGATION PUBLICATIONS section
-    investigation_publications_df = _build_publications_section_df(publications=investigation.publications)
-    fp.write('INVESTIGATION PUBLICATIONS\n')
-    investigation_publications_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                         index_label='Investigation PubMed ID')
-
-    # Write INVESTIGATION CONTACTS section
-    investigation_contacts_df = _build_contacts_section_df(contacts=investigation.contacts)
-    fp.write('INVESTIGATION CONTACTS\n')
-    investigation_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                     index_label='Investigation Person Last Name')
-
-    # Write STUDY sections
-    for study in investigation.studies:
-        study_df_cols = ['Study Identifier',
-                         'Study Title',
-                         'Study Description',
-                         'Study Submission Date',
-                         'Study Public Release Date',
-                         'Study File Name']
-        if study.comments is not None:
-            for comment in sorted(study.comments, key=lambda x: x.name):
-                study_df_cols.append('Comment[' + comment.name + ']')
-        study_df = pd.DataFrame(columns=tuple(study_df_cols))
-        study_df_row = [
-            study.identifier,
-            study.title,
-            study.description,
-            study.submission_date,
-            study.public_release_date,
-            study.filename
-        ]
-        if study.comments is not None:
-            for comment in sorted(study.comments, key=lambda x: x.name):
-                study_df_row.append(comment.value)
-        study_df.loc[0] = study_df_row
-        study_df = study_df.set_index('Study Identifier').T
-        fp.write('STUDY\n')
-        study_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8', index_label='Study Identifier')
-
-        # Write STUDY DESIGN DESCRIPTORS section
-        study_design_descriptors_df = pd.DataFrame(columns=('Study Design Type',
-                                                            'Study Design Type Term Accession Number',
-                                                            'Study Design Type Term Source REF'
-                                                            )
-                                                   )
-        for i, design_descriptor in enumerate(study.design_descriptors):
-            study_design_descriptors_df.loc[i] = [
-                design_descriptor.term,
-                design_descriptor.term_accession,
-                design_descriptor.term_source.name if design_descriptor.term_source else ''
-            ]
-        study_design_descriptors_df = study_design_descriptors_df.set_index('Study Design Type').T
-        fp.write('STUDY DESIGN DESCRIPTORS\n')
-        study_design_descriptors_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                           index_label='Study Design Type')
-
-        # Write STUDY PUBLICATIONS section
-        study_publications_df = _build_publications_section_df(prefix='Study', publications=study.publications)
-        fp.write('STUDY PUBLICATIONS\n')
-        study_publications_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8', index_label='Study PubMed ID')
-
-        # Write STUDY FACTORS section
-        study_factors_df = pd.DataFrame(columns=('Study Factor Name',
-                                                 'Study Factor Type',
-                                                 'Study Factor Type Term Accession Number',
-                                                 'Study Factor Type Term Source REF'
-                                                 )
-                                        )
-        for i, factor in enumerate(study.factors):
-            if factor.factor_type is not None:
-                factor_type_term = factor.factor_type.term
-                factor_type_term_accession = factor.factor_type.term_accession
-                if factor.factor_type.term_source is not None:
-                    factor_type_term_term_source_name = factor.factor_type.term_source.name
-                else:
-                    factor_type_term_term_source_name = ''
-            else:
-                factor_type_term = ''
-                factor_type_term_accession = ''
-                factor_type_term_term_source_name = ''
-            study_factors_df.loc[i] = [
-                factor.name,
-                factor_type_term,
-                factor_type_term_accession,
-                factor_type_term_term_source_name
-            ]
-        study_factors_df = study_factors_df.set_index('Study Factor Name').T
-        fp.write('STUDY FACTORS\n')
-        study_factors_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                index_label='Study Factor Name')
-
-        # Write STUDY ASSAYS section
-        study_assays_df = pd.DataFrame(columns=(
-                                                'Study Assay File Name',
-                                                'Study Assay Measurement Type',
-                                                'Study Assay Measurement Type Term Accession Number',
-                                                'Study Assay Measurement Type Term Source REF',
-                                                'Study Assay Technology Type',
-                                                'Study Assay Technology Type Term Accession Number',
-                                                'Study Assay Technology Type Term Source REF',
-                                                'Study Assay Technology Platform',
-                                                )
-                                       )
-        for i, assay in enumerate(study.assays):
-            study_assays_df.loc[i] = [
-                assay.filename,
-                assay.measurement_type.term,
-                assay.measurement_type.term_accession,
-                assay.measurement_type.term_source.name if assay.measurement_type.term_source else '',
-                assay.technology_type.term,
-                assay.technology_type.term_accession,
-                assay.technology_type.term_source.name if assay.technology_type.term_source else '',
-                assay.technology_platform
-            ]
-        study_assays_df = study_assays_df.set_index('Study Assay File Name').T
-        fp.write('STUDY ASSAYS\n')
-        study_assays_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                               index_label='Study Assay File Name')
-
-        # Write STUDY PROTOCOLS section
-        study_protocols_df = pd.DataFrame(columns=('Study Protocol Name',
-                                                   'Study Protocol Type',
-                                                   'Study Protocol Type Term Accession Number',
-                                                   'Study Protocol Type Term Source REF',
-                                                   'Study Protocol Description',
-                                                   'Study Protocol URI',
-                                                   'Study Protocol Version',
-                                                   'Study Protocol Parameters Name',
-                                                   'Study Protocol Parameters Name Term Accession Number',
-                                                   'Study Protocol Parameters Name Term Source REF',
-                                                   'Study Protocol Components Name',
-                                                   'Study Protocol Components Type',
-                                                   'Study Protocol Components Type Term Accession Number',
-                                                   'Study Protocol Components Type Term Source REF',
-                                                   )
-                                          )
-        for i, protocol in enumerate(study.protocols):
-            parameters_names = ''
-            parameters_accession_numbers = ''
-            parameters_source_refs = ''
-            for parameter in protocol.parameters:
-                parameters_names += parameter.parameter_name.term + ';'
-                parameters_accession_numbers += (parameter.parameter_name.term_accession if parameter.parameter_name.term_accession is not None else '') + ';'
-                parameters_source_refs += (parameter.parameter_name.term_source.name if parameter.parameter_name.term_source else '') + ';'
-            if len(protocol.parameters) > 0:
-                parameters_names = parameters_names[:-1]
-                parameters_accession_numbers = parameters_accession_numbers[:-1]
-                parameters_source_refs = parameters_source_refs[:-1]
-            component_names = ''
-            component_types = ''
-            component_types_accession_numbers = ''
-            component_types_source_refs = ''
-            for component in protocol.components:
-                component_names += component.name + ';'
-                component_types += component.component_type.term + ';'
-                component_types_accession_numbers += component.component_type.term_accession + ';'
-                component_types_source_refs += component.component_type.term_source.name if component.component_type.term_source else '' + ';'
-            if len(protocol.components) > 0:
-                component_names = component_names[:-1]
-                component_types = component_types[:-1]
-                component_types_accession_numbers = component_types_accession_numbers[:-1]
-                component_types_source_refs = component_types_source_refs[:-1]
-            protocol_type_term = ''
-            protocol_type_term_accession = ''
-            protocol_type_term_source_name = ''
-            if protocol.protocol_type:
-                protocol_type_term = protocol.protocol_type.term
-                protocol_type_term_accession = protocol.protocol_type.term_accession
-                if protocol.protocol_type.term_source:
-                    protocol_type_term_source_name = protocol.protocol_type.term_source.name
-            study_protocols_df.loc[i] = [
-                protocol.name,
-                protocol_type_term,
-                protocol_type_term_accession,
-                protocol_type_term_source_name,
-                protocol.description,
-                protocol.uri,
-                protocol.version,
-                parameters_names,
-                parameters_accession_numbers,
-                parameters_source_refs,
-                component_names,
-                component_types,
-                component_types_accession_numbers,
-                component_types_source_refs
-            ]
-        study_protocols_df = study_protocols_df.set_index('Study Protocol Name').T
-        fp.write('STUDY PROTOCOLS\n')
-        study_protocols_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                  index_label='Study Protocol Name')
-
-        # Write STUDY CONTACTS section
-        study_contacts_df = _build_contacts_section_df(prefix='Study', contacts=study.contacts)
-        fp.write('STUDY CONTACTS\n')
-        study_contacts_df.to_csv(path_or_buf=fp, mode='a', sep='\t', encoding='utf-8',
-                                 index_label='Study Person Last Name')
-    if skip_dump_tables:
-        pass
-    else:
-        write_study_table_files(investigation, output_path)
-        write_assay_table_files(investigation, output_path)
-
-    fp.close()
-    return investigation
 
 
 def _get_start_end_nodes(G):
@@ -573,9 +65,11 @@ def _get_start_end_nodes(G):
     end_nodes = list()
     for process in [n for n in G.nodes() if isinstance(n, Process)]:
         if process.prev_process is None:
-            for material in [m for m in process.inputs if not isinstance(m, DataFile)]:
+            for material in [
+                m for m in process.inputs if not isinstance(m, DataFile)]:
                 start_nodes.append(material)
-        outputs_no_data = [m for m in process.outputs if not isinstance(m, DataFile)]
+        outputs_no_data = [
+            m for m in process.outputs if not isinstance(m, DataFile)]
         if process.next_process is None:
             if len(outputs_no_data) == 0:
                 end_nodes.append(process)
@@ -605,33 +99,26 @@ def _longest_path_and_attrs(paths):
     return longest[1]
 
 
-def _all_end_to_end_paths(G, start_nodes):  # we know graphs start with Source or Sample and end with Process
+def _all_end_to_end_paths(G, start_nodes):
+    # we know graphs start with Source or Sample and end with Process
     paths = []
-    num_start_nodes = len(start_nodes)
-    message = 'Calculating for paths for {} start nodes: '.format(num_start_nodes)
-    if isinstance(start_nodes[0], Source):
-        message = 'Calculating for paths for {} sources: '.format(num_start_nodes)
-    elif isinstance(start_nodes[0], Sample):
-        message = 'Calculating for paths for {} samples: '.format(num_start_nodes)
-    if config.show_pbars:
-        pbar = ProgressBar(min_value=0, max_value=num_start_nodes, widgets=[message,
-                                                                            SimpleProgress(),
-                                                                            Bar(left=" |", right="| "), ETA()]).start()
-    else:
-        pbar = lambda x: x
-    for start in pbar(start_nodes):
+
+    for start in start_nodes:
         # Find ends
         if isinstance(start, Source):  # only look for Sample ends if start is a Source
             for end in [x for x in nx.algorithms.descendants(G, start) if
                         isinstance(x, Sample) and len(G.out_edges(x)) == 0]:
                 paths += list(nx.algorithms.all_simple_paths(G, start, end))
+
         elif isinstance(start, Sample):  # only look for Process ends if start is a Sample
             for end in [x for x in nx.algorithms.descendants(G, start) if
                         isinstance(x, Process) and x.next_process is None]:
                 paths += list(nx.algorithms.all_simple_paths(G, start, end))
+
     log.info("Found {} paths!".format(len(paths)))
     if len(paths) == 0:
         log.debug([x.name for x in start_nodes])
+
     return paths
 
 
@@ -688,13 +175,8 @@ def write_study_table_files(inv_obj, output_dir):
         omap = get_object_column_map(columns, columns)
         # load into dictionary
         df_dict = dict(map(lambda k: (k, []), flatten(omap)))
-        if config.show_pbars:
-            pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)),
-                                                                           SimpleProgress(),
-                                                                           Bar(left=" |", right="| "), ETA()]).start()
-        else:
-            pbar = lambda x: x
-        for path in pbar(paths):
+
+        for path in paths:
             for k in df_dict.keys():  # add a row per path
                 df_dict[k].extend([""])
 
@@ -1075,8 +557,9 @@ def read_investigation_file(fp):
         return memf
 
     def _build_section_df(f):
-        df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python', encoding='utf-8',
-                         comment='#').dropna(axis=1, how='all')
+        df = pd.read_csv(
+            f, names=range(0, 128), sep='\t', engine='python', encoding='utf-8',
+            comment='#').dropna(axis=1, how='all')
         df = df.T
         df.replace(np.nan, '', regex=True, inplace=True)  # Strip out the nan entries
         df.reset_index(inplace=True)  # Reset index so it is accessible as column
@@ -1086,11 +569,11 @@ def read_investigation_file(fp):
 
     memf = io.StringIO()
     while True:
-        line = fp.readline()
+        line = fp.readline().encode(encoding='utf-8')
         if not line:
             break
         if not line.lstrip().startswith('#'):
-            memf.write(line)
+            memf.writelines([line.decode('utf-8')])
     memf.seek(0)
 
     df_dict = dict()
@@ -1099,7 +582,7 @@ def read_investigation_file(fp):
     df_dict['ontology_sources'] = _build_section_df(_read_tab_section(
         f=memf,
         sec_key='ONTOLOGY SOURCE REFERENCE',
-        next_sec_key='INVESTIGATION'
+        next_sec_key=u'INVESTIGATION'
     ))
     # assert({'Term Source Name', 'Term Source File', 'Term Source Version', 'Term Source Description'}
     #        .issubset(set(ontology_sources_df.columns.values)))  # Check required labels are present
@@ -1166,7 +649,6 @@ def read_investigation_file(fp):
 
 def check_utf8(fp):
     """Used for rule 0010"""
-    import chardet
     with open(fp.name, 'rb') as fp:
         charset = chardet.detect(fp.read())
         if charset['encoding'] is not 'UTF-8' and charset['encoding'] is not 'ascii':
@@ -1445,7 +927,7 @@ def check_table_files_read(i_df, dir_context):
             try:
                 with open(os.path.join(dir_context, study_filename), encoding='utf-8'):
                     pass
-            except FileNotFoundError:
+            except IOError:
                 errors.append({
                     "message": "Missing study tab file(s)",
                     "supplemental": "Study File {} does not appear to exist".format(study_filename),
@@ -1457,7 +939,7 @@ def check_table_files_read(i_df, dir_context):
                 try:
                     with open(os.path.join(dir_context, assay_filename), encoding='utf-8'):
                         pass
-                except FileNotFoundError:
+                except IOError:
                     errors.append({
                         "message": "Missing assay tab file(s)",
                         "supplemental": "Assay File {} does not appear to exist".format(assay_filename),
@@ -1474,14 +956,14 @@ def check_table_files_load(i_df, dir_context):
             try:
                 with open(os.path.join(dir_context, study_filename), encoding='utf-8') as fp:
                     load_table_checks(fp)
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
                     with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as fp:
                         load_table_checks(fp)
-                except FileNotFoundError:
+                except IOError:
                     pass
 
 
@@ -1493,7 +975,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
                 with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
                     study_df = load_table(s_fp)
                     study_samples = set(study_df['Sample Name'])
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
@@ -1503,7 +985,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
                         assay_samples = set(assay_df['Sample Name'])
                         if not assay_samples.issubset(study_samples):
                             log.error("(E) Some samples in an assay file {} are not declared in the study file {}: {}".format(assay_filename, study_filename, list(assay_samples - study_samples)))
-                except FileNotFoundError:
+                except IOError:
                     pass
 
 
@@ -1532,7 +1014,7 @@ def check_protocol_usage(i_df, dir_context):
                         log.error(
                             "(E) Some protocols used in a study file {} are not declared in the investigation file: "
                             "{}".format(study_filename, diff))
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
@@ -1553,7 +1035,7 @@ def check_protocol_usage(i_df, dir_context):
                             })
                             log.error("(E) Some protocols used in an assay file {} are not declared in the "
                                          "investigation file: {}".format(assay_filename, diff))
-                except FileNotFoundError:
+                except IOError:
                     pass
         # now collect all protocols in all assays to compare to declared protocols
         protocol_refs_used = set()
@@ -1563,7 +1045,7 @@ def check_protocol_usage(i_df, dir_context):
                     study_df = load_table(s_fp)
                     for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
                         protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
@@ -1572,7 +1054,7 @@ def check_protocol_usage(i_df, dir_context):
                         assay_df = load_table(a_fp)
                         for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
                             protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
-                except FileNotFoundError:
+                except IOError:
                     pass
         diff = protocols_declared - protocol_refs_used
         if len(diff) > 0:
@@ -1730,7 +1212,7 @@ def check_study_factor_usage(i_df, dir_context):
                         log.error(
                             "(E) Some factors used in an study file {} are not declared in the investigation file: {}".format(
                                 study_filename, list(study_factors_used - study_factors_declared)))
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
@@ -1746,7 +1228,7 @@ def check_study_factor_usage(i_df, dir_context):
                             log.error(
                                 "(E) Some factors used in an assay file {} are not declared in the investigation file: {}".format(
                                     assay_filename, list(study_factors_used - study_factors_declared)))
-                except FileNotFoundError:
+                except IOError:
                     pass
         study_factors_used = set()
         if study_filename is not '':
@@ -1757,7 +1239,7 @@ def check_study_factor_usage(i_df, dir_context):
                     for col in study_factor_ref_cols:
                         fv = _RX_FACTOR_VALUE.findall(col)
                         study_factors_used = study_factors_used.union(set(fv))
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
@@ -1768,7 +1250,7 @@ def check_study_factor_usage(i_df, dir_context):
                         for col in study_factor_ref_cols:
                             fv = _RX_FACTOR_VALUE.findall(col)
                             study_factors_used = study_factors_used.union(set(fv))
-                except FileNotFoundError:
+                except IOError:
                     pass
         if len(study_factors_declared - study_factors_used) > 0:
             log.warning(
@@ -1799,7 +1281,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                         log.error(
                             "(E) Some protocol parameters referenced in an study file {} are not declared in the investigation file: {}".format(
                                 study_filename, list(protocol_parameters_used - protocol_parameters_declared)))
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
@@ -1815,7 +1297,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                             log.error(
                                 "(E) Some protocol parameters referenced in an assay file {} are not declared in the investigation file: {}".format(
                                     assay_filename, list(protocol_parameters_used - protocol_parameters_declared)))
-                except FileNotFoundError:
+                except IOError:
                     pass
         # now collect all protocol parameters in all assays to compare to declared protocol parameters
         protocol_parameters_used = set()
@@ -1827,7 +1309,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                     for col in parameter_value_cols:
                         pv = _RX_PARAMETER_VALUE.findall(col)
                         protocol_parameters_used = protocol_parameters_used.union(set(pv))
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
@@ -1838,7 +1320,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
                         for col in parameter_value_cols:
                             pv = _RX_PARAMETER_VALUE.findall(col)
                             protocol_parameters_used = protocol_parameters_used.union(set(pv))
-                except FileNotFoundError:
+                except IOError:
                     pass
         if len(protocol_parameters_declared - protocol_parameters_used) > 0:
             log.warning(
@@ -1957,7 +1439,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                 "declared ontology sources {}"
                                                 .format(row+1, object_index[x], y+1, study_filename,
                                                         list(ontology_sources_list)))
-            except FileNotFoundError:
+            except IOError:
                 pass
             for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
                 if assay_filename is not '':
@@ -2004,7 +1486,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                         "in declared ontology sources {}"
                                                         .format(row+1, object_index[x], y+1, study_filename,
                                                                 list(ontology_sources_list)))
-                    except FileNotFoundError:
+                    except IOError:
                         pass
 
 
@@ -2019,13 +1501,13 @@ def load_config(config_dir):
     configs = None
     try:
         configs = isatab_configurator.load(config_dir)
-    except FileNotFoundError:
+    except IOError:
         errors.append({
             "message": "Configurations could not be loaded",
             "supplemental": "On loading {}".format(config_dir),
             "code": 4001
         })
-        log.error("(E) FileNotFoundError on trying to load from {}".format(config_dir))
+        log.error("(E) IOError on trying to load from {}".format(config_dir))
     if configs is None:
         errors.append({
             "message": "Configurations could not be loaded",
@@ -2273,7 +1755,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                     config = configs[('[Sample]', '')]
                     log.info("Checking study file {} against default study table configuration...".format(study_filename))
                     check_assay_table_with_config(df, config, study_filename, protocol_names_and_types)
-            except FileNotFoundError:
+            except IOError:
                 pass
         for j, assay_df in enumerate(i_df['s_assays']):
             assay_filename = assay_df['Study Assay File Name'].tolist()[0]
@@ -2288,7 +1770,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                             "Checking assay file {} against default table configuration ({}, {})...".format(assay_filename, measurement_type, technology_type))
                         check_assay_table_with_config(df, config, assay_filename, protocol_names_and_types)
                         # check_assay_table_with_config(df, protocols, config, assay_filename)
-                except FileNotFoundError:
+                except IOError:
                     pass
         # TODO: Check protocol usage - Rule 4009
 
@@ -2686,7 +2168,7 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
                             log.warning("(W) There are some ontology annotation inconsistencies in {} against {} "
                                         "configuration".format(study_sample_table.filename, 'Study Sample'))
                         log.info("Finished validation on {}".format(study_filename))
-                except FileNotFoundError:
+                except IOError:
                     pass
                 assay_df = i_df['s_assays'][i]
                 for x, assay_filename in enumerate(assay_df['Study Assay File Name'].tolist()):
@@ -2736,7 +2218,7 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
                                         log.warning("(W) There are some ontology annotation inconsistencies in {} against {} "
                                                     "configuration".format(assay_table.filename, (measurement_type, technology_type)))
                                     log.info("Finished validation on {}".format(assay_filename))
-                            except FileNotFoundError:
+                            except IOError:
                                 pass
                         if study_sample_table is not None:
                             log.info("Checking consistencies between study sample table and assay tables...")
@@ -2824,47 +2306,6 @@ def batch_validate(tab_dir_list):
                     }
                 )
     return batch_report
-
-
-def dumps(isa_obj, skip_dump_tables=False):
-    tmp = None
-    output = str()
-    try:
-        tmp = tempfile.mkdtemp()
-        dump(isa_obj=isa_obj, output_path=tmp, skip_dump_tables=skip_dump_tables)
-        with open(os.path.join(tmp, 'i_investigation.txt'), encoding='utf-8') as i_fp:
-            output += os.path.join(tmp, 'i_investigation.txt') + '\n'
-            output += i_fp.read()
-        for s_file in glob.iglob(os.path.join(tmp, 's_*')):
-            with open(s_file, encoding='utf-8') as s_fp:
-                output += "--------\n"
-                output += s_file + '\n'
-                output += s_fp.read()
-        for a_file in glob.iglob(os.path.join(tmp, 'a_*')):
-            with open(a_file, encoding='utf-8') as a_fp:
-                output += "--------\n"
-                output += a_file + '\n'
-                output += a_fp.read()
-    finally:
-        if tmp is not None:
-            shutil.rmtree(tmp)
-    return output
-
-
-def dump_tables_to_dataframes(isa_obj):
-    tmp = None
-    output = dict()
-    try:
-        tmp = tempfile.mkdtemp()
-        dump(isa_obj=isa_obj, output_path=tmp, skip_dump_tables=False)
-        for s_file in glob.iglob(os.path.join(tmp, 's_*')):
-            output[os.path.basename(s_file)] = read_tfile(s_file)
-        for a_file in glob.iglob(os.path.join(tmp, 'a_*')):
-            output[os.path.basename(a_file)] = read_tfile(a_file)
-    finally:
-        if tmp is not None:
-            shutil.rmtree(tmp)
-    return output
 
 
 def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigation file
@@ -2967,7 +2408,7 @@ def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigat
         if os.path.isdir(isatab_path_or_ifile):
             fnames = glob.glob(os.path.join(isatab_path_or_ifile, "i_*.txt"))
             assert len(fnames) == 1
-            FP = open(fnames[0], encoding='utf-8')
+            FP = io.open(fnames[0], encoding='utf-8')
     elif hasattr(isatab_path_or_ifile, 'read'):
         FP = isatab_path_or_ifile
     else:
@@ -3262,7 +2703,7 @@ def pairwise(iterable):
 
 def read_tfile(tfile_path, index_col=None, factor_filter=None):
     log.debug("Opening %s", tfile_path)
-    with open(tfile_path, encoding='utf-8') as tfile_fp:
+    with io.open(tfile_path, encoding='utf-8') as tfile_fp:
         log.debug("Reading file header")
         reader = csv.reader(tfile_fp, dialect='excel-tab')
         header = list(next(reader))
@@ -3541,18 +2982,8 @@ class ProcessSequenceFactory:
             object_label = column_group[0]
 
             if object_label in _LABELS_MATERIAL_NODES:
-
-                if config.show_pbars:
-                    pbar = ProgressBar(
-                        min_value=0, max_value=len(DF.index),
-                        widgets=['Setting material objects: ',
-                                 SimpleProgress(), Bar(left=" |", right="| "),
-                                 ETA()]).start()
-                else:
-                    pbar = lambda x: x
-
-                for _, object_series in pbar(
-                        DF[column_group].drop_duplicates().iterrows()):
+                for _, object_series in DF[
+                    column_group].drop_duplicates().iterrows():
                     node_name = str(object_series[object_label])
                     node_key = ":".join([object_label, node_name])
                     material = None
@@ -3640,15 +3071,8 @@ class ProcessSequenceFactory:
                                                 object_series[comment_column])))
 
             elif object_label in _LABELS_DATA_NODES:
-                if config.show_pbars:
-                    pbar = ProgressBar(
-                        min_value=0, max_value=len(DF.index), widgets=[
-                            'Setting data objects: ', SimpleProgress(),
-                            Bar(left=" |", right="| "), ETA()]).start()
-                else:
-                    pbar = lambda x: x
-                for _, object_series in pbar(
-                        DF[column_group].drop_duplicates().iterrows()):
+                for _, object_series in DF[
+                    column_group].drop_duplicates().iterrows():
                     try:
                         data_file = get_node_by_label_and_key(
                             object_label, str(object_series[object_label]))
@@ -3667,17 +3091,9 @@ class ProcessSequenceFactory:
 
             elif object_label.startswith('Protocol REF'):
                 object_label_index = list(DF.columns).index(object_label)
-                if config.show_pbars:
-                    pbar = ProgressBar(
-                        min_value=0, max_value=len(DF.index), 
-                        widgets=['Generating process objects: ',
-                                 SimpleProgress(), Bar(left=" |", right="| "),
-                                 ETA()]).start()
-                else:
-                    pbar = lambda x: x
                     
                 # don't drop duplicates
-                for _, object_series in pbar(DF.iterrows()): 
+                for _, object_series in DF.iterrows(): 
                     # if _ == 0:
                     #     print('processing: ', object_series[object_label])
                     protocol_ref = str(object_series[object_label])
@@ -3794,15 +3210,8 @@ class ProcessSequenceFactory:
                                             object_series[comment_column])))
 
         # now go row by row pulling out processes and linking them accordingly
-        if config.show_pbars:
-            pbar = ProgressBar(
-                min_value=0, max_value=len(DF.index),
-                widgets=['Linking processes and other nodes in paths: ',
-                         SimpleProgress(), Bar(left=" |", right="| "),
-                         ETA()]).start()
-        else:
-            pbar = lambda x: x
-        for _, object_series in pbar(DF.iterrows()):  # don't drop duplicates
+
+        for _, object_series in DF.iterrows():  # don't drop duplicates
             process_key_sequence = list()
             source_node_context = None
             sample_node_context = None
@@ -3891,30 +3300,6 @@ def find_in_between(a, x, y):
     return result
 
 
-def merge_study_with_assay_tables(study_file_path, assay_file_path,
-                                  target_file_path):
-    """
-        Utility function to merge a study table file with an assay table file. The merge uses the Sample Name as the
-        key, so samples in the assay file must match those in the study file. If there are no matches, the function
-        will output the joined header and no additional rows.
-
-        Usage:
-
-        merge_study_with_assay_tables('/path/to/study.txt', '/path/to/assay.txt', '/path/to/merged.txt')
-    """
-    log.info("Reading study file %s into DataFrame", study_file_path)
-    study_DF = read_tfile(study_file_path)
-    log.info("Reading assay file %s into DataFrame", assay_file_path)
-    assay_DF = read_tfile(assay_file_path)
-    log.info("Merging DataFrames...")
-    merged_DF = pd.merge(study_DF, assay_DF, on='Sample Name')
-    log.info("Writing merged DataFrame to file %s", target_file_path)
-    with open(target_file_path, 'w', encoding='utf-8') as fp:
-        merged_DF.to_csv(
-            fp, sep='\t', index=False,
-            header=study_DF.isatab_header + assay_DF.isatab_header[1:])
-
-
 def squashstr(string):
     nospaces = "".join(string.split())
     return nospaces.lower()
@@ -3959,7 +3344,7 @@ class IsaTabParser(object):
                     'studycontacts')
         isecdict = {}
         ssecdicts = []
-        with open(in_filename, encoding='utf-8') as in_file:
+        with io.open(in_filename, encoding='utf-8') as in_file:
             tabreader = csv.reader(
                 filter(lambda r: r[0] != '#', in_file), dialect='excel-tab')
             current_section = ''

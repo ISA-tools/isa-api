@@ -196,10 +196,6 @@ def sortlistsj(J):
             J.sort(key=lambda i: str(i.values()))
 
 
-def sortlistsx(X):
-    return X
-
-
 def assert_json_equal(jx, jy):
     import json
     jx = json.loads(json.dumps(jx, sort_keys=True))
@@ -209,34 +205,7 @@ def assert_json_equal(jx, jy):
     if jx == jy:
         return True
     else:
-        from deepdiff import DeepDiff
-        log.debug('DeepDiff={}'.format(DeepDiff(jx, jy)))
         return False
-
-
-def assert_xml_equal(x1, x2):
-    # Only counts tags of x1 and x2 to check if the right number appear in each
-
-    def collect_tags(X):
-        foundtags = set()
-        for node in X.iter():
-            foundtags.add(node.tag)
-        return foundtags
-
-    x1tags = collect_tags(x1)
-    x2tags = collect_tags(x2)
-    if len(x1tags - x2tags) > 0 or len(x2tags - x1tags) > 0:
-        log.debug("Collected tags don't match: ", x1tags, x2tags)
-        return False
-    else:
-        for tag in x1tags:
-            tagcount1 = x1.xpath('count(//{})'.format(tag))
-            tagcount2 = x2.xpath('count(//{})'.format(tag))
-            if tagcount1 != tagcount2:
-                log.debug('Counts of {0} tag do not match {1}:{2}'
-                          .format(tag, int(tagcount1), int(tagcount2)))
-                return False
-        return True
 
 
 def strip_ids(J):
