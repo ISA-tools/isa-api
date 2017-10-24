@@ -85,7 +85,7 @@ class Treatment(object):
     def __repr__(self):
         return 'Treatment(factor_type={0}, factor_values={1})'.format(
             self.treatment_type, sorted(
-                self.factor_values, key=lambda x: x.factor_name.name))
+                self.factor_values, key=lambda x: repr(x)))
 
     def __hash__(self):
         return hash(repr(self))

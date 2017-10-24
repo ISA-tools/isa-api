@@ -1,7 +1,6 @@
 import unittest
 from collections import OrderedDict
 
-from isatools import isatab
 from isatools.model import (Investigation, StudyFactor, FactorValue,
                             OntologyAnnotation)
 from isatools.create.models import (InterventionStudyDesign, Treatment,
@@ -78,13 +77,13 @@ class TreatmentTest(unittest.TestCase):
 
     def test_repr(self):
         self.assertEqual(repr(self.treatment),
-                         "Treatment(factor_type=chemical intervention, factor_values=("
-                         "isatools.model.FactorValue(factor_name='{0}', value={1}, unit=None), "
-                         "isatools.model.FactorValue(factor_name='{2}', value={3}, unit={4}), "
-                         "isatools.model.FactorValue(factor_name='{5}', value={6}, unit={7})"
-                         "))".format(BASE_FACTORS[0][NAME], repr(FACTORS_0_VALUE),
-                                     BASE_FACTORS[1][NAME], FACTORS_1_VALUE, repr(FACTORS_1_UNIT),
-                                     BASE_FACTORS[2][NAME], FACTORS_2_VALUE, repr(FACTORS_2_UNIT)))
+                         "Treatment(factor_type=chemical intervention, "
+                         "factor_values=[isatools.model.FactorValue("
+                         "factor_name='AGENT', value='nitroglycerin', "
+                         "unit=None), isatools.model.FactorValue("
+                         "factor_name='DURATION', value=100.0, unit='s'), "
+                         "isatools.model.FactorValue(factor_name='INTENSITY', "
+                         "value=5, unit='kg/m^3')])")
 
     def test_hash(self):
         self.assertEqual(hash(self.treatment), hash(repr(self.treatment)))
@@ -347,42 +346,43 @@ class TreatmentSequenceTest(unittest.TestCase):
         ]
         new_sequence = TreatmentSequence(ranked_treatments=treatments)
         self.assertEqual("TreatmentSequence([(Treatment(factor_type=chemical "
-                         "intervention, factor_values=(isatools.model.FactorValue(factor_name="
-                         "isatools.model.StudyFactor(name='AGENT', factor_type="
+                         "intervention, factor_values=[isatools.model."
+                         "FactorValue(factor_name=isatools.model.StudyFactor("
+                         "name='AGENT', factor_type="
                          "isatools.model.OntologyAnnotation("
                          "term='perturbation agent', term_source=None, "
                          "term_accession='', comments=[]), comments=[]), "
-                         "value='crack', unit=None), isatools.model.FactorValue("
-                         "factor_name=isatools.model.StudyFactor("
-                         "name='INTENSITY', "
-                         "factor_type=isatools.model.OntologyAnnotation("
-                         "term='intensity', term_source=None, "
-                         "term_accession='', comments=[]), comments=[]), "
-                         "value='low', unit=None), isatools.model.FactorValue("
-                         "factor_name=isatools.model.StudyFactor("
-                         "name='DURATION', "
-                         "factor_type=isatools.model.OntologyAnnotation("
-                         "term='time', term_source=None, term_accession='', "
-                         "comments=[]), comments=[]), value='short', "
-                         "unit=None))), 1), (Treatment("
-                         "factor_type=chemical intervention, "
-                         "factor_values=(isatools.model.FactorValue("
-                         "factor_name=isatools.model.StudyFactor(name='AGENT', "
-                         "factor_type=isatools.model.OntologyAnnotation("
-                         "term='perturbation agent', term_source=None, "
-                         "term_accession='', comments=[]), comments=[]), "
-                         "value='crack', unit=None), isatools.model.FactorValue(factor_name="
-                         "isatools.model.StudyFactor(name='INTENSITY', "
-                         "factor_type=isatools.model.OntologyAnnotation("
-                         "term='intensity', term_source=None, "
-                         "term_accession='', comments=[]), comments=[]), "
-                         "value='low', unit=None), isatools.model.FactorValue("
+                         "value='crack', unit=None), "
+                         "isatools.model.FactorValue("
                          "factor_name=isatools.model.StudyFactor("
                          "name='DURATION', "
                          "factor_type=isatools.model.OntologyAnnotation("
                          "term='time', term_source=None, term_accession='', "
                          "comments=[]), comments=[]), value='long', "
-                         "unit=None))), 2)])",
+                         "unit=None), isatools.model.FactorValue("
+                         "factor_name=isatools.model.StudyFactor("
+                         "name='INTENSITY', factor_type="
+                         "isatools.model.OntologyAnnotation(term='intensity', "
+                         "term_source=None, term_accession='', comments=[]), "
+                         "comments=[]), value='low', unit=None)]), 2), ("
+                         "Treatment(factor_type=chemical intervention, "
+                         "factor_values=[isatools.model.FactorValue("
+                         "factor_name=isatools.model.StudyFactor(name='AGENT', "
+                         "factor_type=isatools.model.OntologyAnnotation("
+                         "term='perturbation agent', term_source=None, "
+                         "term_accession='', comments=[]), comments=[]), "
+                         "value='crack', unit=None), "
+                         "isatools.model.FactorValue(factor_name="
+                         "isatools.model.StudyFactor(name='DURATION', "
+                         "factor_type=isatools.model.OntologyAnnotation("
+                         "term='time', term_source=None, term_accession='', "
+                         "comments=[]), comments=[]), value='short', "
+                         "unit=None), isatools.model.FactorValue("
+                         "factor_name=isatools.model.StudyFactor("
+                         "name='INTENSITY', factor_type="
+                         "isatools.model.OntologyAnnotation(term='intensity', "
+                         "term_source=None, term_accession='', comments=[]), "
+                         "comments=[]), value='low', unit=None)]), 1)])",
                          repr(new_sequence))
 
     def test_eq(self):
