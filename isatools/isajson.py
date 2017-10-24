@@ -1599,10 +1599,10 @@ class ISAJSONEncoder(JSONEncoder):
         def get_value(o):
             if isinstance(o, OntologyAnnotation):
                 return get_ontology_annotation(o)
-            elif isinstance(o, (str, int, float)):
+            elif isinstance(o, ((str, unicode), int, float)):
                 return o
             else:
-                raise ValueError("Unexpected value type found: " + type(o))
+                raise ValueError("Unexpected value type found: %s", type(o))
 
         def get_characteristic_category(o):  # TODO: Deal with Material Type
             return clean_nulls(

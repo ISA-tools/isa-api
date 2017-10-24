@@ -1046,9 +1046,9 @@ class Person(Commentable):
                "mid_initials='{person.mid_initials}', " \
                "email='{person.email}', phone='{person.phone}', " \
                "fax='{person.fax}', address='{person.address}', " \
-               "affiliation='{person.affiliation}', roles={person.roles}, " \
+               "affiliation='{person.affiliation}', roles={roles}, " \
                "comments={person.comments})" \
-                .format(person=self)
+                .format(person=self, roles=repr(self.roles))
 
     def __str__(self):
         return """Person(

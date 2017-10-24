@@ -292,7 +292,7 @@ class TestValidateIsaJson(unittest.TestCase):
 
     def test_validate_isajson_assay_config_validation(self):
         """Tests against 4004"""
-        with open(os.path.join(self._unit_json_data_dir, 'assay_config.json')) as fp:
+        with open(os.path.join(self._unit_json_data_dir, 'assay_config.json'), 'rU') as fp:
             report = isajson.validate(fp)
             if 4004 in [e['code'] for e in report['warnings']]:
                 self.fail("Validation failed against transcription_seq.json configuration, when it should have passed")

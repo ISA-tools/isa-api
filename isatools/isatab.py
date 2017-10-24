@@ -65,8 +65,8 @@ def _get_start_end_nodes(G):
     end_nodes = list()
     for process in [n for n in G.nodes() if isinstance(n, Process)]:
         if process.prev_process is None:
-            for material in [
-                m for m in process.inputs if not isinstance(m, DataFile)]:
+            for material in [m for m in process.inputs if
+                             not isinstance(m, DataFile)]:
                 start_nodes.append(material)
         outputs_no_data = [
             m for m in process.outputs if not isinstance(m, DataFile)]
@@ -120,356 +120,6 @@ def _all_end_to_end_paths(G, start_nodes):
         log.debug([x.name for x in start_nodes])
 
     return paths
-
-
-def write_study_table_files(inv_obj, output_dir):
-    """
-        Writes out study table files according to pattern defined by
-
-        Source Name, [ Characteristics[], ... ],
-        Protocol Ref*: 'sample collection', [ ParameterValue[], ... ],
-        Sample Name, [ Characteristics[], ... ]
-        [ FactorValue[], ... ]
-
-        which should be equivalent to studySample.xml in default config
-
-    """
-
-    if not isinstance(inv_obj, Investigation):
-        raise NotImplementedError
-    for study_obj in inv_obj.studies:
-        if study_obj.graph is None: break
-        protrefcount = 0
-        protnames = dict()
-
-        flatten = lambda l: [item for sublist in l for item in sublist]
-        columns = []
-
-        # start_nodes, end_nodes = _get_start_end_nodes(study_obj.graph)
-        paths = _all_end_to_end_paths(study_obj.graph, [x for x in study_obj.graph.nodes() if isinstance(x, Source)])
-        sample_in_path_count = 0
-        for node in _longest_path_and_attrs(paths):
-            if isinstance(node, Source):
-                olabel = "Source Name"
-                columns.append(olabel)
-                columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
-            elif isinstance(node, Process):
-                olabel = "Protocol REF.{}".format(node.executes_protocol.name)
-                columns.append(olabel)
-                if node.date is not None:
-                    columns.append(olabel + ".Date")
-                if node.performer is not None:
-                    columns.append(olabel + ".Performer")
-                columns += flatten(map(lambda x: get_pv_columns(olabel, x), node.parameter_values))
-                if node.executes_protocol.name not in protnames.keys():
-                    protnames[node.executes_protocol.name] = protrefcount
-                    protrefcount += 1
-
-            elif isinstance(node, Sample):
-                olabel = "Sample Name.{}".format(sample_in_path_count)
-                columns.append(olabel)
-                sample_in_path_count += 1
-                columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
-                columns += flatten(map(lambda x: get_fv_columns(olabel, x), node.factor_values))
-
-        omap = get_object_column_map(columns, columns)
-        # load into dictionary
-        df_dict = dict(map(lambda k: (k, []), flatten(omap)))
-
-        for path in paths:
-            for k in df_dict.keys():  # add a row per path
-                df_dict[k].extend([""])
-
-            sample_in_path_count = 0
-            for node in path:
-                if isinstance(node, Source):
-                    olabel = "Source Name"
-                    df_dict[olabel][-1] = node.name
-                    for c in node.characteristics:
-                        clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
-                        write_value_columns(df_dict, clabel, c)
-
-                elif isinstance(node, Process):
-                    olabel = "Protocol REF.{}".format(node.executes_protocol.name)
-                    df_dict[olabel][-1] = node.executes_protocol.name
-                    if node.date is not None:
-                        df_dict[olabel + ".Date"][-1] = node.date
-                    if node.performer is not None:
-                        df_dict[olabel + ".Performer"][-1] = node.performer
-                    for pv in node.parameter_values:
-                        pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
-                        write_value_columns(df_dict, pvlabel, pv)
-
-                elif isinstance(node, Sample):
-                    olabel = "Sample Name.{}".format(sample_in_path_count)
-                    sample_in_path_count += 1
-                    df_dict[olabel][-1] = node.name
-                    for c in node.characteristics:
-                        clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
-                        write_value_columns(df_dict, clabel, c)
-                    for fv in node.factor_values:
-                        fvlabel = "{0}.Factor Value[{1}]".format(olabel, fv.factor_name.name)
-                        write_value_columns(df_dict, fvlabel, fv)
-        if isinstance(pbar, ProgressBar):  pbar.finish()
-
-        DF = pd.DataFrame(columns=columns)
-        DF = DF.from_dict(data=df_dict)
-        DF = DF[columns]  # reorder columns
-        DF = DF.sort_values(by=DF.columns[0], ascending=True)  # arbitrary sort on column 0
-
-        for dup_item in set([x for x in columns if columns.count(x) > 1]):
-            for j, each in enumerate([i for i, x in enumerate(columns) if x == dup_item]):
-                columns[each] = dup_item + str(j)
-
-        DF.columns = columns  # reset columns after checking for dups
-
-        for i, col in enumerate(columns):
-            if col.endswith("Term Source REF"):
-                columns[i] = "Term Source REF"
-            elif col.endswith("Term Accession Number"):
-                columns[i] = "Term Accession Number"
-            elif col.endswith("Unit"):
-                columns[i] = "Unit"
-            elif "Characteristics[" in col:
-                if "material type" in col.lower():
-                    columns[i] = "Material Type"
-                else:
-                    columns[i] = col[col.rindex(".") + 1:]
-            elif "Factor Value[" in col:
-                columns[i] = col[col.rindex(".") + 1:]
-            elif "Parameter Value[" in col:
-                columns[i] = col[col.rindex(".") + 1:]
-            elif col.endswith("Date"):
-                columns[i] = "Date"
-            elif col.endswith("Performer"):
-                columns[i] = "Performer"
-            elif "Protocol REF" in col:
-                columns[i] = "Protocol REF"
-            elif col.startswith("Sample Name."):
-                columns[i] = "Sample Name"
-
-        log.info("Rendered {} paths".format(len(DF.index)))
-
-        DF_no_dups = DF.drop_duplicates()
-        if len(DF.index) > len(DF_no_dups.index):
-            log.info("Dropping duplicates...")
-            DF = DF_no_dups
-
-        log.info("Writing {} rows".format(len(DF.index)))
-        # reset columns, replace nan with empty string, drop empty columns
-        DF.columns = columns
-        DF = DF.replace('', np.nan)
-        DF = DF.dropna(axis=1, how='all')
-
-        with open(os.path.join(output_dir, study_obj.filename), 'w') as out_fp:
-            DF.to_csv(path_or_buf=out_fp, index=False, sep='\t', encoding='utf-8')
-
-
-def write_assay_table_files(inv_obj, output_dir):
-    """
-        Writes out assay table files according to pattern defined by
-
-        Sample Name,
-        Protocol Ref: 'sample collection', [ ParameterValue[], ... ],
-        Material Name, [ Characteristics[], ... ]
-        [ FactorValue[], ... ]
-
-
-    """
-
-    if not isinstance(inv_obj, Investigation):
-        raise NotImplementedError
-    for study_obj in inv_obj.studies:
-        for assay_obj in study_obj.assays:
-            if assay_obj.graph is None: break
-            protrefcount = 0
-            protnames = dict()
-
-            flatten = lambda l: [item for sublist in l for item in sublist]
-            columns = []
-
-            # start_nodes, end_nodes = _get_start_end_nodes(assay_obj.graph)
-            paths = _all_end_to_end_paths(assay_obj.graph, [x for x in assay_obj.graph.nodes() if isinstance(x, Sample)])
-            if len(paths) == 0:
-                log.info("No paths found, skipping writing assay file")
-                continue
-            if _longest_path_and_attrs(paths) is None:
-                raise IOError("Could not find any valid end-to-end paths in assay graph")
-            for node in _longest_path_and_attrs(paths):
-                if isinstance(node, Sample):
-                    olabel = "Sample Name"
-                    columns.append(olabel)
-
-                elif isinstance(node, Process):
-                    olabel = "Protocol REF.{}".format(node.executes_protocol.name)
-                    columns.append(olabel)
-                    if node.date is not None:
-                        columns.append(olabel + ".Date")
-                    if node.performer is not None:
-                        columns.append(olabel + ".Performer")
-                    oname_label = None
-                    if node.executes_protocol.protocol_type:
-                        if node.executes_protocol.protocol_type.term == "nucleic acid sequencing":
-                            oname_label = "Assay Name"
-                        elif node.executes_protocol.protocol_type.term == "data collection":
-                            oname_label = "Scan Name"
-                        elif node.executes_protocol.protocol_type.term == "mass spectrometry":
-                            oname_label = "MS Assay Name"
-                        elif node.executes_protocol.protocol_type.term == "data transformation":
-                            oname_label = "Data Transformation Name"
-                        elif node.executes_protocol.protocol_type.term == "sequence analysis data transformation":
-                            oname_label = "Normalization Name"
-                        elif node.executes_protocol.protocol_type.term == "normalization":
-                            oname_label = "Normalization Name"
-                        if node.executes_protocol.protocol_type.term == "unknown protocol":
-                            oname_label = "Unknown Protocol Name"
-                        if oname_label is not None:
-                            columns.append(oname_label)
-                        elif node.executes_protocol.protocol_type.term == "nucleic acid hybridization":
-                            columns.extend(["Hybridization Assay Name", "Array Design REF"])
-
-                    columns += flatten(map(lambda x: get_pv_columns(olabel, x), node.parameter_values))
-                    if node.executes_protocol.name not in protnames.keys():
-                        protnames[node.executes_protocol.name] = protrefcount
-                        protrefcount += 1
-
-                    for output in [x for x in node.outputs if isinstance(x, DataFile)]:
-                        columns.append(output.label)
-                        columns += flatten(map(lambda x: get_comment_column(output.label, x), output.comments))
-
-                elif isinstance(node, Material):
-                    olabel = node.type
-                    columns.append(olabel)
-                    columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
-
-                elif isinstance(node, DataFile):
-                    pass  # handled in process
-
-            omap = get_object_column_map(columns, columns)
-
-            # load into dictionary
-            df_dict = dict(map(lambda k: (k, []), flatten(omap)))
-
-            if config.show_pbars:
-                pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)),
-                                                                               SimpleProgress(),
-                                                                               Bar(left=" |", right="| "), ETA()]).start()
-            else:
-                pbar = lambda x: x
-            for path in pbar(paths):
-                for k in df_dict.keys():  # add a row per path
-                    df_dict[k].extend([""])
-
-                for node in path:
-
-                    if isinstance(node, Process):
-                        olabel = "Protocol REF.{}".format(node.executes_protocol.name)
-                        df_dict[olabel][-1] = node.executes_protocol.name
-                        if node.date is not None:
-                            df_dict[olabel + ".Date"][-1] = node.date
-                        if node.performer is not None:
-                            df_dict[olabel + ".Performer"][-1] = node.performer
-                        for pv in node.parameter_values:
-                            pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
-                            write_value_columns(df_dict, pvlabel, pv)
-                        oname_label = None
-                        if node.executes_protocol.protocol_type:
-                            if node.executes_protocol.protocol_type.term == "nucleic acid sequencing":
-                                oname_label = "Assay Name"
-                            elif node.executes_protocol.protocol_type.term == "data collection":
-                                oname_label = "Scan Name"
-                            elif node.executes_protocol.protocol_type.term == "mass spectrometry":
-                                oname_label = "MS Assay Name"
-                            elif node.executes_protocol.protocol_type.term == "data transformation":
-                                oname_label = "Data Transformation Name"
-                            elif node.executes_protocol.protocol_type.term == "sequence analysis data transformation":
-                                oname_label = "Normalization Name"
-                            elif node.executes_protocol.protocol_type.term == "normalization":
-                                oname_label = "Normalization Name"
-                            if node.executes_protocol.protocol_type.term == "unknown protocol":
-                                oname_label = "Unknown Protocol Name"
-                            if oname_label is not None:
-                                df_dict[oname_label][-1] = node.name
-                            elif node.executes_protocol.protocol_type.term == "nucleic acid hybridization":
-                                df_dict["Hybridization Assay Name"][-1] = node.name
-                                df_dict["Array Design REF"][-1] = node.array_design_ref
-                        for output in [x for x in node.outputs if isinstance(x, DataFile)]:
-                            olabel = output.label
-                            df_dict[olabel][-1] = output.filename
-                            for co in output.comments:
-                                colabel = "{0}.Comment[{1}]".format(olabel, co.name)
-                                df_dict[colabel][-1] = co.value
-
-                    elif isinstance(node, Sample):
-                        olabel = "Sample Name"
-                        df_dict[olabel][-1] = node.name
-
-                    elif isinstance(node, Material):
-                        olabel = node.type
-                        df_dict[olabel][-1] = node.name
-                        for c in node.characteristics:
-                            clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
-                            write_value_columns(df_dict, clabel, c)
-
-                    elif isinstance(node, DataFile):
-                        pass  # handled in process
-
-            if isinstance(pbar, ProgressBar):  pbar.finish()
-
-            DF = pd.DataFrame(columns=columns)
-            DF = DF.from_dict(data=df_dict)
-            DF = DF[columns]  # reorder columns
-            DF = DF.sort_values(by=DF.columns[0], ascending=True)  # arbitrary sort on column 0
-
-            for dup_item in set([x for x in columns if columns.count(x) > 1]):
-                for j, each in enumerate([i for i, x in enumerate(columns) if x == dup_item]):
-                    columns[each] = ".".join([dup_item, str(j)])
-
-            DF.columns = columns
-
-            for i, col in enumerate(columns):
-                if col.endswith("Term Source REF"):
-                    columns[i] = "Term Source REF"
-                elif col.endswith("Term Accession Number"):
-                    columns[i] = "Term Accession Number"
-                elif col.endswith("Unit"):
-                    columns[i] = "Unit"
-                elif "Characteristics[" in col:
-                    if "material type" in col.lower():
-                        columns[i] = "Material Type"
-                    elif "label" in col.lower():
-                        columns[i] = "Label"
-                    else:
-                        columns[i] = col[col.rindex(".") + 1:]
-                elif "Factor Value[" in col:
-                    columns[i] = col[col.rindex(".") + 1:]
-                elif "Parameter Value[" in col:
-                    columns[i] = col[col.rindex(".") + 1:]
-                elif col.endswith("Date"):
-                    columns[i] = "Date"
-                elif col.endswith("Performer"):
-                    columns[i] = "Performer"
-                elif "Comment[" in col:
-                    columns[i] = col[col.rindex(".") + 1:]
-                elif "Protocol REF" in col:
-                    columns[i] = "Protocol REF"
-                elif "." in col:
-                        columns[i] = col[:col.rindex(".")]
-
-            log.info("Rendered {} paths".format(len(DF.index)))
-            if len(DF.index) > 1:
-                if len(DF.index) > len(DF.drop_duplicates().index):
-                    log.debug("Dropping duplicates...")
-                    DF = DF.drop_duplicates()
-
-            log.info("Writing {} rows".format(len(DF.index)))
-            # reset columns, replace nan with empty string, drop empty columns
-            DF.columns = columns
-            DF = DF.replace('', np.nan)
-            DF = DF.dropna(axis=1, how='all')
-
-            with open(os.path.join(output_dir, assay_obj.filename), 'w') as out_fp:
-                DF.to_csv(path_or_buf=out_fp, index=False, sep='\t', encoding='utf-8')
 
 
 def get_value_columns(label, x):
@@ -925,7 +575,7 @@ def check_table_files_read(i_df, dir_context):
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8'):
+                with open(os.path.join(dir_context, study_filename), 'rU') as _:
                     pass
             except IOError:
                 errors.append({
@@ -937,7 +587,7 @@ def check_table_files_read(i_df, dir_context):
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8'):
+                    with open(os.path.join(dir_context, assay_filename), 'rU') as _:
                         pass
                 except IOError:
                     errors.append({
@@ -954,14 +604,14 @@ def check_table_files_load(i_df, dir_context):
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as fp:
+                with open(os.path.join(dir_context, study_filename), 'rU') as fp:
                     load_table_checks(fp)
             except IOError:
                 pass
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as fp:
+                    with open(os.path.join(dir_context, assay_filename), 'rU') as fp:
                         load_table_checks(fp)
                 except IOError:
                     pass
@@ -972,7 +622,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with open(os.path.join(dir_context, study_filename), 'rU') as s_fp:
                     study_df = load_table(s_fp)
                     study_samples = set(study_df['Sample Name'])
             except IOError:
@@ -980,7 +630,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with open(os.path.join(dir_context, assay_filename), 'rU') as a_fp:
                         assay_df = load_table(a_fp)
                         assay_samples = set(assay_df['Sample Name'])
                         if not assay_samples.issubset(study_samples):
@@ -998,7 +648,7 @@ def check_protocol_usage(i_df, dir_context):
         if study_filename is not '':
             try:
                 protocol_refs_used = set()
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with open(os.path.join(dir_context, study_filename), 'rU') as s_fp:
                     study_df = load_table(s_fp)
                     for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
                         protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
@@ -1020,7 +670,7 @@ def check_protocol_usage(i_df, dir_context):
             if assay_filename is not '':
                 try:
                     protocol_refs_used = set()
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with open(os.path.join(dir_context, assay_filename), 'rU') as a_fp:
                         assay_df = load_table(a_fp)
                         for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
                             protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
@@ -1041,7 +691,7 @@ def check_protocol_usage(i_df, dir_context):
         protocol_refs_used = set()
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with open(os.path.join(dir_context, study_filename), 'rU') as s_fp:
                     study_df = load_table(s_fp)
                     for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
                         protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
@@ -1050,7 +700,7 @@ def check_protocol_usage(i_df, dir_context):
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with open(os.path.join(dir_context, assay_filename), 'rU') as a_fp:
                         assay_df = load_table(a_fp)
                         for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
                             protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
@@ -1202,7 +852,7 @@ def check_study_factor_usage(i_df, dir_context):
         if study_filename is not '':
             try:
                 study_factors_used = set()
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with open(os.path.join(dir_context, study_filename), 'rU') as s_fp:
                     study_df = load_table(s_fp)
                     study_factor_ref_cols = [i for i in study_df.columns if _RX_FACTOR_VALUE.match(i)]
                     for col in study_factor_ref_cols:
@@ -1218,7 +868,7 @@ def check_study_factor_usage(i_df, dir_context):
             if assay_filename is not '':
                 try:
                     study_factors_used = set()
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with open(os.path.join(dir_context, assay_filename), 'rU') as a_fp:
                         assay_df = load_table(a_fp)
                         study_factor_ref_cols = set([i for i in assay_df.columns if _RX_FACTOR_VALUE.match(i)])
                         for col in study_factor_ref_cols:
@@ -1233,7 +883,7 @@ def check_study_factor_usage(i_df, dir_context):
         study_factors_used = set()
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with open(os.path.join(dir_context, study_filename), 'rU') as s_fp:
                     study_df = load_table(s_fp)
                     study_factor_ref_cols = [i for i in study_df.columns if _RX_FACTOR_VALUE.match(i)]
                     for col in study_factor_ref_cols:
@@ -1244,7 +894,7 @@ def check_study_factor_usage(i_df, dir_context):
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with open(os.path.join(dir_context, assay_filename), 'rU') as a_fp:
                         assay_df = load_table(a_fp)
                         study_factor_ref_cols = set([i for i in assay_df.columns if _RX_FACTOR_VALUE.match(i)])
                         for col in study_factor_ref_cols:
@@ -1271,7 +921,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
         if study_filename is not '':
             try:
                 protocol_parameters_used = set()
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with open(os.path.join(dir_context, study_filename), 'rU') as s_fp:
                     study_df = load_table(s_fp)
                     parameter_value_cols = [i for i in study_df.columns if _RX_PARAMETER_VALUE.match(i)]
                     for col in parameter_value_cols:
@@ -1287,7 +937,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
             if assay_filename is not '':
                 try:
                     protocol_parameters_used = set()
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with open(os.path.join(dir_context, assay_filename), 'rU') as a_fp:
                         assay_df = load_table(a_fp)
                         parameter_value_cols = [i for i in assay_df.columns if _RX_PARAMETER_VALUE.match(i)]
                         for col in parameter_value_cols:
@@ -1303,7 +953,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
         protocol_parameters_used = set()
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with open(os.path.join(dir_context, study_filename), 'rU') as s_fp:
                     study_df = load_table(s_fp)
                     parameter_value_cols = [i for i in study_df.columns if _RX_PARAMETER_VALUE.match(i)]
                     for col in parameter_value_cols:
@@ -1314,7 +964,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with open(os.path.join(dir_context, assay_filename), 'rU') as a_fp:
                         assay_df = load_table(a_fp)
                         parameter_value_cols = [i for i in assay_df.columns if _RX_PARAMETER_VALUE.match(i)]
                         for col in parameter_value_cols:
@@ -1397,7 +1047,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with open(os.path.join(dir_context, study_filename), 'rU') as s_fp:
                     df = load_table(s_fp)
                     columns = df.columns
                     object_index = [i for i, x in enumerate(columns) if x.startswith('Term Source REF')]
@@ -1444,7 +1094,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
             for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
                 if assay_filename is not '':
                     try:
-                        with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                        with open(os.path.join(dir_context, assay_filename), 'rU') as a_fp:
                             df = load_table(a_fp)
                             columns = df.columns
                             object_index = [i for i, x in enumerate(columns) if x.startswith('Term Source REF')]
@@ -1750,7 +1400,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
         protocol_names_and_types = dict(zip(protocol_names, protocol_types))
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with open(os.path.join(dir_context, study_filename), 'rU') as s_fp:
                     df = load_table(s_fp)
                     config = configs[('[Sample]', '')]
                     log.info("Checking study file {} against default study table configuration...".format(study_filename))
@@ -1763,7 +1413,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
             technology_type = assay_df['Study Assay Technology Type'].tolist()[0]
             if assay_filename is not '':
                 try:
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with open(os.path.join(dir_context, assay_filename), 'rU') as a_fp:
                         df = load_table(a_fp)
                         config = configs[(measurement_type, technology_type)]
                         log.info(
@@ -2141,7 +1791,7 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
                 protocol_names_and_types = dict(zip(protocol_names, protocol_types))
                 try:
                     log.info("Loading... {}".format(study_filename))
-                    with open(os.path.join(os.path.dirname(fp.name), study_filename), encoding='utf-8') as s_fp:
+                    with open(os.path.join(os.path.dirname(fp.name), study_filename), 'rU') as s_fp:
                         study_sample_table = load_table(s_fp)
                         study_sample_table.filename = study_filename
                         config = configs[('[Sample]', '')]
@@ -2188,7 +1838,7 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
                         else:
                             try:
                                 log.info("Loading... {}".format(assay_filename))
-                                with open(os.path.join(os.path.dirname(fp.name), assay_filename), encoding='utf-8') as a_fp:
+                                with open(os.path.join(os.path.dirname(fp.name), assay_filename), 'rU') as a_fp:
                                     assay_table = load_table(a_fp)
                                     assay_table.filename = assay_filename
                                     assay_tables.append(assay_table)
@@ -2298,7 +1948,7 @@ def batch_validate(tab_dir_list):
         if len(i_files) != 1:
             log.warning("Could not find an investigation file, skipping {}".format(tab_dir))
         else:
-            with open(i_files[0], encoding='utf-8') as fp:
+            with open(i_files[0], 'rU') as fp:
                 batch_report['batch_report'].append(
                     {
                         "filename": fp.name,
@@ -2408,7 +2058,7 @@ def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigat
         if os.path.isdir(isatab_path_or_ifile):
             fnames = glob.glob(os.path.join(isatab_path_or_ifile, "i_*.txt"))
             assert len(fnames) == 1
-            FP = io.open(fnames[0], encoding='utf-8')
+            FP = open(fnames[0], 'rU')
     elif hasattr(isatab_path_or_ifile, 'read'):
         FP = isatab_path_or_ifile
     else:
@@ -2703,7 +2353,7 @@ def pairwise(iterable):
 
 def read_tfile(tfile_path, index_col=None, factor_filter=None):
     log.debug("Opening %s", tfile_path)
-    with io.open(tfile_path, encoding='utf-8') as tfile_fp:
+    with open(tfile_path, 'rU') as tfile_fp:
         log.debug("Reading file header")
         reader = csv.reader(tfile_fp, dialect='excel-tab')
         header = list(next(reader))
@@ -3315,7 +2965,7 @@ def get_squashed(key):
         return squashstr(key)
 
 
-class IsaTabParser(object):
+class Parser(object):
 
     """
         This replacement should be more robust than current i_*.txt file reader. Based on what I did for the
@@ -3344,7 +2994,7 @@ class IsaTabParser(object):
                     'studycontacts')
         isecdict = {}
         ssecdicts = []
-        with io.open(in_filename, encoding='utf-8') as in_file:
+        with open(in_filename, 'rU') as in_file:
             tabreader = csv.reader(
                 filter(lambda r: r[0] != '#', in_file), dialect='excel-tab')
             current_section = ''
@@ -3446,7 +3096,7 @@ class IsaTabParser(object):
                 ssecdict.get('studyfactorname', []),
                 ssecdict.get('studyfactorntype', []),
                 ssecdict.get('studyfactortypetermaccessionnumber', []),
-ssecdict.get('studyfactortypetermsourceref'))
+                ssecdict.get('studyfactortypetermsourceref'))
 
     def parse_ontology_sources_section(self, names, files, versions,
                                        descriptions, comments_dict):
@@ -3543,7 +3193,7 @@ ssecdict.get('studyfactortypetermsourceref'))
                 mid_initials=midinitials, email=email, phone=phone, fax=fax,
                 address=address, affiliation=affiliation, roles=rolesoa)
             obj.contacts.append(person)
-        for i, contact in enumerate(self.ISA.studies[-1].contacts):
+        for i, contact in enumerate(obj.contacts):
             for k, v in comments_dict.items():
                 if len(v) > 0:
                     contact.comments.append(
@@ -3568,7 +3218,7 @@ def parse_in(in_filename, in_format='isa-tab'):
 
     log.debug("starting to parse {0}".format(in_filename))
 
-    parser = IsaTabParser()
+    parser = Parser()
     parser.parse_investigation(in_filename)
 
 
@@ -3581,6 +3231,6 @@ def strip_comments(in_fp):
         if line.lstrip().startswith('#'):
             log.debug('stripping line:'.format(line))
         elif len(line.strip()) > 0:
-            out_fp.write(line)
+            out_fp.write(u'' + line)
     out_fp.seek(0)
     return out_fp
