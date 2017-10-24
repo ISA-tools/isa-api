@@ -84,7 +84,8 @@ class Treatment(object):
 
     def __repr__(self):
         return 'Treatment(factor_type={0}, factor_values={1})'.format(
-            self.treatment_type, self.factor_values)
+            self.treatment_type, sorted(
+                self.factor_values, key=lambda x: x.factor_name.name))
 
     def __hash__(self):
         return hash(repr(self))
@@ -201,8 +202,7 @@ class TreatmentSequence:
         self.add_multiple_treatments(ranked_treatments)
 
     def __repr__(self):
-        return 'TreatmentSequence({0})'.format(
-            sorted(self.ranked_treatments, key=itemgetter(1)))
+        return 'TreatmentSequence({0})'.format(sorted(self.ranked_treatments, key=lambda x: repr(x)))
 
     def __hash__(self):
         return hash(repr(self))
@@ -1978,7 +1978,20 @@ class TreatmentSequenceEncoder(json.JSONEncoder):
 class TreatmentSequenceDecoder(object):
 
     def __init__(self):
-        pass
+        self.factors = dict()
+
+    def get_study_factor(self, factor_json):
+        factor = StudyFactor(
+            name=factor_json["factorName"],
+            factor_type=OntologyAnnotation(
+                term=factor_json["factorType"]["annotationValue"],
+                term_accession=factor_json["factorType"]["termAccession"])
+        )
+        if factor.name in self.factors.keys():
+            return self.factors.get(factor.name)
+        else:
+            self.factors[factor.name] = factor
+            return factor
 
     def load(self, fp):
         treatment_sequence_json = json.load(fp)
@@ -1991,9 +2004,7 @@ class TreatmentSequenceDecoder(object):
                 treatment_type=treatment_json['treatmentType'])
             for factor_json in treatment_json['factorValues']:
                 fv = FactorValue(
-                    factor_name=StudyFactor(
-                        name=factor_json['factor'],
-                        factor_type=treatment_json['treatmentType']),
+                    factor_name=self.get_study_factor(factor_json['factor']),
                     value=factor_json['value'])
                 treatment.factor_values.add(fv)
 
