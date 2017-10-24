@@ -1936,24 +1936,39 @@ class SampleAssayPlanDecoder(object):
 
 class TreatmentSequenceEncoder(json.JSONEncoder):
 
-    def get_factor(self, factor):
+    def get_ontology_annotation(self, ontology_annotation):
         return {
-            'factor': factor.factor_name.name,
-            'value': factor.value.term if isinstance(
-                factor.value, OntologyAnnotation) else factor.value
+            "annotationValue": ontology_annotation.term,
+            "termAccession": ontology_annotation.term_accession,
+            "termSource": ontology_annotation.term_source.name if
+            ontology_annotation.term_source else None
+        }
+
+    def get_study_factor(self, study_factor):
+        return {
+            "factorName": study_factor.name,
+            "factorType": self.get_ontology_annotation(study_factor.factor_type)
+        }
+
+    def get_factor_value(self, factor_value):
+        return {
+            'factor': self.get_study_factor(factor_value.factor_name),
+            'value': factor_value.value.term if isinstance(
+                factor_value.value, OntologyAnnotation) else factor_value.value
         }
 
     def get_treatment(self, treatment):
         return {
-            'treatment_type': treatment.treatment_type,
-            'factor_values' : sorted(
-                [self.get_factor(x) for x in treatment.factor_values])
+            'treatmentType': treatment.treatment_type,
+            'factorValues' : sorted(
+                [self.get_factor_value(x) for x in treatment.factor_values],
+                key=lambda x: x['factor']['factorName'])
         }
 
     def default(self, o):
         if isinstance(o, TreatmentSequence):
             return {
-                'ranked_treatments':[{
+                'rankedTreatments':[{
                     'treatment': self.get_treatment(x[0]),
                     'rank': x[1]
                 } for x in o.ranked_treatments]
@@ -1970,13 +1985,15 @@ class TreatmentSequenceDecoder(object):
 
         treatment_sequence = TreatmentSequence()
 
-        for treatment_tuple in treatment_sequence_json['ranked_treatments']:
+        for treatment_tuple in treatment_sequence_json['rankedTreatments']:
             treatment_json = treatment_tuple['treatment']
             treatment = Treatment(
-                treatment_type=treatment_json['treatment_type'])
-            for factor_json in treatment_json['factor_values']:
+                treatment_type=treatment_json['treatmentType'])
+            for factor_json in treatment_json['factorValues']:
                 fv = FactorValue(
-                    factor_name=factor_json['factor'],
+                    factor_name=StudyFactor(
+                        name=factor_json['factor'],
+                        factor_type=treatment_json['treatmentType']),
                     value=factor_json['value'])
                 treatment.factor_values.add(fv)
 
