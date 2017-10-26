@@ -450,7 +450,6 @@ class StudySampleTableParserIntegrationTest(unittest.TestCase):
             self.assertEqual(len(self.parser.sources), 1)
             self.assertEqual(len(self.parser.samples), 2)
 
-
     def test_isatab_parse_study_table_bii_s_3(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-S-3',
                                'i_gilbert.txt')) as fp:
@@ -623,7 +622,7 @@ class ParserIntegrationTest(unittest.TestCase):
                                           'tab')
         self.parser = isatab.Parser()
 
-    def test_parser_bii_i_1(self):
+    def test_parser_with_bii_i_1(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
                                   'i_investigation.txt')) as fp:
             self.parser.parse(fp)

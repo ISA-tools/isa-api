@@ -2857,8 +2857,8 @@ class AbstractParser(object):
 
     def parse(self, filepath_or_buffer):
         if isinstance(filepath_or_buffer, str):
-            with open(filepath_or_buffer, 'rU') as buffer:
-                self._parse(buffer)
+            with open(filepath_or_buffer, 'rU') as filebuffer:
+                self._parse(filebuffer)
         else:
             self._parse(filepath_or_buffer)
 
@@ -2962,7 +2962,7 @@ class InvestigationParser(AbstractParser):
         self._parse_horizontal_comments(
             section, self.isa.ontology_source_references)
 
-    def _parse_investigation_section(self, section):
+    def _parse_investigation_section(self, section, filename):
         identifier = section.get(
             ' '.join([self._investigation_prefix, 'Identifier']), [])
         title = section.get(
@@ -2976,7 +2976,6 @@ class InvestigationParser(AbstractParser):
         i, t, d, s, p = next(zip_longest(
             identifier, title, description, submission_date,
             public_release_date, fillvalue=''))
-        filename = os.path.basename(getattr(buffer, 'name', ''))
         self.isa.identifier = i
         self.isa.title = t
         self.isa.description = d
@@ -3292,7 +3291,8 @@ class InvestigationParser(AbstractParser):
             if 'ONTOLOGY SOURCE REFERENCE' in section_label:
                 self._parse_ontology_source_reference_section(section)
             if 'INVESTIGATION' in section_label:
-                self._parse_investigation_section(section)
+                self._parse_investigation_section(section, os.path.basename(
+                    getattr(filebuffer, 'name', '')))
             if 'STUDY' in section_label:
                 self._parse_study_section(section)
             if 'STUDY DESIGN DESCRIPTORS' in section_label:
