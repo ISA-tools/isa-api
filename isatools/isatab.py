@@ -4,9 +4,6 @@ Don't forget to read the ISA-Tab spec:
 http://isa-specs.readthedocs.io/en/latest/isatab.html
 """
 from __future__ import absolute_import
-
-from StdSuites.AppleScript_Suite import tab
-
 import chardet
 import csv
 import glob
@@ -24,12 +21,12 @@ from bisect import bisect_right
 from io import StringIO
 from itertools import tee
 from pandas.io.parsers import ParserError
-from six.moves import zip_longest
+from six.moves import zip_longest, zip
 
-from isatools import config
+# from isatools import config
 from isatools.model import *
 
-logging.basicConfig(level=config.log_level)
+# logging.basicConfig(level=config.log_level)
 log = logging.getLogger(__name__)
 
 errors = []
@@ -1151,7 +1148,7 @@ def check_term_source_refs_usage(i_df, dir_context):
 
 def load_config(config_dir):
     """Rule 4001"""
-    # from isatools.io import isatab_configurator
+    from isatools.io import isatab_configurator
     configs = None
     try:
         configs = isatab_configurator.load(config_dir)
@@ -1744,190 +1741,190 @@ BASE_DIR = os.path.dirname(__file__)
 default_config_dir = os.path.join(BASE_DIR, 'resources', 'config', 'xml')
 
 
-def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
-    global errors
-    global warnings
-    errors = list()
-    warnings = list()
-    log.setLevel(log_level)
-    log.info("ISA tab Validator from ISA tools API v0.6")
-    from io import StringIO
-    stream = StringIO()
-    handler = logging.StreamHandler(stream)
-    log.addHandler(handler)
-    validation_finished = False
-    try:
-        # check_utf8(fp)  # skip as does not correctly report right now
-        log.info("Loading... {}".format(fp.name))
-        i_df = load_investigation(fp=fp)
-        log.info("Running prechecks...")
-        check_filenames_present(i_df)  # Rule 3005
-        check_table_files_read(i_df, os.path.dirname(fp.name))  # Rules 0006 and 0008
-        # check_table_files_load(i_df, os.path.dirname(fp.name))  # Rules 0007 and 0009, covered by later validation?
-        check_samples_not_declared_in_study_used_in_assay(i_df, os.path.dirname(fp.name))  # Rule 1003
-        check_study_factor_usage(i_df, os.path.dirname(fp.name))  # Rules 1008 and 1021
-        check_protocol_usage(i_df, os.path.dirname(fp.name))  # Rules 1007 and 1019
-        check_protocol_parameter_usage(i_df, os.path.dirname(fp.name))  # Rules 1009 and 1020
-        check_date_formats(i_df)  # Rule 3001
-        check_dois(i_df)  # Rule 3002
-        check_pubmed_ids_format(i_df)  # Rule 3003
-        check_protocol_names(i_df)  # Rule 1010
-        check_protocol_parameter_names(i_df)  # Rule 1011
-        check_study_factor_names(i_df)  # Rule 1012
-        check_ontology_sources(i_df)  # Rule 3008
-        log.info("Finished prechecks...")
-        log.info("Loading configurations found in {}".format(config_dir))
-        configs = load_config(config_dir)  # Rule 4001
-        if configs is None:
-            raise SystemError("No configuration to load so cannot proceed with validation!")
-        log.info("Using configurations found in {}".format(config_dir))
-        check_measurement_technology_types(i_df, configs)  # Rule 4002
-        log.info("Checking investigation file against configuration...")
-        check_investigation_against_config(i_df, configs)  # Rule 4003 for investigation file only
-        log.info("Finished checking investigation file")
-        for i, study_df in enumerate(i_df['studies']):
-            study_filename = study_df.iloc[0]['Study File Name']
-            study_sample_table = None
-            assay_tables = list()
-            if study_filename is not '':
-                protocol_names = i_df['s_protocols'][i]['Study Protocol Name'].tolist()
-                protocol_types = i_df['s_protocols'][i]['Study Protocol Type'].tolist()
-                protocol_names_and_types = dict(zip(protocol_names, protocol_types))
-                try:
-                    log.info("Loading... {}".format(study_filename))
-                    with open(os.path.join(os.path.dirname(fp.name), study_filename), 'rU') as s_fp:
-                        study_sample_table = load_table(s_fp)
-                        study_sample_table.filename = study_filename
-                        config = configs[('[Sample]', '')]
-                        log.info(
-                            "Validating {} against default study table configuration".format(study_filename))
-                        log.info("Checking Factor Value presence...")
-                        check_factor_value_presence(study_sample_table)  # Rule 4007
-                        log.info("Checking required fields...")
-                        check_required_fields(study_sample_table, config)  # Rule 4003-8, 4010
-                        log.info("Checking generic fields...")
-                        if not check_field_values(study_sample_table, config):  # Rule 4011
-                            log.warning("(W) There are some field value inconsistencies in {} against {} "
-                                        "configuration".format(study_sample_table.filename, 'Study Sample'))
-                        log.info("Checking unit fields...")
-                        if not check_unit_field(study_sample_table, config):
-                            log.warning("(W) There are some unit value inconsistencies in {} against {} "
-                                        "configuration".format(study_sample_table.filename, 'Study Sample'))
-                        log.info("Checking protocol fields...")
-                        if not check_protocol_fields(study_sample_table, config, protocol_names_and_types):  # Rule 4009
-                            log.warning("(W) There are some protocol inconsistencies in {} against {} "
-                                        "configuration".format(study_sample_table.filename, 'Study Sample'))
-                        log.info("Checking ontology fields...")
-                        if not check_ontology_fields(study_sample_table, config):  # Rule 3010
-                            log.warning("(W) There are some ontology annotation inconsistencies in {} against {} "
-                                        "configuration".format(study_sample_table.filename, 'Study Sample'))
-                        log.info("Finished validation on {}".format(study_filename))
-                except IOError:
-                    pass
-                assay_df = i_df['s_assays'][i]
-                for x, assay_filename in enumerate(assay_df['Study Assay File Name'].tolist()):
-                    measurement_type = assay_df['Study Assay Measurement Type'].tolist()[x]
-                    technology_type = assay_df['Study Assay Technology Type'].tolist()[x]
-                    if assay_filename is not '':
-                        try:
-                            config = configs[(measurement_type, technology_type)]
-                        except KeyError:
-                            log.error("Could not load config matching ({}, {})".format(measurement_type, technology_type))
-                            log.warning("Only have configs matching:")
-                            for k in configs.keys():
-                                log.warning(k)
-                            config = None
-                        if config is None:
-                            log.warning("Skipping configuration validation as could not load config...")
-                        else:
-                            try:
-                                log.info("Loading... {}".format(assay_filename))
-                                with open(os.path.join(os.path.dirname(fp.name), assay_filename), 'rU') as a_fp:
-                                    assay_table = load_table(a_fp)
-                                    assay_table.filename = assay_filename
-                                    assay_tables.append(assay_table)
-                                    log.info(
-                                        "Validating {} against assay table configuration ({}, {})...".format(
-                                            assay_filename, measurement_type, technology_type))
-                                    log.info("Checking Factor Value presence...")
-                                    check_factor_value_presence(assay_table)  # Rule 4007
-                                    log.info("Checking required fields...")
-                                    check_required_fields(assay_table, config)  # Rule 4003-8, 4010
-                                    log.info("Checking generic fields...")
-                                    if not check_field_values(assay_table, config):  # Rule 4011
-                                        log.warning(
-                                            "(W) There are some field value inconsistencies in {} against {} configuration".format(
-                                                assay_table.filename, (measurement_type, technology_type)))
-                                    log.info("Checking unit fields...")
-                                    if not check_unit_field(assay_table, config):
-                                        log.warning(
-                                            "(W) There are some unit value inconsistencies in {} against {} configuration".format(
-                                                assay_table.filename, (measurement_type, technology_type)))
-                                    log.info("Checking protocol fields...")
-                                    if not check_protocol_fields(assay_table, config, protocol_names_and_types):  # Rule 4009
-                                        log.warning("(W) There are some protocol inconsistencies in {} against {} "
-                                                    "configuration".format(assay_table.filename, (measurement_type, technology_type)))
-                                    log.info("Checking ontology fields...")
-                                    if not check_ontology_fields(assay_table, config):  # Rule 3010
-                                        log.warning("(W) There are some ontology annotation inconsistencies in {} against {} "
-                                                    "configuration".format(assay_table.filename, (measurement_type, technology_type)))
-                                    log.info("Finished validation on {}".format(assay_filename))
-                            except IOError:
-                                pass
-                        if study_sample_table is not None:
-                            log.info("Checking consistencies between study sample table and assay tables...")
-                            check_sample_names(study_sample_table, assay_tables)
-                            log.info("Finished checking study sample table against assay tables...")
-            if len(errors) != 0:
-                log.info("Skipping pooling test as there are outstanding errors")
-            else:
-                from isatools import utils
-                try:
-                    fp.seek(0)
-                    utils.detect_isatab_process_pooling(fp)
-                except:
-                    pass
-        log.info("Finished validation...")
-        validation_finished = True
-    except ParserError as cpe:
-        errors.append({
-            "message": "Unknown/System Error",
-            "supplemental": "The validator could not identify what the error is: {}".format(str(cpe)),
-            "code": 0
-        })
-        log.fatal("(F) There was an error when trying to parse the ISA tab")
-        log.fatal(cpe)
-    except ValueError as ve:
-        errors.append({
-            "message": "Unknown/System Error",
-            "supplemental": "The validator could not identify what the error is: {}".format(str(ve)),
-            "code": 0
-        })
-        log.fatal("(F) There was an error when trying to parse the ISA tab")
-        log.fatal(ve)
-    except SystemError as se:
-        errors.append({
-            "message": "Unknown/System Error",
-            "supplemental": "The validator could not identify what the error is: {}".format(str(se)),
-            "code": 0
-        })
-        log.fatal("(F) Something went very very wrong! :(")
-        log.fatal(se)
-    except Exception as e:
-        errors.append({
-            "message": "Unknown/System Error",
-            "supplemental": "The validator could not identify what the error is: {}".format(str(e)),
-            "code": 0
-        })
-        log.fatal("(F) Something went very very wrong! :(")
-        log.fatal(e)
-    finally:
-        handler.flush()
-        return {
-            "errors": errors,
-            "warnings": warnings,
-            "validation_finished": validation_finished
-        }
+# def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
+#     global errors
+#     global warnings
+#     errors = list()
+#     warnings = list()
+#     log.setLevel(log_level)
+#     log.info("ISA tab Validator from ISA tools API v0.6")
+#     from io import StringIO
+#     stream = StringIO()
+#     handler = logging.StreamHandler(stream)
+#     log.addHandler(handler)
+#     validation_finished = False
+#     try:
+#         # check_utf8(fp)  # skip as does not correctly report right now
+#         log.info("Loading... {}".format(fp.name))
+#         i_df = load_investigation(fp=fp)
+#         log.info("Running prechecks...")
+#         check_filenames_present(i_df)  # Rule 3005
+#         check_table_files_read(i_df, os.path.dirname(fp.name))  # Rules 0006 and 0008
+#         # check_table_files_load(i_df, os.path.dirname(fp.name))  # Rules 0007 and 0009, covered by later validation?
+#         check_samples_not_declared_in_study_used_in_assay(i_df, os.path.dirname(fp.name))  # Rule 1003
+#         check_study_factor_usage(i_df, os.path.dirname(fp.name))  # Rules 1008 and 1021
+#         check_protocol_usage(i_df, os.path.dirname(fp.name))  # Rules 1007 and 1019
+#         check_protocol_parameter_usage(i_df, os.path.dirname(fp.name))  # Rules 1009 and 1020
+#         check_date_formats(i_df)  # Rule 3001
+#         check_dois(i_df)  # Rule 3002
+#         check_pubmed_ids_format(i_df)  # Rule 3003
+#         check_protocol_names(i_df)  # Rule 1010
+#         check_protocol_parameter_names(i_df)  # Rule 1011
+#         check_study_factor_names(i_df)  # Rule 1012
+#         check_ontology_sources(i_df)  # Rule 3008
+#         log.info("Finished prechecks...")
+#         log.info("Loading configurations found in {}".format(config_dir))
+#         configs = load_config(config_dir)  # Rule 4001
+#         if configs is None:
+#             raise SystemError("No configuration to load so cannot proceed with validation!")
+#         log.info("Using configurations found in {}".format(config_dir))
+#         check_measurement_technology_types(i_df, configs)  # Rule 4002
+#         log.info("Checking investigation file against configuration...")
+#         check_investigation_against_config(i_df, configs)  # Rule 4003 for investigation file only
+#         log.info("Finished checking investigation file")
+#         for i, study_df in enumerate(i_df['studies']):
+#             study_filename = study_df.iloc[0]['Study File Name']
+#             study_sample_table = None
+#             assay_tables = list()
+#             if study_filename is not '':
+#                 protocol_names = i_df['s_protocols'][i]['Study Protocol Name'].tolist()
+#                 protocol_types = i_df['s_protocols'][i]['Study Protocol Type'].tolist()
+#                 protocol_names_and_types = dict(zip(protocol_names, protocol_types))
+#                 try:
+#                     log.info("Loading... {}".format(study_filename))
+#                     with open(os.path.join(os.path.dirname(fp.name), study_filename), 'rU') as s_fp:
+#                         study_sample_table = load_table(s_fp)
+#                         study_sample_table.filename = study_filename
+#                         config = configs[('[Sample]', '')]
+#                         log.info(
+#                             "Validating {} against default study table configuration".format(study_filename))
+#                         log.info("Checking Factor Value presence...")
+#                         check_factor_value_presence(study_sample_table)  # Rule 4007
+#                         log.info("Checking required fields...")
+#                         check_required_fields(study_sample_table, config)  # Rule 4003-8, 4010
+#                         log.info("Checking generic fields...")
+#                         if not check_field_values(study_sample_table, config):  # Rule 4011
+#                             log.warning("(W) There are some field value inconsistencies in {} against {} "
+#                                         "configuration".format(study_sample_table.filename, 'Study Sample'))
+#                         log.info("Checking unit fields...")
+#                         if not check_unit_field(study_sample_table, config):
+#                             log.warning("(W) There are some unit value inconsistencies in {} against {} "
+#                                         "configuration".format(study_sample_table.filename, 'Study Sample'))
+#                         log.info("Checking protocol fields...")
+#                         if not check_protocol_fields(study_sample_table, config, protocol_names_and_types):  # Rule 4009
+#                             log.warning("(W) There are some protocol inconsistencies in {} against {} "
+#                                         "configuration".format(study_sample_table.filename, 'Study Sample'))
+#                         log.info("Checking ontology fields...")
+#                         if not check_ontology_fields(study_sample_table, config):  # Rule 3010
+#                             log.warning("(W) There are some ontology annotation inconsistencies in {} against {} "
+#                                         "configuration".format(study_sample_table.filename, 'Study Sample'))
+#                         log.info("Finished validation on {}".format(study_filename))
+#                 except IOError:
+#                     pass
+#                 assay_df = i_df['s_assays'][i]
+#                 for x, assay_filename in enumerate(assay_df['Study Assay File Name'].tolist()):
+#                     measurement_type = assay_df['Study Assay Measurement Type'].tolist()[x]
+#                     technology_type = assay_df['Study Assay Technology Type'].tolist()[x]
+#                     if assay_filename is not '':
+#                         try:
+#                             config = configs[(measurement_type, technology_type)]
+#                         except KeyError:
+#                             log.error("Could not load config matching ({}, {})".format(measurement_type, technology_type))
+#                             log.warning("Only have configs matching:")
+#                             for k in configs.keys():
+#                                 log.warning(k)
+#                             config = None
+#                         if config is None:
+#                             log.warning("Skipping configuration validation as could not load config...")
+#                         else:
+#                             try:
+#                                 log.info("Loading... {}".format(assay_filename))
+#                                 with open(os.path.join(os.path.dirname(fp.name), assay_filename), 'rU') as a_fp:
+#                                     assay_table = load_table(a_fp)
+#                                     assay_table.filename = assay_filename
+#                                     assay_tables.append(assay_table)
+#                                     log.info(
+#                                         "Validating {} against assay table configuration ({}, {})...".format(
+#                                             assay_filename, measurement_type, technology_type))
+#                                     log.info("Checking Factor Value presence...")
+#                                     check_factor_value_presence(assay_table)  # Rule 4007
+#                                     log.info("Checking required fields...")
+#                                     check_required_fields(assay_table, config)  # Rule 4003-8, 4010
+#                                     log.info("Checking generic fields...")
+#                                     if not check_field_values(assay_table, config):  # Rule 4011
+#                                         log.warning(
+#                                             "(W) There are some field value inconsistencies in {} against {} configuration".format(
+#                                                 assay_table.filename, (measurement_type, technology_type)))
+#                                     log.info("Checking unit fields...")
+#                                     if not check_unit_field(assay_table, config):
+#                                         log.warning(
+#                                             "(W) There are some unit value inconsistencies in {} against {} configuration".format(
+#                                                 assay_table.filename, (measurement_type, technology_type)))
+#                                     log.info("Checking protocol fields...")
+#                                     if not check_protocol_fields(assay_table, config, protocol_names_and_types):  # Rule 4009
+#                                         log.warning("(W) There are some protocol inconsistencies in {} against {} "
+#                                                     "configuration".format(assay_table.filename, (measurement_type, technology_type)))
+#                                     log.info("Checking ontology fields...")
+#                                     if not check_ontology_fields(assay_table, config):  # Rule 3010
+#                                         log.warning("(W) There are some ontology annotation inconsistencies in {} against {} "
+#                                                     "configuration".format(assay_table.filename, (measurement_type, technology_type)))
+#                                     log.info("Finished validation on {}".format(assay_filename))
+#                             except IOError:
+#                                 pass
+#                         if study_sample_table is not None:
+#                             log.info("Checking consistencies between study sample table and assay tables...")
+#                             check_sample_names(study_sample_table, assay_tables)
+#                             log.info("Finished checking study sample table against assay tables...")
+#             if len(errors) != 0:
+#                 log.info("Skipping pooling test as there are outstanding errors")
+#             else:
+#                 from isatools import utils
+#                 try:
+#                     fp.seek(0)
+#                     utils.detect_isatab_process_pooling(fp)
+#                 except:
+#                     pass
+#         log.info("Finished validation...")
+#         validation_finished = True
+#     except ParserError as cpe:
+#         errors.append({
+#             "message": "Unknown/System Error",
+#             "supplemental": "The validator could not identify what the error is: {}".format(str(cpe)),
+#             "code": 0
+#         })
+#         log.fatal("(F) There was an error when trying to parse the ISA tab")
+#         log.fatal(cpe)
+#     except ValueError as ve:
+#         errors.append({
+#             "message": "Unknown/System Error",
+#             "supplemental": "The validator could not identify what the error is: {}".format(str(ve)),
+#             "code": 0
+#         })
+#         log.fatal("(F) There was an error when trying to parse the ISA tab")
+#         log.fatal(ve)
+#     except SystemError as se:
+#         errors.append({
+#             "message": "Unknown/System Error",
+#             "supplemental": "The validator could not identify what the error is: {}".format(str(se)),
+#             "code": 0
+#         })
+#         log.fatal("(F) Something went very very wrong! :(")
+#         log.fatal(se)
+#     except Exception as e:
+#         errors.append({
+#             "message": "Unknown/System Error",
+#             "supplemental": "The validator could not identify what the error is: {}".format(str(e)),
+#             "code": 0
+#         })
+#         log.fatal("(F) Something went very very wrong! :(")
+#         log.fatal(e)
+#     finally:
+#         handler.flush()
+#         return {
+#             "errors": errors,
+#             "warnings": warnings,
+#             "validation_finished": validation_finished
+#         }
 
 
 def batch_validate(tab_dir_list):
@@ -2352,7 +2349,7 @@ def pairwise(iterable):
     """Pairwise iterator"""
     a, b = tee(iterable)
     next(b, None)
-    return itertools.izip(a, b)
+    return zip(a, b)
 
 
 def read_tfile(tfile_path, index_col=None, factor_filter=None):
@@ -2954,292 +2951,6 @@ def find_in_between(a, x, y):
     return result
 
 
-def squashstr(string):
-    nospaces = "".join(string.split())
-    return nospaces.lower()
-
-
-def get_squashed(key):
-    try:
-        if '[' in key and ']' in key:
-            return squashstr(key[0:key.index('[')]) + key[key.index('['):]
-        else:
-            return squashstr(key)
-    except ValueError:
-        return squashstr(key)
-
-
-class Parser(object):
-
-    """
-        This replacement should be more robust than current i_*.txt file reader. Based on what I did for the
-        MAGE-TAB IDF parser. INCOMPLETE - do not use!
-
-        TODO: Work out how to add comments in correct contexts
-        TODO: Parse Assay section
-        TODO: Unit tests
-    """
-
-    def __init__(self):
-        self.ISA = Investigation()
-        self._ts_dict = {}
-
-    def parse_investigation(self, in_filename):
-        section_keys = ('ontologysourcereference',
-                    'investigation',
-                    'investigationpublications',
-                    'investigationcontacts',
-                    'study',
-                    'studydesigndescriptors',
-                    'studypublciations',
-                    'studyfactors',
-                    'studyassays',
-                    'studyprotocols',
-                    'studycontacts')
-        isecdict = {}
-        ssecdicts = []
-        with open(in_filename, 'rU') as in_file:
-            tabreader = csv.reader(
-                filter(lambda r: r[0] != '#', in_file), dialect='excel-tab')
-            current_section = ''
-            for row in tabreader:
-                key = get_squashed(key=row[0])
-                if key in section_keys:
-                    current_section = key
-                if key.startswith('comment'):
-                    key = '.'.join((current_section, key))
-                if key == 'study':
-                    ssecdicts.append({})
-                if key.startswith('study'):
-                    ssecdicts[-1][key] = row[1:]
-                else:
-                    isecdict[key] = row[1:]
-
-        self.parse_ontology_sources_section(
-            isecdict.get('termsourcename', []),
-            isecdict.get('termsourcefile', []),
-            isecdict.get('termsourceversion', []),
-            isecdict.get('termsourcedescription'),
-            {k: isecdict[k] for k in isecdict.keys()
-             if k.startswith('ontologysourcereference.')})
-        self.parse_investigation_section(
-            isecdict.get('investigationidentifier', []),
-            isecdict.get('investigationtitle', []),
-            isecdict.get('investigationdescription', []),
-            isecdict.get('investigationsubmissiondate', []),
-            isecdict.get('investigationpublicreleasedate'),
-            {k: isecdict[k] for k in isecdict.keys() if k.startswith('investigation.')})
-        self.parse_publications_section(
-            self.ISA,
-            isecdict.get('investigationpubmedid', []),
-            isecdict.get('investigationpublicationdoi', []),
-            isecdict.get('investigationpublicationauthorlist', []),
-            isecdict.get('investigationpublicationtitle', []),
-            isecdict.get('investigationpublicationstatus', []),
-            isecdict.get('investigationpublicationstatustermsourceref', []),
-            isecdict.get('investigationpublicationstatustermaccessionnumber'),
-            {k: isecdict[k] for k in isecdict.keys()
-             if k.startswith('investigationpublications.')})
-        self.parse_people_section(
-            self.ISA,
-            isecdict.get('investigationpersonlastname', []),
-            isecdict.get('investigationpersonfirstname', []),
-            isecdict.get('investigationpersonmidinitials', []),
-            isecdict.get('investigationpersonemail', []),
-            isecdict.get('investigationpersonphone', []),
-            isecdict.get('investigationpersonfax', []),
-            isecdict.get('investigationpersonaddress', []),
-            isecdict.get('investigationpersonaffiliation', []),
-            isecdict.get('investigationpersonroles', []),
-            isecdict.get('investigationpersonrolestermaccessionnumber', []),
-            isecdict.get('investigationpersonrolestermsourceref'),
-            {k: isecdict[k] for k in isecdict.keys()
-             if k.startswith('investigationcontacts.')})
-
-        for ssecdict in ssecdicts:
-            self.parse_study_section(
-                ssecdict.get('studyidentifier', []),
-                ssecdict.get('studytitle', []),
-                ssecdict.get('studydescription', []),
-                ssecdict.get('studysubmissiondate', []),
-                ssecdict.get('studypublicreleasedate', []),
-                ssecdict.get('studyfilename'))
-            self.parse_study_design_section(
-                self.ISA.studies[-1],
-                ssecdict.get('studydesigntype', []),
-                ssecdict.get('studydesigntypetermaccessionnumber', []),
-                ssecdict.get('studydesigntypetermsourceref'))
-            self.parse_publications_section(
-                self.ISA.studies[-1],
-                ssecdict.get('studypubmedid', []),
-                ssecdict.get('studypublicationdoi', []),
-                ssecdict.get('studypublicationauthorlist', []),
-                ssecdict.get('studypublicationtitle', []),
-                ssecdict.get('studypublicationstatus', []),
-                ssecdict.get('studypublicationstatustermsourceref', []),
-                ssecdict.get('studypublicationstatustermaccessionnumber'),
-                {k: ssecdict[k] for k in ssecdict.keys()
-                 if k.startswith('studypublications.')})
-            self.parse_people_section(
-                self.ISA.studies[-1],
-                ssecdict.get('studypersonlastname', []),
-                ssecdict.get('studypersonfirstname', []),
-                ssecdict.get('studypersonmidinitials', []),
-                ssecdict.get('studypersonemail', []),
-                ssecdict.get('studypersonphone', []),
-                ssecdict.get('studypersonfax', []),
-                ssecdict.get('studypersonaddress', []),
-                ssecdict.get('studypersonaffiliation', []),
-                ssecdict.get('studypersonroles', []),
-                ssecdict.get('studypersonrolestermaccessionnumber', []),
-                ssecdict.get('studypersonrolestermsourceref'),
-                {k: ssecdict[k] for k in ssecdict.keys()
-                 if k.startswith('studycontacts.')})
-            self.parse_study_factors_section(
-                self.ISA.studies[-1],
-                ssecdict.get('studyfactorname', []),
-                ssecdict.get('studyfactorntype', []),
-                ssecdict.get('studyfactortypetermaccessionnumber', []),
-                ssecdict.get('studyfactortypetermsourceref'))
-
-    def parse_ontology_sources_section(self, names, files, versions,
-                                       descriptions, comments_dict):
-        i = 0
-        for name, file, version, description in zip_longest(
-                names, files, versions, descriptions):
-            i += 1
-            os = OntologySource(
-                name=name, file=file, version=version, description=description)
-            for k, v in comments_dict.items():
-                if i < len(v) > 0:
-                    os.comments.append(
-                        Comment(name=k[k.index('[')+1:-1], value=v[i]))
-            self.ISA.ontology_source_references.append(os)
-            self._ts_dict[name] = os
-
-    def parse_investigation_section(
-            self, identifiers, titles, descriptions, submissiondates,
-            publicreleasedates, comments_dict):
-        for identifier, title, description, submissiondate, \
-            publicreleasedate in  zip_longest(
-            identifiers, titles, descriptions, submissiondates,
-            publicreleasedates):
-            self.ISA.identifier = identifier
-            self.ISA.title = title
-            self.ISA.description = description
-            self.ISA.submission_date = submissiondate
-            self.ISA.public_release_date = publicreleasedate
-            for k, v in comments_dict.items():
-                if len(v) > 0:
-                    self.ISA.comments.append(
-                        Comment(name=k[k.index('[')+1:-1],
-                                value=';'.join(v) if len(v) > 1 else v[0]))
-            break  # because there should only be one or zero rows
-
-    def parse_study_section(self, identifiers, titles, descriptions,
-                            submissiondates, publicreleasedates, filenames):
-        for identifier, title, description, submissiondate, publicreleasedate,\
-            filename in zip_longest(
-            identifiers, titles, descriptions, submissiondates,
-            publicreleasedates, filenames):
-            study = Study(
-                identifier=identifier, title=title, description=description,
-                submission_date=submissiondate,
-                public_release_date=publicreleasedate, filename=filename)
-            self.ISA.studies.append(study)
-
-    def parse_study_design_section(self, obj, dtypes, dtypetans, dtypetsrs):
-        for dtype, dtypetan, dtypetsr in zip_longest(
-                dtypes, dtypetans, dtypetsrs):
-            dtypeoa = OntologyAnnotation(
-                term=dtype, term_source=self._ts_dict.get(dtypetsr),
-                term_accession=dtypetan)
-            obj.design_type = dtypeoa
-            break
-
-    def parse_publications_section(
-            self, obj, pubmedids, dois, authorlists, titles, statuses,
-            statustans, statustsrs, comments_dict):
-        i = 0
-        for pubmedid, doi, authorlist, title, status, statustsr, statustan in \
-                zip_longest(
-                    pubmedids, dois, authorlists, titles, statuses, statustans,
-                    statustsrs):
-            i += 1
-            statusoa = OntologyAnnotation(
-                term=status, term_source=self._ts_dict.get(statustsr),
-                term_accession=statustan)
-            publication = Publication(
-                pubmed_id=pubmedid, doi=doi, author_list=authorlist,
-                title=title, status=statusoa)
-            for k, v in comments_dict.items():
-                if i < len(v) > 0:
-                    publication.comments.append(
-                        Comment(name=k[k.index('[')+1:-1], value=v[i]))
-            obj.publications.append(publication)
-
-    def parse_people_section(
-            self, obj, lastnames, firstnames, midinitialss, emails, phones,
-            faxes, addresses, affiliations, roles, roletans, roletrs,
-            comments_dict):
-        i = 0
-        for lastname, firstname, midinitials, email, phone, fax, address, \
-            affiliation, role, roletan, roletsr in \
-                zip_longest(
-                    lastnames, firstnames, midinitialss, emails, phones, faxes,
-                    addresses, affiliations, roles, roletans, roletrs):
-            i += 1
-            rolesoa = OntologyAnnotation(
-                term=role, term_source=self._ts_dict.get(roletsr),
-                term_accession=roletan)
-            person = Person(
-                last_name=lastname, first_name=firstname,
-                mid_initials=midinitials, email=email, phone=phone, fax=fax,
-                address=address, affiliation=affiliation, roles=rolesoa)
-            obj.contacts.append(person)
-        for i, contact in enumerate(obj.contacts):
-            for k, v in comments_dict.items():
-                if len(v) > 0:
-                    contact.comments.append(
-                        Comment(name=k[k.index('[')+1:-1], value=v[i]))
-
-    def parse_study_factors_section(
-            self, obj, fnames, ftypes, ftypetans, ftypetsrs):
-        for fname, ftype, ftypetan, ftypetsr in zip_longest(
-                fnames, ftypes, ftypetans, ftypetsrs):
-            ftypeoa = OntologyAnnotation(
-                term=ftype, term_source=self._ts_dict.get(ftypetsr),
-                term_accession=ftypetan)
-            factor = StudyFactor(name=fname, factor_type=ftypeoa)
-            obj.factors.append(factor)
-
-
-def parse_in(in_filename, in_format='isa-tab'):
-    """ Parse the given input file using the in_format and return as ISA
-    objects"""
-
-    log.debug("parsing {0} in format {1}".format(in_filename, in_format))
-
-    log.debug("starting to parse {0}".format(in_filename))
-
-    parser = Parser()
-    parser.parse_investigation(in_filename)
-
-
-def strip_comments(in_fp):
-    out_fp = StringIO()
-    if not isinstance(in_fp, StringIO):
-        out_fp.name = in_fp.name
-    for line in in_fp.readlines():
-        log.debug('processing line: {}'.format(line))
-        if line.lstrip().startswith('#'):
-            log.debug('stripping line:'.format(line))
-        elif len(line.strip()) > 0:
-            out_fp.write(u'' + line)
-    out_fp.seek(0)
-    return out_fp
-
-
 class InvestigationParser(object):
 
     def __init__(self):
@@ -3278,7 +2989,7 @@ class InvestigationParser(object):
                     ' '.join([term_source_prefix, 'Version']), [])
                 descriptions = section.get(
                     ' '.join([term_source_prefix, 'Description']), [])
-                for n, f, v, d in itertools.izip_longest(
+                for n, f, v, d in zip_longest(
                         names, files, versions, descriptions, fillvalue=''):
                     ontology_source = OntologySource(n, f, v, d)
                     self.isa.ontology_source_references.append(ontology_source)
@@ -3295,17 +3006,17 @@ class InvestigationParser(object):
                     ' '.join([investigation_prefix, 'Submission Date']), [])
                 public_release_date = section.get(
                     ' '.join([investigation_prefix, 'Public Release Date']), [])
-                i, t, d, s, p = next(itertools.izip_longest(
+                i, t, d, s, p = next(zip_longest(
                     identifier, title, description, submission_date,
-                    public_release_date), ('', '', '', '', ''))
+                    public_release_date, fillvalue=''))
+                filename = os.path.basename(getattr(buffer, 'name', ''))
                 self.isa.identifier = i
                 self.isa.title = t
                 self.isa.description = d
                 self.isa.submission_date = s
                 self.isa.public_release_date = p
-                self.isa.filename = os.path.basename(
-                    getattr(buffer, 'name', ''))
-            
+                self.isa.filename = filename
+
             if 'STUDY' in section_label:
                 identifier = section.get(
                     ' '.join([study_prefix, 'Identifier']), [])
@@ -3319,9 +3030,10 @@ class InvestigationParser(object):
                     ' '.join([study_prefix, 'Public Release Date']), [])
                 filename = section.get(
                     ' '.join([study_prefix, 'File Name']), [])
-                i, t, d, s, p, f = next(itertools.izip_longest(
+                i, t, d, s, p, f = next(zip_longest(
                     identifier, title, description, submission_date,
-                    public_release_date, filename))
+                    public_release_date, filename, fillvalue=''),
+                    ('', '', '', '', '', ''))
                 study = Study('', f, i, t, d, s, p)
                 self.isa.studies.append(study)
 
@@ -3332,12 +3044,13 @@ class InvestigationParser(object):
                     ' '.join([design_type_prefix, term_accession_postfix]), [])
                 design_type_term_source_ref = section.get(
                     ' '.join([design_type_prefix, term_source_ref_postfix]), [])
-                for term, accession, source in itertools.izip_longest(
+                for term, accession, source in zip_longest(
                         design_type, design_type_term_accession,
-                        design_type_term_source_ref):
-                    annotation = OntologyAnnotation(term, source, accession)
-                    study = self.isa.studies[-1]
-                    study.design_descriptors.append(annotation)
+                        design_type_term_source_ref, fillvalue=''):
+                    if not all(x == '' for x in (term, accession, source)):
+                        annotation = OntologyAnnotation(term, source, accession)
+                        study = self.isa.studies[-1]
+                        study.design_descriptors.append(annotation)
 
             if 'STUDY FACTORS' in section_label:
                 factor_prefix = 'Factor'
@@ -3350,14 +3063,16 @@ class InvestigationParser(object):
                     ' '.join([factor_type_prefix, term_accession_postfix]), [])
                 factor_type_term_source_ref = section.get(
                     ' '.join([factor_type_prefix, term_source_ref_postfix]), [])
-                for name, term, accession, source in itertools.izip_longest(
+                for name, term, accession, source in zip_longest(
                         factor_name, factor_type, factor_type_term_accession,
-                        factor_type_term_source_ref):
-                    annotation = OntologyAnnotation(term, source, accession)
-                    factor = StudyFactor('', name, annotation)
-                    study = self.isa.studies[-1]
-                    study.factors.append(factor)
-                
+                        factor_type_term_source_ref, fillvalue=''):
+                    if not all(x == '' for x in
+                               (name, term, accession, source)):
+                        annotation = OntologyAnnotation(term, source, accession)
+                        factor = StudyFactor('', name, annotation)
+                        study = self.isa.studies[-1]
+                        study.factors.append(factor)
+
             if 'STUDY ASSAYS' in section_label:
                 study_assay_prefix = ' '.join([study_prefix, 'Assay'])
                 mt_prefix = ' '.join([study_assay_prefix, 'Measurement Type'])
@@ -3368,7 +3083,7 @@ class InvestigationParser(object):
                 measurement_type_term_source_ref = section.get(
                     ' '.join([mt_prefix, term_source_ref_postfix]), [])
 
-                technology_type = section.get(tt_prefix)
+                technology_type = section.get(tt_prefix, [])
                 technology_type_term_accession = section.get(
                     ' '.join([tt_prefix, term_accession_postfix]), [])
                 technology_type_term_source_ref = section.get(
@@ -3378,17 +3093,20 @@ class InvestigationParser(object):
                 assay_filename = section.get(
                     ' '.join([study_assay_prefix, 'File Name']), [])
                 for mt_term, mt_accession, mt_source, tt_term, tt_accession, \
-                    tt_source, p, f in itertools.izip_longest(
+                    tt_source, p, f in zip_longest(
                         measurement_type, measurement_type_term_accession,
                         measurement_type_term_source_ref, technology_type,
                         technology_type_term_accession,
                         technology_type_term_source_ref, technology_platform,
-                        assay_filename):
-                    mt = OntologyAnnotation(mt_term, mt_source, mt_accession)
-                    tt = OntologyAnnotation(tt_term, tt_source, tt_accession)
-                    assay = Assay(mt, tt, p, f)
-                    study = self.isa.studies[-1]
-                    study.assays.append(assay)
+                        assay_filename, fillvalue=''):
+                    if not all(x == '' for x in (
+                    mt_term, mt_accession, mt_source, tt_term, tt_accession, \
+                    tt_source, p, f)):
+                        mt = OntologyAnnotation(mt_term, mt_source, mt_accession)
+                        tt = OntologyAnnotation(tt_term, tt_source, tt_accession)
+                        assay = Assay(mt, tt, p, f)
+                        study = self.isa.studies[-1]
+                        study.assays.append(assay)
 
             if 'STUDY PROTOCOLS' in section_label:
                 protocol_prefix = ' '.join([study_prefix, 'Protocol'])
@@ -3429,7 +3147,7 @@ class InvestigationParser(object):
                     ' '.join([components_type_prefix, term_source_ref_postfix]),
                     [])
                 for n, t, t_acc, t_src, d, u, v, pn, pn_acc, pn_src, cn, ct, \
-                    ct_acc, ct_src in itertools.izip_longest(
+                    ct_acc, ct_src in zip_longest(
                         protocol_name, protocol_type,
                         protocol_type_accession,
                         protocol_type_source_ref,
@@ -3441,26 +3159,33 @@ class InvestigationParser(object):
                         components_names,
                         components_types,
                         components_types_term_accession,
-                        components_types_term_source_ref):
-                    t_ann = OntologyAnnotation(t, t_acc, t_src)
-                    protocol = Protocol('', n, t_ann, u, d, v)
-                    # parse Parameters
-                    for n, a, s in itertools.izip_longest(pn.split(';'),
-                                                          pn_acc.split(';'),
-                                                          pn_src.split(';')):
-                        pn_ann = OntologyAnnotation(n, s, a)
-                        parameter = ProtocolParameter('',pn_ann)
-                        protocol.parameters.append(parameter)
-                    # parse Components
-                    for n, t, a, s in itertools.izip_longest(cn.split(';'),
-                                                             ct.split(';'),
-                                                             ct_acc.split(';'),
-                                                             ct_src.split(';')):
-                        ct_ann = OntologyAnnotation(t, s, a)
-                        component = ProtocolComponent('', n, ct_ann)
-                        protocol.components.append(component)
-                    study = self.isa.studies[-1]
-                    study.protocols.append(protocol)
+                        components_types_term_source_ref, fillvalue=''):
+                    if not all(x == '' for x in (
+                    n, t, t_acc, t_src, d, u, v, pn, pn_acc, pn_src, cn, ct,
+                    ct_acc, ct_src)):
+                        t_ann = OntologyAnnotation(t, t_src, t_acc)
+                        protocol = Protocol('', n, t_ann, u, d, v)
+                        # parse Parameters
+                        for n, a, s in zip_longest(pn.split(';'),
+                                                              pn_acc.split(';'),
+                                                              pn_src.split(';'),
+                                                              fillvalue=''):
+                            if not all(x == '' for x in (n, a, s)):
+                                pn_ann = OntologyAnnotation(n, s, a)
+                                parameter = ProtocolParameter('',pn_ann)
+                                protocol.parameters.append(parameter)
+                        # parse Components
+                        for n, t, a, s in zip_longest(
+                                cn.split(';'),
+                                ct.split(';'),
+                                ct_acc.split(';'),
+                                ct_src.split(';'), fillvalue=''):
+                            if not all(x == '' for x in (n, t, a, s)):
+                                ct_ann = OntologyAnnotation(t, s, a)
+                                component = ProtocolComponent('', n, ct_ann)
+                                protocol.components.append(component)
+                        study = self.isa.studies[-1]
+                        study.protocols.append(protocol)
 
             # parse PUBLICATIONS
             if any(x in section_label for x in (
@@ -3482,14 +3207,15 @@ class InvestigationParser(object):
                     [investigation_or_study_prefix, publication_prefix,
                      'Title']), [])
                 # TODO: Publication status
-                for p, d, a, t in itertools.izip_longest(
-                        pubmed_id, doi, author_list, title):
-                    publication = Publication(p, d, a, t)
-                    if next(iter(self.isa.studies), None) is None:
-                        self.isa.publications.append(publication)
-                    else:
-                        study = self.isa.studies[-1]
-                        study.publications.append(publication)
+                for p, d, a, t in zip_longest(
+                        pubmed_id, doi, author_list, title, fillvalue=''):
+                    if not all(x == '' for x in (p, d, a, t)):
+                        publication = Publication(p, d, a, t)
+                        if next(iter(self.isa.studies), None) is None:
+                            self.isa.publications.append(publication)
+                        else:
+                            study = self.isa.studies[-1]
+                            study.publications.append(publication)
 
             # parse CONTACTS
             if any(x in section_label for x in (
@@ -3533,24 +3259,28 @@ class InvestigationParser(object):
                     [investigation_or_study_prefix, person_prefix,
                      roles_prefix, term_source_ref_postfix]), [])
 
-                for l, f, m, e, p, f, ad, af, rs, r_accs, r_srcs in \
-                        itertools.izip_longest(last_name, first_name,
+                for l, fn, m, e, p, fx, ad, af, rs, r_accs, r_srcs in \
+                        zip_longest(last_name, first_name,
                                                mid_initials, email, phone, fax,
                                                address, affiliation, roles,
                                                roles_term_accession,
-                                               roles_term_source_ref):
-                    roles_list = []
-                    for r, r_acc, r_src in itertools.izip_longest(
-                            rs.split(';'), r_accs.split(';'),
-                            r_srcs.split(';')):
-                        r_ann = OntologyAnnotation(r, r_src, r_acc)
-                        roles_list.append(r_ann)
-                    person = Person(l, f, m, e, p, f, ad, af, roles_list)
-                    if next(iter(self.isa.studies), None) is None:
-                        self.isa.contacts.append(person)
-                    else:
-                        study = self.isa.studies[-1]
-                        study.contacts.append(person)
+                                               roles_term_source_ref,
+                                               fillvalue=''):
+                    if not all(x == '' for x in (
+                    l, fn, m, e, p, fx, ad, af, rs, r_accs, r_srcs)):
+                        roles_list = []
+                        for r, r_acc, r_src in zip_longest(
+                                rs.split(';'), r_accs.split(';'),
+                                r_srcs.split(';'), fillvalue=''):
+                            if not all(x == '' for x in (r, r_acc, r_src)):
+                                r_ann = OntologyAnnotation(r, r_src, r_acc)
+                                roles_list.append(r_ann)
+                        person = Person(l, fn, m, e, p, fx, ad, af, roles_list)
+                        if next(iter(self.isa.studies), None) is None:
+                            self.isa.contacts.append(person)
+                        else:
+                            study = self.isa.studies[-1]
+                            study.contacts.append(person)
 
     @staticmethod
     def split_investigation_table(buffer):

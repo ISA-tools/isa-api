@@ -6,7 +6,6 @@ setup(
     name='isatools',
     version='0.9.2-lite',
     packages=['isatools',
-              'isatools.convert',
               'isatools.errors',
               'isatools.tests'
               ],
@@ -34,16 +33,8 @@ setup(
         'jsonschema',
         'pandas',
         'networkx',
-        'lxml',
-        'requests',
         'chardet',
         'iso8601',
-        'jinja2',
-        'bs4',
-        'mzml2isa',
-        'biopython',
-        'progressbar2',
-        'deepdiff'
     ],
     test_suite='tests'
 )
