@@ -4,7 +4,6 @@ import io
 from isatools import isatab
 from isatools.model import *
 import unittest
-import tempfile
 import os
 
 
@@ -42,9 +41,13 @@ class InvestigationParserUnitTests(unittest.TestCase):
             u'Investigation Publication Status\t"S1"\t"S2"\n' \
             u'Investigation Publication Status Term Accession Number\t"acc1"\t"acc2"\n' \
             u'Investigation Publication Status Term Source REF\t"src1"\t"src2"'
-        
-        self.publication1 = Publication('0', 'doi1', 'AL1', 'T1',)
-        self.publication2 = Publication('1', 'doi2', 'AL2', 'T2', )
+
+        publication_status1 = OntologyAnnotation('S1', 'src1', 'acc1')
+        publication_status2 = OntologyAnnotation('S2', 'src2', 'acc2')
+        self.publication1 = Publication('0', 'doi1', 'AL1', 'T1',
+                                        publication_status1)
+        self.publication2 = Publication('1', 'doi2', 'AL2', 'T2',
+                                        publication_status2)
 
         self.study_publications_section = \
             u'STUDY\n' \
@@ -66,8 +69,12 @@ class InvestigationParserUnitTests(unittest.TestCase):
             u'Study Publication Status Term Accession Number\t"acc1b"\t"acc2b"\n' \
             u'Study Publication Status Term Source REF\t"src1b"\t"src2b"'
 
-        self.publication1b = Publication('0b', 'doi1b', 'AL1b', 'T1b', )
-        self.publication2b = Publication('1b', 'doi2b', 'AL2b', 'T2b', )
+        publication_status1b = OntologyAnnotation('S1b', 'src1b', 'acc1b')
+        publication_status2b = OntologyAnnotation('S2b', 'src2b', 'acc2b')
+        self.publication1b = Publication('0b', 'doi1b', 'AL1b', 'T1b',
+                                         publication_status1b)
+        self.publication2b = Publication('1b', 'doi2b', 'AL2b', 'T2b',
+                                         publication_status2b)
 
         self.investigation_contacts_section = \
             u'INVESTIGATION CONTACTS\n' \
@@ -333,14 +340,13 @@ class InvestigationParserIntegrationTests(unittest.TestCase):
         self.parser = isatab.InvestigationParser()
 
     def tearDown(self):
-        # os.rmdir(self._tmp_dir)
         pass
 
     def test_isatab_load_bii_i_1(self):
-        with open(os.path.join(self._tab_data_dir, 'BII-I-1', 'i_investigation.txt')) as fp:
+        with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                  'i_investigation.txt')) as fp:
             self.parser.parse(fp)
             isa = self.parser.isa
-
             self.assertListEqual([s.filename for s in isa.studies],
                                  ['s_BII-S-1.txt',
                                   's_BII-S-2.txt'])
@@ -355,7 +361,8 @@ class InvestigationParserIntegrationTests(unittest.TestCase):
                                  ['a_microarray.txt'])
 
     def test_isatab_load_bii_s_3(self):
-        with open(os.path.join(self._tab_data_dir, 'BII-S-3', 'i_gilbert.txt')) as fp:
+        with io.open(os.path.join(self._tab_data_dir, 'BII-S-3',
+                                  'i_gilbert.txt')) as fp:
             self.parser.parse(fp)
             isa = self.parser.isa
 
@@ -368,7 +375,8 @@ class InvestigationParserIntegrationTests(unittest.TestCase):
                                   'a_gilbert-assay-Tx.txt'])
 
     def test_isatab_load_bii_s_7(self):
-        with open(os.path.join(self._tab_data_dir, 'BII-S-7', 'i_matteo.txt'), 'rU') as fp:
+        with io.open(os.path.join(self._tab_data_dir, 'BII-S-7',
+                                  'i_matteo.txt')) as fp:
             self.parser.parse(fp)
             isa = self.parser.isa
 
@@ -378,3 +386,305 @@ class InvestigationParserIntegrationTests(unittest.TestCase):
             [s for s in isa.studies if s.filename == 's_BII-S-7.txt'][0]
             self.assertListEqual([a.filename for a in study_bii_s_7.assays],
                                  ['a_matteo-assay-Gx.txt'])
+
+
+class StudySampleTableParserUnitTest(unittest.TestCase):
+
+    def setUp(self):
+        self.isa = Investigation()
+        self.isa.ontology_source_references = [
+            OntologySource('A', 'f1', '1', 'd1'),
+            OntologySource('B', 'f2', '2', 'd2')]
+        self.parser = isatab.StudySampleTableParser(self.isa)
+
+        self.study_sample_table = \
+            u'Source Name\tSample Name\n' \
+            u'source1\tsample1\n' \
+            u'source2\tsample2'
+
+        self.source_list = [Source(name='source1'), Source(name='source2')]
+        self.sample_list = [Sample(name='sample1'), Sample(name='sample2')]
+
+    def test_parse_sources(self):
+        self.parser.parse(io.StringIO(self.study_sample_table))
+        self.assertListEqual(self.parser.sources, self.source_list)
+
+    def test_parse_samples(self):
+        self.parser.parse(io.StringIO(self.study_sample_table))
+        self.assertListEqual(self.parser.samples, self.sample_list)
+
+
+class StudySampleTableParserIntegrationTest(unittest.TestCase):
+
+    def setUp(self):
+        self._tab_data_dir = os.path.join(os.path.dirname(__file__), 'data',
+                                          'tab')
+
+    def tearDown(self):
+        pass
+
+    def test_isatab_parse_study_table_bii_s_1(self):
+        with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
+                               'i_investigation.txt')) as fp:
+            investigation_parser = isatab.InvestigationParser()
+            investigation_parser.parse(fp)
+
+            self.parser = isatab.StudySampleTableParser(
+                investigation_parser.isa)
+            self.parser.parse(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                           investigation_parser.isa.studies[
+                                               0].filename))
+            self.assertEqual(len(self.parser.sources), 18)
+            self.assertEqual(len(self.parser.samples), 164)
+
+    def test_isatab_parse_bii_s_2(self):
+        with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
+                               'i_investigation.txt')) as fp:
+            investigation_parser = isatab.InvestigationParser()
+            investigation_parser.parse(fp)
+            self.parser = isatab.StudySampleTableParser(
+                investigation_parser.isa)
+            self.parser.parse(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                           investigation_parser.isa.studies[
+                                               1].filename))
+            self.assertEqual(len(self.parser.sources), 1)
+            self.assertEqual(len(self.parser.samples), 2)
+
+
+    def test_isatab_parse_study_table_bii_s_3(self):
+        with io.open(os.path.join(self._tab_data_dir, 'BII-S-3',
+                               'i_gilbert.txt')) as fp:
+            investigation_parser = isatab.InvestigationParser()
+            investigation_parser.parse(fp)
+            self.parser = isatab.StudySampleTableParser(
+                investigation_parser.isa)
+            self.parser.parse(os.path.join(self._tab_data_dir, 'BII-S-3',
+                                           investigation_parser.isa.studies[
+                                               -1].filename))
+            self.assertEqual(len(self.parser.sources), 4)
+            self.assertEqual(len(self.parser.samples), 4)
+
+    def test_isatab_load_bii_s_7(self):
+        with io.open(os.path.join(self._tab_data_dir, 'BII-S-7',
+                               'i_matteo.txt')) as fp:
+            investigation_parser = isatab.InvestigationParser()
+            investigation_parser.parse(fp)
+            self.parser = isatab.StudySampleTableParser(
+                investigation_parser.isa)
+            self.parser.parse(os.path.join(self._tab_data_dir, 'BII-S-7',
+                                           investigation_parser.isa.studies[
+                                               -1].filename))
+            self.assertEqual(len(self.parser.sources), 29)
+            self.assertEqual(len(self.parser.samples), 29)
+
+
+class AssayTableParserUnitTest(unittest.TestCase):
+
+    def setUp(self):
+        self.isa = Investigation()
+        self.isa.ontology_source_references = [
+            OntologySource('A', 'f1', '1', 'd1'),
+            OntologySource('B', 'f2', '2', 'd2')]
+        self.parser = isatab.AssayTableParser(self.isa)
+
+        self.assay_table = \
+            u'Sample Name\tExtract Name\tLabeled Extract Name\tRaw Data File\n' \
+            u'sample1\textract1\t\tfile1.txt\n' \
+            u'sample2\t\tlabeled1\tfile2.txt'
+
+        self.sample_list = [Sample(name='sample1'), Sample(name='sample2')]
+        self.data_file_list = [
+            DataFile(filename='file2.txt', label='Raw Data File'),
+            DataFile(filename='file1.txt', label='Raw Data File')
+        ]
+        self.other_material_list = [LabeledExtract(name='labeled1'),
+                                    Extract(name='extract1')]
+
+    def test_parse_samples(self):
+        self.parser.parse(io.StringIO(self.assay_table))
+        self.assertListEqual(self.parser.samples, self.sample_list)
+
+    def test_parse_data_files(self):
+        self.parser.parse(io.StringIO(self.assay_table))
+        self.assertListEqual(self.parser.data_files, self.data_file_list)
+
+    def test_parse_other_material(self):
+        self.parser.parse(io.StringIO(self.assay_table))
+        self.assertListEqual(self.parser.other_material,
+                             self.other_material_list)
+
+
+class AssayTableParserIntegrationTest(unittest.TestCase):
+
+    def setUp(self):
+        self._tab_data_dir = os.path.join(os.path.dirname(__file__), 'data',
+                                          'tab')
+
+    def tearDown(self):
+        pass
+
+    def test_isatab_parse_assay_table_bii_s_1_metabolome(self):
+        with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
+                               'i_investigation.txt')) as fp:
+            investigation_parser = isatab.InvestigationParser()
+            investigation_parser.parse(fp)
+
+            self.parser = isatab.AssayTableParser(
+                investigation_parser.isa)
+            self.parser.parse(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                           'a_metabolome.txt'))
+            self.assertEqual(len(self.parser.samples), 92)
+            self.assertEqual(len(self.parser.data_files), 111)
+            self.assertEqual(len(self.parser.other_material), 92)
+
+    def test_isatab_parse_bii_s_1_microarray(self):
+        with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                  'i_investigation.txt')) as fp:
+            investigation_parser = isatab.InvestigationParser()
+            investigation_parser.parse(fp)
+            self.parser = isatab.AssayTableParser(
+                investigation_parser.isa)
+            self.parser.parse(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                           'a_microarray.txt'))
+            self.assertEqual(len(self.parser.samples), 2)
+            self.assertEqual(len(self.parser.data_files), 15)
+            self.assertEqual(len(self.parser.other_material), 28)
+
+    def test_isatab_parse_bii_s_1_proteome(self):
+        with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                  'i_investigation.txt')) as fp:
+            investigation_parser = isatab.InvestigationParser()
+            investigation_parser.parse(fp)
+            self.parser = isatab.AssayTableParser(
+                investigation_parser.isa)
+            self.parser.parse(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                           'a_proteome.txt'))
+            self.assertEqual(len(self.parser.samples), 8)
+            self.assertEqual(len(self.parser.data_files), 7)
+            self.assertEqual(len(self.parser.other_material), 19)
+
+    def test_isatab_parse_bii_s_2_trascriptome(self):
+        with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                  'i_investigation.txt')) as fp:
+            investigation_parser = isatab.InvestigationParser()
+            investigation_parser.parse(fp)
+            self.parser = isatab.AssayTableParser(
+                investigation_parser.isa)
+            self.parser.parse(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                           'a_transcriptome.txt'))
+            self.assertEqual(len(self.parser.samples), 48)
+            self.assertEqual(len(self.parser.data_files), 49)
+            self.assertEqual(len(self.parser.other_material), 96)
+
+    def test_isatab_parse_bii_s_3_Gx(self):
+        with io.open(os.path.join(self._tab_data_dir, 'BII-S-3',
+                               'i_gilbert.txt')) as fp:
+            investigation_parser = isatab.InvestigationParser()
+            investigation_parser.parse(fp)
+            self.parser = isatab.AssayTableParser(
+                investigation_parser.isa)
+            self.parser.parse(os.path.join(self._tab_data_dir, 'BII-S-3',
+                                           'a_gilbert-assay-Gx.txt'))
+            self.assertEqual(len(self.parser.samples), 4)
+            self.assertEqual(len(self.parser.data_files), 6)
+            self.assertEqual(len(self.parser.other_material), 4)
+
+    def test_isatab_parse_bii_s_3_Tx(self):
+        with io.open(os.path.join(self._tab_data_dir, 'BII-S-3',
+                               'i_gilbert.txt')) as fp:
+            investigation_parser = isatab.InvestigationParser()
+            investigation_parser.parse(fp)
+            self.parser = isatab.AssayTableParser(
+                investigation_parser.isa)
+            self.parser.parse(os.path.join(self._tab_data_dir, 'BII-S-3',
+                                           'a_gilbert-assay-Tx.txt'))
+            self.assertEqual(len(self.parser.samples), 4)
+            self.assertEqual(len(self.parser.data_files), 24)
+            self.assertEqual(len(self.parser.other_material), 4)
+
+    def test_isatab_parse_bii_s_7_Gx(self):
+        with io.open(os.path.join(self._tab_data_dir, 'BII-S-7',
+                               'i_matteo.txt')) as fp:
+            investigation_parser = isatab.InvestigationParser()
+            investigation_parser.parse(fp)
+            self.parser = isatab.AssayTableParser(
+                investigation_parser.isa)
+            self.parser.parse(os.path.join(self._tab_data_dir, 'BII-S-7',
+                                           'a_matteo-assay-Gx.txt'))
+            self.assertEqual(len(self.parser.samples), 29)
+            self.assertEqual(len(self.parser.data_files), 29)
+            self.assertEqual(len(self.parser.other_material), 29)
+
+
+class ParserIntegrationTest(unittest.TestCase):
+
+    def setUp(self):
+        self._tab_data_dir = os.path.join(os.path.dirname(__file__), 'data',
+                                          'tab')
+        self.parser = isatab.Parser()
+
+    def test_parser_bii_i_1(self):
+        with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
+                                  'i_investigation.txt')) as fp:
+            self.parser.parse(fp)
+            self.assertEqual(len(self.parser.isa.ontology_source_references), 7)
+            self.assertEqual(len(self.parser.isa.contacts), 3)
+            self.assertEqual(len(self.parser.isa.publications), 1)
+            self.assertEqual(len(self.parser.isa.comments), 2)
+            self.assertEqual(len(self.parser.isa.studies), 2)
+
+            self.assertEqual(len(self.parser.isa.studies[0].design_descriptors),
+                             1)
+            self.assertEqual(len(self.parser.isa.studies[0].publications),
+                             1)
+            self.assertEqual(len(self.parser.isa.studies[0].contacts),
+                             3)
+            self.assertEqual(len(self.parser.isa.studies[0].factors),
+                             2)
+            self.assertEqual(len(self.parser.isa.studies[0].assays), 3)
+            self.assertEqual(len(self.parser.isa.studies[0].protocols), 7)
+
+            self.assertEqual(len(self.parser.isa.studies[0].assays[0].samples),
+                             8)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[0].data_files),
+                7)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[0].other_material),
+                19)
+            self.assertEqual(len(self.parser.isa.studies[0].assays[1].samples),
+                             92)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[1].data_files),
+                111)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[1].other_material),
+                92)
+
+            self.assertEqual(len(self.parser.isa.studies[0].assays[2].samples),
+                             48)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[2].data_files),
+                49)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[2].other_material),
+                96)
+            self.assertEqual(len(self.parser.isa.studies[1].design_descriptors),
+                             1)
+            self.assertEqual(len(self.parser.isa.studies[1].publications),
+                             1)
+            self.assertEqual(len(self.parser.isa.studies[1].contacts),
+                             3)
+            self.assertEqual(len(self.parser.isa.studies[1].factors),
+                             3)
+            self.assertEqual(len(self.parser.isa.studies[1].assays), 1)
+            self.assertEqual(len(self.parser.isa.studies[1].protocols), 4)
+
+            self.assertEqual(len(self.parser.isa.studies[1].assays[-1].samples),
+                             2)
+            self.assertEqual(
+                len(self.parser.isa.studies[1].assays[-1].data_files),
+                15)
+            self.assertEqual(
+                len(self.parser.isa.studies[1].assays[-1].other_material),
+                28)

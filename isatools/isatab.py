@@ -20,10 +20,9 @@ from bisect import bisect_left
 from bisect import bisect_right
 from io import StringIO
 from itertools import tee
-from pandas.io.parsers import ParserError
 from six.moves import zip_longest, zip
+from collections import namedtuple
 
-# from isatools import config
 from isatools.model import *
 
 # logging.basicConfig(level=config.log_level)
@@ -60,67 +59,6 @@ _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name',
                        'Hybridization Assay Name', 'Scan Name',
                        'Data Transformation Name', 'Normalization Name']
 
-
-def _get_start_end_nodes(G):
-    start_nodes = list()
-    end_nodes = list()
-    for process in [n for n in G.nodes() if isinstance(n, Process)]:
-        if process.prev_process is None:
-            for material in [m for m in process.inputs if
-                             not isinstance(m, DataFile)]:
-                start_nodes.append(material)
-        outputs_no_data = [
-            m for m in process.outputs if not isinstance(m, DataFile)]
-        if process.next_process is None:
-            if len(outputs_no_data) == 0:
-                end_nodes.append(process)
-            else:
-                for material in outputs_no_data:
-                    end_nodes.append(material)
-    return start_nodes, end_nodes
-
-
-def _longest_path_and_attrs(paths):
-    longest = (0, None)
-    for path in paths:
-        length = len(path)
-        for n in path:
-            if isinstance(n, Source):
-                length += len(n.characteristics)
-            elif isinstance(n, Sample):
-                length += (len(n.characteristics) + len(n.factor_values))
-            elif isinstance(n, Material):
-                length += (len(n.characteristics))
-            elif isinstance(n, Process):
-                length += len([o for o in n.outputs if isinstance(o, DataFile)])
-            if n.comments is not None:
-                length += len(n.comments)
-        if length > longest[0]:
-            longest = (length, path)
-    return longest[1]
-
-
-def _all_end_to_end_paths(G, start_nodes):
-    # we know graphs start with Source or Sample and end with Process
-    paths = []
-
-    for start in start_nodes:
-        # Find ends
-        if isinstance(start, Source):  # only look for Sample ends if start is a Source
-            for end in [x for x in nx.algorithms.descendants(G, start) if
-                        isinstance(x, Sample) and len(G.out_edges(x)) == 0]:
-                paths += list(nx.algorithms.all_simple_paths(G, start, end))
-
-        elif isinstance(start, Sample):  # only look for Process ends if start is a Sample
-            for end in [x for x in nx.algorithms.descendants(G, start) if
-                        isinstance(x, Process) and x.next_process is None]:
-                paths += list(nx.algorithms.all_simple_paths(G, start, end))
-
-    log.info("Found {} paths!".format(len(paths)))
-    if len(paths) == 0:
-        log.debug([x.name for x in start_nodes])
-
-    return paths
 
 
 def get_value_columns(label, x):
@@ -722,12 +660,9 @@ def check_protocol_usage(i_df, dir_context):
 
 def load_table(fp):
     try:
-        fp = strip_comments(fp)
-        import numpy as np
         df = pd.read_csv(fp, dtype=str, sep='\t', encoding='utf-8').replace(np.nan, '')
     except UnicodeDecodeError:
         log.warning("Could not load file with UTF-8, trying ISO-8859-1")
-        fp = strip_comments(fp)
         df = pd.read_csv(fp, dtype=str, sep='\t', encoding='latin1').replace(np.nan, '')
     return df
 
@@ -1927,38 +1862,6 @@ default_config_dir = os.path.join(BASE_DIR, 'resources', 'config', 'xml')
 #         }
 
 
-def batch_validate(tab_dir_list):
-    """ Validate a batch of ISA-Tab archives
-    :param tab_dir_list: List of file paths to the ISA-Tab archives to validate
-    :return: batch report as JSON
-
-    Example:
-        from isatools import isatab
-        my_tabs = [
-            '/path/to/study1/',
-            '/path/to/study2/'
-        ]
-        batch_report = isatab.batch_validate(my_tabs, '/path/to/report.txt')
-    """
-    batch_report = {
-        "batch_report": []
-    }
-    for tab_dir in tab_dir_list:
-        log.info("***Validating {}***\n".format(tab_dir))
-        i_files = glob.glob(os.path.join(tab_dir, 'i_*.txt'))
-        if len(i_files) != 1:
-            log.warning("Could not find an investigation file, skipping {}".format(tab_dir))
-        else:
-            with open(i_files[0], 'rU') as fp:
-                batch_report['batch_report'].append(
-                    {
-                        "filename": fp.name,
-                        "report": validate(fp)
-                    }
-                )
-    return batch_report
-
-
 def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigation file
 
     def get_ontology_source(term_source_ref):
@@ -2360,7 +2263,6 @@ def read_tfile(tfile_path, index_col=None, factor_filter=None):
         header = list(next(reader))
         tfile_fp.seek(0)
         log.debug("Reading file into DataFrame")
-        tfile_fp = strip_comments(tfile_fp)
         tfile_df = pd.read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col, memory_map=True,
                                encoding='utf-8').fillna('')
         log.debug("Setting isatab_header")
@@ -2451,15 +2353,15 @@ def preprocess(DF):
                         rightcol == 'Protein Identification File':
             inferred_protocol_type = 'metabolite identification'
 
-        # Force use of unknown protocol always, until we can insert missing 
+        # Force use of unknown protocol always, until we can insert missing
         # protocol from above inferences into study metadata
         inferred_protocol_type = ''
         log.info('Inserting protocol {} in between {} and {}'
                  .format(
-            inferred_protocol_type if inferred_protocol_type != '' else 
+            inferred_protocol_type if inferred_protocol_type != '' else
             'unknown', leftcol, rightcol))
-        DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset), 
-                  'unknown'  if inferred_protocol_type == '' else 
+        DF.insert(i, 'Protocol REF.{}'.format(num_protocol_refs + offset),
+                  'unknown'  if inferred_protocol_type == '' else
                   inferred_protocol_type)
         DF.isatab_header.insert(i, 'Protocol REF')
         offset += 1
@@ -2703,7 +2605,7 @@ class ProcessSequenceFactory:
                                 fv = FactorValue(factor_name=factor)
 
                                 v, u = get_value(
-                                    fv_column, column_group, object_series, 
+                                    fv_column, column_group, object_series,
                                     ontology_source_map, unit_categories)
 
                                 fv.value = v
@@ -2734,7 +2636,7 @@ class ProcessSequenceFactory:
                                 x.name for x in data_file.comments]:
                                 data_file.comments.append(
                                     Comment(
-                                        name=comment_column[8:-1], 
+                                        name=comment_column[8:-1],
                                         value=str(
                                             object_series[comment_column])))
                     except KeyError:
@@ -2742,14 +2644,14 @@ class ProcessSequenceFactory:
 
             elif object_label.startswith('Protocol REF'):
                 object_label_index = list(DF.columns).index(object_label)
-                    
+
                 # don't drop duplicates
-                for _, object_series in DF.iterrows(): 
+                for _, object_series in DF.iterrows():
                     # if _ == 0:
                     #     print('processing: ', object_series[object_label])
                     protocol_ref = str(object_series[object_label])
                     process_key = process_keygen(
-                        protocol_ref, column_group, _cg, DF.columns, 
+                        protocol_ref, column_group, _cg, DF.columns,
                         object_series, _, DF)
 
                     # TODO: Keep process key sequence here to reduce number of passes on Protocol REF columns?
@@ -2807,7 +2709,7 @@ class ProcessSequenceFactory:
                             # print(process_key, 'input', input_node_label, node_key)
                             process.inputs.append(input_node)
 
-                    name_column_hits = [n for n in column_group 
+                    name_column_hits = [n for n in column_group
                                         if n in _LABELS_ASSAY_NODES]
 
                     if len(name_column_hits) == 1:
@@ -2818,7 +2720,7 @@ class ProcessSequenceFactory:
 
                         category_key = pv_column[16:-1]
 
-                        if category_key in [x.category.parameter_name.term 
+                        if category_key in [x.category.parameter_name.term
                                             for x in process.parameter_values]:
                             pass
                         else:
@@ -2826,11 +2728,11 @@ class ProcessSequenceFactory:
                                 protocol = protocol_map[protocol_ref]
                             except KeyError:
                                 raise ValueError(
-                                    'Could not find protocol matching ', 
+                                    'Could not find protocol matching ',
                                     protocol_ref)
 
                             param_hits = [
-                                p for p in protocol.parameters 
+                                p for p in protocol.parameters
                                 if p.parameter_name.term == category_key]
 
                             if len(param_hits) == 1:
@@ -2951,18 +2853,7 @@ def find_in_between(a, x, y):
     return result
 
 
-class InvestigationParser(object):
-
-    def __init__(self):
-        self.isa = Investigation()
-
-    @staticmethod
-    def section_to_dict(section_rows):
-        d = dict()
-        for r in section_rows:
-            label = next(iter(r), None)
-            d[label] = r[1:]
-        return d
+class AbstractParser(object):
 
     def parse(self, filepath_or_buffer):
         if isinstance(filepath_or_buffer, str):
@@ -2972,326 +2863,40 @@ class InvestigationParser(object):
             self._parse(filepath_or_buffer)
 
     def _parse(self, buffer):
-        section_slices = self.split_investigation_table(buffer)
-        # TODO: Comments
-        for section_slice in section_slices:
-            section_label = next(iter(section_slice))
-            section = self.section_to_dict(section_slice)
-            study_prefix = 'Study'
-            term_accession_postfix = 'Term Accession Number'
-            term_source_ref_postfix = 'Term Source REF'
+        raise NotImplementedError(
+            'Inherit from this class and implement this method')
 
-            if 'ONTOLOGY SOURCE REFERENCE' in section_label:
-                term_source_prefix = 'Term Source'
-                names = section.get(' '.join([term_source_prefix, 'Name']), [])
-                files = section.get(' '.join([term_source_prefix, 'File']), [])
-                versions = section.get(
-                    ' '.join([term_source_prefix, 'Version']), [])
-                descriptions = section.get(
-                    ' '.join([term_source_prefix, 'Description']), [])
-                for n, f, v, d in zip_longest(
-                        names, files, versions, descriptions, fillvalue=''):
-                    ontology_source = OntologySource(n, f, v, d)
-                    self.isa.ontology_source_references.append(ontology_source)
 
-            if 'INVESTIGATION' in section_label:
-                investigation_prefix = 'Investigation'
-                identifier = section.get(
-                    ' '.join([investigation_prefix, 'Identifier']), [])
-                title = section.get(
-                    ' '.join([investigation_prefix, 'Title']), [])
-                description = section.get(
-                    ' '.join([investigation_prefix, 'Description']), [])
-                submission_date = section.get(
-                    ' '.join([investigation_prefix, 'Submission Date']), [])
-                public_release_date = section.get(
-                    ' '.join([investigation_prefix, 'Public Release Date']), [])
-                i, t, d, s, p = next(zip_longest(
-                    identifier, title, description, submission_date,
-                    public_release_date, fillvalue=''))
-                filename = os.path.basename(getattr(buffer, 'name', ''))
-                self.isa.identifier = i
-                self.isa.title = t
-                self.isa.description = d
-                self.isa.submission_date = s
-                self.isa.public_release_date = p
-                self.isa.filename = filename
+class InvestigationParser(AbstractParser):
 
-            if 'STUDY' in section_label:
-                identifier = section.get(
-                    ' '.join([study_prefix, 'Identifier']), [])
-                title = section.get(
-                    ' '.join([study_prefix, 'Title']), [])
-                description = section.get(
-                    ' '.join([study_prefix, 'Description']), [])
-                submission_date = section.get(
-                    ' '.join([study_prefix, 'Submission Date']), [])
-                public_release_date = section.get(
-                    ' '.join([study_prefix, 'Public Release Date']), [])
-                filename = section.get(
-                    ' '.join([study_prefix, 'File Name']), [])
-                i, t, d, s, p, f = next(zip_longest(
-                    identifier, title, description, submission_date,
-                    public_release_date, filename, fillvalue=''),
-                    ('', '', '', '', '', ''))
-                study = Study('', f, i, t, d, s, p)
-                self.isa.studies.append(study)
-
-            if 'STUDY DESIGN DESCRIPTORS' in section_label:
-                design_type_prefix = ' '.join([study_prefix, 'Design Type'])
-                design_type = section.get(design_type_prefix)
-                design_type_term_accession = section.get(
-                    ' '.join([design_type_prefix, term_accession_postfix]), [])
-                design_type_term_source_ref = section.get(
-                    ' '.join([design_type_prefix, term_source_ref_postfix]), [])
-                for term, accession, source in zip_longest(
-                        design_type, design_type_term_accession,
-                        design_type_term_source_ref, fillvalue=''):
-                    if not all(x == '' for x in (term, accession, source)):
-                        annotation = OntologyAnnotation(term, source, accession)
-                        study = self.isa.studies[-1]
-                        study.design_descriptors.append(annotation)
-
-            if 'STUDY FACTORS' in section_label:
-                factor_prefix = 'Factor'
-                factor_type_prefix = ' '.join(
-                    [study_prefix, factor_prefix, 'Type'])
-                factor_name = section.get(
-                    ' '.join([study_prefix, factor_prefix, 'Name']), [])
-                factor_type = section.get(factor_type_prefix)
-                factor_type_term_accession = section.get(
-                    ' '.join([factor_type_prefix, term_accession_postfix]), [])
-                factor_type_term_source_ref = section.get(
-                    ' '.join([factor_type_prefix, term_source_ref_postfix]), [])
-                for name, term, accession, source in zip_longest(
-                        factor_name, factor_type, factor_type_term_accession,
-                        factor_type_term_source_ref, fillvalue=''):
-                    if not all(x == '' for x in
-                               (name, term, accession, source)):
-                        annotation = OntologyAnnotation(term, source, accession)
-                        factor = StudyFactor('', name, annotation)
-                        study = self.isa.studies[-1]
-                        study.factors.append(factor)
-
-            if 'STUDY ASSAYS' in section_label:
-                study_assay_prefix = ' '.join([study_prefix, 'Assay'])
-                mt_prefix = ' '.join([study_assay_prefix, 'Measurement Type'])
-                tt_prefix = ' '.join([study_assay_prefix, 'Technology Type'])
-                measurement_type = section.get(mt_prefix)
-                measurement_type_term_accession = section.get(
-                    ' '.join([mt_prefix, term_accession_postfix]), [])
-                measurement_type_term_source_ref = section.get(
-                    ' '.join([mt_prefix, term_source_ref_postfix]), [])
-
-                technology_type = section.get(tt_prefix, [])
-                technology_type_term_accession = section.get(
-                    ' '.join([tt_prefix, term_accession_postfix]), [])
-                technology_type_term_source_ref = section.get(
-                    ' '.join([tt_prefix, term_source_ref_postfix]), [])
-                technology_platform = section.get(
-                    ' '.join([study_assay_prefix, 'Technology Platform']), [])
-                assay_filename = section.get(
-                    ' '.join([study_assay_prefix, 'File Name']), [])
-                for mt_term, mt_accession, mt_source, tt_term, tt_accession, \
-                    tt_source, p, f in zip_longest(
-                        measurement_type, measurement_type_term_accession,
-                        measurement_type_term_source_ref, technology_type,
-                        technology_type_term_accession,
-                        technology_type_term_source_ref, technology_platform,
-                        assay_filename, fillvalue=''):
-                    if not all(x == '' for x in (
-                    mt_term, mt_accession, mt_source, tt_term, tt_accession, \
-                    tt_source, p, f)):
-                        mt = OntologyAnnotation(mt_term, mt_source, mt_accession)
-                        tt = OntologyAnnotation(tt_term, tt_source, tt_accession)
-                        assay = Assay(mt, tt, p, f)
-                        study = self.isa.studies[-1]
-                        study.assays.append(assay)
-
-            if 'STUDY PROTOCOLS' in section_label:
-                protocol_prefix = ' '.join([study_prefix, 'Protocol'])
-                protocol_type_prefix = ' '.join([protocol_prefix, 'Type'])
-                parameters_name_prefix = ' '.join(
-                    [protocol_prefix, 'Parameters Name'])
-                components_type_prefix = ' '.join(
-                    [protocol_prefix, 'Components Type'])
-                protocol_name = section.get(
-                    ' '.join([protocol_prefix, 'Name']), [])
-                protocol_type = section.get(protocol_type_prefix)
-                protocol_type_accession = section.get(
-                    ' '.join([protocol_type_prefix, term_accession_postfix]),
-                    [])
-                protocol_type_source_ref = section.get(
-                    ' '.join([protocol_type_prefix, term_source_ref_postfix]),
-                    [])
-                protocol_description = section.get(
-                    ' '.join([protocol_prefix, 'Description']), [])
-                protocol_uri = section.get(' '.join([protocol_prefix, 'URI']),
-                                           [])
-                protocol_version = section.get(
-                    ' '.join([protocol_prefix, 'Version']), [])
-                parameters_names = section.get(parameters_name_prefix, [])
-                parameters_names_term_accession = section.get(
-                    ' '.join([parameters_name_prefix, term_accession_postfix]),
-                    [])
-                parameters_names_term_source_ref = section.get(
-                    ' '.join([parameters_name_prefix, term_source_ref_postfix]),
-                    [])
-                components_names = section.get(
-                    ' '.join([protocol_prefix, 'Components Name']), [])
-                components_types = section.get(components_type_prefix, [])
-                components_types_term_accession = section.get(
-                    ' '.join([components_type_prefix, term_accession_postfix]),
-                    [])
-                components_types_term_source_ref = section.get(
-                    ' '.join([components_type_prefix, term_source_ref_postfix]),
-                    [])
-                for n, t, t_acc, t_src, d, u, v, pn, pn_acc, pn_src, cn, ct, \
-                    ct_acc, ct_src in zip_longest(
-                        protocol_name, protocol_type,
-                        protocol_type_accession,
-                        protocol_type_source_ref,
-                        protocol_description,
-                        protocol_uri, protocol_version,
-                        parameters_names,
-                        parameters_names_term_accession,
-                        parameters_names_term_source_ref,
-                        components_names,
-                        components_types,
-                        components_types_term_accession,
-                        components_types_term_source_ref, fillvalue=''):
-                    if not all(x == '' for x in (
-                    n, t, t_acc, t_src, d, u, v, pn, pn_acc, pn_src, cn, ct,
-                    ct_acc, ct_src)):
-                        t_ann = OntologyAnnotation(t, t_src, t_acc)
-                        protocol = Protocol('', n, t_ann, u, d, v)
-                        # parse Parameters
-                        for n, a, s in zip_longest(pn.split(';'),
-                                                              pn_acc.split(';'),
-                                                              pn_src.split(';'),
-                                                              fillvalue=''):
-                            if not all(x == '' for x in (n, a, s)):
-                                pn_ann = OntologyAnnotation(n, s, a)
-                                parameter = ProtocolParameter('',pn_ann)
-                                protocol.parameters.append(parameter)
-                        # parse Components
-                        for n, t, a, s in zip_longest(
-                                cn.split(';'),
-                                ct.split(';'),
-                                ct_acc.split(';'),
-                                ct_src.split(';'), fillvalue=''):
-                            if not all(x == '' for x in (n, t, a, s)):
-                                ct_ann = OntologyAnnotation(t, s, a)
-                                component = ProtocolComponent('', n, ct_ann)
-                                protocol.components.append(component)
-                        study = self.isa.studies[-1]
-                        study.protocols.append(protocol)
-
-            # parse PUBLICATIONS
-            if any(x in section_label for x in (
-                    'INVESTIGATION PUBLICATIONS', 'STUDY PUBLICATIONS')):
-                investigation_or_study_prefix = \
-                    'Investigation' if 'INVESTIGATION' in next(
-                        iter(section_label)) else 'Study'
-                publication_prefix = 'Publication'
-                status_prefix = 'Status'
-                pubmed_id = section.get(' '.join(
-                    [investigation_or_study_prefix, 'PubMed ID']), [])
-                doi = section.get(' '.join(
-                    [investigation_or_study_prefix, publication_prefix,
-                     'DOI']), [])
-                author_list = section.get(' '.join(
-                    [investigation_or_study_prefix, publication_prefix,
-                     'Author List']), [])
-                title = section.get(' '.join(
-                    [investigation_or_study_prefix, publication_prefix,
-                     'Title']), [])
-                # TODO: Publication status
-                for p, d, a, t in zip_longest(
-                        pubmed_id, doi, author_list, title, fillvalue=''):
-                    if not all(x == '' for x in (p, d, a, t)):
-                        publication = Publication(p, d, a, t)
-                        if next(iter(self.isa.studies), None) is None:
-                            self.isa.publications.append(publication)
-                        else:
-                            study = self.isa.studies[-1]
-                            study.publications.append(publication)
-
-            # parse CONTACTS
-            if any(x in section_label for x in (
-                    'INVESTIGATION CONTACTS', 'STUDY CONTACTS')):
-                investigation_or_study_prefix = \
-                    'Investigation' if 'INVESTIGATION' in next(
-                        iter(section_label)) else 'Study'
-                person_prefix = 'Person'
-                roles_prefix = 'Roles'
-                last_name = section.get(' '.join(
-                    [investigation_or_study_prefix, person_prefix,
-                     'Last Name']), [])
-                first_name = section.get(' '.join(
-                    [investigation_or_study_prefix, person_prefix,
-                     'First Name']), [])
-                mid_initials = section.get(' '.join(
-                    [investigation_or_study_prefix, person_prefix,
-                     'Mid Initials']), [])
-                email = section.get(' '.join(
-                    [investigation_or_study_prefix, person_prefix, 'Email']),
-                    [])
-                phone = section.get(' '.join(
-                    [investigation_or_study_prefix, person_prefix, 'Phone']),
-                    [])
-                fax = section.get(' '.join(
-                    [investigation_or_study_prefix, person_prefix, 'Fax']), [])
-                address = section.get(' '.join(
-                    [investigation_or_study_prefix, person_prefix, 'Address']),
-                    [])
-                affiliation = section.get(' '.join(
-                    [investigation_or_study_prefix, person_prefix,
-                     'Affiliation']), [])
-
-                roles = section.get(' '.join(
-                    [investigation_or_study_prefix, person_prefix,
-                     roles_prefix]), [])
-                roles_term_accession = section.get(' '.join(
-                    [investigation_or_study_prefix, person_prefix,
-                     roles_prefix, term_accession_postfix]), [])
-                roles_term_source_ref = section.get(' '.join(
-                    [investigation_or_study_prefix, person_prefix,
-                     roles_prefix, term_source_ref_postfix]), [])
-
-                for l, fn, m, e, p, fx, ad, af, rs, r_accs, r_srcs in \
-                        zip_longest(last_name, first_name,
-                                               mid_initials, email, phone, fax,
-                                               address, affiliation, roles,
-                                               roles_term_accession,
-                                               roles_term_source_ref,
-                                               fillvalue=''):
-                    if not all(x == '' for x in (
-                    l, fn, m, e, p, fx, ad, af, rs, r_accs, r_srcs)):
-                        roles_list = []
-                        for r, r_acc, r_src in zip_longest(
-                                rs.split(';'), r_accs.split(';'),
-                                r_srcs.split(';'), fillvalue=''):
-                            if not all(x == '' for x in (r, r_acc, r_src)):
-                                r_ann = OntologyAnnotation(r, r_src, r_acc)
-                                roles_list.append(r_ann)
-                        person = Person(l, fn, m, e, p, fx, ad, af, roles_list)
-                        if next(iter(self.isa.studies), None) is None:
-                            self.isa.contacts.append(person)
-                        else:
-                            study = self.isa.studies[-1]
-                            study.contacts.append(person)
+    def __init__(self):
+        self.isa = Investigation()
+        self._investigation_prefix = 'Investigation'
+        self._study_prefix = 'Study'
+        self._term_accession_postfix = 'Term Accession Number'
+        self._term_source_ref_postfix = 'Term Source REF'
 
     @staticmethod
-    def split_investigation_table(buffer):
-        """only support filepath for now"""
+    def _pairwise(iterable):
+        a, b = tee(iterable)
+        next(b, None)
+        return zip(a, b)
+
+    @staticmethod
+    def _section_to_dict(section_rows):
+        d = dict()
+        for r in section_rows:
+            label = next(iter(r), None)
+            d[label] = r[1:]
+        return d
+
+    def _split_investigation_table(self, f):
         section_keywords = (
             'ONTOLOGY SOURCE REFERENCE', 'INVESTIGATION',
             'INVESTIGATION PUBLICATIONS', 'INVESTIGATION CONTACTS', 'STUDY',
             'STUDY DESIGN DESCRIPTORS', 'STUDY PUBLICATIONS', 'STUDY FACTORS',
             'STUDY ASSAYS', 'STUDY PROTOCOLS', 'STUDY CONTACTS')
         section_slices = []
-        f = buffer
         section_delimiters = []
         tabreader = csv.reader(
             filter(lambda r: next(iter(r)) != '#', f), delimiter='\t')
@@ -3300,7 +2905,8 @@ class InvestigationParser(object):
             if label is not None and label in section_keywords:
                 section_delimiters.append(sec_index)
         f.seek(0)
-        for this_sec_index, next_sec_index in pairwise(section_delimiters):
+        for this_sec_index, next_sec_index in self._pairwise(
+                section_delimiters):
             section_slice = []
             sec_f = itertools.islice(f, this_sec_index, next_sec_index)
             secreader = csv.reader(sec_f, delimiter='\t')
@@ -3315,3 +2921,514 @@ class InvestigationParser(object):
             section_slice.append(row)
         section_slices.append(section_slice)
         return section_slices
+
+    @staticmethod
+    def _parse_vertical_comments(section, section_obj):
+        CommentGroup = namedtuple('CommentGroup', ['name', 'value'])
+        regex_comment = re.compile('Comment\[(.*?)\]')
+        comments = [(regex_comment.findall(x)[-1], section.get(x))
+                    for x in (x for x in section.keys() if
+                              regex_comment.match(x))]
+        for comment in comments:
+            comment_group = CommentGroup._make(comment)
+            for value in getattr(comment_group, 'value'):
+                section_obj.comments.append(
+                    Comment(getattr(comment_group, 'name'), value))
+
+    @staticmethod
+    def _parse_horizontal_comments(section, section_obj_list):
+        CommentGroup = namedtuple('CommentGroup', ['name', 'value'])
+        regex_comment = re.compile('Comment\[(.*?)\]')
+        comment_groups = [CommentGroup._make((regex_comment.findall(x)[-1],
+                                             section.get(x)))
+                          for x in (x for x in section.keys() if
+                                    regex_comment.match(x))]
+        for comment_group in comment_groups:
+            for v, o in zip_longest(getattr(comment_group, 'value'),
+                                    section_obj_list, fillvalue=''):
+                o.comments.append(Comment(getattr(comment_group, 'name'), v))
+
+    def _parse_ontology_source_reference_section(self, section):
+        term_source_prefix = 'Term Source'
+        names = section.get(' '.join([term_source_prefix, 'Name']), [])
+        files = section.get(' '.join([term_source_prefix, 'File']), [])
+        versions = section.get(' '.join([term_source_prefix, 'Version']), [])
+        descriptions = section.get(
+            ' '.join([term_source_prefix, 'Description']), [])
+        for n, f, v, d in zip_longest(
+                names, files, versions, descriptions, fillvalue=''):
+            ontology_source = OntologySource(n, f, v, d)
+            self.isa.ontology_source_references.append(ontology_source)
+        self._parse_horizontal_comments(
+            section, self.isa.ontology_source_references)
+
+    def _parse_investigation_section(self, section):
+        identifier = section.get(
+            ' '.join([self._investigation_prefix, 'Identifier']), [])
+        title = section.get(
+            ' '.join([self._investigation_prefix, 'Title']), [])
+        description = section.get(
+            ' '.join([self._investigation_prefix, 'Description']), [])
+        submission_date = section.get(
+            ' '.join([self._investigation_prefix, 'Submission Date']), [])
+        public_release_date = section.get(
+            ' '.join([self._investigation_prefix, 'Public Release Date']), [])
+        i, t, d, s, p = next(zip_longest(
+            identifier, title, description, submission_date,
+            public_release_date, fillvalue=''))
+        filename = os.path.basename(getattr(buffer, 'name', ''))
+        self.isa.identifier = i
+        self.isa.title = t
+        self.isa.description = d
+        self.isa.submission_date = s
+        self.isa.public_release_date = p
+        self.isa.filename = filename
+        self._parse_vertical_comments(section, self.isa)
+
+    def _parse_study_section(self, section):
+        identifier = section.get(
+            ' '.join([self._study_prefix, 'Identifier']), [])
+        title = section.get(
+            ' '.join([self._study_prefix, 'Title']), [])
+        description = section.get(
+            ' '.join([self._study_prefix, 'Description']), [])
+        submission_date = section.get(
+            ' '.join([self._study_prefix, 'Submission Date']), [])
+        public_release_date = section.get(
+            ' '.join([self._study_prefix, 'Public Release Date']), [])
+        filename = section.get(
+            ' '.join([self._study_prefix, 'File Name']), [])
+        i, t, d, s, p, f = next(zip_longest(
+            identifier, title, description, submission_date,
+            public_release_date, filename, fillvalue=''),
+            ('', '', '', '', '', ''))
+        study = Study('', f, i, t, d, s, p)
+        self.isa.studies.append(study)
+        self._parse_vertical_comments(section, study)
+
+    def _parse_study_design_descriptors_section(self, section):
+        design_type_prefix = ' '.join([self._study_prefix, 'Design Type'])
+        design_type = section.get(design_type_prefix)
+        design_type_term_accession = section.get(
+            ' '.join([design_type_prefix, self._term_accession_postfix]), [])
+        design_type_term_source_ref = section.get(
+            ' '.join([design_type_prefix, self._term_source_ref_postfix]), [])
+        for term, accession, source in zip_longest(
+                design_type, design_type_term_accession,
+                design_type_term_source_ref, fillvalue=''):
+            if not all(x == '' for x in (term, accession, source)):
+                annotation = OntologyAnnotation(term, source, accession)
+                study = self.isa.studies[-1]
+                study.design_descriptors.append(annotation)
+        self._parse_horizontal_comments(
+            section, self.isa.studies[-1].design_descriptors)
+
+    def _parse_study_factors_section(self, section):
+        factor_prefix = 'Factor'
+        factor_type_prefix = ' '.join(
+            [self._study_prefix, factor_prefix, 'Type'])
+        factor_name = section.get(
+            ' '.join([self._study_prefix, factor_prefix, 'Name']), [])
+        factor_type = section.get(factor_type_prefix)
+        factor_type_term_accession = section.get(
+            ' '.join(
+                [factor_type_prefix, self._term_accession_postfix]), [])
+        factor_type_term_source_ref = section.get(
+            ' '.join(
+                [factor_type_prefix, self._term_source_ref_postfix]),
+            [])
+        for name, term, accession, source in zip_longest(
+                factor_name, factor_type, factor_type_term_accession,
+                factor_type_term_source_ref, fillvalue=''):
+            if not all(x == '' for x in
+                       (name, term, accession, source)):
+                annotation = OntologyAnnotation(term, source, accession)
+                factor = StudyFactor('', name, annotation)
+                study = self.isa.studies[-1]
+                study.factors.append(factor)
+        self._parse_horizontal_comments(
+            section, self.isa.studies[-1].factors)
+
+    def _parse_study_assays_section(self, section):
+        study_assay_prefix = ' '.join([self._study_prefix, 'Assay'])
+        mt_prefix = ' '.join([study_assay_prefix, 'Measurement Type'])
+        tt_prefix = ' '.join([study_assay_prefix, 'Technology Type'])
+        measurement_type = section.get(mt_prefix)
+        measurement_type_term_accession = section.get(
+            ' '.join([mt_prefix, self._term_accession_postfix]), [])
+        measurement_type_term_source_ref = section.get(
+            ' '.join([mt_prefix, self._term_source_ref_postfix]), [])
+
+        technology_type = section.get(tt_prefix, [])
+        technology_type_term_accession = section.get(
+            ' '.join([tt_prefix, self._term_accession_postfix]), [])
+        technology_type_term_source_ref = section.get(
+            ' '.join([tt_prefix, self._term_source_ref_postfix]), [])
+        technology_platform = section.get(
+            ' '.join([study_assay_prefix, 'Technology Platform']), [])
+        assay_filename = section.get(
+            ' '.join([study_assay_prefix, 'File Name']), [])
+        for mt_term, mt_accession, mt_source, tt_term, tt_accession, \
+            tt_source, p, f in zip_longest(
+            measurement_type, measurement_type_term_accession,
+            measurement_type_term_source_ref, technology_type,
+            technology_type_term_accession,
+            technology_type_term_source_ref, technology_platform,
+            assay_filename, fillvalue=''):
+            if not all(x == '' for x in (
+                    mt_term, mt_accession, mt_source, tt_term, tt_accession,
+                    tt_source, p, f)):
+                mt = OntologyAnnotation(mt_term, mt_source, mt_accession)
+                tt = OntologyAnnotation(tt_term, tt_source, tt_accession)
+                assay = Assay(mt, tt, p, f)
+                study = self.isa.studies[-1]
+                study.assays.append(assay)
+        self._parse_horizontal_comments(
+            section, self.isa.studies[-1].assays)
+
+    def _parse_study_protocols_section(self, section):
+        protocol_prefix = ' '.join([self._study_prefix, 'Protocol'])
+        protocol_type_prefix = ' '.join([protocol_prefix, 'Type'])
+        parameters_name_prefix = ' '.join(
+            [protocol_prefix, 'Parameters Name'])
+        components_type_prefix = ' '.join(
+            [protocol_prefix, 'Components Type'])
+        protocol_name = section.get(
+            ' '.join([protocol_prefix, 'Name']), [])
+        protocol_type = section.get(protocol_type_prefix)
+        protocol_type_accession = section.get(
+            ' '.join([protocol_type_prefix, self._term_accession_postfix]),
+            [])
+        protocol_type_source_ref = section.get(
+            ' '.join([protocol_type_prefix, self._term_source_ref_postfix]),
+            [])
+        protocol_description = section.get(
+            ' '.join([protocol_prefix, 'Description']), [])
+        protocol_uri = section.get(' '.join([protocol_prefix, 'URI']),
+                                   [])
+        protocol_version = section.get(
+            ' '.join([protocol_prefix, 'Version']), [])
+        parameters_names = section.get(parameters_name_prefix, [])
+        parameters_names_term_accession = section.get(
+            ' '.join(
+                [parameters_name_prefix, self._term_accession_postfix]),
+            [])
+        parameters_names_term_source_ref = section.get(
+            ' '.join([parameters_name_prefix,
+                      self._term_source_ref_postfix]),
+            [])
+        components_names = section.get(
+            ' '.join([protocol_prefix, 'Components Name']), [])
+        components_types = section.get(components_type_prefix, [])
+        components_types_term_accession = section.get(
+            ' '.join(
+                [components_type_prefix, self._term_accession_postfix]),
+            [])
+        components_types_term_source_ref = section.get(
+            ' '.join([components_type_prefix,
+                      self._term_source_ref_postfix]),
+            [])
+        for n, t, t_acc, t_src, d, u, v, pn, pn_acc, pn_src, cn, ct, \
+            ct_acc, ct_src in zip_longest(
+            protocol_name, protocol_type,
+            protocol_type_accession,
+            protocol_type_source_ref,
+            protocol_description,
+            protocol_uri, protocol_version,
+            parameters_names,
+            parameters_names_term_accession,
+            parameters_names_term_source_ref,
+            components_names,
+            components_types,
+            components_types_term_accession,
+            components_types_term_source_ref, fillvalue=''):
+            if not all(x == '' for x in (
+                    n, t, t_acc, t_src, d, u, v, pn, pn_acc, pn_src, cn, ct,
+                    ct_acc, ct_src)):
+                t_ann = OntologyAnnotation(t, t_src, t_acc)
+                protocol = Protocol('', n, t_ann, u, d, v)
+                # parse Parameters
+                for n, a, s in zip_longest(pn.split(';'),
+                                           pn_acc.split(';'),
+                                           pn_src.split(';'),
+                                           fillvalue=''):
+                    if not all(x == '' for x in (n, a, s)):
+                        pn_ann = OntologyAnnotation(n, s, a)
+                        parameter = ProtocolParameter('', pn_ann)
+                        protocol.parameters.append(parameter)
+                # parse Components
+                for n, t, a, s in zip_longest(
+                        cn.split(';'),
+                        ct.split(';'),
+                        ct_acc.split(';'),
+                        ct_src.split(';'), fillvalue=''):
+                    if not all(x == '' for x in (n, t, a, s)):
+                        ct_ann = OntologyAnnotation(t, s, a)
+                        component = ProtocolComponent('', n, ct_ann)
+                        protocol.components.append(component)
+                study = self.isa.studies[-1]
+                study.protocols.append(protocol)
+        self._parse_horizontal_comments(
+            section, self.isa.studies[-1].protocols)
+
+    def _parse_publications_section(self, section_label, section):
+        investigation_or_study_prefix = \
+            'Investigation' if 'INVESTIGATION' in next(
+                iter(section_label)) else 'Study'
+        publication_prefix = 'Publication'
+        status_prefix = 'Status'
+        pubmed_id = section.get(' '.join(
+            [investigation_or_study_prefix, 'PubMed ID']), [])
+        doi = section.get(' '.join(
+            [investigation_or_study_prefix, publication_prefix,
+             'DOI']), [])
+        author_list = section.get(' '.join(
+            [investigation_or_study_prefix, publication_prefix,
+             'Author List']), [])
+        title = section.get(' '.join(
+            [investigation_or_study_prefix, publication_prefix,
+             'Title']), [])
+        status = section.get(' '.join(
+            [investigation_or_study_prefix, publication_prefix,
+             status_prefix]))
+        status_accession = section.get(' '.join(
+            [investigation_or_study_prefix, publication_prefix,
+             status_prefix, self._term_accession_postfix]))
+        status_term_source = section.get(' '.join(
+            [investigation_or_study_prefix, publication_prefix,
+             status_prefix, self._term_source_ref_postfix]))
+        for p, d, a, t, s, s_acc, s_src in zip_longest(
+                pubmed_id, doi, author_list, title, status,
+                status_accession, status_term_source, fillvalue=''):
+            if not all(x == '' for x in (p, d, a, t, s, s_acc, s_src)):
+                annotation = OntologyAnnotation(s, s_src, s_acc)
+                publication = Publication(p, d, a, t, annotation)
+                if next(iter(self.isa.studies), None) is None:
+                    self.isa.publications.append(publication)
+                else:
+                    study = self.isa.studies[-1]
+                    study.publications.append(publication)
+        if next(iter(self.isa.studies), None) is None:
+            self._parse_horizontal_comments(
+                section, self.isa.publications)
+        else:
+            self._parse_horizontal_comments(
+                section, self.isa.studies[-1].publications)
+
+    def _parse_contacts_section(self, section_label, section):
+        investigation_or_study_prefix = \
+            'Investigation' if 'INVESTIGATION' in next(
+                iter(section_label)) else 'Study'
+        person_prefix = 'Person'
+        roles_prefix = 'Roles'
+        last_name = section.get(' '.join(
+            [investigation_or_study_prefix, person_prefix,
+             'Last Name']), [])
+        first_name = section.get(' '.join(
+            [investigation_or_study_prefix, person_prefix,
+             'First Name']), [])
+        mid_initials = section.get(' '.join(
+            [investigation_or_study_prefix, person_prefix,
+             'Mid Initials']), [])
+        email = section.get(' '.join(
+            [investigation_or_study_prefix, person_prefix, 'Email']),
+            [])
+        phone = section.get(' '.join(
+            [investigation_or_study_prefix, person_prefix, 'Phone']),
+            [])
+        fax = section.get(' '.join(
+            [investigation_or_study_prefix, person_prefix, 'Fax']), [])
+        address = section.get(' '.join(
+            [investigation_or_study_prefix, person_prefix, 'Address']),
+            [])
+        affiliation = section.get(' '.join(
+            [investigation_or_study_prefix, person_prefix,
+             'Affiliation']), [])
+
+        roles = section.get(' '.join(
+            [investigation_or_study_prefix, person_prefix,
+             roles_prefix]), [])
+        roles_term_accession = section.get(' '.join(
+            [investigation_or_study_prefix, person_prefix,
+             roles_prefix, self._term_accession_postfix]), [])
+        roles_term_source_ref = section.get(' '.join(
+            [investigation_or_study_prefix, person_prefix,
+             roles_prefix, self._term_source_ref_postfix]), [])
+
+        for l, fn, m, e, p, fx, ad, af, rs, r_accs, r_srcs in \
+                zip_longest(last_name, first_name,
+                            mid_initials, email, phone, fax,
+                            address, affiliation, roles,
+                            roles_term_accession,
+                            roles_term_source_ref,
+                            fillvalue=''):
+            if not all(x == '' for x in (
+                    l, fn, m, e, p, fx, ad, af, rs, r_accs, r_srcs)):
+                roles_list = []
+                for r, r_acc, r_src in zip_longest(
+                        rs.split(';'), r_accs.split(';'),
+                        r_srcs.split(';'), fillvalue=''):
+                    if not all(x == '' for x in (r, r_acc, r_src)):
+                        r_ann = OntologyAnnotation(r, r_src, r_acc)
+                        roles_list.append(r_ann)
+                person = Person(l, fn, m, e, p, fx, ad, af, roles_list)
+                if next(iter(self.isa.studies), None) is None:
+                    self.isa.contacts.append(person)
+                else:
+                    study = self.isa.studies[-1]
+                    study.contacts.append(person)
+        if next(iter(self.isa.studies), None) is None:
+            self._parse_horizontal_comments(
+                section, self.isa.contacts)
+        else:
+            self._parse_horizontal_comments(
+                section, self.isa.studies[-1].contacts)
+
+    def _parse(self, filebuffer):
+        section_slices = self._split_investigation_table(filebuffer)
+        for section_slice in section_slices:
+            section_label = next(iter(section_slice))
+            section = self._section_to_dict(section_slice)
+            if 'ONTOLOGY SOURCE REFERENCE' in section_label:
+                self._parse_ontology_source_reference_section(section)
+            if 'INVESTIGATION' in section_label:
+                self._parse_investigation_section(section)
+            if 'STUDY' in section_label:
+                self._parse_study_section(section)
+            if 'STUDY DESIGN DESCRIPTORS' in section_label:
+                self._parse_study_design_descriptors_section(section)
+            if 'STUDY FACTORS' in section_label:
+                self._parse_study_factors_section(section)
+            if 'STUDY ASSAYS' in section_label:
+                self._parse_study_assays_section(section)
+            if 'STUDY PROTOCOLS' in section_label:
+                self._parse_study_protocols_section(section)
+            if any(x in section_label for x in (
+                    'INVESTIGATION PUBLICATIONS', 'STUDY PUBLICATIONS')):
+                self._parse_publications_section(section_label, section)
+            if any(x in section_label for x in (
+                    'INVESTIGATION CONTACTS', 'STUDY CONTACTS')):
+                self._parse_contacts_section(section_label, section)
+
+
+class StudySampleTableParser(AbstractParser):
+
+    def __init__(self, isa=None):
+        if isa is None:
+            raise IOError('You must provide an Investigation object output '
+                          'from the Investigation parser')
+        self.isa = isa
+        self.sources = None
+        self.samples = None
+
+    def _parse(self, filebuffer):
+        df = pd.read_csv(filebuffer, dtype=str, sep='\t', encoding='utf-8')\
+            .replace(np.nan, '')
+        sources = dict(
+            map(lambda x: ('Source Name.' + x, Source(name=x)),
+                [str(x) for x in df['Source Name'].drop_duplicates()
+                 if x != '']))
+        samples = dict(
+            map(lambda x: ('Sample Name.' + x, Sample(name=x)),
+                [str(x) for x in df['Sample Name'].drop_duplicates()
+                 if x != '']))
+        self.sources = sources.values()
+        self.samples = samples.values()
+
+
+class AssayTableParser(AbstractParser):
+
+    def __init__(self, isa=None):
+        if isa is None:
+            raise IOError('You must provide an Investigation object output '
+                          'from the Investigation parser')
+        self.isa = isa
+        self.samples = None
+        self.other_material = None
+        self.data_files = None
+
+        self.data_file_labels = ('Raw Data File', 'Derived Spectral Data File',
+                                 'Derived Array Data File', 'Array Data File',
+                                 'Protein Assignment File',
+                                 'Peptide Assignment File',
+                                 'Post Translational Modification Assignment File',
+                                 'Acquisition Parameter Data File',
+                                 'Free Induction Decay Data File',
+                                 'Derived Array Data Matrix File', 'Image File',
+                                 'Derived Data File',
+                                 'Metabolite Assignment File',
+                                 'Raw Spectral Data File')
+        self.material_labels = ('Source Name', 'Sample Name', 'Extract Name',
+                                'Labeled Extract Name')
+        self.other_material_labels = ('Extract Name', 'Labeled Extract Name')
+        self.assay_labels = ('Assay Name', 'MS Assay Name',
+                             'Hybridization Assay Name', 'Scan Name',
+                             'Data Transformation Name', 'Normalization Name')
+
+    def _parse(self, filebuffer):
+        df = pd.read_csv(filebuffer, dtype=str, sep='\t', encoding='utf-8')\
+            .replace(np.nan, '')
+        samples = dict(
+            map(lambda x: ('.'.join(['Sample Name', x]), Sample(name=x)),
+                [str(x) for x in df['Sample Name'].drop_duplicates()
+                 if x != '']))
+
+        data_files = dict()
+        for data_col in (x for x in df.columns if x in self.data_file_labels):
+            filenames = [x for x in df[data_col].drop_duplicates() if x != '']
+            data_files.update(
+                dict(map(
+                    lambda x: ('.'.join([data_col, x]),
+                               DataFile(filename=x, label=data_col)),
+                    filenames)))
+
+        other_material = dict()
+        for material_col in (x for x in df.columns if
+                             x in self.other_material_labels):
+            if material_col == 'Extract Name':
+                extracts = dict(
+                    map(lambda x: (
+                    '.'.join(['Extract Name', x]), Extract(name=x)),
+                        [str(x) for x in df['Extract Name'].drop_duplicates()
+                         if x != '']))
+                other_material.update(extracts)
+            elif material_col == 'Labeled Extract Name':
+                labeled_extracts = dict(
+                    map(lambda x: (
+                        '.'.join(['Labeled Extract Name', x]),
+                        LabeledExtract(name=x)),
+                        [str(x) for x in
+                         df['Labeled Extract Name'].drop_duplicates()
+                         if x != '']))
+                other_material.update(labeled_extracts)
+
+        self.samples = samples.values()
+        self.data_files = data_files.values()
+        self.other_material = other_material.values()
+
+
+class Parser(AbstractParser):
+
+    def __init__(self):
+        self.investigation_parser = InvestigationParser()
+
+    def _parse(self, filebuffer):
+        self.investigation_parser.parse(filebuffer)
+
+        for study in self.investigation_parser.isa.studies:
+            study_sample_table_parser = StudySampleTableParser(
+                self.investigation_parser.isa)
+            study_sample_table_parser.parse(
+                os.path.join(os.path.dirname(filebuffer.name), study.filename))
+            study.sources = study_sample_table_parser.sources
+            study.samples = study_sample_table_parser.samples
+            for assay in study.assays:
+                assay_table_parser = AssayTableParser(
+                    self.investigation_parser.isa)
+                assay_table_parser.parse(
+                    os.path.join(os.path.dirname(filebuffer.name),
+                                 assay.filename))
+                assay.samples = assay_table_parser.samples
+                assay.data_files = assay_table_parser.data_files
+                assay.other_material = assay_table_parser.other_material
+        self.isa = self.investigation_parser.isa
