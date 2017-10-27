@@ -4,15 +4,11 @@ from setuptools import setup
 
 setup(
     name='isatools',
-    version='0.9.2-lite',
+    version='0.9.3-lite',
     packages=['isatools',
-              'isatools.errors',
-              'isatools.tests'
+              'isatools.errors'
               ],
-    package_data={'isatools': [
-        'resources/schemas/isa_model_version_1_0_schemas/core/*.json',
-        'resources/config/xml/*.xml',
-        'resources/isatools.ini'],
+    package_data={'isatools': [],
         '': ['LICENSE.txt', 'README.md']},
     description='Metadata tracking tools help to manage an increasingly '
                 'diverse set of life science, environmental and biomedical '
@@ -21,20 +17,22 @@ setup(
     author_email='isatools@googlegroups.com',
     url='https://github.com/ISA-tools/isa-api',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
-        'Programming Language :: Python :: 2.7'
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6'
         ],
     install_requires=[
         'numpy',
         'jsonschema',
         'pandas',
         'networkx',
-        'chardet',
-        'iso8601',
+        'six'
     ],
     test_suite='tests'
 )

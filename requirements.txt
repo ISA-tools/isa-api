@@ -1,6 +1,3 @@
 numpy
 jsonschema
 pandas
-networkx
-iso8601
-chardet

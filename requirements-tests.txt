@@ -1,3 +1,7 @@
+numpy
+jsonschema
+pandas
+networkx
 coveralls
 tox
 pytest

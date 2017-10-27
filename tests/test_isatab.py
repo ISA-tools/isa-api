@@ -407,11 +407,13 @@ class StudySampleTableParserUnitTest(unittest.TestCase):
 
     def test_parse_sources(self):
         self.parser.parse(io.StringIO(self.study_sample_table))
-        self.assertListEqual(self.parser.sources, self.source_list)
+        self.assertListEqual(sorted(self.parser.sources, key=lambda x: repr(x)),
+                             sorted(self.source_list, key=lambda x: repr(x)))
 
     def test_parse_samples(self):
         self.parser.parse(io.StringIO(self.study_sample_table))
-        self.assertListEqual(self.parser.samples, self.sample_list)
+        self.assertListEqual(sorted(self.parser.samples, key=lambda x: repr(x)),
+                             sorted(self.sample_list, key=lambda x: repr(x)))
 
 
 class StudySampleTableParserIntegrationTest(unittest.TestCase):
@@ -501,16 +503,20 @@ class AssayTableParserUnitTest(unittest.TestCase):
 
     def test_parse_samples(self):
         self.parser.parse(io.StringIO(self.assay_table))
-        self.assertListEqual(self.parser.samples, self.sample_list)
+        self.assertListEqual(sorted(self.parser.samples, key=lambda x: repr(x)),
+                             sorted(self.sample_list, key=lambda x: repr(x)))
 
     def test_parse_data_files(self):
         self.parser.parse(io.StringIO(self.assay_table))
-        self.assertListEqual(self.parser.data_files, self.data_file_list)
+        self.assertListEqual(
+            sorted(self.parser.data_files, key=lambda x: repr(x)),
+            sorted(self.data_file_list, key=lambda x: repr(x)))
 
     def test_parse_other_material(self):
         self.parser.parse(io.StringIO(self.assay_table))
-        self.assertListEqual(self.parser.other_material,
-                             self.other_material_list)
+        self.assertListEqual(
+            sorted(self.parser.other_material, key=lambda x: repr(x)),
+            sorted(self.other_material_list, key=lambda x: repr(x)))
 
 
 class AssayTableParserIntegrationTest(unittest.TestCase):
@@ -524,7 +530,7 @@ class AssayTableParserIntegrationTest(unittest.TestCase):
 
     def test_isatab_parse_assay_table_bii_s_1_metabolome(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
-                               'i_investigation.txt')) as fp:
+                                  'i_investigation.txt')) as fp:
             investigation_parser = isatab.InvestigationParser()
             investigation_parser.parse(fp)
 
@@ -535,6 +541,13 @@ class AssayTableParserIntegrationTest(unittest.TestCase):
             self.assertEqual(len(self.parser.samples), 92)
             self.assertEqual(len(self.parser.data_files), 111)
             self.assertEqual(len(self.parser.other_material), 92)
+            # isatab.make_donut(
+            #     [len(self.parser.samples), len(self.parser.data_files),
+            #      len(self.parser.other_material)], 'a_metabolome.txt',
+            #     ['tab:blue', 'tab:orange', 'tab:green'],
+            #     ['{} sources'.format(len(self.parser.samples)),
+            #      '{} data_files'.format(len(self.parser.data_files)),
+            #      '{} other_material'.format(len(self.parser.other_material))])
 
     def test_isatab_parse_bii_s_1_microarray(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',

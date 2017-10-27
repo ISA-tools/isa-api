@@ -11,17 +11,18 @@ import os
 import re
 from json import JSONEncoder
 from jsonschema import *
+from six import string_types
 
 from isatools import config
 from isatools.model import *
 
 __author__ = 'djcomlab@gmail.com (David Johnson)'
 
-logging.basicConfig(level=config.log_level)
+logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
-errors = list()
-warnings = list()
+errors = []
+warnings = []
 
 # REGEXES
 _RX_DOI = re.compile("(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%'#? ])\\S)+)")
@@ -1242,74 +1243,6 @@ def check_measurement_technology_types(assay_json, configs):
                   .format(measurement_type, technology_type))
 
 
-def check_study_and_assay_graphs(study_json, configs):
-
-    def check_assay_graph(process_sequence_json, config):
-        list_of_last_processes_in_sequence = [i for i in process_sequence_json if "nextProcess" not in i.keys()]
-        log.info("Checking against assay protocol sequence configuration {}".format(config["description"]))
-        config_protocol_sequence = [i["protocol"] for i in config["protocols"]]
-        for process in list_of_last_processes_in_sequence:  # build graphs backwards
-            assay_graph = list()
-            try:
-                while True:
-                    process_graph = list()
-                    if "outputs" in process.keys():
-                        outputs = process["outputs"]
-                        if len(outputs) > 0:
-                            for output in outputs:
-                                output_id = output["@id"]
-                                process_graph.append(output_id)
-                    protocol_id = protocols_and_types[process["executesProtocol"]["@id"]]
-                    process_graph.append(protocol_id)
-                    if "inputs" in process.keys():
-                        inputs = process["inputs"]
-                        if len(inputs) > 0:
-                            for input_ in inputs:
-                                input_id = input_["@id"]
-                                process_graph.append(input_id)
-                    process_graph.reverse()
-                    assay_graph.append(process_graph)
-                    process = [i for i in process_sequence_json if i["@id"] == process["previousProcess"]["@id"]][0]
-                    if process['@id'] == process["previousProcess"]["@id"]:
-                        log.fatal("Previous process is same as current process, which forms a loop!!!!! Cannot find start node!!!!!!!")
-                        break
-            except KeyError:  # this happens when we can"t find a previousProcess
-                pass
-            assay_graph.reverse()
-            assay_protocol_sequence = [[j for j in i if not j.startswith("#")] for i in assay_graph]
-            assay_protocol_sequence = [i for j in assay_protocol_sequence for i in j]  # flatten list
-            assay_protocol_sequence_of_interest = [i for i in assay_protocol_sequence if i in config_protocol_sequence]
-            #  filter out protocols in sequence that are not of interest (additional ones to required by config)
-            squished_assay_protocol_sequence_of_interest = list()
-            prev_prot = None
-            for prot in assay_protocol_sequence_of_interest:  # remove consecutive same protocols
-                if prev_prot != prot:
-                    squished_assay_protocol_sequence_of_interest.append(prot)
-                prev_prot = prot
-            from isatools.utils import contains
-            if not contains(squished_assay_protocol_sequence_of_interest, config_protocol_sequence):
-                warnings.append({
-                    "message": "Process sequence is not valid against configuration",
-                    "supplemental": "Config protocol sequence {} does not in assay protocol sequence {}".format(config_protocol_sequence,
-                                                                                                                squished_assay_protocol_sequence_of_interest),
-                    "code": 4004
-                })
-                log.warning("Configuration protocol sequence {} does not match study graph found in {}"
-                            .format(config_protocol_sequence, assay_protocol_sequence))
-
-    protocols_and_types = dict([(i["@id"], i["protocolType"]["annotationValue"]) for i in study_json["protocols"]])
-    # first check study graph
-    log.info("Loading configuration (study)")
-    config = configs["study"]
-    check_assay_graph(study_json["processSequence"], config)
-    for assay_json in study_json["assays"]:
-        m = assay_json["measurementType"]["annotationValue"]
-        t = assay_json["technologyType"]["annotationValue"]
-        log.info("Loading configuration ({}, {})".format(m, t))
-        config = configs[(m, t)]
-        check_assay_graph(assay_json["processSequence"], config)
-
-
 BASE_DIR = os.path.dirname(__file__)
 default_config_dir = os.path.join(BASE_DIR, "resources", "config", "json", "default")
 
@@ -1401,9 +1334,6 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level,
             log.fatal("(F) There are some errors that mean validation against configurations cannot proceed.")
             return stream
         fp.seek(0)  # reset file pointer
-        log.info("Checking study and assay graphs...")
-        for study_json in isa_json["studies"]:
-            check_study_and_assay_graphs(study_json, configs)  # Rule 4004
         log.info("Finished validation...")
     except KeyError as k:
         errors.append({
@@ -1599,7 +1529,7 @@ class ISAJSONEncoder(JSONEncoder):
         def get_value(o):
             if isinstance(o, OntologyAnnotation):
                 return get_ontology_annotation(o)
-            elif isinstance(o, ((str, unicode), int, float)):
+            elif isinstance(o, (string_types, int, float)):
                 return o
             else:
                 raise ValueError("Unexpected value type found: %s", type(o))
