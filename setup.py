@@ -30,6 +30,7 @@ setup(
     install_requires=[
         'numpy',
         'pandas',
+        'networkx',
         'six'
     ],
     test_suite='tests'
