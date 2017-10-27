@@ -29,9 +29,7 @@ setup(
         ],
     install_requires=[
         'numpy',
-        'jsonschema',
         'pandas',
-        'networkx',
         'six'
     ],
     test_suite='tests'

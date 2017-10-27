@@ -1,7 +1,6 @@
 numpy
-jsonschema
 pandas
-networkx
+six
 coveralls
 tox
 pytest
