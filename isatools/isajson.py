@@ -13,7 +13,6 @@ from json import JSONEncoder
 from jsonschema import *
 from six import string_types
 
-from isatools import config
 from isatools.model import *
 
 __author__ = 'djcomlab@gmail.com (David Johnson)'
@@ -1247,7 +1246,7 @@ BASE_DIR = os.path.dirname(__file__)
 default_config_dir = os.path.join(BASE_DIR, "resources", "config", "json", "default")
 
 
-def validate(fp, config_dir=default_config_dir, log_level=config.log_level,
+def validate(fp, config_dir=default_config_dir, log_level=logging.DEBUG,
              base_schemas_dir="isa_model_version_1_0_schemas"):
     if config_dir is None:
         config_dir = default_config_dir
