@@ -97,7 +97,7 @@ class InvestigationParser(AbstractParser):
             d[label] = r[1:]
         return d
 
-    def _split_investigation_table(self, f):
+    def _split_investigation_table(self, filebuffer):
         section_keywords = (
             'ONTOLOGY SOURCE REFERENCE', 'INVESTIGATION',
             'INVESTIGATION PUBLICATIONS', 'INVESTIGATION CONTACTS', 'STUDY',
@@ -105,23 +105,23 @@ class InvestigationParser(AbstractParser):
             'STUDY ASSAYS', 'STUDY PROTOCOLS', 'STUDY CONTACTS')
         section_slices = []
         section_delimiters = []
-        tabreader = csv.reader(
-            filter(lambda r: next(iter(r)) != '#', f), delimiter='\t')
+        tabreader = csv.reader(filebuffer, delimiter='\t')
         for sec_index, row in enumerate(tabreader):
             label = next(iter(row), None)
-            if label is not None and label in section_keywords:
-                section_delimiters.append(sec_index)
-        f.seek(0)
+            if label is not None and not label.strip().startswith('#'):
+                if label in section_keywords:
+                    section_delimiters.append(sec_index)
+        filebuffer.seek(0)
         for this_sec_index, next_sec_index in self._pairwise(
                 section_delimiters):
             section_slice = []
-            sec_f = itertools.islice(f, this_sec_index, next_sec_index)
+            sec_f = itertools.islice(filebuffer, this_sec_index, next_sec_index)
             secreader = csv.reader(sec_f, delimiter='\t')
             for row in secreader:
                 section_slice.append(row)
-            f.seek(0)
+            filebuffer.seek(0)
             section_slices.append(section_slice)
-        sec_f = itertools.islice(f, section_delimiters[-1], None)
+        sec_f = itertools.islice(filebuffer, section_delimiters[-1], None)
         section_slice = []
         secreader = csv.reader(sec_f, delimiter='\t')
         for row in secreader:
@@ -182,7 +182,7 @@ class InvestigationParser(AbstractParser):
             ' '.join([self._investigation_prefix, 'Public Release Date']), [])
         i, t, d, s, p = next(zip_longest(
             identifier, title, description, submission_date,
-            public_release_date, fillvalue=''))
+            public_release_date, fillvalue=''), ('', '', '', '', ''))
         self.isa.identifier = i
         self.isa.title = t
         self.isa.description = d
@@ -529,8 +529,8 @@ class StudySampleTableParser(AbstractParser):
         self.samples = None
 
     def _parse(self, filebuffer):
-        df = pd.read_csv(filebuffer, dtype=str, sep='\t', encoding='utf-8')\
-            .replace(np.nan, '')
+        df = pd.read_csv(filebuffer, dtype=str, sep='\t', encoding='utf-8',
+                         comment='#').replace(np.nan, '')
         sources = dict(
             map(lambda x: ('Source Name.' + x, Source(name=x)),
                 [str(x) for x in df['Source Name'].drop_duplicates()
@@ -573,8 +573,8 @@ class AssayTableParser(AbstractParser):
                              'Data Transformation Name', 'Normalization Name')
 
     def _parse(self, filebuffer):
-        df = pd.read_csv(filebuffer, dtype=str, sep='\t', encoding='utf-8')\
-            .replace(np.nan, '')
+        df = pd.read_csv(filebuffer, dtype=str, sep='\t', encoding='utf-8',
+                         comment='#').replace(np.nan, '')
         samples = dict(
             map(lambda x: ('.'.join(['Sample Name', x]), Sample(name=x)),
                 [str(x) for x in df['Sample Name'].drop_duplicates()
@@ -772,8 +772,7 @@ class InvestigationValidator(AbstractValidator):
             'Study Person Roles Term Accession Number',
             'Study Person Roles Term Source REF'
         )
-        tabreader = csv.reader(
-            filter(lambda r: next(iter(r)) != '#', filebuffer), delimiter='\t')
+        tabreader = csv.reader(filebuffer, delimiter='\t')
         for sec_index, row in enumerate(tabreader):
             label = next(iter(row), None)
             if label is None:
@@ -806,9 +805,7 @@ class StudySampleTableValidator(AbstractValidator):
                 {
                     'row-number': 0,
                     'message': 'The file has no header',
-                    'row': next(csv.reader(
-                        filter(lambda r: next(iter(r)) != '#', filebuffer),
-                        delimiter='\t')),
+                    'row': next(csv.reader(filebuffer, delimiter='\t')),
                     'column-number': None,
                     'code': 'empty-header'
                 }
@@ -824,8 +821,7 @@ class StudySampleTableValidator(AbstractValidator):
             'Term Source REF',
             'Unit'
         )
-        tabreader = csv.reader(
-            filter(lambda r: next(iter(r)) != '#', filebuffer), delimiter='\t')
+        tabreader = csv.reader(filebuffer, delimiter='\t')
         labels = next(tabreader)
         for col_index, label in enumerate(labels):
             if label not in study_sample_heading_labels + other_heading_labels \

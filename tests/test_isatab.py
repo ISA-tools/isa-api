@@ -32,6 +32,16 @@ class InvestigationParserUnitTests(unittest.TestCase):
                                submission_date='2017-10-24',
                                public_release_date='2017-10-25')
 
+        self.investigation_section_with_comment_lines = \
+            u'# This line is a comment\n' \
+            u'INVESTIGATION\n' \
+            u'Investigation Identifier\t"ID"\n' \
+            u'Investigation Title\t"T"\n' \
+            u'# This line is another comment\n' \
+            u'Investigation Description\t"D"\n' \
+            u'Investigation Submission Date\t"2017-10-24"\n' \
+            u'Investigation Public Release Date\t"2017-10-25"'
+
         self.investigation_publications_section = \
             u'INVESTIGATION PUBLICATIONS\n' \
             u'Investigation PubMed ID\t"0"\t"1"\n' \
@@ -271,6 +281,11 @@ class InvestigationParserUnitTests(unittest.TestCase):
                     component_type=OntologyAnnotation('ct1b', 'ct1b_src',
                                                       'ct1b_acc'))
             ])
+
+    def test_parse_and_ignore_comment_lines(self):
+        self.parser.parse(
+            io.StringIO(self.investigation_section_with_comment_lines))
+        self.assertEqual(self.i, self.parser.isa)
         
     def test_parse_ontology_source_reference(self):
         self.parser.parse(io.StringIO(self.ontology_source_ref_section))
