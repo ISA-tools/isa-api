@@ -556,13 +556,6 @@ class AssayTableParserIntegrationTest(unittest.TestCase):
             self.assertEqual(len(self.parser.samples), 92)
             self.assertEqual(len(self.parser.data_files), 111)
             self.assertEqual(len(self.parser.other_material), 92)
-            # isatab.make_donut(
-            #     [len(self.parser.samples), len(self.parser.data_files),
-            #      len(self.parser.other_material)], 'a_metabolome.txt',
-            #     ['tab:blue', 'tab:orange', 'tab:green'],
-            #     ['{} sources'.format(len(self.parser.samples)),
-            #      '{} data_files'.format(len(self.parser.data_files)),
-            #      '{} other_material'.format(len(self.parser.other_material))])
 
     def test_isatab_parse_bii_s_1_microarray(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
