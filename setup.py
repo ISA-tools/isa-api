@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='isatools',
-    version='0.9.3-lite_test',
+    version='0.9.3-lite',
     packages=['isatools',
               'isatools.errors'
               ],
@@ -31,7 +31,8 @@ setup(
         'numpy',
         'pandas',
         'networkx',
-        'six'
+        'six',
+        'matplotlib'
     ],
     test_suite='tests'
 )

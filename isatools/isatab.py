@@ -9,6 +9,7 @@ Don't forget to read the ISA-Tab spec:
 http://isa-specs.readthedocs.io/en/latest/isatab.html
 """
 from __future__ import absolute_import
+from bisect import bisect_left, bisect_right
 import csv
 import itertools
 import logging
@@ -527,21 +528,100 @@ class StudySampleTableParser(AbstractParser):
         self.isa = isa
         self.sources = None
         self.samples = None
+        self.materials_map = dict()
+        self.process_map = dict()
 
     def _parse(self, filebuffer):
         df = pd.read_csv(filebuffer, dtype=str, sep='\t', encoding='utf-8',
                          comment='#').replace(np.nan, '')
         sources = dict(
-            map(lambda x: ('Source Name.' + x, Source(name=x)),
+            map(lambda x: ('.'.join(['Source Name', x]), Source(name=x)),
                 [str(x) for x in df['Source Name'].drop_duplicates()
                  if x != '']))
         samples_series = pd.concat(map(lambda x: df[x].dropna(),
                                     (x for x in df.columns if
                                      x.startswith('Sample Name'))))
         samples = dict(
-            map(lambda x: ('Sample Name.' + x, Sample(name=x)), samples_series))
+            map(lambda x: ('.'.join(['Sample Name', x]), Sample(name=x)),
+                samples_series))
         self.sources = list(sources.values())
+        self.materials_map.update(sources)
         self.samples = list(samples.values())
+        self.materials_map.update(samples)
+        self._make_process_sequence(df)
+
+    @staticmethod
+    def _find_lt(a, x):
+        i = bisect_left(a, x)
+        if i:
+            return a[i - 1]
+        else:
+            return -1
+
+    @staticmethod
+    def _find_gt(a, x):
+        i = bisect_right(a, x)
+        if i != len(a):
+            return a[i]
+        else:
+            return -1
+
+    @staticmethod
+    def _clean_label(label):
+        if label.startswith('Source Name'):
+            return 'Source Name'
+        elif label.startswith('Sample Name'):
+            return 'Sample Name'
+
+    def _make_process_sequence(self, df):
+        object_labels = ('Source Name', 'Sample Name', 'Protocol REF')
+        assay_name_labels = (
+            'Assay Name', 'MS Assay Name', 'Hybridization Assay Name',
+            'Scan Name', 'Data Transformation Name', 'Normalization Name')
+        df = df[[x for x in df.columns if
+                 x.startswith(object_labels + assay_name_labels)]]
+        process_key_sequences = []
+        for rindex, row in df.iterrows():
+            process_key_sequence = []
+            labels = df.columns
+            nodes_index = [i for i, x in enumerate(labels) if
+                           x in ('Source Name', 'Sample Name')]
+            for cindex, label in enumerate(labels):
+                val = row[label]
+                if label.startswith('Protocol REF') and val != '':
+                    output_node_index = self._find_gt(nodes_index, cindex)
+                    if output_node_index > -1:
+                        output_node_label = labels[output_node_index]
+                        output_node_val = row[output_node_label]
+                    input_node_index = self._find_lt(nodes_index, cindex)
+                    if input_node_index > -1:
+                        input_node_label = labels[input_node_index]
+                        input_node_val = row[input_node_label]
+                    input_nodes_with_prot_keys = df.loc[
+                        df[labels[cindex]] == val].groupby(
+                        [labels[cindex], labels[input_node_index]]).size()
+                    output_nodes_with_prot_keys = df.loc[
+                        df[labels[cindex]] == val].groupby(
+                        [labels[cindex], labels[output_node_index]]).size()
+                    if len(input_nodes_with_prot_keys) > len(
+                            output_nodes_with_prot_keys):
+                        process_key = '.'.join([val, output_node_val.strip()])
+                    elif len(input_nodes_with_prot_keys) < len(
+                            output_nodes_with_prot_keys):
+                        process_key = '.'.join([input_node_val.strip(), val])
+                    else:
+                        process_key = '.'.join([input_node_val.strip(), val,
+                                                output_node_val.strip()])
+                    if process_key not in self.process_map.keys():
+                        process = Process(id_=process_key)
+                        self.process_map[process_key] = process
+                    process_key_sequence.append(process_key)
+                elif label.startswith(('Source Name', 'Sample Name')):
+                    process_key_sequence.append(
+                        '.'.join([self._clean_label(label), val]))
+            process_key_sequences.append(process_key_sequence)
+        for process_key_sequence in process_key_sequences:
+            print(process_key_sequence)
 
 
 class AssayTableParser(AbstractParser):
@@ -555,17 +635,14 @@ class AssayTableParser(AbstractParser):
         self.other_material = None
         self.data_files = None
 
-        self.data_file_labels = ('Raw Data File', 'Derived Spectral Data File',
-                                 'Derived Array Data File', 'Array Data File',
-                                 'Protein Assignment File',
-                                 'Peptide Assignment File',
-                                 'Post Translational Modification Assignment File',
-                                 'Acquisition Parameter Data File',
-                                 'Free Induction Decay Data File',
-                                 'Derived Array Data Matrix File', 'Image File',
-                                 'Derived Data File',
-                                 'Metabolite Assignment File',
-                                 'Raw Spectral Data File')
+        self.data_file_labels = (
+            'Raw Data File', 'Derived Spectral Data File',
+            'Derived Array Data File', 'Array Data File',
+            'Protein Assignment File', 'Peptide Assignment File',
+            'Post Translational Modification Assignment File',
+            'Acquisition Parameter Data File', 'Free Induction Decay Data File',
+            'Derived Array Data Matrix File', 'Image File', 'Derived Data File',
+            'Metabolite Assignment File', 'Raw Spectral Data File')
         self.material_labels = ('Source Name', 'Sample Name', 'Extract Name',
                                 'Labeled Extract Name')
         self.other_material_labels = ('Extract Name', 'Labeled Extract Name')
@@ -596,7 +673,7 @@ class AssayTableParser(AbstractParser):
             if material_col == 'Extract Name':
                 extracts = dict(
                     map(lambda x: (
-                    '.'.join(['Extract Name', x]), Extract(name=x)),
+                        '.'.join(['Extract Name', x]), Extract(name=x)),
                         [str(x) for x in df['Extract Name'].drop_duplicates()
                          if x != '']))
                 other_material.update(extracts)
