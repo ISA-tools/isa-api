@@ -270,7 +270,8 @@ class InvestigationParserUnitTests(unittest.TestCase):
                                                       'ct2_acc'))
             ])
         self.study_protocol1b = Protocol(
-            '', 'p1b', OntologyAnnotation('pt1b', 'pt1b_src', 'pt1b_acc'), 'u1b',
+            '', 'p1b', OntologyAnnotation('pt1b', 'pt1b_src', 'pt1b_acc'),
+            'u1b',
             'd1b', 'v1b', [
                 ProtocolParameter(
                     parameter_name=OntologyAnnotation('ppn1b', 'ppn1b_src',
@@ -427,7 +428,8 @@ class StudySampleTableParserUnitTest(unittest.TestCase):
 
         self.source_list = [Source(name='source1'), Source(name='source2')]
         self.sample_list = [Sample(name='sample1'), Sample(name='sample2')]
-        self.sample_list_with_numbers_as_ids = [Sample(name='1'), Sample(name='2')]
+        self.sample_list_with_numbers_as_ids = [Sample(name='1'),
+                                                Sample(name='2')]
 
     def test_parse_sources(self):
         self.parser.parse(io.StringIO(self.study_sample_table))
