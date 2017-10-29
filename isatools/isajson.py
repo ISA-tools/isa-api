@@ -4,11 +4,11 @@ Don't forget to read the ISA-JSON spec:
 http://isa-specs.readthedocs.io/en/latest/isajson.html
 """
 from __future__ import absolute_import
+
 import json
 import logging
 import re
 from json import JSONEncoder
-from six import string_types
 
 from isatools.model import *
 

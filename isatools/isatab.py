@@ -535,10 +535,11 @@ class StudySampleTableParser(AbstractParser):
             map(lambda x: ('Source Name.' + x, Source(name=x)),
                 [str(x) for x in df['Source Name'].drop_duplicates()
                  if x != '']))
+        samples_series = pd.concat(map(lambda x: df[x].dropna(),
+                                    (x for x in df.columns if
+                                     x.startswith('Sample Name'))))
         samples = dict(
-            map(lambda x: ('Sample Name.' + x, Sample(name=x)),
-                [str(x) for x in df['Sample Name'].drop_duplicates()
-                 if x != '']))
+            map(lambda x: ('Sample Name.' + x, Sample(name=x)), samples_series))
         self.sources = list(sources.values())
         self.samples = list(samples.values())
 

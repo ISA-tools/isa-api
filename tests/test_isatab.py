@@ -417,8 +417,17 @@ class StudySampleTableParserUnitTest(unittest.TestCase):
             u'source1\tsample1\n' \
             u'source2\tsample2'
 
+        self.study_sample_table_with_two_sample_names_columns = \
+            u'Source Name\tSample Name\tSample Name\n' \
+            u'source1\tsample1\tsample2\n'
+
+        self.study_sample_table_with_numbers_as_ids = \
+            u'Source Name\tSample Name\tSample Name\n' \
+            u'source1\t1\t2\n'
+
         self.source_list = [Source(name='source1'), Source(name='source2')]
         self.sample_list = [Sample(name='sample1'), Sample(name='sample2')]
+        self.sample_list_with_numbers_as_ids = [Sample(name='1'), Sample(name='2')]
 
     def test_parse_sources(self):
         self.parser.parse(io.StringIO(self.study_sample_table))
@@ -429,6 +438,19 @@ class StudySampleTableParserUnitTest(unittest.TestCase):
         self.parser.parse(io.StringIO(self.study_sample_table))
         self.assertListEqual(sorted(self.parser.samples, key=lambda x: repr(x)),
                              sorted(self.sample_list, key=lambda x: repr(x)))
+
+    def test_parse_samples_with_two_sample_names_columns(self):
+        self.parser.parse(
+            io.StringIO(self.study_sample_table_with_two_sample_names_columns))
+        self.assertListEqual(sorted(self.parser.samples, key=lambda x: repr(x)),
+                             sorted(self.sample_list, key=lambda x: repr(x)))
+
+    def test_parse_samples_with_with_numbers_as_ids(self):
+        self.parser.parse(
+            io.StringIO(self.study_sample_table_with_numbers_as_ids))
+        self.assertListEqual(sorted(self.parser.samples, key=lambda x: repr(x)),
+                             sorted(self.sample_list_with_numbers_as_ids,
+                                    key=lambda x: repr(x)))
 
 
 class StudySampleTableParserIntegrationTest(unittest.TestCase):
