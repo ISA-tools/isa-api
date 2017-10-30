@@ -8,12 +8,14 @@
             "type": "array",
             "items": {
                 "type": "object",
-                    "properties": {
-                        "treatment": {
-                            "$ref": "treatment_schema.json#"
-                        },
-                        "rank": "integer"
+                "properties": {
+                    "treatment": {
+                        "$ref": "treatment_schema.json#"
+                    },
+                    "rank": {
+                        "type": "integer"
                     }
+                }
             }
         }
     }

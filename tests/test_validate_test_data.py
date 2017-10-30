@@ -98,7 +98,7 @@ class TestIsaJsonTestData(unittest.TestCase):
 class TestIsaTabTestData(unittest.TestCase):
 
     def setUp(self):
-        self._reporting_level = logging.ERROR
+        self._reporting_level = logging.INFO
 
     def test_validate_testdata_bii_i_1_isatab(self):
         test_case = 'BII-I-1'
@@ -334,16 +334,16 @@ class TestIsaJsonCreateTestData(unittest.TestCase):
                                         resolver=resolver)
             validator.validate(json.load(test_case_fp))
 
-    # def test_validate_testdata_treatment_sequence_json(self):
-    #     with open(os.path.join(utils.JSON_DATA_DIR, 'create',
-    #                            'treatment_sequence_test.json')) as test_case_fp:
-    #         with open(os.path.join(self.v2_create_schemas_path,
-    #                                'treatment_sequence_schema.json')) as fp:
-    #             treatment_sequence_schema = json.load(fp)
-    #         resolver = RefResolver('file://{}'.format(
-    #             os.path.join(self.v2_create_schemas_path,
-    #                          'treatment_sequence_schema.json')),
-    #                                treatment_sequence_schema)
-    #         validator = Draft4Validator(treatment_sequence_schema,
-    #                                     resolver=resolver)
-    #         validator.validate(json.load(test_case_fp))
+    def test_validate_testdata_treatment_sequence_json(self):
+        with open(os.path.join(utils.JSON_DATA_DIR, 'create',
+                               'treatment_sequence_test.json')) as test_case_fp:
+            with open(os.path.join(self.v2_create_schemas_path,
+                                   'treatment_sequence_schema.json')) as fp:
+                treatment_sequence_schema = json.load(fp)
+            resolver = RefResolver('file://{}'.format(
+                os.path.join(self.v2_create_schemas_path,
+                             'treatment_sequence_schema.json')),
+                                   treatment_sequence_schema)
+            validator = Draft4Validator(treatment_sequence_schema,
+                                        resolver=resolver)
+            validator.validate(json.load(test_case_fp))
