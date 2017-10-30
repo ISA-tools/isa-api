@@ -4,7 +4,7 @@
     "description": "JSON-schema representing a ranked treatment sequence (treatment plan) in the ISA model v2.0",
     "type": "object",
     "properties": {
-        "ranked_treatments": {
+        "rankedTreatments": {
             "type": "array",
             "items": {
                 "type": "object",

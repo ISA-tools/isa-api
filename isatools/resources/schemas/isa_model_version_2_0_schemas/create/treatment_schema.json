@@ -4,7 +4,7 @@
     "description": "JSON-schema representing a treatment in the ISA model v2.0",
     "type": "object",
     "properties": {
-        "treatment_type" : {
+        "treatmentType" : {
             "enum": [ 
                 "chemical intervention", 
                 "behavioural intervention", 
@@ -12,7 +12,7 @@
                 "biological intervention",
                 "radiological intervention"]
         },
-        "factor_values" : {
+        "factorValues" : {
             "type" : "array",
             "items" :  {
                 "$ref": "factor_value_schema.json#"
