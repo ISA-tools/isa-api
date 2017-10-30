@@ -108,6 +108,38 @@ class TestIsaTabTestData(unittest.TestCase):
             if len(report['errors']) > 0:
                 self.fail("Error found when validating ISA tab: {}".format(report['errors']))
 
+    def test_info_reporting_bii_i_1_isatab(self):
+        test_case = 'BII-I-1'
+        with open(os.path.join(utils.TAB_DATA_DIR, test_case,
+                               'i_investigation.txt')) as test_case_fp:
+            report = isatab.validate(
+                fp=test_case_fp,
+                config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
+                log_level=self._reporting_level)
+            self.assertIn(
+                {'message': 'Found 18 study groups in s_BII-S-1.txt',
+                 'supplemental': 'Found 18 study groups in s_BII-S-1.txt',
+                 'code': 5001}, report['info'])
+            self.assertIn(
+                {'message': 'Found 9 study groups in a_proteome.txt',
+                 'code': 5001,
+                 'supplemental': 'Found 9 study groups in a_proteome.txt'},
+                report['info'])
+            self.assertIn({
+                'message': 'Found 17 study groups in a_metabolome.txt',
+                'code': 5001,
+                'supplemental': 'Found 17 study groups in a_metabolome.txt'},
+                report['info'])
+            self.assertIn({
+                'message': 'Found 12 study groups in a_transcriptome.txt',
+                'code': 5001,
+                'supplemental': 'Found 12 study groups in a_transcriptome.txt'},
+                report['info'])
+            self.assertIn({'message': 'Found 7 study groups in a_microarray.txt',
+                'code': 5001,
+                'supplemental': 'Found 7 study groups in a_microarray.txt'},
+                report['info'])
+
     def test_validate_testdata_bii_s_3_isatab(self):
         test_case = 'BII-S-3'
         with open(os.path.join(utils.TAB_DATA_DIR, test_case, 'i_gilbert.txt')) as test_case_fp:

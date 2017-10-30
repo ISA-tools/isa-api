@@ -164,7 +164,7 @@ class TransposedTabParser(object):
 
 errors = []
 warnings = []
-
+info = []
 
 # REGEXES
 _RX_I_FILE_NAME = re.compile('i_(.*?)\.txt')
@@ -2608,11 +2608,27 @@ BASE_DIR = os.path.dirname(__file__)
 default_config_dir = os.path.join(BASE_DIR, 'resources', 'config', 'xml')
 
 
+def check_study_groups(table, filename):
+    factor_columns = [x for x in table.columns if x.startswith('Factor Value')]
+    if factor_columns != []:
+        num_study_groups = len(table[factor_columns].drop_duplicates())
+        log.info("Found {} study groups in {}".format(num_study_groups, filename))
+        info.append({
+            "message": "Found {} study groups in {}".format(num_study_groups, filename),
+            "supplemental": "Found {} study groups in {}".format(num_study_groups, filename),
+            "code": 5001
+        })
+    else:
+        log.info("No study factors found in {}".format(filename))
+
+
 def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
     global errors
     global warnings
+    global info
     errors = list()
     warnings = list()
+    info = list()
     log.setLevel(log_level)
     log.info("ISA tab Validator from ISA tools API v0.6")
     from io import StringIO
@@ -2624,6 +2640,8 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
         # check_utf8(fp)  # skip as does not correctly report right now
         log.info("Loading... {}".format(fp.name))
         i_df = load_investigation(fp=fp)
+        if 'Comment[Number of Study Groups]' in i_df['i_publications'].columns:
+            print(i_df['i_publications']['Comment[Number of Study Groups]'])
         log.info("Running prechecks...")
         check_filenames_present(i_df)  # Rule 3005
         check_table_files_read(i_df, os.path.dirname(fp.name))  # Rules 0006 and 0008
@@ -2685,6 +2703,8 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
                         if not check_ontology_fields(study_sample_table, config):  # Rule 3010
                             log.warning("(W) There are some ontology annotation inconsistencies in {} against {} "
                                         "configuration".format(study_sample_table.filename, 'Study Sample'))
+                        log.info("Checking study group size...")
+                        check_study_groups(study_sample_table, study_filename)
                         log.info("Finished validation on {}".format(study_filename))
                 except FileNotFoundError:
                     pass
@@ -2735,6 +2755,8 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
                                     if not check_ontology_fields(assay_table, config):  # Rule 3010
                                         log.warning("(W) There are some ontology annotation inconsistencies in {} against {} "
                                                     "configuration".format(assay_table.filename, (measurement_type, technology_type)))
+                                    log.info("Checking study group size...")
+                                    check_study_groups(assay_table, assay_filename)
                                     log.info("Finished validation on {}".format(assay_filename))
                             except FileNotFoundError:
                                 pass
@@ -2790,6 +2812,7 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
         return {
             "errors": errors,
             "warnings": warnings,
+            "info": info,
             "validation_finished": validation_finished
         }
 
