@@ -22,6 +22,8 @@ from six.moves import zip_longest, zip
 
 from isatools.model import *
 
+__author__ = 'djcomlab@gmail.com (David Johnson)'
+
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 

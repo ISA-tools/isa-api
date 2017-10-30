@@ -2,6 +2,7 @@ numpy
 pandas
 networkx
 six
+matplotlib
 coveralls
 tox
 pytest
