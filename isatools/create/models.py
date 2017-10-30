@@ -1941,7 +1941,7 @@ class TreatmentSequenceEncoder(json.JSONEncoder):
             "annotationValue": ontology_annotation.term,
             "termAccession": ontology_annotation.term_accession,
             "termSource": ontology_annotation.term_source.name if
-            ontology_annotation.term_source else None
+            ontology_annotation.term_source else ''
         }
 
     def get_study_factor(self, study_factor):
@@ -2010,3 +2010,38 @@ class TreatmentSequenceDecoder(object):
 
             treatment_sequence.add_treatment(treatment, treatment_tuple['rank'])
         return treatment_sequence
+
+
+def make_summary_from_treatment_sequence(treatment_sequence):
+    factor_values = set()
+    for treatment, rank in treatment_sequence.ranked_treatments:
+        factor_values = factor_values.union(treatment.factor_values)
+    factors_dict = dict()
+    for factor_value in factor_values:
+        factors_dict[factor_value.factor_name.name] = []
+    for factor_value in factor_values:
+        factors_dict[factor_value.factor_name.name].append(factor_value.value)
+        ranks = set()
+    treatments = []
+    for treatment, rank in treatment_sequence.ranked_treatments:
+        ranks.add(rank)
+        fv_tuples = [{
+            'factor': x.factor_name.name,
+            'value': x.value} for x in
+            treatment.factor_values]
+        treatments.append(fv_tuples)
+
+    len_full_factorial = len(list(itertools.product(*factors_dict.values())))
+    len_treatment_sequence = len(treatment_sequence.ranked_treatments)
+    is_full_factorial = len_full_factorial == len_treatment_sequence
+
+    report = {
+        'full_factorial': is_full_factorial,
+        'number_of_factors': len(factors_dict.keys()),
+        'number_of_factor_levels_per_factor': factors_dict,
+        'number_of_treatments': len(treatment_sequence.ranked_treatments),
+        'length_of_treatment_sequence': len(ranks),
+        'list_of_treatments': treatments,
+        'number_of_treatment': len(treatments)
+    }
+    return report

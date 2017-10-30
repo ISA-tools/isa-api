@@ -1137,3 +1137,475 @@ class DecodeFromJsonTests(unittest.TestCase):
 
         self.assertEqual(
             repr(treatment_sequence), repr(self.treatment_sequence))
+
+    def test_summary_from_treatment_sequence(self):
+        decoder = TreatmentSequenceDecoder()
+        treatment_sequence = decoder.load(StringIO("""{
+                    "rankedTreatments": [
+                        {
+                            "treatment": {
+                                "factorValues": [
+                                    {
+                                        "factor": {
+                                            "factorName": "AGENT",
+                                            "factorType": {
+                                                "annotationValue": "perturbation agent",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "calpol"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "DURATION",
+                                            "factorType": {
+                                                "annotationValue": "time",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "long"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "INTENSITY",
+                                            "factorType": {
+                                                "annotationValue": "intensity",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "high"
+                                    }
+                                ],
+                                "treatmentType": "chemical intervention"
+                            },
+                            "rank": 1
+                        },
+                        {
+                            "treatment": {
+                                "factorValues": [
+                                    {
+                                        "factor": {
+                                            "factorName": "AGENT",
+                                            "factorType": {
+                                                "annotationValue": "perturbation agent",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "calpol"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "DURATION",
+                                            "factorType": {
+                                                "annotationValue": "time",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "short"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "INTENSITY",
+                                            "factorType": {
+                                                "annotationValue": "intensity",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "low"
+                                    }
+                                ],
+                                "treatmentType": "chemical intervention"
+                            },
+                            "rank": 1
+                        },
+                        {
+                            "treatment": {
+                                "factorValues": [
+                                    {
+                                        "factor": {
+                                            "factorName": "AGENT",
+                                            "factorType": {
+                                                "annotationValue": "perturbation agent",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "no agent"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "DURATION",
+                                            "factorType": {
+                                                "annotationValue": "time",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "long"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "INTENSITY",
+                                            "factorType": {
+                                                "annotationValue": "intensity",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "low"
+                                    }
+                                ],
+                                "treatmentType": "chemical intervention"
+                            },
+                            "rank": 1
+                        },
+                        {
+                            "treatment": {
+                                "factorValues": [
+                                    {
+                                        "factor": {
+                                            "factorName": "AGENT",
+                                            "factorType": {
+                                                "annotationValue": "perturbation agent",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "calpol"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "DURATION",
+                                            "factorType": {
+                                                "annotationValue": "time",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "short"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "INTENSITY",
+                                            "factorType": {
+                                                "annotationValue": "intensity",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "high"
+                                    }
+                                ],
+                                "treatmentType": "chemical intervention"
+                            },
+                            "rank": 1
+                        },
+                        {
+                            "treatment": {
+                                "factorValues": [
+                                    {
+                                        "factor": {
+                                            "factorName": "AGENT",
+                                            "factorType": {
+                                                "annotationValue": "perturbation agent",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "calpol"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "DURATION",
+                                            "factorType": {
+                                                "annotationValue": "time",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "long"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "INTENSITY",
+                                            "factorType": {
+                                                "annotationValue": "intensity",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "low"
+                                    }
+                                ],
+                                "treatmentType": "chemical intervention"
+                            },
+                            "rank": 1
+                        },
+                        {
+                            "treatment": {
+                                "factorValues": [
+                                    {
+                                        "factor": {
+                                            "factorName": "AGENT",
+                                            "factorType": {
+                                                "annotationValue": "perturbation agent",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "no agent"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "DURATION",
+                                            "factorType": {
+                                                "annotationValue": "time",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "short"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "INTENSITY",
+                                            "factorType": {
+                                                "annotationValue": "intensity",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "low"
+                                    }
+                                ],
+                                "treatmentType": "chemical intervention"
+                            },
+                            "rank": 1
+                        },
+                        {
+                            "treatment": {
+                                "factorValues": [
+                                    {
+                                        "factor": {
+                                            "factorName": "AGENT",
+                                            "factorType": {
+                                                "annotationValue": "perturbation agent",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "no agent"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "DURATION",
+                                            "factorType": {
+                                                "annotationValue": "time",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "short"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "INTENSITY",
+                                            "factorType": {
+                                                "annotationValue": "intensity",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "high"
+                                    }
+                                ],
+                                "treatmentType": "chemical intervention"
+                            },
+                            "rank": 1
+                        },
+                        {
+                            "treatment": {
+                                "factorValues": [
+                                    {
+                                        "factor": {
+                                            "factorName": "AGENT",
+                                            "factorType": {
+                                                "annotationValue": "perturbation agent",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "no agent"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "DURATION",
+                                            "factorType": {
+                                                "annotationValue": "time",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "long"
+                                    },
+                                    {
+                                        "factor": {
+                                            "factorName": "INTENSITY",
+                                            "factorType": {
+                                                "annotationValue": "intensity",
+                                                "termSource": null,
+                                                "termAccession": ""
+                                            }
+                                        },
+                                        "value": "high"
+                                    }
+                                ],
+                                "treatmentType": "chemical intervention"
+                            },
+                            "rank": 1
+                        }
+                    ]
+                }"""))
+        report = make_summary_from_treatment_sequence(treatment_sequence)
+        expected_report = """{
+    "number_of_treatment": 8,
+    "number_of_factors": 3,
+    "length_of_treatment_sequence": 1,
+    "number_of_treatments": 8,
+    "full_factorial": true,
+    "list_of_treatments": [
+        [
+            {
+                "factor": "INTENSITY",
+                "value": "high"
+            },
+            {
+                "factor": "AGENT",
+                "value": "no agent"
+            },
+            {
+                "factor": "DURATION",
+                "value": "short"
+            }
+        ],
+        [
+            {
+                "factor": "AGENT",
+                "value": "no agent"
+            },
+            {
+                "factor": "INTENSITY",
+                "value": "low"
+            },
+            {
+                "factor": "DURATION",
+                "value": "short"
+            }
+        ],
+        [
+            {
+                "factor": "AGENT",
+                "value": "no agent"
+            },
+            {
+                "factor": "INTENSITY",
+                "value": "low"
+            },
+            {
+                "factor": "DURATION",
+                "value": "long"
+            }
+        ],
+        [
+            {
+                "factor": "AGENT",
+                "value": "calpol"
+            },
+            {
+                "factor": "INTENSITY",
+                "value": "low"
+            },
+            {
+                "factor": "DURATION",
+                "value": "short"
+            }
+        ],
+        [
+            {
+                "factor": "AGENT",
+                "value": "calpol"
+            },
+            {
+                "factor": "INTENSITY",
+                "value": "high"
+            },
+            {
+                "factor": "DURATION",
+                "value": "short"
+            }
+        ],
+        [
+            {
+                "factor": "AGENT",
+                "value": "calpol"
+            },
+            {
+                "factor": "INTENSITY",
+                "value": "low"
+            },
+            {
+                "factor": "DURATION",
+                "value": "long"
+            }
+        ],
+        [
+            {
+                "factor": "INTENSITY",
+                "value": "high"
+            },
+            {
+                "factor": "AGENT",
+                "value": "no agent"
+            },
+            {
+                "factor": "DURATION",
+                "value": "long"
+            }
+        ],
+        [
+            {
+                "factor": "AGENT",
+                "value": "calpol"
+            },
+            {
+                "factor": "INTENSITY",
+                "value": "high"
+            },
+            {
+                "factor": "DURATION",
+                "value": "long"
+            }
+        ]
+    ],
+    "number_of_factor_levels_per_factor": {
+        "AGENT": [
+            "calpol",
+            "no agent"
+        ],
+        "INTENSITY": [
+            "high",
+            "low"
+        ],
+        "DURATION": [
+            "short",
+            "long"
+        ]
+    }
+}"""
+        self.assertEqual(sorted(json.loads(expected_report)), sorted(report))
