@@ -33,6 +33,8 @@ SAMPLETAB_DATA_DIR = os.path.join(DATA_DIR, 'sampletab')
 
 CONFIGS_DATA_DIR = os.path.join(DATA_DIR, 'configs')
 
+SCHEMAS_DATA_DIR = os.path.join(DATA_DIR, 'schemas')
+
 XML_CONFIGS_DATA_DIR = os.path.join(CONFIGS_DATA_DIR, 'xml')
 
 DEFAULT2015_XML_CONFIGS_DATA_DIR = os.path.join(

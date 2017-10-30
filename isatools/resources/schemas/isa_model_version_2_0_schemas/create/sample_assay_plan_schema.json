@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$schema": "http://json-schema.org/draft-04/schema",
     "title": "ISA model 2.0 Sample Assay Plan schema",
     "description": "JSON-schema representing sample assay planning parameters in ISA model v2",
     "properties": {

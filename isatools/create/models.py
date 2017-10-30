@@ -1952,7 +1952,7 @@ class TreatmentSequenceEncoder(json.JSONEncoder):
 
     def get_factor_value(self, factor_value):
         return {
-            'factor': self.get_study_factor(factor_value.factor_name),
+            'category': self.get_study_factor(factor_value.factor_name),
             'value': factor_value.value.term if isinstance(
                 factor_value.value, OntologyAnnotation) else factor_value.value
         }
@@ -1962,7 +1962,7 @@ class TreatmentSequenceEncoder(json.JSONEncoder):
             'treatmentType': treatment.treatment_type,
             'factorValues' : sorted(
                 [self.get_factor_value(x) for x in treatment.factor_values],
-                key=lambda x: x['factor']['factorName'])
+                key=lambda x: x['category']['factorName'])
         }
 
     def default(self, o):
@@ -2004,7 +2004,7 @@ class TreatmentSequenceDecoder(object):
                 treatment_type=treatment_json['treatmentType'])
             for factor_json in treatment_json['factorValues']:
                 fv = FactorValue(
-                    factor_name=self.get_study_factor(factor_json['factor']),
+                    factor_name=self.get_study_factor(factor_json['category']),
                     value=factor_json['value'])
                 treatment.factor_values.add(fv)
 

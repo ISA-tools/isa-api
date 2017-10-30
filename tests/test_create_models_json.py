@@ -332,33 +332,33 @@ class EncodeToJsonTests(unittest.TestCase):
                     "treatment": {
                         "factorValues": [
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "AGENT",
                                     "factorType": {
                                         "annotationValue": "perturbation agent",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "calpol"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "DURATION",
                                     "factorType": {
                                         "annotationValue": "time",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "long"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "INTENSITY",
                                     "factorType": {
                                         "annotationValue": "intensity",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
@@ -373,33 +373,33 @@ class EncodeToJsonTests(unittest.TestCase):
                     "treatment": {
                         "factorValues": [
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "AGENT",
                                     "factorType": {
                                         "annotationValue": "perturbation agent",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "calpol"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "DURATION",
                                     "factorType": {
                                         "annotationValue": "time",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "short"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "INTENSITY",
                                     "factorType": {
                                         "annotationValue": "intensity",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
@@ -414,33 +414,33 @@ class EncodeToJsonTests(unittest.TestCase):
                     "treatment": {
                         "factorValues": [
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "AGENT",
                                     "factorType": {
                                         "annotationValue": "perturbation agent",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "no agent"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "DURATION",
                                     "factorType": {
                                         "annotationValue": "time",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "long"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "INTENSITY",
                                     "factorType": {
                                         "annotationValue": "intensity",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
@@ -455,33 +455,33 @@ class EncodeToJsonTests(unittest.TestCase):
                     "treatment": {
                         "factorValues": [
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "AGENT",
                                     "factorType": {
                                         "annotationValue": "perturbation agent",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "calpol"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "DURATION",
                                     "factorType": {
                                         "annotationValue": "time",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "short"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "INTENSITY",
                                     "factorType": {
                                         "annotationValue": "intensity",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
@@ -496,33 +496,33 @@ class EncodeToJsonTests(unittest.TestCase):
                     "treatment": {
                         "factorValues": [
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "AGENT",
                                     "factorType": {
                                         "annotationValue": "perturbation agent",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "calpol"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "DURATION",
                                     "factorType": {
                                         "annotationValue": "time",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "long"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "INTENSITY",
                                     "factorType": {
                                         "annotationValue": "intensity",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
@@ -537,33 +537,33 @@ class EncodeToJsonTests(unittest.TestCase):
                     "treatment": {
                         "factorValues": [
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "AGENT",
                                     "factorType": {
                                         "annotationValue": "perturbation agent",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "no agent"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "DURATION",
                                     "factorType": {
                                         "annotationValue": "time",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "short"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "INTENSITY",
                                     "factorType": {
                                         "annotationValue": "intensity",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
@@ -578,33 +578,33 @@ class EncodeToJsonTests(unittest.TestCase):
                     "treatment": {
                         "factorValues": [
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "AGENT",
                                     "factorType": {
                                         "annotationValue": "perturbation agent",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "no agent"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "DURATION",
                                     "factorType": {
                                         "annotationValue": "time",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "short"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "INTENSITY",
                                     "factorType": {
                                         "annotationValue": "intensity",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
@@ -619,33 +619,33 @@ class EncodeToJsonTests(unittest.TestCase):
                     "treatment": {
                         "factorValues": [
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "AGENT",
                                     "factorType": {
                                         "annotationValue": "perturbation agent",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "no agent"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "DURATION",
                                     "factorType": {
                                         "annotationValue": "time",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
                                 "value": "long"
                             },
                             {
-                                "factor": {
+                                "category": {
                                     "factorName": "INTENSITY",
                                     "factorType": {
                                         "annotationValue": "intensity",
-                                        "termSource": null,
+                                        "termSource": "",
                                         "termAccession": ""
                                     }
                                 },
@@ -786,7 +786,7 @@ class DecodeFromJsonTests(unittest.TestCase):
 
     def test_create_from_decoded_json(self):
         with open(os.path.join(
-                utils.JSON_DATA_DIR, 'create', 'samplassayplan_test.json')) \
+                utils.JSON_DATA_DIR, 'create', 'sampleassayplan_test.json')) \
                 as json_fp:
             sample_assay_plan = SampleAssayPlanDecoder().load(json_fp)
         with open(

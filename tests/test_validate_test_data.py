@@ -1,9 +1,15 @@
-import unittest
-import os
-from isatools import isajson, isatab
-from isatools.tests import utils
+import json
 import logging
+import os
+import unittest
 
+from jsonschema import Draft4Validator
+from jsonschema import RefResolver
+
+from isatools import isajson
+from isatools import isatab
+
+from isatools.tests import utils
 
 def setUpModule():
     if not os.path.exists(utils.DATA_DIR):
@@ -290,3 +296,54 @@ class TestIsaTabSraTestData(unittest.TestCase):
                                      log_level=self._reporting_level)
             if len(report['errors']) > 0:
                 self.fail("Error found when validating ISA tab: {}".format(report['errors']))
+
+
+class TestIsaJsonCreateTestData(unittest.TestCase):
+
+    def setUp(self):
+        self._reporting_level = logging.ERROR
+        self.v2_create_schemas_path = os.path.join(
+            os.path.dirname(__file__), '..', 'isatools', 'resources', 'schemas',
+            'isa_model_version_2_0_schemas', 'create')
+
+    def test_validate_testdata_sampleassayplan_json(self):
+        with open(os.path.join(utils.JSON_DATA_DIR, 'create',
+                               'sampleassayplan_test.json')) as test_case_fp:
+            with open(os.path.join(self.v2_create_schemas_path,
+                                   'sample_assay_plan_schema.json')) as fp:
+                sample_assay_plan_schema = json.load(fp)
+                resolver = RefResolver('file://{}'.format(
+                    os.path.join(self.v2_create_schemas_path,
+                                 'sample_assay_plan_schema.json')),
+                    sample_assay_plan_schema)
+            validator = Draft4Validator(sample_assay_plan_schema,
+                                        resolver=resolver)
+            validator.validate(json.load(test_case_fp))
+
+    def test_validate_testdata_sampleassayplan_qc_json(self):
+        with open(os.path.join(utils.JSON_DATA_DIR, 'create',
+                               'sampleassayplan_qc_test.json')) as test_case_fp:
+            with open(os.path.join(self.v2_create_schemas_path,
+                                   'sample_assay_plan_schema.json')) as fp:
+                sample_assay_plan_schema = json.load(fp)
+            resolver = RefResolver('file://{}'.format(
+                os.path.join(self.v2_create_schemas_path,
+                             'sample_assay_plan_schema.json')),
+                                   sample_assay_plan_schema)
+            validator = Draft4Validator(sample_assay_plan_schema,
+                                        resolver=resolver)
+            validator.validate(json.load(test_case_fp))
+
+    # def test_validate_testdata_treatment_sequence_json(self):
+    #     with open(os.path.join(utils.JSON_DATA_DIR, 'create',
+    #                            'treatment_sequence_test.json')) as test_case_fp:
+    #         with open(os.path.join(self.v2_create_schemas_path,
+    #                                'treatment_sequence_schema.json')) as fp:
+    #             treatment_sequence_schema = json.load(fp)
+    #         resolver = RefResolver('file://{}'.format(
+    #             os.path.join(self.v2_create_schemas_path,
+    #                          'treatment_sequence_schema.json')),
+    #                                treatment_sequence_schema)
+    #         validator = Draft4Validator(treatment_sequence_schema,
+    #                                     resolver=resolver)
+    #         validator.validate(json.load(test_case_fp))
