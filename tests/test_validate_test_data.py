@@ -98,7 +98,7 @@ class TestIsaJsonTestData(unittest.TestCase):
 class TestIsaTabTestData(unittest.TestCase):
 
     def setUp(self):
-        self._reporting_level = logging.INFO
+        self._reporting_level = logging.ERROR
 
     def test_validate_testdata_bii_i_1_isatab(self):
         test_case = 'BII-I-1'
