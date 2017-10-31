@@ -2640,8 +2640,6 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
         # check_utf8(fp)  # skip as does not correctly report right now
         log.info("Loading... {}".format(fp.name))
         i_df = load_investigation(fp=fp)
-        if 'Comment[Number of Study Groups]' in i_df['i_publications'].columns:
-            print(i_df['i_publications']['Comment[Number of Study Groups]'])
         log.info("Running prechecks...")
         check_filenames_present(i_df)  # Rule 3005
         check_table_files_read(i_df, os.path.dirname(fp.name))  # Rules 0006 and 0008
@@ -2668,6 +2666,11 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
         check_investigation_against_config(i_df, configs)  # Rule 4003 for investigation file only
         log.info("Finished checking investigation file")
         for i, study_df in enumerate(i_df['studies']):
+            study_group_size = None
+            if 'Comment[Number of Study Groups]' in study_df.columns:
+                study_group_sizes = study_df['Comment[Number of Study Groups]']
+                study_group_size = next(iter(study_group_sizes))
+                print(study_group_size)
             study_filename = study_df.iloc[0]['Study File Name']
             study_sample_table = None
             assay_tables = list()
