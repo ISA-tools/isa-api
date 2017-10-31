@@ -3782,25 +3782,3 @@ def plink(p1, p2):
     if isinstance(p1, Process) and isinstance(p2, Process):
         p1.next_process = p2
         p2.prev_process = p1
-
-
-# def make_donut(sizes, text, colors, labels):
-#     """
-#     use like isatab.make_pie(
-#                 [len(self.parser.samples), len(self.parser.data_files),
-#                  len(self.parser.other_material)], 'a_filename.txt',
-#                 ['tab:blue', 'tab:orange', 'tab:green'],
-#                 ['sources', 'data_files', 'other_material'])
-#     """
-#     import matplotlib.pyplot as plt
-#     fig, ax = plt.subplots()
-#     ax.axis('equal')
-#     width = 0.35
-#     kwargs = dict(colors=colors, startangle=180)
-#     outside, _ = ax.pie(sizes, radius=1, pctdistance=1-width/2,labels=labels,**kwargs)
-#     plt.setp(outside, width=width, edgecolor='white')
-#
-#     kwargs = dict(size=20, fontweight='bold', va='center')
-#     ax.text(0, 0, text, ha='center', **kwargs)
-#     # plt.show()
-#     plt.savefig('out.png')

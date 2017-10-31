@@ -1,9 +1,9 @@
 """Functions for visualizing ISA content from ISA model objects."""
 from __future__ import absolute_import
 import os
-import matplotlib as mpl
+import matplotlib
 if os.environ.get('DISPLAY','') == '':
-    mpl.use('Agg')
+    matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 
