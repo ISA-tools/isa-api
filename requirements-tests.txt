@@ -2,7 +2,7 @@ numpy
 pandas
 networkx
 six
-matplotlib==2.0.2
+matplotlib
 coveralls
 tox
 pytest
