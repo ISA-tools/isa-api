@@ -20,8 +20,9 @@ __author__ = 'djcomlab@gmail.com (David Johnson)'
 logging.basicConfig(level=config.log_level)
 log = logging.getLogger(__name__)
 
-errors = list()
-warnings = list()
+errors = []
+warnings = []
+info = []
 
 # REGEXES
 _RX_DOI = re.compile("(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%'#? ])\\S)+)")
@@ -1310,6 +1311,39 @@ def check_study_and_assay_graphs(study_json, configs):
         check_assay_graph(assay_json["processSequence"], config)
 
 
+def check_study_groups(study_or_assay):
+    samples = study_or_assay.samples
+    study_groups = set()
+    for sample in samples:
+        if len(sample.factor_values) > 0:
+            factors = tuple(sample.factor_values)
+            study_groups.add(factors)
+    num_study_groups = len(study_groups)
+    log.info('Found {} study groups in {}'.format(num_study_groups,
+                                                  study_or_assay.identifier))
+    info.append({
+        'message': 'Found {} study groups in {}'.format(
+            num_study_groups, study_or_assay.identifier),
+        'supplemental': 'Found {} study groups in {}'.format(
+            num_study_groups, study_or_assay.identifier),
+        'code': 5001
+    })
+    study_group_size_in_comment = study_or_assay.get_comment(
+        'Number of Study Groups')
+    if study_group_size_in_comment is not None:
+        if study_group_size_in_comment != num_study_groups:
+            warnings.append({
+                'message': 'Reported study group size does not match table'
+                    .format(num_study_groups,
+                            study_or_assay.identifier),
+                'supplemental': 'Study group size reported as {} but found {} '
+                                'in {}'.format(
+                    study_group_size_in_comment, num_study_groups,
+                    study_or_assay.identifier),
+                'code': 5002
+            })
+
+
 BASE_DIR = os.path.dirname(__file__)
 default_config_dir = os.path.join(BASE_DIR, "resources", "config", "json", "default")
 
@@ -1404,6 +1438,14 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level,
         log.info("Checking study and assay graphs...")
         for study_json in isa_json["studies"]:
             check_study_and_assay_graphs(study_json, configs)  # Rule 4004
+        fp.seek(0)
+        # try load and do study groups check
+        log.info("Checking study groups...")
+        isa = load(fp)
+        for study in isa.studies:
+            check_study_groups(study)
+            for assay in study.assays:
+                check_study_groups(assay)
         log.info("Finished validation...")
     except KeyError as k:
         errors.append({
