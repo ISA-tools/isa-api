@@ -377,17 +377,21 @@ class TestStudyGroupsValidationIsaTab(unittest.TestCase):
                 'supplemental': 'Found 7 study groups in a_microarray.txt'},
                 report['info'])
 
-    # def test_info_reporting_bii_i_1_with_study_groups_comment_isatab(self):
-    #     test_case = 'BII-I-1'
-    #     with open(os.path.join(
-    #             utils.TAB_DATA_DIR, test_case,
-    #             '_i_investigation_with_study_groups_comment.txt')
-    #     ) as test_case_fp:
-    #         report = isatab.validate(
-    #             fp=test_case_fp,
-    #             config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
-    #             log_level=self._reporting_level)
-    #         print(report['warnings'])
+    def test_info_reporting_bii_i_1_with_study_groups_comment_isatab(self):
+        test_case = 'BII-I-1'
+        with open(os.path.join(
+                utils.TAB_DATA_DIR, test_case,
+                '_i_investigation_with_study_groups_comment.txt')
+        ) as test_case_fp:
+            report = isatab.validate(
+                fp=test_case_fp,
+                config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
+                log_level=self._reporting_level)
+            self.assertIn({
+                'message': 'Reported study group size does not match table',
+                'supplemental': 'Study group size reported as 7 but found 18 in'
+                                ' s_BII-S-1.txt',
+                'code': 5002}, report['warnings'])
 
     def test_info_reporting_bii_s_3_isatab(self):
         test_case = 'BII-S-3'

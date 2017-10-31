@@ -2608,16 +2608,33 @@ BASE_DIR = os.path.dirname(__file__)
 default_config_dir = os.path.join(BASE_DIR, 'resources', 'config', 'xml')
 
 
-def check_study_groups(table, filename):
+def check_study_groups(table, filename, study_group_size_in_comment):
     factor_columns = [x for x in table.columns if x.startswith('Factor Value')]
     if factor_columns != []:
         num_study_groups = len(table[factor_columns].drop_duplicates())
-        log.info("Found {} study groups in {}".format(num_study_groups, filename))
+        log.info('Found {} study groups in {}'.format(
+            num_study_groups, filename))
         info.append({
-            "message": "Found {} study groups in {}".format(num_study_groups, filename),
-            "supplemental": "Found {} study groups in {}".format(num_study_groups, filename),
-            "code": 5001
+            'message': 'Found {} study groups in {}'.format(
+                num_study_groups, filename),
+            'supplemental': 'Found {} study groups in {}'.format(
+                num_study_groups, filename),
+            'code': 5001
         })
+        if study_group_size_in_comment is not None and \
+                        study_group_size_in_comment != num_study_groups:
+            log.warning('Study group size reported as {} but found {} in {}'
+                        .format(
+                study_group_size_in_comment, num_study_groups, filename))
+            warnings.append({
+                'message': 'Reported study group size does not match table'
+                    .format(num_study_groups, filename),
+                'supplemental': 'Study group size reported as {} but found {} '
+                                'in {}'.format(
+                    study_group_size_in_comment, num_study_groups, filename),
+                'code': 5002
+            })
+            
     else:
         log.info("No study factors found in {}".format(filename))
 
@@ -2666,11 +2683,10 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
         check_investigation_against_config(i_df, configs)  # Rule 4003 for investigation file only
         log.info("Finished checking investigation file")
         for i, study_df in enumerate(i_df['studies']):
-            study_group_size = None
+            study_group_size_in_comment = None
             if 'Comment[Number of Study Groups]' in study_df.columns:
                 study_group_sizes = study_df['Comment[Number of Study Groups]']
-                study_group_size = next(iter(study_group_sizes))
-                print(study_group_size)
+                study_group_size_in_comment = next(iter(study_group_sizes))
             study_filename = study_df.iloc[0]['Study File Name']
             study_sample_table = None
             assay_tables = list()
@@ -2707,11 +2723,16 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
                             log.warning("(W) There are some ontology annotation inconsistencies in {} against {} "
                                         "configuration".format(study_sample_table.filename, 'Study Sample'))
                         log.info("Checking study group size...")
-                        check_study_groups(study_sample_table, study_filename)
+                        check_study_groups(study_sample_table, study_filename, study_group_size_in_comment)
                         log.info("Finished validation on {}".format(study_filename))
                 except FileNotFoundError:
                     pass
                 assay_df = i_df['s_assays'][i]
+                study_group_size_in_comment = None
+                if 'Comment[Number of Study Groups]' in assay_df.columns:
+                    study_group_sizes = study_df[
+                        'Comment[Number of Study Groups]']
+                    study_group_size_in_comment = next(iter(study_group_sizes))
                 for x, assay_filename in enumerate(assay_df['Study Assay File Name'].tolist()):
                     measurement_type = assay_df['Study Assay Measurement Type'].tolist()[x]
                     technology_type = assay_df['Study Assay Technology Type'].tolist()[x]
@@ -2759,7 +2780,7 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
                                         log.warning("(W) There are some ontology annotation inconsistencies in {} against {} "
                                                     "configuration".format(assay_table.filename, (measurement_type, technology_type)))
                                     log.info("Checking study group size...")
-                                    check_study_groups(assay_table, assay_filename)
+                                    check_study_groups(assay_table, assay_filename, study_group_size_in_comment)
                                     log.info("Finished validation on {}".format(assay_filename))
                             except FileNotFoundError:
                                 pass
