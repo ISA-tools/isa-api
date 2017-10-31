@@ -726,7 +726,6 @@ class IsaTabFixer(object):
                 protocol_ref_index + 2, field_names[factor_index + 1 + 1])
             field_names.insert(
                 protocol_ref_index + 3, field_names[factor_index + 2 + 2])
-
             del field_names[factor_index + 3]  # del Factor Value[{}]
             del field_names[factor_index + 1 + 2]  # del Term Source REF
             del field_names[factor_index + 2 + 1]  # del Term Accession
@@ -746,7 +745,6 @@ class IsaTabFixer(object):
                 protocol_ref_index + 3, field_names[factor_index + 2 + 2])
             field_names.insert(
                 protocol_ref_index + 4, field_names[factor_index + 3 + 3])
-
             del field_names[factor_index + 4]  # del Factor Value[{}]
             del field_names[factor_index + 1 + 3]  # del Unit
             del field_names[factor_index + 2 + 2]  # del Term Source REF
@@ -760,7 +758,6 @@ class IsaTabFixer(object):
                 protocol_ref_index + 1, field_names[factor_index])
             field_names.insert(
                 protocol_ref_index + 2, field_names[factor_index + 1 + 1])
-
             del field_names[factor_index + 2]  # del Factor Value[{}]
             del field_names[factor_index + 1 + 1]  # del Unit
         else:  # move only the Factor Value column
@@ -771,7 +768,7 @@ class IsaTabFixer(object):
 
         table_file_df.columns = self.clean_isatab_field_names(field_names)
 
-        # Renamce Factor Value column to Parameter Value column
+        # Rename Factor Value column to Parameter Value column
         field_names_modified = list(table_file_df.columns)
         field_names_modified[protocol_ref_index + 1] = \
             field_names_modified[protocol_ref_index + 1].replace(
@@ -788,6 +785,16 @@ class IsaTabFixer(object):
                 'No protocol with name {protocol_ref} was found'.format(
                     protocol_ref=protocol_ref))
         protocol.add_param(factor_name)
+        factor = study.get_factor(factor_name)
+        if factor is None:
+            raise ISAModelAttributeError(
+                'No factor with name {factor_name} was found'.format(
+                    factor_name=factor_name))
+        else:
+            study.del_factor(name=factor_name, are_you_sure=True)
+
+        study.filename = '{study_filename}.fix'.format(
+            study_filename=study.filename)
 
         isatab.dump(
             investigation, output_path=os.path.dirname(self.path),

@@ -1659,9 +1659,8 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     def add_prot(self, protocol_name='', protocol_type=None,
                  use_default_params=True):
         if self.get_prot(protocol_name=protocol_name) is not None:
-            print('A protocol with name "{}" has '
-                                         'already been declared in the study'
-                                         .format(protocol_name))
+            print('A protocol with name "{}" has already been declared in the '
+                  'study'.format(protocol_name))
         else:
             if isinstance(protocol_type, str) and use_default_params:
                 default_protocol = self.__get_default_protocol(protocol_type)
@@ -1679,6 +1678,32 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         except StopIteration:
             pass
         return prot
+
+    def add_factor(self, name, factor_type):
+        if self.get_factor(name=name) is not None:
+            print(
+                'A factor with name "{}" has already been declared in the study'
+                    .format(name))
+        else:
+            self.factors.append(StudyFactor(
+                name=name, factor_type=OntologyAnnotation(term=factor_type)))
+
+    def del_factor(self, name, are_you_sure=False):
+        if self.get_factor(name=name) is None:
+            print(
+                'A factor with name "{}" hasnot been found in the study'
+                .format(name))
+        else:
+            if are_you_sure:  # force user to say yes, to be sure to be sure
+                self.factors.remove(self.get_factor(name=name))
+
+    def get_factor(self, name):
+        factor = None
+        try:
+            factor = next(x for x in self.factors if x.name == name)
+        except StopIteration:
+            pass
+        return factor
         
     @property
     def assays(self):

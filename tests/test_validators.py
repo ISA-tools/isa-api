@@ -4,6 +4,7 @@ import os
 from isatools.tests import utils
 import tempfile
 import shutil
+import logging
 
 
 def setUpModule():
@@ -333,6 +334,105 @@ class TestValidateIsaTab(unittest.TestCase):
                 self.fail("Validation did not complete successfully when it should have!")
             elif len(report['errors'] + report['warnings']) == 0:
                 self.fail("Validation error and warnings are missing when should report some with BII-S-7")
+
+
+class TestStudyGroupsValidationIsaTab(unittest.TestCase):
+
+    def setUp(self):
+        self._tab_data_dir = utils.TAB_DATA_DIR
+        self._reporting_level = logging.ERROR
+
+    def tearDown(self):
+        pass
+
+    def test_info_reporting_bii_i_1_isatab(self):
+        test_case = 'BII-I-1'
+        with open(os.path.join(utils.TAB_DATA_DIR, test_case,
+                               'i_investigation.txt')) as test_case_fp:
+            report = isatab.validate(
+                fp=test_case_fp,
+                config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
+                log_level=self._reporting_level)
+            self.assertIn(
+                {'message': 'Found 18 study groups in s_BII-S-1.txt',
+                 'supplemental': 'Found 18 study groups in s_BII-S-1.txt',
+                 'code': 5001}, report['info'])
+            self.assertIn(
+                {'message': 'Found 9 study groups in a_proteome.txt',
+                 'code': 5001,
+                 'supplemental': 'Found 9 study groups in a_proteome.txt'},
+                report['info'])
+            self.assertIn({
+                'message': 'Found 17 study groups in a_metabolome.txt',
+                'code': 5001,
+                'supplemental': 'Found 17 study groups in a_metabolome.txt'},
+                report['info'])
+            self.assertIn({
+                'message': 'Found 12 study groups in a_transcriptome.txt',
+                'code': 5001,
+                'supplemental': 'Found 12 study groups in a_transcriptome.txt'},
+                report['info'])
+            self.assertIn({'message': 'Found 7 study groups in a_microarray.txt',
+                'code': 5001,
+                'supplemental': 'Found 7 study groups in a_microarray.txt'},
+                report['info'])
+
+    # def test_info_reporting_bii_i_1_with_study_groups_comment_isatab(self):
+    #     test_case = 'BII-I-1'
+    #     with open(os.path.join(
+    #             utils.TAB_DATA_DIR, test_case,
+    #             '_i_investigation_with_study_groups_comment.txt')
+    #     ) as test_case_fp:
+    #         report = isatab.validate(
+    #             fp=test_case_fp,
+    #             config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
+    #             log_level=self._reporting_level)
+    #         print(report['warnings'])
+
+    def test_info_reporting_bii_s_3_isatab(self):
+        test_case = 'BII-S-3'
+        with open(os.path.join(utils.TAB_DATA_DIR, test_case,
+                               'i_gilbert.txt')) as test_case_fp:
+            report = isatab.validate(
+                fp=test_case_fp,
+                config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
+                log_level=self._reporting_level)
+            self.assertIn(
+                {'code': 5001,
+                 'message': 'Found 4 study groups in s_BII-S-3.txt',
+                 'supplemental': 'Found 4 study groups in s_BII-S-3.txt'},
+                report['info'])
+
+    def test_info_reporting_bii_s_7_isatab(self):
+        test_case = 'BII-S-7'
+        with open(os.path.join(utils.TAB_DATA_DIR, test_case,
+                               'i_matteo.txt')) as test_case_fp:
+            report = isatab.validate(
+                fp=test_case_fp,
+                config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
+                log_level=self._reporting_level)
+            self.assertIn(
+                {'supplemental': 'Found 2 study groups in s_BII-S-7.txt',
+                 'code': 5001,
+                 'message': 'Found 2 study groups in s_BII-S-7.txt'},
+                report['info'])
+
+    def test_info_reporting_mtbls1_isatab(self):
+        test_case = 'MTBLS1'
+        with open(os.path.join(utils.TAB_DATA_DIR, test_case,
+                               'i_investigation.txt')) as test_case_fp:
+            report = isatab.validate(
+                fp=test_case_fp,
+                config_dir=utils.DEFAULT2015_XML_CONFIGS_DATA_DIR,
+                log_level=self._reporting_level)
+
+            self.assertIn(
+                {'supplemental': 'Found 4 study groups in s_MTBLS1.txt',
+                 'code': 5001,
+                 'message': 'Found 4 study groups in s_MTBLS1.txt'},
+                report['info'])
+
+
 
 
 class TestBatchValidateIsaTab(unittest.TestCase):

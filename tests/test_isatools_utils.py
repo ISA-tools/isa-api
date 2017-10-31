@@ -623,7 +623,7 @@ class TestIsaTabFixer(unittest.TestCase):
                     next(fixed_tab_fp).split('\t')))
             self.assertListEqual(actual_field_names, expected_field_names)
 
-        # check the parameter got added to the protocol
+        # check the param got added to protocol and factor removed from study
         with open(os.path.dirname(
                 s_table_path) + '/i_Investigation.txt.fix') as fixed_i_fp:
             investigation = isatab.load(fixed_i_fp)
@@ -632,6 +632,8 @@ class TestIsaTabFixer(unittest.TestCase):
                 'environmental material collection - standard procedure 1')
             param = protocol.get_param('dose')
             self.assertIsNotNone(param)
+            factor = study.get_factor('dose')
+            self.assertIsNone(factor)
 
     def test_batch_fixer(self):
         s_table_path = os.path.join(self._tmp_dir, 'BII-S-3', 's_BII-S-3.txt')
