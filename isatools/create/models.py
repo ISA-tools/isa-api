@@ -360,70 +360,150 @@ class AssayType(object):
 
 class AssayTopologyModifiers(object):
 
-    def __init__(self, distinct_libraries=0, array_designs=None,
-                 injection_modes=None, acquisition_modes=None,
-                 pulse_sequences=None, technical_replicates=1,
-                 instruments=None, chromatography_instruments=None):
-        
-        self.__distinct_libraries = distinct_libraries
-        
-        if array_designs is None:
-            self.__array_designs = set()
-        else:
-            self.array_designs = array_designs
-            
-        if injection_modes is None:
-            self.__injection_modes = set()
-        else:
-            self.injection_modes = injection_modes
-        
-        if acquisition_modes is None:
-            self.__acquisition_modes = set()
-        else:
-            self.acquisition_modes = acquisition_modes
-        
-        if pulse_sequences is None:  # only applies to NMR
-            self.__pulse_sequences = set()
-        else:
-            self.pulse_sequences = pulse_sequences
-            
+    def __init__(self, technical_replicates=1, instruments=None):
         self.__technical_replicates = technical_replicates
-        
         if instruments is None:  # scanning instruments
             self.__instruments = set()
         else:
             self.instruments = instruments
-            
-        if chromatography_instruments is None:  # chromatography instruments
+
+    @property
+    def technical_replicates(self):
+        return self.__technical_replicates
+
+    @technical_replicates.setter
+    def technical_replicates(self, val):
+        if not isinstance(val, int):
+            raise TypeError('{0} is an invalid value for technical_replicates. '
+                            'Please provide an integer.')
+        if val < 1:
+            raise ValueError('injection_modes must be greater than 0.')
+        self.__technical_replicates = val
+
+    @property
+    def instruments(self):
+        return self.__instruments
+
+    @instruments.setter
+    def instruments(self, val):
+        if not isinstance(val, set):
+            raise TypeError('{0} is an invalid value for instruments. '
+                            'Please provide an set of string.'.format(val))
+        if not all(isinstance(x, str) for x in val):
+            raise ValueError('all instruments need to be of type string')
+        self.__instruments = val
+
+
+class NMRAssayTopologyModifiers(AssayTopologyModifiers):
+
+    def __init__(self, acquisition_modes=None,
+                 pulse_sequences=None, technical_replicates=1,
+                 instruments=None, injection_modes=None):
+        super().__init__(technical_replicates=technical_replicates,
+                         instruments=instruments)
+        if pulse_sequences is None:
+            self.__pulse_sequences = set()
+        else:
+            self.pulse_sequences = pulse_sequences
+        if injection_modes is None:
+            self.__injection_modes = set()
+        else:
+            self.injection_modes = injection_modes
+        if acquisition_modes is None:
+            self.__acquisition_modes = set()
+        else:
+            self.acquisition_modes = acquisition_modes
+
+    @property
+    def pulse_sequences(self):
+        return self.__pulse_sequences
+
+    @pulse_sequences.setter
+    def pulse_sequences(self, val):
+        if not isinstance(val, set):
+            raise TypeError('{0} is an invalid value for pulse_sequences. '
+                            'Please provide an set of string.')
+        if not all(isinstance(x, str) for x in val):
+            raise ValueError('all pulse sequences need to be of type string')
+        self.__pulse_sequences = val
+
+    @property
+    def injection_modes(self):
+        return self.__injection_modes
+
+    @injection_modes.setter
+    def injection_modes(self, val):
+        injection_mode_values = ('FIA', 'GC', 'LC')
+        if not isinstance(val, set):
+            raise TypeError('{0} is an invalid value for injection_modes. '
+                            'Please provide an set of string.')
+        if not all(isinstance(x, str) for x in val):
+            raise ValueError('all injection modes need to be of type string')
+        if not all(x in injection_mode_values for x in val):
+            raise ValueError('injection modes must be one of {}'.format(
+                injection_mode_values))
+        self.__injection_modes = val
+
+    @property
+    def acquisition_modes(self):
+        return self.__acquisition_modes
+
+    @acquisition_modes.setter
+    def acquisition_modes(self, val):
+        if not isinstance(val, set):
+            raise TypeError('{0} is an invalid value for acquisition_modes. '
+                            'Please provide an set of string.')
+        if not all(isinstance(x, str) for x in val):
+            raise ValueError('all acquisition modes need to be of type string')
+        self.__acquisition_modes = val
+
+    def __repr__(self):
+        return 'NMRAssayTopologyModifiers(' \
+               'acquisition_modes={0}, ' \
+               'pulse_sequences={1}, ' \
+               'technical_replicates={2}, ' \
+               'instruments={3}, injection_modes={4})'.format(
+                sorted(self.acquisition_modes),
+                sorted(self.pulse_sequences),
+                self.technical_replicates,
+                sorted(self.instruments),
+                sorted(self.acquisition_modes)
+                )
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __eq__(self, other):
+        return isinstance(other, NMRAssayTopologyModifiers) \
+               and self.injection_modes == other.injection_modes \
+               and self.acquisition_modes == other.acquisition_modes \
+               and self.pulse_sequences == other.pulse_sequences \
+               and self.technical_replicates == other.technical_replicates \
+               and self.instruments == other.instruments
+
+
+class MSAssayTopologyModifiers(AssayTopologyModifiers):
+
+    def __init__(self, acquisition_modes=None,
+                 chromatography_instruments=None, technical_replicates=1,
+                 instruments=None, injection_modes=None):
+        super().__init__(technical_replicates=technical_replicates,
+                         instruments=instruments)
+        if injection_modes is None:
+            self.__injection_modes = set()
+        else:
+            self.injection_modes = injection_modes
+        if acquisition_modes is None:
+            self.__acquisition_modes = set()
+        else:
+            self.acquisition_modes = acquisition_modes
+        if chromatography_instruments is None:
             self.__chromatography_instruments = set()
         else:
             self.chromatography_instruments = chromatography_instruments
-
-    @property
-    def distinct_libraries(self):
-        return self.__distinct_libraries
-
-    @distinct_libraries.setter
-    def distinct_libraries(self, distinct_libraries):
-        if not isinstance(distinct_libraries, int):
-            raise TypeError('{0} is an invalid value for distinct_libraries. '
-                            'Please provide an integer.')
-        if distinct_libraries < 0:
-            raise ValueError('distinct_libraries must be greater than 0.')
-        self.__distinct_libraries = distinct_libraries
-
-    @property
-    def array_designs(self):
-        return self.__array_designs
-
-    @array_designs.setter
-    def array_designs(self, val):
-        if not isinstance(val, set):
-            raise TypeError('{0} is an invalid value for array_designs. '
-                            'Please provide an set of string.')
-        if not all(isinstance(x, str) for x in val):
-            raise ValueError('all array designs need to be of type string')
-        self.__array_designs = val
 
     @property
     def injection_modes(self):
@@ -456,46 +536,6 @@ class AssayTopologyModifiers(object):
         self.__acquisition_modes = val
 
     @property
-    def pulse_sequences(self):
-        return self.__pulse_sequences
-
-    @pulse_sequences.setter
-    def pulse_sequences(self, val):
-        if not isinstance(val, set):
-            raise TypeError('{0} is an invalid value for pulse_sequences. '
-                            'Please provide an set of string.')
-        if not all(isinstance(x, str) for x in val):
-            raise ValueError('all pulse sequences need to be of type string')
-        self.__pulse_sequences = val
-
-
-    @property
-    def technical_replicates(self):
-        return self.__technical_replicates
-
-    @technical_replicates.setter
-    def technical_replicates(self, val):
-        if not isinstance(val, int):
-            raise TypeError('{0} is an invalid value for technical_replicates. '
-                            'Please provide an integer.')
-        if val < 1:
-            raise ValueError('injection_modes must be greater than 0.')
-        self.__technical_replicates = val
-
-    @property
-    def instruments(self):
-        return self.__instruments
-
-    @instruments.setter
-    def instruments(self, val):
-        if not isinstance(val, set):
-            raise TypeError('{0} is an invalid value for instruments. '
-                            'Please provide an set of string.')
-        if not all(isinstance(x, str) for x in val):
-            raise ValueError('all instruments need to be of type string')
-        self.__instruments = val
-        
-    @property
     def chromatography_instruments(self):
         return self.__chromatography_instruments
 
@@ -510,22 +550,15 @@ class AssayTopologyModifiers(object):
         self.__chromatography_instruments = val
 
     def __repr__(self):
-        return 'AssayTopologyModifiers(' \
-               'distinct_libraries={0}, ' \
-               'array_designs={1}, ' \
-               'injection_modes={2}, ' \
+        return 'MSAssayTopologyModifiers(' \
+               'technical_replicates={0}, ' \
+               'instruments={1}, injection_modes={2}, ' \
                'acquisition_modes={3}, ' \
-               'pulse_sequences={4}, ' \
-               'technical_replicates={5}, ' \
-               'instruments={6}, ' \
-               'chromatography_instruments={7})'.format(
-                self.distinct_libraries,
-                sorted(self.array_designs),
-                sorted(self.injection_modes),
-                sorted(self.acquisition_modes),
-                sorted(self.pulse_sequences),
+               'chromatography_instruments={4})'.format(
                 self.technical_replicates,
                 sorted(self.instruments),
+                sorted(self.injection_modes),
+                sorted(self.acquisition_modes),
                 sorted(self.chromatography_instruments)
                 )
 
@@ -536,60 +569,101 @@ class AssayTopologyModifiers(object):
         return not self == other
 
     def __eq__(self, other):
-        return isinstance(other, AssayTopologyModifiers) \
-               and self.distinct_libraries == other.distinct_libraries \
-               and self.array_designs == other.array_designs \
+        return isinstance(other, MSAssayTopologyModifiers) \
                and self.injection_modes == other.injection_modes \
                and self.acquisition_modes == other.acquisition_modes \
-               and self.pulse_sequences == other.pulse_sequences \
                and self.technical_replicates == other.technical_replicates \
                and self.instruments == other.instruments \
                and self.chromatography_instruments == \
-               other.chromatography_instruments
-
-
-class NMRAssayTopologyModifiers(AssayTopologyModifiers):
-
-    def __init__(self, acquisition_modes=None,
-                 pulse_sequences=None, technical_replicates=1,
-                 instruments=None):
-        super().__init__(technical_replicates=technical_replicates,
-                         instruments=instruments,
-                         pulse_sequences=pulse_sequences,
-                         acquisition_modes=acquisition_modes)
-
-
-class MSAssayTopologyModifiers(AssayTopologyModifiers):
-
-    def __init__(self, acquisition_modes=None,
-                 chromatography_instruments=None, technical_replicates=1,
-                 instruments=None, injection_modes=None):
-        super().__init__(technical_replicates=technical_replicates,
-                         instruments=instruments,
-                         chromatography_instruments=chromatography_instruments,
-                         injection_modes=injection_modes,
-                         acquisition_modes=acquisition_modes)
+                   other.chromatography_instruments
 
 
 class DNASeqAssayTopologyModifiers(AssayTopologyModifiers):
 
-    def __init__(self, acquisition_modes=None,
-                 distinct_libraries=0, technical_replicates=1,
+    def __init__(self, distinct_libraries=0, technical_replicates=1,
                  instruments=None):
         super().__init__(technical_replicates=technical_replicates,
-                         instruments=instruments,
-                         distinct_libraries=distinct_libraries,
-                         acquisition_modes=acquisition_modes)
+                         instruments=instruments)
+        self.__distinct_libraries = distinct_libraries
+
+    @property
+    def distinct_libraries(self):
+        return self.__distinct_libraries
+
+    @distinct_libraries.setter
+    def distinct_libraries(self, distinct_libraries):
+        if not isinstance(distinct_libraries, int):
+            raise TypeError('{0} is an invalid value for distinct_libraries. '
+                            'Please provide an integer.')
+        if distinct_libraries < 0:
+            raise ValueError('distinct_libraries must be greater than 0.')
+        self.__distinct_libraries = distinct_libraries
+
+    def __repr__(self):
+        return 'DNASeqAssayTopologyModifiers(' \
+               'technical_replicates={0}, ' \
+               'instruments={1}, distinct_libraries={2})'.format(
+                self.technical_replicates,
+                sorted(self.instruments),
+                self.distinct_libraries
+                )
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __eq__(self, other):
+        return isinstance(other, DNASeqAssayTopologyModifiers) \
+               and self.technical_replicates == other.technical_replicates \
+               and self.instruments == other.instruments \
+               and self.distinct_libraries == other.distinct_libraries
 
 
 class DNAMicroAssayTopologyModifiers(AssayTopologyModifiers):
 
-    def __init__(self, acquisition_modes=None,
-                 array_designs=None, technical_replicates=1,
-                 instruments=None):
-        super().__init__(technical_replicates=technical_replicates,
-                         instruments=instruments,
-                         array_designs=array_designs)
+    def __init__(self, array_designs=None, technical_replicates=1):
+        super().__init__(technical_replicates=technical_replicates)
+        if array_designs is None:
+            self.__array_designs = set()
+        else:
+            self.array_designs = array_designs
+
+    @property
+    def instruments(self):
+        raise NotImplementedError(
+            'instruments property not implemented for DNA Microarray topology '
+            'modifiers')
+
+    @property
+    def array_designs(self):
+        return self.__array_designs
+
+    @array_designs.setter
+    def array_designs(self, val):
+        if not isinstance(val, set):
+            raise TypeError('{0} is an invalid value for array_designs. '
+                            'Please provide an set of string.')
+        if not all(isinstance(x, str) for x in val):
+            raise ValueError('all array designs need to be of type string')
+        self.__array_designs = val
+
+    def __repr__(self):
+        return 'DNAMicroAssayTopologyModifiers(' \
+               'technical_replicates={0}, array_designs={1})'.format(
+                self.technical_replicates, sorted(self.array_designs))
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __eq__(self, other):
+        return isinstance(other, DNAMicroAssayTopologyModifiers) \
+               and self.technical_replicates == other.technical_replicates \
+               and self.array_designs == other.array_designs
 
 
 class SampleAssayPlan(object):
