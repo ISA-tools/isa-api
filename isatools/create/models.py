@@ -1904,18 +1904,36 @@ class IsaModelObjectFactory(object):
 
 class SampleAssayPlanEncoder(json.JSONEncoder):
 
-    def get_top_mods(self, o):
-        return {
-            'distinct_libraries': o.distinct_libraries,
-            'array_designs': sorted(o.array_designs),
-            'injection_modes': sorted(o.injection_modes),
-            'acquisition_modes': sorted(o.acquisition_modes),
-            'pulse_sequences': sorted(o.pulse_sequences),
-            'technical_replicates': o.technical_replicates,
-            'instruments': sorted(o.instruments),
-            'chromatography_instruments': sorted(
-                o.chromatography_instruments)
-        }
+    @staticmethod
+    def get_top_mods(o):
+        if isinstance(o, DNAMicroAssayTopologyModifiers):
+            return {
+                'array_designs': sorted(o.array_designs),
+                'technical_replicates': o.technical_replicates
+            }
+        if isinstance(o, DNASeqAssayTopologyModifiers):
+            return {
+                'distinct_libraries': o.distinct_libraries,
+                'technical_replicates': o.technical_replicates,
+                'instruments': sorted(o.instruments)
+            }
+        if isinstance(o, MSAssayTopologyModifiers):
+            return {
+                'injection_modes': sorted(o.injection_modes),
+                'acquisition_modes': sorted(o.acquisition_modes),
+                'technical_replicates': o.technical_replicates,
+                'instruments': sorted(o.instruments),
+                'chromatography_instruments': sorted(
+                    o.chromatography_instruments)
+            }
+        if isinstance(o, NMRAssayTopologyModifiers):
+            return {
+                'injection_modes': sorted(o.injection_modes),
+                'acquisition_modes': sorted(o.acquisition_modes),
+                'pulse_sequences': sorted(o.pulse_sequences),
+                'technical_replicates': o.technical_replicates,
+                'instruments': sorted(o.instruments)
+            }
 
     def get_assay_type(self, o):
         return {
@@ -1927,7 +1945,8 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
             if o.topology_modifiers else []
         }
 
-    def get_sample_plan(self, sample_plan):
+    @staticmethod
+    def get_sample_plan(sample_plan):
         sample_plan_record_list = []
         for k in iter(sample_plan.keys()):
             sample_type_characteristic = k
@@ -1941,7 +1960,8 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
             )
         return sample_plan_record_list
 
-    def get_sample_qc_plan(self, sample_qc_plan):
+    @staticmethod
+    def get_sample_qc_plan(sample_qc_plan):
         sample_qc_plan_record_list = []
         for k in sample_qc_plan.keys():
             sample_type_characteristic = k
@@ -1988,25 +2008,58 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
 class SampleAssayPlanDecoder(object):
 
     def __init__(self):
-        pass
+        self.dna_micro_key_signature = ('technical_replicates', 'array_designs')
+        self.dna_seq_key_signature = (
+            'technical_replicates', 'distinct_libraries', 'instruments')
+        self.ms_key_signature = (
+            'technical_replicates', 'injection_modes', 'acquisition_modes',
+            'instruments', 'chromatography_instruments')
+        self.nmr_key_signature = (
+            'technical_replicates', 'injection_modes', 'acquisition_modes',
+            'pulse_sequences', 'instruments')
 
     def load_top_mods(self, top_mods_json):
-        top_mods = AssayTopologyModifiers()
+        # do a bit of duck-typing
+        top_mods = None
+        key_signature = top_mods_json.keys()
+        if set(self.dna_micro_key_signature).issubset(key_signature):
+            top_mods = DNAMicroAssayTopologyModifiers()
+            top_mods.array_designs = set(
+                map(lambda x: x, top_mods_json['array_designs']))
+            top_mods.technical_replicates = top_mods_json[
+                'technical_replicates']
+        elif set(self.dna_seq_key_signature).issubset(key_signature):
+            top_mods = DNASeqAssayTopologyModifiers()
 
-        top_mods.distinct_libraries = top_mods_json['distinct_libraries']
-        top_mods.array_designs = set(
-            map(lambda x: x, top_mods_json['array_designs']))
-        top_mods.injection_modes = set(
-            map(lambda x: x, top_mods_json['injection_modes']))
-        top_mods.acquisition_modes = set(
-            map(lambda x: x, top_mods_json['acquisition_modes']))
-        top_mods.pulse_sequences = set(
-            map(lambda x: x, top_mods_json['pulse_sequences']))
-        top_mods.technical_replicates = top_mods_json['technical_replicates']
-        top_mods.instruments = set(
-            map(lambda x: x, top_mods_json['instruments']))
-        top_mods.chromatography_instruments = set(
-            map(lambda x: x, top_mods_json['chromatography_instruments']))
+            top_mods.distinct_libraries = top_mods_json['distinct_libraries']
+            top_mods.technical_replicates = top_mods_json[
+                'technical_replicates']
+            top_mods.instruments = set(
+                map(lambda x: x, top_mods_json['instruments']))
+        elif set(self.ms_key_signature).issubset(key_signature):
+            top_mods = MSAssayTopologyModifiers()
+            top_mods.injection_modes = set(
+                map(lambda x: x, top_mods_json['injection_modes']))
+            top_mods.acquisition_modes = set(
+                map(lambda x: x, top_mods_json['acquisition_modes']))
+            top_mods.technical_replicates = top_mods_json[
+                'technical_replicates']
+            top_mods.instruments = set(
+                map(lambda x: x, top_mods_json['instruments']))
+            top_mods.chromatography_instruments = set(
+                map(lambda x: x, top_mods_json['chromatography_instruments']))
+        elif set(self.nmr_key_signature).issubset(key_signature):
+            top_mods = NMRAssayTopologyModifiers()
+            top_mods.injection_modes = set(
+                map(lambda x: x, top_mods_json['injection_modes']))
+            top_mods.acquisition_modes = set(
+                map(lambda x: x, top_mods_json['acquisition_modes']))
+            top_mods.pulse_sequences = set(
+                map(lambda x: x, top_mods_json['pulse_sequences']))
+            top_mods.technical_replicates = top_mods_json[
+                'technical_replicates']
+            top_mods.instruments = set(
+                map(lambda x: x, top_mods_json['instruments']))
         return top_mods
 
     def load_assay_type(self, assay_type_json):

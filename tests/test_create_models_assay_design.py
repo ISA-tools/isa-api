@@ -198,8 +198,10 @@ class AssayTopologyModifiersTest(unittest.TestCase):
             MSAssayTopologyModifiers()
         expected_assay_topology_modifiers = MSAssayTopologyModifiers(
             technical_replicates=6,
+            acquisition_modes={'mode1', 'mode2'},
             instruments={'Agilent QTOF'},
-            injection_modes={'GC', 'LC'}
+            injection_modes={'GC', 'LC'},
+            chromatography_instruments={'Agilent 12345F'}
         )
         self.assertEqual(expected_assay_topology_modifiers_default,
                          self.ms_assay_topology_modifiers_default)

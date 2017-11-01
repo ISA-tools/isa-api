@@ -27,12 +27,8 @@ class EncodeToJsonTests(unittest.TestCase):
         self.plan.add_sample_plan_record('liver', 3)
         self.plan.add_sample_plan_record('tissue', 5)
 
-        self.top_mods = AssayTopologyModifiers()
+        self.top_mods = DNAMicroAssayTopologyModifiers()
         self.top_mods.technical_replicates = 2
-        self.top_mods.injection_modes = {'LC', 'GC'}
-        self.top_mods.acquisition_modes = {'positive', 'negative'}
-        self.top_mods.chromatography_instruments = {'Agilent Q12324A'}
-        self.top_mods.instruments = {'Agilent QTOF'}
         self.top_mods.array_designs = {'A-AFFY-27', 'A-AFFY-28'}
 
         self.assay_type = AssayType(measurement_type='genome sequencing',
@@ -49,44 +45,73 @@ class EncodeToJsonTests(unittest.TestCase):
         self.treatment_sequence = TreatmentSequence(
             ranked_treatments=factory.compute_full_factorial_design())
 
-    def test_serialize_assay_default_topology_modifiers(self):
+    def test_serialize_dna_micro_assay_default_topology_modifiers(self):
+        expected = ordered(
+            json.loads("""{
+                "technical_replicates": 1,
+                "array_designs": []
+            }""")
+        )
+
+        actual = ordered(
+            json.loads(
+                json.dumps(DNAMicroAssayTopologyModifiers(),
+                           cls=SampleAssayPlanEncoder)
+            )
+        )
+        self.assertTrue(expected == actual)
+
+    def test_serialize_dna_seq_assay_default_topology_modifiers(self):
+        expected = ordered(
+            json.loads("""{
+                "technical_replicates": 1,
+                "distinct_libraries": 0,
+                "instruments": []
+            }""")
+        )
+
+        actual = ordered(
+            json.loads(
+                json.dumps(DNASeqAssayTopologyModifiers(),
+                           cls=SampleAssayPlanEncoder)
+            )
+        )
+        self.assertTrue(expected == actual)
+
+    def test_serialize_ms_assay_default_topology_modifiers(self):
         expected = ordered(
             json.loads("""{
                 "technical_replicates": 1,
                 "instruments": [],
-                "distinct_libraries": 0,
                 "injection_modes": [],
                 "chromatography_instruments": [],
-                "pulse_sequences": [],
-                "array_designs": [],
                 "acquisition_modes": []
             }""")
         )
 
         actual = ordered(
             json.loads(
-                json.dumps(AssayTopologyModifiers(), cls=SampleAssayPlanEncoder)
+                json.dumps(MSAssayTopologyModifiers(),
+                           cls=SampleAssayPlanEncoder)
             )
         )
         self.assertTrue(expected == actual)
 
-    def test_serialize_assay_topology_modifiers(self):
+    def test_serialize_nmr_assay_default_topology_modifiers(self):
         expected = ordered(
             json.loads("""{
-                "distinct_libraries": 0,
-                "instruments": ["Agilent QTOF"],
-                "injection_modes": ["GC", "LC"],
-                "acquisition_modes": ["negative", "positive"],
+                "technical_replicates": 1,
+                "instruments": [],
+                "injection_modes": [],
                 "pulse_sequences": [],
-                "array_designs": ["A-AFFY-27", "A-AFFY-28"],
-                "chromatography_instruments": ["Agilent Q12324A"],
-                "technical_replicates": 2
+                "acquisition_modes": []
             }""")
         )
 
         actual = ordered(
             json.loads(
-                json.dumps(self.top_mods, cls=SampleAssayPlanEncoder)
+                json.dumps(NMRAssayTopologyModifiers(),
+                           cls=SampleAssayPlanEncoder)
             )
         )
         self.assertTrue(expected == actual)
@@ -123,26 +148,19 @@ class EncodeToJsonTests(unittest.TestCase):
         )
         self.assertTrue(expected == actual)
 
-    def test_serialize_assay_type_with_top_mods(self):
+    def test_serialize_assay_type_with_dna_micro_top_mods(self):
         self.assay_type.topology_modifiers = self.top_mods
 
         expected = ordered(
             json.loads("""{
                 "topology_modifiers": {
-                    "acquisition_modes": ["negative", "positive"],
-                    "pulse_sequences": [],
-                    "chromatography_instruments": ["Agilent Q12324A"],
-                    "injection_modes": ["GC", "LC"],
-                    "instruments": ["Agilent QTOF"],
                     "technical_replicates": 2,
-                    "distinct_libraries": 0,
                     "array_designs": ["A-AFFY-27", "A-AFFY-28"]
                 },
                 "measurement_type": "genome sequencing",
                 "technology_type": "DNA microarray"
             }""")
         )
-
         actual = ordered(
             json.loads(
                 json.dumps(self.assay_type, cls=SampleAssayPlanEncoder)
@@ -266,14 +284,8 @@ class EncodeToJsonTests(unittest.TestCase):
                 "assay_types": [
                     {
                         "topology_modifiers": {
-                            "distinct_libraries": 0,
                             "technical_replicates": 2,
-                            "acquisition_modes": ["negative", "positive"],
-                            "instruments": ["Agilent QTOF"],
-                            "injection_modes": ["GC", "LC"],
-                            "array_designs": ["A-AFFY-27", "A-AFFY-28"],
-                            "pulse_sequences": [],
-                            "chromatography_instruments": ["Agilent Q12324A"]
+                            "array_designs": ["A-AFFY-27", "A-AFFY-28"]
                         }, 
                         "technology_type": "DNA microarray", 
                         "measurement_type": "genome sequencing"
@@ -283,14 +295,8 @@ class EncodeToJsonTests(unittest.TestCase):
                         "sample_type": "liver",
                         "assay_type": {
                             "topology_modifiers": {
-                                "distinct_libraries": 0,
                                 "technical_replicates": 2,
-                                "acquisition_modes": ["negative", "positive"],
-                                "instruments": ["Agilent QTOF"],
-                                "injection_modes": ["GC", "LC"],
-                                "array_designs": ["A-AFFY-27", "A-AFFY-28"],
-                                "pulse_sequences": [], 
-                                "chromatography_instruments": ["Agilent Q12324A"]
+                                "array_designs": ["A-AFFY-27", "A-AFFY-28"]
                             },
                             "technology_type": "DNA microarray",
                             "measurement_type": "genome sequencing"
@@ -300,14 +306,8 @@ class EncodeToJsonTests(unittest.TestCase):
                         "sample_type": "tissue",
                         "assay_type": {
                             "topology_modifiers": {
-                                "distinct_libraries": 0, 
-                                "technical_replicates": 2, 
-                                "acquisition_modes": ["negative", "positive"], 
-                                "instruments": ["Agilent QTOF"], 
-                                "injection_modes": ["GC", "LC"], 
-                                "array_designs": ["A-AFFY-27", "A-AFFY-28"], 
-                                "pulse_sequences": [], 
-                                "chromatography_instruments": ["Agilent Q12324A"]
+                                "technical_replicates": 2,
+                                "array_designs": ["A-AFFY-27", "A-AFFY-28"]
                             }, 
                             "technology_type": "DNA microarray", 
                             "measurement_type": "genome sequencing"
@@ -677,12 +677,8 @@ class DecodeFromJsonTests(unittest.TestCase):
         self.plan.add_sample_plan_record('liver', 3)
         self.plan.add_sample_plan_record('tissue', 5)
 
-        self.top_mods = AssayTopologyModifiers()
+        self.top_mods = DNAMicroAssayTopologyModifiers()
         self.top_mods.technical_replicates = 2
-        self.top_mods.injection_modes = {'LC', 'GC'}
-        self.top_mods.acquisition_modes = {'positive', 'negative'}
-        self.top_mods.chromatography_instruments = {'Agilent Q12324A'}
-        self.top_mods.instruments = {'Agilent QTOF'}
         self.top_mods.array_designs = {'A-AFFY-27', 'A-AFFY-28'}
 
         self.assay_type = AssayType(measurement_type='genome sequencing',
@@ -723,14 +719,8 @@ class DecodeFromJsonTests(unittest.TestCase):
                 "assay_types": [
                     {
                         "topology_modifiers": {
-                            "distinct_libraries": 0,
                             "technical_replicates": 2,
-                            "acquisition_modes": ["negative", "positive"],
-                            "instruments": ["Agilent QTOF"],
-                            "injection_modes": ["GC", "LC"],
-                            "array_designs": ["A-AFFY-27", "A-AFFY-28"],
-                            "pulse_sequences": [],
-                            "chromatography_instruments": ["Agilent Q12324A"]
+                            "array_designs": ["A-AFFY-27", "A-AFFY-28"]
                         }, 
                         "technology_type": "DNA microarray", 
                         "measurement_type": "genome sequencing"
@@ -740,14 +730,8 @@ class DecodeFromJsonTests(unittest.TestCase):
                         "sample_type": "liver",
                         "assay_type": {
                             "topology_modifiers": {
-                                "distinct_libraries": 0,
                                 "technical_replicates": 2,
-                                "acquisition_modes": ["negative", "positive"],
-                                "instruments": ["Agilent QTOF"],
-                                "injection_modes": ["GC", "LC"],
-                                "array_designs": ["A-AFFY-27", "A-AFFY-28"],
-                                "pulse_sequences": [], 
-                                "chromatography_instruments": ["Agilent Q12324A"]
+                                "array_designs": ["A-AFFY-27", "A-AFFY-28"]
                             },
                             "technology_type": "DNA microarray",
                             "measurement_type": "genome sequencing"
@@ -757,14 +741,8 @@ class DecodeFromJsonTests(unittest.TestCase):
                         "sample_type": "tissue",
                         "assay_type": {
                             "topology_modifiers": {
-                                "distinct_libraries": 0, 
-                                "technical_replicates": 2, 
-                                "acquisition_modes": ["negative", "positive"], 
-                                "instruments": ["Agilent QTOF"], 
-                                "injection_modes": ["GC", "LC"], 
-                                "array_designs": ["A-AFFY-27", "A-AFFY-28"], 
-                                "pulse_sequences": [], 
-                                "chromatography_instruments": ["Agilent Q12324A"]
+                                "technical_replicates": 2,
+                                "array_designs": ["A-AFFY-27", "A-AFFY-28"]
                             }, 
                             "technology_type": "DNA microarray", 
                             "measurement_type": "genome sequencing"
