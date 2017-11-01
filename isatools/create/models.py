@@ -548,6 +548,50 @@ class AssayTopologyModifiers(object):
                other.chromatography_instruments
 
 
+class NMRAssayTopologyModifiers(AssayTopologyModifiers):
+
+    def __init__(self, acquisition_modes=None,
+                 pulse_sequences=None, technical_replicates=1,
+                 instruments=None):
+        super().__init__(technical_replicates=technical_replicates,
+                         instruments=instruments,
+                         pulse_sequences=pulse_sequences,
+                         acquisition_modes=acquisition_modes)
+
+
+class MSAssayTopologyModifiers(AssayTopologyModifiers):
+
+    def __init__(self, acquisition_modes=None,
+                 chromatography_instruments=None, technical_replicates=1,
+                 instruments=None, injection_modes=None):
+        super().__init__(technical_replicates=technical_replicates,
+                         instruments=instruments,
+                         chromatography_instruments=chromatography_instruments,
+                         injection_modes=injection_modes,
+                         acquisition_modes=acquisition_modes)
+
+
+class DNASeqAssayTopologyModifiers(AssayTopologyModifiers):
+
+    def __init__(self, acquisition_modes=None,
+                 distinct_libraries=0, technical_replicates=1,
+                 instruments=None):
+        super().__init__(technical_replicates=technical_replicates,
+                         instruments=instruments,
+                         distinct_libraries=distinct_libraries,
+                         acquisition_modes=acquisition_modes)
+
+
+class DNAMicroAssayTopologyModifiers(AssayTopologyModifiers):
+
+    def __init__(self, acquisition_modes=None,
+                 array_designs=None, technical_replicates=1,
+                 instruments=None):
+        super().__init__(technical_replicates=technical_replicates,
+                         instruments=instruments,
+                         array_designs=array_designs)
+
+
 class SampleAssayPlan(object):
     def __init__(self, group_size=0, sample_plan=None, assay_plan=None,
                  sample_qc_plan=None):
