@@ -18,9 +18,9 @@ To validate ISA-Tab files in a given directory ``./tabdir/`` against a given con
 making sure to *point to the investigation file* of your ISA-Tab, and providing the XML configurations. The validator will then read the location of your study and assay table files from the investigation file in order to validate those. If no path to XML configurations is provided, the ISA API will automatically select and use the ``isaconfig-default_v2015-07-02`` configurations.
 
 This ISA-Tab validator has been tested against the sample data sets `BII-I-1
-<https://github.com/ISA-tools/isa-api/tree/master/tests/data/BII-I-1>`_, `BII-S-3
-<https://github.com/ISA-tools/isa-api/tree/master/tests/data/BII-S-3>`_ and `BII-S-7
-<https://github.com/ISA-tools/isa-api/tree/master/tests/data/BII-S-7>`_, that are found in the ``isatools`` package.
+<https://github.com/ISA-tools/ISAdatasets/tree/master/tab/BII-I-1>`_, `BII-S-3
+<https://github.com/ISA-tools/ISAdatasets/tree/master/tab/BII-S-3>`_ and `BII-S-7
+<https://github.com/ISA-tools/ISAdatasets/tree/master/tab/BII-S-7>`_, that are found in the ``isatools`` package.
 
 The validator will return a JSON-formatted report of warnings and errors.
 
@@ -36,7 +36,7 @@ To validate an ISA JSON file against the ISA JSON version 1.0 specification you 
 
 The rules we check for in the new validators are documented in `this working document <https://goo.gl/l0YzZt>`_  in Google spreadsheets. Please be aware as this is a working document, some of these rules may be amended as we get more feedback and evolve the ISA API code.
 
-This ISA JSON validator has been tested against `a range of dummy test data <https://github.com/ISA-tools/isa-api/tree/master/tests/data/json>`_ found in ``isatools`` tests package.
+This ISA JSON validator has been tested against `a range of dummy test data <https://github.com/ISA-tools/ISAdatasets/tree/tests/json>`_ found in ``ISAdatasets`` GitHub repository.
 
 The validator will return a JSON-formatted report of warnings and errors.
 
