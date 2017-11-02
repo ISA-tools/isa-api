@@ -17,7 +17,7 @@ Installation from sources
 -------------------------
 The ISA-API source code is hosted on GitHub at: `<https://github.com/ISA-tools/isa-api>`_ You can get the source code by running the following `git` command:
 
-``https://github.com/ISA-tools/isa-api/``
+``$ git clone https://github.com/ISA-tools/isa-api/``
 
 We recommend using a virtual environment for your Python projects. ``virtualenv`` is a tool for creating isolated
 Python runtime environments. It does not install separate copies of Python, but rather it does provide a clever way
