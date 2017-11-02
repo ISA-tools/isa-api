@@ -667,33 +667,31 @@ class DNAMicroAssayTopologyModifiers(AssayTopologyModifiers):
 
 
 class SampleAssayPlan(object):
+
     def __init__(self, group_size=0, sample_plan=None, assay_plan=None,
                  sample_qc_plan=None):
-        # TODO test initialization from sample_plan and assay_plan!!
         self.__group_size = 0
         self.__sample_types = set()
         self.__assay_types = set()
-
         self.group_size = group_size
-
         if sample_plan is None:
             self.__sample_plan = {}
         else:
             self.sample_types = {key for key in sample_plan}
             self.sample_plan = sample_plan
-
         if assay_plan is None:
             self.__assay_plan = set()
         else:
             self.assay_types = {value for key, value in assay_plan}
             self.assay_plan = assay_plan
-
         if sample_qc_plan is None:
             self.__sample_qc_plan = {}
         else:
             for k, v in assay_plan:
                 self.assay_types.add(v)
             self.__sample_qc_plan = sample_qc_plan
+        self.__pre_run_batch = None
+        self.__post_run_batch = None
 
     @property
     def group_size(self):
@@ -847,6 +845,34 @@ class SampleAssayPlan(object):
         for sample_type, injection_interval in val.items():
             self.add_sample_qc_plan_record(sample_type, injection_interval)
 
+    @property
+    def pre_run_batch(self):
+        return self.__pre_run_batch
+
+    @pre_run_batch.setter
+    def pre_run_batch(self, qc_batch_dict):
+        pre_run_batch = SampleQCBatch()
+        pre_run_batch.material = qc_batch_dict['material']
+        parameter_name = qc_batch_dict['parameter']
+        parameter_values = qc_batch_dict['values']
+        pre_run_batch.parameter_values = list(
+            map(lambda x: (parameter_name, x), parameter_values))
+        self.__pre_run_batch = pre_run_batch
+        
+    @property
+    def post_run_batch(self):
+        return self.__post_run_batch
+
+    @post_run_batch.setter
+    def post_run_batch(self, qc_batch_dict):
+        post_run_batch = SampleQCBatch()
+        post_run_batch.material = qc_batch_dict['material']
+        parameter_name = qc_batch_dict['parameter']
+        parameter_values = qc_batch_dict['values']
+        post_run_batch.parameter_values = list(
+            map(lambda x: (parameter_name, x), parameter_values))
+        self.__post_run_batch = post_run_batch
+
     def __repr__(self):
         return 'isatools.create.models.SampleAssayPlan(' \
                'group_size={sample_assay_plan.group_size}, ' \
@@ -862,6 +888,13 @@ class SampleAssayPlan(object):
 
     def __ne__(self, other):
         return hash(repr(self)) != hash(repr(other))
+
+
+class SampleQCBatch(object):
+
+    def __init__(self, material=None, parameter_values=None):
+        self.material = material
+        self.parameter_values = parameter_values
 
 
 class BaseStudyDesign(object):
@@ -974,16 +1007,47 @@ class IsaModelObjectFactory(object):
         samples = []
         process_sequence = []
         study = Study(filename='study.txt')
-        study.protocols = [Protocol(name='sample collection', protocol_type=
-                                    OntologyAnnotation(term='sample collection')
-                                    )]
+        sample_collection = Protocol(name='sample collection',
+                                     protocol_type=OntologyAnnotation(
+                                         term='sample collection'))
+        sample_collection.add_param('Run Order')
+        study.protocols = [sample_collection]
         collection_event_rank_characteristic = OntologyAnnotation(
             term='collection_event_rank_characteristic')
         study.characteristic_categories.append(
             collection_event_rank_characteristic)
 
         sample_count = 0
+        qc_param_set = set()
 
+        sample_qc_plan = self.sample_assay_plan
+        prebatch = sample_qc_plan.pre_run_batch
+        if isinstance(prebatch, SampleQCBatch):
+            qcsource = Source(name='qc_prebatch_in', characteristics=[
+                Characteristic(
+                    category=OntologyAnnotation(term='Material Type'),
+                    value=OntologyAnnotation(term=prebatch.material))])
+            sources.append(qcsource)
+            for i, (p, v) in enumerate(prebatch.parameter_values):
+                qc_param_set.add(p)
+                sample = Sample(name='qc_prebatch_out-{}'.format(i))
+                qc_param = sample_collection.get_param(p)
+                if qc_param is None:
+                    sample_collection.add_param(p)
+                process = Process(executes_protocol=study.get_prot(
+                    'sample collection'), inputs=[qcsource],
+                    outputs=[sample], performer=self.ops[0], date_=
+                    datetime.datetime.isoformat(
+                        datetime.datetime.now()))
+                process.parameter_values=[
+                    ParameterValue(
+                        category=sample_collection.get_param('Run Order'),
+                        value=-1),
+                    ParameterValue(category=sample_collection.get_param(p),
+                                   value=v),
+                ]
+                samples.append(sample)
+                process_sequence.append(process)
         for group_id, fvs, rank in groups_ids:
             collection_event_rank = Characteristic(
                 category=collection_event_rank_characteristic,
@@ -998,10 +1062,10 @@ class IsaModelObjectFactory(object):
                 sources.append(source)
                 for sample_type, sampling_size in sample_plan.items():
                     for sampn in range(0, sampling_size):
-                        for qc_material_type in  self.sample_assay_plan \
+                        for qc_material_type in self.sample_assay_plan \
                                 .sample_qc_plan.keys():
 
-                            if sample_count % self.sample_assay_plan\
+                            if sample_count % self.sample_assay_plan \
                                     .sample_qc_plan[qc_material_type] == 0:
                                 # insert QC sample collection
                                 qcsource = Source(
@@ -1015,17 +1079,16 @@ class IsaModelObjectFactory(object):
                                         'qc', qc_material_type.value.term))
                                 sample.derives_from = [qcsource]
                                 samples.append(sample)
-
-                                process = Process(executes_protocol=study.get_prot(
-                                    'sample collection'), inputs=[qcsource],
-                                    outputs=[sample], performer=self.ops[0], date_=
-                                    datetime.datetime.isoformat(
+                                process = Process(
+                                    executes_protocol=sample_collection,
+                                    inputs=[qcsource],
+                                    outputs=[sample], performer=self.ops[0],
+                                    date_=datetime.datetime.isoformat(
                                         datetime.datetime.now()),
-                                parameter_values=[ParameterValue(
-                                    category=ProtocolParameter(
-                                        parameter_name=OntologyAnnotation(
-                                            term='Run Order')),
-                                    value=str(sample_count))])
+                                    parameter_values=[ParameterValue(
+                                        category=sample_collection.get_param(
+                                            'Run Order'), value=str(
+                                            sample_count))])
                                 process_sequence.append(process)
                         # normal sample collection
                         sample = Sample(name=self._idgen(
@@ -1037,16 +1100,50 @@ class IsaModelObjectFactory(object):
                         samples.append(sample)
                         sample_count += 1
 
-                        process = Process(executes_protocol=study.get_prot(
-                            'sample collection'), inputs=[source],
-                            outputs=[sample], performer=self.ops[0], date_=
+                        process = Process(executes_protocol=sample_collection,
+                                          inputs=[source], outputs=[sample],
+                                          performer=self.ops[0], date_=
                             datetime.date.isoformat(datetime.datetime.now()),
                         parameter_values=[ParameterValue(
-                            category=ProtocolParameter(
-                                parameter_name=OntologyAnnotation(
-                                    term='Run Order')),
+                            category=sample_collection.get_param('Run Order'),
                             value=str(sample_count))])
                         process_sequence.append(process)
+        postbatch = sample_qc_plan.post_run_batch
+        if isinstance(postbatch, SampleQCBatch):
+            qcsource = Source(name='qc_postbatch_in', characteristics=[
+                Characteristic(
+                    category=OntologyAnnotation(term='Material Type'),
+                    value=OntologyAnnotation(term=postbatch.material))])
+            sources.append(qcsource)
+            for i, (p, v) in enumerate(postbatch.parameter_values):
+                qc_param_set.add(p)
+                sample = Sample(name='qc_postbatch_out-{}'.format(i))
+                qc_param = sample_collection.get_param(p)
+                if qc_param is None:
+                    sample_collection.add_param(p)
+                process = Process(executes_protocol=study.get_prot(
+                    'sample collection'), inputs=[qcsource],
+                    outputs=[sample], performer=self.ops[0], date_=
+                    datetime.datetime.isoformat(
+                        datetime.datetime.now()))
+                process.parameter_values = [
+                    ParameterValue(
+                        category=sample_collection.get_param('Run Order'),
+                                   value=(sample_count + 1)),
+                    ParameterValue(category=sample_collection.get_param(p),
+                                   value=v)
+                ]
+                samples.append(sample)
+                process_sequence.append(process)
+        # normalize size of params across all processes
+        for process in process_sequence:
+            missing = qc_param_set - set(
+                [x.category.parameter_name.term for x in
+                 process.parameter_values])
+            for each in missing:
+                qc_param_missing = sample_collection.get_param(each)
+                process.parameter_values.append(
+                    ParameterValue(category=qc_param_missing))
         study.sources = sources
         study.samples = samples
         study.process_sequence = process_sequence

@@ -665,6 +665,20 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         plan.group_size = 2
         plan.add_sample_type('solvent')
         plan.add_sample_qc_plan_record('solvent', 8)
+        plan.pre_run_batch = {
+            'material': 'blank',
+            'parameter': 'param1',
+            'values': [
+                5, 4, 3, 2, 1, 1, 1, 1, 1, 1
+            ]
+        }
+        plan.post_run_batch = {
+            'material': 'blank',
+            'parameter': 'param2',
+            'values': [
+                1, 1, 1, 1, 1, 1, 2, 3, 4, 5
+            ]
+        }
 
         treatment_factory = TreatmentFactory(
             factors=[self.f1, self.f2, self.f3])
@@ -681,12 +695,11 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         study = IsaModelObjectFactory(
             plan,  treatment_sequence).create_study_from_plan()
         study.filename = 's_study.txt'
-        # print(isatab.dumps(self.investigation))
         self.investigation.studies = [study]
-        # 36 sources, 36 QC sources
-        self.assertEqual(72, len(study.sources))
+        # 36 sources, 38 QC sources
+        self.assertEqual(74, len(study.sources))
         self.assertEqual(36, len(
             [x for x in study.sources
              if x.get_char('Material Type').value.term == 'solvent']))
         # 288 samples plus 36 QC samples
-        self.assertEqual(324, len(study.samples))
+        self.assertEqual(344, len(study.samples))
