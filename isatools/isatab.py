@@ -24,7 +24,7 @@ from isatools.model import *
 
 __author__ = 'djcomlab@gmail.com (David Johnson)'
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 log = logging.getLogger(__name__)
 
 
@@ -575,6 +575,12 @@ class StudySampleTableParser(AbstractParser):
         elif label.startswith('Sample Name'):
             return 'Sample Name'
 
+    @staticmethod
+    def _pairwise(iterable):
+        a, b = itertools.tee(iterable)
+        next(b, None)
+        return zip(a, b)
+
     def _make_process_sequence(self, df):
         object_labels = ('Source Name', 'Sample Name', 'Protocol REF')
         assay_name_labels = (
@@ -623,7 +629,30 @@ class StudySampleTableParser(AbstractParser):
                         '.'.join([self._clean_label(label), val]))
             process_key_sequences.append(process_key_sequence)
         for process_key_sequence in process_key_sequences:
-            print(process_key_sequence)
+            iteration = []
+            for left, right in self._pairwise(process_key_sequence):
+                iteration.append([left, right])
+                if left.startswith(('Source Name',
+                                    'Sample Name')) and not right.startswith(
+                        ('Source Name', 'Sample Name')):
+                    material = self.materials_map[left]
+                    process = self.process_map[right]
+                    if material not in process.inputs:
+                        process.inputs.append(material)
+                elif not left.startswith(('Source Name',
+                                        'Sample Name')) and right.startswith(
+                        ('Source Name', 'Sample Name')):
+                    process = self.process_map[left]
+                    material = self.materials_map[right]
+                    if material not in process.outputs:
+                        process.outputs.append(material)
+                else:
+                    # ignore, as we then link processes
+                    print('left and right are both processes')
+
+        for process in [x for x in self.process_map.values()]:
+            print(process.inputs)
+            print(process.outputs)
 
 
 class AssayTableParser(AbstractParser):

@@ -14,7 +14,7 @@ from isatools.model import *
 
 __author__ = 'djcomlab@gmail.com (David Johnson)'
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 log = logging.getLogger(__name__)
 
 errors = []
