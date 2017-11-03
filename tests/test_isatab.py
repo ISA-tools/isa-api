@@ -351,8 +351,8 @@ class InvestigationParserUnitTests(unittest.TestCase):
 class InvestigationParserIntegrationTests(unittest.TestCase):
 
     def setUp(self):
-        self._tab_data_dir = os.path.join(os.path.dirname(__file__), 'data',
-                                          'tab')
+        self._tab_data_dir = os.path.join(
+            os.path.dirname(__file__), 'data', 'tab')
         self.parser = isatab.InvestigationParser()
 
     def tearDown(self):
@@ -406,6 +406,8 @@ class InvestigationParserIntegrationTests(unittest.TestCase):
 
 class StudySampleTableParserUnitTest(unittest.TestCase):
 
+    """Note: does not account for missing Protocol REF preprocessing"""
+
     def setUp(self):
         self.isa = Investigation()
         self.isa.ontology_source_references = [
@@ -430,6 +432,16 @@ class StudySampleTableParserUnitTest(unittest.TestCase):
             u'Source Name\tProtocol REF\tSample Name\n' \
             u'source1\tsample collection\tsample1\n' \
             u'source2\tsample collection\tsample2'
+
+        self.study_sample_table_with_process_split = \
+            u'Source Name\tProtocol REF\tSample Name\n' \
+            u'source1\tsample collection\tsample1\n' \
+            u'source1\tsample collection\tsample2'
+
+        self.study_sample_table_with_process_pool = \
+            u'Source Name\tProtocol REF\tSample Name\n' \
+            u'source1\tsample collection\tsample1\n' \
+            u'source2\tsample collection\tsample1'
 
         self.source_list = [Source(name='source1'), Source(name='source2')]
         self.sample_list = [Sample(name='sample1'), Sample(name='sample2')]
@@ -462,28 +474,51 @@ class StudySampleTableParserUnitTest(unittest.TestCase):
     def test_parse_process_sequence(self):
         self.parser.parse(
             io.StringIO(self.study_sample_table_with_process))
+        self.assertEqual(len(self.parser.process_sequence), 2)
         self.assertIn(self.source_list[0],
                       self.parser.process_sequence[0].inputs)
-        self.assertIn(self.sample_list[1],
-                      self.parser.process_sequence[1].outputs)
-        self.assertIn(self.source_list[1],
-                      self.parser.process_sequence[1].inputs)
-        self.assertIn(self.sample_list[1],
-                      self.parser.process_sequence[1].outputs)
+        self.assertIn(self.sample_list[0],
+                      self.parser.process_sequence[0].outputs)
+        self.assertIn(self.source_list[-1],
+                      self.parser.process_sequence[-1].inputs)
+        self.assertIn(self.sample_list[-1],
+                      self.parser.process_sequence[-1].outputs)
+
+    def test_parse_process_sequence_split(self):
+        self.parser.parse(
+            io.StringIO(self.study_sample_table_with_process_split))
+        self.assertEqual(len(self.parser.process_sequence), 1)
+        self.assertIn(self.source_list[0],
+                      self.parser.process_sequence[0].inputs)
+        self.assertIn(self.sample_list[0],
+                      self.parser.process_sequence[0].outputs)
+        self.assertIn(self.sample_list[-1],
+                      self.parser.process_sequence[0].outputs)
+
+    def test_parse_process_sequence_pool(self):
+        self.parser.parse(
+            io.StringIO(self.study_sample_table_with_process_pool))
+        self.assertEqual(len(self.parser.process_sequence), 1)
+        self.assertIn(self.source_list[0],
+                      self.parser.process_sequence[0].inputs)
+        self.assertIn(self.source_list[-1],
+                      self.parser.process_sequence[0].inputs)
+        self.assertIn(self.sample_list[0],
+                      self.parser.process_sequence[0].outputs)
 
 
 class StudySampleTableParserIntegrationTest(unittest.TestCase):
 
     def setUp(self):
-        self._tab_data_dir = os.path.join(os.path.dirname(__file__), 'data',
-                                          'tab')
+        self._tab_data_dir = os.path.join(
+            os.path.dirname(__file__), 'data', 'tab')
 
     def tearDown(self):
         pass
 
     def test_isatab_parse_study_table_bii_s_1(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
-                               'i_investigation.txt')) as fp:
+                                  'i_investigation.txt')) as fp:
             investigation_parser = isatab.InvestigationParser()
             investigation_parser.parse(fp)
 
@@ -498,7 +533,7 @@ class StudySampleTableParserIntegrationTest(unittest.TestCase):
 
     def test_isatab_parse_bii_s_2(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
-                               'i_investigation.txt')) as fp:
+                                  'i_investigation.txt')) as fp:
             investigation_parser = isatab.InvestigationParser()
             investigation_parser.parse(fp)
             self.parser = isatab.StudySampleTableParser(
@@ -512,7 +547,7 @@ class StudySampleTableParserIntegrationTest(unittest.TestCase):
 
     def test_isatab_parse_study_table_bii_s_3(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-S-3',
-                               'i_gilbert.txt')) as fp:
+                                  'i_gilbert.txt')) as fp:
             investigation_parser = isatab.InvestigationParser()
             investigation_parser.parse(fp)
             self.parser = isatab.StudySampleTableParser(
@@ -526,7 +561,7 @@ class StudySampleTableParserIntegrationTest(unittest.TestCase):
 
     def test_isatab_load_bii_s_7(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-S-7',
-                               'i_matteo.txt')) as fp:
+                                  'i_matteo.txt')) as fp:
             investigation_parser = isatab.InvestigationParser()
             investigation_parser.parse(fp)
             self.parser = isatab.StudySampleTableParser(
@@ -553,6 +588,11 @@ class AssayTableParserUnitTest(unittest.TestCase):
             u'sample1\textract1\t\tfile1.txt\n' \
             u'sample2\t\tlabeled1\tfile2.txt'
 
+        self.assay_table_with_process = \
+            u'Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tLabeled Extract Name\tProtocol REF\tRaw Data File\n' \
+            u'sample1\tsample extraction\textract1\tlabeling\tlabeled1\tscanning\tfile1.txt\n' \
+            u'sample2\tsample extraction\textract1\tlabeling\tlabeled1\tscanning\tfile2.txt'
+
         self.sample_list = [Sample(name='sample1'), Sample(name='sample2')]
         self.data_file_list = [
             DataFile(filename='file2.txt', label='Raw Data File'),
@@ -578,12 +618,17 @@ class AssayTableParserUnitTest(unittest.TestCase):
             sorted(self.parser.other_material, key=lambda x: repr(x)),
             sorted(self.other_material_list, key=lambda x: repr(x)))
 
+    def test_parse_process_sequence(self):
+        self.parser.parse(
+            io.StringIO(self.assay_table_with_process))
+        self.assertEqual(len(self.parser.process_sequence), 3)
+
 
 class AssayTableParserIntegrationTest(unittest.TestCase):
 
     def setUp(self):
-        self._tab_data_dir = os.path.join(os.path.dirname(__file__), 'data',
-                                          'tab')
+        self._tab_data_dir = os.path.join(
+            os.path.dirname(__file__), 'data', 'tab')
 
     def tearDown(self):
         pass
@@ -601,6 +646,7 @@ class AssayTableParserIntegrationTest(unittest.TestCase):
             self.assertEqual(len(self.parser.samples), 92)
             self.assertEqual(len(self.parser.data_files), 111)
             self.assertEqual(len(self.parser.other_material), 92)
+            self.assertEqual(len(self.parser.process_sequence), 92)
 
     def test_isatab_parse_bii_s_1_microarray(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
@@ -614,6 +660,7 @@ class AssayTableParserIntegrationTest(unittest.TestCase):
             self.assertEqual(len(self.parser.samples), 2)
             self.assertEqual(len(self.parser.data_files), 15)
             self.assertEqual(len(self.parser.other_material), 28)
+            self.assertEqual(len(self.parser.process_sequence), 30)
 
     def test_isatab_parse_bii_s_1_proteome(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
@@ -627,6 +674,7 @@ class AssayTableParserIntegrationTest(unittest.TestCase):
             self.assertEqual(len(self.parser.samples), 8)
             self.assertEqual(len(self.parser.data_files), 7)
             self.assertEqual(len(self.parser.other_material), 19)
+            self.assertEqual(len(self.parser.process_sequence), 16)
 
     def test_isatab_parse_bii_s_2_trascriptome(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
@@ -640,6 +688,7 @@ class AssayTableParserIntegrationTest(unittest.TestCase):
             self.assertEqual(len(self.parser.samples), 48)
             self.assertEqual(len(self.parser.data_files), 49)
             self.assertEqual(len(self.parser.other_material), 96)
+            self.assertEqual(len(self.parser.process_sequence), 144)
 
     def test_isatab_parse_bii_s_3_Gx(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-S-3',
@@ -653,6 +702,7 @@ class AssayTableParserIntegrationTest(unittest.TestCase):
             self.assertEqual(len(self.parser.samples), 4)
             self.assertEqual(len(self.parser.data_files), 6)
             self.assertEqual(len(self.parser.other_material), 4)
+            self.assertEqual(len(self.parser.process_sequence), 16)
 
     def test_isatab_parse_bii_s_3_Tx(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-S-3',
@@ -666,10 +716,11 @@ class AssayTableParserIntegrationTest(unittest.TestCase):
             self.assertEqual(len(self.parser.samples), 4)
             self.assertEqual(len(self.parser.data_files), 24)
             self.assertEqual(len(self.parser.other_material), 4)
+            self.assertEqual(len(self.parser.process_sequence), 16)
 
     def test_isatab_parse_bii_s_7_Gx(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-S-7',
-                               'i_matteo.txt')) as fp:
+                                 'i_matteo.txt')) as fp:
             investigation_parser = isatab.InvestigationParser()
             investigation_parser.parse(fp)
             self.parser = isatab.AssayTableParser(
@@ -679,13 +730,14 @@ class AssayTableParserIntegrationTest(unittest.TestCase):
             self.assertEqual(len(self.parser.samples), 29)
             self.assertEqual(len(self.parser.data_files), 29)
             self.assertEqual(len(self.parser.other_material), 29)
+            self.assertEqual(len(self.parser.process_sequence), 116)
 
 
 class ParserIntegrationTest(unittest.TestCase):
 
     def setUp(self):
-        self._tab_data_dir = os.path.join(os.path.dirname(__file__), 'data',
-                                          'tab')
+        self._tab_data_dir = os.path.join(
+            os.path.dirname(__file__), 'data', 'tab')
         self.parser = isatab.Parser()
 
     def test_parser_with_bii_i_1(self):
@@ -698,58 +750,61 @@ class ParserIntegrationTest(unittest.TestCase):
             self.assertEqual(len(self.parser.isa.comments), 2)
             self.assertEqual(len(self.parser.isa.studies), 2)
 
-            self.assertEqual(len(self.parser.isa.studies[0].design_descriptors),
-                             1)
-            self.assertEqual(len(self.parser.isa.studies[0].publications),
-                             1)
-            self.assertEqual(len(self.parser.isa.studies[0].contacts),
-                             3)
-            self.assertEqual(len(self.parser.isa.studies[0].factors),
-                             2)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].design_descriptors), 1)
+            self.assertEqual(len(self.parser.isa.studies[0].publications), 1)
+            self.assertEqual(len(self.parser.isa.studies[0].contacts), 3)
+            self.assertEqual(len(self.parser.isa.studies[0].factors), 2)
             self.assertEqual(len(self.parser.isa.studies[0].assays), 3)
             self.assertEqual(len(self.parser.isa.studies[0].protocols), 7)
 
-            self.assertEqual(len(self.parser.isa.studies[0].assays[0].samples),
-                             8)
-            self.assertEqual(
-                len(self.parser.isa.studies[0].assays[0].data_files),
-                7)
-            self.assertEqual(
-                len(self.parser.isa.studies[0].assays[0].other_material),
-                19)
-            self.assertEqual(len(self.parser.isa.studies[0].assays[1].samples),
-                             92)
-            self.assertEqual(
-                len(self.parser.isa.studies[0].assays[1].data_files),
-                111)
-            self.assertEqual(
-                len(self.parser.isa.studies[0].assays[1].other_material),
-                92)
+            self.assertEqual(len(self.parser.isa.studies[0].sources), 18)
+            self.assertEqual(len(self.parser.isa.studies[0].samples), 164)
+            self.assertEqual(len(self.parser.isa.studies[0].process_sequence), 18)
 
-            self.assertEqual(len(self.parser.isa.studies[0].assays[2].samples),
-                             48)
             self.assertEqual(
-                len(self.parser.isa.studies[0].assays[2].data_files),
-                49)
+                len(self.parser.isa.studies[0].assays[0].samples), 8)
             self.assertEqual(
-                len(self.parser.isa.studies[0].assays[2].other_material),
-                96)
-            self.assertEqual(len(self.parser.isa.studies[1].design_descriptors),
-                             1)
-            self.assertEqual(len(self.parser.isa.studies[1].publications),
-                             1)
-            self.assertEqual(len(self.parser.isa.studies[1].contacts),
-                             3)
-            self.assertEqual(len(self.parser.isa.studies[1].factors),
-                             3)
+                len(self.parser.isa.studies[0].assays[0].data_files), 7)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[0].other_material), 19)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[0].process_sequence), 16)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[1].samples), 92)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[1].data_files), 111)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[1].other_material), 92)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[1].process_sequence), 92)
+
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[2].samples), 48)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[2].data_files), 49)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[2].other_material), 96)
+            self.assertEqual(
+                len(self.parser.isa.studies[0].assays[2].process_sequence), 144)
+
+            self.assertEqual(
+                len(self.parser.isa.studies[1].design_descriptors), 1)
+            self.assertEqual(len(self.parser.isa.studies[1].publications), 1)
+            self.assertEqual(len(self.parser.isa.studies[1].contacts), 3)
+            self.assertEqual(len(self.parser.isa.studies[1].factors), 3)
             self.assertEqual(len(self.parser.isa.studies[1].assays), 1)
             self.assertEqual(len(self.parser.isa.studies[1].protocols), 4)
 
-            self.assertEqual(len(self.parser.isa.studies[1].assays[-1].samples),
-                             2)
+            self.assertEqual(len(self.parser.isa.studies[1].sources), 1)
+            self.assertEqual(len(self.parser.isa.studies[1].samples), 2)
+            self.assertEqual(len(self.parser.isa.studies[1].process_sequence), 1)
+
             self.assertEqual(
-                len(self.parser.isa.studies[1].assays[-1].data_files),
-                15)
+                len(self.parser.isa.studies[1].assays[-1].samples), 2)
             self.assertEqual(
-                len(self.parser.isa.studies[1].assays[-1].other_material),
-                28)
+                len(self.parser.isa.studies[1].assays[-1].data_files), 15)
+            self.assertEqual(
+                len(self.parser.isa.studies[1].assays[-1].other_material), 28)
+            self.assertEqual(
+                len(self.parser.isa.studies[1].assays[-1].process_sequence), 30)

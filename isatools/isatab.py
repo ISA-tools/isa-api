@@ -18,6 +18,7 @@ import os
 import pandas as pd
 import re
 from collections import namedtuple
+from collections import OrderedDict
 from six.moves import zip_longest, zip
 
 from isatools.model import *
@@ -65,12 +66,134 @@ class Sniffer(object):
 
 class AbstractParser(object):
 
+    @staticmethod
+    def _pairwise(iterable):
+        a, b = itertools.tee(iterable)
+        next(b, None)
+        return zip(a, b)
+
     def parse(self, filepath_or_buffer):
         if isinstance(filepath_or_buffer, str):
             with open(filepath_or_buffer, 'rU') as filebuffer:
                 self._parse(filebuffer)
         else:
             self._parse(filepath_or_buffer)
+
+    def _parse(self, filebuffer):
+        raise NotImplementedError(
+            'Inherit from this class and implement this method')
+
+
+class TableParser(AbstractParser):
+
+    DATA_FILE_LABELS = (
+        'Raw Data File', 'Derived Spectral Data File',
+        'Derived Array Data File', 'Array Data File',
+        'Protein Assignment File', 'Peptide Assignment File',
+        'Post Translational Modification Assignment File',
+        'Acquisition Parameter Data File', 'Free Induction Decay Data File',
+        'Derived Array Data Matrix File', 'Image File', 'Derived Data File',
+        'Metabolite Assignment File', 'Raw Spectral Data File')
+    MATERIAL_LABELS = ('Source Name', 'Sample Name', 'Extract Name',
+                       'Labeled Extract Name')
+    OTHER_MATERIAL_LABELS = ('Extract Name', 'Labeled Extract Name')
+    NODE_LABELS = DATA_FILE_LABELS + MATERIAL_LABELS + OTHER_MATERIAL_LABELS
+    ASSAY_LABELS = ('Assay Name', 'MS Assay Name', 'Hybridization Assay Name',
+                    'Scan Name', 'Data Transformation Name',
+                    'Normalization Name')
+    ALL_LABELS = NODE_LABELS + ASSAY_LABELS + tuple('Protocol REF')
+
+    @staticmethod
+    def _find_lt(a, x):
+        i = bisect_left(a, x)
+        if i:
+            return a[i - 1]
+        else:
+            return -1
+
+    @staticmethod
+    def _find_gt(a, x):
+        i = bisect_right(a, x)
+        if i != len(a):
+            return a[i]
+        else:
+            return -1
+
+    @staticmethod
+    def _clean_label(label):
+        for clean_label in TableParser.ALL_LABELS:
+            if label.startswith(clean_label):
+                return clean_label
+
+    def __init__(self):
+        self.node_map = OrderedDict()
+        self.process_map = OrderedDict()
+
+    def _make_process_sequence(self, df):
+        df = df[[x for x in df.columns if
+                 x.startswith(TableParser.ALL_LABELS)]]
+        process_key_sequences = []
+        for rindex, row in df.iterrows():
+            process_key_sequence = []
+            labels = df.columns
+            nodes_index = [i for i, x in enumerate(labels) if
+                           x in TableParser.NODE_LABELS]
+            for cindex, label in enumerate(labels):
+                val = row[label]
+                if label.startswith('Protocol REF') and val != '':
+                    output_node_index = self._find_gt(nodes_index, cindex)
+                    if output_node_index > -1:
+                        output_node_label = labels[output_node_index]
+                        output_node_val = row[output_node_label]
+                    input_node_index = self._find_lt(nodes_index, cindex)
+                    if input_node_index > -1:
+                        input_node_label = labels[input_node_index]
+                        input_node_val = row[input_node_label]
+                    input_nodes_with_prot_keys = df.loc[
+                        df[labels[cindex]] == val].groupby(
+                        [labels[cindex], labels[input_node_index]]).size()
+                    output_nodes_with_prot_keys = df.loc[
+                        df[labels[cindex]] == val].groupby(
+                        [labels[cindex], labels[output_node_index]]).size()
+                    if len(input_nodes_with_prot_keys) > len(
+                            output_nodes_with_prot_keys):
+                        process_key = '.'.join([val, output_node_val.strip()])
+                    elif len(input_nodes_with_prot_keys) < len(
+                            output_nodes_with_prot_keys):
+                        process_key = '.'.join([input_node_val.strip(), val])
+                    else:
+                        process_key = '.'.join([input_node_val.strip(), val,
+                                                output_node_val.strip()])
+                    if process_key not in self.process_map.keys():
+                        process = Process(id_=process_key)
+                        self.process_map[process_key] = process
+                    process_key_sequence.append(process_key)
+                elif label.startswith(TableParser.NODE_LABELS):
+                    process_key_sequence.append(
+                        '.'.join([self._clean_label(label), val]))
+            process_key_sequences.append(process_key_sequence)
+        for process_key_sequence in process_key_sequences:
+            for left, right in self._pairwise(process_key_sequence):
+                if left.startswith(TableParser.NODE_LABELS) and not \
+                        right.startswith(TableParser.NODE_LABELS):
+                    material = self.node_map[left]
+                    process = self.process_map[right]
+                    if material not in process.inputs:
+                        process.inputs.append(material)
+                elif not left.startswith(TableParser.NODE_LABELS) and \
+                        right.startswith(TableParser.NODE_LABELS):
+                    process = self.process_map[left]
+                    material = self.node_map[right]
+                    if material not in process.outputs:
+                        process.outputs.append(material)
+        for process_key_sequence in process_key_sequences:
+            process_only_key_sequence = filter(
+                lambda x: not x.startswith(TableParser.NODE_LABELS),
+                process_key_sequence)
+            for left, right in self._pairwise(process_only_key_sequence):
+                left_process = self.process_map[left]
+                right_process = self.process_map[right]
+                plink(left_process, right_process)
 
     def _parse(self, filebuffer):
         raise NotImplementedError(
@@ -85,12 +208,6 @@ class InvestigationParser(AbstractParser):
         self._study_prefix = 'Study'
         self._term_accession_postfix = 'Term Accession Number'
         self._term_source_ref_postfix = 'Term Source REF'
-
-    @staticmethod
-    def _pairwise(iterable):
-        a, b = itertools.tee(iterable)
-        next(b, None)
-        return zip(a, b)
 
     @staticmethod
     def _section_to_dict(section_rows):
@@ -521,17 +638,16 @@ class InvestigationParser(AbstractParser):
                 self._parse_contacts_section(section_label, section)
 
 
-class StudySampleTableParser(AbstractParser):
+class StudySampleTableParser(TableParser):
 
     def __init__(self, isa=None):
+        TableParser.__init__(self)
         if isa is None:
             raise IOError('You must provide an Investigation object output '
                           'from the Investigation parser')
         self.isa = isa
         self.sources = None
         self.samples = None
-        self.materials_map = dict()
-        self.process_map = dict()
         self.process_sequence = None
 
     def _parse(self, filebuffer):
@@ -548,117 +664,17 @@ class StudySampleTableParser(AbstractParser):
             map(lambda x: ('.'.join(['Sample Name', x]), Sample(name=x)),
                 samples_series))
         self.sources = list(sources.values())
-        self.materials_map.update(sources)
+        self.node_map.update(sources)
         self.samples = list(samples.values())
-        self.materials_map.update(samples)
+        self.node_map.update(samples)
         self._make_process_sequence(df)
         self.process_sequence = list(self.process_map.values())
 
-    @staticmethod
-    def _find_lt(a, x):
-        i = bisect_left(a, x)
-        if i:
-            return a[i - 1]
-        else:
-            return -1
 
-    @staticmethod
-    def _find_gt(a, x):
-        i = bisect_right(a, x)
-        if i != len(a):
-            return a[i]
-        else:
-            return -1
-
-    @staticmethod
-    def _clean_label(label):
-        if label.startswith('Source Name'):
-            return 'Source Name'
-        elif label.startswith('Sample Name'):
-            return 'Sample Name'
-
-    @staticmethod
-    def _pairwise(iterable):
-        a, b = itertools.tee(iterable)
-        next(b, None)
-        return zip(a, b)
-
-    def _make_process_sequence(self, df):
-        object_labels = ('Source Name', 'Sample Name', 'Protocol REF')
-        assay_name_labels = (
-            'Assay Name', 'MS Assay Name', 'Hybridization Assay Name',
-            'Scan Name', 'Data Transformation Name', 'Normalization Name')
-        df = df[[x for x in df.columns if
-                 x.startswith(object_labels + assay_name_labels)]]
-        process_key_sequences = []
-        for rindex, row in df.iterrows():
-            process_key_sequence = []
-            labels = df.columns
-            nodes_index = [i for i, x in enumerate(labels) if
-                           x in ('Source Name', 'Sample Name')]
-            for cindex, label in enumerate(labels):
-                val = row[label]
-                if label.startswith('Protocol REF') and val != '':
-                    output_node_index = self._find_gt(nodes_index, cindex)
-                    if output_node_index > -1:
-                        output_node_label = labels[output_node_index]
-                        output_node_val = row[output_node_label]
-                    input_node_index = self._find_lt(nodes_index, cindex)
-                    if input_node_index > -1:
-                        input_node_label = labels[input_node_index]
-                        input_node_val = row[input_node_label]
-                    input_nodes_with_prot_keys = df.loc[
-                        df[labels[cindex]] == val].groupby(
-                        [labels[cindex], labels[input_node_index]]).size()
-                    output_nodes_with_prot_keys = df.loc[
-                        df[labels[cindex]] == val].groupby(
-                        [labels[cindex], labels[output_node_index]]).size()
-                    if len(input_nodes_with_prot_keys) > len(
-                            output_nodes_with_prot_keys):
-                        process_key = '.'.join([val, output_node_val.strip()])
-                    elif len(input_nodes_with_prot_keys) < len(
-                            output_nodes_with_prot_keys):
-                        process_key = '.'.join([input_node_val.strip(), val])
-                    else:
-                        process_key = '.'.join([input_node_val.strip(), val,
-                                                output_node_val.strip()])
-                    if process_key not in self.process_map.keys():
-                        process = Process(id_=process_key)
-                        self.process_map[process_key] = process
-                    process_key_sequence.append(process_key)
-                elif label.startswith(('Source Name', 'Sample Name')):
-                    process_key_sequence.append(
-                        '.'.join([self._clean_label(label), val]))
-            process_key_sequences.append(process_key_sequence)
-        for process_key_sequence in process_key_sequences:
-            for left, right in self._pairwise(process_key_sequence):
-                if left.startswith(
-                        ('Source Name', 'Sample Name')) and not \
-                        right.startswith(('Source Name', 'Sample Name')):
-                    material = self.materials_map[left]
-                    process = self.process_map[right]
-                    if material not in process.inputs:
-                        process.inputs.append(material)
-                elif not left.startswith(
-                        ('Source Name', 'Sample Name')) and right.startswith(
-                        ('Source Name', 'Sample Name')):
-                    process = self.process_map[left]
-                    material = self.materials_map[right]
-                    if material not in process.outputs:
-                        process.outputs.append(material)
-        for process_key_sequence in process_key_sequences:
-            process_only_key_sequence = filter(
-                lambda x: not x.startswith(('Source Name', 'Sample Name')),
-                process_key_sequence)
-            for left, right in self._pairwise(process_only_key_sequence):
-                left_process = self.process_map[left]
-                right_process = self.process_map[right]
-                plink(left_process, right_process)
-
-
-class AssayTableParser(AbstractParser):
+class AssayTableParser(TableParser):
 
     def __init__(self, isa=None):
+        TableParser.__init__(self)
         if isa is None:
             raise IOError('You must provide an Investigation object output '
                           'from the Investigation parser')
@@ -666,21 +682,9 @@ class AssayTableParser(AbstractParser):
         self.samples = None
         self.other_material = None
         self.data_files = None
-
-        self.data_file_labels = (
-            'Raw Data File', 'Derived Spectral Data File',
-            'Derived Array Data File', 'Array Data File',
-            'Protein Assignment File', 'Peptide Assignment File',
-            'Post Translational Modification Assignment File',
-            'Acquisition Parameter Data File', 'Free Induction Decay Data File',
-            'Derived Array Data Matrix File', 'Image File', 'Derived Data File',
-            'Metabolite Assignment File', 'Raw Spectral Data File')
-        self.material_labels = ('Source Name', 'Sample Name', 'Extract Name',
-                                'Labeled Extract Name')
-        self.other_material_labels = ('Extract Name', 'Labeled Extract Name')
-        self.assay_labels = ('Assay Name', 'MS Assay Name',
-                             'Hybridization Assay Name', 'Scan Name',
-                             'Data Transformation Name', 'Normalization Name')
+        self.node_map = dict()
+        self.process_map = dict()
+        self.process_sequence = None
 
     def _parse(self, filebuffer):
         df = pd.read_csv(filebuffer, dtype=str, sep='\t', encoding='utf-8',
@@ -691,7 +695,8 @@ class AssayTableParser(AbstractParser):
                  if x != '']))
 
         data_files = dict()
-        for data_col in (x for x in df.columns if x in self.data_file_labels):
+        for data_col in (x for x in df.columns if
+                         x in TableParser.DATA_FILE_LABELS):
             filenames = [x for x in df[data_col].drop_duplicates() if x != '']
             data_files.update(
                 dict(map(
@@ -701,7 +706,7 @@ class AssayTableParser(AbstractParser):
 
         other_material = dict()
         for material_col in (x for x in df.columns if
-                             x in self.other_material_labels):
+                             x in TableParser.OTHER_MATERIAL_LABELS):
             if material_col == 'Extract Name':
                 extracts = dict(
                     map(lambda x: (
@@ -720,12 +725,17 @@ class AssayTableParser(AbstractParser):
                 other_material.update(labeled_extracts)
 
         self.samples = list(samples.values())
+        self.node_map.update(samples)
         self.data_files = list(data_files.values())
+        self.node_map.update(data_files)
         self.other_material = list(other_material.values())
+        self.node_map.update(other_material)
+        self._make_process_sequence(df)
+        self.process_sequence = list(self.process_map.values())
 
 
 class Parser(AbstractParser):
-    # TODO: Build process graphs, but not needed for basic Galaxy support
+
     def __init__(self):
         self.investigation_parser = InvestigationParser()
 
@@ -739,6 +749,7 @@ class Parser(AbstractParser):
                 os.path.join(os.path.dirname(filebuffer.name), study.filename))
             study.sources = study_sample_table_parser.sources
             study.samples = study_sample_table_parser.samples
+            study.process_sequence = study_sample_table_parser.process_sequence
             for assay in study.assays:
                 assay_table_parser = AssayTableParser(
                     self.investigation_parser.isa)
@@ -748,6 +759,7 @@ class Parser(AbstractParser):
                 assay.samples = assay_table_parser.samples
                 assay.data_files = assay_table_parser.data_files
                 assay.other_material = assay_table_parser.other_material
+                assay.process_sequence = assay_table_parser.process_sequence
         self.isa = self.investigation_parser.isa
 
 
