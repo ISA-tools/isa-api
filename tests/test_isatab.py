@@ -426,6 +426,11 @@ class StudySampleTableParserUnitTest(unittest.TestCase):
             u'Source Name\tSample Name\tSample Name\n' \
             u'source1\t1\t2\n'
 
+        self.study_sample_table_with_process = \
+            u'Source Name\tProtocol REF\tSample Name\n' \
+            u'source1\tsample collection\tsample1\n' \
+            u'source2\tsample collection\tsample2'
+
         self.source_list = [Source(name='source1'), Source(name='source2')]
         self.sample_list = [Sample(name='sample1'), Sample(name='sample2')]
         self.sample_list_with_numbers_as_ids = [Sample(name='1'),
@@ -454,6 +459,18 @@ class StudySampleTableParserUnitTest(unittest.TestCase):
                              sorted(self.sample_list_with_numbers_as_ids,
                                     key=lambda x: repr(x)))
 
+    def test_parse_process_sequence(self):
+        self.parser.parse(
+            io.StringIO(self.study_sample_table_with_process))
+        self.assertIn(self.source_list[0],
+                      self.parser.process_sequence[0].inputs)
+        self.assertIn(self.sample_list[1],
+                      self.parser.process_sequence[1].outputs)
+        self.assertIn(self.source_list[1],
+                      self.parser.process_sequence[1].inputs)
+        self.assertIn(self.sample_list[1],
+                      self.parser.process_sequence[1].outputs)
+
 
 class StudySampleTableParserIntegrationTest(unittest.TestCase):
 
@@ -477,6 +494,7 @@ class StudySampleTableParserIntegrationTest(unittest.TestCase):
                                                0].filename))
             self.assertEqual(len(self.parser.sources), 18)
             self.assertEqual(len(self.parser.samples), 164)
+            self.assertEqual(len(self.parser.process_sequence), 18)
 
     def test_isatab_parse_bii_s_2(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-I-1',
@@ -490,6 +508,7 @@ class StudySampleTableParserIntegrationTest(unittest.TestCase):
                                                1].filename))
             self.assertEqual(len(self.parser.sources), 1)
             self.assertEqual(len(self.parser.samples), 2)
+            self.assertEqual(len(self.parser.process_sequence), 1)
 
     def test_isatab_parse_study_table_bii_s_3(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-S-3',
@@ -503,6 +522,7 @@ class StudySampleTableParserIntegrationTest(unittest.TestCase):
                                                -1].filename))
             self.assertEqual(len(self.parser.sources), 4)
             self.assertEqual(len(self.parser.samples), 4)
+            self.assertEqual(len(self.parser.process_sequence), 4)
 
     def test_isatab_load_bii_s_7(self):
         with io.open(os.path.join(self._tab_data_dir, 'BII-S-7',
@@ -516,6 +536,7 @@ class StudySampleTableParserIntegrationTest(unittest.TestCase):
                                                -1].filename))
             self.assertEqual(len(self.parser.sources), 29)
             self.assertEqual(len(self.parser.samples), 29)
+            self.assertEqual(len(self.parser.process_sequence), 29)
 
 
 class AssayTableParserUnitTest(unittest.TestCase):
