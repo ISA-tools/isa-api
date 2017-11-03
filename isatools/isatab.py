@@ -628,31 +628,31 @@ class StudySampleTableParser(AbstractParser):
                     process_key_sequence.append(
                         '.'.join([self._clean_label(label), val]))
             process_key_sequences.append(process_key_sequence)
-        for process_key_sequence in process_key_sequences:
-            iteration = []
-            for left, right in self._pairwise(process_key_sequence):
-                iteration.append([left, right])
-                if left.startswith(('Source Name',
-                                    'Sample Name')) and not right.startswith(
-                        ('Source Name', 'Sample Name')):
-                    material = self.materials_map[left]
-                    process = self.process_map[right]
-                    if material not in process.inputs:
-                        process.inputs.append(material)
-                elif not left.startswith(('Source Name',
-                                        'Sample Name')) and right.startswith(
-                        ('Source Name', 'Sample Name')):
-                    process = self.process_map[left]
-                    material = self.materials_map[right]
-                    if material not in process.outputs:
-                        process.outputs.append(material)
-                else:
-                    # ignore, as we then link processes
-                    print('left and right are both processes')
-
-        for process in [x for x in self.process_map.values()]:
-            print(process.inputs)
-            print(process.outputs)
+        # for process_key_sequence in process_key_sequences:
+        #     iteration = []
+        #     for left, right in self._pairwise(process_key_sequence):
+        #         iteration.append([left, right])
+        #         if left.startswith(('Source Name',
+        #                             'Sample Name')) and not right.startswith(
+        #                 ('Source Name', 'Sample Name')):
+        #             material = self.materials_map[left]
+        #             process = self.process_map[right]
+        #             if material not in process.inputs:
+        #                 process.inputs.append(material)
+        #         elif not left.startswith(('Source Name',
+        #                                 'Sample Name')) and right.startswith(
+        #                 ('Source Name', 'Sample Name')):
+        #             process = self.process_map[left]
+        #             material = self.materials_map[right]
+        #             if material not in process.outputs:
+        #                 process.outputs.append(material)
+        #         else:
+        #             # ignore, as we then link processes
+        #             print('left and right are both processes')
+        #
+        # for process in [x for x in self.process_map.values()]:
+        #     print(process.inputs)
+        #     print(process.outputs)
 
 
 class AssayTableParser(AbstractParser):
