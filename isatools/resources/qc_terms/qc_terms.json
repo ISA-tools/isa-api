@@ -1,0 +1,39 @@
+{
+"qc_terms" : [
+  {
+  "term_uri":"http://purl.obolibrary.org/obo/MSI_AO000010",
+  "term_label" : "dilution series reference",
+  "term_synonym" : []
+  },
+    {
+  "term_uri":"http://purl.obolibrary.org/obo/MSI_AO000011",
+  "term_label" : "long term reference",
+  "term_synonym" : ["biological pool (inter)","inter study QC","LTR","biological pool"]
+  },
+  {
+  "term_uri":"http://purl.obolibrary.org/obo/MSI_AO000012",
+  "term_label" : "reference compound",
+  "term_synonym" : ["pure standard"]
+  }, 
+  {
+  "term_uri":"http://purl.obolibrary.org/obo/MSI_AO000013",
+  "term_label" : "reference compound mix",
+  "term_synonym" : ["pure standard mix","reference material mix"]
+  },
+  {
+  "term_uri":"http://purl.obolibrary.org/obo/MSI_AO000014",
+  "term_label" : "sample preparation blank",
+  "term_synonym" : ["method blank","method reference"]
+  },
+  {
+  "term_uri":"http://purl.obolibrary.org/obo/MSI_AO000015",
+  "term_label" : "solvent blank",
+  "term_synonym" : ["normal blank","solvent reference"]
+  },
+      {
+  "term_uri":"http://purl.obolibrary.org/obo/MSI_AO000016",
+  "term_label" : "study reference",
+  "term_synonym" : ["SR","iQC - internal quality control"]
+  }
+  ]
+}
