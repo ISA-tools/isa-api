@@ -2294,7 +2294,7 @@ def make_summary_from_treatment_sequence(treatment_sequence):
         factors_dict[factor_value.factor_name.name] = []
     for factor_value in factor_values:
         factors_dict[factor_value.factor_name.name].append(factor_value.value)
-        ranks = set()
+    ranks = set()
     treatments = []
     for treatment, rank in treatment_sequence.ranked_treatments:
         ranks.add(rank)
