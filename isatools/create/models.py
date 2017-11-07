@@ -978,7 +978,8 @@ class IsaModelObjectFactory(object):
         return self.__treatment_sequence
 
     @treatment_sequence.setter
-    def treatment_sequence(self, treatment_sequence):  # TODO: Implement repeated measure writer
+    def treatment_sequence(self, treatment_sequence):
+        # TODO: Implement repeated measure writer
         if not isinstance(treatment_sequence, set):
             raise ISAModelAttributeError('treatment_sequence must be a set '
                                          'of tuples of type (Treatment, int)')
@@ -1170,8 +1171,8 @@ class IsaModelObjectFactory(object):
 
                 assay = Assay(measurement_type=atype.measurement_type,
                               technology_type=atype.technology_type,
-                              filename='a_mp_{0}_{1}_assay.txt'.format(
-                                  inj_mode, acq_mode))
+                              filename='a_{0}_mp_{1}_{2}_assay.txt'.format(
+                                  stype.value.term, inj_mode, acq_mode))
                 mp_protocol_name = None
                 if atype.technology_type.term == 'mass spectrometry':
                     try:
@@ -1324,8 +1325,8 @@ class IsaModelObjectFactory(object):
 
                     assay = Assay(measurement_type=atype.measurement_type,
                                   technology_type=atype.technology_type,
-                                  filename='a_nmr_{0}_{1}_assay.txt'.format(
-                                      acq_mode, pulse_seq))
+                                  filename='a_{0}_nmr_{1}_{2}_assay.txt'.format(
+                                      stype.value.term, acq_mode, pulse_seq))
 
                     if atype.technology_type.term == 'nmr spectroscopy':
                         try:
@@ -1439,8 +1440,9 @@ class IsaModelObjectFactory(object):
                     assay.samples.append(sample)
 
                     if len(atype.topology_modifiers.array_designs) > 0:
-                        assay.filename = 'a_tp_{0}_assay.txt'\
-                            .format('_'.join(atype.topology_modifiers
+                        assay.filename = 'a_{0}_microarray_{1}_assay.txt'\
+                            .format(stype.value.term,
+                                    '_'.join(atype.topology_modifiers
                                              .array_designs))
                         for array_design, technical_replicate_num in \
                                 itertools.product(
@@ -1525,8 +1527,9 @@ class IsaModelObjectFactory(object):
                     assay.samples.append(sample)
 
                     if len(atype.topology_modifiers.instruments) > 0:
-                        assay.filename = 'a_ngs_{0}_assay.txt'\
-                            .format('_'.join(atype.topology_modifiers
+                        assay.filename = 'a_{0}_dnaseq_{1}_assay.txt' \
+                            .format(stype.value.term,
+                                    '_'.join(atype.topology_modifiers
                                              .instruments))
                         for instrument, technical_replicate_num in \
                                 itertools.product(
@@ -1611,8 +1614,8 @@ class IsaModelObjectFactory(object):
 
                     assay = Assay(measurement_type=atype.measurement_type,
                                   technology_type=atype.technology_type,
-                                  filename='a_ms_{0}_{1}_assay.txt'.format(
-                                      inj_mode, acq_mode))
+                                  filename='a_{0}_ms_{1}_{2}_assay.txt'.format(
+                                      stype.value.term, inj_mode, acq_mode))
                     try:
                         study.add_prot(
                             protocol_name='metabolite extraction',
@@ -1685,7 +1688,7 @@ class IsaModelObjectFactory(object):
                                         'chromatography instrument'),
                                     value=next(
                                         iter(atype.topology_modifiers
-                                             .chromatography_instruments))
+                                             .chromatography_instruments), '')
                                 )
                             )
                             eproc.parameter_values.append(
@@ -1723,7 +1726,7 @@ class IsaModelObjectFactory(object):
                                     category=ms_prot.get_param('instrument'),
                                     value=next(
                                         iter(atype.topology_modifiers
-                                             .instruments))
+                                             .instruments), '')
                                 ),
                                 ParameterValue(category=ms_prot.get_param(
                                     'scan polarity'), value=acq_mode),
@@ -1749,8 +1752,8 @@ class IsaModelObjectFactory(object):
 
                     assay = Assay(measurement_type=atype.measurement_type,
                                   technology_type=atype.technology_type,
-                                  filename='a_nmr_{0}_{1}_assay.txt'.format(
-                                      acq_mode, pulse_seq))
+                                  filename='a_{0}_nmr_{1}_{2}_assay.txt'.format(
+                                      stype.value.term, acq_mode, pulse_seq))
 
                     if atype.technology_type.term == 'nmr spectroscopy':
                         try:
@@ -1853,8 +1856,9 @@ class IsaModelObjectFactory(object):
                     assay.samples.append(sample)
 
                     if len(atype.topology_modifiers.array_designs) > 0:
-                        assay.filename = 'a_tp_{0}_assay.txt' \
-                            .format('_'.join(atype.topology_modifiers
+                        assay.filename = 'a_{0}_dnamicro_{1}_assay.txt' \
+                            .format(stype.value.term,
+                                    '_'.join(atype.topology_modifiers
                                              .array_designs))
                         for array_design, technical_replicate_num in \
                                 itertools.product(
@@ -1931,8 +1935,9 @@ class IsaModelObjectFactory(object):
                     assay.samples.append(sample)
 
                     if len(atype.topology_modifiers.instruments) > 0:
-                        assay.filename = 'a_ngs_{0}_assay.txt'\
-                            .format('_'.join(atype.topology_modifiers
+                        assay.filename = 'a_{0}_dnaseq_{1}_assay.txt'\
+                            .format(stype.value.term,
+                                    '_'.join(atype.topology_modifiers
                                              .instruments))
                         for instrument, technical_replicate_num in \
                                 itertools.product(

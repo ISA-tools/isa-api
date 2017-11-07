@@ -2,7 +2,7 @@ language: python
 python:
 - '3.6'
 before_install:
-- git clone -b tests --single-branch http://github.com/ISA-tools/ISAdatasets tests/data
+- bash -x get_test_data.sh
 install:
 - pip install --upgrade pip && pip install -r requirements-tests.txt
 - pip install tox-travis
