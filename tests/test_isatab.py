@@ -5,7 +5,15 @@ from isatools import isatab
 from isatools.model import *
 import unittest
 import os
+import sys
 
+# Function for opening correctly a CSV file for csv.reader() for both Python 2 and 3
+def utf8_text_file_open(path):
+    if sys.version_info[0] < 3: 
+        fp = open(path, 'rb')
+    else:
+        fp = open(path, 'r', newline='', encoding='utf8')
+    return fp
 
 class InvestigationParserUnitTests(unittest.TestCase):
 
@@ -404,7 +412,7 @@ class InvestigationParserIntegrationTests(unittest.TestCase):
                                  ['a_matteo-assay-Gx.txt'])
 
     def test_isatab_load_mtbls30(self):
-        with io.open(os.path.join(self._tab_data_dir, 'MTBLS30-2',
+        with utf8_text_file_open(os.path.join(self._tab_data_dir, 'MTBLS30-2',
                                   'i_Investigation.txt')) as fp:
             self.parser.parse(fp)
             isa = self.parser.isa
