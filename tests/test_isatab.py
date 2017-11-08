@@ -594,6 +594,19 @@ class StudySampleTableParserIntegrationTest(unittest.TestCase):
             self.assertEqual(len(self.parser.samples), 29)
             self.assertEqual(len(self.parser.process_sequence), 29)
 
+    def test_isatab_load_mtbls30(self):
+        with utf8_text_file_open(os.path.join(self._tab_data_dir, 'MTBLS30-2',
+                                  'i_Investigation.txt')) as fp:
+            investigation_parser = isatab.InvestigationParser()
+            investigation_parser.parse(fp)
+            self.parser = isatab.StudySampleTableParser(
+                investigation_parser.isa)
+            self.parser.parse(os.path.join(self._tab_data_dir, 'MTBLS30-2',
+                                           investigation_parser.isa.studies[
+                                               -1].filename))
+            self.assertEqual(len(self.parser.sources), 5)
+            self.assertEqual(len(self.parser.samples), 300)
+            self.assertEqual(len(self.parser.process_sequence), 6)
 
 class AssayTableParserUnitTest(unittest.TestCase):
 
