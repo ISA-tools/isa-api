@@ -766,6 +766,20 @@ class AssayTableParserIntegrationTest(unittest.TestCase):
             self.assertEqual(len(self.parser.other_material), 29)
             self.assertEqual(len(self.parser.process_sequence), 116)
 
+    def test_isatab_load_mtbls30(self):
+        with utf8_text_file_open(os.path.join(self._tab_data_dir, 'MTBLS30-2',
+                                  'i_Investigation.txt')) as fp:
+            investigation_parser = isatab.InvestigationParser()
+            investigation_parser.parse(fp)
+            self.parser = isatab.AssayTableParser(
+                investigation_parser.isa)
+            self.parser.parse(os.path.join(self._tab_data_dir, 'MTBLS30-2',
+                                           'a_york_src_GC_mass_spectrometry.txt'))
+            self.assertEqual(len(self.parser.samples), 29)
+            self.assertEqual(len(self.parser.data_files), 29)
+            self.assertEqual(len(self.parser.other_material), 29)
+            self.assertEqual(len(self.parser.process_sequence), 116)
+
 class ParserIntegrationTest(unittest.TestCase):
 
     def setUp(self):
