@@ -2559,7 +2559,9 @@ def check_protocol_fields(table, cfg, proto_map):
 
 def check_ontology_fields(table, cfg):
     def check_single_field(cell_value, source, acc, cfield, filename):
-        if cell_has_value(cell_value) or cell_has_value(source) or cell_has_value(acc):
+        if (cell_has_value(cell_value) and not cell_has_value(
+                source) and cell_has_value(acc)) or not cell_has_value(
+                cell_value):
             warnings.append({
                 "message": "Missing Term Source REF in annotation or missing Term Source Name",
                 "supplemental": "Incomplete values for ontology headers, for the field '"
