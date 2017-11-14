@@ -28,8 +28,9 @@ class IdentifierType(Enum):
     uuid = 2
     name = 3
 
-
-def convert(work_dir, identifier_type=IdentifierType.name, validate_first=True, use_new_parser=False):
+def convert(work_dir, identifier_type=IdentifierType.name,
+                validate_first=True, config_dir=isatab.default_config_dir,
+                use_new_parser=False):
     i_files = glob.glob(os.path.join(work_dir, 'i_*.txt'))
     if validate_first:
         log.info("Validating input ISA tab before conversion")
@@ -37,7 +38,8 @@ def convert(work_dir, identifier_type=IdentifierType.name, validate_first=True, 
             log.fatal("Could not resolve input investigation file, please check input ISA tab directory")
             return
         with open(i_files[0], 'r', encoding='utf-8') as validate_fp:
-            report = isatab.validate(fp=validate_fp, log_level=logging.ERROR)
+            report = isatab.validate(fp=validate_fp, config_dir=config_dir,
+                                     log_level=logging.ERROR)
             if len(report['errors']) > 0:
                 log.fatal("Could not proceed with conversion as there are some fatal validation errors. Check log")
                 return
