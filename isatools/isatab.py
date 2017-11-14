@@ -2387,7 +2387,7 @@ def check_field_values(table, cfg):
                 int(cell_value)
             except ValueError:
                 is_valid_value = False
-        elif 'float' == data_type:
+        elif 'double' == data_type:
             try:
                 float(cell_value)
             except ValueError:

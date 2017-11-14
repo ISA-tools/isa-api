@@ -287,7 +287,8 @@ class TestValidateIsaJson(unittest.TestCase):
             report = isajson.validate(fp)
             if 4004 in [e['code'] for e in report['warnings']]:
                 self.fail("Validation failed against default study configuration, when it should have passed")
-            report = isajson.validate(open(os.path.join(self._unit_json_data_dir, 'study_config_fail.json')))
+        with open(os.path.join(self._unit_json_data_dir, 'study_config_fail.json')) as fail_fp:
+            report = isajson.validate(fail_fp)
             if 4004 not in [e['code'] for e in report['warnings']]:
                 self.fail("Validation passed against default study configuration, when it should have failed")
 
