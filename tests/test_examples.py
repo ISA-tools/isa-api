@@ -87,7 +87,7 @@ class TestSimpleIsaTabExample(unittest.TestCase):
         validateISAtab.main(args)
         sys.stdout = old_stdout
         self.assertIn("Validated 1 ISA-Tab archives, 1 valid ISA-Tab archives, 0 invalid ISA-Tab archives", mystdout.getvalue())
-        self.assertIn("Found 0 errors and 42 warnings in across all ISA-Tab archives", mystdout.getvalue())
+        self.assertIn("Found 0 errors and 40 warnings in across all ISA-Tab archives", mystdout.getvalue())
 
 
 class TestSimpleIsaJsonExample(unittest.TestCase):

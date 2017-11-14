@@ -1574,7 +1574,7 @@ def check_protocol_usage(i_df, dir_context):
                             protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
                 except FileNotFoundError:
                     pass
-        diff = protocols_declared - protocol_refs_used
+        diff = protocols_declared - protocol_refs_used - {''}
         if len(diff) > 0:
             warnings.append({
                 "message": "Protocol declared but not used",
