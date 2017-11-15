@@ -3321,7 +3321,7 @@ def read_tfile(tfile_path, index_col=None, factor_filter=None):
         tfile_df = pd.read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col, memory_map=True,
                                encoding='utf-8').fillna('')
         log.debug("Setting isatab_header")
-        tfile_df.isatab_header = header
+        setattr(tfile_df, 'isatab_header', header)
     if factor_filter:
         log.debug("Filtering DataFrame contents on Factor Value %s", factor_filter)
         return tfile_df[tfile_df['Factor Value[{}]'.format(factor_filter[0])] == factor_filter[1]]
