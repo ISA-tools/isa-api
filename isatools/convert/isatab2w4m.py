@@ -357,8 +357,8 @@ def get_sample_names(assay_df, measures_df):
 
 def make_sample_metadata(study_df, assay_df, sample_names, normalize=True):
     # Normalize column names
-    study_df.set_axis(1, make_names(study_df.axes[1].tolist()))
-    assay_df.set_axis(1, make_names(assay_df.axes[1].tolist()))
+    study_df.set_axis(axis=1, labels=make_names(study_df.axes[1].tolist()))
+    assay_df.set_axis(axis=1, labels=make_names(assay_df.axes[1].tolist()))
 
     # Merge data frames
     sample_metadata = assay_df.merge(study_df, on='Sample.Name', sort=False)
