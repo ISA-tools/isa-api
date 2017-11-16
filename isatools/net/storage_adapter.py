@@ -235,7 +235,7 @@ class IsaGitHubStorageAdapter(IsaStorageAdapter):
                 except etree.XMLSyntaxError:
                     return False
         else:
-            log.warn("The request was not successfully fulfilled: ", res.status_code)
+            log.warning("The request was not successfully fulfilled: ", res.status_code)
             return False
 
     def retrieve(self, source, destination='isa-target', owner='ISA-tools', repository='isa-api', ref='master',

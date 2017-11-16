@@ -57,7 +57,7 @@ class TestIsaTab2Sra(unittest.TestCase):
         b = isatab2sra.convert(self._biis3_dir, self._tmp_dir, validate_first=False)
         self.assertIsInstance(b, BytesIO)
         with ZipFile(b) as zip_file:
-            self.assertEquals(len(zip_file.namelist()), 5)
+            self.assertEqual(len(zip_file.namelist()), 5)
 
     def test_isatab2sra_dump_submission_xml_biis3(self):
         isatab2sra.convert(self._biis3_dir, self._tmp_dir, validate_first=False)

@@ -515,7 +515,7 @@ def dumps(investigation):
                 if len(derives_from_accession_hits) == 1:
                     derived_from = derives_from_accession_hits[0].value
                 else:
-                    log.warn("WARNING! No Sample Accession available so referencing Derived From relation using "
+                    log.warning("WARNING! No Sample Accession available so referencing Derived From relation using "
                              "Sample Name \"{}\" instead".format(derived_from_obj.name))
                     derived_from = derived_from_obj.name
         sample_accession_hits = [x for x in s.characteristics if x.category.term == "Sample Accession"]
