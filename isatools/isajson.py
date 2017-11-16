@@ -583,7 +583,7 @@ def load(fp):
                                 parameter_value.value = parameter_value_json["value"]
                             process.parameter_values.append(parameter_value)
                     else:
-                        log.warn("warning: parameter category not found for instance {}".format(parameter_json))
+                        log.warning("warning: parameter category not found for instance {}".format(parameter_json))
                 assay.process_sequence.append(process)
                 process_dict[process.id] = process
 
@@ -1554,14 +1554,17 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_ontology_annotation(o):
-            return clean_nulls(
-                {
-                    "@id": id_gen(o),
-                    "annotationValue": o.term,
-                    "termAccession": o.term_accession,
-                    "termSource": o.term_source.name if o.term_source else None
-                }
-            )
+            if o is not None:
+                return clean_nulls(
+                    {
+                        "@id": id_gen(o),
+                        "annotationValue": o.term,
+                        "termAccession": o.term_accession,
+                        "termSource": o.term_source.name if o.term_source else None
+                    }
+                )
+            else:
+                return None
 
         def get_ontology_annotations(o):
             return list(map(lambda x: get_ontology_annotation(x), o))
