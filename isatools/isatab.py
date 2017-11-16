@@ -1590,7 +1590,6 @@ def check_protocol_usage(i_df, dir_context):
 def load_table(fp):
     try:
         fp = strip_comments(fp)
-        import numpy as np
         df = pd.read_csv(fp, dtype=str, sep='\t', encoding='utf-8').replace(np.nan, '')
     except UnicodeDecodeError:
         log.warning("Could not load file with UTF-8, trying ISO-8859-1")
@@ -3309,6 +3308,67 @@ def pairwise(iterable):
     return zip(a, b)
 
 
+class IsaTabSeries(pd.Series):
+    @property
+    def _consutrctor(self):
+        return IsaTabSeries
+
+
+class IsaTabDataFrame(pd.DataFrame):
+
+    DATA_FILE_LABELS = (
+        'Raw Data File', 'Derived Spectral Data File',
+        'Derived Array Data File', 'Array Data File',
+        'Protein Assignment File', 'Peptide Assignment File',
+        'Post Translational Modification Assignment File',
+        'Acquisition Parameter Data File', 'Free Induction Decay Data File',
+        'Derived Array Data Matrix File', 'Image File', 'Derived Data File',
+        'Metabolite Assignment File', 'Raw Spectral Data File')
+    MATERIAL_LABELS = ('Source Name', 'Sample Name', 'Extract Name',
+                       'Labeled Extract Name')
+    OTHER_MATERIAL_LABELS = ('Extract Name', 'Labeled Extract Name')
+    NODE_LABELS = DATA_FILE_LABELS + MATERIAL_LABELS + OTHER_MATERIAL_LABELS
+    ASSAY_LABELS = ('Assay Name', 'MS Assay Name', 'Hybridization Assay Name',
+                    'Scan Name', 'Data Transformation Name',
+                    'Normalization Name')
+    QUALIFIER_LABELS = ('Protocol REF', 'Material Type', 'Term Source REF',
+                        'Term Accession Number', 'Unit')
+    ALL_LABELS = NODE_LABELS + ASSAY_LABELS + QUALIFIER_LABELS
+    ALL_LABELS + tuple(['Protocol REF'])
+
+    def __init__(self, *args, **kw):
+        super(IsaTabDataFrame, self).__init__(*args, **kw)
+
+    @property
+    def _constructor(self):
+        return IsaTabDataFrame
+
+    _constructor_sliced = IsaTabSeries
+
+    @staticmethod
+    def _clean_label(label):
+        for clean_label in IsaTabDataFrame.ALL_LABELS:
+            if label.strip().lower().startswith(clean_label.lower()):
+                return clean_label
+            elif _RX_CHARACTERISTICS.match(label):
+                return 'Characteristics[{val}]'.format(
+                    val=next(iter(_RX_CHARACTERISTICS.findall(label))))
+            elif _RX_PARAMETER_VALUE.match(label):
+                return 'Parameter Value[{val}]'.format(
+                    val=next(iter(_RX_PARAMETER_VALUE.findall(label))))
+            elif _RX_FACTOR_VALUE.match(label):
+                return 'Factor Value[{val}]'.format(
+                    val=next(iter(_RX_FACTOR_VALUE.findall(label))))
+            elif _RX_COMMENT.match(label):
+                return 'Comment[{val}]'.format(
+                    val=next(iter(_RX_COMMENT.findall(label))))
+
+
+    @property
+    def isatab_header(self):
+        return list(map(lambda x: self._clean_label(x), self.columns))
+
+
 def read_tfile(tfile_path, index_col=None, factor_filter=None):
     log.debug("Opening %s", tfile_path)
     with open(tfile_path, encoding='utf-8') as tfile_fp:
@@ -3318,10 +3378,12 @@ def read_tfile(tfile_path, index_col=None, factor_filter=None):
         tfile_fp.seek(0)
         log.debug("Reading file into DataFrame")
         tfile_fp = strip_comments(tfile_fp)
-        tfile_df = pd.read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col, memory_map=True,
-                               encoding='utf-8').fillna('')
-        log.debug("Setting isatab_header")
-        setattr(tfile_df, 'isatab_header', header)
+        tfile_df = pd.read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col,
+                        memory_map=True, encoding='utf-8').fillna('')
+        tfile_df.isatab_header = header
+        # tfile_df = IsaTabDataFrame(
+        #     pd.read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col,
+        #                 memory_map=True, encoding='utf-8').fillna(''))
     if factor_filter:
         log.debug("Filtering DataFrame contents on Factor Value %s", factor_filter)
         return tfile_df[tfile_df['Factor Value[{}]'.format(factor_filter[0])] == factor_filter[1]]
