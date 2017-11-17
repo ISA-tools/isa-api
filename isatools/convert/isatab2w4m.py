@@ -107,12 +107,12 @@ def read_args():
                         help='Filter out NA values in the specified sample '
                              'metadata columns. The value is a comma separated '
                              'list of column names.',
-                        dest='samp_na_filering', required=False)
+                        dest='samp_na_filtering', required=False)
     parser.add_argument('-V',
                         help='Filter out NA values in the specified variable '
                              'metadata columns. The value is a comma separated '
                              'list of column names.',
-                        dest='var_na_filering', required=False)
+                        dest='var_na_filtering', required=False)
     args = parser.parse_args()
     args = vars(args)
 
@@ -533,8 +533,8 @@ def convert(input_dir, output_dir, sample_output, variable_output,
 # Main {{{1
 ################################################################
 
-if __name__ == '__main__':
-
+def main():
+    
     # Parse command line arguments
     args_dict = read_args()
 
@@ -556,3 +556,6 @@ if __name__ == '__main__':
                  samp_file=args_dict['sample_output'],
                  var_file=args_dict['variable_output'],
                  mat_file=args_dict['matrix_output'])
+
+if __name__ == '__main__':
+    main()
