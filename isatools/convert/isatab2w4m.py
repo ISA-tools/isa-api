@@ -292,18 +292,6 @@ def make_variable_names(assay_df):
             if var_names is None:
                 var_names = [str(v) for v in assay_df[col].values]
             else:
-#                for i in range(var_names):
-#                    s = var_names[i]
-#                    t = str(assay_df[col][i])
-#                    if s == '' and t == '':
-#                        v = ''
-#                    elif s == '':
-#                        v = t
-#                    elif t == '':
-#                        v = s
-#                    else:
-#                        v = '_'.join([s, t])
-#                    var_names[i] = v
                 var_names = [(s if str(t) == '' else (str(t) if s == '' else '_'.join([s, str(t)]))) for
                              s, t in zip(var_names, assay_df[col].values)]
         except:
