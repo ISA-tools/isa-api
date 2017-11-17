@@ -1,6 +1,4 @@
 # Test conversion to W4M format
-# To run this test, run the following command from root directory:
-# coverage run --source isatools -m py.test tests/test_isatab2w4m.py
 
 import os
 import tempfile
@@ -18,7 +16,7 @@ def setUpModule():
                                 .format(utils.DATA_DIR))
  
 # Test class
-class TestIsaTab2W4m(unittest.TestCase):
+class TestIsatab2w4m(unittest.TestCase):
 
     # Initialize instance resources
     def setUp(self):
@@ -29,16 +27,26 @@ class TestIsaTab2W4m(unittest.TestCase):
         #shutil.rmtree(self._tmp_dir)
         pass
         
-    # Test MTBLS30
-    def test_isatab2w4m_convert_MTBLS30(self):
-        
-        test_case = 'MTBLS30-2'
+    def plain_test(self, study, test_dir):
         
         # Convert
-        isatab2w4m.convert(input_dir = os.path.join(utils.TAB_DATA_DIR, test_case), output_dir = self._tmp_dir, sample_output = '%s-w4m-sample-metadata.tsv', variable_output = '%s-w4m-variable-metadata.tsv', matrix_output = '%s-w4m-sample-variable-matrix.tsv')
+        isatab2w4m.convert(input_dir = os.path.join(utils.TAB_DATA_DIR, test_dir), output_dir = self._tmp_dir, sample_output = '%s-w4m-sample-metadata.tsv', variable_output = '%s-w4m-variable-metadata.tsv', matrix_output = '%s-w4m-sample-variable-matrix.tsv')
         
         # Check files
         for x in ['sample-metadata', 'variable-metadata', 'sample-variable-matrix']:
-            ref_file = os.path.join(utils.TAB_DATA_DIR, test_case, '.'.join(['-'.join(['MTBLS30', 'w4m', x]), 'tsv']))
-            output_file = os.path.join(self._tmp_dir, '.'.join(['-'.join(['s_York_SRC_metabolomics.txt', 'w4m', x]), 'tsv']))
+            ref_file = os.path.join(utils.TAB_DATA_DIR, test_dir, '.'.join(['-'.join([study, 'w4m', x]), 'tsv']))
+            output_file = os.path.join(self._tmp_dir, '.'.join(['-'.join([study, 'w4m', x]), 'tsv']))
+            self.assertTrue(os.path.exists(output_file))
             self.assertTrue(filecmp.cmp(output_file, ref_file), 'Output file "{0}" differs from reference file "{1}".'.format(output_file, ref_file))
+        
+    # Test MTBLS30
+    def test_isatab2w4m_convert_MTBLS30(self):
+        self.plain_test('MTBLS30', 'MTBLS30-w4m')
+        
+    # Test MTBLS404
+    def test_isatab2w4m_convert_MTBLS404(self):
+        self.plain_test('MTBLS404', 'MTBLS404-w4m')
+        
+    # Test MTBLS338
+    def test_isatab2w4m_convert_MTBLS338(self):
+        self.plain_test('MTBLS338', 'MTBLS338-w4m')

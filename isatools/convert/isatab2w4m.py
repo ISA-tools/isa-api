@@ -269,11 +269,12 @@ def make_names(u, uniq = False):
                 j = 1
                 for i in item_indices[x][1:]:
                     while True:
-                        new_name = v[i] + "." + str(j)
-                        if new_name not in item_indices:
+                        new_name = x + "." + str(j)
+                        if new_name not in item_indices.keys():
                             break
                         j += 1
                     v[i] = new_name
+                    j += 1
 
     return v
 
@@ -282,21 +283,35 @@ def make_names(u, uniq = False):
 ################################################################
 
 def make_variable_names(assay_df):
+    
     var_names = None
 
     # Make variable names from data values
     for col in ['mass_to_charge', 'retention_time']:
         try:
             if var_names is None:
-                var_names = assay_df[col].values
+                var_names = [str(v) for v in assay_df[col].values]
             else:
-                var_names = [s + ('' if str(t) == '' else ('_' + str(t))) for
+#                for i in range(var_names):
+#                    s = var_names[i]
+#                    t = str(assay_df[col][i])
+#                    if s == '' and t == '':
+#                        v = ''
+#                    elif s == '':
+#                        v = t
+#                    elif t == '':
+#                        v = s
+#                    else:
+#                        v = '_'.join([s, t])
+#                    var_names[i] = v
+                var_names = [(s if str(t) == '' else (str(t) if s == '' else '_'.join([s, str(t)]))) for
                              s, t in zip(var_names, assay_df[col].values)]
         except:
             pass
 
-    # Normlize names
-    var_names = make_names(var_names)
+    # Normalize names
+    var_names = ['X' + s for s in var_names]
+    var_names = make_names(var_names, uniq = True)
 
     return var_names
 
@@ -460,7 +475,7 @@ def convert2w4m(input_dir, study_filename=None, assay_filename=None,
                                              normalize=True)
         w4m_assays.append(dict(samp=sample_metadata, var=variable_metadata,
                                mat=sample_variable_matrix,
-                               filename=assay.filename, study=study.filename))
+                               filename=assay.filename, study=study.identifier))
 
     return w4m_assays
 
