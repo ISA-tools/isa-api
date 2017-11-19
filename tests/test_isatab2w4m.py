@@ -40,13 +40,36 @@ class TestIsatab2w4m(unittest.TestCase):
             self.assertTrue(filecmp.cmp(output_file, ref_file), 'Output file "{0}" differs from reference file "{1}".'.format(output_file, ref_file))
         
     # Test MTBLS30
-    def test_isatab2w4m_convert_MTBLS30(self):
+    def test_MTBLS30(self):
         self.plain_test('MTBLS30', 'MTBLS30-w4m')
         
     # Test MTBLS404
-    def test_isatab2w4m_convert_MTBLS404(self):
+    def test_MTBLS404(self):
         self.plain_test('MTBLS404', 'MTBLS404-w4m')
         
     # Test MTBLS338
-    def test_isatab2w4m_convert_MTBLS338(self):
+    def test_MTBLS338(self):
         self.plain_test('MTBLS338', 'MTBLS338-w4m')
+        
+    # Test NA filtering
+    def na_filtering_test(self, study, test_dir, samp_na_filtering = None, var_na_filtering = None):
+        
+        var_filtering = ','.join(var_na_filtering)
+        
+        # Convert
+        isatab2w4m.convert(input_dir = os.path.join(utils.TAB_DATA_DIR, test_dir), output_dir = self._tmp_dir, sample_output = '-'.join(['%s', var_filtering, 'na-filtering-w4m-sample-metadata.tsv']), variable_output = '-'.join(['%s', var_filtering, 'na-filtering-w4m-variable-metadata.tsv']), matrix_output = '-'.join(['%s', var_filtering, 'na-filtering-w4m-sample-variable-matrix.tsv']), samp_na_filtering = samp_na_filtering, var_na_filtering = var_na_filtering)
+        
+        # Check files
+        for x in ['sample-metadata', 'variable-metadata', 'sample-variable-matrix']:
+            ref_file = os.path.join(utils.TAB_DATA_DIR, test_dir, '.'.join(['-'.join([study, 'w4m', x, 'na-filtering']), 'tsv']))
+            output_file = os.path.join(self._tmp_dir, '.'.join(['-'.join([study, var_filtering, 'na-filtering', 'w4m', x]), 'tsv']))
+            self.assertTrue(os.path.exists(output_file))
+            self.assertTrue(filecmp.cmp(output_file, ref_file), 'Output file "{0}" differs from reference file "{1}".'.format(output_file, ref_file))
+    
+    # Test MTBLS404 NA filtering
+    def test_MTBLS404_na_filtering(self):
+        self.na_filtering_test('MTBLS404', 'MTBLS404-w4m', samp_na_filtering = ['Characteristics[gender]'], var_na_filtering = ['mass_to_charge'])
+        self.na_filtering_test('MTBLS404', 'MTBLS404-w4m', samp_na_filtering = ['Characteristics[gender]'], var_na_filtering = ['mass_to_charge', 'mass_to_charge'])
+        self.na_filtering_test('MTBLS404', 'MTBLS404-w4m', samp_na_filtering = ['Characteristics[gender]'], var_na_filtering = ['charge'])
+        self.na_filtering_test('MTBLS404', 'MTBLS404-w4m', samp_na_filtering = ['Characteristics[gender]'], var_na_filtering = ['database'])
+        self.na_filtering_test('MTBLS404', 'MTBLS404-w4m', samp_na_filtering = ['Characteristics[gender]'], var_na_filtering = ['charge', 'database'])

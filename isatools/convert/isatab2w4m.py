@@ -211,29 +211,32 @@ def get_data_file(assay):
 
     return data_filename
 
+# Load data frame {{{1
+################################################################
+
+def load_df(path):
+    df = ISATAB.read_tfile(path)
+    df.replace(to_replace = '', value = numpy.nan, inplace = True)
+    return df
 
 # Get assay data frame {{{1
 ################################################################
 
 def get_assay_df(input_dir, assay):
-    return ISATAB.read_tfile(os.path.join(input_dir, assay.filename))
-
+    return load_df(os.path.join(input_dir, assay.filename))
 
 # Get measures data frame {{{1
 ################################################################
 
 def get_measures_df(input_dir, assay):
     data_filename = get_data_file(assay)
-    array = ISATAB.read_tfile(os.path.join(input_dir, data_filename))
-    return array
-
+    return load_df(os.path.join(input_dir, data_filename))
 
 # Get study data frame {{{1
 ################################################################
 
 def get_study_df(input_dir, study):
-    return ISATAB.read_tfile(os.path.join(input_dir, study.filename))
-
+    return load_df(os.path.join(input_dir, study.filename))
 
 # Make names {{{1
 ################################################################
@@ -284,18 +287,18 @@ def make_names(u, uniq = False):
 
 def make_variable_names(assay_df):
     
-    var_names = None
+    var_names = [''] * assay_df.shape[0]
 
     # Make variable names from data values
     for col in ['mass_to_charge', 'retention_time']:
-        try:
-            if var_names is None:
-                var_names = [str(v) for v in assay_df[col].values]
-            else:
-                var_names = [(s if str(t) == '' else (str(t) if s == '' else '_'.join([s, str(t)]))) for
-                             s, t in zip(var_names, assay_df[col].values)]
-        except:
-            pass
+        for i, v in enumerate(assay_df[col].values):
+            if type(v) == str or not numpy.isnan(v):
+                x = var_names[i]
+                if x == '':
+                    x = str(v)
+                else:
+                    x = '_'.join([x, str(v)])
+                var_names[i] = x
 
     # Normalize names
     var_names = ['X' + s for s in var_names]
@@ -467,7 +470,6 @@ def convert2w4m(input_dir, study_filename=None, assay_filename=None,
 
     return w4m_assays
 
-
 # Write data frame {{{1
 ################################################################
 
@@ -512,7 +514,6 @@ def filter_na_values(assays, table, cols):
     for assay in assays:
         assay[table].dropna(axis=0, how='all', subset=make_names(cols),
                             inplace=True)
-
 
 # Convert {{{1
 ################################################################
