@@ -509,11 +509,28 @@ def write_assays(assays, output_dir, samp_file, var_file, mat_file):
 # Filter NA values {{{1
 ################################################################
 
-def filter_na_values(assays, table, cols):
+def filter_na_values(assays, samp_na_filtering = None, var_na_filtering = None):
+    
     # Loop on all assays
     for assay in assays:
-        assay[table].dropna(axis=0, how='all', subset=make_names(cols),
-                            inplace=True)
+        
+        if samp_na_filtering is not None:
+            cols = make_names(samp_na_filtering)
+            samp = assay['samp'].dropna(axis=0, how='all', subset=cols)
+            removed_sample_names = numpy.setdiff1d(assay['samp']['sample.name'], samp['sample.name'])
+            assay['samp'] = samp
+            assay['mat'].drop(labels = removed_sample_names, axis = 1, inplace = True)
+            
+        if var_na_filtering is not None:
+            cols = make_names(var_na_filtering)
+            var = assay['var'].dropna(axis=0, how='all', subset=cols)
+            removed_variable_names_index = []
+            kept_var_names = var['variable.name'].tolist()
+            for i, v in enumerate(assay['var']['variable.name']):
+                if v not in kept_var_names:
+                    removed_variable_names_index.append(i)
+            assay['var'] = var
+            assay['mat'].drop(labels = [assay['mat'].axes[0][i] for i in removed_variable_names_index], axis = 0, inplace = True)
 
 # Convert {{{1
 ################################################################
@@ -521,16 +538,17 @@ def filter_na_values(assays, table, cols):
 def convert(input_dir, output_dir, sample_output, variable_output,
             matrix_output, study_filename=None, assay_filename=None,
             all_assays=None, samp_na_filtering=None, var_na_filtering=None):
+    
+    # Convert assays to W4M format
     assays = convert2w4m(input_dir=input_dir,
                          study_filename=study_filename,
                          assay_filename=assay_filename,
                          all_assays=all_assays)
 
-    if samp_na_filtering is not None:
-        filter_na_values(assays, table='samp', cols=samp_na_filtering)
-    if var_na_filtering is not None:
-        filter_na_values(assays, table='var', cols=var_na_filtering)
+    # Filter NA values
+    filter_na_values(assays, samp_na_filtering, var_na_filtering)
 
+    # Write assays into files
     write_assays(assays, output_dir=output_dir, samp_file=sample_output,
                  var_file=variable_output, mat_file=matrix_output)
 
