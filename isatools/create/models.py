@@ -979,7 +979,6 @@ class IsaModelObjectFactory(object):
 
     @treatment_sequence.setter
     def treatment_sequence(self, treatment_sequence):
-        # TODO: Implement repeated measure writer
         if not isinstance(treatment_sequence, set):
             raise ISAModelAttributeError('treatment_sequence must be a set '
                                          'of tuples of type (Treatment, int)')
@@ -998,12 +997,17 @@ class IsaModelObjectFactory(object):
         if self.sample_assay_plan.sample_plan == {}:
             raise ISAModelAttributeError('sample_plan is not defined')
         sample_plan = self.sample_assay_plan.sample_plan
+        ranked_treatment_set = set()
+        for x, _ in self.treatment_sequence.ranked_treatments:
+            ranked_treatment_set.add(x)
+        groups_ids = [(uuid.uuid4(), x) for x in ranked_treatment_set]
+        ranks = set([y for _, y in self.treatment_sequence.ranked_treatments])
 
-        groups_ids = [(uuid.uuid4(), x.factor_values, y) for x, y in
-                      self.treatment_sequence.ranked_treatments]
-
-        if len(groups_ids) == 0:
-            groups_ids = ['']
+        group_rank_map = dict()
+        for group_id, rank in itertools.product(groups_ids, ranks):
+            if group_id not in group_rank_map.keys():
+                group_rank_map[group_id] = set()
+            group_rank_map[group_id].add(rank)
         sources = []
         samples = []
         process_sequence = []
@@ -1049,11 +1053,8 @@ class IsaModelObjectFactory(object):
                 ]
                 samples.append(sample)
                 process_sequence.append(process)
-        for group_id, fvs, rank in groups_ids:
-            collection_event_rank = Characteristic(
-                category=collection_event_rank_characteristic,
-                value=rank)
-            for subjn in range(group_size):
+        for (group_id, fvs), ranks in group_rank_map.items():
+            for subjn in (str(x) for x in range(group_size)):
                 material_type = Characteristic(
                     category=OntologyAnnotation(
                         term='Material Type'),
@@ -1061,54 +1062,56 @@ class IsaModelObjectFactory(object):
                 source = Source(name=self._idgen(group_id, subjn))
                 source.characteristics = [material_type]
                 sources.append(source)
-                for sample_type, sampling_size in sample_plan.items():
-                    for sampn in range(0, sampling_size):
-                        for qc_material_type in self.sample_assay_plan \
-                                .sample_qc_plan.keys():
+                for rank in ranks:
+                    for sample_type, sampling_size in sample_plan.items():
+                        for sampn in (str(x) for x in range(0, sampling_size)):
+                            for qc_material_type in self.sample_assay_plan \
+                                    .sample_qc_plan.keys():
+                                if sample_count % self.sample_assay_plan \
+                                        .sample_qc_plan[qc_material_type] == 0:
+                                    # insert QC sample collection
+                                    qcsource = Source(
+                                        name=self._idgen(group_id, subjn) + '_qc')
+                                    qcsource.characteristics = [qc_material_type]
+                                    sources.append(qcsource)
 
-                            if sample_count % self.sample_assay_plan \
-                                    .sample_qc_plan[qc_material_type] == 0:
-                                # insert QC sample collection
-                                qcsource = Source(
-                                    name=self._idgen(group_id, subjn) + '_qc')
-                                qcsource.characteristics = [qc_material_type]
-                                sources.append(qcsource)
-
-                                sample = Sample(
-                                    name=self._idgen(
-                                        group_id, subjn,
-                                        'qc', qc_material_type.value.term))
-                                sample.derives_from = [qcsource]
-                                samples.append(sample)
-                                process = Process(
-                                    executes_protocol=sample_collection,
-                                    inputs=[qcsource],
-                                    outputs=[sample], performer=self.ops[0],
-                                    date_=datetime.datetime.isoformat(
-                                        datetime.datetime.now()),
-                                    parameter_values=[ParameterValue(
-                                        category=sample_collection.get_param(
-                                            'Run Order'), value=str(
-                                            sample_count))])
-                                process_sequence.append(process)
-                        # normal sample collection
-                        sample = Sample(name=self._idgen(
-                            group_id, subjn, sampn, sample_type.value.term),
-                            factor_values=fvs)
-                        sample.characteristics = [sample_type,
-                                                  collection_event_rank]
-                        sample.derives_from = [source]
-                        samples.append(sample)
-                        sample_count += 1
-
-                        process = Process(executes_protocol=sample_collection,
-                                          inputs=[source], outputs=[sample],
-                                          performer=self.ops[0], date_=
-                            datetime.date.isoformat(datetime.datetime.now()),
-                        parameter_values=[ParameterValue(
-                            category=sample_collection.get_param('Run Order'),
-                            value=str(sample_count))])
-                        process_sequence.append(process)
+                                    sample = Sample(
+                                        name=self._idgen(
+                                            group_id, subjn,
+                                            'qc', qc_material_type.value.term))
+                                    sample.derives_from = [qcsource]
+                                    samples.append(sample)
+                                    process = Process(
+                                        executes_protocol=sample_collection,
+                                        inputs=[qcsource],
+                                        outputs=[sample], performer=self.ops[0],
+                                        date_=datetime.datetime.isoformat(
+                                            datetime.datetime.now()),
+                                        parameter_values=[ParameterValue(
+                                            category=sample_collection.get_param(
+                                                'Run Order'), value=str(
+                                                sample_count))])
+                                    process_sequence.append(process)
+                            # normal sample collection
+                            sample = Sample(name=self._idgen(
+                                group_id, subjn, sampn, sample_type.value.term),
+                                factor_values=fvs)
+                            collection_event_rank = Characteristic(
+                                category=collection_event_rank_characteristic,
+                                value=rank)
+                            sample.characteristics = [sample_type,
+                                                      collection_event_rank]
+                            sample.derives_from = [source]
+                            samples.append(sample)
+                            sample_count += 1
+                            process = Process(executes_protocol=sample_collection,
+                                              inputs=[source], outputs=[sample],
+                                              performer=self.ops[0], date_=
+                                datetime.date.isoformat(datetime.date.today()),
+                            parameter_values=[ParameterValue(
+                                category=sample_collection.get_param('Run Order'),
+                                value=str(sample_count))])
+                            process_sequence.append(process)
         postbatch = sample_qc_plan.post_run_batch
         if isinstance(postbatch, SampleQCBatch):
             qcsource = Source(name='qc_postbatch_in', characteristics=[

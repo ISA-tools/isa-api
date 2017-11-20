@@ -771,6 +771,7 @@ class DecodeFromJsonTests(unittest.TestCase):
                 os.path.join(utils.JSON_DATA_DIR, 'create',
                              'treatment_sequence_test.json')) as json_fp:
             treatment_plan = TreatmentSequenceDecoder().load(json_fp)
+        print(sample_assay_plan)
         isa_object_factory = IsaModelObjectFactory(
             sample_assay_plan, treatment_plan)
         study = isa_object_factory.create_assays_from_plan()

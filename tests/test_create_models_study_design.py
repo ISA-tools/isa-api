@@ -645,8 +645,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         ffactorial_design_treatments = \
             treatment_factory.compute_full_factorial_design()
         treatment_sequence = TreatmentSequence(
-            ranked_treatments={
-                (x, i) for i, x in enumerate(ffactorial_design_treatments)})
+            ranked_treatments={(x, 1) for x in ffactorial_design_treatments})
         # makes each study group ranked in sequence
         study = IsaModelObjectFactory(
             plan, treatment_sequence).create_study_from_plan()
@@ -688,8 +687,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         ffactorial_design_treatments = \
             treatment_factory.compute_full_factorial_design()
         treatment_sequence = TreatmentSequence(
-            ranked_treatments={(x, i) for i, x in
-                               enumerate(ffactorial_design_treatments)})
+            ranked_treatments={(x, 1) for x in ffactorial_design_treatments})
         # makes each study group ranked in sequence
         study = IsaModelObjectFactory(
             plan,  treatment_sequence).create_study_from_plan()
@@ -711,6 +709,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         treatments = treatment_factory.compute_full_factorial_design()
         treatment_sequence = TreatmentSequence(ranked_treatments=treatments)
         self.assertEqual(len(treatments), 2)
+        self.assertEqual(len(treatment_sequence.ranked_treatments), 2)
         self.assertEqual(
             max((x for _, x in treatment_sequence.ranked_treatments)), 1)
         sample_assay_plan = SampleAssayPlan()
@@ -768,6 +767,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         treatments = treatment_factory.compute_full_factorial_design()
         treatment_sequence = TreatmentSequence(ranked_treatments=treatments)
         self.assertEqual(len(treatments), 12)
+        self.assertEqual(len(treatment_sequence.ranked_treatments), 12)
         self.assertEqual(
             max((x for _, x in treatment_sequence.ranked_treatments)), 1)
         sample_assay_plan = SampleAssayPlan()
@@ -806,6 +806,86 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
 
         ms_assay_type1 = AssayType(measurement_type='metabolite profiling',
                                   technology_type='mass spectrometry')
+        ms_assay_type1.topology_modifiers = MSAssayTopologyModifiers(
+            injection_modes={'LC'},
+            acquisition_modes={'negative'},
+            technical_replicates=1
+        )
+        sample_assay_plan.add_assay_type(ms_assay_type1)
+        ms_assay_type2 = AssayType(measurement_type='metabolite profiling',
+                                   technology_type='mass spectrometry')
+        ms_assay_type2.topology_modifiers = MSAssayTopologyModifiers(
+            injection_modes={'FIA'},
+            acquisition_modes={'postitive', 'negative'},
+            technical_replicates=2
+        )
+        sample_assay_plan.add_assay_type(ms_assay_type2)
+        sample_assay_plan.add_assay_plan_record('urine', ms_assay_type1)
+        sample_assay_plan.add_assay_plan_record('urine', ms_assay_type2)
+
+        sample_assay_plan.add_assay_type(ngs_assay_type)
+        study = isa_factory.create_assays_from_plan()
+        self.assertEqual(len(study.assays), 11)
+        self.assertEqual(len(study.protocols), 7)
+
+    def test_study_from_repeated_mesaure_plan(self):
+        factor1 = StudyFactor(name='1')
+        factor2 = StudyFactor(name='2')
+        factor3 = StudyFactor(name='3')
+        treatment_factory = TreatmentFactory(
+            factors=[factor1, factor2, factor3])
+        treatment_factory.add_factor_value(factor1, 'a')
+        treatment_factory.add_factor_value(factor1, 'b')
+        treatment_factory.add_factor_value(factor2, 'i')
+        treatment_factory.add_factor_value(factor2, 'ii')
+        treatment_factory.add_factor_value(factor2, 'iii')
+        treatment_factory.add_factor_value(factor3, 'alpha')
+        treatment_factory.add_factor_value(factor3, 'beta')
+        treatments = treatment_factory.compute_full_factorial_design()
+        treatment_sequence = TreatmentSequence()
+        for treatment in treatments:
+            treatment_sequence.add_treatment(treatment, 1)
+            treatment_sequence.add_treatment(treatment, 2)
+        self.assertEqual(len(treatments), 12)
+        self.assertEqual(len(treatment_sequence.ranked_treatments), 24)
+        self.assertEqual(
+            max((x for _, x in treatment_sequence.ranked_treatments)), 2)
+        sample_assay_plan = SampleAssayPlan()
+        sample_assay_plan.group_size = 3
+        sample_assay_plan.add_sample_type('liver')
+        sample_assay_plan.add_sample_type('blood')
+        sample_assay_plan.add_sample_type('urine')
+        sample_assay_plan.add_sample_plan_record('liver', 1)
+        sample_assay_plan.add_sample_plan_record('blood', 1)
+        sample_assay_plan.add_sample_plan_record('urine', 2)
+        isa_factory = IsaModelObjectFactory(
+            sample_assay_plan=sample_assay_plan,
+            treatment_sequence=treatment_sequence)
+        study = isa_factory.create_study_from_plan()
+        self.assertEqual(len(study.sources), 36)  # number of subjects
+        self.assertEqual(len(study.samples), 288)
+
+        ms_assay_type = AssayType(measurement_type='metabolite profiling',
+                                  technology_type='mass spectrometry')
+        ms_assay_type.topology_modifiers = MSAssayTopologyModifiers(
+            injection_modes={'FIA', 'LC'},
+            acquisition_modes={'positive', 'negative'},
+            technical_replicates=2
+        )
+        ngs_assay_type = AssayType(
+            measurement_type='nucleotide sequencing', technology_type='NGS')
+        ngs_assay_type.topology_modifiers = DNASeqAssayTopologyModifiers(
+            technical_replicates=1, distinct_libraries=1
+        )
+        sample_assay_plan.add_assay_type(ms_assay_type)
+        sample_assay_plan.add_assay_type(ngs_assay_type)
+        sample_assay_plan.add_assay_plan_record('liver', ms_assay_type)
+        sample_assay_plan.add_assay_plan_record('liver', ngs_assay_type)
+        sample_assay_plan.add_assay_plan_record('blood', ms_assay_type)
+        sample_assay_plan.add_assay_plan_record('blood', ngs_assay_type)
+
+        ms_assay_type1 = AssayType(measurement_type='metabolite profiling',
+                                   technology_type='mass spectrometry')
         ms_assay_type1.topology_modifiers = MSAssayTopologyModifiers(
             injection_modes={'LC'},
             acquisition_modes={'negative'},

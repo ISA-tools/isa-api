@@ -3363,7 +3363,6 @@ class IsaTabDataFrame(pd.DataFrame):
                 return 'Comment[{val}]'.format(
                     val=next(iter(_RX_COMMENT.findall(label))))
 
-
     @property
     def isatab_header(self):
         return list(map(lambda x: self._clean_label(x), self.columns))
