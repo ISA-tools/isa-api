@@ -519,17 +519,17 @@ def filter_na_values(assays, samp_na_filtering = None, var_na_filtering = None):
             samp = assay['samp'].dropna(axis=0, how='all', subset=cols)
             removed_sample_names = numpy.setdiff1d(assay['samp']['sample.name'], samp['sample.name'])
             assay['samp'] = samp
-            assay['mat'].drop(labels = removed_sample_names, axis = 1, inplace = True)
+            assay['mat'].drop(labels = removed_sample_names.tolist(), axis = 1, inplace = True)
             
         if var_na_filtering is not None:
             cols = make_names(var_na_filtering)
-            var = assay['var'].dropna(axis=0, how='all', subset=cols)
+            var_names = assay['var']['variable.name'].tolist()
+            assay['var'].dropna(axis=0, how='all', subset=cols, inplace = True)
+            kept_var_names = assay['var']['variable.name'].tolist()
             removed_variable_names_index = []
-            kept_var_names = var['variable.name'].tolist()
-            for i, v in enumerate(assay['var']['variable.name']):
+            for i, v in enumerate(var_names):
                 if v not in kept_var_names:
                     removed_variable_names_index.append(i)
-            assay['var'] = var
             assay['mat'].drop(labels = [assay['mat'].axes[0][i] for i in removed_variable_names_index], axis = 0, inplace = True)
 
 # Convert {{{1

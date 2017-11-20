@@ -56,15 +56,21 @@ class TestIsatab2w4m(unittest.TestCase):
         
         var_filtering = ','.join(var_na_filtering)
         
+        # Set file names
+        output_files = dict()
+        ref_files = dict()
+        for x in ['sample-metadata', 'variable-metadata', 'sample-variable-matrix']:
+            filename = '.'.join(['-'.join([study, 'w4m', var_filtering, x, 'na-filtering']), 'tsv'])
+            output_files[x] = os.path.join(self._tmp_dir, filename)
+            ref_files[x] = os.path.join(utils.TAB_DATA_DIR, test_dir, filename)
+        
         # Convert
-        isatab2w4m.convert(input_dir = os.path.join(utils.TAB_DATA_DIR, test_dir), output_dir = self._tmp_dir, sample_output = '-'.join(['%s', var_filtering, 'na-filtering-w4m-sample-metadata.tsv']), variable_output = '-'.join(['%s', var_filtering, 'na-filtering-w4m-variable-metadata.tsv']), matrix_output = '-'.join(['%s', var_filtering, 'na-filtering-w4m-sample-variable-matrix.tsv']), samp_na_filtering = samp_na_filtering, var_na_filtering = var_na_filtering)
+        isatab2w4m.convert(input_dir = os.path.join(utils.TAB_DATA_DIR, test_dir), output_dir = self._tmp_dir, sample_output = output_files['sample-metadata'], variable_output = output_files['variable-metadata'], matrix_output = output_files['sample-variable-matrix'], samp_na_filtering = samp_na_filtering, var_na_filtering = var_na_filtering)
         
         # Check files
         for x in ['sample-metadata', 'variable-metadata', 'sample-variable-matrix']:
-            ref_file = os.path.join(utils.TAB_DATA_DIR, test_dir, '.'.join(['-'.join([study, 'w4m', x, 'na-filtering']), 'tsv']))
-            output_file = os.path.join(self._tmp_dir, '.'.join(['-'.join([study, var_filtering, 'na-filtering', 'w4m', x]), 'tsv']))
-            self.assertTrue(os.path.exists(output_file))
-            self.assertTrue(filecmp.cmp(output_file, ref_file), 'Output file "{0}" differs from reference file "{1}".'.format(output_file, ref_file))
+            self.assertTrue(os.path.exists(output_files[x]))
+            self.assertTrue(filecmp.cmp(output_files[x], ref_files[x]), 'Output file "{0}" differs from reference file "{1}".'.format(output_files[x], ref_files[x]))
     
     # Test MTBLS404 NA filtering
     def test_MTBLS404_na_filtering(self):
