@@ -79,3 +79,21 @@ class TestIsatab2w4m(unittest.TestCase):
         self.na_filtering_test('MTBLS404', 'MTBLS404-w4m', samp_na_filtering = ['Characteristics[gender]'], var_na_filtering = ['charge'])
         self.na_filtering_test('MTBLS404', 'MTBLS404-w4m', samp_na_filtering = ['Characteristics[gender]'], var_na_filtering = ['database'])
         self.na_filtering_test('MTBLS404', 'MTBLS404-w4m', samp_na_filtering = ['Characteristics[gender]'], var_na_filtering = ['charge', 'database'])
+        
+    # Test assay selection
+    def test_assay_selection(self):
+        
+        study = 'MTBLS30'
+        test_dir = 'MTBLS30-w4m'
+        
+        for assay in ['a_york_src_GC_mass_spectrometry.txt', 'a_york_src_FIA_mass_spectrometry.txt']:
+                    
+            # Convert
+            isatab2w4m.convert(input_dir = os.path.join(utils.TAB_DATA_DIR, test_dir), output_dir = self._tmp_dir, sample_output = '%s-w4m-sample-metadata-{0}.tsv'.format(assay), variable_output = '%s-w4m-variable-metadata-{0}.tsv'.format(assay), matrix_output = '%s-w4m-sample-variable-matrix-{0}.tsv'.format(assay), assay_filename = assay)
+            
+            # Check files
+            for x in ['sample-metadata', 'variable-metadata', 'sample-variable-matrix']:
+                ref_file = os.path.join(utils.TAB_DATA_DIR, test_dir, '.'.join(['-'.join([study, 'w4m', x, assay]), 'tsv']))
+                output_file = os.path.join(self._tmp_dir, '.'.join(['-'.join([study, 'w4m', x, assay]), 'tsv']))
+                self.assertTrue(os.path.exists(output_file))
+                self.assertTrue(filecmp.cmp(output_file, ref_file), 'Output file "{0}" differs from reference file "{1}".'.format(output_file, ref_file))
