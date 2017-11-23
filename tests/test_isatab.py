@@ -1036,8 +1036,8 @@ class UnitTestIsaStudyGroups():
         self.assertEqual(num_study_groups, 1)
 
     def test_check_study_groups(self):
-        self.assertTrue('Comment[Number of Study Groups]' in self.study_df.columns)
-        study_group_sizes = self.study_df['Comment[Number of Study Groups]']
+        self.assertTrue(isatab.NUMBER_OF_STUDY_GROUPS in self.study_df.columns)
+        study_group_sizes = self.study_df[isatab.NUMBER_OF_STUDY_GROUPS]
         study_group_size_in_comment = next(iter(study_group_sizes))
         self.assertTrue(isatab.check_study_groups(self.study_sample_table, self.study_filename, study_group_size_in_comment))
 

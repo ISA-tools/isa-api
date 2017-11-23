@@ -47,6 +47,7 @@ def xml_config_contents(filename):
 
 
 STUDY_SAMPLE_XML_CONFIG = xml_config_contents('studySample.xml')
+NUMBER_OF_STUDY_GROUPS = 'Comment[Number of Study Groups]'
 
 
 class _Defaults(object):
@@ -2688,8 +2689,8 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
         log.info("Finished checking investigation file")
         for i, study_df in enumerate(i_df['studies']):
             study_group_size_in_comment = None
-            if 'Comment[Number of Study Groups]' in study_df.columns:
-                study_group_sizes = study_df['Comment[Number of Study Groups]']
+            if NUMBER_OF_STUDY_GROUPS in study_df.columns:
+                study_group_sizes = study_df[NUMBER_OF_STUDY_GROUPS]
                 study_group_size_in_comment = next(iter(study_group_sizes))
             study_filename = study_df.iloc[0]['Study File Name']
             study_sample_table = None
@@ -2733,9 +2734,9 @@ def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
                     pass
                 assay_df = i_df['s_assays'][i]
                 study_group_size_in_comment = None
-                if 'Comment[Number of Study Groups]' in assay_df.columns:
+                if NUMBER_OF_STUDY_GROUPS in assay_df.columns:
                     study_group_sizes = study_df[
-                        'Comment[Number of Study Groups]']
+                        NUMBER_OF_STUDY_GROUPS]
                     study_group_size_in_comment = next(iter(study_group_sizes))
                 for x, assay_filename in enumerate(assay_df['Study Assay File Name'].tolist()):
                     measurement_type = assay_df['Study Assay Measurement Type'].tolist()[x]
