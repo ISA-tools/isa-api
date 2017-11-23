@@ -2608,25 +2608,30 @@ def check_ontology_fields(table, cfg):
 BASE_DIR = os.path.dirname(__file__)
 default_config_dir = os.path.join(BASE_DIR, 'resources', 'config', 'xml')
 
+def get_num_study_groups(study_sample_table, study_filename):
+    num_study_groups = -1
+    factor_columns = [x for x in study_sample_table.columns if x.startswith('Factor Value')]
+    if factor_columns != []:
+        num_study_groups = len(study_sample_table[factor_columns].drop_duplicates())
+    else:
+        log.info("No study factors found in {}".format(study_filename))
+    return num_study_groups
 
 def check_study_groups(table, filename, study_group_size_in_comment):
-    factor_columns = [x for x in table.columns if x.startswith('Factor Value')]
-    if factor_columns != []:
-        num_study_groups = len(table[factor_columns].drop_duplicates())
-        log.info('Found {} study groups in {}'.format(
+    num_study_groups = get_num_study_groups(table, filename)
+    log.info('Found {} study groups in {}'.format(
             num_study_groups, filename))
-        info.append({
+    info.append({
             'message': 'Found {} study groups in {}'.format(
                 num_study_groups, filename),
             'supplemental': 'Found {} study groups in {}'.format(
                 num_study_groups, filename),
             'code': 5001
-        })
-        if study_group_size_in_comment is not None and \
+    })
+    if study_group_size_in_comment is not None and \
                         study_group_size_in_comment != num_study_groups:
             log.warning('Study group size reported as {} but found {} in {}'
-                        .format(
-                study_group_size_in_comment, num_study_groups, filename))
+                        .format(study_group_size_in_comment, num_study_groups, filename))
             warnings.append({
                 'message': 'Reported study group size does not match table'
                     .format(num_study_groups, filename),
@@ -2634,11 +2639,9 @@ def check_study_groups(table, filename, study_group_size_in_comment):
                                 'in {}'.format(
                     study_group_size_in_comment, num_study_groups, filename),
                 'code': 5002
-            })
-            
-    else:
-        log.info("No study factors found in {}".format(filename))
-
+                })
+            return False
+    return True
 
 def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
     global errors

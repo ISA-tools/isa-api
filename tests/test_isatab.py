@@ -1015,3 +1015,29 @@ label2\trow2_value1\trow2_value2\n"""
             'header': ['label1', 'label2']
         }
         self.assertEqual(ttable_dict, expected_ttable)
+
+class UnitTestIsaStudyGroups():
+
+    def setUp(self):
+        self.fp = open(os.path.join(self._tab_data_dir, 'MTBLS404', 'i_sacurine.txt'), encoding='utf-8')
+        self.i_df = isatab.load_investigation(fp=self.fp)
+        for i, study_df in enumerate(self.i_df['studies']):
+            study_filename = study_df.iloc[0]['Study File Name']
+            self.s_fp = open(os.path.join(os.path.dirname(self.fp.name), study_filename), encoding='utf-8')
+            self.study_sample_table = isatab.load_table(self.s_fp)
+            self.study_sample_table.filename = study_filename
+
+    def tearDown(self):
+        self.fp.close()
+        self.s_fp.close()
+
+    def test_get_num_study_groups(self):
+        num_study_groups = isatab.get_num_study_groups(self.study_sample_table, self.study_filename)
+        self.assertEqual(num_study_groups, 1)
+
+    def test_check_study_groups(self):
+        self.assertTrue('Comment[Number of Study Groups]' in self.study_df.columns)
+        study_group_sizes = self.study_df['Comment[Number of Study Groups]']
+        study_group_size_in_comment = next(iter(study_group_sizes))
+        self.assertTrue(isatab.check_study_groups(self.study_sample_table, self.study_filename, study_group_size_in_comment))
+
