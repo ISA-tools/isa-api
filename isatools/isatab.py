@@ -1583,7 +1583,7 @@ def check_protocol_usage(i_df, dir_context):
                 "code": 1019
             })
             log.warning(
-                "(W) Some protocols declared in the file {} are not used in any assay file: {}".format(
+                "(W) Some protocols declared in the investigation file are not used neither in the study file {} nor in any related assay file: {}".format(
                     study_filename, list(diff)))
 
 
