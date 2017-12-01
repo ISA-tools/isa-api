@@ -1080,7 +1080,8 @@ class IsaModelObjectFactory(object):
                 ]
                 samples.append(sample)
                 process_sequence.append(process)
-        for (group_id, fvs), ranks in group_rank_map.items():
+        for (group_id, treatment), ranks in group_rank_map.items():
+            fvs = treatment.factor_values
             for subjn in (str(x) for x in range(group_size)):
                 material_type = Characteristic(
                     category=OntologyAnnotation(
@@ -2129,8 +2130,7 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
             return {
                 'group_size': o.group_size,
                 'sample_types': sorted([x.value.term for x in o.sample_types]),
-                'assay_types': sorted(
-                    [self.get_assay_type(x) for x in o.assay_types]),
+                'assay_types': [self.get_assay_type(x) for x in o.assay_types],
                 'sample_plan': self.get_sample_plan(o.sample_plan),
                 'sample_qc_plan': self.get_sample_qc_plan(o.sample_qc_plan),
                 'assay_plan': self.get_assay_plan(o.assay_plan)
