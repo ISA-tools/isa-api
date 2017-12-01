@@ -1,6 +1,6 @@
 numpy
 jsonschema
-pandas
+pandas==0.20.*
 networkx
 behave
 httpretty
