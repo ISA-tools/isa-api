@@ -628,6 +628,36 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
                               factor_type=OntologyAnnotation(term='intensity'))
         self.f3 = StudyFactor(name='DURATION',
                               factor_type=OntologyAnnotation(term='time'))
+        self.agent = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
+        self.intensity = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
+        self.duration = StudyFactor(name=BASE_FACTORS[2]['name'], factor_type=BASE_FACTORS[2]['type'])
+        self.first_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            FactorValue(factor_name=self.agent, value='crack'),
+            FactorValue(factor_name=self.intensity, value='low'),
+            FactorValue(factor_name=self.duration, value='medium')
+        ))
+        self.second_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            FactorValue(factor_name=self.agent, value='crack'),
+            FactorValue(factor_name=self.intensity, value='high'),
+            FactorValue(factor_name=self.duration, value='medium')
+        ))
+
+    def test_add_treatment_epoch_not_starting_with_1(self):
+        treatment_sequence = TreatmentSequence()
+        self.assertRaises(TypeError, treatment_sequence.add_treatment, self.first_treatment, 3)
+
+    def test_add_treatment_epoch_not_sequential(self):
+        treatment_sequence = TreatmentSequence()
+        treatment_sequence.add_treatment(self.first_treatment, 1)
+        self.assertTrue(treatment_sequence.ranked_treatments.__len__() == 1)
+        self.assertRaises(TypeError, treatment_sequence.add_treatment, self.second_treatment, 4)
+
+    def test_add_treatment_epoch_not_sequential(self):
+        treatment_sequence = TreatmentSequence()
+        treatment_sequence.add_treatment(self.first_treatment, 1)
+        self.assertTrue(treatment_sequence.ranked_treatments.__len__() == 1)
+        treatment_sequence.add_treatment(self.second_treatment, 2)
+        self.assertRaises(TypeError, treatment_sequence.add_treatment, self.second_treatment, 4)
 
     def test_create_study_from_plan(self):
         plan = SampleAssayPlan()

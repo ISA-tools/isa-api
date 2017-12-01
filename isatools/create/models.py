@@ -1,4 +1,5 @@
-"""Model objects for storing study design settings, for consumption by
+"""
+Model objects for storing study design settings, for consumption by
 function or factory to create ISA model objects.
 """
 from __future__ import absolute_import
@@ -125,6 +126,9 @@ class Treatment(object):
 
 
 class TreatmentFactory(object):
+    """
+      A factory class to build a set of Treatments.
+     """
 
     def __init__(self, intervention_type=INTERVENTIONS['CHEMICAL'],
                  factors=BASE_FACTORS):
@@ -164,7 +168,7 @@ class TreatmentFactory(object):
 
     def compute_full_factorial_design(self):
         """
-        Computes the ful factorial design on the basis of the stored factor and
+        Computes the full factorial design on the basis of the stored factor and
         factor values. If one of the factors has no associated values an empty
         set is returned :return: set - the full factorial design as a set of
         Treatments
@@ -185,7 +189,7 @@ class TreatmentFactory(object):
 
 class TreatmentSequence:
     """
-    A treatment sequence is an ordered (graph-like) combination of treatment
+    A treatment sequence is an ordered (graph-like) combination of treatments (as a list), each with an associated rank.
     """
 
     def __init__(self, ranked_treatments=[], subject_count=10):
@@ -252,11 +256,34 @@ class TreatmentSequence:
 
     def add_treatment(self, treatment, epoch=1):
         if isinstance(treatment, Treatment) and isinstance(epoch, int):
-            # TODO check epoch
-            self.__ranked_treatments.add((treatment, epoch))
+            if self.check_epochs(epoch):
+                self.__ranked_treatments.add((treatment, epoch))
+            else:
+                raise TypeError('The epoch number {0} is either not greater than 1 or it does not complete the sequence of epochs, which should start in 1 and have no values missing up to the highest epoch value '.format(epoch))
 
+    def check_epochs(self, new_epoch):
+        """
+        Checks that the list of epochs in the __ranked_treatments have 1 as the lowest value and no value is missing from the lowest to the highest value
+        :return: true if the list of epochs satisfies the criteria above, false otherwise
+        """
+        epoch_list = [x[1] for x in self.__ranked_treatments]
+        epoch_list.append(new_epoch)
+        if epoch_list.__len__() == 1:
+            return (1 in epoch_list)
+        try:
+            it = (x for x in epoch_list)
+            first = next(it)
+            boolean1 = any(i == 1 for i in epoch_list)
+            boolean2 = all(i >= 1 for i in epoch_list)
+            boolean3 = all(a == b for a, b in enumerate(it, first + 1))
+            return boolean1 and boolean2 and boolean3
+        except StopIteration:
+            log.error("StopIteration - shouldn't occur!")
 
 class AssayType(object):
+    """
+       A type of assay, determined by a measurement_type, a technology_type and a set of topology_modifiers (of type AssayTopologyModifiers).
+    """
 
     def __init__(self, measurement_type=None, technology_type=None,
                  topology_modifiers=None):
