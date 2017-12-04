@@ -286,7 +286,7 @@ def load(fp):
                 characteristic.unit = unit
                 source.characteristics.append(characteristic)
             sources_dict[source.id] = source
-            study.materials["sources"].append(source)
+            study.sources.append(source)
         for sample_json in study_json["materials"]["samples"]:
             sample = Sample(
                 id_=sample_json["@id"],
@@ -334,7 +334,7 @@ def load(fp):
                     )
                 sample.factor_values.append(factor_value)
             samples_dict[sample.id] = sample
-            study.materials["samples"].append(sample)
+            study.samples.append(sample)
             try:
                 for source_id_ref_json in sample_json["derivesFrom"]:
                     sample.derives_from.append(sources_dict[source_id_ref_json["@id"]])
@@ -462,7 +462,7 @@ def load(fp):
                 assay.data_files.append(data_file)
             for sample_json in assay_json["materials"]["samples"]:
                 sample = samples_dict[sample_json["@id"]]
-                assay.materials["samples"].append(sample)
+                assay.samples.append(sample)
             for assay_characteristics_category_json in assay_json["characteristicCategories"]:
                 characteristic_category =OntologyAnnotation(
                     id_=assay_characteristics_category_json["@id"],
@@ -494,7 +494,7 @@ def load(fp):
                         )
                     )
                     material.characteristics.append(characteristic)
-                assay.materials["other_material"].append(material)
+                assay.other_material.append(material)
                 other_materials_dict[material.id] = material
             for assay_process_json in assay_json["processSequence"]:
                 process = Process(
@@ -1711,9 +1711,9 @@ class ISAJSONEncoder(JSONEncoder):
                 "studyDesignDescriptors": get_ontology_annotations(o.design_descriptors),
                 "protocols": list(map(lambda x: get_protocol(x), o.protocols)),
                 "materials": {
-                    "sources": list(map(lambda x: get_source(x), o.materials['sources'])),
-                    "samples": get_samples(o.materials['samples']),
-                    "otherMaterials": get_other_materials(o.materials['other_material'])
+                    "sources": list(map(lambda x: get_source(x), o.sources)),
+                    "samples": get_samples(o.samples),
+                    "otherMaterials": get_other_materials(o.other_material)
                 },
                 "processSequence": list(map(lambda x: get_process(x), o.process_sequence)),
                 "factors": list(map(lambda x: get_factor(x), o.factors)),
@@ -1747,8 +1747,8 @@ class ISAJSONEncoder(JSONEncoder):
                     "unitCategories": get_ontology_annotations(o.units),
                     "comments": get_comments(o.comments) if o.comments else [],
                     "materials": {
-                        "samples": get_samples(o.materials['samples']),
-                        "otherMaterials": get_other_materials(o.materials['other_material'])
+                        "samples": get_samples(o.samples),
+                        "otherMaterials": get_other_materials(o.other_material)
                     },
                     "dataFiles": list(map(lambda x: get_data_file(x), o.data_files)),
                     "processSequence": get_processes(o.process_sequence)

@@ -280,7 +280,7 @@ def get_factors_summary(mtbls_study_id):
     ISA = load(mtbls_study_id=mtbls_study_id)
     all_samples = []
     for study in ISA.studies:
-        all_samples.extend(study.materials['samples'])
+        all_samples.extend(study.samples)
     samples_and_fvs = []
     for sample in all_samples:
         sample_and_fvs = {
@@ -322,7 +322,7 @@ def get_sources_for_sample(mtbls_study_id, sample_name):
     ISA = load(mtbls_study_id=mtbls_study_id)
     hits = []
     for study in ISA.studies:
-        for sample in study.materials['samples']:
+        for sample in study.samples:
             if sample.name == sample_name:
                 print('found a hit ', sample.name)
                 for source in sample.derives_from:
@@ -373,7 +373,7 @@ def get_characteristics_summary(mtbls_study_id):
     ISA = load(mtbls_study_id=mtbls_study_id)
     all_samples = []
     for study in ISA.studies:
-        all_samples.extend(study.materials['samples'])
+        all_samples.extend(study.samples)
     samples_and_characs = []
     for sample in all_samples:
         sample_and_characs = {
@@ -408,7 +408,7 @@ def get_characteristics_summary(mtbls_study_id):
 #     ISA = load(mtbls_study_id=mtbls_study_id)
 #     all_samples = []
 #     for study in ISA.studies:
-#         all_samples.extend(study.materials['samples'])
+#         all_samples.extend(study.samples)
 #     samples_and_pvs = []
 #     for sample in all_samples:
 #         sample_and_pvs = {
@@ -426,7 +426,7 @@ def get_characteristics_summary(mtbls_study_id):
 #                             pv_value = pv.value.term
 #                         sample_and_pvs[pv.category.parameter_name.term] = pv_value
 #             for assay in study.assays:
-#                 for sample in assay.materials['samples']:
+#                 for sample in assay.samples:
 #                     a_processes_linked_to_sample = [x for x in nx.algorithms.descendants(assay.graph, sample) if
 #                                                     isinstance(x, Process)]
 #                     for process in a_processes_linked_to_sample:
@@ -449,7 +449,7 @@ def get_study_variable_summary(mtbls_study_id):
     ISA = load(mtbls_study_id=mtbls_study_id)
     all_samples = []
     for study in ISA.studies:
-        all_samples.extend(study.materials['samples'])
+        all_samples.extend(study.samples)
     samples_and_variables = []
     for sample in all_samples:
         sample_and_vars = {
@@ -482,7 +482,7 @@ def get_study_variable_summary(mtbls_study_id):
         #                     pv_value = pv.value.term
         #                 sample_and_vars[pv.category.parameter_name.term] = pv_value
         #     for assay in study.assays:
-        #         for sample in assay.materials['samples']:
+        #         for sample in assay.samples:
         #             a_processes_linked_to_sample = [x for x in nx.algorithms.descendants(assay.graph, sample) if
         #                                             isinstance(x, Process)]
         #             for process in a_processes_linked_to_sample:

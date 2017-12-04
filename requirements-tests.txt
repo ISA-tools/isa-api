@@ -12,7 +12,7 @@ iso8601
 chardet
 jinja2
 deepdiff
-bs4
+beautifulsoup4
 mzml2isa
 biopython
 progressbar2

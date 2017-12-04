@@ -46,7 +46,7 @@ def modify_investigation(fp):
     study.publications.append(publication)
 
     source = Source(name='source_material')
-    study.materials['sources'].append(source)
+    study.sources.append(source)
 
     prototype_sample = Sample(name='sample_material', derives_from=[source])
     ncbitaxon = OntologySource(name='NCBITaxon', description="NCBI Taxonomy")

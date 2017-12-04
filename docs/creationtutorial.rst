@@ -83,7 +83,7 @@ feedback from a user on-the-fly.
         # Here we create one Source material object and attach it to our study.
 
         source = Source(name='source_material')
-        study.materials['sources'].append(source)
+        study.sources.append(source)
 
         # Then we create three Sample objects, with organism as Homo Sapiens, and attach them to the study. We use the utility function
         # batch_create_material() to clone a prototype material object. The function automatiaclly appends
@@ -97,7 +97,7 @@ feedback from a user on-the-fly.
                                                                   term_accession="http://purl.bioontology.org/ontology/NCBITAXON/9606"))
         prototype_sample.characteristics.append(characteristic_organism)
 
-        study.materials['samples'] = batch_create_materials(prototype_sample, n=3)  # creates a batch of 3 samples
+        study.samples = batch_create_materials(prototype_sample, n=3)  # creates a batch of 3 samples
 
         # Now we create a single Protocol object that represents our sample collection protocol, and attach it to the
         # study object. Protocols must be declared before we describe Processes, as a processing event of some sort

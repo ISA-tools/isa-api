@@ -4,12 +4,14 @@ from setuptools import setup
 
 setup(
     name='isatools',
-    version='0.9.0',
+    version='0.9.3',
     packages=['isatools',
               'isatools.convert',
+              'isatools.create',
+              'isatools.errors',
               'isatools.io',
               'isatools.net',
-              'isatools.create'],
+              ],
     package_data={'isatools': [
         'resources/schemas/cedar/*.json',
         'resources/schemas/isa_model_version_1_0_schemas/core/*.json',
@@ -25,8 +27,9 @@ setup(
         'resources/tab_templates/*.txt',
         'net/resources/biocrates/*',
         'net/resources/sra/*.xsl',
-        'net/resources/sra/*.xml'],
-                  '': ['LICENSE.txt', 'README.md']},
+        'net/resources/sra/*.xml',
+        'resources/isatools.ini'],
+        '': ['LICENSE.txt', 'README.md']},
     description='Metadata tracking tools help to manage an increasingly diverse set of life science, environmental and biomedical experiments',
     author='ISA Infrastructure Team',
     author_email='isatools@googlegroups.com',
@@ -51,7 +54,7 @@ setup(
         'chardet',
         'iso8601',
         'jinja2',
-        'bs4',
+        'beautifulsoup4',
         'mzml2isa',
         'biopython',
         'progressbar2'

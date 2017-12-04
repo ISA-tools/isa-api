@@ -197,8 +197,8 @@ def load(FP):
     ]
     sources, samples, processes, characteristic_categories, unit_categories = GenericSampleTabProcessSequenceFactory(
         ontology_sources=ISA.ontology_source_references, study_factors=study.factors).create_from_df(scd_df)
-    study.materials['sources'] = list(sources.values())
-    study.materials['samples'] = list(samples.values())
+    study.sources = list(sources.values())
+    study.samples = list(samples.values())
     study.process_sequence = list(processes.values())
     study.characteristic_categories = list(characteristic_categories.values())
     study.units = list(unit_categories.values())
@@ -495,8 +495,8 @@ def dumps(investigation):
 
     all_samples = []
     for study in investigation.studies:
-        all_samples += study.materials['sources']
-        all_samples += study.materials['samples']
+        all_samples += study.sources
+        all_samples += study.samples
 
     all_samples = list(set(all_samples))
     if config.show_pbars:
