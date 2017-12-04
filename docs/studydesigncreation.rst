@@ -3,19 +3,18 @@ Study-design-driven creation of ISA content
 ###########################################
 
 In addition to the basic classes for creating ISA objects (such as ``Investigation``, ``Study``, ``Assay`` described previously),
-the ISA API also provides a set of Python classes that you can use to create ISA content based on on the experiment, or study,  design.
+the ISA API also provides a set of helper Python classes to bootstrap the creation of ISA documents from key parameters obtained from the Design of Experiment (DoE).
+The methods allow the creation of the study Treatment plan, the Sample collection Plan and the study assay plan.
 
-Some of the objects we cover for this are:
+The core functions of the ISA-API create mode which are covered in this section are:
 
 - ``InterventionStudyDesign``
 - ``Treatment``
 - ``TreatmentFactory``
 - ``TreatmentSequence``
 - ``SampleAssayPlan``
-- and what we call 'topology modifiers', which are different ways of modifying the topology (or shape) of the graph representing the experiment, such as
-specific modifiers for mass spectrometry assays (```MSAssayTopologyModifiers```) or for DNA sequence assays  (```DNASeqAssayTopologyModifiers```)
+- Assay 'topology modifiers'
 
-We will explain each of these objects and how to use them below.
 
 Getting started
 ---------------
@@ -74,8 +73,15 @@ all epochs should be positive integers, epoch numbers may be repeated (for conco
 no value should be missing between the lowest epoch (1) and the highest epoch.
 
 
+Taking into account the specifics of Data Acquisition events dependent on methodology and technology
+----------------------------------------------------------------------------------------------------
 
+The Assay 'topology modifiers' functions (such as ```MSAssayTopologyModifiers```  for Mass Spectrometry based assays or  ```DNASeqAssayTopologyModifiers``` for DNA sequence assays) are present to support specific branching or pooling events affecting the underlying experimental graph.
+Depending on the assay and the technology used to acquired data, the number of hinge point varies but the basic principles remain the same. Irrespective of the technique, one may carry out several data acquisition on the same input material (technical replication). However, when using a technique such as mass spectrometry
+an range of setting may be set by the operators, such as the type of injections modes, the type of acquisition modes. When using sequencing technology, different instruments may be used, libraries may be prepared as single or paired ends.
+The 'Topoloy Modifiers' method in the ISA-API allows to specify those in a flexible yet generic way.
 
+We will explain each of these objects and how to use them below.
 
 
 
