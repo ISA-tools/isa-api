@@ -398,7 +398,7 @@ class TreatmentSequenceTest(unittest.TestCase):
             )), 2)
         ]
         first_sequence = TreatmentSequence(treatments)
-        second_sequence = TreatmentSequence(reversed(treatments))
+        second_sequence = TreatmentSequence(list(reversed(treatments)))
         self.assertEqual(first_sequence, second_sequence)
         self.assertEqual(hash(first_sequence), hash(second_sequence))
 

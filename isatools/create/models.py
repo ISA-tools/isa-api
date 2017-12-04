@@ -241,9 +241,20 @@ class TreatmentSequence:
     """
 
     def add_multiple_treatments(self, elements_to_add):
+        """
+        Adds multiple treatments to the sequence. To satisfy the epoch criteria,
+        the treatments need to be added according to the order/rank determined by the epoch
+        number.
+        :param elements_to_add:
+        :return:
+        """
         if isinstance(elements_to_add, Treatment):
             self.add_treatment(elements_to_add)
         elif isinstance(elements_to_add, Iterable):
+            if any(True for _ in elements_to_add):
+                elems_copy = elements_to_add
+                if (isinstance(next(iter(elements_to_add)), tuple)):
+                    elements_to_add = sorted(elems_copy, key=lambda x: x[1])
             for elem in elements_to_add:
                 if isinstance(elem, Treatment):
                     self.add_treatment(elem)
