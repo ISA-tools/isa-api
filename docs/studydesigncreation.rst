@@ -52,7 +52,7 @@ observation designs.
 
 >>> study_design = InterventionStudyDesign()
 
-The definition of `intervention design http://purl.obolibrary.org/obo/OBI_0000115`_ according to the `Ontology for Biomedical Investigations http://obi-ontology.org/`_ is:
+The definition of [intervention design](http://purl.obolibrary.org/obo/OBI_0000115) according to the [Ontology for Biomedical Investigations](http://obi-ontology.org/) is:
 
 .. note::
     "An intervention design is a study design in which a controlled process applied to the subjects (the intervention) serves as the independent variable manipulated by the experimentalist. The treatment (perturbation or intervention) defined can be defined as a combination of values taken by independent variable manipulated by the experimentalists are applied to the recruited subjects assigned (possibly by applying specific methods) to treatment groups. The specificity of intervention design is the fact that independent variables are being manipulated and a response of the biological system is evaluated via response variables as monitored by possibly a series of assays."
