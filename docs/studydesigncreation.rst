@@ -77,9 +77,9 @@ Taking into account the specifics of Data Acquisition events dependent on method
 ----------------------------------------------------------------------------------------------------
 
 The Assay 'topology modifiers' functions (such as ```MSAssayTopologyModifiers```  for Mass Spectrometry based assays or  ```DNASeqAssayTopologyModifiers``` for DNA sequence assays) are present to support specific branching or pooling events affecting the underlying experimental graph.
-Depending on the assay and the technology used to acquired data, the number of hinge point varies but the basic principles remain the same. Irrespective of the technique, one may carry out several data acquisition on the same input material (technical replication). However, when using a technique such as mass spectrometry
+Depending on the assay and the technology used to acquire data, the number of 'hinge points' may vary but the basic principle remains the same. Some are common to all: for instance, irrespective of the technique, one may carry out several data acquisition on the same input material (technical replication). On the other hand, when using a technique such as mass spectrometry
 an range of setting may be set by the operators, such as the type of injections modes, the type of acquisition modes. When using sequencing technology, different instruments may be used, libraries may be prepared as single or paired ends.
-The 'Topoloy Modifiers' method in the ISA-API allows to specify those in a flexible yet generic way.
+The 'Topology Modifiers' method in the ISA-API allows to specify those in a flexible yet generic way.
 
 We will explain each of these objects and how to use them below.
 
