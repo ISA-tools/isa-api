@@ -271,12 +271,10 @@ class TreatmentSequence:
         if epoch_list.__len__() == 1:
             return (1 in epoch_list)
         try:
+            epoch_list = sorted(list(set(epoch_list)))
             it = (x for x in epoch_list)
             first = next(it)
-            boolean1 = any(i == 1 for i in epoch_list)
-            boolean2 = all(i >= 1 for i in epoch_list)
-            boolean3 = all(a == b for a, b in enumerate(it, first + 1))
-            return boolean1 and boolean2 and boolean3
+            return any(i == 1 for i in epoch_list) and all(i >= 1 for i in epoch_list) and all(a == b for a, b in enumerate(it, first + 1))
         except StopIteration:
             log.error("StopIteration - shouldn't occur!")
 
