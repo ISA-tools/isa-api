@@ -1,4 +1,4 @@
-############################################
+###########################################
 Study-design-driven creation of ISA content
 ###########################################
 
@@ -59,11 +59,23 @@ The definition of `intervention design http://purl.obolibrary.org/obo/OBI_000011
     "An intervention design is a study design in which a controlled process applied to the subjects (the intervention) serves as the independent variable manipulated by the experimentalist. The treatment (perturbation or intervention) defined can be defined as a combination of values taken by independent variable manipulated by the experimentalists are applied to the recruited subjects assigned (possibly by applying specific methods) to treatment groups. The specificity of intervention design is the fact that independent variables are being manipulated and a response of the biological system is evaluated via response variables as monitored by possibly a series of assays."
 
 
-Creation of treatments: Treatment, TreatmentSequence, TreatmentFactory
----------------------------------------------------------------------
+Creation of treatments: Treatment, TreatmentFactory, TreatmentSequence
+----------------------------------------------------------------------
 
-The ```Treatment``` class is defined as a tuple of factor values (as defined in the ISA
-    model v1) and a treatment type
+The ```Treatment``` class is defined as a tuple of factor values (as defined in the ISA model v1) and a treatment type.
+
+The ```TreatmentFactory``` class provides utility methods to create a set of ```Treatment``` objects, which may be used in a ```TreatmentSequence```.
+One of the utility methods is that for creating the set of treatments corresponding to a full factorial design (using method ```compute_full_factorial_design```).
+This computes all the combinations of factor values, returning an empty set if one of the factors has no associated values.
+
+The ```TreatmentSequence``` class provides a way of building is an ordered sequence of treatments, where each
+treatment is assigned a rank, or epoch number, with the following properties: the epoch numbers always start with 1 (lowest epoch number),
+all epochs should be positive integers, epoch numbers may be repeated (for concomitant treatments),
+no value should be missing between the lowest epoch (1) and the highest epoch.
+
+
+
+
 
 
 
