@@ -13,6 +13,7 @@ flexible way to build and use ISA content, as well as provide utility functions 
 #. :doc:`Installation </installation>`
 #. :doc:`ISA model </isamodel>`
 #. :doc:`Creating objects </creation>`
+#. :doc:`Creating objects based on study-design </studydesigncreation>`
 #. :doc:`Tutorial: describing a simple experiment with objects <creationtutorial>`
 #. :doc:`Converting between ISA formats </conversions>`
 #. :doc:`Importing and exporting SRA formatted datasets </sraconversion>`
