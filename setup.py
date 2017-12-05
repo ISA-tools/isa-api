@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='isatools',
-    version='0.9.2',
+    version='0.9.3',
     packages=['isatools',
               'isatools.convert',
               'isatools.create',
@@ -55,7 +55,7 @@ setup(
         'chardet',
         'iso8601',
         'jinja2',
-        'bs4',
+        'beautifulsoup4',
         'mzml2isa',
         'biopython',
         'progressbar2',
