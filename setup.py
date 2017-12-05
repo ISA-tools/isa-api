@@ -55,7 +55,7 @@ setup(
         'chardet',
         'iso8601',
         'jinja2',
-        'bs4',
+        'beautifulsoup4',
         'mzml2isa',
         'biopython',
         'progressbar2',
