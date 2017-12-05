@@ -659,6 +659,18 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         treatment_sequence.add_treatment(self.second_treatment, 2)
         self.assertRaises(TypeError, treatment_sequence.add_treatment, self.second_treatment, 4)
 
+    def test_constructor(self):
+        treatment_factory = TreatmentFactory(factors=[self.agent, self.intensity, self.duration])
+
+        treatment_factory.add_factor_value(self.agent, {'acetyl salicylic acid', 'acetaminophen', 'ibuprofen'})
+        treatment_factory.add_factor_value(self.intensity, {'high dose', 'low dose', 'medium dose'})
+        treatment_factory.add_factor_value(self.duration, {'2 hr', '4 hr'})
+
+        factorial_design_treatments = treatment_factory.compute_full_factorial_design()
+
+        treatment_sequence = TreatmentSequence(ranked_treatments={
+            (x, (i+1)) for i, x in enumerate(factorial_design_treatments)})
+
     def test_create_study_from_plan(self):
         plan = SampleAssayPlan()
         plan.add_sample_type('liver')
@@ -672,10 +684,10 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
             self.f1, {'cocaine', 'crack', 'aether'})
         treatment_factory.add_factor_value(self.f2, {'low', 'medium', 'high'})
         treatment_factory.add_factor_value(self.f3, {'short', 'long'})
-        ffactorial_design_treatments = \
+        factorial_design_treatments = \
             treatment_factory.compute_full_factorial_design()
         treatment_sequence = TreatmentSequence(
-            ranked_treatments={(x, 1) for x in ffactorial_design_treatments})
+            ranked_treatments={(x, 1) for x in factorial_design_treatments})
         # makes each study group ranked in sequence
         study = IsaModelObjectFactory(
             plan, treatment_sequence).create_study_from_plan()

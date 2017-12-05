@@ -703,6 +703,9 @@ class DNAMicroAssayTopologyModifiers(AssayTopologyModifiers):
 
 
 class SampleAssayPlan(object):
+    """
+    A class representing the sampling plan and the assay plan.
+    """
 
     def __init__(self, group_size=0, sample_plan=None, assay_plan=None,
                  sample_qc_plan=None):
@@ -968,6 +971,9 @@ class InterventionStudyDesign(BaseStudyDesign):
 
 
 class IsaModelObjectFactory(object):
+    """
+    A factory class to create ISA content given a SampleAssayPlan object and a TreatmentSequence object.
+    """
 
     def __init__(self, sample_assay_plan, treatment_sequence=None):
         self.__sample_assay_plan = sample_assay_plan
