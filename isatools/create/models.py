@@ -196,7 +196,7 @@ class TreatmentSequence:
                tuples (Treatment, int) where the second term represents the
                epoch
         """
-        self.__ranked_treatments = set()
+        self.__ranked_treatments = []
         # self.__subject_count = subject_count if isinstance(
         # subject_count, int) and subject_count >= 0 else 0
         # self.__sample_map = {}
@@ -264,11 +264,18 @@ class TreatmentSequence:
             raise TypeError('The argument {0} is not of the correct type.'.format(elements_to_add))
 
     def add_treatment(self, treatment, epoch=1):
-        if isinstance(treatment, Treatment) and isinstance(epoch, int):
-            if self.check_epochs(epoch):
-                self.__ranked_treatments.add((treatment, epoch))
+        if isinstance(treatment, Treatment):
+            if isinstance(epoch, int):
+                if self.check_epochs(epoch):
+                    self.__ranked_treatments.add((treatment, epoch))
+                else:
+                    raise TypeError('The epoch number {0} is either not greater than 1 or it does not complete the sequence of epochs, which should start in 1 and have no values missing up to the highest epoch value '.format(epoch))
             else:
-                raise TypeError('The epoch number {0} is either not greater than 1 or it does not complete the sequence of epochs, which should start in 1 and have no values missing up to the highest epoch value '.format(epoch))
+                raise TypeError('The arguemnt {0} is not an integer'.format(epoch))
+        else:
+            raise TypeError('The argument {0} is not a treatment'.format(treatment))
+
+
 
     def check_epochs(self, new_epoch):
         """
