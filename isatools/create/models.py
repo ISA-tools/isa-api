@@ -196,7 +196,7 @@ class TreatmentSequence:
                tuples (Treatment, int) where the second term represents the
                epoch
         """
-        self.__ranked_treatments = []
+        self.__ranked_treatments = set()
         # self.__subject_count = subject_count if isinstance(
         # subject_count, int) and subject_count >= 0 else 0
         # self.__sample_map = {}
