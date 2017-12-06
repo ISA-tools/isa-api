@@ -15,6 +15,7 @@ branches:
   only:
     - master
     - develop
+    - /v\d+\.\d+\.\d+[a-z]?/
 deploy:
   provider: pypi
   user: zigur
