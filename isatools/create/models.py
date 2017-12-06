@@ -127,7 +127,7 @@ class Treatment(object):
 
 class TreatmentFactory(object):
     """
-      A factory class to build a set of Treatments.
+      A factory class to build a set of Treatments given an intervention_type and a set of factors.
      """
 
     def __init__(self, intervention_type=INTERVENTIONS['CHEMICAL'],
@@ -138,8 +138,6 @@ class TreatmentFactory(object):
 
         self.__intervention_type = intervention_type
         self.__factors = OrderedDict([(factor, set()) for factor in factors])
-
-        # self._factorial_design = set()
 
     @property
     def intervention_type(self):
@@ -174,13 +172,13 @@ class TreatmentFactory(object):
         Treatments
         """
         factor_values = [
-            [FactorValue(
+            [ FactorValue(
                 factor_name=factor_name, value=value, unit=None
-            ) for value in values]
+              ) for value in values]
             for factor_name, values in self.factors.items()
         ]
         if set() not in self.factors.values():
-            return {Treatment(treatment_type=self.intervention_type,
+            return { Treatment(treatment_type=self.intervention_type,
                               factor_values=treatment_factors)
                     for treatment_factors in itertools.product(*factor_values)}
         else:
@@ -938,6 +936,10 @@ class BaseStudyDesign(object):
 
 
 class InterventionStudyDesign(BaseStudyDesign):
+    """
+    A class representing an intervention study design, which is composed of an
+    ordered dictionary of pairs of treatment sequences and samples plans.
+    """
 
     def __init__(self):
         super().__init__()
