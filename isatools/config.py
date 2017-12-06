@@ -31,5 +31,7 @@ def read(path):
     else:
         show_pbars = False
 
+
 # Load default config from resources/isatools.ini
-read(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'resources', 'isatools.ini'))
+read(os.path.join(os.path.dirname(
+    os.path.abspath(__file__)), 'resources', 'isatools.ini'))
