@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import json
+import logging
 import os
 from uuid import uuid4
 from os import listdir
@@ -12,6 +13,7 @@ from isatools.io import isatab_parser
 __author__ = 'agbeltran'
 
 
+log = logging.getLogger('isatools')
 CEDAR_SCHEMA_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../resources/schemas/cedar")
 
 
@@ -21,7 +23,7 @@ class ISATab2CEDAR(object):
         self.primary_source = primary_source
 
     def createCEDARjson_folder(self, work_dir, json_dir, inv_identifier):
-        print("Convert ISA datasets in folder ", work_dir)
+        log.info("Convert ISA datasets in folder ".format(work_dir))
         path = os.path.abspath(work_dir)
         folders = [ f for f in listdir(path) if isdir(join(path,f))]
 
@@ -29,7 +31,7 @@ class ISATab2CEDAR(object):
             self.createCEDARjson(CEDAR_SCHEMA_PATH, join(path,folder), json_dir, inv_identifier)
 
     def createCEDARjson(self, work_dir, json_dir, inv_identifier):
-        print("Converting ISA to CEDAR model for ", work_dir)
+        log.info("Converting ISA to CEDAR model for ".format(work_dir))
         schema_file = "investigation_template.json"
         with open(join(CEDAR_SCHEMA_PATH,schema_file)) as json_fp:
             schema = json.load(json_fp)
@@ -45,7 +47,7 @@ class ISATab2CEDAR(object):
         #                 parserfile.close()
 
         if isa_tab is None:
-            print("No ISAtab dataset found")
+            log.info("No ISAtab dataset found")
         else:
                 if isa_tab.metadata != {}:
                     investigationObject = dict([
@@ -125,7 +127,7 @@ class ISATab2CEDAR(object):
                     json.dump(cedar_json, outfile, indent=4, sort_keys=True)
                     outfile.close()
 
-                print("... conversion finished.")
+                log.info("... conversion finished.")
 
     def createStudiesList(self, studies):
         json_list = []

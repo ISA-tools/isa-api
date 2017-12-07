@@ -1,11 +1,11 @@
 import logging
 
-from isatools import config
+
 from isatools import isatab
 from isatools import sampletab
 
-logging.basicConfig(level=config.log_level)
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger('isatools')
 
 
 def convert(source_sampletab_fp, target_dir):

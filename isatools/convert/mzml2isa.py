@@ -2,11 +2,11 @@ import logging
 import os
 from mzml2isa.parsing import convert as mzml_convert
 
-from isatools import config
+
 from isatools import isatab
 
-logging.basicConfig(level=config.log_level)
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger('isatools')
 
 
 def convert(mzml_folder, out_folder, study_id, validate_output=False):

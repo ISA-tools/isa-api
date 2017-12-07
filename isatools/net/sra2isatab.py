@@ -12,7 +12,7 @@ from io import BytesIO
 from shutil import rmtree
 from zipfile import ZipFile
 
-from isatools import config
+
 
 
 def deprecated(func):
@@ -39,8 +39,8 @@ SUBMISSION_XSL_FILE = os.path.join(
     SRA_DIR, 'sra-submission-embl-online2isatab-txt.xsl')
 STUDY_XSL_FILE = os.path.join(SRA_DIR, 'sra-study-embl-online2isatab.xsl')
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 # REGEXES
 _RX_ACCESSION_VALIDATION = re.compile("^(ERA|SRA|ERP|SRP)([0-9]+)$")

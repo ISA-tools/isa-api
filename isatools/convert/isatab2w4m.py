@@ -12,14 +12,14 @@ import csv
 import numpy
 from string import Template
 
-from isatools import config
+
 from isatools import isatab as ISATAB
 
 # original from https://github.com/workflow4metabolomics/mtbls-dwnld/blob/develop/isatab2w4m.py
 __author__ = 'pkrog (Pierrick Roger)'
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 # Check Python version
 if sys.hexversion < 0x03040000:

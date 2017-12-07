@@ -27,11 +27,11 @@ from progressbar import SimpleProgress
 from progressbar import Bar
 from progressbar import ETA
 
-from isatools import config
+from isatools import logging as isa_logging
 from isatools.model import *
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 
 def xml_config_contents(filename):
@@ -614,7 +614,7 @@ def _all_end_to_end_paths(G, start_nodes):  # we know graphs start with Source o
         message = 'Calculating for paths for {} sources: '.format(num_start_nodes)
     elif isinstance(start_nodes[0], Sample):
         message = 'Calculating for paths for {} samples: '.format(num_start_nodes)
-    if config.show_pbars:
+    if isa_logging.show_pbars:
         pbar = ProgressBar(min_value=0, max_value=num_start_nodes, widgets=[message,
                                                                             SimpleProgress(),
                                                                             Bar(left=" |", right="| "), ETA()]).start()
@@ -689,7 +689,7 @@ def write_study_table_files(inv_obj, output_dir):
         omap = get_object_column_map(columns, columns)
         # load into dictionary
         df_dict = dict(map(lambda k: (k, []), flatten(omap)))
-        if config.show_pbars:
+        if isa_logging.show_pbars:
             pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)),
                                                                            SimpleProgress(),
                                                                            Bar(left=" |", right="| "), ETA()]).start()
@@ -869,7 +869,7 @@ def write_assay_table_files(inv_obj, output_dir):
             # load into dictionary
             df_dict = dict(map(lambda k: (k, []), flatten(omap)))
 
-            if config.show_pbars:
+            if isa_logging.show_pbars:
                 pbar = ProgressBar(min_value=0, max_value=len(paths), widgets=['Writing {} paths: '.format(len(paths)),
                                                                                SimpleProgress(),
                                                                                Bar(left=" |", right="| "), ETA()]).start()
@@ -2644,16 +2644,19 @@ def check_study_groups(table, filename, study_group_size_in_comment):
             return False
     return True
 
-def validate(fp, config_dir=default_config_dir, log_level=config.log_level):
+
+def validate(fp, config_dir=default_config_dir, log_level=None):
     global errors
     global warnings
     global info
     errors = list()
     warnings = list()
     info = list()
-    log.setLevel(log_level)
+    if log_level in (
+        logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING,
+        logging.ERROR, logging.CRITICAL):
+        log.setLevel(log_level)
     log.info("ISA tab Validator from ISA tools API v0.6")
-    from io import StringIO
     stream = StringIO()
     handler = logging.StreamHandler(stream)
     log.addHandler(handler)
@@ -3656,7 +3659,7 @@ class ProcessSequenceFactory:
 
             if object_label in _LABELS_MATERIAL_NODES:
 
-                if config.show_pbars:
+                if isa_logging.show_pbars:
                     pbar = ProgressBar(
                         min_value=0, max_value=len(DF.index),
                         widgets=['Setting material objects: ',
@@ -3754,7 +3757,7 @@ class ProcessSequenceFactory:
                                                 object_series[comment_column])))
 
             elif object_label in _LABELS_DATA_NODES:
-                if config.show_pbars:
+                if isa_logging.show_pbars:
                     pbar = ProgressBar(
                         min_value=0, max_value=len(DF.index), widgets=[
                             'Setting data objects: ', SimpleProgress(),
@@ -3781,7 +3784,7 @@ class ProcessSequenceFactory:
 
             elif object_label.startswith('Protocol REF'):
                 object_label_index = list(DF.columns).index(object_label)
-                if config.show_pbars:
+                if isa_logging.show_pbars:
                     pbar = ProgressBar(
                         min_value=0, max_value=len(DF.index), 
                         widgets=['Generating process objects: ',
@@ -3908,7 +3911,7 @@ class ProcessSequenceFactory:
                                             object_series[comment_column])))
 
         # now go row by row pulling out processes and linking them accordingly
-        if config.show_pbars:
+        if isa_logging.show_pbars:
             pbar = ProgressBar(
                 min_value=0, max_value=len(DF.index),
                 widgets=['Linking processes and other nodes in paths: ',

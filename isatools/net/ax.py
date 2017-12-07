@@ -12,15 +12,15 @@ import os
 import shutil
 import tempfile
 
-from isatools import config
+
 from isatools.convert import magetab2isatab
 from isatools.convert import magetab2json
 
 EBI_FTP_SERVER = 'ftp.ebi.ac.uk'
 AX_EXPERIMENT_BASE_DIR = '/pub/databases/arrayexpress/data/experiment'
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 
 def get(arrayexpress_id, target_dir=None):

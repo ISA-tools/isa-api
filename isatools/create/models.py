@@ -11,15 +11,12 @@ import random
 import uuid
 from collections import Iterable
 from collections import OrderedDict
-from operator import itemgetter
 from numbers import Number
 
-from isatools import config
 from isatools.model import *
 
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+log = logging.getLogger('isatools')
 
 __author__ = 'massi'
 

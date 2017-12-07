@@ -22,7 +22,7 @@ from isatools.net import pubmed
 from isatools.tests import utils as test_utils
 
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('isatools')
 
 
 def setUpModule():

@@ -1,12 +1,12 @@
 import json
 import logging
 
-from isatools import config
+
 from isatools import sampletab
 from isatools.isajson import ISAJSONEncoder
 
-logging.basicConfig(level=config.log_level)
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger('isatools')
 
 
 def convert(source_sampletab_fp, target_json_fp):

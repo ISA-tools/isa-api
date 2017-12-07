@@ -9,12 +9,12 @@ import pandas as pd
 import uuid
 from zipfile import ZipFile
 
-from isatools import config
+
 from isatools import isatab
 from isatools.model import *
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 
 def format_report_csv(report):

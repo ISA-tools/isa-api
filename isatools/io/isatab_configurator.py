@@ -17,10 +17,10 @@ import os
 import glob
 import logging
 
-from isatools import config
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+
+log = logging.getLogger('isatools')
 
 
 def load(config_dir):

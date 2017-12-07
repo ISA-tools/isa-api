@@ -14,7 +14,7 @@ import tempfile
 import shutil
 import re
 
-from isatools import config
+
 from isatools import isatab
 from isatools.convert import isatab2json
 from isatools.model import OntologyAnnotation
@@ -23,8 +23,8 @@ from isatools.model import OntologyAnnotation
 EBI_FTP_SERVER = 'ftp.ebi.ac.uk'
 MTBLS_BASE_DIR = '/pub/databases/metabolights/studies/public'
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 # REGEXES
 _RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
