@@ -163,9 +163,9 @@ class TransposedTabParser(object):
         return self._ttable_dict
 
 
-errors = []
-warnings = []
-info = []
+validator_errors = []
+validator_warnings = []
+validator_info = []
 
 # REGEXES
 _RX_I_FILE_NAME = re.compile('i_(.*?)\.txt')
@@ -1171,7 +1171,7 @@ def check_utf8(fp):
     with open(fp.name, 'rb') as fp:
         charset = chardet.detect(fp.read())
         if charset['encoding'] is not 'UTF-8' and charset['encoding'] is not 'ascii':
-            warnings.append({
+            validator_warnings.append({
                 "message": "File should be UTF8 encoding",
                 "supplemental": "Encoding is '{0}' with confidence {1}".format(charset['encoding'], charset['confidence']),
                 "code": 10
@@ -1197,14 +1197,14 @@ def load_investigation(fp):
             for label in extra_labels:
                 if _RX_COMMENT.match(label) is None:
                     log.fatal("(F) In {} section, label {} is not allowed".format(section, label))
-                    errors.append({
+                    validator_errors.append({
                         "message": "Invalid label found in investigation file",
                         "supplemental": "In {} section, label {} is not allowed".format(section, label),
                         "code": 5
                     })
                 elif len(_RX_COMMENT.findall(label)) == 0:
                     log.warning("(W) In {} section, label {} is missing a name".format(section, label))
-                    warnings.append({
+                    validator_warnings.append({
                         "message": "Missing name in Comment[] label",
                         "supplemental": "In {} section, label {} is missing a name".format(section, label),
                         "code": 4014
@@ -1298,7 +1298,7 @@ def check_filenames_present(i_df):
     """Used for rule 3005"""
     for s_pos, study_df in enumerate(i_df['studies']):
         if study_df.iloc[0]['Study File Name'] is '':
-            warnings.append({
+            validator_warnings.append({
                 "message": "Missing study file name",
                 "supplemental": "STUDY.{}".format(s_pos),
                 "code": 3005
@@ -1306,7 +1306,7 @@ def check_filenames_present(i_df):
             log.warning("(W) A study filename is missing for STUDY.{}".format(s_pos))
         for a_pos, filename in enumerate(i_df['s_assays'][s_pos]['Study Assay File Name'].tolist()):
             if filename is '':
-                warnings.append({
+                validator_warnings.append({
                     "message": "Missing assay file name",
                     "supplemental": "STUDY.{}, STUDY ASSAY.{}".format(s_pos, a_pos),
                     "code": 3005
@@ -1321,7 +1321,7 @@ def check_date_formats(i_df):
             try:
                 iso8601.parse_date(date_str)
             except iso8601.ParseError:
-                warnings.append({
+                validator_warnings.append({
                     "message": "Date is not ISO8601 formatted",
                     "supplemental": "Found {} in date field".format(date_str),
                     "code": 3001
@@ -1350,7 +1350,7 @@ def check_dois(i_df):
     def check_doi(doi_str):
         if doi_str is not '':
             if not _RX_DOI.match(doi_str):
-                warnings.append({
+                validator_warnings.append({
                     "message": "DOI is not valid format",
                     "supplemental": "Found {} in DOI field".format(doi_str),
                     "code": 3002
@@ -1368,7 +1368,7 @@ def check_pubmed_ids_format(i_df):
     def check_pubmed_id(pubmed_id_str):
         if pubmed_id_str is not '':
             if (_RX_PMID.match(pubmed_id_str) is None) and (_RX_PMCID.match(pubmed_id_str) is None):
-                warnings.append({
+                validator_warnings.append({
                     "message": "PubMed ID is not valid format",
                     "supplemental": "Found PubMedID {}".format(pubmed_id_str),
                     "code": 3003
@@ -1386,7 +1386,7 @@ def check_protocol_names(i_df):
     for study_protocols_df in i_df['s_protocols']:
         for i, protocol_name in enumerate(study_protocols_df['Study Protocol Name'].tolist()):
             if protocol_name is '' or 'Unnamed: ' in protocol_name:  # DataFrames labels empty cells as 'Unnamed: n'
-                warnings.append({
+                validator_warnings.append({
                     "message": "Protocol missing name",
                     "supplemental": "pos={}".format(i),
                     "code": 1010
@@ -1402,7 +1402,7 @@ def check_protocol_parameter_names(i_df):
             if len(protocol_parameters_names.split(sep=';')) > 1:  # There's an empty cell if no protocols
                 for protocol_parameter_name in protocol_parameters_names.split(sep=';'):
                     if protocol_parameter_name is '' or 'Unnamed: ' in protocol_parameter_name:
-                        warnings.append({
+                        validator_warnings.append({
                             "message": "Protocol Parameter missing name",
                             "supplemental": "Protocol Parameter at pos={}".format(i),
                             "code": 1011
@@ -1416,7 +1416,7 @@ def check_study_factor_names(i_df):
     for study_protocols_df in i_df['s_factors']:
         for i, protocol_name in enumerate(study_protocols_df['Study Factor Name'].tolist()):
             if protocol_name is '' or 'Unnamed: ' in protocol_name:  # DataFrames labels empty cells as 'Unnamed: n'
-                warnings.append({
+                validator_warnings.append({
                     "message": "Study Factor missing name",
                     "supplemental": "Study Factor pos={}".format(i),
                     "code": 1012
@@ -1427,15 +1427,19 @@ def check_study_factor_names(i_df):
 
 def check_ontology_sources(i_df):
     """Used for rule 3008"""
+    term_source_refs = []
     for i, ontology_source_name in enumerate(i_df['ontology_sources']['Term Source Name'].tolist()):
         if ontology_source_name is '' or 'Unnamed: ' in ontology_source_name:
-            warnings.append({
+            validator_warnings.append({
                 "message": "Ontology Source missing name ref",
                 "supplemental": "pos={}".format(i),
                 "code": 3008
             })
             log.warning("(W) An Ontology Source Reference at position {} is missing Term Source Name, so can't be "
                            "referenced".format(i))
+        else:
+            term_source_refs.append(ontology_source_name)
+    return term_source_refs
 
 
 def check_table_files_read(i_df, dir_context):
@@ -1447,7 +1451,7 @@ def check_table_files_read(i_df, dir_context):
                 with open(os.path.join(dir_context, study_filename), encoding='utf-8'):
                     pass
             except FileNotFoundError:
-                errors.append({
+                validator_errors.append({
                     "message": "Missing study tab file(s)",
                     "supplemental": "Study File {} does not appear to exist".format(study_filename),
                     "code": 6
@@ -1459,7 +1463,7 @@ def check_table_files_read(i_df, dir_context):
                     with open(os.path.join(dir_context, assay_filename), encoding='utf-8'):
                         pass
                 except FileNotFoundError:
-                    errors.append({
+                    validator_errors.append({
                         "message": "Missing assay tab file(s)",
                         "supplemental": "Assay File {} does not appear to exist".format(assay_filename),
                         "code": 8
@@ -1524,7 +1528,7 @@ def check_protocol_usage(i_df, dir_context):
                     protocol_refs_used = set([r for r in protocol_refs_used if pd.notnull(r)])
                     diff = list(protocol_refs_used - protocols_declared)
                     if len(diff) > 0:
-                        errors.append({
+                        validator_errors.append({
                             "message": "Missing Protocol declaration",
                             "supplemental": "protocols in study file {} are not declared in the investigation file: "
                                             "{}".format(study_filename, diff),
@@ -1546,7 +1550,7 @@ def check_protocol_usage(i_df, dir_context):
                         protocol_refs_used = set([r for r in protocol_refs_used if pd.notnull(r)])
                         diff = list(protocol_refs_used - protocols_declared)
                         if len(diff) > 0:
-                            errors.append({
+                            validator_errors.append({
                                 "message": "Missing Protocol declaration",
                                 "supplemental": "protocols in study file {} are not declared in the investigation file: "
                                                 "{}".format(study_filename, diff),
@@ -1577,7 +1581,7 @@ def check_protocol_usage(i_df, dir_context):
                     pass
         diff = protocols_declared - protocol_refs_used - {''}
         if len(diff) > 0:
-            warnings.append({
+            validator_warnings.append({
                 "message": "Protocol declared but not used",
                 "supplemental": "protocols declared in the file {} are not used in any assay file: "
                                 "{}".format(study_filename, diff),
@@ -1618,7 +1622,7 @@ def load_table_checks(fp):
         if _RX_COMMENT.match(column):
             if len(_RX_COMMENT.findall(column)) == 0:
                 log.warning("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
-                warnings.append({
+                validator_warnings.append({
                     "message": "Missing name in Comment[] label",
                     "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
                     "code": 4014
@@ -1626,7 +1630,7 @@ def load_table_checks(fp):
         if _RX_CHARACTERISTICS.match(column):
             if len(_RX_CHARACTERISTICS.findall(column)) == 0:
                 log.warning("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
-                warnings.append({
+                validator_warnings.append({
                     "message": "Missing name in Characteristics[] label",
                     "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
                     "code": 4014
@@ -1634,7 +1638,7 @@ def load_table_checks(fp):
         if _RX_PARAMETER_VALUE.match(column):
             if len(_RX_PARAMETER_VALUE.findall(column)) == 0:
                 log.warning("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
-                warnings.append({
+                validator_warnings.append({
                     "message": "Missing name in Parameter Value[] label",
                     "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
                     "code": 4014
@@ -1642,7 +1646,7 @@ def load_table_checks(fp):
         if _RX_FACTOR_VALUE.match(column):
             if len(_RX_FACTOR_VALUE.findall(column)) == 0:
                 log.warning("(W) In file {}, label {} is missing a name".format(os.path.basename(fp.name), column))
-                warnings.append({
+                validator_warnings.append({
                     "message": "Missing name in Factor Value[] label",
                     "supplemental": "In file {}, label {} is missing a name".format(os.path.basename(fp.name), column),
                     "code": 4014
@@ -1867,7 +1871,7 @@ def check_term_source_refs_in_investigation(i_df):
             section_term_source_refs.remove(section_term_source_ref_to_remove)
         diff = set(section_term_source_refs) - set(ontology_sources_list)
         if len(diff) > 0:
-            warnings.append({
+            validator_warnings.append({
                 "message": "Missing Term Source",
                 "supplemental": "Ontology sources missing {}".format(list(diff)),
                 "code": 3009
@@ -1878,7 +1882,7 @@ def check_term_source_refs_in_investigation(i_df):
     i_publication_status_term_source_ref = [i for i in i_df['i_publications']['Investigation Publication Status Term Source REF'].tolist() if i != '']
     diff = set(i_publication_status_term_source_ref) - set(ontology_sources_list)
     if len(diff) > 0:
-        warnings.append({
+        validator_warnings.append({
             "message": "Missing Term Source",
             "supplemental": "Ontology sources missing {}".format(list(diff)),
             "code": 3009
@@ -1888,7 +1892,7 @@ def check_term_source_refs_in_investigation(i_df):
     i_person_roles_term_source_ref = [i for i in i_df['i_contacts']['Investigation Person Roles Term Source REF'].tolist() if i != '']
     diff = set(i_person_roles_term_source_ref) - set(ontology_sources_list)
     if len(diff) > 0:
-        warnings.append({
+        validator_warnings.append({
             "message": "Missing Term Source",
             "supplemental": "Ontology sources missing {}".format(list(diff)),
             "code": 3009
@@ -1932,7 +1936,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                             if row not in ontology_sources_list:
                                 if isinstance(row, float):
                                     if not math.isnan(row):
-                                        warnings.append({
+                                        validator_warnings.append({
                                             "message": "Missing Term Source",
                                             "supplemental": "Ontology sources missing {} at column position {} and row {} "
                                                             "in {} not declared in ontology "
@@ -1945,7 +1949,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                                                              study_filename,
                                                                                              list(ontology_sources_list)))
                                 else:
-                                    warnings.append({
+                                    validator_warnings.append({
                                         "message": "Missing Term Source",
                                         "supplemental": "Ontology sources missing {} at column position {} and row {} "
                                                         "in {} not declared in ontology "
@@ -1979,7 +1983,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                     if row not in ontology_sources_list:
                                         if isinstance(row, float):
                                             if not math.isnan(row):
-                                                warnings.append({
+                                                validator_warnings.append({
                                                     "message": "Missing Term Source",
                                                     "supplemental": "Ontology sources missing {} at column position {} and "
                                                                     "row {} in {} not declared in ontology sources {}"
@@ -1992,7 +1996,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
                                                             .format(row+1, object_index[x], y+1, study_filename,
                                                                     list(ontology_sources_list)))
                                         else:
-                                            warnings.append({
+                                            validator_warnings.append({
                                                 "message": "Missing Term Source",
                                                 "supplemental": "Ontology sources missing {} at column position {} and row "
                                                                 "{} in {} not declared in ontology sources {}"
@@ -2020,14 +2024,14 @@ def load_config(config_dir):
     try:
         configs = isatab_configurator.load(config_dir)
     except FileNotFoundError:
-        errors.append({
+        validator_errors.append({
             "message": "Configurations could not be loaded",
             "supplemental": "On loading {}".format(config_dir),
             "code": 4001
         })
         log.error("(E) FileNotFoundError on trying to load from {}".format(config_dir))
     if configs is None:
-        errors.append({
+        validator_errors.append({
             "message": "Configurations could not be loaded",
             "supplemental": "On loading {}".format(config_dir),
             "code": 4001
@@ -2048,7 +2052,7 @@ def check_measurement_technology_types(i_df, configs):
         if len(measurement_types) == len(technology_types):
             for x, measurement_type in enumerate(measurement_types):
                 if (measurement_types[x], technology_types[x]) not in configs.keys():
-                    errors.append({
+                    validator_errors.append({
                         "message": "Measurement/technology type invalid",
                         "supplemental": "Measurement {}/technology {}, STUDY ASSAY.{}"
                             .format(measurement_types[x], technology_types[x], i),
@@ -2071,7 +2075,7 @@ def check_investigation_against_config(i_df, configs):
                     if isinstance(required_value, float):
                         if math.isnan(required_value):
                             if i > 0:
-                                warnings.append({
+                                validator_warnings.append({
                                     "message": "A required property is missing",
                                     "supplemental": "A property value in {}.{} of investigation file at column {} is "
                                                     "required".format(col, i + 1, x + 1),
@@ -2081,7 +2085,7 @@ def check_investigation_against_config(i_df, configs):
                                     "(W) A property value in {}.{} of investigation file at column {} is required".format(
                                         col, i+1, x + 1))
                             else:
-                                warnings.append({
+                                validator_warnings.append({
                                     "message": "A required property is missing",
                                     "supplemental": "A property value in {} of investigation file at column {} is "
                                                     "required".format(col, x + 1),
@@ -2093,7 +2097,7 @@ def check_investigation_against_config(i_df, configs):
                     else:
                         if required_value == '' or 'Unnamed: ' in required_value:
                             if i > 0:
-                                warnings.append({
+                                validator_warnings.append({
                                     "message": "A required property is missing",
                                     "supplemental": "A property value in {}.{} of investigation file at column {} is "
                                                     "required".format(col, i+1, x + 1),
@@ -2103,7 +2107,7 @@ def check_investigation_against_config(i_df, configs):
                                     "(W) A property value in {}.{} of investigation file at column {} is required".format(
                                         col, i+1, x + 1))
                             else:
-                                warnings.append({
+                                validator_warnings.append({
                                     "message": "A required property is missing",
                                     "supplemental": "A property value in {} of investigation file at column {} is "
                                                     "required".format(col, x + 1),
@@ -2149,7 +2153,7 @@ def check_study_table_against_config(s_df, protocols_declared, config):
     object_index = [i for i in object_index if i[1] in fields]
     for x, object in enumerate(object_index):
         if fields[x] != object[1]:
-            warnings.append({
+            validator_warnings.append({
                 "message": "The column order in assay table is not valid",
                 "supplemental": "Unexpected heading found. Expected {} but found {} at column number {}"
                     .format(fields[x], object[1], object[0]),
@@ -2192,7 +2196,7 @@ def check_assay_table_against_config(s_df, config):
     object_index = [i for i in object_index if i[1] in fields]
     for x, object in enumerate(object_index):
         if fields[x] != object[1]:
-            warnings.append({
+            validator_warnings.append({
                 "message": "The column order in assay table is not valid",
                 "supplemental": "Unexpected heading found. Expected {} but found {} at column number {}"
                     .format(fields[x], object[1], object[0]),
@@ -2222,7 +2226,7 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
     required_fields = [i.header for i in config.get_isatab_configuration()[0].get_field() if i.is_required]
     for required_field in required_fields:
         if required_field not in columns:
-            warnings.append({
+            validator_warnings.append({
                 "message": "A required column in assay table is not present",
                 "supplemental": "In {} the required column {} missing from column headings"
                     .format(filename, required_field),
@@ -2233,7 +2237,7 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
             # Now check that the required column cells all have values, Rules 4003-4008
             for y, cell in enumerate(df[required_field]):
                 if not cell_has_value(cell):
-                    warnings.append({
+                    validator_warnings.append({
                         "message": "A required cell value is missing",
                         "supplemental": "Cell at row {} in column '{}' has no value".format(y, required_field),
                         "code": 4012
@@ -2249,7 +2253,7 @@ def check_assay_table_with_config(df, config, filename, protocol_names_and_types
         for cell in df[each]:
             prots_found.add(cell)
         if len(prots_found) > 1:
-            warnings.append({
+            validator_warnings.append({
                 "message": "Multiple protocol references in Protocol REF column",
                 "supplemental": "Multiple protocol references {} are found in {}".format(prots_found, each),
                 "code": 4999
@@ -2298,7 +2302,7 @@ def check_factor_value_presence(table):
     for factor_field in factor_fields:
         for x, cell_value in enumerate(table.fillna('')[factor_field]):
             if cell_value == '':
-                warnings.append({
+                validator_warnings.append({
                     "message": "A required node factor value is missing value",
                     "supplemental": "(W) Missing value for '" + factor_field + "' at row " + str(x) + " in " +
                                     table.filename,
@@ -2311,14 +2315,14 @@ def check_required_fields(table, cfg):
     for fheader in [i.header for i in cfg.get_isatab_configuration()[0].get_field() if i.is_required]:
         found_field = [i for i in table.columns if i.lower() == fheader.lower()]
         if len(found_field) == 0:
-            warnings.append({
+            validator_warnings.append({
                 "message": "A required column in assay table is not present",
                 "supplemental": "Required field '" + fheader + "' not found in the file '" + table.filename + "'",
                 "code": 4010
             })
             log.warning("(W) Required field '" + fheader + "' not found in the file '" + table.filename + "'")
         elif len(found_field) > 1:
-            warnings.append({
+            validator_warnings.append({
                 "message": "Multiple columns found",
                 "supplemental": "Field '" + fheader + "' cannot have multiple values in the file '" + table.filename,
                 "code": 4013
@@ -2333,7 +2337,7 @@ def check_sample_names(study_sample_table, assay_tables=[]):
             assay_samples = set(assay_table['Sample Name'])
             for assay_sample in assay_samples:
                 if assay_sample not in study_samples:
-                    warnings.append({
+                    validator_warnings.append({
                         "message": "Missing Sample",
                         "supplemental": "{} is a Sample Name in {}, but it is not defined in the Study Sample File {}."
                                 .format(assay_sample, assay_table.filename, study_sample_table.filename),
@@ -2349,7 +2353,7 @@ def check_field_values(table, cfg):
         if isinstance(cell_value, float):
             if math.isnan(cell_value):
                 if cfg_field.is_required:
-                    warnings.append({
+                    validator_warnings.append({
                         "message": "A required column in assay table is not present",
                         "supplemental": "Missing value for the required field '" + cfg_field.header
                                         + "' in the file '" + table.filename + "'",
@@ -2362,7 +2366,7 @@ def check_field_values(table, cfg):
             value = cell_value.strip()
             if value == '':
                 if cfg_field.is_required:
-                    warnings.append({
+                    validator_warnings.append({
                         "message": "A required cell value is missing",
                         "supplemental": "Missing value for the required field '" + cfg_field.header + "' in the file '" +
                                 table.filename + "'",
@@ -2399,7 +2403,7 @@ def check_field_values(table, cfg):
         elif data_type in ['ontology-term', 'ontology term']:
             return True  # Structure and values checked in check_ontology_fields()
         else:
-            warnings.append({
+            validator_warnings.append({
                 "message": "Unknown data type found",
                 "supplemental": "Unknown data type '" + data_type + "' for field '" + cfg_field.header +
                                 "' in the file '" + table.filename + "'",
@@ -2409,7 +2413,7 @@ def check_field_values(table, cfg):
                         "' in the file '" + table.filename + "'")
             return False
         if not is_valid_value:
-            warnings.append({
+            validator_warnings.append({
                 "message": "A value does not correspond to the correct data type",
                 "supplemental": "Invalid value '" + cell_value + "' for type '" + data_type + "' of the field '"
                                 + cfg_field.header + "'",
@@ -2435,7 +2439,7 @@ def check_field_values(table, cfg):
 def check_unit_field(table, cfg):
     def check_unit_value(cell_value, unit_value, cfield, filename):
         if cell_has_value(cell_value) or cell_has_value(unit_value):
-            warnings.append({
+            validator_warnings.append({
                 "message": "Cell found has unit but no value",
                 "supplemental": "Field '" + cfield.header + "' has a unit but not a value in the file '" + filename
                                 + "'",
@@ -2461,7 +2465,7 @@ def check_unit_field(table, cfg):
             if rindx < len(table.columns):
                 rheader = table.columns[rindx]
             if rheader is None or rheader.lower() != 'unit':
-                warnings.append({
+                validator_warnings.append({
                     "message": "Cell requires a Unit",
                     "supplemental": "The field '" + header + "' in the file '" + table.filename + "' misses a required "
                                                                                                   "'Unit' column",
@@ -2531,7 +2535,7 @@ def check_protocol_fields(table, cfg, proto_map):
                         proto_type = proto_map[proto_name]
                         fprotos.append(proto_type)
                     except KeyError:
-                        warnings.append({
+                        validator_warnings.append({
                             "message": "Missing Protocol declaration",
                             "supplemental": " Could not find protocol type for protocol name '{}', trying to validate "
                                             "against name only".format(proto_name),
@@ -2542,7 +2546,7 @@ def check_protocol_fields(table, cfg, proto_map):
                         fprotos.append(proto_name)
                 invalid_protos = set(cprotos) - set(fprotos)
                 if len(invalid_protos) > 0:
-                    warnings.append({
+                    validator_warnings.append({
                         "message": "Missing Protocol declaration",
                         "supplemental": "Protocol(s) of type " + str(list(invalid_protos))
                                         + " defined in the ISA-configuration expected as a between '"
@@ -2557,12 +2561,12 @@ def check_protocol_fields(table, cfg, proto_map):
     return result
 
 
-def check_ontology_fields(table, cfg):
+def check_ontology_fields(table, cfg, tsrs):
     def check_single_field(cell_value, source, acc, cfield, filename):
         if (cell_has_value(cell_value) and not cell_has_value(
                 source) and cell_has_value(acc)) or not cell_has_value(
                 cell_value):
-            warnings.append({
+            validator_warnings.append({
                 "message": "Missing Term Source REF in annotation or missing Term Source Name",
                 "supplemental": "Incomplete values for ontology headers, for the field '"
                                 + cfield.header + "' in the file '"
@@ -2572,8 +2576,19 @@ def check_ontology_fields(table, cfg):
             log.warning(
                 "(W) Incomplete values for ontology headers, for the field '" + cfield.header + "' in the file '" +
                 filename + "'. Check that all the label/accession/source are provided.")
+            if source not in tsrs:
+                validator_warnings.append({
+                    "message": "Term Source REF reference broken",
+                    "supplemental": "Term Source REF, for the field '"
+                                    + cfield.header + "' in the file '"
+                                    + filename + "' does not refer to a declared Ontology Source.",
+                    "code": 3011
+                })
+                log.warning(
+                    "(W) Term Source REF, for the field '" + cfield.header +
+                    "' in the file '" + filename +
+                    "' does not refer to a declared Ontology Source.")
             return False
-        # TODO: Implement check against declared ontology sources in investigation file
         return True
 
     result = True
@@ -2618,11 +2633,12 @@ def get_num_study_groups(study_sample_table, study_filename):
         log.info("No study factors found in {}".format(study_filename))
     return num_study_groups
 
+
 def check_study_groups(table, filename, study_group_size_in_comment):
     num_study_groups = get_num_study_groups(table, filename)
     log.info('Found {} study groups in {}'.format(
             num_study_groups, filename))
-    info.append({
+    validator_info.append({
             'message': 'Found {} study groups in {}'.format(
                 num_study_groups, filename),
             'supplemental': 'Found {} study groups in {}'.format(
@@ -2633,7 +2649,7 @@ def check_study_groups(table, filename, study_group_size_in_comment):
                         study_group_size_in_comment != num_study_groups:
             log.warning('Study group size reported as {} but found {} in {}'
                         .format(study_group_size_in_comment, num_study_groups, filename))
-            warnings.append({
+            validator_warnings.append({
                 'message': 'Reported study group size does not match table'
                     .format(num_study_groups, filename),
                 'supplemental': 'Study group size reported as {} but found {} '
@@ -2646,12 +2662,12 @@ def check_study_groups(table, filename, study_group_size_in_comment):
 
 
 def validate(fp, config_dir=default_config_dir, log_level=None):
-    global errors
-    global warnings
-    global info
-    errors = list()
-    warnings = list()
-    info = list()
+    global validator_errors
+    global validator_warnings
+    global validator_info
+    validator_errors = []
+    validator_warnings = []
+    validator_info = []
     if log_level in (
         logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING,
         logging.ERROR, logging.CRITICAL):
@@ -2679,7 +2695,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
         check_protocol_names(i_df)  # Rule 1010
         check_protocol_parameter_names(i_df)  # Rule 1011
         check_study_factor_names(i_df)  # Rule 1012
-        check_ontology_sources(i_df)  # Rule 3008
+        term_source_refs = check_ontology_sources(i_df)  # Rule 3008
         log.info("Finished prechecks...")
         log.info("Loading configurations found in {}".format(config_dir))
         configs = load_config(config_dir)  # Rule 4001
@@ -2727,7 +2743,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                             log.warning("(W) There are some protocol inconsistencies in {} against {} "
                                         "configuration".format(study_sample_table.filename, 'Study Sample'))
                         log.info("Checking ontology fields...")
-                        if not check_ontology_fields(study_sample_table, config):  # Rule 3010
+                        if not check_ontology_fields(study_sample_table, config, term_source_refs):  # Rule 3010
                             log.warning("(W) There are some ontology annotation inconsistencies in {} against {} "
                                         "configuration".format(study_sample_table.filename, 'Study Sample'))
                         log.info("Checking study group size...")
@@ -2784,7 +2800,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                                         log.warning("(W) There are some protocol inconsistencies in {} against {} "
                                                     "configuration".format(assay_table.filename, (measurement_type, technology_type)))
                                     log.info("Checking ontology fields...")
-                                    if not check_ontology_fields(assay_table, config):  # Rule 3010
+                                    if not check_ontology_fields(assay_table, config, term_source_refs):  # Rule 3010
                                         log.warning("(W) There are some ontology annotation inconsistencies in {} against {} "
                                                     "configuration".format(assay_table.filename, (measurement_type, technology_type)))
                                     log.info("Checking study group size...")
@@ -2796,7 +2812,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                             log.info("Checking consistencies between study sample table and assay tables...")
                             check_sample_names(study_sample_table, assay_tables)
                             log.info("Finished checking study sample table against assay tables...")
-            if len(errors) != 0:
+            if len(validator_errors) != 0:
                 log.info("Skipping pooling test as there are outstanding errors")
             else:
                 from isatools import utils
@@ -2808,7 +2824,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
         log.info("Finished validation...")
         validation_finished = True
     except ParserError as cpe:
-        errors.append({
+        validator_errors.append({
             "message": "Unknown/System Error",
             "supplemental": "The validator could not identify what the error is: {}".format(str(cpe)),
             "code": 0
@@ -2816,7 +2832,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
         log.fatal("(F) There was an error when trying to parse the ISA tab")
         log.fatal(cpe)
     except ValueError as ve:
-        errors.append({
+        validator_errors.append({
             "message": "Unknown/System Error",
             "supplemental": "The validator could not identify what the error is: {}".format(str(ve)),
             "code": 0
@@ -2824,7 +2840,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
         log.fatal("(F) There was an error when trying to parse the ISA tab")
         log.fatal(ve)
     except SystemError as se:
-        errors.append({
+        validator_errors.append({
             "message": "Unknown/System Error",
             "supplemental": "The validator could not identify what the error is: {}".format(str(se)),
             "code": 0
@@ -2832,7 +2848,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
         log.fatal("(F) Something went very very wrong! :(")
         log.fatal(se)
     except Exception as e:
-        errors.append({
+        validator_errors.append({
             "message": "Unknown/System Error",
             "supplemental": "The validator could not identify what the error is: {}".format(str(e)),
             "code": 0
@@ -2842,9 +2858,9 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
     finally:
         handler.flush()
         return {
-            "errors": errors,
-            "warnings": warnings,
-            "info": info,
+            "errors": validator_errors,
+            "warnings": validator_warnings,
+            "info": validator_info,
             "validation_finished": validation_finished
         }
 
