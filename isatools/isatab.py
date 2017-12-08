@@ -2940,6 +2940,8 @@ def dump_tables_to_dataframes(isa_obj):
 
 def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigation file
 
+    comment_regex = re.compile('Comment\s*\[(.*?)\]')
+
     def get_ontology_source(term_source_ref):
         try:
             os = ontology_source_map[term_source_ref]
@@ -3018,17 +3020,21 @@ def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigat
         return contacts
 
     def get_comments(section_df):
+
         comments = []
-        for col in [x for x in section_df.columns if str(x).startswith("Comment[")]:
+        for col in [
+            x for x in section_df.columns if comment_regex.match(str(x))]:
             for _, row in section_df.iterrows():
-                comment = Comment(name=col[8:-1], value=row[col])
+                comment = Comment(
+                    name=str(next(comment_regex.finditer(col))), value=row[col])
                 comments.append(comment)
         return comments
 
     def get_comments_row(cols, row):
         comments = []
-        for col in [x for x in cols if str(x).startswith("Comment[")]:
-            comment = Comment(name=col[8:-1], value=row[col])
+        for col in [x for x in cols if comment_regex.match(str(x))]:
+            comment = Comment(
+                name=str(next(comment_regex.finditer(col))), value=row[col])
             comments.append(comment)
         return comments
 
