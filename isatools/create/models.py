@@ -1096,13 +1096,16 @@ class IsaModelObjectFactory(object):
                 sources.append(qcsource)
             else:
                 for i, (c, v) in enumerate(prebatch.characteristic_values):
+                    var_characteristic = OntologyAnnotation(term=c)
                     qcsource = Source(
                         name='qc_prebatch_in-{}'.format(i), characteristics=[
                         Characteristic(
                             category=OntologyAnnotation(term='Material Type'),
                             value=OntologyAnnotation(term=prebatch.material)),
-                            Characteristic(category=OntologyAnnotation(term=c),
+                            Characteristic(category=var_characteristic,
                                            value=v)])
+                    if var_characteristic not in study.characteristic_categories:
+                        study.characteristic_categories.append(var_characteristic)
                     sources.append(qcsource)
                     if prebatch.parameter_values is None:
                         sample = Sample(name='qc_prebatch_out-{}'.format(i))
@@ -1143,6 +1146,11 @@ class IsaModelObjectFactory(object):
                             samples.append(sample)
                             process_sequence.append(process)
             if prebatch.parameter_values is not None:
+                qcsource = Source(name='qc_prebatch_in', characteristics=[
+                    Characteristic(
+                        category=OntologyAnnotation(term='Material Type'),
+                        value=OntologyAnnotation(term=prebatch.material))])
+                sources.append(qcsource)
                 for i, (p, v) in enumerate(prebatch.parameter_values):
                     qc_param_set.add(p)
                     sample = Sample(name='qc_prebatch_out-{}'.format(i))
@@ -1162,7 +1170,8 @@ class IsaModelObjectFactory(object):
                                        value=v),
                     ]
                     samples.append(sample)
-                process_sequence.append(process)
+                    process_sequence.append(process)
+        # Main batch
         for (group_id, treatment), ranks in group_rank_map.items():
             fvs = treatment.factor_values
             for subjn in (str(x) for x in range(group_size)):
@@ -1172,6 +1181,18 @@ class IsaModelObjectFactory(object):
                     value=OntologyAnnotation(term='specimen'))
                 source = Source(name=self._idgen(group_id, subjn))
                 source.characteristics = [material_type]
+                if prebatch is not None:
+                    if prebatch.characteristic_values is not None:
+                        c, v = next(iter(prebatch.characteristic_values))
+                        var_characteristic = OntologyAnnotation(term=c)
+                        source.characteristics.append(Characteristic(
+                            category=var_characteristic))
+                if sample_qc_plan.post_run_batch is not None:
+                    if sample_qc_plan.post_run_batch.characteristic_values is not None:
+                        c, v = next(iter(sample_qc_plan.post_run_batch.characteristic_values))
+                        var_characteristic = OntologyAnnotation(term=c)
+                        source.characteristics.append(Characteristic(
+                            category=var_characteristic))
                 sources.append(source)
                 for rank in ranks:
                     for sample_type, sampling_size in sample_plan.items():
@@ -1280,6 +1301,11 @@ class IsaModelObjectFactory(object):
                             samples.append(sample)
                             process_sequence.append(process)
             if postbatch.parameter_values is not None:
+                qcsource = Source(name='qc_prebatch_in', characteristics=[
+                    Characteristic(
+                        category=OntologyAnnotation(term='Material Type'),
+                        value=OntologyAnnotation(term=prebatch.material))])
+                sources.append(qcsource)
                 for i, (p, v) in enumerate(postbatch.parameter_values):
                     qc_param_set.add(p)
                     sample = Sample(name='qc_postbatch_out-{}'.format(i))
@@ -1299,7 +1325,7 @@ class IsaModelObjectFactory(object):
                                        value=v),
                     ]
                     samples.append(sample)
-                process_sequence.append(process)
+                    process_sequence.append(process)
         # normalize size of params across all processes
         for process in process_sequence:
             missing = qc_param_set - set(

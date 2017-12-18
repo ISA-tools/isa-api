@@ -738,7 +738,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         study.filename = 's_study.txt'
         self.investigation.studies = [study]
         # 36 sources, 38 QC sources
-        self.assertEqual(74, len(study.sources))
+        self.assertEqual(76, len(study.sources))
         self.assertEqual(36, len(
             [x for x in study.sources
              if x.get_char('Material Type').value.term == 'solvent']))
@@ -757,7 +757,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         plan.pre_run_batch = {
             'material': 'blank',
             'variable_type': 'characteristic',
-            'variable_name': 'param1',
+            'variable_name': 'char1',
             'values': [
                 5, 4, 3, 2, 1, 1, 1, 1, 1, 1
             ]
@@ -765,7 +765,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         plan.post_run_batch = {
             'material': 'blank',
             'variable_type': 'characteristic',
-            'variable_name': 'param1',
+            'variable_name': 'char2',
             'values': [
                 1, 1, 1, 1, 1, 1, 2, 3, 4, 5
             ]
@@ -786,13 +786,15 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
             plan,  treatment_sequence).create_study_from_plan()
         study.filename = 's_study.txt'
         self.investigation.studies = [study]
-        # 36 sources, 38 QC sources
+        # 36 sources, 56 QC sources
         self.assertEqual(92, len(study.sources))
         self.assertEqual(36, len(
             [x for x in study.sources
              if x.get_char('Material Type').value.term == 'solvent']))
         # 288 samples plus 36 QC samples
         self.assertEqual(344, len(study.samples))
+        from isatools import isatab
+        print(isatab.dumps(Investigation(studies=[study])))
 
     def test_study_from_2_level_factorial_plan(self):
         factor = StudyFactor(name='1')
