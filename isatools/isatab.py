@@ -1606,7 +1606,18 @@ def load_table(fp):
         any_var_regex = re.compile('.*\[(.*?)\]')
         hits = any_var_regex.findall(label)
         if len(hits) > 0:
-            new_labels.append(hits[0].strip())
+            val = hits[0].strip()
+            if 'Comment' in label:
+                new_label = 'Comment[{val}]'.format(val=val)
+            elif 'Characteristics' in label:
+                new_label = 'Characteristics[{val}]'.format(val=val)
+            elif 'Parameter Value' in label:
+                new_label = 'Parameter Value[{val}]'.format(val=val)
+            elif 'Factor Value' in label:
+                new_label = 'Factor Value[{val}]'.format(val=val)
+            new_labels.append(new_label)
+        else:
+            new_labels.append(label)
     df.columns = new_labels
     return df
 
@@ -2969,10 +2980,17 @@ def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigat
 
     def get_oa_list_from_semi_c_list(vals, accessions, ts_refs):
         oa_list = []
-        for _, val in enumerate(vals.split(';')):
-            oa = get_oa(val, accessions.split(';')[_], ts_refs.split(';')[_])
-            if oa is not None:
-                oa_list.append(oa)
+        accession_split = accessions.split(';')
+        ts_refs_split = ts_refs.split(';')
+        # if no acc or ts_refs
+        if accession_split == [''] and ts_refs_split == ['']:
+            for val in vals.split(';'):
+                oa_list.append(OntologyAnnotation(term=val, ))
+        else:  # try parse all three sections
+            for _, val in enumerate(vals.split(';')):
+                oa = get_oa(val, accessions.split(';')[_], ts_refs.split(';')[_])
+                if oa is not None:
+                    oa_list.append(oa)
         return oa_list
 
     def get_publications(section_df):

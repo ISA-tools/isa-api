@@ -652,7 +652,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         self.assertTrue(treatment_sequence.ranked_treatments.__len__() == 1)
         self.assertRaises(TypeError, treatment_sequence.add_treatment, self.second_treatment, 4)
 
-    def test_add_treatment_epoch_not_sequential(self):
+    def test_add_treatment_epoch_not_sequential2(self):
         treatment_sequence = TreatmentSequence()
         treatment_sequence.add_treatment(self.first_treatment, 1)
         self.assertTrue(treatment_sequence.ranked_treatments.__len__() == 1)
@@ -793,8 +793,6 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
              if x.get_char('Material Type').value.term == 'solvent']))
         # 288 samples plus 36 QC samples
         self.assertEqual(344, len(study.samples))
-        from isatools import isatab
-        print(isatab.dumps(Investigation(studies=[study])))
 
     def test_study_from_2_level_factorial_plan(self):
         factor = StudyFactor(name='1')
