@@ -894,10 +894,15 @@ class SampleAssayPlan(object):
     def pre_run_batch(self, qc_batch_dict):
         pre_run_batch = SampleQCBatch()
         pre_run_batch.material = qc_batch_dict['material']
-        parameter_name = qc_batch_dict['parameter']
-        parameter_values = qc_batch_dict['values']
-        pre_run_batch.parameter_values = list(
-            map(lambda x: (parameter_name, x), parameter_values))
+        var_type = qc_batch_dict['variable_type']
+        var_name = qc_batch_dict['variable_name']
+        var_values = qc_batch_dict['values']
+        if var_type == 'parameter':
+            pre_run_batch.parameter_values = list(
+                map(lambda x: (var_name, x), var_values))
+        elif var_type == 'characteristic':
+            pre_run_batch.characteristic_values = list(
+                map(lambda x: (var_name, x), var_values))
         self.__pre_run_batch = pre_run_batch
         
     @property
@@ -908,10 +913,15 @@ class SampleAssayPlan(object):
     def post_run_batch(self, qc_batch_dict):
         post_run_batch = SampleQCBatch()
         post_run_batch.material = qc_batch_dict['material']
-        parameter_name = qc_batch_dict['parameter']
-        parameter_values = qc_batch_dict['values']
-        post_run_batch.parameter_values = list(
-            map(lambda x: (parameter_name, x), parameter_values))
+        var_type = qc_batch_dict['variable_type']
+        var_name = qc_batch_dict['variable_name']
+        var_values = qc_batch_dict['values']
+        if var_type == 'parameter':
+            post_run_batch.parameter_values = list(
+                map(lambda x: (var_name, x), var_values))
+        elif var_type == 'characteristic':
+            post_run_batch.characteristic_values = list(
+                map(lambda x: (var_name, x), var_values))
         self.__post_run_batch = post_run_batch
 
     def __repr__(self):
@@ -933,9 +943,11 @@ class SampleAssayPlan(object):
 
 class SampleQCBatch(object):
 
-    def __init__(self, material=None, parameter_values=None):
+    def __init__(self, material=None, parameter_values=None,
+                 characteristic_values=None):
         self.material = material
         self.parameter_values = parameter_values
+        self.characteristic_values = characteristic_values
 
 
 class BaseStudyDesign(object):

@@ -707,14 +707,16 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         plan.add_sample_qc_plan_record('solvent', 8)
         plan.pre_run_batch = {
             'material': 'blank',
-            'parameter': 'param1',
+            'variable_type': 'parameter',
+            'variable_name': 'param1',
             'values': [
                 5, 4, 3, 2, 1, 1, 1, 1, 1, 1
             ]
         }
         plan.post_run_batch = {
             'material': 'blank',
-            'parameter': 'param2',
+            'variable_type': 'parameter',
+            'variable_name': 'param1',
             'values': [
                 1, 1, 1, 1, 1, 1, 2, 3, 4, 5
             ]
