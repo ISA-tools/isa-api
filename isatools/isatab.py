@@ -1601,12 +1601,13 @@ def load_table(fp):
         fp = strip_comments(fp)
         df = pd.read_csv(fp, dtype=str, sep='\t', encoding='latin1').replace(np.nan, '')
     labels = df.columns
-    for i, label in enumerate(labels):
+    new_labels = []
+    for label in labels:
         any_var_regex = re.compile('.*\[(.*?)\]')
         hits = any_var_regex.findall(label)
         if len(hits) > 0:
-            labels[i] = hits[0].strip()
-    df.columns = labels
+            new_labels.append(hits[0].strip())
+    df.columns = new_labels
     return df
 
 
