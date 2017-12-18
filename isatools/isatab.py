@@ -1600,6 +1600,13 @@ def load_table(fp):
         log.warning("Could not load file with UTF-8, trying ISO-8859-1")
         fp = strip_comments(fp)
         df = pd.read_csv(fp, dtype=str, sep='\t', encoding='latin1').replace(np.nan, '')
+    labels = df.columns
+    for i, label in enumerate(labels):
+        any_var_regex = re.compile('.*\[(.*?)\]')
+        hits = any_var_regex.findall(label)
+        if len(hits) > 0:
+            labels[i] = hits[0].strip()
+    df.columns = labels
     return df
 
 
