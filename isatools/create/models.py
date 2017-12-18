@@ -1096,19 +1096,16 @@ class IsaModelObjectFactory(object):
                 sources.append(qcsource)
             else:
                 for i, (c, v) in enumerate(prebatch.characteristic_values):
-                    qcsource = Source(name='qc_prebatch_in', characteristics=[
+                    qcsource = Source(
+                        name='qc_prebatch_in-{}'.format(i), characteristics=[
                         Characteristic(
                             category=OntologyAnnotation(term='Material Type'),
                             value=OntologyAnnotation(term=prebatch.material)),
                             Characteristic(category=OntologyAnnotation(term=c),
                                            value=v)])
                     sources.append(qcsource)
-                    for j, (p, v) in enumerate(prebatch.parameter_values):
-                        qc_param_set.add(p)
-                        sample = Sample(name='qc_prebatch_out-{}'.format(j))
-                        qc_param = sample_collection.get_param(p)
-                        if qc_param is None:
-                            sample_collection.add_param(p)
+                    if prebatch.parameter_values is None:
+                        sample = Sample(name='qc_prebatch_out-{}'.format(i))
                         process = Process(executes_protocol=study.get_prot(
                             'sample collection'), inputs=[qcsource],
                             outputs=[sample], performer=self.ops[0], date_=
@@ -1118,32 +1115,53 @@ class IsaModelObjectFactory(object):
                             ParameterValue(
                                 category=sample_collection.get_param(
                                     'Run Order'),
-                                value=-1),
-                            ParameterValue(
-                                category=sample_collection.get_param(p),
-                                value=v),
+                                value=-1)
                         ]
                         samples.append(sample)
                         process_sequence.append(process)
-            for i, (p, v) in enumerate(prebatch.parameter_values):
-                qc_param_set.add(p)
-                sample = Sample(name='qc_prebatch_out-{}'.format(i))
-                qc_param = sample_collection.get_param(p)
-                if qc_param is None:
-                    sample_collection.add_param(p)
-                process = Process(executes_protocol=study.get_prot(
-                    'sample collection'), inputs=[qcsource],
-                    outputs=[sample], performer=self.ops[0], date_=
-                    datetime.datetime.isoformat(
-                        datetime.datetime.now()))
-                process.parameter_values=[
-                    ParameterValue(
-                        category=sample_collection.get_param('Run Order'),
-                        value=-1),
-                    ParameterValue(category=sample_collection.get_param(p),
-                                   value=v),
-                ]
-                samples.append(sample)
+                    else:
+                        for j, (p, v) in enumerate(prebatch.parameter_values):
+                            qc_param_set.add(p)
+                            sample = Sample(name='qc_prebatch_out-{}'.format(j))
+                            qc_param = sample_collection.get_param(p)
+                            if qc_param is None:
+                                sample_collection.add_param(p)
+                            process = Process(executes_protocol=study.get_prot(
+                                'sample collection'), inputs=[qcsource],
+                                outputs=[sample], performer=self.ops[0], date_=
+                                datetime.datetime.isoformat(
+                                    datetime.datetime.now()))
+                            process.parameter_values = [
+                                ParameterValue(
+                                    category=sample_collection.get_param(
+                                        'Run Order'),
+                                    value=-1),
+                                ParameterValue(
+                                    category=sample_collection.get_param(p),
+                                    value=v),
+                            ]
+                            samples.append(sample)
+                            process_sequence.append(process)
+            if prebatch.parameter_values is not None:
+                for i, (p, v) in enumerate(prebatch.parameter_values):
+                    qc_param_set.add(p)
+                    sample = Sample(name='qc_prebatch_out-{}'.format(i))
+                    qc_param = sample_collection.get_param(p)
+                    if qc_param is None:
+                        sample_collection.add_param(p)
+                    process = Process(executes_protocol=study.get_prot(
+                        'sample collection'), inputs=[qcsource],
+                        outputs=[sample], performer=self.ops[0], date_=
+                        datetime.datetime.isoformat(
+                            datetime.datetime.now()))
+                    process.parameter_values=[
+                        ParameterValue(
+                            category=sample_collection.get_param('Run Order'),
+                            value=-1),
+                        ParameterValue(category=sample_collection.get_param(p),
+                                       value=v),
+                    ]
+                    samples.append(sample)
                 process_sequence.append(process)
         for (group_id, treatment), ranks in group_rank_map.items():
             fvs = treatment.factor_values
@@ -1207,30 +1225,80 @@ class IsaModelObjectFactory(object):
                             process_sequence.append(process)
         postbatch = sample_qc_plan.post_run_batch
         if isinstance(postbatch, SampleQCBatch):
-            qcsource = Source(name='qc_postbatch_in', characteristics=[
-                Characteristic(
-                    category=OntologyAnnotation(term='Material Type'),
-                    value=OntologyAnnotation(term=postbatch.material))])
-            sources.append(qcsource)
-            for i, (p, v) in enumerate(postbatch.parameter_values):
-                qc_param_set.add(p)
-                sample = Sample(name='qc_postbatch_out-{}'.format(i))
-                qc_param = sample_collection.get_param(p)
-                if qc_param is None:
-                    sample_collection.add_param(p)
-                process = Process(executes_protocol=study.get_prot(
-                    'sample collection'), inputs=[qcsource],
-                    outputs=[sample], performer=self.ops[0], date_=
-                    datetime.datetime.isoformat(
-                        datetime.datetime.now()))
-                process.parameter_values = [
-                    ParameterValue(
-                        category=sample_collection.get_param('Run Order'),
-                                   value=(sample_count + 1)),
-                    ParameterValue(category=sample_collection.get_param(p),
-                                   value=v)
-                ]
-                samples.append(sample)
+            if postbatch.characteristic_values is None:
+                qcsource = Source(name='qc_postbatch_in', characteristics=[
+                    Characteristic(
+                        category=OntologyAnnotation(term='Material Type'),
+                        value=OntologyAnnotation(term=postbatch.material))])
+                sources.append(qcsource)
+            else:
+                for i, (c, v) in enumerate(postbatch.characteristic_values):
+                    qcsource = Source(
+                        name='qc_postbatch_in-{}'.format(i), characteristics=[
+                        Characteristic(
+                            category=OntologyAnnotation(term='Material Type'),
+                            value=OntologyAnnotation(term=postbatch.material)),
+                            Characteristic(category=OntologyAnnotation(term=c),
+                                           value=v)])
+                    sources.append(qcsource)
+                    if postbatch.parameter_values is None:
+                        sample = Sample(name='qc_postbatch_out-{}'.format(i))
+                        process = Process(executes_protocol=study.get_prot(
+                            'sample collection'), inputs=[qcsource],
+                            outputs=[sample], performer=self.ops[0], date_=
+                            datetime.datetime.isoformat(
+                                datetime.datetime.now()))
+                        process.parameter_values = [
+                            ParameterValue(
+                                category=sample_collection.get_param(
+                                    'Run Order'),
+                                value=-1)
+                        ]
+                        samples.append(sample)
+                        process_sequence.append(process)
+                    else:
+                        for j, (p, v) in enumerate(postbatch.parameter_values):
+                            qc_param_set.add(p)
+                            sample = Sample(name='qc_postbatch_out-{}'.format(j))
+                            qc_param = sample_collection.get_param(p)
+                            if qc_param is None:
+                                sample_collection.add_param(p)
+                            process = Process(executes_protocol=study.get_prot(
+                                'sample collection'), inputs=[qcsource],
+                                outputs=[sample], performer=self.ops[0], date_=
+                                datetime.datetime.isoformat(
+                                    datetime.datetime.now()))
+                            process.parameter_values = [
+                                ParameterValue(
+                                    category=sample_collection.get_param(
+                                        'Run Order'),
+                                    value=-1),
+                                ParameterValue(
+                                    category=sample_collection.get_param(p),
+                                    value=v),
+                            ]
+                            samples.append(sample)
+                            process_sequence.append(process)
+            if postbatch.parameter_values is not None:
+                for i, (p, v) in enumerate(postbatch.parameter_values):
+                    qc_param_set.add(p)
+                    sample = Sample(name='qc_postbatch_out-{}'.format(i))
+                    qc_param = sample_collection.get_param(p)
+                    if qc_param is None:
+                        sample_collection.add_param(p)
+                    process = Process(executes_protocol=study.get_prot(
+                        'sample collection'), inputs=[qcsource],
+                        outputs=[sample], performer=self.ops[0], date_=
+                        datetime.datetime.isoformat(
+                            datetime.datetime.now()))
+                    process.parameter_values=[
+                        ParameterValue(
+                            category=sample_collection.get_param('Run Order'),
+                            value=-1),
+                        ParameterValue(category=sample_collection.get_param(p),
+                                       value=v),
+                    ]
+                    samples.append(sample)
                 process_sequence.append(process)
         # normalize size of params across all processes
         for process in process_sequence:
