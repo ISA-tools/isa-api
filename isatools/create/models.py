@@ -1088,11 +1088,43 @@ class IsaModelObjectFactory(object):
         sample_qc_plan = self.sample_assay_plan
         prebatch = sample_qc_plan.pre_run_batch
         if isinstance(prebatch, SampleQCBatch):
-            qcsource = Source(name='qc_prebatch_in', characteristics=[
-                Characteristic(
-                    category=OntologyAnnotation(term='Material Type'),
-                    value=OntologyAnnotation(term=prebatch.material))])
-            sources.append(qcsource)
+            if prebatch.characteristic_values is None:
+                qcsource = Source(name='qc_prebatch_in', characteristics=[
+                    Characteristic(
+                        category=OntologyAnnotation(term='Material Type'),
+                        value=OntologyAnnotation(term=prebatch.material))])
+                sources.append(qcsource)
+            else:
+                for i, (c, v) in enumerate(prebatch.characteristic_values):
+                    qcsource = Source(name='qc_prebatch_in', characteristics=[
+                        Characteristic(
+                            category=OntologyAnnotation(term='Material Type'),
+                            value=OntologyAnnotation(term=prebatch.material)),
+                            Characteristic(category=OntologyAnnotation(term=c),
+                                           value=v)])
+                    sources.append(qcsource)
+                    for j, (p, v) in enumerate(prebatch.parameter_values):
+                        qc_param_set.add(p)
+                        sample = Sample(name='qc_prebatch_out-{}'.format(j))
+                        qc_param = sample_collection.get_param(p)
+                        if qc_param is None:
+                            sample_collection.add_param(p)
+                        process = Process(executes_protocol=study.get_prot(
+                            'sample collection'), inputs=[qcsource],
+                            outputs=[sample], performer=self.ops[0], date_=
+                            datetime.datetime.isoformat(
+                                datetime.datetime.now()))
+                        process.parameter_values = [
+                            ParameterValue(
+                                category=sample_collection.get_param(
+                                    'Run Order'),
+                                value=-1),
+                            ParameterValue(
+                                category=sample_collection.get_param(p),
+                                value=v),
+                        ]
+                        samples.append(sample)
+                        process_sequence.append(process)
             for i, (p, v) in enumerate(prebatch.parameter_values):
                 qc_param_set.add(p)
                 sample = Sample(name='qc_prebatch_out-{}'.format(i))
