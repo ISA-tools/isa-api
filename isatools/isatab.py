@@ -181,7 +181,7 @@ _RX_INDEXED_COL = re.compile('(.*?)\.\d+')
 
 # column labels
 _LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name', 'Labeled Extract Name']
-_LABELS_DATA_NODES = ['Raw Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
+_LABELS_DATA_NODES = ['Raw Data File', 'Raw Spectral Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
                       'Protein Assignment File', 'Peptide Assignment File',
                       'Post Translational Modification Assignment File', 'Acquisition Parameter Data File',
                       'Free Induction Decay Data File', 'Derived Array Data Matrix File', 'Image File',
@@ -3696,7 +3696,7 @@ class ProcessSequenceFactory:
                 n = samples[lk]
             elif l in ('Extract Name', 'Labeled Extract Name'):
                 n = other_material[lk]
-            elif l.endswith('File'):
+            elif l.endswith(' File'):
                 n = data[lk]
             return n
 
