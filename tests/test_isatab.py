@@ -403,6 +403,16 @@ class InvestigationParserIntegrationTests(unittest.TestCase):
             self.assertListEqual([a.filename for a in study_bii_s_7.assays],
                                  ['a_matteo-assay-Gx.txt'])
 
+    def test_isatab_load_issue210_on_MTBLS30(self):
+        with open(os.path.join(self._tab_data_dir, 'MTBLS30', 'i_Investigation.txt'), 'rb') as fp:
+            self.parser.parse(fp)
+            ISA = self.parser.isa
+
+            self.assertListEqual([s.filename for s in ISA.studies], ['s_York_SRC_metabolomics.txt'])
+            study = [s for s in ISA.studies if s.filename == 's_York_SRC_metabolomics.txt'][0]
+            self.assertListEqual([a.filename for a in study.assays],
+                                 ['a_york_src_GCMS_metabolomics_metabolite profiling_mass spectrometry.txt', 'a_york_src_LCMS_metabolomics_metabolite profiling_mass spectrometry.txt'])
+
 
 class StudySampleTableParserUnitTest(unittest.TestCase):
 
