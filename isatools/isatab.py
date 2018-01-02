@@ -180,13 +180,19 @@ _RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
 _RX_INDEXED_COL = re.compile('(.*?)\.\d+')
 
 # column labels
-_LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name', 'Labeled Extract Name']
-_LABELS_DATA_NODES = ['Raw Data File', 'Raw Spectral Data File', 'Derived Spectral Data File', 'Derived Array Data File', 'Array Data File',
-                      'Protein Assignment File', 'Peptide Assignment File',
-                      'Post Translational Modification Assignment File', 'Acquisition Parameter Data File',
-                      'Free Induction Decay Data File', 'Derived Array Data Matrix File', 'Image File',
+_LABELS_MATERIAL_NODES = ['Source Name', 'Sample Name', 'Extract Name',
+                          'Labeled Extract Name']
+_LABELS_DATA_NODES = ['Raw Data File', 'Raw Spectral Data File',
+                      'Derived Spectral Data File', 'Derived Array Data File',
+                      'Array Data File', 'Protein Assignment File',
+                      'Peptide Assignment File',
+                      'Post Translational Modification Assignment File',
+                      'Acquisition Parameter Data File',
+                      'Free Induction Decay Data File',
+                      'Derived Array Data Matrix File', 'Image File',
                       'Derived Data File', 'Metabolite Assignment File']
-_LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name', 'Scan Name',
+_LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name',
+                       'Hybridization Assay Name', 'Scan Name',
                        'Data Transformation Name', 'Normalization Name']
 
 
@@ -3743,7 +3749,8 @@ class ProcessSequenceFactory:
                             c for c in column_group if c.startswith(
                                 'Characteristics[')]:
 
-                            category_key = charac_column[16:-1]
+                            category_key = next(iter(
+                                _RX_CHARACTERISTICS.findall(charac_column)))
 
                             try:
                                 category = characteristic_categories[
@@ -3767,10 +3774,12 @@ class ProcessSequenceFactory:
                         for comment_column in [
                             c for c in column_group if c.startswith(
                                 'Comment[')]:
-                            if comment_column[8:-1] not in [
+                            comment_key = next(iter(
+                                _RX_COMMENT.findall(comment_column)))
+                            if comment_key not in [
                                 x.name for x in material.comments]:
                                 material.comments.append(
-                                    Comment(name=comment_column[8:-1],
+                                    Comment(name=comment_key,
                                             value=str(
                                                 object_series[comment_column])))
 
@@ -3789,7 +3798,8 @@ class ProcessSequenceFactory:
                             c for c in DF.columns if c.startswith(
                                 'Factor Value[')]:
 
-                            category_key = fv_column[13:-1]
+                            category_key = next(iter(
+                                _RX_FACTOR_VALUE.findall(fv_column)))
 
                             factor_hits = [
                                 f for f in self.factors if
@@ -3829,11 +3839,13 @@ class ProcessSequenceFactory:
                         for comment_column in [
                             c for c in column_group if c.startswith(
                                 'Comment[')]:
-                            if comment_column[8:-1] not in [
+                            comment_key = next(iter(
+                                _RX_COMMENT.findall(comment_column)))
+                            if comment_key not in [
                                 x.name for x in data_file.comments]:
                                 data_file.comments.append(
                                     Comment(
-                                        name=comment_column[8:-1], 
+                                        name=comment_key,
                                         value=str(
                                             object_series[comment_column])))
                     except KeyError:
@@ -3923,7 +3935,8 @@ class ProcessSequenceFactory:
                     for pv_column in [c for c in column_group if c.startswith(
                             'Parameter Value[')]:
 
-                        category_key = pv_column[16:-1]
+                        category_key = next(iter(
+                            _RX_PARAMETER_VALUE.findall(pv_column)))
 
                         if category_key in [x.category.parameter_name.term 
                                             for x in process.parameter_values]:
@@ -3960,10 +3973,12 @@ class ProcessSequenceFactory:
                     for comment_column in \
                             [c for c in column_group
                              if c.startswith('Comment[')]:
-                        if comment_column[8:-1] not in \
+                        comment_key = next(iter(
+                            _RX_COMMENT.findall(comment_column)))
+                        if comment_key not in \
                                 [x.name for x in process.comments]:
                             process.comments.append(
-                                Comment(name=comment_column[8:-1],
+                                Comment(name=comment_key,
                                         value=str(
                                             object_series[comment_column])))
 
@@ -4248,7 +4263,8 @@ ssecdict.get('studyfactortypetermsourceref'))
             for k, v in comments_dict.items():
                 if i < len(v) > 0:
                     os.comments.append(
-                        Comment(name=k[k.index('[')+1:-1], value=v[i]))
+                        Comment(name=next(iter(_RX_COMMENT.findall(k))),
+                                value=v[i]))
             self.ISA.ontology_source_references.append(os)
             self._ts_dict[name] = os
 
@@ -4267,7 +4283,7 @@ ssecdict.get('studyfactortypetermsourceref'))
             for k, v in comments_dict.items():
                 if len(v) > 0:
                     self.ISA.comments.append(
-                        Comment(name=k[k.index('[')+1:-1],
+                        Comment(name=next(iter(_RX_COMMENT.findall(k))),
                                 value=';'.join(v) if len(v) > 1 else v[0]))
             break  # because there should only be one or zero rows
 
@@ -4310,7 +4326,8 @@ ssecdict.get('studyfactortypetermsourceref'))
             for k, v in comments_dict.items():
                 if i < len(v) > 0:
                     publication.comments.append(
-                        Comment(name=k[k.index('[')+1:-1], value=v[i]))
+                        Comment(name=next(iter(_RX_COMMENT.findall(k))),
+                                value=v[i]))
             obj.publications.append(publication)
 
     def parse_people_section(
@@ -4336,7 +4353,8 @@ ssecdict.get('studyfactortypetermsourceref'))
             for k, v in comments_dict.items():
                 if len(v) > 0:
                     contact.comments.append(
-                        Comment(name=k[k.index('[')+1:-1], value=v[i]))
+                        Comment(name=next(iter(_RX_COMMENT.findall(k))),
+                                value=v[i]))
 
     def parse_study_factors_section(
             self, obj, fnames, ftypes, ftypetans, ftypetsrs):
