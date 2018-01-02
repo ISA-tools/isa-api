@@ -24,10 +24,12 @@ from isatools.errors import ISAModelAttributeError
 
 log = logging.getLogger('isatools')
 
-def _build_assay_graph(process_sequence=list()):
+def _build_assay_graph(process_sequence=None):
     """:obj:`networkx.DiGraph` Returns a directed graph object based on a
     given ISA process sequence."""
     g = nx.DiGraph()
+    if process_sequence is None:
+        return g
     for process in process_sequence:
         if process.next_process is not None or len(
                 process.outputs) > 0:

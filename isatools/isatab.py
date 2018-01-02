@@ -196,7 +196,8 @@ _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name',
                        'Data Transformation Name', 'Normalization Name']
 
 
-def dump(isa_obj, output_path, i_file_name='i_investigation.txt', skip_dump_tables=False):
+def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
+         skip_dump_tables=False, write_factor_values_in_assay_table=False):
 
     def _build_roles_str(roles):
         log.debug('building roles from: %s', roles)
@@ -569,7 +570,8 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt', skip_dump_tabl
         pass
     else:
         write_study_table_files(investigation, output_path)
-        write_assay_table_files(investigation, output_path)
+        write_assay_table_files(
+            investigation, output_path, write_factor_values_in_assay_table)
 
     fp.close()
     return investigation
@@ -605,6 +607,12 @@ def _longest_path_and_attrs(paths):
                 length += (len(n.characteristics))
             elif isinstance(n, Process):
                 length += len([o for o in n.outputs if isinstance(o, DataFile)])
+                if n.date is not None:
+                    length += 1
+                if n.performer is not None:
+                    length += 1
+                if n.name != '':
+                    length += 1
             if n.comments is not None:
                 length += len(n.comments)
         if length > longest[0]:
@@ -790,7 +798,7 @@ def write_study_table_files(inv_obj, output_dir):
             DF.to_csv(path_or_buf=out_fp, index=False, sep='\t', encoding='utf-8')
 
 
-def write_assay_table_files(inv_obj, output_dir):
+def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
     """
         Writes out assay table files according to pattern defined by
 
@@ -824,6 +832,10 @@ def write_assay_table_files(inv_obj, output_dir):
                 if isinstance(node, Sample):
                     olabel = "Sample Name"
                     columns.append(olabel)
+                    if write_factor_values:
+                        columns += flatten(
+                            map(lambda x: get_fv_columns(olabel, x),
+                                node.factor_values))
 
                 elif isinstance(node, Process):
                     olabel = "Protocol REF.{}".format(node.executes_protocol.name)
@@ -928,6 +940,11 @@ def write_assay_table_files(inv_obj, output_dir):
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
                         df_dict[olabel][-1] = node.name
+                        if write_factor_values:
+                            for fv in node.factor_values:
+                                fvlabel = "{0}.Factor Value[{1}]".format(
+                                    olabel, fv.factor_name.name)
+                                write_value_columns(df_dict, fvlabel, fv)
 
                     elif isinstance(node, Material):
                         olabel = node.type
@@ -2922,12 +2939,15 @@ def batch_validate(tab_dir_list):
     return batch_report
 
 
-def dumps(isa_obj, skip_dump_tables=False):
+def dumps(isa_obj, skip_dump_tables=False,
+          write_factor_values_in_assay_table=False):
     tmp = None
     output = str()
     try:
         tmp = tempfile.mkdtemp()
-        dump(isa_obj=isa_obj, output_path=tmp, skip_dump_tables=skip_dump_tables)
+        dump(isa_obj=isa_obj, output_path=tmp, skip_dump_tables=skip_dump_tables,
+             write_factor_values_in_assay_table=
+             write_factor_values_in_assay_table)
         with open(os.path.join(tmp, 'i_investigation.txt'), encoding='utf-8') as i_fp:
             output += os.path.join(tmp, 'i_investigation.txt') + '\n'
             output += i_fp.read()
