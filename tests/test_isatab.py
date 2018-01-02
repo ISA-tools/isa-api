@@ -989,6 +989,14 @@ sample1	extraction	e2	scanning	d2"""
                     self.fail('Incorrectly inserted Protocol REF before '
                               'Data Transformation Name')
 
+    def test_isatab_factor_value_parsing_issue270(self):
+        with open(os.path.join(self._tab_data_dir, 'issue270', 'i_matteo.txt'),
+                  encoding='utf-8') as fp:
+            ISA = isatab.load(fp)
+            s = ISA.studies[-1]
+            for sample in s.samples:
+                self.assertGreater(len(sample.factor_values), 0)
+
 
 class TestTransposedTabParser(unittest.TestCase):
 
@@ -1015,6 +1023,7 @@ label2\trow2_value1\trow2_value2\n"""
             'header': ['label1', 'label2']
         }
         self.assertEqual(ttable_dict, expected_ttable)
+
 
 class UnitTestIsaStudyGroups():
 

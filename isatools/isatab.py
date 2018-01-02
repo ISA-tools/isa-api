@@ -3371,25 +3371,25 @@ class IsaTabSeries(pd.Series):
 
 class IsaTabDataFrame(pd.DataFrame):
 
-    DATA_FILE_LABELS = (
+    DATA_FILE_LABELS = [
         'Raw Data File', 'Derived Spectral Data File',
         'Derived Array Data File', 'Array Data File',
         'Protein Assignment File', 'Peptide Assignment File',
         'Post Translational Modification Assignment File',
         'Acquisition Parameter Data File', 'Free Induction Decay Data File',
         'Derived Array Data Matrix File', 'Image File', 'Derived Data File',
-        'Metabolite Assignment File', 'Raw Spectral Data File')
-    MATERIAL_LABELS = ('Source Name', 'Sample Name', 'Extract Name',
-                       'Labeled Extract Name')
-    OTHER_MATERIAL_LABELS = ('Extract Name', 'Labeled Extract Name')
+        'Metabolite Assignment File', 'Raw Spectral Data File']
+    MATERIAL_LABELS = ['Source Name', 'Sample Name', 'Extract Name',
+                       'Labeled Extract Name']
+    OTHER_MATERIAL_LABELS = ['Extract Name', 'Labeled Extract Name']
     NODE_LABELS = DATA_FILE_LABELS + MATERIAL_LABELS + OTHER_MATERIAL_LABELS
-    ASSAY_LABELS = ('Assay Name', 'MS Assay Name', 'Hybridization Assay Name',
+    ASSAY_LABELS = ['Assay Name', 'MS Assay Name', 'Hybridization Assay Name',
                     'Scan Name', 'Data Transformation Name',
-                    'Normalization Name')
-    QUALIFIER_LABELS = ('Protocol REF', 'Material Type', 'Term Source REF',
-                        'Term Accession Number', 'Unit')
+                    'Normalization Name', 'Array Design REF']
+    QUALIFIER_LABELS = ['Protocol REF', 'Material Type', 'Term Source REF',
+                        'Term Accession Number', 'Unit']
     ALL_LABELS = NODE_LABELS + ASSAY_LABELS + QUALIFIER_LABELS
-    ALL_LABELS + tuple(['Protocol REF'])
+    ALL_LABELS.append('Protocol REF')
 
     def __init__(self, *args, **kw):
         super(IsaTabDataFrame, self).__init__(*args, **kw)
@@ -3403,7 +3403,7 @@ class IsaTabDataFrame(pd.DataFrame):
     @staticmethod
     def _clean_label(label):
         for clean_label in IsaTabDataFrame.ALL_LABELS:
-            if label.strip().lower().startswith(clean_label.lower()):
+            if clean_label.lower() in label.strip().lower():
                 return clean_label
             elif _RX_CHARACTERISTICS.match(label):
                 return 'Characteristics[{val}]'.format(
@@ -3764,36 +3764,6 @@ class ProcessSequenceFactory:
 
                             material.characteristics.append(characteristic)
 
-                        if isinstance(material, Sample) and self.factors is not None:
-
-                            for fv_column in [
-                                c for c in column_group if c.startswith(
-                                    'Factor Value[')]:
-
-                                category_key = fv_column[13:-1]
-
-                                factor_hits = [
-                                    f for f in self.factors if f.name ==
-                                                               category_key]
-
-                                if len(factor_hits) == 1:
-                                    factor = factor_hits[0]
-                                else:
-                                    raise ValueError(
-                                        'Could not resolve Study Factor from '
-                                        'Factor Value ', category_key)
-
-                                fv = FactorValue(factor_name=factor)
-
-                                v, u = get_value(
-                                    fv_column, column_group, object_series, 
-                                    ontology_source_map, unit_categories)
-
-                                fv.value = v
-                                fv.unit = u
-
-                                material.factor_values.append(fv)
-
                         for comment_column in [
                             c for c in column_group if c.startswith(
                                 'Comment[')]:
@@ -3803,6 +3773,45 @@ class ProcessSequenceFactory:
                                     Comment(name=comment_column[8:-1],
                                             value=str(
                                                 object_series[comment_column])))
+
+                for _, object_series in pbar(DF.drop_duplicates().iterrows()):
+                    node_name = str(object_series['Sample Name'])
+                    node_key = ":".join(['Sample Name', node_name])
+                    material = None
+                    try:
+                        material = samples[node_key]
+                    except KeyError:
+                        pass  # skip if object not found
+                    if isinstance(
+                            material, Sample) and self.factors is not None:
+
+                        for fv_column in [
+                            c for c in DF.columns if c.startswith(
+                                'Factor Value[')]:
+
+                            category_key = fv_column[13:-1]
+
+                            factor_hits = [
+                                f for f in self.factors if
+                                f.name == category_key]
+
+                            if len(factor_hits) == 1:
+                                factor = factor_hits[0]
+                            else:
+                                raise ValueError(
+                                    'Could not resolve Study Factor from '
+                                    'Factor Value ', category_key)
+
+                            fv = FactorValue(factor_name=factor)
+
+                            v, u = get_value(
+                                fv_column, DF.columns, object_series,
+                                ontology_source_map, unit_categories)
+
+                            fv.value = v
+                            fv.unit = u
+
+                            material.factor_values.append(fv)
 
             elif object_label in _LABELS_DATA_NODES:
                 if isa_logging.show_pbars:
