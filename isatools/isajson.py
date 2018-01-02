@@ -310,29 +310,34 @@ def load(fp):
                     try:
                         unit = units_dict[characteristic_json["unit"]["@id"]]
                     except KeyError:
-                        raise IOError("Can't create unit annotation")
+                        unit = None
                 elif not isinstance(value, str):
                     raise IOError("Unexpected type in characteristic value")
                 characteristic.value = value
                 characteristic.unit = unit
                 sample.characteristics.append(characteristic)
             for factor_value_json in sample_json["factorValues"]:
-                try:
-                    factor_value = FactorValue(
-                        factor_name=factors_dict[factor_value_json["category"]["@id"]],
-                        value=OntologyAnnotation(
-                            term=factor_value_json["value"]["annotationValue"],
-                            term_accession=factor_value_json["value"]["termAccession"],
-                            term_source=term_source_dict[factor_value_json["value"]["termSource"]],
-                        ),
-
-                    )
-                except TypeError:
-                    factor_value = FactorValue(
-                        factor_name=factors_dict[factor_value_json["category"]["@id"]],
-                        value=factor_value_json["value"],
-                        unit=units_dict[factor_value_json["unit"]["@id"]],
-                    )
+                value = factor_value_json["value"]
+                unit = None
+                factor_value = FactorValue(
+                    factor_name=factors_dict[factor_value_json["category"]["@id"]])
+                if isinstance(value, dict):
+                    try:
+                        value = OntologyAnnotation(
+                                    term=factor_value_json["value"]["annotationValue"],
+                                    term_accession=factor_value_json["value"]["termAccession"],
+                                    term_source=term_source_dict[factor_value_json["value"]["termSource"]])
+                    except KeyError:
+                        raise IOError("Can't create value as annotation")
+                elif isinstance(value, (int, float)):
+                    try:
+                        unit = units_dict[factor_value_json["unit"]["@id"]]
+                    except KeyError:
+                        unit = None
+                elif not isinstance(value, str):
+                    raise IOError("Unexpected type in factor value")
+                factor_value.value = value
+                factor_value.unit = unit
                 sample.factor_values.append(factor_value)
             samples_dict[sample.id] = sample
             study.samples.append(sample)
