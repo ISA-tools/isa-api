@@ -752,3 +752,17 @@ class TestIsaTabFixer(unittest.TestCase):
                 'environmental material collection - standard procedure 1')
             param = protocol.get_param('dose')
             self.assertIsNotNone(param)
+
+    def test_unused_protocol_fixer(self):
+        i_table_path = os.path.join(self._tmp_dir, 'BII-S-3', 'i_gilbert.txt')
+        fixer = utils.IsaTabFixer(i_table_path)
+        fixer.remove_unused_protocols()
+        with open('{}.fix'.format(i_table_path)) as fixed_i_fp:
+            investigation = isatab.load(fixed_i_fp)
+            study = investigation.studies[-1]
+            unused_protocol1 = \
+                study.get_prot('reverse transcription - standard procedure 5')
+            unused_protocol2 = \
+                study.get_prot('sequence analysis - standard procedure 7')
+            self.assertIsNone(unused_protocol1)
+            self.assertIsNone(unused_protocol2)

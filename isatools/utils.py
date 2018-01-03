@@ -680,7 +680,7 @@ class IsaTabFixer(object):
 
         table_file_df.columns = self.clean_isatab_field_names(field_names)
 
-        # Renamce Factor Value column to Characteristics column
+        # Rename Factor Value column to Characteristics column
         field_names_modified = list(table_file_df.columns)
         field_names_modified[source_name_index + 1] = \
             field_names_modified[source_name_index + 1].replace(
@@ -700,7 +700,7 @@ class IsaTabFixer(object):
         clean_field_names = self.clean_isatab_field_names(field_names)
 
         factor_index = clean_field_names.index(
-            'Factor Value[{}]'.format(factor_name))
+            'Factor Value[{factor_name}]'.format(factor_name=factor_name))
 
         with open(self.path) as tfile_fp:
             next(tfile_fp)
@@ -712,7 +712,7 @@ class IsaTabFixer(object):
         if protocol_ref_index < 0:
             raise IOError(
                 'Could not find protocol ref matching {protocol_ref}'
-                    .format(protocol_ref=protocol_ref))
+                .format(protocol_ref=protocol_ref))
 
         if factor_index < len(field_names) and \
             'Term Source REF' in field_names[factor_index + 1] and \
@@ -734,8 +734,8 @@ class IsaTabFixer(object):
                 'Term Source REF' in field_names[factor_index + 2] and \
                 'Term Accession' in field_names[factor_index + 3]:
             log.debug(
-                'Moving Factor Value[{}] with unit term columns'.format(
-                    factor_name))
+                'Moving Factor Value[{factor_name}] with unit term columns'
+                .format(factor_name=factor_name))
             # move Factor Value and Unit as ontology annotation
             field_names.insert(
                 protocol_ref_index + 1, field_names[factor_index])
@@ -752,7 +752,8 @@ class IsaTabFixer(object):
         elif factor_index < len(field_names) and \
             'Unit' in field_names[factor_index + 1]:
             log.debug(
-                'Moving Factor Value[{}] with unit column'.format(factor_name))
+                'Moving Factor Value[{factor_name}] with unit column'
+                .format(factor_name=factor_name))
             # move Factor Value and Unit columns
             field_names.insert(
                 protocol_ref_index + 1, field_names[factor_index])
@@ -761,7 +762,8 @@ class IsaTabFixer(object):
             del field_names[factor_index + 2]  # del Factor Value[{}]
             del field_names[factor_index + 1 + 1]  # del Unit
         else:  # move only the Factor Value column
-            log.debug('Moving Factor Value[{}]'.format(factor_name))
+            log.debug('Moving Factor Value[{factor_name}]'
+                      .format(factor_name=factor_name))
             field_names.insert(
                 protocol_ref_index + 1, field_names[factor_index])
             del field_names[factor_index]  # del Factor Value[{}]
@@ -805,3 +807,30 @@ class IsaTabFixer(object):
                     s_filename=os.path.basename(self.path))), 'w') as out_fp:
             table_file_df.to_csv(path_or_buf=out_fp, index=False, sep='\t',
                                  encoding='utf-8')
+
+    def remove_unused_protocols(self):
+        investigation = isatab.load(os.path.dirname(self.path))
+        for study in investigation.studies:
+            unused_protocol_names = set(x.name for x in study.protocols)
+            for process in study.process_sequence:
+                try:
+                    unused_protocol_names.remove(process.executes_protocol.name)
+                except KeyError:
+                    pass
+            for assay in study.assays:
+                for process in assay.process_sequence:
+                    try:
+                        unused_protocol_names.remove(process.executes_protocol.name)
+                    except KeyError:
+                        pass
+            print('Unused protocols: {}'.format(unused_protocol_names))
+            # remove these protocols from study.protocols
+            clean_protocols_list = []
+            for protocol in study.protocols:
+                if protocol.name not in unused_protocol_names:
+                    clean_protocols_list.append(protocol)
+            study.protocols = clean_protocols_list
+        isatab.dump(
+            investigation, output_path=os.path.dirname(self.path),
+            i_file_name='{filename}.fix'.format(
+                filename=os.path.basename(self.path)), skip_dump_tables=True)

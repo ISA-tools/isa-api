@@ -309,7 +309,8 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
 
     if not _RX_I_FILE_NAME.match(i_file_name):
         log.debug('investigation filename=', i_file_name)
-        raise NameError("Investigation file must match pattern i_*.txt")
+        raise NameError('Investigation file must match pattern i_*.txt, got {}'
+                        .format(i_file_name))
 
     if os.path.exists(output_path):
         fp = open(os.path.join(output_path, i_file_name), 'w', encoding='utf-8')
