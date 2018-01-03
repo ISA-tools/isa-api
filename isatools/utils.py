@@ -3,10 +3,10 @@ from __future__ import absolute_import
 
 import csv
 import json
-import logging
 import os
 import pandas as pd
 import uuid
+from functools import reduce
 from zipfile import ZipFile
 
 
@@ -536,6 +536,38 @@ class IsaTabAnalyzer(object):
         print(json.dumps(self.generate_study_design_report(), indent=4,
                          sort_keys=True))
 
+    def compute_stats(self):
+        isa = isatab.load(self.path, skip_load_tables=False)
+        print('-------------------------------------------')
+        print('Investigation stats')
+        print('-------------------------------------------')
+        print('Num ontologies declared: {}'.format(
+            len(isa.ontology_source_references)))
+        print('Num studies: {}'.format(len(isa.studies)))
+        print('Total study assays: {}'.format(
+            reduce(lambda x, y: len(x.assays) + len(y.assays), isa.studies)))
+        print('Num investigation publications: {}'.format(
+            len(isa.publications)))
+        print('Total study publications: {}'.format(
+            reduce(lambda x, y: len(x.publications) + len(y.publications),
+                   isa.studies)))
+        print('Num study people: {}'.format(len(isa.contacts)))
+        print('Total study people: {}'.format(
+            reduce(lambda x, y: len(x.contacts) + len(y.contacts),
+                   isa.studies)))
+        for study in isa.studies:
+            print('-------------------------------------------')
+            print('Study stats for {}'.format(study.filename ))
+            print('-------------------------------------------')
+            print('Num assays: {}'.format(len(study.assays)))
+            from collections import Counter
+            counter = Counter()
+            for material in study.sources + study.samples + \
+                study.other_material:
+                counter.update(material.characteristics)
+            for k, v in counter.items():
+                print('{characteristic} used {num} times'.format(
+                    characteristic=k, num=v))
 
 def batch_fix_isatabs(settings):
     """
