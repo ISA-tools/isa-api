@@ -3788,7 +3788,14 @@ class ProcessSequenceFactory:
                             characteristic.value = v
                             characteristic.unit = u
 
-                            material.characteristics.append(characteristic)
+                            if characteristic.category.term in [
+                                x.category.term for x in material.characteristics]:
+                                log.warning(
+                                    'Duplicate characteristic found for '
+                                    'material, skipping adding to material '
+                                    'object')
+                            else:
+                                material.characteristics.append(characteristic)
 
                         for comment_column in [
                             c for c in column_group if c.startswith(
