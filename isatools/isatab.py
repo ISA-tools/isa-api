@@ -2986,8 +2986,6 @@ def dump_tables_to_dataframes(isa_obj):
 
 def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigation file
 
-    comment_regex = re.compile('Comment\s*\[(.*?)\]')
-
     def get_ontology_source(term_source_ref):
         try:
             os = ontology_source_map[term_source_ref]
@@ -3076,18 +3074,18 @@ def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigat
 
         comments = []
         for col in [
-            x for x in section_df.columns if comment_regex.match(str(x))]:
+            x for x in section_df.columns if _RX_COMMENT.match(str(x))]:
             for _, row in section_df.iterrows():
                 comment = Comment(
-                    name=str(next(comment_regex.finditer(col))), value=row[col])
+                    name=next(iter(_RX_COMMENT.findall(col))), value=row[col])
                 comments.append(comment)
         return comments
 
     def get_comments_row(cols, row):
         comments = []
-        for col in [x for x in cols if comment_regex.match(str(x))]:
+        for col in [x for x in cols if _RX_COMMENT.match(str(x))]:
             comment = Comment(
-                name=str(next(comment_regex.finditer(col))), value=row[col])
+                name=next(iter(_RX_COMMENT.findall(col))), value=row[col])
             comments.append(comment)
         return comments
 
@@ -4271,7 +4269,7 @@ class IsaTabParser(object):
                 ssecdict.get('studyfactorname', []),
                 ssecdict.get('studyfactorntype', []),
                 ssecdict.get('studyfactortypetermaccessionnumber', []),
-ssecdict.get('studyfactortypetermsourceref'))
+                ssecdict.get('studyfactortypetermsourceref'))
 
     def parse_ontology_sources_section(self, names, files, versions,
                                        descriptions, comments_dict):
