@@ -290,15 +290,16 @@ def make_variable_names(assay_df):
     var_names = [''] * assay_df.shape[0]
 
     # Make variable names from data values
-    for col in ['mass_to_charge', 'retention_time']:
-        for i, v in enumerate(assay_df[col].values):
-            if type(v) == str or not numpy.isnan(v):
-                x = var_names[i]
-                if x == '':
-                    x = str(v)
-                else:
-                    x = '_'.join([x, str(v)])
-                var_names[i] = x
+    for col in ['mass_to_charge', 'retention_time', 'chemical_shift']:
+        if assay_df.keys().contains(col):
+            for i, v in enumerate(assay_df[col].values):
+                if type(v) == str or not numpy.isnan(v):
+                    x = var_names[i]
+                    if x == '':
+                        x = str(v)
+                    else:
+                        x = '_'.join([x, str(v)])
+                    var_names[i] = x
 
     # Normalize names
     var_names = ['X' + s for s in var_names]
