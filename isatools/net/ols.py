@@ -10,14 +10,14 @@ import logging
 from urllib.request import urlopen
 from urllib.parse import urlencode
 
-from isatools import config
+
 from isatools.model import OntologySource, OntologyAnnotation
 
 OLS_API_BASE_URI = "http://www.ebi.ac.uk/ols/api"
 OLS_PAGINATION_SIZE = 500
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 
 def get_ols_ontologies():

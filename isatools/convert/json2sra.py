@@ -1,12 +1,12 @@
 import logging
 
-from isatools import config
+
 from isatools import isajson
 from isatools import sra
 
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 
 def convert(json_fp, path, config_dir=None, sra_settings=None,

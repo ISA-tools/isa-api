@@ -1,4 +1,5 @@
-"""Model objects for storing study design settings, for consumption by
+"""
+Model objects for storing study design settings, for consumption by
 function or factory to create ISA model objects.
 """
 from __future__ import absolute_import
@@ -10,15 +11,12 @@ import random
 import uuid
 from collections import Iterable
 from collections import OrderedDict
-from operator import itemgetter
 from numbers import Number
 
-from isatools import config
 from isatools.model import *
 
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+log = logging.getLogger('isatools')
 
 __author__ = 'massi'
 
@@ -125,6 +123,9 @@ class Treatment(object):
 
 
 class TreatmentFactory(object):
+    """
+      A factory class to build a set of Treatments given an intervention_type and a set of factors.
+     """
 
     def __init__(self, intervention_type=INTERVENTIONS['CHEMICAL'],
                  factors=BASE_FACTORS):
@@ -134,8 +135,6 @@ class TreatmentFactory(object):
 
         self.__intervention_type = intervention_type
         self.__factors = OrderedDict([(factor, set()) for factor in factors])
-
-        # self._factorial_design = set()
 
     @property
     def intervention_type(self):
@@ -164,19 +163,19 @@ class TreatmentFactory(object):
 
     def compute_full_factorial_design(self):
         """
-        Computes the ful factorial design on the basis of the stored factor and
+        Computes the full factorial design on the basis of the stored factor and
         factor values. If one of the factors has no associated values an empty
         set is returned :return: set - the full factorial design as a set of
         Treatments
         """
         factor_values = [
-            [FactorValue(
+            [ FactorValue(
                 factor_name=factor_name, value=value, unit=None
-            ) for value in values]
+              ) for value in values]
             for factor_name, values in self.factors.items()
         ]
         if set() not in self.factors.values():
-            return {Treatment(treatment_type=self.intervention_type,
+            return { Treatment(treatment_type=self.intervention_type,
                               factor_values=treatment_factors)
                     for treatment_factors in itertools.product(*factor_values)}
         else:
@@ -185,7 +184,7 @@ class TreatmentFactory(object):
 
 class TreatmentSequence:
     """
-    A treatment sequence is an ordered (graph-like) combination of treatment
+    A treatment sequence is an ordered (graph-like) combination of treatments (as a list), each with an associated rank.
     """
 
     def __init__(self, ranked_treatments=[], subject_count=10):
@@ -237,9 +236,20 @@ class TreatmentSequence:
     """
 
     def add_multiple_treatments(self, elements_to_add):
+        """
+        Adds multiple treatments to the sequence. To satisfy the epoch criteria,
+        the treatments need to be added according to the order/rank determined by the epoch
+        number.
+        :param elements_to_add:
+        :return:
+        """
         if isinstance(elements_to_add, Treatment):
             self.add_treatment(elements_to_add)
         elif isinstance(elements_to_add, Iterable):
+            if any(True for _ in elements_to_add):
+                elems_copy = elements_to_add
+                if (isinstance(next(iter(elements_to_add)), tuple)):
+                    elements_to_add = sorted(elems_copy, key=lambda x: x[1])
             for elem in elements_to_add:
                 if isinstance(elem, Treatment):
                     self.add_treatment(elem)
@@ -251,12 +261,40 @@ class TreatmentSequence:
             raise TypeError('The argument {0} is not of the correct type.'.format(elements_to_add))
 
     def add_treatment(self, treatment, epoch=1):
-        if isinstance(treatment, Treatment) and isinstance(epoch, int):
-            # TODO check epoch
-            self.__ranked_treatments.add((treatment, epoch))
+        if isinstance(treatment, Treatment):
+            if isinstance(epoch, int):
+                if self.check_epochs(epoch):
+                    self.__ranked_treatments.add((treatment, epoch))
+                else:
+                    raise TypeError('The epoch number {0} is either not greater than 1 or it does not complete the sequence of epochs, which should start in 1 and have no values missing up to the highest epoch value '.format(epoch))
+            else:
+                raise TypeError('The arguemnt {0} is not an integer'.format(epoch))
+        else:
+            raise TypeError('The argument {0} is not a treatment'.format(treatment))
 
+
+
+    def check_epochs(self, new_epoch):
+        """
+        Checks that the list of epochs in the __ranked_treatments have 1 as the lowest value and no value is missing from the lowest to the highest value
+        :return: true if the list of epochs satisfies the criteria above, false otherwise
+        """
+        epoch_list = [x[1] for x in self.__ranked_treatments]
+        epoch_list.append(new_epoch)
+        if epoch_list.__len__() == 1:
+            return (1 in epoch_list)
+        try:
+            epoch_list = sorted(list(set(epoch_list)))
+            it = (x for x in epoch_list)
+            first = next(it)
+            return any(i == 1 for i in epoch_list) and all(i >= 1 for i in epoch_list) and all(a == b for a, b in enumerate(it, first + 1))
+        except StopIteration:
+            log.error("StopIteration - shouldn't occur!")
 
 class AssayType(object):
+    """
+       A type of assay, determined by a measurement_type, a technology_type and a set of topology_modifiers (of type AssayTopologyModifiers).
+    """
 
     def __init__(self, measurement_type=None, technology_type=None,
                  topology_modifiers=None):
@@ -667,6 +705,9 @@ class DNAMicroAssayTopologyModifiers(AssayTopologyModifiers):
 
 
 class SampleAssayPlan(object):
+    """
+    A class representing the sampling plan and the assay plan.
+    """
 
     def __init__(self, group_size=0, sample_plan=None, assay_plan=None,
                  sample_qc_plan=None):
@@ -853,10 +894,15 @@ class SampleAssayPlan(object):
     def pre_run_batch(self, qc_batch_dict):
         pre_run_batch = SampleQCBatch()
         pre_run_batch.material = qc_batch_dict['material']
-        parameter_name = qc_batch_dict['parameter']
-        parameter_values = qc_batch_dict['values']
-        pre_run_batch.parameter_values = list(
-            map(lambda x: (parameter_name, x), parameter_values))
+        var_type = qc_batch_dict['variable_type']
+        var_name = qc_batch_dict['variable_name']
+        var_values = qc_batch_dict['values']
+        if var_type == 'parameter':
+            pre_run_batch.parameter_values = list(
+                map(lambda x: (var_name, x), var_values))
+        elif var_type == 'characteristic':
+            pre_run_batch.characteristic_values = list(
+                map(lambda x: (var_name, x), var_values))
         self.__pre_run_batch = pre_run_batch
         
     @property
@@ -867,10 +913,15 @@ class SampleAssayPlan(object):
     def post_run_batch(self, qc_batch_dict):
         post_run_batch = SampleQCBatch()
         post_run_batch.material = qc_batch_dict['material']
-        parameter_name = qc_batch_dict['parameter']
-        parameter_values = qc_batch_dict['values']
-        post_run_batch.parameter_values = list(
-            map(lambda x: (parameter_name, x), parameter_values))
+        var_type = qc_batch_dict['variable_type']
+        var_name = qc_batch_dict['variable_name']
+        var_values = qc_batch_dict['values']
+        if var_type == 'parameter':
+            post_run_batch.parameter_values = list(
+                map(lambda x: (var_name, x), var_values))
+        elif var_type == 'characteristic':
+            post_run_batch.characteristic_values = list(
+                map(lambda x: (var_name, x), var_values))
         self.__post_run_batch = post_run_batch
 
     def __repr__(self):
@@ -892,9 +943,11 @@ class SampleAssayPlan(object):
 
 class SampleQCBatch(object):
 
-    def __init__(self, material=None, parameter_values=None):
+    def __init__(self, material=None, parameter_values=None,
+                 characteristic_values=None):
         self.material = material
         self.parameter_values = parameter_values
+        self.characteristic_values = characteristic_values
 
 
 class BaseStudyDesign(object):
@@ -902,6 +955,10 @@ class BaseStudyDesign(object):
 
 
 class InterventionStudyDesign(BaseStudyDesign):
+    """
+    A class representing an intervention study design, which is composed of an
+    ordered dictionary of pairs of treatment sequences and samples plans.
+    """
 
     def __init__(self):
         super().__init__()
@@ -932,6 +989,9 @@ class InterventionStudyDesign(BaseStudyDesign):
 
 
 class IsaModelObjectFactory(object):
+    """
+    A factory class to create ISA content given a SampleAssayPlan object and a TreatmentSequence object.
+    """
 
     def __init__(self, sample_assay_plan, treatment_sequence=None):
         self.__sample_assay_plan = sample_assay_plan
@@ -1028,32 +1088,92 @@ class IsaModelObjectFactory(object):
         sample_qc_plan = self.sample_assay_plan
         prebatch = sample_qc_plan.pre_run_batch
         if isinstance(prebatch, SampleQCBatch):
-            qcsource = Source(name='qc_prebatch_in', characteristics=[
-                Characteristic(
-                    category=OntologyAnnotation(term='Material Type'),
-                    value=OntologyAnnotation(term=prebatch.material))])
-            sources.append(qcsource)
-            for i, (p, v) in enumerate(prebatch.parameter_values):
-                qc_param_set.add(p)
-                sample = Sample(name='qc_prebatch_out-{}'.format(i))
-                qc_param = sample_collection.get_param(p)
-                if qc_param is None:
-                    sample_collection.add_param(p)
-                process = Process(executes_protocol=study.get_prot(
-                    'sample collection'), inputs=[qcsource],
-                    outputs=[sample], performer=self.ops[0], date_=
-                    datetime.datetime.isoformat(
-                        datetime.datetime.now()))
-                process.parameter_values=[
-                    ParameterValue(
-                        category=sample_collection.get_param('Run Order'),
-                        value=-1),
-                    ParameterValue(category=sample_collection.get_param(p),
-                                   value=v),
-                ]
-                samples.append(sample)
-                process_sequence.append(process)
-        for (group_id, fvs), ranks in group_rank_map.items():
+            if prebatch.characteristic_values is None:
+                qcsource = Source(name='qc_prebatch_in', characteristics=[
+                    Characteristic(
+                        category=OntologyAnnotation(term='Material Type'),
+                        value=OntologyAnnotation(term=prebatch.material))])
+                sources.append(qcsource)
+            else:
+                for i, (c, v) in enumerate(prebatch.characteristic_values):
+                    var_characteristic = OntologyAnnotation(term=c)
+                    qcsource = Source(
+                        name='qc_prebatch_in-{}'.format(i), characteristics=[
+                        Characteristic(
+                            category=OntologyAnnotation(term='Material Type'),
+                            value=OntologyAnnotation(term=prebatch.material)),
+                            Characteristic(category=var_characteristic,
+                                           value=v)])
+                    if var_characteristic not in study.characteristic_categories:
+                        study.characteristic_categories.append(var_characteristic)
+                    sources.append(qcsource)
+                    if prebatch.parameter_values is None:
+                        sample = Sample(name='qc_prebatch_out-{}'.format(i))
+                        process = Process(executes_protocol=study.get_prot(
+                            'sample collection'), inputs=[qcsource],
+                            outputs=[sample], performer=self.ops[0], date_=
+                            datetime.datetime.isoformat(
+                                datetime.datetime.now()))
+                        process.parameter_values = [
+                            ParameterValue(
+                                category=sample_collection.get_param(
+                                    'Run Order'),
+                                value=-1)
+                        ]
+                        samples.append(sample)
+                        process_sequence.append(process)
+                    else:
+                        for j, (p, v) in enumerate(prebatch.parameter_values):
+                            qc_param_set.add(p)
+                            sample = Sample(name='qc_prebatch_out-{}'.format(j))
+                            qc_param = sample_collection.get_param(p)
+                            if qc_param is None:
+                                sample_collection.add_param(p)
+                            process = Process(executes_protocol=study.get_prot(
+                                'sample collection'), inputs=[qcsource],
+                                outputs=[sample], performer=self.ops[0], date_=
+                                datetime.datetime.isoformat(
+                                    datetime.datetime.now()))
+                            process.parameter_values = [
+                                ParameterValue(
+                                    category=sample_collection.get_param(
+                                        'Run Order'),
+                                    value=-1),
+                                ParameterValue(
+                                    category=sample_collection.get_param(p),
+                                    value=v),
+                            ]
+                            samples.append(sample)
+                            process_sequence.append(process)
+            if prebatch.parameter_values is not None:
+                qcsource = Source(name='qc_prebatch_in', characteristics=[
+                    Characteristic(
+                        category=OntologyAnnotation(term='Material Type'),
+                        value=OntologyAnnotation(term=prebatch.material))])
+                sources.append(qcsource)
+                for i, (p, v) in enumerate(prebatch.parameter_values):
+                    qc_param_set.add(p)
+                    sample = Sample(name='qc_prebatch_out-{}'.format(i))
+                    qc_param = sample_collection.get_param(p)
+                    if qc_param is None:
+                        sample_collection.add_param(p)
+                    process = Process(executes_protocol=study.get_prot(
+                        'sample collection'), inputs=[qcsource],
+                        outputs=[sample], performer=self.ops[0], date_=
+                        datetime.datetime.isoformat(
+                            datetime.datetime.now()))
+                    process.parameter_values=[
+                        ParameterValue(
+                            category=sample_collection.get_param('Run Order'),
+                            value=-1),
+                        ParameterValue(category=sample_collection.get_param(p),
+                                       value=v),
+                    ]
+                    samples.append(sample)
+                    process_sequence.append(process)
+        # Main batch
+        for (group_id, treatment), ranks in group_rank_map.items():
+            fvs = treatment.factor_values
             for subjn in (str(x) for x in range(group_size)):
                 material_type = Characteristic(
                     category=OntologyAnnotation(
@@ -1061,6 +1181,18 @@ class IsaModelObjectFactory(object):
                     value=OntologyAnnotation(term='specimen'))
                 source = Source(name=self._idgen(group_id, subjn))
                 source.characteristics = [material_type]
+                if prebatch is not None:
+                    if prebatch.characteristic_values is not None:
+                        c, v = next(iter(prebatch.characteristic_values))
+                        var_characteristic = OntologyAnnotation(term=c)
+                        source.characteristics.append(Characteristic(
+                            category=var_characteristic))
+                if sample_qc_plan.post_run_batch is not None:
+                    if sample_qc_plan.post_run_batch.characteristic_values is not None:
+                        c, v = next(iter(sample_qc_plan.post_run_batch.characteristic_values))
+                        var_characteristic = OntologyAnnotation(term=c)
+                        source.characteristics.append(Characteristic(
+                            category=var_characteristic))
                 sources.append(source)
                 for rank in ranks:
                     for sample_type, sampling_size in sample_plan.items():
@@ -1114,31 +1246,86 @@ class IsaModelObjectFactory(object):
                             process_sequence.append(process)
         postbatch = sample_qc_plan.post_run_batch
         if isinstance(postbatch, SampleQCBatch):
-            qcsource = Source(name='qc_postbatch_in', characteristics=[
-                Characteristic(
-                    category=OntologyAnnotation(term='Material Type'),
-                    value=OntologyAnnotation(term=postbatch.material))])
-            sources.append(qcsource)
-            for i, (p, v) in enumerate(postbatch.parameter_values):
-                qc_param_set.add(p)
-                sample = Sample(name='qc_postbatch_out-{}'.format(i))
-                qc_param = sample_collection.get_param(p)
-                if qc_param is None:
-                    sample_collection.add_param(p)
-                process = Process(executes_protocol=study.get_prot(
-                    'sample collection'), inputs=[qcsource],
-                    outputs=[sample], performer=self.ops[0], date_=
-                    datetime.datetime.isoformat(
-                        datetime.datetime.now()))
-                process.parameter_values = [
-                    ParameterValue(
-                        category=sample_collection.get_param('Run Order'),
-                                   value=(sample_count + 1)),
-                    ParameterValue(category=sample_collection.get_param(p),
-                                   value=v)
-                ]
-                samples.append(sample)
-                process_sequence.append(process)
+            if postbatch.characteristic_values is None:
+                qcsource = Source(name='qc_postbatch_in', characteristics=[
+                    Characteristic(
+                        category=OntologyAnnotation(term='Material Type'),
+                        value=OntologyAnnotation(term=postbatch.material))])
+                sources.append(qcsource)
+            else:
+                for i, (c, v) in enumerate(postbatch.characteristic_values):
+                    qcsource = Source(
+                        name='qc_postbatch_in-{}'.format(i), characteristics=[
+                        Characteristic(
+                            category=OntologyAnnotation(term='Material Type'),
+                            value=OntologyAnnotation(term=postbatch.material)),
+                            Characteristic(category=OntologyAnnotation(term=c),
+                                           value=v)])
+                    sources.append(qcsource)
+                    if postbatch.parameter_values is None:
+                        sample = Sample(name='qc_postbatch_out-{}'.format(i))
+                        process = Process(executes_protocol=study.get_prot(
+                            'sample collection'), inputs=[qcsource],
+                            outputs=[sample], performer=self.ops[0], date_=
+                            datetime.datetime.isoformat(
+                                datetime.datetime.now()))
+                        process.parameter_values = [
+                            ParameterValue(
+                                category=sample_collection.get_param(
+                                    'Run Order'),
+                                value=-1)
+                        ]
+                        samples.append(sample)
+                        process_sequence.append(process)
+                    else:
+                        for j, (p, v) in enumerate(postbatch.parameter_values):
+                            qc_param_set.add(p)
+                            sample = Sample(name='qc_postbatch_out-{}'.format(j))
+                            qc_param = sample_collection.get_param(p)
+                            if qc_param is None:
+                                sample_collection.add_param(p)
+                            process = Process(executes_protocol=study.get_prot(
+                                'sample collection'), inputs=[qcsource],
+                                outputs=[sample], performer=self.ops[0], date_=
+                                datetime.datetime.isoformat(
+                                    datetime.datetime.now()))
+                            process.parameter_values = [
+                                ParameterValue(
+                                    category=sample_collection.get_param(
+                                        'Run Order'),
+                                    value=-1),
+                                ParameterValue(
+                                    category=sample_collection.get_param(p),
+                                    value=v),
+                            ]
+                            samples.append(sample)
+                            process_sequence.append(process)
+            if postbatch.parameter_values is not None:
+                qcsource = Source(name='qc_prebatch_in', characteristics=[
+                    Characteristic(
+                        category=OntologyAnnotation(term='Material Type'),
+                        value=OntologyAnnotation(term=prebatch.material))])
+                sources.append(qcsource)
+                for i, (p, v) in enumerate(postbatch.parameter_values):
+                    qc_param_set.add(p)
+                    sample = Sample(name='qc_postbatch_out-{}'.format(i))
+                    qc_param = sample_collection.get_param(p)
+                    if qc_param is None:
+                        sample_collection.add_param(p)
+                    process = Process(executes_protocol=study.get_prot(
+                        'sample collection'), inputs=[qcsource],
+                        outputs=[sample], performer=self.ops[0], date_=
+                        datetime.datetime.isoformat(
+                            datetime.datetime.now()))
+                    process.parameter_values=[
+                        ParameterValue(
+                            category=sample_collection.get_param('Run Order'),
+                            value=-1),
+                        ParameterValue(category=sample_collection.get_param(p),
+                                       value=v),
+                    ]
+                    samples.append(sample)
+                    process_sequence.append(process)
         # normalize size of params across all processes
         for process in process_sequence:
             missing = qc_param_set - set(
@@ -2102,8 +2289,7 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
             return {
                 'group_size': o.group_size,
                 'sample_types': sorted([x.value.term for x in o.sample_types]),
-                'assay_types': sorted(
-                    [self.get_assay_type(x) for x in o.assay_types]),
+                'assay_types': [self.get_assay_type(x) for x in o.assay_types],
                 'sample_plan': self.get_sample_plan(o.sample_plan),
                 'sample_qc_plan': self.get_sample_qc_plan(o.sample_qc_plan),
                 'assay_plan': self.get_assay_plan(o.assay_plan)

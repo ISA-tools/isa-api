@@ -8,11 +8,11 @@ from __future__ import absolute_import
 from Bio import Entrez, Medline
 import logging
 
-from isatools import config
+
 from isatools.model import Comment, Publication
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 
 def get_pubmed_article(pubmed_id):

@@ -9,12 +9,12 @@ import re
 import glob
 import logging
 
-from isatools import config
+
 from isatools import isatab
 from isatools.isajson import ISAJSONEncoder
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 SCHEMAS_PATH = join(os.path.dirname(os.path.realpath(__file__)), "../resources/schemas/isa_model_version_1_0_schemas/core/")
 INVESTIGATION_SCHEMA = "investigation_schema.json"

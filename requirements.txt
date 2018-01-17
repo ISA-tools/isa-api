@@ -7,7 +7,7 @@ requests
 iso8601
 chardet
 jinja2
-bs4
+beautifulsoup4
 mzml2isa
 biopython
 progressbar2

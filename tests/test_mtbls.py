@@ -63,3 +63,12 @@ class TestMtblsIO(unittest.TestCase):
         factors_summary = MTBLS.get_factors_summary('MTBLS26')
         self.assertIsInstance(factors_summary, list)
         self.assertEqual(len(factors_summary), 18)
+
+    def test_get_data_for_sample(self):
+        hits = MTBLS.get_data_for_sample(
+            'MTBLS108', sample_name='Lut_C_223h')
+        self.assertEqual(len(hits), 2)
+        self.assertIn(
+            'm_study_p_c_metabolite_profiling_mass_spectrometry_v2_maf.tsv',
+            [x.filename for x in hits])
+        self.assertIn('Lut_C_223h.raw', [x.filename for x in hits])

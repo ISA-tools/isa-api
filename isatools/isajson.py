@@ -9,16 +9,16 @@ import json
 import logging
 import os
 import re
+from io import StringIO
 from json import JSONEncoder
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 
-from isatools import config
 from isatools.model import *
 
 __author__ = 'djcomlab@gmail.com (David Johnson)'
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 errors = []
 warnings = []
@@ -310,29 +310,34 @@ def load(fp):
                     try:
                         unit = units_dict[characteristic_json["unit"]["@id"]]
                     except KeyError:
-                        raise IOError("Can't create unit annotation")
+                        unit = None
                 elif not isinstance(value, str):
                     raise IOError("Unexpected type in characteristic value")
                 characteristic.value = value
                 characteristic.unit = unit
                 sample.characteristics.append(characteristic)
             for factor_value_json in sample_json["factorValues"]:
-                try:
-                    factor_value = FactorValue(
-                        factor_name=factors_dict[factor_value_json["category"]["@id"]],
-                        value=OntologyAnnotation(
-                            term=factor_value_json["value"]["annotationValue"],
-                            term_accession=factor_value_json["value"]["termAccession"],
-                            term_source=term_source_dict[factor_value_json["value"]["termSource"]],
-                        ),
-
-                    )
-                except TypeError:
-                    factor_value = FactorValue(
-                        factor_name=factors_dict[factor_value_json["category"]["@id"]],
-                        value=factor_value_json["value"],
-                        unit=units_dict[factor_value_json["unit"]["@id"]],
-                    )
+                value = factor_value_json["value"]
+                unit = None
+                factor_value = FactorValue(
+                    factor_name=factors_dict[factor_value_json["category"]["@id"]])
+                if isinstance(value, dict):
+                    try:
+                        value = OntologyAnnotation(
+                                    term=factor_value_json["value"]["annotationValue"],
+                                    term_accession=factor_value_json["value"]["termAccession"],
+                                    term_source=term_source_dict[factor_value_json["value"]["termSource"]])
+                    except KeyError:
+                        raise IOError("Can't create value as annotation")
+                elif isinstance(value, (int, float)):
+                    try:
+                        unit = units_dict[factor_value_json["unit"]["@id"]]
+                    except KeyError:
+                        unit = None
+                elif not isinstance(value, str):
+                    raise IOError("Unexpected type in factor value")
+                factor_value.value = value
+                factor_value.unit = unit
                 sample.factor_values.append(factor_value)
             samples_dict[sample.id] = sample
             study.samples.append(sample)
@@ -1348,13 +1353,15 @@ BASE_DIR = os.path.dirname(__file__)
 default_config_dir = os.path.join(BASE_DIR, "resources", "config", "json", "default")
 
 
-def validate(fp, config_dir=default_config_dir, log_level=config.log_level,
+def validate(fp, config_dir=default_config_dir, log_level=None,
              base_schemas_dir="isa_model_version_1_0_schemas"):
     if config_dir is None:
         config_dir = default_config_dir
-    log.setLevel(log_level)
+    if log_level in (
+        logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING,
+        logging.ERROR, logging.CRITICAL):
+        log.setLevel(log_level)
     log.info("ISA JSON Validator from ISA tools API v0.3")
-    from io import StringIO
     stream = StringIO()
     handler = logging.StreamHandler(stream)
     log.addHandler(handler)

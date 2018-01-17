@@ -2,12 +2,12 @@ import os
 import shutil
 import logging
 
-from isatools import config
+
 from isatools import isajson
 from isatools import isatab
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 
 def convert(json_fp, path, i_file_name='i_investigation.txt', config_dir=isajson.default_config_dir,

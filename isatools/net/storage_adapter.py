@@ -11,10 +11,10 @@ import pathlib
 import base64
 import logging
 
-from isatools import config
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+
+log = logging.getLogger('isatools')
 
 __author__ = 'massi'
 

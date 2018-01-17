@@ -8,11 +8,11 @@ import pandas as pd
 import re
 from pandas.util.testing import assert_frame_equal
 
-from isatools import config
+
 from isatools.isatab import read_investigation_file
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'tests', 'data')

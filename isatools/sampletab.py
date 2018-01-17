@@ -9,11 +9,11 @@ from progressbar import ETA
 from progressbar import ProgressBar
 from progressbar import SimpleProgress
 
-from isatools import config
+from isatools import logging as isa_logging
 from isatools.model import *
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 
 def _peek(f):
@@ -499,7 +499,7 @@ def dumps(investigation):
         all_samples += study.samples
 
     all_samples = list(set(all_samples))
-    if config.show_pbars:
+    if isa_logging.show_pbars:
         pbar = ProgressBar(min_value=0, max_value=len(all_samples),
                            widgets=['Writing {} samples: '.format(len(all_samples)), SimpleProgress(),
                                     Bar(left=" |", right="| "), ETA()]).start()

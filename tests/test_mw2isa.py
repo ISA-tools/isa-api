@@ -4,12 +4,12 @@ import shutil
 import os
 import logging
 
-from isatools import config
+
 from isatools import isatab
 from isatools.net.mw2isa import mw2isa_convert
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 __author__ = 'proccaserra@gmail.com'
 

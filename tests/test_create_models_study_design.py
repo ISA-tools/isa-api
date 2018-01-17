@@ -398,7 +398,7 @@ class TreatmentSequenceTest(unittest.TestCase):
             )), 2)
         ]
         first_sequence = TreatmentSequence(treatments)
-        second_sequence = TreatmentSequence(reversed(treatments))
+        second_sequence = TreatmentSequence(list(reversed(treatments)))
         self.assertEqual(first_sequence, second_sequence)
         self.assertEqual(hash(first_sequence), hash(second_sequence))
 
@@ -628,6 +628,48 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
                               factor_type=OntologyAnnotation(term='intensity'))
         self.f3 = StudyFactor(name='DURATION',
                               factor_type=OntologyAnnotation(term='time'))
+        self.agent = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
+        self.intensity = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
+        self.duration = StudyFactor(name=BASE_FACTORS[2]['name'], factor_type=BASE_FACTORS[2]['type'])
+        self.first_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            FactorValue(factor_name=self.agent, value='crack'),
+            FactorValue(factor_name=self.intensity, value='low'),
+            FactorValue(factor_name=self.duration, value='medium')
+        ))
+        self.second_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
+            FactorValue(factor_name=self.agent, value='crack'),
+            FactorValue(factor_name=self.intensity, value='high'),
+            FactorValue(factor_name=self.duration, value='medium')
+        ))
+
+    def test_add_treatment_epoch_not_starting_with_1(self):
+        treatment_sequence = TreatmentSequence()
+        self.assertRaises(TypeError, treatment_sequence.add_treatment, self.first_treatment, 3)
+
+    def test_add_treatment_epoch_not_sequential(self):
+        treatment_sequence = TreatmentSequence()
+        treatment_sequence.add_treatment(self.first_treatment, 1)
+        self.assertTrue(treatment_sequence.ranked_treatments.__len__() == 1)
+        self.assertRaises(TypeError, treatment_sequence.add_treatment, self.second_treatment, 4)
+
+    def test_add_treatment_epoch_not_sequential2(self):
+        treatment_sequence = TreatmentSequence()
+        treatment_sequence.add_treatment(self.first_treatment, 1)
+        self.assertTrue(treatment_sequence.ranked_treatments.__len__() == 1)
+        treatment_sequence.add_treatment(self.second_treatment, 2)
+        self.assertRaises(TypeError, treatment_sequence.add_treatment, self.second_treatment, 4)
+
+    def test_constructor(self):
+        treatment_factory = TreatmentFactory(factors=[self.agent, self.intensity, self.duration])
+
+        treatment_factory.add_factor_value(self.agent, {'acetyl salicylic acid', 'acetaminophen', 'ibuprofen'})
+        treatment_factory.add_factor_value(self.intensity, {'high dose', 'low dose', 'medium dose'})
+        treatment_factory.add_factor_value(self.duration, {'2 hr', '4 hr'})
+
+        factorial_design_treatments = treatment_factory.compute_full_factorial_design()
+
+        treatment_sequence = TreatmentSequence(ranked_treatments={
+            (x, (i+1)) for i, x in enumerate(factorial_design_treatments)})
 
     def test_create_study_from_plan(self):
         plan = SampleAssayPlan()
@@ -642,10 +684,10 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
             self.f1, {'cocaine', 'crack', 'aether'})
         treatment_factory.add_factor_value(self.f2, {'low', 'medium', 'high'})
         treatment_factory.add_factor_value(self.f3, {'short', 'long'})
-        ffactorial_design_treatments = \
+        factorial_design_treatments = \
             treatment_factory.compute_full_factorial_design()
         treatment_sequence = TreatmentSequence(
-            ranked_treatments={(x, 1) for x in ffactorial_design_treatments})
+            ranked_treatments={(x, 1) for x in factorial_design_treatments})
         # makes each study group ranked in sequence
         study = IsaModelObjectFactory(
             plan, treatment_sequence).create_study_from_plan()
@@ -654,7 +696,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         self.assertEqual(36, len(study.sources))
         self.assertEqual(288, len(study.samples))
 
-    def test_create_study_from_plan_with_qc(self):
+    def test_create_study_from_plan_with_qc_parameters(self):
         plan = SampleAssayPlan()
         plan.add_sample_type('liver')
         plan.add_sample_plan_record('liver', 5)
@@ -665,14 +707,16 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         plan.add_sample_qc_plan_record('solvent', 8)
         plan.pre_run_batch = {
             'material': 'blank',
-            'parameter': 'param1',
+            'variable_type': 'parameter',
+            'variable_name': 'param1',
             'values': [
                 5, 4, 3, 2, 1, 1, 1, 1, 1, 1
             ]
         }
         plan.post_run_batch = {
             'material': 'blank',
-            'parameter': 'param2',
+            'variable_type': 'parameter',
+            'variable_name': 'param1',
             'values': [
                 1, 1, 1, 1, 1, 1, 2, 3, 4, 5
             ]
@@ -694,7 +738,56 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         study.filename = 's_study.txt'
         self.investigation.studies = [study]
         # 36 sources, 38 QC sources
-        self.assertEqual(74, len(study.sources))
+        self.assertEqual(76, len(study.sources))
+        self.assertEqual(36, len(
+            [x for x in study.sources
+             if x.get_char('Material Type').value.term == 'solvent']))
+        # 288 samples plus 36 QC samples
+        self.assertEqual(344, len(study.samples))
+
+    def test_create_study_from_plan_with_qc_source_characteristics(self):
+        plan = SampleAssayPlan()
+        plan.add_sample_type('liver')
+        plan.add_sample_plan_record('liver', 5)
+        plan.add_sample_type('blood')
+        plan.add_sample_plan_record('blood', 3)
+        plan.group_size = 2
+        plan.add_sample_type('solvent')
+        plan.add_sample_qc_plan_record('solvent', 8)
+        plan.pre_run_batch = {
+            'material': 'blank',
+            'variable_type': 'characteristic',
+            'variable_name': 'char1',
+            'values': [
+                5, 4, 3, 2, 1, 1, 1, 1, 1, 1
+            ]
+        }
+        plan.post_run_batch = {
+            'material': 'blank',
+            'variable_type': 'characteristic',
+            'variable_name': 'char2',
+            'values': [
+                1, 1, 1, 1, 1, 1, 2, 3, 4, 5
+            ]
+        }
+
+        treatment_factory = TreatmentFactory(
+            factors=[self.f1, self.f2, self.f3])
+        treatment_factory.add_factor_value(
+            self.f1, {'cocaine', 'crack', 'aether'})
+        treatment_factory.add_factor_value(self.f2, {'low', 'medium', 'high'})
+        treatment_factory.add_factor_value(self.f3, {'short', 'long'})
+        ffactorial_design_treatments = \
+            treatment_factory.compute_full_factorial_design()
+        treatment_sequence = TreatmentSequence(
+            ranked_treatments={(x, 1) for x in ffactorial_design_treatments})
+        # makes each study group ranked in sequence
+        study = IsaModelObjectFactory(
+            plan,  treatment_sequence).create_study_from_plan()
+        study.filename = 's_study.txt'
+        self.investigation.studies = [study]
+        # 36 sources, 56 QC sources
+        self.assertEqual(92, len(study.sources))
         self.assertEqual(36, len(
             [x for x in study.sources
              if x.get_char('Material Type').value.term == 'solvent']))

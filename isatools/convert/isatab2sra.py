@@ -5,12 +5,12 @@ import logging
 import json
 from io import StringIO
 
-from isatools import config
+
 from isatools.convert import isatab2json
 from isatools.convert import json2sra
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 
 def zipdir(path, zip_file):

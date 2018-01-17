@@ -14,16 +14,22 @@ Todo:
 """
 from __future__ import absolute_import
 import abc
+import logging
 import networkx as nx
 import warnings
+
 
 from isatools.errors import ISAModelAttributeError
 
 
-def _build_assay_graph(process_sequence=list()):
+log = logging.getLogger('isatools')
+
+def _build_assay_graph(process_sequence=None):
     """:obj:`networkx.DiGraph` Returns a directed graph object based on a
     given ISA process sequence."""
     g = nx.DiGraph()
+    if process_sequence is None:
+        return g
     for process in process_sequence:
         if process.next_process is not None or len(
                 process.outputs) > 0:
@@ -1659,7 +1665,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     def add_prot(self, protocol_name='', protocol_type=None,
                  use_default_params=True):
         if self.get_prot(protocol_name=protocol_name) is not None:
-            print('A protocol with name "{}" has already been declared in the '
+            log.warning('A protocol with name "{}" has already been declared in the '
                   'study'.format(protocol_name))
         else:
             if isinstance(protocol_type, str) and use_default_params:
@@ -1681,7 +1687,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     def add_factor(self, name, factor_type):
         if self.get_factor(name=name) is not None:
-            print(
+            log.warning(
                 'A factor with name "{}" has already been declared in the study'
                     .format(name))
         else:
@@ -1690,7 +1696,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     def del_factor(self, name, are_you_sure=False):
         if self.get_factor(name=name) is None:
-            print(
+            log.warning(
                 'A factor with name "{}" hasnot been found in the study'
                 .format(name))
         else:

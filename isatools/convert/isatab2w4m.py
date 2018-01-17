@@ -12,14 +12,14 @@ import csv
 import numpy
 from string import Template
 
-from isatools import config
+
 from isatools import isatab as ISATAB
 
 # original from https://github.com/workflow4metabolomics/mtbls-dwnld/blob/develop/isatab2w4m.py
 __author__ = 'pkrog (Pierrick Roger)'
 
-logging.basicConfig(level=config.log_level)
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('isatools')
 
 # Check Python version
 if sys.hexversion < 0x03040000:
@@ -374,8 +374,8 @@ def make_sample_metadata(study_df, assay_df, sample_names, normalize=True):
     if normalize:
         norm_sample_names = make_names(sample_names, uniq=True)
         sample_metadata.insert(0, 'sample.name', norm_sample_names)
-        sample_metadata.set_axis(1, make_names(sample_metadata.axes[1].tolist(),
-                                               uniq=True))
+        sample_metadata.set_axis(axis=1, labels=make_names(
+            sample_metadata.axes[1].tolist(), uniq=True))
 
     return sample_metadata
 
@@ -395,7 +395,7 @@ def make_variable_metadata(measures_df, sample_names, variable_names,
 
     # Normalize
     if normalize:
-        variable_metadata.set_axis(1, make_names(
+        variable_metadata.set_axis(axis=1, labels=make_names(
             variable_metadata.axes[1].tolist(), uniq=True))
 
     return variable_metadata
@@ -422,7 +422,7 @@ def make_matrix(measures_df, sample_names, variable_names, normalize=True):
     if normalize:
         norm_sample_names = make_names(sample_names, uniq=True)
         norm_sample_names.insert(0, 'variable.name')
-        sample_variable_matrix.set_axis(1, norm_sample_names)
+        sample_variable_matrix.set_axis(axis=1, labels=norm_sample_names)
 
     return sample_variable_matrix
 
