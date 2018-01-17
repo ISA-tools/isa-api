@@ -557,7 +557,7 @@ class IsaTabAnalyzer(object):
                    isa.studies)))
         for study in isa.studies:
             print('-------------------------------------------')
-            print('Study stats for {}'.format(study.filename ))
+            print('Study stats for {}'.format(study.filename))
             print('-------------------------------------------')
             print('Num assays: {}'.format(len(study.assays)))
             from collections import Counter
