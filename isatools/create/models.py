@@ -1087,6 +1087,7 @@ class IsaModelObjectFactory(object):
 
         sample_qc_plan = self.sample_assay_plan
         prebatch = sample_qc_plan.pre_run_batch
+        factors = set()
         if isinstance(prebatch, SampleQCBatch):
             if prebatch.characteristic_values is None:
                 qcsource = Source(name='qc_prebatch_in', characteristics=[
@@ -1174,6 +1175,8 @@ class IsaModelObjectFactory(object):
         # Main batch
         for (group_id, treatment), ranks in group_rank_map.items():
             fvs = treatment.factor_values
+            for factor in [x.factor_name for x in fvs]:
+                factors.add(factor)
             for subjn in (str(x) for x in range(group_size)):
                 material_type = Characteristic(
                     category=OntologyAnnotation(
@@ -1338,6 +1341,7 @@ class IsaModelObjectFactory(object):
         study.sources = sources
         study.samples = samples
         study.process_sequence = process_sequence
+        study.factors = list(factors)
         return study
 
     def create_ms_assays_from_plan(self):
