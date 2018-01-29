@@ -762,6 +762,79 @@ class DecodeFromJsonTests(unittest.TestCase):
 
         self.assertEqual(sample_assay_plan, self.plan)
 
+    def test_IsaModelFactory_NMR_serialization_issue_293(self):
+        decoder = SampleAssayPlanDecoder()
+        sample_assay_plan = decoder.load(StringIO("""{
+                "sample_types": ["liver", "tissue", "water"],
+                "group_size": 20,
+                "sample_plan": [
+                    {
+                        "sampling_size": 3,
+                        "sample_type": "liver"
+                    },
+                    {
+                        "sampling_size": 5,
+                        "sample_type": "tissue"
+                    }
+                ],
+                "sample_qc_plan": [
+                    {
+                        "injection_interval": 8,
+                        "sample_type": "water"
+                    }
+                ],
+                "assay_types": [
+                    {
+                        "topology_modifiers": {
+                            "technical_replicates": 2,
+                            "injection_modes": [],
+                            "instruments": ["Instrument A"],
+                            "pulse_sequences": ["TOCSY"],
+                            "acquisition_modes": ["mode1"]
+                        }, 
+                        "technology_type": "nmr spectroscopy",
+                        "measurement_type": "metabolite profiling"
+                    }],
+                "assay_plan": [
+                    {
+                        "sample_type": "liver",
+                        "assay_type": {
+                            "topology_modifiers": {
+                                "technical_replicates": 2,
+                                "injection_modes": [],
+                                "instruments": ["Instrument A"],
+                                "pulse_sequences": ["TOCSY"],
+                                "acquisition_modes": ["mode1"]
+                            },
+                            "technology_type": "nmr spectroscopy",
+                            "measurement_type": "metabolite profiling"
+                        }
+                    },
+                    {
+                        "sample_type": "tissue",
+                        "assay_type": {
+                            "topology_modifiers": {
+                                "technical_replicates": 2,
+                                "injection_modes": [],
+                                "instruments": ["Instrument A"],
+                                "pulse_sequences": ["TOCSY"],
+                                "acquisition_modes": ["mode1"]
+                            }, 
+                            "technology_type": "nmr spectroscopy", 
+                            "measurement_type": "metabolite profiling"
+                        }
+                    }
+                ]
+            }"""))
+
+        with open(os.path.join(utils.JSON_DATA_DIR, 'create',
+                               'treatment_sequence_test.json')) as json_fp:
+            treatment_plan = TreatmentSequenceDecoder().load(json_fp)
+        isa_object_factory = IsaModelObjectFactory(
+            sample_assay_plan, treatment_plan)
+        study = isa_object_factory.create_assays_from_plan()
+        self.assertEqual(len(study.assays), 2)
+
     def test_create_from_decoded_json(self):
         with open(os.path.join(
                 utils.JSON_DATA_DIR, 'create', 'sampleassayplan_test.json')) \
