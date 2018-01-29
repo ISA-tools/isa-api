@@ -744,6 +744,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
              if x.get_char('Material Type').value.term == 'solvent']))
         # 288 samples plus 36 QC samples
         self.assertEqual(344, len(study.samples))
+        self.assertEqual(3, len(study.factors))
 
     def test_create_study_from_plan_with_qc_source_characteristics(self):
         plan = SampleAssayPlan()
