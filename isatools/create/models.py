@@ -415,7 +415,7 @@ class AssayTopologyModifiers(object):
             raise TypeError('{0} is an invalid value for technical_replicates. '
                             'Please provide an integer.')
         if val < 1:
-            raise ValueError('injection_modes must be greater than 0.')
+            raise ValueError('technical_replicates must be greater than 0.')
         self.__technical_replicates = val
 
     @property
