@@ -1364,7 +1364,8 @@ class IsaModelObjectFactory(object):
                               filename='a_{0}_mp_{1}_{2}_assay.txt'.format(
                                   stype.value.term, inj_mode, acq_mode))
                 mp_protocol_name = None
-                if atype.technology_type.term == 'mass spectrometry':
+                lowered_tt = atype.technology_type.term.lower()
+                if lowered_tt == 'mass spectrometry':
                     try:
                         study.add_prot(
                             protocol_name='metabolite extraction',
@@ -1501,7 +1502,8 @@ class IsaModelObjectFactory(object):
 
         for stype, atype in self.sample_assay_plan.assay_plan:
 
-            if atype.technology_type.term == 'nmr spectroscopy':
+            lowered_tt = atype.technology_type.term.lower()
+            if lowered_tt == 'nmr spectroscopy':
                 if atype.measurement_type.term != 'metabolite profiling':
                     raise ISAModelAttributeError(
                         'Measurement type must be of type '
@@ -1616,6 +1618,7 @@ class IsaModelObjectFactory(object):
             samples_filtered_on_stype = [x for x in study.samples if
                                          stype in x.characteristics]
 
+            lowered_tt = atype.technology_type.term.lower()
             if atype.technology_type.term == 'DNA microarray':
                 assay = Assay(measurement_type=atype.measurement_type,
                               technology_type=atype.technology_type)
@@ -1702,6 +1705,7 @@ class IsaModelObjectFactory(object):
             samples_filtered_on_stype = [x for x in study.samples if
                              stype in x.characteristics]
 
+            lowered_tt = atype.technology_type.term.lower()
             if atype.technology_type.term == 'nucleotide sequencing':
                 assay = Assay(measurement_type=atype.measurement_type,
                               technology_type=atype.technology_type)
@@ -1791,12 +1795,13 @@ class IsaModelObjectFactory(object):
             raise ISAModelAttributeError('assay_plan is not defined')
 
         for stype, atype in self.sample_assay_plan.assay_plan:
-
             # first get all samples of stype
             samples_stype = [x for x in study.samples if
                              stype in x.characteristics]
-            if atype.measurement_type.term == 'metabolite profiling' \
-                    and atype.technology_type.term == 'mass spectrometry':
+            lowered_mt = atype.measurement_type.term.lower()
+            lowered_tt = atype.technology_type.term.lower()
+            if lowered_mt == 'metabolite profiling' \
+                    and lowered_tt == 'mass spectrometry':
                 for inj_mode, acq_mode in itertools.product(
                         atype.topology_modifiers.injection_modes,
                         atype.topology_modifiers.acquisition_modes):
@@ -1933,8 +1938,8 @@ class IsaModelObjectFactory(object):
                     if assay is not None:
                         study.assays.append(assay)
 
-            elif atype.measurement_type.term == 'metabolite profiling' \
-                    and atype.technology_type.term == 'nmr spectroscopy':
+            elif lowered_mt == 'metabolite profiling' \
+                    and lowered_tt == 'nmr spectroscopy':
                 for pulse_seq, acq_mode in itertools.product(
                         atype.topology_modifiers.pulse_sequences,
                         atype.topology_modifiers.acquisition_modes):
@@ -1945,7 +1950,7 @@ class IsaModelObjectFactory(object):
                                   filename='a_{0}_nmr_{1}_{2}_assay.txt'.format(
                                       stype.value.term, acq_mode, pulse_seq))
 
-                    if atype.technology_type.term == 'nmr spectroscopy':
+                    if lowered_tt == 'nmr spectroscopy':
                         try:
                             study.add_prot(
                                 protocol_name='metabolite extraction',
@@ -2032,7 +2037,7 @@ class IsaModelObjectFactory(object):
 
                     if assay is not None:
                         study.assays.append(assay)
-            elif atype.technology_type.term == 'DNA microarray':
+            elif lowered_tt == 'dna microarray':
                 assay = Assay(measurement_type=atype.measurement_type,
                               technology_type=atype.technology_type)
 
@@ -2110,7 +2115,7 @@ class IsaModelObjectFactory(object):
                 if assay is not None:
                     study.assays.append(assay)
 
-            elif atype.technology_type.term == 'nucleotide sequencing':
+            elif lowered_tt == 'nucleotide sequencing':
                 assay = Assay(measurement_type=atype.measurement_type,
                               technology_type=atype.technology_type)
 

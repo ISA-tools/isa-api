@@ -28,6 +28,7 @@ from progressbar import Bar
 from progressbar import ETA
 
 from isatools import logging as isa_logging
+from isatools.io import isatab_configurator
 from isatools.model import *
 
 
@@ -2062,7 +2063,6 @@ def check_term_source_refs_usage(i_df, dir_context):
 
 def load_config(config_dir):
     """Rule 4001"""
-    from isatools.io import isatab_configurator
     configs = None
     try:
         configs = isatab_configurator.load(config_dir)
@@ -2094,7 +2094,9 @@ def check_measurement_technology_types(i_df, configs):
         technology_types = assay_df['Study Assay Technology Type'].tolist()
         if len(measurement_types) == len(technology_types):
             for x, measurement_type in enumerate(measurement_types):
-                if (measurement_types[x], technology_types[x]) not in configs.keys():
+                lowered_mt = measurement_types[x].lower()
+                lowered_tt = technology_types[x].lower()
+                if (lowered_mt, lowered_tt) not in configs.keys():
                     validator_errors.append({
                         "message": "Measurement/technology type invalid",
                         "supplemental": "Measurement {}/technology {}, STUDY ASSAY.{}"
@@ -2106,7 +2108,6 @@ def check_measurement_technology_types(i_df, configs):
 
 
 def check_investigation_against_config(i_df, configs):
-    import math
 
     def check_section_against_required_fields_one_value(section, required, i=0):
         fields_required = [i for i in section.columns if i in required]
@@ -2317,7 +2318,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
             try:
                 with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
                     df = load_table(s_fp)
-                    config = configs[('[Sample]', '')]
+                    config = configs[('[sample]', '')]
                     log.info("Checking study file {} against default study table configuration...".format(study_filename))
                     check_assay_table_with_config(df, config, study_filename, protocol_names_and_types)
             except FileNotFoundError:
@@ -2330,7 +2331,9 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
                 try:
                     with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
                         df = load_table(a_fp)
-                        config = configs[(measurement_type, technology_type)]
+                        lowered_mt = measurement_type.lower()
+                        lowered_tt = technology_type.lower()
+                        config = configs[(lowered_mt, lowered_tt)]
                         log.info(
                             "Checking assay file {} against default table configuration ({}, {})...".format(assay_filename, measurement_type, technology_type))
                         check_assay_table_with_config(df, config, assay_filename, protocol_names_and_types)
@@ -2766,7 +2769,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                     with open(os.path.join(os.path.dirname(fp.name), study_filename), encoding='utf-8') as s_fp:
                         study_sample_table = load_table(s_fp)
                         study_sample_table.filename = study_filename
-                        config = configs[('[Sample]', '')]
+                        config = configs[('[sample]', '')]
                         log.info(
                             "Validating {} against default study table configuration".format(study_filename))
                         log.info("Checking Factor Value presence...")
@@ -2805,7 +2808,9 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                     technology_type = assay_df['Study Assay Technology Type'].tolist()[x]
                     if assay_filename is not '':
                         try:
-                            config = configs[(measurement_type, technology_type)]
+                            lowered_mt = measurement_type.lower()
+                            lowered_tt = technology_type.lower()
+                            config = configs[(lowered_mt, lowered_tt)]
                         except KeyError:
                             log.error("Could not load config matching ({}, {})".format(measurement_type, technology_type))
                             log.warning("Only have configs matching:")

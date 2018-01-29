@@ -30,7 +30,7 @@ def load(config_dir):
             config_obj = parse(inFileName=file, silence=True)
             measurement_type = config_obj.get_isatab_configuration()[0].get_measurement().get_term_label()
             technology_type = config_obj.get_isatab_configuration()[0].get_technology().get_term_label()
-            config_dict[(measurement_type, technology_type)] = config_obj
+            config_dict[(measurement_type.lower(), technology_type.lower())] = config_obj
         except GDSParseError as parse_error:
             log.error(parse_error)
     return config_dict
