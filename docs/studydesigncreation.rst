@@ -13,7 +13,7 @@ The core functions of the ISA-API create mode which are covered in this section 
 - ``TreatmentFactory``
 - ``TreatmentSequence``
 - ``SampleAssayPlan``
-- Assay 'topology modifiers' that support creating experimental graphs with specific characteristics for different technologies, such as ```MSAssayTopologyModifiers``` and ```DNASeqAssayTopologyModifiers```
+- Assay 'topology modifiers' that support creating experimental graphs with specific characteristics for different technologies, such as ``MSAssayTopologyModifiers`` and ``DNASeqAssayTopologyModifiers``
 
 
 Getting started
@@ -61,9 +61,9 @@ The definition of `intervention design <http://purl.obolibrary.org/obo/OBI_00001
 Creation of treatments: Treatment, TreatmentFactory, TreatmentSequence
 ----------------------------------------------------------------------
 
-The ```Treatment``` class is defined as a tuple of factor values (as defined in the ISA model v1) and a treatment type.
+The ``Treatment`` class is defined as a tuple of factor values (as defined in the ISA model v1) and a treatment type.
 
-To create a treatment object, you need to identify the ```StudyFactor```s and their ```FactorValue``s as the treatment is a specific combination of factor values:
+To create a treatment object, you need to identify the ``StudyFactor``s and their ``FactorValue``s as the treatment is a specific combination of factor values:
 
 .. code-block:: python
 
@@ -82,20 +82,20 @@ To create a treatment object, you need to identify the ```StudyFactor```s and th
 
 For convenience, a few objects are provided with some common:
 
-- ```INTERVENTIONS``` such as chemical, behavioural, surgical, biological, radiological, and
-- ```BASE_FACTORS```representing a perturbation agent, intensity and duration of the treatment
+- ``INTERVENTIONS`` such as chemical, behavioural, surgical, biological, radiological, and
+- ``BASE_FACTORS`` representing a perturbation agent, intensity and duration of the treatment
 
 but if these are not suitable for your purposes, you can build your own intervention type and factors.
 
-In the example above we use one of the common interventions but created our own set of ```StudyFactor```s.
+In the example above we use one of the common interventions but created our own set of ``StudyFactor``s.
 
 Instead of creating individual treatments, you may want to create all the treatments required for a specific design type.
 
-The ```TreatmentFactory``` class provides utility methods to create a set of ```Treatment``` objects. One of the utility methods is that
-for creating the set of treatments corresponding to a full factorial design (using method ```compute_full_factorial_design```).
+The ``TreatmentFactory`` class provides utility methods to create a set of ``Treatment`` objects. One of the utility methods is that
+for creating the set of treatments corresponding to a full factorial design (using method ``compute_full_factorial_design``).
 This computes all the combinations of factor values, returning an empty set if one of the factors has no associated values.
 
-An example of using the ```TreatmentFactory``` class is as follows:
+An example of using the ``TreatmentFactory`` class is as follows:
 
 .. code-block:: python
     treatment_factory = TreatmentFactory(factors=[agent, intensity, duration])
@@ -106,11 +106,11 @@ An example of using the ```TreatmentFactory``` class is as follows:
 
     factorial_design_treatments = treatment_factory.compute_full_factorial_design()
 
-The ```factorial_design_treatments``` object will contain the set of 18 treatments that result from performing all the combinations of the 3x3x2 factor values shown above.
+The ``factorial_design_treatments`` object will contain the set of 18 treatments that result from performing all the combinations of the 3x3x2 factor values shown above.
 
-A set of treatments may be combined in a ```TreatmentSequence```.
+A set of treatments may be combined in a ``TreatmentSequence``.
 
-The ```TreatmentSequence``` class provides a way of building is an ordered sequence of treatments, where each
+The ``TreatmentSequence`` class provides a way of building is an ordered sequence of treatments, where each
 treatment is assigned a rank, or epoch number, with the following properties: the epoch numbers always start with 1 (lowest epoch number),
 all epochs should be positive integers, epoch numbers may be repeated (for concomitant treatments),
 no value should be missing between the lowest epoch (1) and the highest epoch.
@@ -127,13 +127,13 @@ Creation of Sample and Assay Plans
 
 After you have identified the treatments, to describe your experiment fully you will need to indicate
 the sampling plan (i.e. in which way you select the samples) as well as the assay plan (i.e. what
-measurements you are taken from the samples). For this purpose, we provide the ```SampleAssayPlan``` class.
+measurements you are taken from the samples). For this purpose, we provide the ``SampleAssayPlan`` class.
 
 
 Taking into account the specifics of Data Acquisition events dependent on methodology and technology
 ----------------------------------------------------------------------------------------------------
 
-The Assay 'topology modifiers' functions (such as ```MSAssayTopologyModifiers```  for Mass Spectrometry based assays or  ```DNASeqAssayTopologyModifiers``` for DNA sequence assays) are present to support specific branching or pooling events affecting the underlying experimental graph, which we aim to represent with ISA objects.
+The Assay 'topology modifiers' functions (such as ``MSAssayTopologyModifiers``  for Mass Spectrometry based assays or  ``DNASeqAssayTopologyModifiers`` for DNA sequence assays) are present to support specific branching or pooling events affecting the underlying experimental graph, which we aim to represent with ISA objects.
 Depending on the assay and the technology used to acquire data, the number of 'hinge points' may vary but the basic principle remains the same. Some are common to all: for instance, irrespective of the technique, one may carry out several data acquisition on the same input material (technical replication). On the other hand, when using a technique such as mass spectrometry
 an range of setting may be set by the operators, such as the type of injections modes, the type of acquisition modes. When using sequencing technology, different instruments may be used, libraries may be prepared as single or paired ends.
 The 'Topology Modifiers' method in the ISA-API allows to specify those in a flexible yet generic way.
