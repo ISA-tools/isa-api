@@ -950,13 +950,10 @@ class SampleQCBatch(object):
         self.characteristic_values = characteristic_values
 
 
-class BaseStudyDesign(object):
-    pass
 
-
-class InterventionStudyDesign(BaseStudyDesign):
+class StudyDesign():
     """
-    A class representing an intervention study design, which is composed of an
+    A class representing a study design, which is composed of an
     ordered dictionary of pairs of treatment sequences and samples plans.
     """
 

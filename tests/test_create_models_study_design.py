@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 from isatools.model import (Investigation, StudyFactor, FactorValue,
                             OntologyAnnotation)
-from isatools.create.models import (InterventionStudyDesign, Treatment,
+from isatools.create.models import (StudyDesign, Treatment,
                                     Characteristic, TreatmentFactory,
                                     TreatmentSequence, AssayType,
                                     SampleAssayPlan, INTERVENTIONS,
@@ -566,10 +566,10 @@ class SampleAssayPlanTest(unittest.TestCase):
                           blood_sample_type, ngs_assay_type)
 
 
-class InterventionStudyDesignTest(unittest.TestCase):
+class StudyDesignTest(unittest.TestCase):
 
     def setUp(self):
-        self.design = InterventionStudyDesign()
+        self.design = StudyDesign()
         self.agent = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
         self.intensity = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
         self.duration = StudyFactor(name=BASE_FACTORS[2]['name'], factor_type=BASE_FACTORS[2]['type'])
