@@ -2275,7 +2275,10 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
 
     @staticmethod
     def get_sample_qc_batch_plan(sample_qc_batch_plan):
-        return sample_qc_batch_plan
+        if sample_qc_batch_plan is None:
+            return {}
+        else:
+            return sample_qc_batch_plan
 
     def get_assay_plan(self, assay_plan):
         assay_plan_record_list = []

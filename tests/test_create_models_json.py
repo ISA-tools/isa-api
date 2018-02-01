@@ -176,10 +176,11 @@ class EncodeToJsonTests(unittest.TestCase):
                 "sample_plan": [],
                 "sample_types": [],
                 "sample_qc_plan": [],
-                "assay_plan": []
+                "assay_plan": [],
+                "pre_run_batch": {},
+                "post_run_batch": {}
             }""")
         )
-
         actual = ordered(
             json.loads(
                 json.dumps(SampleAssayPlan(), cls=SampleAssayPlanEncoder)
