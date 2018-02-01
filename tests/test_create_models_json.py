@@ -218,6 +218,22 @@ class EncodeToJsonTests(unittest.TestCase):
     def test_serialize_sampleplan_with_qc(self):
         self.plan.add_sample_type('water')
         self.plan.add_sample_qc_plan_record('water', 8)
+        self.plan.pre_run_batch = {
+            'material': 'blank',
+            'variable_type': 'parameter',
+            'variable_name': 'param1',
+            'values': [
+                5, 4, 3, 2, 1, 1, 1, 1, 1, 1
+            ]
+        }
+        self.plan.post_run_batch = {
+            'material': 'blank',
+            'variable_type': 'parameter',
+            'variable_name': 'param1',
+            'values': [
+                1, 1, 1, 1, 1, 1, 2, 3, 4, 5
+            ]
+        }
 
         expected = ordered(
             json.loads("""{
@@ -240,7 +256,23 @@ class EncodeToJsonTests(unittest.TestCase):
                             }
                         ],
                         "assay_types": [],
-                        "sample_types": ["liver", "tissue", "water"]
+                        "sample_types": ["liver", "tissue", "water"],
+                        "pre_run_batch": {
+                            "material": "blank",
+                            "variable_type": "parameter",
+                            "variable_name": "param1",
+                            "values": [
+                                5, 4, 3, 2, 1, 1, 1, 1, 1, 1
+                            ]
+                        },
+                        "post_run_batch": {
+                            "material": "blank",
+                            "variable_type": "parameter",
+                            "variable_name": "param1",
+                            "values": [
+                                1, 1, 1, 1, 1, 1, 2, 3, 4, 5
+                            ]
+                        }
                     }""")
         )
 

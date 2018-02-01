@@ -705,23 +705,6 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         plan.group_size = 2
         plan.add_sample_type('solvent')
         plan.add_sample_qc_plan_record('solvent', 8)
-        plan.pre_run_batch = {
-            'material': 'blank',
-            'variable_type': 'parameter',
-            'variable_name': 'param1',
-            'values': [
-                5, 4, 3, 2, 1, 1, 1, 1, 1, 1
-            ]
-        }
-        plan.post_run_batch = {
-            'material': 'blank',
-            'variable_type': 'parameter',
-            'variable_name': 'param1',
-            'values': [
-                1, 1, 1, 1, 1, 1, 2, 3, 4, 5
-            ]
-        }
-
         treatment_factory = TreatmentFactory(
             factors=[self.f1, self.f2, self.f3])
         treatment_factory.add_factor_value(
@@ -792,6 +775,9 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         self.assertEqual(36, len(
             [x for x in study.sources
              if x.get_char('Material Type').value.term == 'solvent']))
+        self.assertEqual(20, len(
+            [x for x in study.sources
+             if x.get_char('Material Type').value.term == 'blank']))
         # 288 samples plus 36 QC samples
         self.assertEqual(344, len(study.samples))
 
@@ -922,7 +908,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         self.assertEqual(len(study.assays), 11)
         self.assertEqual(len(study.protocols), 7)
 
-    def test_study_from_repeated_mesaure_plan(self):
+    def test_study_from_repeated_measure_plan(self):
         factor1 = StudyFactor(name='1')
         factor2 = StudyFactor(name='2')
         factor3 = StudyFactor(name='3')
@@ -958,7 +944,9 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         study = isa_factory.create_study_from_plan()
         self.assertEqual(len(study.sources), 36)  # number of subjects
         self.assertEqual(len(study.samples), 288)
-
+        for sample in study.samples:
+            print(str(sample))
+        return
         ms_assay_type = AssayType(measurement_type='metabolite profiling',
                                   technology_type='mass spectrometry')
         ms_assay_type.topology_modifiers = MSAssayTopologyModifiers(

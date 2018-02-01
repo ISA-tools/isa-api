@@ -2276,6 +2276,10 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
             )
         return sample_qc_plan_record_list
 
+    @staticmethod
+    def get_sample_qc_batch_plan(sample_qc_batch_plan):
+        return sample_qc_batch_plan
+
     def get_assay_plan(self, assay_plan):
         assay_plan_record_list = []
         for mapping in assay_plan:
@@ -2301,7 +2305,10 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
                 'assay_types': [self.get_assay_type(x) for x in o.assay_types],
                 'sample_plan': self.get_sample_plan(o.sample_plan),
                 'sample_qc_plan': self.get_sample_qc_plan(o.sample_qc_plan),
-                'assay_plan': self.get_assay_plan(o.assay_plan)
+                'assay_plan': self.get_assay_plan(o.assay_plan),
+                'pre_run_batch': self.get_sample_qc_batch_plan(o.pre_run_batch),
+                'post_run_batch': self.get_sample_qc_batch_plan(
+                    o.post_run_batch)
             }
 
 
@@ -2401,6 +2408,9 @@ class SampleAssayPlanDecoder(object):
                 material_type=sample_qc_plan_record['sample_type'],
                 injection_interval=sample_qc_plan_record['injection_interval']
             )
+
+        sample_assay_plan.pre_run_batch = sample_assay_plan['pre_run_batch']
+        sample_assay_plan.post_run_batch = sample_assay_plan['post_run_batch']
 
         return sample_assay_plan
 
