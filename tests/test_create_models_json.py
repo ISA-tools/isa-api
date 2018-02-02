@@ -176,9 +176,7 @@ class EncodeToJsonTests(unittest.TestCase):
                 "sample_plan": [],
                 "sample_types": [],
                 "sample_qc_plan": [],
-                "assay_plan": [],
-                "pre_run_batch": {},
-                "post_run_batch": {}
+                "assay_plan": []
             }""")
         )
         actual = ordered(
@@ -186,6 +184,7 @@ class EncodeToJsonTests(unittest.TestCase):
                 json.dumps(SampleAssayPlan(), cls=SampleAssayPlanEncoder)
             )
         )
+
         self.assertTrue(expected == actual)
 
     def test_serialize_sampleplan(self):
@@ -219,22 +218,38 @@ class EncodeToJsonTests(unittest.TestCase):
     def test_serialize_sampleplan_with_qc(self):
         self.plan.add_sample_type('water')
         self.plan.add_sample_qc_plan_record('water', 8)
-        self.plan.pre_run_batch = {
-            'material': 'blank',
-            'variable_type': 'parameter',
-            'variable_name': 'param1',
-            'values': [
-                5, 4, 3, 2, 1, 1, 1, 1, 1, 1
-            ]
-        }
-        self.plan.post_run_batch = {
-            'material': 'blank',
-            'variable_type': 'parameter',
-            'variable_name': 'param1',
-            'values': [
-                1, 1, 1, 1, 1, 1, 2, 3, 4, 5
-            ]
-        }
+        batch1 = SampleQCBatch()
+        batch1.material = 'blank'
+        batch1.parameter_values = [
+            ParameterValue(category=ProtocolParameter(
+                parameter_name=OntologyAnnotation(term='param1')), value=5),
+            ParameterValue(category=ProtocolParameter(
+                parameter_name=OntologyAnnotation(term='param1')), value=4),
+            ParameterValue(category=ProtocolParameter(
+                parameter_name=OntologyAnnotation(term='param1')), value=3),
+            ParameterValue(category=ProtocolParameter(
+                parameter_name=OntologyAnnotation(term='param1')), value=2),
+            ParameterValue(category=ProtocolParameter(
+                parameter_name=OntologyAnnotation(term='param1')), value=1),
+            ParameterValue(category=ProtocolParameter(
+                parameter_name=OntologyAnnotation(term='param1')), value=1),
+            ParameterValue(category=ProtocolParameter(
+                parameter_name=OntologyAnnotation(term='param1')), value=1),
+            ParameterValue(category=ProtocolParameter(
+                parameter_name=OntologyAnnotation(term='param1')), value=1),
+            ParameterValue(category=ProtocolParameter(
+                parameter_name=OntologyAnnotation(term='param1')), value=1),
+            ParameterValue(category=ProtocolParameter(
+                parameter_name=OntologyAnnotation(term='param1')), value=1)
+        ]
+        self.plan.pre_run_batch = batch1
+        batch2 = SampleQCBatch()
+        batch2.material = 'solvent'
+        batch2.parameter_values = [
+            ParameterValue(category=ProtocolParameter(
+                parameter_name=OntologyAnnotation(term='param2')), value=x)
+            for x in reversed([x.value for x in batch1.parameter_values])]
+        self.plan.post_run_batch = batch2
 
         expected = ordered(
             json.loads("""{
@@ -267,21 +282,18 @@ class EncodeToJsonTests(unittest.TestCase):
                             ]
                         },
                         "post_run_batch": {
-                            "material": "blank",
+                            "material": "solvent",
                             "variable_type": "parameter",
-                            "variable_name": "param1",
+                            "variable_name": "param2",
                             "values": [
                                 1, 1, 1, 1, 1, 1, 2, 3, 4, 5
                             ]
                         }
                     }""")
         )
-
-        actual = ordered(
-            json.loads(
+        actual = ordered(json.loads(
                 json.dumps(self.plan, cls=SampleAssayPlanEncoder)
-            )
-        )
+        ))
         self.assertTrue(expected == actual)
 
     def test_serialize_sampleassayplan(self):
@@ -781,7 +793,9 @@ class DecodeFromJsonTests(unittest.TestCase):
                             "measurement_type": "genome sequencing"
                         }
                     }
-                ]
+                ],
+                "pre_run_batch": {},
+                "post_run_batch": {}
             }"""))
 
         self.plan.add_sample_type('water')

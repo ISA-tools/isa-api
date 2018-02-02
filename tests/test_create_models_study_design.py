@@ -10,7 +10,8 @@ from isatools.create.models import (StudyDesign, Treatment,
                                     BASE_FACTORS_ as BASE_FACTORS,
                                     IsaModelObjectFactory,
                                     MSAssayTopologyModifiers,
-                                    DNASeqAssayTopologyModifiers)
+                                    DNASeqAssayTopologyModifiers,
+                                    SampleQCBatch)
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitroglycerin'
@@ -720,13 +721,13 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
             plan,  treatment_sequence).create_study_from_plan()
         study.filename = 's_study.txt'
         self.investigation.studies = [study]
-        # 36 sources, 38 QC sources
-        self.assertEqual(76, len(study.sources))
+        # 36 sources, 36 QC sources
+        self.assertEqual(72, len(study.sources))
         self.assertEqual(36, len(
             [x for x in study.sources
              if x.get_char('Material Type').value.term == 'solvent']))
         # 288 samples plus 36 QC samples
-        self.assertEqual(344, len(study.samples))
+        self.assertEqual(324, len(study.samples))
         self.assertEqual(3, len(study.factors))
 
     def test_create_study_from_plan_with_qc_source_characteristics(self):
@@ -738,22 +739,39 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         plan.group_size = 2
         plan.add_sample_type('solvent')
         plan.add_sample_qc_plan_record('solvent', 8)
-        plan.pre_run_batch = {
-            'material': 'blank',
-            'variable_type': 'characteristic',
-            'variable_name': 'char1',
-            'values': [
-                5, 4, 3, 2, 1, 1, 1, 1, 1, 1
-            ]
-        }
-        plan.post_run_batch = {
-            'material': 'blank',
-            'variable_type': 'characteristic',
-            'variable_name': 'char2',
-            'values': [
-                1, 1, 1, 1, 1, 1, 2, 3, 4, 5
-            ]
-        }
+        batch1 = SampleQCBatch()
+        batch1.material = 'blank'
+        batch1.characteristic_values = [
+            Characteristic(category=OntologyAnnotation(term='charac1'),
+                           value=5),
+            Characteristic(category=OntologyAnnotation(term='charac1'),
+                           value=4),
+            Characteristic(category=OntologyAnnotation(term='charac1'),
+                           value=3),
+            Characteristic(category=OntologyAnnotation(term='charac1'),
+                           value=2),
+            Characteristic(category=OntologyAnnotation(term='charac1'),
+                           value=1),
+            Characteristic(category=OntologyAnnotation(term='charac1'),
+                           value=1),
+            Characteristic(category=OntologyAnnotation(term='charac1'),
+                           value=1),
+            Characteristic(category=OntologyAnnotation(term='charac1'),
+                           value=1),
+            Characteristic(category=OntologyAnnotation(term='charac1'),
+                           value=1),
+            Characteristic(category=OntologyAnnotation(term='charac1'),
+                           value=1),
+            Characteristic(category=OntologyAnnotation(term='charac1'),
+                           value=1)
+        ]
+        plan.pre_run_batch = batch1
+        batch2 = SampleQCBatch()
+        batch2.material = 'solvent'
+        batch2.characteristic_values = [
+            Characteristic(category=OntologyAnnotation(term='charac2'), value=x)
+            for x in reversed([x.value for x in batch1.parameter_values])]
+        plan.post_run_batch = batch2
 
         treatment_factory = TreatmentFactory(
             factors=[self.f1, self.f2, self.f3])
@@ -771,15 +789,15 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         study.filename = 's_study.txt'
         self.investigation.studies = [study]
         # 36 sources, 56 QC sources
-        self.assertEqual(92, len(study.sources))
+        self.assertEqual(85, len(study.sources))
         self.assertEqual(36, len(
             [x for x in study.sources
              if x.get_char('Material Type').value.term == 'solvent']))
-        self.assertEqual(20, len(
+        self.assertEqual(13, len(
             [x for x in study.sources
              if x.get_char('Material Type').value.term == 'blank']))
         # 288 samples plus 36 QC samples
-        self.assertEqual(344, len(study.samples))
+        self.assertEqual(324, len(study.samples))
 
     def test_study_from_2_level_factorial_plan(self):
         factor = StudyFactor(name='1')
@@ -944,9 +962,6 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         study = isa_factory.create_study_from_plan()
         self.assertEqual(len(study.sources), 36)  # number of subjects
         self.assertEqual(len(study.samples), 288)
-        for sample in study.samples:
-            print(str(sample))
-        return
         ms_assay_type = AssayType(measurement_type='metabolite profiling',
                                   technology_type='mass spectrometry')
         ms_assay_type.topology_modifiers = MSAssayTopologyModifiers(

@@ -891,38 +891,20 @@ class SampleAssayPlan(object):
         return self.__pre_run_batch
 
     @pre_run_batch.setter
-    def pre_run_batch(self, qc_batch_dict):
-        pre_run_batch = SampleQCBatch()
-        pre_run_batch.material = qc_batch_dict['material']
-        var_type = qc_batch_dict['variable_type']
-        var_name = qc_batch_dict['variable_name']
-        var_values = qc_batch_dict['values']
-        if var_type == 'parameter':
-            pre_run_batch.parameter_values = list(
-                map(lambda x: (var_name, x), var_values))
-        elif var_type == 'characteristic':
-            pre_run_batch.characteristic_values = list(
-                map(lambda x: (var_name, x), var_values))
-        self.__pre_run_batch = pre_run_batch
+    def pre_run_batch(self, qc_batch):
+        if not isinstance(qc_batch, SampleQCBatch):
+            raise TypeError('QC batch must be of type SampleQCBatch')
+        self.__pre_run_batch = qc_batch
         
     @property
     def post_run_batch(self):
         return self.__post_run_batch
 
     @post_run_batch.setter
-    def post_run_batch(self, qc_batch_dict):
-        post_run_batch = SampleQCBatch()
-        post_run_batch.material = qc_batch_dict['material']
-        var_type = qc_batch_dict['variable_type']
-        var_name = qc_batch_dict['variable_name']
-        var_values = qc_batch_dict['values']
-        if var_type == 'parameter':
-            post_run_batch.parameter_values = list(
-                map(lambda x: (var_name, x), var_values))
-        elif var_type == 'characteristic':
-            post_run_batch.characteristic_values = list(
-                map(lambda x: (var_name, x), var_values))
-        self.__post_run_batch = post_run_batch
+    def post_run_batch(self, qc_batch):
+        if not isinstance(qc_batch, SampleQCBatch):
+            raise TypeError('QC batch must be of type SampleQCBatch')
+        self.__post_run_batch = qc_batch
 
     def __repr__(self):
         return 'isatools.create.models.SampleAssayPlan(' \
@@ -946,9 +928,14 @@ class SampleQCBatch(object):
     def __init__(self, material=None, parameter_values=None,
                  characteristic_values=None):
         self.material = material
-        self.parameter_values = parameter_values
-        self.characteristic_values = characteristic_values
-
+        if parameter_values is None:
+            self.parameter_values = []
+        else:
+            self.parameter_values = parameter_values
+        if characteristic_values is None:
+            self.characteristic_values = []
+        else:
+            self.characteristic_values = characteristic_values
 
 
 class StudyDesign():
@@ -1093,15 +1080,15 @@ class IsaModelObjectFactory(object):
                         value=OntologyAnnotation(term=prebatch.material))])
                 sources.append(qcsource)
             else:
-                for i, (c, v) in enumerate(prebatch.characteristic_values):
-                    var_characteristic = OntologyAnnotation(term=c)
+                for i, c in enumerate(prebatch.characteristic_values):
+                    var_characteristic = c.category
                     qcsource = Source(
                         name='qc_prebatch_in-{}'.format(i), characteristics=[
                         Characteristic(
                             category=OntologyAnnotation(term='Material Type'),
                             value=OntologyAnnotation(term=prebatch.material)),
                             Characteristic(category=var_characteristic,
-                                           value=v)])
+                                           value=c.value)])
                     if var_characteristic not in study.characteristic_categories:
                         study.characteristic_categories.append(var_characteristic)
                     sources.append(qcsource)
@@ -1183,16 +1170,17 @@ class IsaModelObjectFactory(object):
                 source.characteristics = [material_type]
                 if prebatch is not None:
                     if prebatch.characteristic_values is not None:
-                        c, v = next(iter(prebatch.characteristic_values))
-                        var_characteristic = OntologyAnnotation(term=c)
+                        c = next(iter(prebatch.characteristic_values))
+                        var_characteristic = c.category
                         source.characteristics.append(Characteristic(
                             category=var_characteristic))
                 if sample_qc_plan.post_run_batch is not None:
                     if sample_qc_plan.post_run_batch.characteristic_values is not None:
-                        c, v = next(iter(sample_qc_plan.post_run_batch.characteristic_values))
-                        var_characteristic = OntologyAnnotation(term=c)
-                        source.characteristics.append(Characteristic(
-                            category=var_characteristic))
+                        if len(sample_qc_plan.post_run_batch.characteristic_values) > 0:
+                            c = next(iter(sample_qc_plan.post_run_batch.characteristic_values))
+                            var_characteristic = c.category
+                            source.characteristics.append(Characteristic(
+                                category=var_characteristic))
                 sources.append(source)
                 for rank in ranks:
                     for sample_type, sampling_size in sample_plan.items():
@@ -2275,10 +2263,30 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
 
     @staticmethod
     def get_sample_qc_batch_plan(sample_qc_batch_plan):
-        if sample_qc_batch_plan is None:
-            return {}
-        else:
-            return sample_qc_batch_plan
+        if isinstance(sample_qc_batch_plan, SampleQCBatch):
+            if len(sample_qc_batch_plan.parameter_values) > 0 and \
+                    len(sample_qc_batch_plan.characteristic_values) > 0:
+                raise ISAModelAttributeError(
+                    'Must only set a range of parameter values OR '
+                    'characteristic values. Not both.')
+            qc_batch_plan_json = {
+                'material': sample_qc_batch_plan.material,
+            }
+            if len(sample_qc_batch_plan.characteristic_values) > 0:
+                qc_batch_plan_json['variable_type'] = 'characteristic'
+                qc_batch_plan_json['variable_name'] = next(
+                    iter(sample_qc_batch_plan.characteristic_values))\
+                    .characteristic_category.term
+                qc_batch_plan_json['values'] = [
+                    x.value for x in sample_qc_batch_plan.characteristic_values]
+            else:
+                qc_batch_plan_json['variable_type'] = 'parameter'
+                qc_batch_plan_json['variable_name'] = next(
+                    iter(sample_qc_batch_plan.parameter_values)) \
+                    .category.parameter_name.term
+                qc_batch_plan_json['values'] = [
+                    x.value for x in sample_qc_batch_plan.parameter_values]
+            return qc_batch_plan_json
 
     def get_assay_plan(self, assay_plan):
         assay_plan_record_list = []
@@ -2299,17 +2307,21 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
         elif isinstance(o, AssayType):
             return self.get_assay_type(o)
         elif isinstance(o, SampleAssayPlan):
-            return {
+            sample_assay_plan_json = {
                 'group_size': o.group_size,
                 'sample_types': sorted([x.value.term for x in o.sample_types]),
                 'assay_types': [self.get_assay_type(x) for x in o.assay_types],
                 'sample_plan': self.get_sample_plan(o.sample_plan),
                 'sample_qc_plan': self.get_sample_qc_plan(o.sample_qc_plan),
-                'assay_plan': self.get_assay_plan(o.assay_plan),
-                'pre_run_batch': self.get_sample_qc_batch_plan(o.pre_run_batch),
-                'post_run_batch': self.get_sample_qc_batch_plan(
-                    o.post_run_batch)
+                'assay_plan': self.get_assay_plan(o.assay_plan)
             }
+            if o.pre_run_batch:
+                sample_assay_plan_json['pre_run_batch'] = \
+                    self.get_sample_qc_batch_plan(o.pre_run_batch)
+            if o.post_run_batch:
+                sample_assay_plan_json['post_run_batch'] = \
+                    self.get_sample_qc_batch_plan(o.post_run_batch)
+            return sample_assay_plan_json
 
 
 class SampleAssayPlanDecoder(object):
@@ -2408,9 +2420,20 @@ class SampleAssayPlanDecoder(object):
                 material_type=sample_qc_plan_record['sample_type'],
                 injection_interval=sample_qc_plan_record['injection_interval']
             )
-
-        sample_assay_plan.pre_run_batch = sample_assay_plan['pre_run_batch']
-        sample_assay_plan.post_run_batch = sample_assay_plan['post_run_batch']
+        try:
+            pre_run_batch_json =  sample_assay_plan_json['pre_run_batch']
+            pre_run_batch = SampleQCBatch()
+            pre_run_batch.material = pre_run_batch_json['material']
+            sample_assay_plan.pre_run_batch = pre_run_batch
+        except KeyError:
+            pass
+        try:
+            post_run_batch_json = sample_assay_plan_json['post_run_batch']
+            post_run_batch = SampleQCBatch()
+            post_run_batch.material = post_run_batch_json['material']
+            sample_assay_plan.post_run_batch = sample_assay_plan_json['post_run_batch']
+        except KeyError:
+            pass
 
         return sample_assay_plan
 
