@@ -683,6 +683,7 @@ def write_study_table_files(inv_obj, output_dir):
                 olabel = "Source Name"
                 columns.append(olabel)
                 columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
+                columns += flatten(map(lambda x: get_comment_column(olabel, x), node.comments))
             elif isinstance(node, Process):
                 olabel = "Protocol REF.{}".format(node.executes_protocol.name)
                 columns.append(olabel)
@@ -723,6 +724,9 @@ def write_study_table_files(inv_obj, output_dir):
                     for c in node.characteristics:
                         clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
                         write_value_columns(df_dict, clabel, c)
+                    for co in node.comments:
+                        colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                        df_dict[colabel][-1] = co.value
 
                 elif isinstance(node, Process):
                     olabel = "Protocol REF.{}".format(node.executes_protocol.name)
@@ -782,6 +786,8 @@ def write_study_table_files(inv_obj, output_dir):
                 columns[i] = "Protocol REF"
             elif col.startswith("Sample Name."):
                 columns[i] = "Sample Name"
+            elif "Comment[" in col:
+                columns[i] = col[col.rindex(".") + 1:]
 
         log.info("Rendered {} paths".format(len(DF.index)))
 
