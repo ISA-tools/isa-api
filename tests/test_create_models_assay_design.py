@@ -28,8 +28,8 @@ class AssayTypeTest(unittest.TestCase):
                          "isatools.model.OntologyAnnotation("
                          "term='{0}', term_source=None, term_accession='', "
                          "comments=[]), "
-                         "technology_type=i"
-                         "satools.model.OntologyAnnotation(term='{1}', "
+                         "technology_type="
+                         "isatools.model.OntologyAnnotation(term='{1}', "
                          "term_source=None, term_accession='', comments=[]), "
                          "topology_modifiers=None)"
                          .format(MEASUREMENT_TYPE_TRANSCRIPTION_PROFILING,
@@ -89,6 +89,7 @@ class AssayTopologyModifiersTest(unittest.TestCase):
             instruments={'Agilent QTOF'}
         )
         self.ms_assay_topology_modifiers_default = MSAssayTopologyModifiers()
+        self.ms_assay_topology_modifiers_default2 = MSAssayTopologyModifiers2()
         self.ms_assay_topology_modifiers = MSAssayTopologyModifiers(
             injection_modes={'GC', 'LC'},
             acquisition_modes={'mode1', 'mode2'},
@@ -103,6 +104,16 @@ class AssayTopologyModifiersTest(unittest.TestCase):
             pulse_sequences={'TOCSY', 'NOCSY'},
             technical_replicates=6,
             instruments={'Agilent QTOF'}
+        )
+        self.ms_assay_topology_modifiers2 = MSAssayTopologyModifiers2(
+            sample_fractions={'polar', 'non-polar'},
+            injection_modes={
+                MSInjectionModeTopologyModifiers(
+                    acquisition_modes={
+                        MSAcquisitionModeTopologyModifier(
+                            acquisition_method='pos', technical_repeats=1)}
+                )
+            }
         )
 
     def test_dna_micro_repr(self):
@@ -193,6 +204,16 @@ class AssayTopologyModifiersTest(unittest.TestCase):
                          "chromatography_instruments=['Agilent 12345F'])",
                          repr(self.ms_assay_topology_modifiers))
 
+    def test_ms_repr2(self):
+        self.assertEqual('MSAssayTopologyModifiers2('
+                         'sample_fractions=0 sample fractions, '
+                         'injection_modes=0 injection modes)',
+                         repr(self.ms_assay_topology_modifiers_default2))
+        self.assertEqual('MSAssayTopologyModifiers2('
+                         'sample_fractions=2 sample fractions, '
+                         'injection_modes=1 injection modes)',
+                         repr(self.ms_assay_topology_modifiers2))
+
     def test_ms_eq(self):
         expected_assay_topology_modifiers_default = \
             MSAssayTopologyModifiers()
@@ -208,6 +229,24 @@ class AssayTopologyModifiersTest(unittest.TestCase):
         self.assertEqual(hash(expected_assay_topology_modifiers),
                          hash(self.ms_assay_topology_modifiers))
 
+    def test_ms_eq2(self):
+        expected_assay_topology_modifiers_default = \
+            MSAssayTopologyModifiers2()
+        expected_assay_topology_modifiers = MSAssayTopologyModifiers2(
+            sample_fractions={'polar', 'non-polar'},
+            injection_modes={
+                MSInjectionModeTopologyModifiers(
+                    acquisition_modes={
+                        MSAcquisitionModeTopologyModifier(
+                            acquisition_method='pos', technical_repeats=1)}
+                )
+            }
+        )
+        self.assertEqual(expected_assay_topology_modifiers_default,
+                         self.ms_assay_topology_modifiers_default2)
+        self.assertEqual(hash(expected_assay_topology_modifiers),
+                         hash(self.ms_assay_topology_modifiers2))
+
     def test_ms_ne(self):
         expected_assay_topology_modifiers_default = MSAssayTopologyModifiers()
         expected_assay_topology_modifiers = MSAssayTopologyModifiers(
@@ -219,7 +258,24 @@ class AssayTopologyModifiersTest(unittest.TestCase):
                             self.ms_assay_topology_modifiers_default)
         self.assertNotEqual(hash(expected_assay_topology_modifiers_default),
                             hash(self.ms_assay_topology_modifiers))
-        
+
+    def test_ms_ne2(self):
+        expected_assay_topology_modifiers_default = MSAssayTopologyModifiers2()
+        expected_assay_topology_modifiers = MSAssayTopologyModifiers2(
+            sample_fractions={'non-polar'},
+            injection_modes={
+                MSInjectionModeTopologyModifiers(
+                    acquisition_modes={
+                        MSAcquisitionModeTopologyModifier(
+                            acquisition_method='neg', technical_repeats=1)}
+                )
+            }
+        )
+        self.assertNotEqual(expected_assay_topology_modifiers,
+                            self.ms_assay_topology_modifiers_default2)
+        self.assertNotEqual(hash(expected_assay_topology_modifiers_default),
+                            hash(self.ms_assay_topology_modifiers2))
+
     def test_nmr_repr(self):
         self.assertEqual('NMRAssayTopologyModifiers('
                          'acquisition_modes=[], '

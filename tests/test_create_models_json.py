@@ -97,6 +97,23 @@ class EncodeToJsonTests(unittest.TestCase):
         )
         self.assertTrue(expected == actual)
 
+    def test_serialize_ms_assay_default_topology_modifiers2(self):
+        expected = ordered(
+            json.loads("""{
+                "sample_fractions": [],            
+                "injection_modes": []
+            }""")
+        )
+
+        actual = ordered(
+            json.loads(
+                json.dumps(MSAssayTopologyModifiers2(),
+                           cls=SampleAssayPlanEncoder)
+            )
+        )
+        print(json.dumps(actual, indent=4))
+        self.assertTrue(expected == actual)
+
     def test_serialize_nmr_assay_default_topology_modifiers(self):
         expected = ordered(
             json.loads("""{
