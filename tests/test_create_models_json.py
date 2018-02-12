@@ -78,26 +78,8 @@ class EncodeToJsonTests(unittest.TestCase):
         )
         self.assertTrue(expected == actual)
 
+
     def test_serialize_ms_assay_default_topology_modifiers(self):
-        expected = ordered(
-            json.loads("""{
-                "technical_replicates": 1,
-                "instruments": [],
-                "injection_modes": [],
-                "chromatography_instruments": [],
-                "acquisition_modes": []
-            }""")
-        )
-
-        actual = ordered(
-            json.loads(
-                json.dumps(MSAssayTopologyModifiers(),
-                           cls=SampleAssayPlanEncoder)
-            )
-        )
-        self.assertTrue(expected == actual)
-
-    def test_serialize_ms_assay_default_topology_modifiers2(self):
         expected = ordered(
             json.loads("""{
                 "sample_fractions": [],            
@@ -107,11 +89,61 @@ class EncodeToJsonTests(unittest.TestCase):
 
         actual = ordered(
             json.loads(
-                json.dumps(MSAssayTopologyModifiers2(),
+                json.dumps(MSTopologyModifiers(),
                            cls=SampleAssayPlanEncoder)
             )
         )
-        print(json.dumps(actual, indent=4))
+        self.assertTrue(expected == actual)
+
+    def test_serialize_ms_assay_topology_modifiers(self):
+        expected = ordered(
+            json.loads("""{
+                "sample_fractions": [
+                    "non-polar",
+                    "polar"
+                ],
+                "injection_modes": [
+                    {
+                        "acquisition_modes": [],
+                        "injection_mode": "DI"
+                    },
+                    {
+                        "chromatography_column": "Chrom col",
+                        "instrument": "MS instr",
+                        "acquisition_modes": [
+                            {
+                                "acquisition_method": "positive",
+                                "technical_repeats": 1
+                            }
+                        ],
+                        "injection_mode": "LC",
+                        "chromatography_instrument": "Chrom instr"
+                    }
+                ]
+            }""")
+    )
+
+        top_mods = MSTopologyModifiers()
+        top_mods.sample_fractions.add('polar')
+        top_mods.sample_fractions.add('non-polar')
+        top_mods.injection_modes.add(MSInjectionMode())
+        top_mods.injection_modes.add(
+            MSInjectionMode(
+                injection_mode='LC', chromatography_instrument='Chrom instr',
+                chromatography_column='Chrom col', ms_instrument='MS instr',
+                acquisition_modes={
+                    MSAcquisitionMode(
+                        acquisition_method='positive', technical_repeats=1)
+                }
+            )
+        )
+
+        actual = ordered(
+            json.loads(
+                json.dumps(top_mods, cls=SampleAssayPlanEncoder)
+            )
+        )
+        print(json.dumps(top_mods, cls=SampleAssayPlanEncoder, indent=4))
         self.assertTrue(expected == actual)
 
     def test_serialize_nmr_assay_default_topology_modifiers(self):
@@ -127,7 +159,7 @@ class EncodeToJsonTests(unittest.TestCase):
 
         actual = ordered(
             json.loads(
-                json.dumps(NMRAssayTopologyModifiers(),
+                json.dumps(NMRTopologyModifiers(),
                            cls=SampleAssayPlanEncoder)
             )
         )
@@ -756,6 +788,130 @@ class DecodeFromJsonTests(unittest.TestCase):
         factory.add_factor_value(BASE_FACTORS[2], 'long')
         self.treatment_sequence = TreatmentSequence(
             ranked_treatments=factory.compute_full_factorial_design())
+
+    def test_decode_sample_assay_plan_ms(self):
+        decoder = SampleAssayPlanDecoder()
+        sample_assay_plan = decoder.load(StringIO("""{
+                        "sample_types": ["liver", "tissue", "water"],
+                        "group_size": 20,
+                        "sample_plan": [
+                            {
+                                "sampling_size": 3,
+                                "sample_type": "liver"
+                            },
+                            {
+                                "sampling_size": 5,
+                                "sample_type": "tissue"
+                            }
+                        ],
+                        "sample_qc_plan": [
+                            {
+                                "injection_interval": 8,
+                                "sample_type": "water"
+                            }
+                        ],
+                        "assay_types": [
+                            {
+                                "sample_fractions": ["polar", "non-polar"],
+                                "injection_modes": [
+                                    {
+                                        "injection_mode": "DI",
+                                        "chromatography_column": null,
+                                        "chromatography_instrument": "none reported",
+                                        "instrument": null,
+                                        "acquisition_modes": [{
+                                            "acquisition_method": "polar",
+                                            "technical_repeats": 1
+                                        }]
+                                    },
+                                    {
+                                        "injection_mode": "LC",
+                                        "chromatography_column": "Chrom col",
+                                        "chromatography_instrument": "Chrom instr",
+                                        "instrument": "MS instr",
+                                        "acquisition_modes": [
+                                            {
+                                                "acquisition_method": "polar",
+                                                "technical_repeats": 2
+                                            },
+                                            {
+                                                "acquisition_method": "non-polar",
+                                                "technical_repeats": 2
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        "assay_plan": [
+                            {
+                                "sample_type": "liver",
+                                "assay_type": {
+                                    "topology_modifiers": {
+                                        "sample_fractions": ["polar", "non-polar"],
+                                        "injection_modes": [
+                                            {
+                                                "injection_mode": "DI",
+                                                "chromatography_column": null,
+                                                "chromatography_instrument": "none reported",
+                                                "instrument": null,
+                                                "acquisition_modes": [{
+                                                    "acquisition_method": "postitive/negative",
+                                                    "technical_repeats": 1
+                                                }]
+                                            },
+                                            {
+                                                "injection_mode": "LC",
+                                                "chromatography_column": "Chrom col",
+                                                "chromatography_instrument": "Chrom instr",
+                                                "instrument": "MS instr",
+                                                "acquisition_modes": [
+                                                    {
+                                                        "acquisition_method": "postitive",
+                                                        "technical_repeats": 2
+                                                    },
+                                                    {
+                                                        "acquisition_method": "negative",
+                                                        "technical_repeats": 2
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "technology_type": "metabolite profiling",
+                                    "measurement_type": "mass spectrometry"
+                                }
+                            }
+                        ],
+                        "pre_run_batch": {},
+                        "post_run_batch": {}
+                    }"""))
+        plan = SampleAssayPlan()
+        assay_type = AssayType(
+            measurement_type=OntologyAnnotation(term='metabolite profiling'),
+            technology_type=OntologyAnnotation(term='mass spectrometry')
+        )
+        topology_modifiers = MSTopologyModifiers()
+        topology_modifiers.sample_fractions.add('polar')
+        topology_modifiers.sample_fractions.add('non=polar')
+        assay_type.topology_modifiers = topology_modifiers
+        injection_mode_di = MSInjectionMode()
+        injection_mode_di.acquisition_modes.add(MSAcquisitionMode(
+            acquisition_method='positive/negative',
+            technical_repeats=1
+        ))
+        topology_modifiers.injection_modes.add(injection_mode_di)
+        injection_mode_lc = MSInjectionMode(
+            injection_mode='LC', chromatography_column='Chrom col',
+            chromatography_instrument='Chrom instr', ms_instrument='MS instr')
+        injection_mode_lc.acquisition_modes.add(MSAcquisitionMode(
+            acquisition_method='positive', technical_repeats=2
+        ))
+        injection_mode_lc.acquisition_modes.add(MSAcquisitionMode(
+            acquisition_method='negative', technical_repeats=2
+        ))
+        plan.add_assay_type(assay_type)
+
 
     def test_decode_sample_assay_plan(self):
         decoder = SampleAssayPlanDecoder()

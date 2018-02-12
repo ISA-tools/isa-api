@@ -4,13 +4,9 @@ function or factory to create ISA model objects.
 """
 from __future__ import absolute_import
 import datetime
-from random import sample
-
 import itertools
 import json
-import logging
 import random
-import uuid
 from collections import Iterable
 from collections import OrderedDict
 from numbers import Number
@@ -322,13 +318,15 @@ class AssayType(object):
                             'Please provide an OntologyAnnotation or string.'
                             .format(technology_type))
 
-        if isinstance(topology_modifiers, AssayTopologyModifiers):
+        if isinstance(topology_modifiers, (NMRTopologyModifiers,
+                                           MSTopologyModifiers)):
             self.__topology_modifiers = topology_modifiers
         elif topology_modifiers is None:
             self.__topology_modifiers = None
         else:
             raise TypeError('{0} is an invalid value for topology_modifiers. '
-                            'Please provide a AssayTopologyModifiers object.'
+                            'Please provide a supported AssayTopologyModifiers '
+                            'object (currently NMR or MS).'
                             .format(topology_modifiers))
 
     @property
@@ -371,13 +369,15 @@ class AssayType(object):
 
     @topology_modifiers.setter
     def topology_modifiers(self, topology_modifiers):
-        if isinstance(topology_modifiers, AssayTopologyModifiers):
+        if isinstance(topology_modifiers, (NMRTopologyModifiers,
+                                           MSTopologyModifiers)):
             self.__topology_modifiers = topology_modifiers
         elif topology_modifiers is None:
             self.__topology_modifiers = None
         else:
             raise TypeError('{0} is an invalid value for measurement_type. '
-                            'Please provide a AssayTopologyModifiers object.'
+                            'Please provide a supported AssayTopologyModifiers '
+                            'object (currently NMR or MS).'
                             .format(topology_modifiers))
 
     def __repr__(self):
@@ -398,7 +398,7 @@ class AssayType(object):
                and self.technology_type == other.technology_type
 
 
-class AssayTopologyModifiers(object):
+class GenericAssayTopologyModifiers(object):
 
     def __init__(self, technical_replicates=1, instruments=None):
         self.__technical_replicates = technical_replicates
@@ -434,7 +434,7 @@ class AssayTopologyModifiers(object):
         self.__instruments = val
 
 
-class NMRAssayTopologyModifiers(AssayTopologyModifiers):
+class NMRTopologyModifiers(GenericAssayTopologyModifiers):
 
     def __init__(self, acquisition_modes=None,
                  pulse_sequences=None, technical_replicates=1,
@@ -498,7 +498,7 @@ class NMRAssayTopologyModifiers(AssayTopologyModifiers):
         self.__acquisition_modes = val
 
     def __repr__(self):
-        return 'NMRAssayTopologyModifiers(' \
+        return 'NMRTopologyModifiers(' \
                'acquisition_modes={0}, ' \
                'pulse_sequences={1}, ' \
                'technical_replicates={2}, ' \
@@ -517,7 +517,7 @@ class NMRAssayTopologyModifiers(AssayTopologyModifiers):
         return not self == other
 
     def __eq__(self, other):
-        return isinstance(other, NMRAssayTopologyModifiers) \
+        return isinstance(other, NMRTopologyModifiers) \
                and self.injection_modes == other.injection_modes \
                and self.acquisition_modes == other.acquisition_modes \
                and self.pulse_sequences == other.pulse_sequences \
@@ -525,7 +525,7 @@ class NMRAssayTopologyModifiers(AssayTopologyModifiers):
                and self.instruments == other.instruments
 
 
-class MSAcquisitionModeTopologyModifier(object):
+class MSAcquisitionMode(object):
 
     def __init__(self, acquisition_method, technical_repeats=1):
         self.__acquisition_method = acquisition_method
@@ -537,9 +537,9 @@ class MSAcquisitionModeTopologyModifier(object):
 
     @acquisition_method.setter
     def acquisition_method(self, val):
-        if val not in ('pos', 'neg', 'pos-neg'):
-            raise ValueError('Acquisition method must be one of pos, neg or '
-                             'pos-neg')
+        if val not in ('positive', 'negative', 'positive/negative'):
+            raise ValueError('Acquisition method must be one of positive, '
+                             'negative or positive/negative')
         self.__acquisition_method = val
 
     @property
@@ -549,22 +549,26 @@ class MSAcquisitionModeTopologyModifier(object):
     @technical_repeats.setter
     def technical_repeats(self, val):
         if not isinstance(val, int):
-            raise ValueError('Technical repeasts must be specified in integer'
+            raise ValueError('Technical repeats must be specified in integer'
                              'numbers')
         self.__technical_repeats = val
 
 
-class MSInjectionModeTopologyModifiers(object):
+    def __repr__(self):
+        return 'MSAcquisitionMode(' \
+               'acquisition_method={acquisition_method}, ' \
+               'technical_repeats={technical_repeats})'.format(
+                acquisition_method=self.acquisition_method,
+                technical_repeats=self.technical_repeats)
+
+
+class MSInjectionMode(object):
 
     def __init__(self, injection_mode='DI',
                  chromatography_instrument='none reported',
                  chromatography_column='none reported',
-                 acquisition_modes=None, instrument=None):
+                 acquisition_modes=None, ms_instrument=None):
         self.injection_mode = injection_mode
-        if instrument is None:
-            self.__instrument = None
-        else:
-            self.__instrument = instrument
         self.__chromatography_instrument = chromatography_instrument
         self.__chromatography_column = chromatography_column
         if injection_mode in ('GC', 'LC'):
@@ -575,10 +579,14 @@ class MSInjectionModeTopologyModifiers(object):
             self.chromatography_column = chromatography_column
         else:
             self.__chromatography_column = None
-        if injection_mode is None:
+        if acquisition_modes is None:
             self.__acquisition_modes = set()
         else:
-            self.___acquisition_modes = acquisition_modes
+            self.__acquisition_modes = acquisition_modes
+        if ms_instrument is None:
+            self.__ms_instrument = None
+        else:
+            self.__ms_instrument = ms_instrument
 
     @property
     def injection_mode(self):
@@ -592,16 +600,17 @@ class MSInjectionModeTopologyModifiers(object):
         self.__injection_mode = val
 
     @property
-    def instrument(self):
-        return self.__instrument
+    def ms_instrument(self):
+        return self.__ms_instrument
 
-    @instrument.setter
-    def instrument(self, val):
-        self.__instrument = val
+    @ms_instrument.setter
+    def ms_instrument(self, val):
+        self.__ms_instrument = val
 
     @property
     def chromatography_instrument(self):
-        return self.__chromatography_instrument
+        if self.injection_mode in ('GC', 'LC'):
+            return self.__chromatography_instrument
 
     @chromatography_instrument.setter
     def chromatography_instrument(self, val):
@@ -612,12 +621,13 @@ class MSInjectionModeTopologyModifiers(object):
 
     @property
     def chromatography_column(self):
-        return self.__chromatography_column
+        if self.injection_mode in ('LC'):
+            return self.__chromatography_column
 
     @chromatography_column.setter
     def chromatography_column(self, val):
         if self.injection_mode not in ('LC'):
-            raise ValueError('Cannot set chromatography colun if '
+            raise ValueError('Cannot set chromatography column if '
                              'injection mode is not LC')
         self.__chromatography_column = val
 
@@ -630,15 +640,27 @@ class MSInjectionModeTopologyModifiers(object):
         if not isinstance(val, set):
             raise TypeError('{0} is an invalid value for acquisition_modes. '
                             'Please provide an set of '
-                            'MSAcquisitionModeTopologyModifier.')
-        if not all(isinstance(
-                x, MSAcquisitionModeTopologyModifier) for x in val):
+                            'MSAcquisitionMode.')
+        if not all(isinstance(x, MSAcquisitionMode) for x in val):
             raise ValueError('Acquisition modes must be of type '
-                             'MSAcquisitionModeTopologyModifier')
+                             'MSAcquisitionMode')
         self.__acquisition_modes.add(val)
 
+    def __repr__(self):
+        return 'MSInjectionMode(' \
+               'injection_mode={injection_mode}, ' \
+               'ms_instrument={ms_instrument}, ' \
+               'chromatography_instrument={chromatography_instrument}, ' \
+               'chromatography_column={chromatography_column}, ' \
+               'acquisition_modes={acquisition_modes})'.format(
+                injection_mode=self.injection_mode,
+                ms_instrument=self.ms_instrument,
+                chromatography_instrument=self.chromatography_instrument,
+                chromatography_column=self.chromatography_column,
+                acquisition_modes=sorted(self.acquisition_modes)
+        )
 
-class MSAssayTopologyModifiers2(object):
+class MSTopologyModifiers(object):
 
     def __init__(self, sample_fractions=None,
                  injection_modes=None):
@@ -674,16 +696,16 @@ class MSAssayTopologyModifiers2(object):
         if not isinstance(val, set):
             raise TypeError('{0} is an invalid value for injection_modes. '
                             'Please provide an set of string.')
-        if not all(isinstance(x, MSInjectionModeTopologyModifiers) for x in val):
+        if not all(isinstance(x, MSInjectionMode) for x in val):
             raise ValueError('all injection modes need to be of type string')
         self.__injection_modes = val
 
     def __repr__(self):
-        return 'MSAssayTopologyModifiers2(' \
-               'sample_fractions={num_sample_fractions} sample fractions, ' \
-               'injection_modes={num_injection_modes} injection modes)'.format(
-                num_sample_fractions=len(self.sample_fractions),
-                num_injection_modes=len(self.injection_modes))
+        return 'MSTopologyModifiers(' \
+               'sample_fractions={num_sample_fractions}, ' \
+               'injection_modes={num_injection_modes})'.format(
+                num_sample_fractions=sorted(self.sample_fractions),
+                num_injection_modes=list(self.injection_modes))
 
     def __hash__(self):
         return hash(repr(self))
@@ -692,105 +714,12 @@ class MSAssayTopologyModifiers2(object):
         return not self == other
 
     def __eq__(self, other):
-        return isinstance(other, MSAssayTopologyModifiers2) \
+        return isinstance(other, MSTopologyModifiers) \
                and self.injection_modes == other.injection_modes \
                and self.sample_fractions == other.sample_fractions
 
 
-class MSAssayTopologyModifiers(AssayTopologyModifiers):
-
-    def __init__(self, acquisition_modes=None,
-                 chromatography_instruments=None, technical_replicates=1,
-                 instruments=None, injection_modes=None):
-        super().__init__(technical_replicates=technical_replicates,
-                         instruments=instruments)
-        if injection_modes is None:
-            self.__injection_modes = set()
-        else:
-            self.injection_modes = injection_modes
-        if acquisition_modes is None:
-            self.__acquisition_modes = set()
-        else:
-            self.acquisition_modes = acquisition_modes
-        if chromatography_instruments is None:
-            self.__chromatography_instruments = set()
-        else:
-            self.chromatography_instruments = chromatography_instruments
-
-    @property
-    def injection_modes(self):
-        return self.__injection_modes
-
-    @injection_modes.setter
-    def injection_modes(self, val):
-        injection_mode_values = ('FIA', 'GC', 'LC')
-        if not isinstance(val, set):
-            raise TypeError('{0} is an invalid value for injection_modes. '
-                            'Please provide an set of string.')
-        if not all(isinstance(x, str) for x in val):
-            raise ValueError('all injection modes need to be of type string')
-        if not all(x in injection_mode_values for x in val):
-            raise ValueError('injection modes must be one of {}'.format(
-                injection_mode_values))
-        self.__injection_modes = val
-
-    @property
-    def acquisition_modes(self):
-        return self.__acquisition_modes
-
-    @acquisition_modes.setter
-    def acquisition_modes(self, val):
-        if not isinstance(val, set):
-            raise TypeError('{0} is an invalid value for acquisition_modes. '
-                            'Please provide an set of string.')
-        if not all(isinstance(x, str) for x in val):
-            raise ValueError('all acquisition modes need to be of type string')
-        self.__acquisition_modes = val
-
-    @property
-    def chromatography_instruments(self):
-        return self.__chromatography_instruments
-
-    @chromatography_instruments.setter
-    def chromatography_instruments(self, val):
-        if not isinstance(val, set):
-            raise TypeError('{0} is an invalid value for chromatography_'
-                            'instruments. Please provide an set of string.')
-        if not all(isinstance(x, str) for x in val):
-            raise ValueError('all chromatography instruments need to be of '
-                             'type string')
-        self.__chromatography_instruments = val
-
-    def __repr__(self):
-        return 'MSAssayTopologyModifiers(' \
-               'technical_replicates={0}, ' \
-               'instruments={1}, injection_modes={2}, ' \
-               'acquisition_modes={3}, ' \
-               'chromatography_instruments={4})'.format(
-                self.technical_replicates,
-                sorted(self.instruments),
-                sorted(self.injection_modes),
-                sorted(self.acquisition_modes),
-                sorted(self.chromatography_instruments)
-                )
-
-    def __hash__(self):
-        return hash(repr(self))
-
-    def __ne__(self, other):
-        return not self == other
-
-    def __eq__(self, other):
-        return isinstance(other, MSAssayTopologyModifiers) \
-               and self.injection_modes == other.injection_modes \
-               and self.acquisition_modes == other.acquisition_modes \
-               and self.technical_replicates == other.technical_replicates \
-               and self.instruments == other.instruments \
-               and self.chromatography_instruments == \
-                   other.chromatography_instruments
-
-
-class DNASeqAssayTopologyModifiers(AssayTopologyModifiers):
+class DNASeqAssayTopologyModifiers(GenericAssayTopologyModifiers):
 
     def __init__(self, distinct_libraries=0, technical_replicates=1,
                  instruments=None):
@@ -833,7 +762,7 @@ class DNASeqAssayTopologyModifiers(AssayTopologyModifiers):
                and self.distinct_libraries == other.distinct_libraries
 
 
-class DNAMicroAssayTopologyModifiers(AssayTopologyModifiers):
+class DNAMicroAssayTopologyModifiers(GenericAssayTopologyModifiers):
 
     def __init__(self, array_designs=None, technical_replicates=1):
         super().__init__(technical_replicates=technical_replicates)
@@ -2384,8 +2313,8 @@ class IsaModelObjectFactory(object):
 
 class SampleAssayPlanEncoder(json.JSONEncoder):
 
-    def get_acq_mods(self, o):
-        if isinstance(o, MSAcquisitionModeTopologyModifier):
+    def get_acquisition_mode(self, o):
+        if isinstance(o, MSAcquisitionMode):
             return {
                 'acquisition_method': o.acquisition_method,
                 'technical_repeats': o.technical_repeats
@@ -2403,23 +2332,13 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
                 'technical_replicates': o.technical_replicates,
                 'instruments': sorted(o.instruments)
             }
-        if isinstance(o, MSAssayTopologyModifiers):
+        if isinstance(o, MSTopologyModifiers):
             return {
-                'injection_modes': sorted(o.injection_modes),
-                'acquisition_modes': sorted(o.acquisition_modes),
-                'technical_replicates': o.technical_replicates,
-                'instruments': sorted(o.instruments),
-                'chromatography_instruments': sorted(
-                    o.chromatography_instruments)
-            }
-        if isinstance(o, MSAssayTopologyModifiers2):
-            return {
-                'sample_fractions': [self.get_acq_mods(x) for
-                                     x in o.sample_fractions],
+                'sample_fractions': list(o.sample_fractions),
                 'injection_modes': [self.get_injection_mode(x) for
                                     x in o.injection_modes]
             }
-        if isinstance(o, NMRAssayTopologyModifiers):
+        if isinstance(o, NMRTopologyModifiers):
             return {
                 'injection_modes': sorted(o.injection_modes),
                 'acquisition_modes': sorted(o.acquisition_modes),
@@ -2429,13 +2348,19 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
             }
 
     def get_injection_mode(self, o):
-        if isinstance(o, MSInjectionModeTopologyModifiers):
-            return {
+        if isinstance(o, MSInjectionMode):
+            j = {
                 'injection_mode': o.injection_mode,
-                'instrument': o.instrument,
-                'chromatography_column': o.chromatography_column,
-                'chromatography_instrument': o.chromatography_instrument,
+                'acquisition_modes': [self.get_acquisition_mode(x) for
+                                      x in o.acquisition_modes]
             }
+            if o.ms_instrument:
+                j['instrument'] = o.ms_instrument
+            if o.chromatography_instrument:
+                j['chromatography_instrument'] = o.chromatography_instrument
+            if o.chromatography_column:
+                j['chromatography_column'] = o.chromatography_column
+            return j
 
     def get_assay_type(self, o):
         return {
@@ -2518,7 +2443,7 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
         return assay_plan_record_list
 
     def default(self, o):
-        if isinstance(o, (AssayTopologyModifiers, MSAssayTopologyModifiers2)):
+        if isinstance(o, (GenericAssayTopologyModifiers, MSTopologyModifiers)):
             return self.get_top_mods(o)
         elif isinstance(o, AssayType):
             return self.get_assay_type(o)
@@ -2572,7 +2497,7 @@ class SampleAssayPlanDecoder(object):
             top_mods.instruments = set(
                 map(lambda x: x, top_mods_json['instruments']))
         elif set(self.ms_key_signature).issubset(key_signature):
-            top_mods = MSAssayTopologyModifiers()
+            top_mods = MSTopologyModifiers()
             top_mods.injection_modes = set(
                 map(lambda x: x, top_mods_json['injection_modes']))
             top_mods.acquisition_modes = set(
@@ -2584,7 +2509,7 @@ class SampleAssayPlanDecoder(object):
             top_mods.chromatography_instruments = set(
                 map(lambda x: x, top_mods_json['chromatography_instruments']))
         elif set(self.nmr_key_signature).issubset(key_signature):
-            top_mods = NMRAssayTopologyModifiers()
+            top_mods = NMRTopologyModifiers()
             top_mods.injection_modes = set(
                 map(lambda x: x, top_mods_json['injection_modes']))
             top_mods.acquisition_modes = set(
@@ -2750,7 +2675,6 @@ def make_summary_from_treatment_sequence(treatment_sequence):
             'value': x.value} for x in
             treatment.factor_values]
         treatments.append(fv_tuples)
-
     len_full_factorial = len(list(itertools.product(*factors_dict.values())))
     len_treatment_sequence = len(treatment_sequence.ranked_treatments)
     is_full_factorial = len_full_factorial == len_treatment_sequence
