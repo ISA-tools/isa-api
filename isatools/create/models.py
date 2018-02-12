@@ -370,14 +370,15 @@ class AssayType(object):
     @topology_modifiers.setter
     def topology_modifiers(self, topology_modifiers):
         if isinstance(topology_modifiers, (NMRTopologyModifiers,
-                                           MSTopologyModifiers)):
+                                           MSTopologyModifiers,
+                                           GenericAssayTopologyModifiers)):
             self.__topology_modifiers = topology_modifiers
         elif topology_modifiers is None:
             self.__topology_modifiers = None
         else:
             raise TypeError('{0} is an invalid value for measurement_type. '
                             'Please provide a supported AssayTopologyModifiers '
-                            'object (currently NMR or MS).'
+                            'object (currently NMR or MS or Generic).'
                             .format(topology_modifiers))
 
     def __repr__(self):

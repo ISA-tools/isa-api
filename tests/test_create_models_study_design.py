@@ -9,7 +9,7 @@ from isatools.create.models import (StudyDesign, Treatment,
                                     SampleAssayPlan, INTERVENTIONS,
                                     BASE_FACTORS_ as BASE_FACTORS,
                                     IsaModelObjectFactory,
-                                    MSAssayTopologyModifiers,
+                                    MSTopologyModifiers,
                                     DNASeqAssayTopologyModifiers,
                                     SampleQCBatch)
 
@@ -827,7 +827,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
 
         ms_assay_type = AssayType(measurement_type='metabolite profiling',
                                   technology_type='mass spectrometry')
-        ms_assay_type.topology_modifiers = MSAssayTopologyModifiers(
+        ms_assay_type.topology_modifiers = MSTopologyModifiers(
             injection_modes={'FIA', 'LC'},
             acquisition_modes={'positive', 'negative'},
             technical_replicates=2
@@ -885,7 +885,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
 
         ms_assay_type = AssayType(measurement_type='metabolite profiling',
                                   technology_type='mass spectrometry')
-        ms_assay_type.topology_modifiers = MSAssayTopologyModifiers(
+        ms_assay_type.topology_modifiers = MSTopologyModifiers(
             injection_modes={'FIA', 'LC'},
             acquisition_modes={'positive', 'negative'},
             technical_replicates=2
@@ -904,7 +904,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
 
         ms_assay_type1 = AssayType(measurement_type='metabolite profiling',
                                   technology_type='mass spectrometry')
-        ms_assay_type1.topology_modifiers = MSAssayTopologyModifiers(
+        ms_assay_type1.topology_modifiers = MSTopologyModifiers(
             injection_modes={'LC'},
             acquisition_modes={'negative'},
             technical_replicates=1
@@ -912,7 +912,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         sample_assay_plan.add_assay_type(ms_assay_type1)
         ms_assay_type2 = AssayType(measurement_type='metabolite profiling',
                                    technology_type='mass spectrometry')
-        ms_assay_type2.topology_modifiers = MSAssayTopologyModifiers(
+        ms_assay_type2.topology_modifiers = MSTopologyModifiers(
             injection_modes={'FIA'},
             acquisition_modes={'postitive', 'negative'},
             technical_replicates=2
@@ -964,7 +964,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         self.assertEqual(len(study.samples), 288)
         ms_assay_type = AssayType(measurement_type='metabolite profiling',
                                   technology_type='mass spectrometry')
-        ms_assay_type.topology_modifiers = MSAssayTopologyModifiers(
+        ms_assay_type.topology_modifiers = MSTopologyModifiers(
             injection_modes={'FIA', 'LC'},
             acquisition_modes={'positive', 'negative'},
             technical_replicates=2
@@ -983,7 +983,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
 
         ms_assay_type1 = AssayType(measurement_type='metabolite profiling',
                                    technology_type='mass spectrometry')
-        ms_assay_type1.topology_modifiers = MSAssayTopologyModifiers(
+        ms_assay_type1.topology_modifiers = MSTopologyModifiers(
             injection_modes={'LC'},
             acquisition_modes={'negative'},
             technical_replicates=1
@@ -991,7 +991,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         sample_assay_plan.add_assay_type(ms_assay_type1)
         ms_assay_type2 = AssayType(measurement_type='metabolite profiling',
                                    technology_type='mass spectrometry')
-        ms_assay_type2.topology_modifiers = MSAssayTopologyModifiers(
+        ms_assay_type2.topology_modifiers = MSTopologyModifiers(
             injection_modes={'FIA'},
             acquisition_modes={'postitive', 'negative'},
             technical_replicates=2
