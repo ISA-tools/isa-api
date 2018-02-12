@@ -528,8 +528,8 @@ class NMRAssayTopologyModifiers(AssayTopologyModifiers):
 class MSAcquisitionModeTopologyModifier(object):
 
     def __init__(self, acquisition_method, technical_repeats=1):
-        self.acquisition_method = acquisition_method
-        self.technical_repeats = technical_repeats
+        self.__acquisition_method = acquisition_method
+        self.__technical_repeats = technical_repeats
 
     @property
     def acquisition_method(self):
@@ -559,8 +559,14 @@ class MSInjectionModeTopologyModifiers(object):
     def __init__(self, injection_mode='DI',
                  chromatography_instrument='none reported',
                  chromatography_column='none reported',
-                 acquisition_modes=None):
+                 acquisition_modes=None, instrument=None):
         self.injection_mode = injection_mode
+        if instrument is None:
+            self.__instrument = None
+        else:
+            self.__instrument = instrument
+        self.__chromatography_instrument = chromatography_instrument
+        self.__chromatography_column = chromatography_column
         if injection_mode in ('GC', 'LC'):
             self.chromatography_instrument = chromatography_instrument
         else:
@@ -2378,6 +2384,13 @@ class IsaModelObjectFactory(object):
 
 class SampleAssayPlanEncoder(json.JSONEncoder):
 
+    def get_acq_mods(self, o):
+        if isinstance(o, MSAcquisitionModeTopologyModifier):
+            return {
+                'acquisition_method': o.acquisition_method,
+                'technical_repeats': o.technical_repeats
+            }
+
     def get_top_mods(self, o):
         if isinstance(o, DNAMicroAssayTopologyModifiers):
             return {
@@ -2401,10 +2414,10 @@ class SampleAssayPlanEncoder(json.JSONEncoder):
             }
         if isinstance(o, MSAssayTopologyModifiers2):
             return {
-                'sample_fractions': sorted(o.sample_fractions),
-                'injection_modes':
-                    sorted([self.get_injection_mode(x) for
-                            x in o.injection_modes])
+                'sample_fractions': [self.get_acq_mods(x) for
+                                     x in o.sample_fractions],
+                'injection_modes': [self.get_injection_mode(x) for
+                                    x in o.injection_modes]
             }
         if isinstance(o, NMRAssayTopologyModifiers):
             return {
