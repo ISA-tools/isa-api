@@ -11,7 +11,9 @@ from isatools.create.models import (StudyDesign, Treatment,
                                     IsaModelObjectFactory,
                                     MSTopologyModifiers,
                                     DNASeqAssayTopologyModifiers,
-                                    SampleQCBatch)
+                                    SampleQCBatch,
+                                    MSAcquisitionMode,
+                                    MSInjectionMode)
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitroglycerin'
@@ -798,6 +800,8 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
              if x.get_char('Material Type').value.term == 'blank']))
         # 288 samples plus 36 QC samples
         self.assertEqual(324, len(study.samples))
+        from isatools import isatab
+        print(isatab.dumps(Investigation(studies=[study])))
 
     def test_study_from_2_level_factorial_plan(self):
         factor = StudyFactor(name='1')
@@ -828,9 +832,16 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         ms_assay_type = AssayType(measurement_type='metabolite profiling',
                                   technology_type='mass spectrometry')
         ms_assay_type.topology_modifiers = MSTopologyModifiers(
-            injection_modes={'FIA', 'LC'},
-            acquisition_modes={'positive', 'negative'},
-            technical_replicates=2
+            sample_fractions=set(),
+            injection_modes={MSInjectionMode(
+                injection_mode='FIA',
+                acquisition_modes={
+                    MSAcquisitionMode(acquisition_method='negative',
+                                      technical_repeats=2),
+                    MSAcquisitionMode(acquisition_method='positive',
+                                      technical_repeats=2),
+                }
+            )}
         )
         ngs_assay_type = AssayType(
             measurement_type='nucleotide sequencing', technology_type='NGS')
@@ -846,8 +857,8 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         sample_assay_plan.add_assay_plan_record('blood', ngs_assay_type)
         sample_assay_plan.add_assay_plan_record('urine', ngs_assay_type)
         study = isa_factory.create_assays_from_plan()
-        self.assertEqual(len(study.assays), 12)
-        self.assertEqual(len(study.protocols), 6)
+        self.assertEqual(len(study.assays), 6)
+        self.assertEqual(len(study.protocols), 4)
 
     def test_study_from_2_by_3_by_2_factorial_plan(self):
         factor1 = StudyFactor(name='1')
@@ -886,9 +897,8 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         ms_assay_type = AssayType(measurement_type='metabolite profiling',
                                   technology_type='mass spectrometry')
         ms_assay_type.topology_modifiers = MSTopologyModifiers(
-            injection_modes={'FIA', 'LC'},
-            acquisition_modes={'positive', 'negative'},
-            technical_replicates=2
+            sample_fractions={'polar'},
+            injection_modes={MSInjectionMode()}
         )
         ngs_assay_type = AssayType(
             measurement_type='nucleotide sequencing', technology_type='NGS')
@@ -905,26 +915,35 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         ms_assay_type1 = AssayType(measurement_type='metabolite profiling',
                                   technology_type='mass spectrometry')
         ms_assay_type1.topology_modifiers = MSTopologyModifiers(
-            injection_modes={'LC'},
-            acquisition_modes={'negative'},
-            technical_replicates=1
+            sample_fractions=set(),
+            injection_modes={MSInjectionMode(
+                injection_mode='LC',
+                acquisition_modes={MSAcquisitionMode(
+                    acquisition_method='negative', technical_repeats=1)}
+            )}
         )
         sample_assay_plan.add_assay_type(ms_assay_type1)
         ms_assay_type2 = AssayType(measurement_type='metabolite profiling',
                                    technology_type='mass spectrometry')
         ms_assay_type2.topology_modifiers = MSTopologyModifiers(
-            injection_modes={'FIA'},
-            acquisition_modes={'postitive', 'negative'},
-            technical_replicates=2
+            sample_fractions=set(),
+            injection_modes={MSInjectionMode(
+                injection_mode='FIA',
+                acquisition_modes={
+                    MSAcquisitionMode(acquisition_method='negative',
+                                      technical_repeats=2),
+                    MSAcquisitionMode(acquisition_method='positive',
+                                      technical_repeats=2),
+                }
+            )}
         )
         sample_assay_plan.add_assay_type(ms_assay_type2)
         sample_assay_plan.add_assay_plan_record('urine', ms_assay_type1)
         sample_assay_plan.add_assay_plan_record('urine', ms_assay_type2)
-
         sample_assay_plan.add_assay_type(ngs_assay_type)
         study = isa_factory.create_assays_from_plan()
-        self.assertEqual(len(study.assays), 11)
-        self.assertEqual(len(study.protocols), 7)
+        self.assertEqual(len(study.assays), 3)
+        self.assertEqual(len(study.protocols), 5)
 
     def test_study_from_repeated_measure_plan(self):
         factor1 = StudyFactor(name='1')
@@ -965,9 +984,26 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         ms_assay_type = AssayType(measurement_type='metabolite profiling',
                                   technology_type='mass spectrometry')
         ms_assay_type.topology_modifiers = MSTopologyModifiers(
-            injection_modes={'FIA', 'LC'},
-            acquisition_modes={'positive', 'negative'},
-            technical_replicates=2
+            sample_fractions=set(),
+            injection_modes={MSInjectionMode(
+                injection_mode='FIA',
+                acquisition_modes={
+                    MSAcquisitionMode(acquisition_method='negative',
+                                      technical_repeats=2),
+                    MSAcquisitionMode(acquisition_method='positive',
+                                      technical_repeats=2),
+                }
+            ),
+            MSInjectionMode(
+                injection_mode='LC',
+                acquisition_modes={
+                    MSAcquisitionMode(acquisition_method='negative',
+                                      technical_repeats=2),
+                    MSAcquisitionMode(acquisition_method='positive',
+                                      technical_repeats=2),
+                }
+            )
+            }
         )
         ngs_assay_type = AssayType(
             measurement_type='nucleotide sequencing', technology_type='NGS')
@@ -984,17 +1020,27 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         ms_assay_type1 = AssayType(measurement_type='metabolite profiling',
                                    technology_type='mass spectrometry')
         ms_assay_type1.topology_modifiers = MSTopologyModifiers(
-            injection_modes={'LC'},
-            acquisition_modes={'negative'},
-            technical_replicates=1
+            injection_modes={MSInjectionMode(
+                injection_mode='LC',
+                acquisition_modes={
+                    MSAcquisitionMode(acquisition_method='negative',
+                                      technical_repeats=1)
+                }
+            )}
         )
         sample_assay_plan.add_assay_type(ms_assay_type1)
         ms_assay_type2 = AssayType(measurement_type='metabolite profiling',
                                    technology_type='mass spectrometry')
         ms_assay_type2.topology_modifiers = MSTopologyModifiers(
-            injection_modes={'FIA'},
-            acquisition_modes={'postitive', 'negative'},
-            technical_replicates=2
+            injection_modes={MSInjectionMode(
+                injection_mode='FIA',
+                acquisition_modes={
+                    MSAcquisitionMode(acquisition_method='positive',
+                                      technical_repeats=2),
+                    MSAcquisitionMode(acquisition_method='negative',
+                                      technical_repeats=2)
+                }
+            )}
         )
         sample_assay_plan.add_assay_type(ms_assay_type2)
         sample_assay_plan.add_assay_plan_record('urine', ms_assay_type1)
@@ -1003,4 +1049,4 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         sample_assay_plan.add_assay_type(ngs_assay_type)
         study = isa_factory.create_assays_from_plan()
         self.assertEqual(len(study.assays), 11)
-        self.assertEqual(len(study.protocols), 7)
+        self.assertEqual(len(study.protocols), 6)

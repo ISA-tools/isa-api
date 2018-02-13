@@ -812,35 +812,39 @@ class DecodeFromJsonTests(unittest.TestCase):
                         ],
                         "assay_types": [
                             {
-                                "sample_fractions": ["polar", "non-polar"],
-                                "injection_modes": [
-                                    {
-                                        "injection_mode": "DI",
-                                        "chromatography_column": null,
-                                        "chromatography_instrument": "none reported",
-                                        "instrument": null,
-                                        "acquisition_modes": [{
-                                            "acquisition_method": "polar",
-                                            "technical_repeats": 1
-                                        }]
-                                    },
-                                    {
-                                        "injection_mode": "LC",
-                                        "chromatography_column": "Chrom col",
-                                        "chromatography_instrument": "Chrom instr",
-                                        "instrument": "MS instr",
-                                        "acquisition_modes": [
-                                            {
-                                                "acquisition_method": "polar",
-                                                "technical_repeats": 2
-                                            },
-                                            {
-                                                "acquisition_method": "non-polar",
-                                                "technical_repeats": 2
-                                            }
-                                        ]
-                                    }
-                                ]
+                                "topology_modifiers": {
+                                    "sample_fractions": ["polar", "non-polar"],
+                                    "injection_modes": [
+                                        {
+                                            "injection_mode": "DI",
+                                            "chromatography_column": null,
+                                            "chromatography_instrument": "none reported",
+                                            "instrument": null,
+                                            "acquisition_modes": [{
+                                                "acquisition_method": "positive",
+                                                "technical_repeats": 1
+                                            }]
+                                        },
+                                        {
+                                            "injection_mode": "LC",
+                                            "chromatography_column": "Chrom col",
+                                            "chromatography_instrument": "Chrom instr",
+                                            "instrument": "MS instr",
+                                            "acquisition_modes": [
+                                                {
+                                                    "acquisition_method": "positive",
+                                                    "technical_repeats": 2
+                                                },
+                                                {
+                                                    "acquisition_method": "negative",
+                                                    "technical_repeats": 2
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "technology_type": "metabolite profiling",
+                                "measurement_type": "mass spectrometry"
                             }
                         ],
                         "assay_plan": [
