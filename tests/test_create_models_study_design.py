@@ -800,8 +800,6 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
              if x.get_char('Material Type').value.term == 'blank']))
         # 288 samples plus 36 QC samples
         self.assertEqual(324, len(study.samples))
-        from isatools import isatab
-        print(isatab.dumps(Investigation(studies=[study])))
 
     def test_study_from_2_level_factorial_plan(self):
         factor = StudyFactor(name='1')
@@ -809,11 +807,12 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         treatment_factory.add_factor_value(factor, 'a')
         treatment_factory.add_factor_value(factor, 'b')
         treatments = treatment_factory.compute_full_factorial_design()
-        treatment_sequence = TreatmentSequence(ranked_treatments=treatments)
+        two_ranks_of_treatments = {(x, 1) for x in treatments}.union({(x, 2) for x in treatments})
+        treatment_sequence = TreatmentSequence(ranked_treatments=two_ranks_of_treatments)
         self.assertEqual(len(treatments), 2)
-        self.assertEqual(len(treatment_sequence.ranked_treatments), 2)
+        self.assertEqual(len(treatment_sequence.ranked_treatments), 4)
         self.assertEqual(
-            max((x for _, x in treatment_sequence.ranked_treatments)), 1)
+            max((x for _, x in treatment_sequence.ranked_treatments)), 2)
         sample_assay_plan = SampleAssayPlan()
         sample_assay_plan.group_size = 5
         sample_assay_plan.add_sample_type('liver')
@@ -827,7 +826,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
             treatment_sequence=treatment_sequence)
         study = isa_factory.create_study_from_plan()
         self.assertEqual(len(study.sources), 10)  # number of subjects
-        self.assertEqual(len(study.samples), 150)
+        self.assertEqual(len(study.samples), 300)
 
         ms_assay_type = AssayType(measurement_type='metabolite profiling',
                                   technology_type='mass spectrometry')
@@ -859,6 +858,9 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         study = isa_factory.create_assays_from_plan()
         self.assertEqual(len(study.assays), 6)
         self.assertEqual(len(study.protocols), 4)
+        study.filename = 's_study.txt'
+        from isatools import isatab
+        print(isatab.dumps(Investigation(studies=[study])))
 
     def test_study_from_2_by_3_by_2_factorial_plan(self):
         factor1 = StudyFactor(name='1')

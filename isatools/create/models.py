@@ -1097,14 +1097,14 @@ class IsaModelObjectFactory(object):
     def _idgen(self, gid='', subn='', samn='', samt=''):
         idarr = []
         if gid != '':
-            idarr.append('{}'.format(gid))  # study group
+            idarr.append('Group-{}'.format(gid))  # study group
         if subn != '':
-            idarr.append('source_{}'.format(subn))
-        if samn != '':
-            idarr.append('sample_{}'.format(samn))
+            idarr.append('Subject-{}'.format(subn))
         if samt != '':
             idarr.append(samt)
-        return '_'.join(idarr)
+        if samn != '':
+            idarr.append('{}'.format(samn))
+        return '.'.join(idarr)
 
     @property
     def ops(self):
@@ -1167,12 +1167,9 @@ class IsaModelObjectFactory(object):
         sample_collection = Protocol(name='sample collection',
                                      protocol_type=OntologyAnnotation(
                                          term='sample collection'))
-        sample_collection.add_param('Run Order')
+        sample_collection.add_param('run order')
+        sample_collection.add_param('collection event rank')
         study.protocols = [sample_collection]
-        collection_event_rank_characteristic = OntologyAnnotation(
-            term='collection_event_rank_characteristic')
-        study.characteristic_categories.append(
-            collection_event_rank_characteristic)
 
         sample_count = 0
         qc_param_set = set()
@@ -1181,28 +1178,41 @@ class IsaModelObjectFactory(object):
         prebatch = sample_qc_plan.pre_run_batch
         factors = set()
         if isinstance(prebatch, SampleQCBatch):
-            if prebatch.characteristic_values is None:
-                qcsource = Source(name='source_QC', characteristics=[
+            for i, c in enumerate(prebatch.characteristic_values):
+                var_characteristic = c.category
+                qcsource = Source(
+                    name='QC.{}.{}'.format(
+                        prebatch.material, str(i+1).zfill(3)), characteristics=[
                     Characteristic(
                         category=OntologyAnnotation(term='Material Type'),
-                        value=OntologyAnnotation(term=prebatch.material))])
+                        value=OntologyAnnotation(term=prebatch.material)),
+                        Characteristic(category=var_characteristic,
+                                       value=c.value)])
+                if var_characteristic not in study.characteristic_categories:
+                    study.characteristic_categories.append(var_characteristic)
                 sources.append(qcsource)
-            else:
-                for i, c in enumerate(prebatch.characteristic_values):
-                    var_characteristic = c.category
-                    qcsource = Source(
-                        name='source_QC_{}'.format(str(i+1).zfill(3)), characteristics=[
-                        Characteristic(
-                            category=OntologyAnnotation(term='Material Type'),
-                            value=OntologyAnnotation(term=prebatch.material)),
-                            Characteristic(category=var_characteristic,
-                                           value=c.value)])
-                    if var_characteristic not in study.characteristic_categories:
-                        study.characteristic_categories.append(var_characteristic)
-                    sources.append(qcsource)
-                    if prebatch.parameter_values is None:
-                        sample = Sample(name='sample_QC_{}'.format(
-                            str(i+1).zfill(3)))
+                if prebatch.parameter_values is None:
+                    sample = Sample(name=qcsource.name)
+                    process = Process(executes_protocol=study.get_prot(
+                        'sample collection'), inputs=[qcsource],
+                        outputs=[sample], performer=self.ops[0], date_=
+                        datetime.datetime.isoformat(
+                            datetime.datetime.now()))
+                    process.parameter_values = [
+                        ParameterValue(
+                            category=sample_collection.get_param(
+                                'run order'),
+                            value=-1)
+                    ]
+                    samples.append(sample)
+                    process_sequence.append(process)
+                else:
+                    for j, (p, v) in enumerate(prebatch.parameter_values):
+                        qc_param_set.add(p)
+                        sample = Sample(name=qcsource.name)
+                        qc_param = sample_collection.get_param(p)
+                        if qc_param is None:
+                            sample_collection.add_param(p)
                         process = Process(executes_protocol=study.get_prot(
                             'sample collection'), inputs=[qcsource],
                             outputs=[sample], performer=self.ops[0], date_=
@@ -1211,43 +1221,23 @@ class IsaModelObjectFactory(object):
                         process.parameter_values = [
                             ParameterValue(
                                 category=sample_collection.get_param(
-                                    'Run Order'),
-                                value=-1)
+                                    'run order'),
+                                value=-1),
+                            ParameterValue(
+                                category=sample_collection.get_param(p),
+                                value=v),
                         ]
                         samples.append(sample)
                         process_sequence.append(process)
-                    else:
-                        for j, (p, v) in enumerate(prebatch.parameter_values):
-                            qc_param_set.add(p)
-                            sample = Sample(name='sample_QC_{}'.format(str(j+1).zfill(3)))
-                            qc_param = sample_collection.get_param(p)
-                            if qc_param is None:
-                                sample_collection.add_param(p)
-                            process = Process(executes_protocol=study.get_prot(
-                                'sample collection'), inputs=[qcsource],
-                                outputs=[sample], performer=self.ops[0], date_=
-                                datetime.datetime.isoformat(
-                                    datetime.datetime.now()))
-                            process.parameter_values = [
-                                ParameterValue(
-                                    category=sample_collection.get_param(
-                                        'Run Order'),
-                                    value=-1),
-                                ParameterValue(
-                                    category=sample_collection.get_param(p),
-                                    value=v),
-                            ]
-                            samples.append(sample)
-                            process_sequence.append(process)
             if prebatch.parameter_values is not None:
-                qcsource = Source(name='source_QC', characteristics=[
+                qcsource = Source(name='QC.{}'.format(prebatch.material), characteristics=[
                     Characteristic(
                         category=OntologyAnnotation(term='Material Type'),
                         value=OntologyAnnotation(term=prebatch.material))])
                 sources.append(qcsource)
                 for i, (p, v) in enumerate(prebatch.parameter_values):
                     qc_param_set.add(p)
-                    sample = Sample(name='sample_QC_{}'.format(str(i+1).zfill(3)))
+                    sample = Sample(name='QC.{}.{}'.format(prebatch.material, str(i+1).zfill(3)))
                     qc_param = sample_collection.get_param(p)
                     if qc_param is None:
                         sample_collection.add_param(p)
@@ -1258,7 +1248,7 @@ class IsaModelObjectFactory(object):
                             datetime.datetime.now()))
                     process.parameter_values=[
                         ParameterValue(
-                            category=sample_collection.get_param('Run Order'),
+                            category=sample_collection.get_param('run order'),
                             value=-1),
                         ParameterValue(category=sample_collection.get_param(p),
                                        value=v),
@@ -1270,7 +1260,7 @@ class IsaModelObjectFactory(object):
             fvs = treatment.factor_values
             for factor in [x.factor_name for x in fvs]:
                 factors.add(factor)
-            for subjn in (str(x).zfill(3) for x in range(group_size)):
+            for subjn in (str(x).zfill(3) for x in range(1, group_size+1)):
                 material_type = Characteristic(
                     category=OntologyAnnotation(
                         term='Material Type'),
@@ -1293,7 +1283,7 @@ class IsaModelObjectFactory(object):
                 sources.append(source)
                 for rank in ranks:
                     for sample_type, sampling_size in sample_plan.items():
-                        for sampn in (str(x) for x in range(0, sampling_size)):
+                        for sampn in (str(x) for x in range(1, sampling_size+1)):
                             for qc_material_type in self.sample_assay_plan \
                                     .sample_qc_plan.keys():
                                 if sample_count % self.sample_assay_plan \
@@ -1303,7 +1293,6 @@ class IsaModelObjectFactory(object):
                                         name=self._idgen(group_id, subjn) + '_QC')
                                     qcsource.characteristics = [qc_material_type]
                                     sources.append(qcsource)
-
                                     sample = Sample(
                                         name=self._idgen(
                                             group_id, subjn,
@@ -1315,21 +1304,18 @@ class IsaModelObjectFactory(object):
                                         inputs=[qcsource],
                                         outputs=[sample], performer=self.ops[0],
                                         date_=datetime.datetime.isoformat(
-                                            datetime.datetime.now()),
-                                        parameter_values=[ParameterValue(
+                                            datetime.datetime.now()))
+                                    process.parameter_values.append(
+                                        ParameterValue(
                                             category=sample_collection.get_param(
-                                                'Run Order'), value=str(
-                                                sample_count))])
+                                                'run order'), value=str(
+                                                sample_count)))
                                     process_sequence.append(process)
                             # normal sample collection
                             sample = Sample(name=self._idgen(
                                 group_id, subjn, sampn, sample_type.value.term),
                                 factor_values=fvs)
-                            collection_event_rank = Characteristic(
-                                category=collection_event_rank_characteristic,
-                                value=rank)
-                            sample.characteristics = [sample_type,
-                                                      collection_event_rank]
+                            sample.characteristics = [sample_type]
                             sample.derives_from = [source]
                             samples.append(sample)
                             sample_count += 1
@@ -1338,8 +1324,13 @@ class IsaModelObjectFactory(object):
                                               performer=self.ops[0], date_=
                                 datetime.date.isoformat(datetime.date.today()),
                             parameter_values=[ParameterValue(
-                                category=sample_collection.get_param('Run Order'),
+                                category=sample_collection.get_param('run order'),
                                 value=str(sample_count).zfill(3))])
+                            process.parameter_values.append(
+                                ParameterValue(
+                                    category=sample_collection.get_param(
+                                        'collection event rank'),
+                                    value=str(rank)))
                             process_sequence.append(process)
         postbatch = sample_qc_plan.post_run_batch
         if isinstance(postbatch, SampleQCBatch):
@@ -1360,7 +1351,7 @@ class IsaModelObjectFactory(object):
                                            value=v)])
                     sources.append(qcsource)
                     if postbatch.parameter_values is None:
-                        sample = Sample(name='sample_QC_{}'.format(str(i+1).zfill(3)))
+                        sample = Sample(name='QC.{}.{}'.format(postbatch.material, str(i+1).zfill(3)))
                         process = Process(executes_protocol=study.get_prot(
                             'sample collection'), inputs=[qcsource],
                             outputs=[sample], performer=self.ops[0], date_=
@@ -1377,7 +1368,7 @@ class IsaModelObjectFactory(object):
                     else:
                         for j, p in enumerate(postbatch.parameter_values):
                             qc_param_set.add(p)
-                            sample = Sample(name='sample_QC_{}'.format(str(j+1).zfill(3)))
+                            sample = Sample(name='QC.{}.{}'.format(postbatch.material, str(j+1).zfill(3)))
                             qc_param = sample_collection.get_param(
                                 p.category.parameter_name.term)
                             if qc_param is None:
@@ -1390,7 +1381,7 @@ class IsaModelObjectFactory(object):
                             process.parameter_values = [
                                 ParameterValue(
                                     category=sample_collection.get_param(
-                                        'Run Order'),
+                                        'run order'),
                                     value=-1),
                                 ParameterValue(
                                     category=sample_collection.get_param(
@@ -1407,7 +1398,7 @@ class IsaModelObjectFactory(object):
                 sources.append(qcsource)
                 for i, p in enumerate(postbatch.parameter_values):
                     qc_param_set.add(p)
-                    sample = Sample(name='sample_QC_{}'.format(str(i+1).zfill(3)))
+                    sample = Sample(name='QC.{}.{}'.format(postbatch.material, str(i+1).zfill(3)))
                     qc_param = sample_collection.get_param(
                         p.category.parameter_name.term)
                     if qc_param is None:
@@ -1420,7 +1411,7 @@ class IsaModelObjectFactory(object):
                             datetime.datetime.now()))
                     process.parameter_values=[
                         ParameterValue(
-                            category=sample_collection.get_param('Run Order'),
+                            category=sample_collection.get_param('run order'),
                             value=-1),
                         ParameterValue(category=sample_collection.get_param(
                             p.category.parameter_name.term), value=p.value),
@@ -1486,7 +1477,7 @@ class IsaModelObjectFactory(object):
                             pass
                         nmr_prot = study.get_prot(mp_protocol_name)
                         try:
-                            nmr_prot.add_param('randomized run order')
+                            nmr_prot.add_param('run order')
                         except ISAModelAttributeError:
                             pass
                         try:
@@ -1532,7 +1523,7 @@ class IsaModelObjectFactory(object):
                                                     datetime.date.today()))
                                 aproc.parameter_values = [
                                     ParameterValue(category=nmr_prot.get_param(
-                                        'randomized run order'),
+                                        'run order'),
                                         value=str(run_counter)),
                                     ParameterValue(category=nmr_prot.get_param(
                                         'acquisition mode'), value=acq_mode),
@@ -1784,7 +1775,7 @@ class IsaModelObjectFactory(object):
                             pass
                         ms_prot = study.get_prot(mp_protocol_name)
                         try:
-                            ms_prot.add_param('randomized run order')
+                            ms_prot.add_param('run order')
                         except ISAModelAttributeError:
                             pass
                         try:
@@ -1842,7 +1833,7 @@ class IsaModelObjectFactory(object):
                                                     datetime.date.today()))
                                 aproc.parameter_values = [
                                     ParameterValue(category=ms_prot.get_param(
-                                        'randomized run order'),
+                                        'run order'),
                                         value=str(run_counter)),
                                     ParameterValue(category=ms_prot.get_param(
                                         'injection mode'), value=injection_mode.injection_mode ),
@@ -1918,7 +1909,7 @@ class IsaModelObjectFactory(object):
                                 pass
                             ms_prot = study.get_prot(mp_protocol_name)
                             try:
-                                ms_prot.add_param('randomized run order')
+                                ms_prot.add_param('run order')
                             except ISAModelAttributeError:
                                 pass
                             try:
@@ -1980,7 +1971,7 @@ class IsaModelObjectFactory(object):
                                     aproc.parameter_values = [
                                         ParameterValue(
                                             category=ms_prot.get_param(
-                                                'randomized run order'),
+                                                'run order'),
                                             value=str(run_counter)),
                                         ParameterValue(
                                             category=ms_prot.get_param(
@@ -2064,7 +2055,7 @@ class IsaModelObjectFactory(object):
                             pass
                         nmr_prot = study.get_prot(mp_protocol_name)
                         try:
-                            nmr_prot.add_param('randomized run order')
+                            nmr_prot.add_param('run order')
                         except ISAModelAttributeError:
                             pass
                         try:
@@ -2112,7 +2103,7 @@ class IsaModelObjectFactory(object):
                                                     datetime.date.today()))
                                 aproc.parameter_values = [
                                     ParameterValue(category=nmr_prot.get_param(
-                                        'randomized run order'),
+                                        'run order'),
                                         value=str(run_counter)),
                                     ParameterValue(category=nmr_prot.get_param(
                                         'acquisition mode'), value=acq_mode),
