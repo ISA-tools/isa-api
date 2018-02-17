@@ -1644,12 +1644,15 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
             parameter_list = ['instrument',
                               'ion source',
                               'detector',
-                              'analyzer']
+                              'analyzer',
+                              'chromatography instrument',
+                              'chromatography column']
         elif protocol_type == 'nmr spectroscopy':
             parameter_list = ['instrument',
                               'NMR probe',
                               'number of acquisition',
-                              'magnetic field strength']
+                              'magnetic field strength',
+                              'pulse sequence']
         elif protocol_type == 'nucleic acid hybridization':
             parameter_list = ['Array Design REF']
         elif protocol_type == 'nucleic acid sequencing':
@@ -1662,11 +1665,9 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         # TODO: Implement this for other defaults OR generate from config #51
         return default_protocol
 
-    def add_prot(self, protocol_name='', protocol_type=None,
-                 use_default_params=True):
+    def add_prot(self, protocol_name='', protocol_type=None, use_default_params=True):
         if self.get_prot(protocol_name=protocol_name) is not None:
-            log.warning('A protocol with name "{}" has already been declared in the '
-                  'study'.format(protocol_name))
+            log.warning('A protocol with name "{}" has already been declared in the study'.format(protocol_name))
         else:
             if isinstance(protocol_type, str) and use_default_params:
                 default_protocol = self.__get_default_protocol(protocol_type)
@@ -2206,10 +2207,7 @@ class Protocol(Commentable):
 
     def add_param(self, parameter_name=''):
         if self.get_param(parameter_name=parameter_name) is not None:
-            raise ISAModelAttributeError('A parameter with name "{0}" has '
-                                         'already been declared in the protocol'
-                                         '"{1}"'
-                                         .format(parameter_name, self.name))
+            pass
         else:
             if isinstance(parameter_name, str):
                 self.parameters.append(ProtocolParameter(
