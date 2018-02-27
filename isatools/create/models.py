@@ -1197,8 +1197,8 @@ class IsaModelObjectFactory(object):
                     process = Process(executes_protocol=study.get_prot(
                         'sample collection'), inputs=[qcsource],
                         outputs=[sample], performer=self.ops[0], date_=
-                        datetime.datetime.isoformat(
-                            datetime.datetime.now()))
+                        datetime.date.isoformat(
+                            datetime.date.today()))
                     process.parameter_values = [
                         ParameterValue(
                             category=sample_collection.get_param(
@@ -1217,8 +1217,8 @@ class IsaModelObjectFactory(object):
                         process = Process(executes_protocol=study.get_prot(
                             'sample collection'), inputs=[qcsource],
                             outputs=[sample], performer=self.ops[0], date_=
-                            datetime.datetime.isoformat(
-                                datetime.datetime.now()))
+                            datetime.date.isoformat(
+                                datetime.date.today()))
                         process.parameter_values = [
                             ParameterValue(
                                 category=sample_collection.get_param(
@@ -1245,8 +1245,8 @@ class IsaModelObjectFactory(object):
                     process = Process(executes_protocol=study.get_prot(
                         'sample collection'), inputs=[qcsource],
                         outputs=[sample], performer=self.ops[0], date_=
-                        datetime.datetime.isoformat(
-                            datetime.datetime.now()))
+                        datetime.date.isoformat(
+                            datetime.date.today()))
                     process.parameter_values=[
                         ParameterValue(
                             category=sample_collection.get_param('run order'),
@@ -1307,8 +1307,8 @@ class IsaModelObjectFactory(object):
                                         executes_protocol=sample_collection,
                                         inputs=[qcsource],
                                         outputs=[sample], performer=self.ops[0],
-                                        date_=datetime.datetime.isoformat(
-                                            datetime.datetime.now()))
+                                        date_=datetime.date.isoformat(
+                                            datetime.date.today()))
                                     process.parameter_values.append(
                                         ParameterValue(
                                             category=sample_collection.get_param(
@@ -1367,8 +1367,8 @@ class IsaModelObjectFactory(object):
                         process = Process(executes_protocol=study.get_prot(
                             'sample collection'), inputs=[qcsource],
                             outputs=[sample], performer=self.ops[0], date_=
-                            datetime.datetime.isoformat(
-                                datetime.datetime.now()))
+                            datetime.date.isoformat(
+                                datetime.date.today()))
                         process.parameter_values = [
                             ParameterValue(
                                 category=sample_collection.get_param(
@@ -1388,8 +1388,8 @@ class IsaModelObjectFactory(object):
                             process = Process(executes_protocol=study.get_prot(
                                 'sample collection'), inputs=[qcsource],
                                 outputs=[sample], performer=self.ops[0], date_=
-                                datetime.datetime.isoformat(
-                                    datetime.datetime.now()))
+                                datetime.date.isoformat(
+                                    datetime.date.today()))
                             process.parameter_values = [
                                 ParameterValue(
                                     category=sample_collection.get_param(
@@ -1419,8 +1419,8 @@ class IsaModelObjectFactory(object):
                     process = Process(executes_protocol=study.get_prot(
                         'sample collection'), inputs=[qcsource],
                         outputs=[sample], performer=self.ops[0], date_=
-                        datetime.datetime.isoformat(
-                            datetime.datetime.now()))
+                        datetime.date.isoformat(
+                            datetime.date.today()))
                     process.parameter_values=[
                         ParameterValue(
                             category=sample_collection.get_param('run order'),
