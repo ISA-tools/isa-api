@@ -1179,6 +1179,7 @@ class IsaModelObjectFactory(object):
         factors = set()
         if isinstance(prebatch, SampleQCBatch):
             for i, c in enumerate(prebatch.characteristic_values):
+                print('adding', i, c)
                 var_characteristic = c.category
                 qcsource = Source(
                     name='QC.{}.{}'.format(
@@ -1267,6 +1268,7 @@ class IsaModelObjectFactory(object):
                     value=OntologyAnnotation(term='specimen'))
                 source = Source(name=self._idgen(group_id, subjn))
                 source.characteristics = [material_type]
+
                 if prebatch is not None:
                     if prebatch.characteristic_values is not None:
                         c = next(iter(prebatch.characteristic_values))
@@ -1343,15 +1345,23 @@ class IsaModelObjectFactory(object):
                         value=OntologyAnnotation(term=postbatch.material))])
                 sources.append(qcsource)
             else:
-                for i, (c, v) in enumerate(postbatch.characteristic_values):
+                for i, c in enumerate(postbatch.characteristic_values):
+                    var_characteristic = c.category
                     qcsource = Source(
-                        name='source_QC_{}'.format(i), characteristics=[
-                        Characteristic(
-                            category=OntologyAnnotation(term='Material Type'),
-                            value=OntologyAnnotation(term=postbatch.material)),
-                            Characteristic(category=OntologyAnnotation(term=c),
-                                           value=v)])
-                    sources.append(qcsource)
+                        name='QC.{}.{}'.format(
+                            prebatch.material, str(i + 1).zfill(3)),
+                        characteristics=[
+                            Characteristic(
+                                category=OntologyAnnotation(
+                                    term='Material Type'),
+                                value=OntologyAnnotation(
+                                    term=prebatch.material)),
+                            Characteristic(category=var_characteristic,
+                                           value=str(c.value + 1).zfill(3))])
+                    if var_characteristic not in study.characteristic_categories:
+                        study.characteristic_categories.append(
+                            var_characteristic)
+
                     if postbatch.parameter_values is None:
                         sample = Sample(name='QC.{}.{}'.format(postbatch.material, str(i+1).zfill(3)))
                         process = Process(executes_protocol=study.get_prot(
