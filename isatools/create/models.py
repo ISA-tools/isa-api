@@ -1187,7 +1187,7 @@ class IsaModelObjectFactory(object):
                         category=OntologyAnnotation(term='Material Type'),
                         value=OntologyAnnotation(term=prebatch.material)),
                         Characteristic(category=var_characteristic,
-                                       value=c.value)])
+                                       value=str(c.value+1).zfill(3))])
                 if var_characteristic not in study.characteristic_categories:
                     study.characteristic_categories.append(var_characteristic)
                 sources.append(qcsource)
@@ -1311,7 +1311,7 @@ class IsaModelObjectFactory(object):
                                         ParameterValue(
                                             category=sample_collection.get_param(
                                                 'run order'), value=str(
-                                                sample_count)))
+                                                sample_count+1).zfill(3)))
                                     process_sequence.append(process)
                             # normal sample collection
                             sample = Sample(name=self._idgen(
@@ -1558,16 +1558,11 @@ class IsaModelObjectFactory(object):
                         ext_protocol = study.get_prot('metabolite extraction')
                         if injection_mode in ('LC', 'GC'):
                             try:
-                                ext_protocol.add_param(
-                                    'chromatography instrument')
+                                ext_protocol.add_param('chromatography instrument')
                             except ISAModelAttributeError:
                                 pass
                             try:
                                 ext_protocol.add_param('chromatography column')
-                            except ISAModelAttributeError:
-                                pass
-                            try:
-                                ext_protocol.add_param('elution program')
                             except ISAModelAttributeError:
                                 pass
                         mp_protocol_name = '{0}-{1} mass spectrometry'.format(
@@ -1606,8 +1601,7 @@ class IsaModelObjectFactory(object):
                             extr = Extract(name='{0}.Extract-{1}'.format(
                                 samp.name, biorepl))
                             assay.other_material.append(extr)
-                            eproc = Process(executes_protocol=study
-                                            .get_prot('metabolite extraction'),
+                            eproc = Process(executes_protocol=ext_protocol,
                                             inputs=[samp], outputs=[extr],
                                             performer=self.ops[1],
                                             date_=datetime.date.isoformat(
@@ -1615,15 +1609,13 @@ class IsaModelObjectFactory(object):
                             if injection_mode.injection_mode in ('LC', 'GC'):
                                 eproc.parameter_values.append(
                                     ParameterValue(
-                                        category=ext_protocol.get_param(
-                                            'chromatography instrument'),
+                                        category=ext_protocol.get_param('chromatography instrument'),
                                         value=injection_mode.chromatography_instrument)
                                     )
                                 chromat_col = injection_mode.chromatography_column
                                 eproc.parameter_values.append(
                                     ParameterValue(
-                                        category=ext_protocol.get_param(
-                                            'chromatography column'),
+                                        category=ext_protocol.get_param('chromatography column'),
                                         value=chromat_col)
                                 )
                             assay.process_sequence.append(eproc)

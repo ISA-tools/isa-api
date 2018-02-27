@@ -872,6 +872,7 @@ class DecodeFromJsonTests(unittest.TestCase):
                                                 "acquisition_modes": [
                                                     {
                                                         "acquisition_method": "postitive",
+                                
                                                         "technical_repeats": 2
                                                     },
                                                     {
