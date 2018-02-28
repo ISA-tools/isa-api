@@ -1534,7 +1534,7 @@ class IsaModelObjectFactory(object):
                     plink(eproc, aproc)
                     assaycode = 'A002'  # TODO: Find out what NMR assay codes they use, if any
                     dfile = RawSpectralDataFile(
-                        filename='{assaycode}_{pulse_seq}_{acq_mode}_{biorepl}_{techrepl}.mzml.gz'.format(
+                        filename='{assaycode}_{pulse_seq}_{acq_mode}_{biorepl}_{techrepl}.nmrml'.format(
                             assaycode=assaycode, biorepl=biorepl,
                             pulse_seq=pulse_seq, acq_mode=acq_mode,
                             techrepl=techrepl))
@@ -1667,7 +1667,7 @@ class IsaModelObjectFactory(object):
                                 # London encoding
                                 # ...
                                 dfile = RawSpectralDataFile(
-                                    filename='{assaycode}_{inj_mode}_{acq_mode}_{biorepl}_{techrepl}.mzml.gz'.format(
+                                    filename='{assaycode}_{inj_mode}_{acq_mode}_{biorepl}_{techrepl}.mzml'.format(
                                         assaycode=assaycode, biorepl=biorepl,
                                         inj_mode=injection_mode.injection_mode , acq_mode=acquisition_mode.acquisition_method,
                                         techrepl=techrepl))
@@ -1780,7 +1780,7 @@ class IsaModelObjectFactory(object):
                                     # London encoding
                                     # ...
                                     dfile = RawSpectralDataFile(
-                                        filename='{assaycode}_{inj_mode}_{acq_mode}_{biorepl}_{techrepl}.mzml.gz'.format(
+                                        filename='{assaycode}_{inj_mode}_{acq_mode}_{biorepl}_{techrepl}.mzml'.format(
                                             assaycode=assaycode,
                                             biorepl=biorepl,
                                             inj_mode=injection_mode.injection_mode,
