@@ -440,7 +440,7 @@ class NMRTopologyModifiers(GenericAssayTopologyModifiers):
 
     def __init__(self, acquisition_modes=None,
                  pulse_sequences=None, technical_replicates=1,
-                 instruments=None, injection_modes=None):
+                 instruments=None, injection_modes=None, magnet_power=None):
         super().__init__(technical_replicates=technical_replicates,
                          instruments=instruments)
         if pulse_sequences is None:
@@ -455,6 +455,7 @@ class NMRTopologyModifiers(GenericAssayTopologyModifiers):
             self.__acquisition_modes = set()
         else:
             self.acquisition_modes = acquisition_modes
+        self.magnet_power = magnet_power
 
     @property
     def pulse_sequences(self):
@@ -1136,7 +1137,7 @@ class IsaModelObjectFactory(object):
         else:
             self.__treatment_sequence = treatment_sequence
 
-    def create_study_from_plan(self, naming_convention=None):
+    def create_study_from_plan(self):
         if self.sample_assay_plan is None:
             raise ISAModelAttributeError('sample_assay_plan must be set to '
                                          'create model objects in factory')
@@ -1179,7 +1180,6 @@ class IsaModelObjectFactory(object):
         factors = set()
         if isinstance(prebatch, SampleQCBatch):
             for i, c in enumerate(prebatch.characteristic_values):
-                print('adding', i, c)
                 var_characteristic = c.category
                 qcsource = Source(
                     name='QC.{}.{}'.format(
@@ -1483,7 +1483,10 @@ class IsaModelObjectFactory(object):
                 nmr_prot.add_param('pulse sequence')
             except ISAModelAttributeError:
                 pass
-
+            try:
+                nmr_prot.add_param('magnetic field strength')
+            except ISAModelAttributeError:
+                pass
             num_samples_in_stype = len(samples)
             technical_replicates = \
                 assay_type.topology_modifiers.technical_replicates
@@ -1530,6 +1533,12 @@ class IsaModelObjectFactory(object):
                         ParameterValue(category=nmr_prot.get_param(
                             'pulse sequence'), value=pulse_seq),
                     ]
+                    print(assay_type.topology_modifiers.magnet_power)
+                    if assay_type.topology_modifiers.magnet_power is not None:
+                        aproc.parameter_values.append(
+                            ParameterValue(category=nmr_prot.get_param(
+                                'magnetic field strength'), value=assay_type.topology_modifiers.magnet_power)
+                        )
                     run_counter += 1
                     plink(eproc, aproc)
                     assaycode = 'A002'  # TODO: Find out what NMR assay codes they use, if any
@@ -1566,7 +1575,7 @@ class IsaModelObjectFactory(object):
                         except ISAModelAttributeError:
                             pass
                         ext_protocol = study.get_prot('metabolite extraction')
-                        if injection_mode in ('LC', 'GC'):
+                        if injection_mode.injection_mode in ('LC', 'GC'):
                             try:
                                 ext_protocol.add_param('chromatography instrument')
                             except ISAModelAttributeError:
@@ -1617,12 +1626,19 @@ class IsaModelObjectFactory(object):
                                             date_=datetime.date.isoformat(
                                                 datetime.date.today()))
                             if injection_mode.injection_mode in ('LC', 'GC'):
+                                chromat_instr = injection_mode.chromatography_instrument
+                                chromat_col = injection_mode.chromatography_column
+                                eproc = Process(executes_protocol=ext_protocol,
+                                                inputs=[samp], outputs=[extr],
+                                                performer=self.ops[1],
+                                                date_=datetime.date.isoformat(
+                                                    datetime.date.today()))
                                 eproc.parameter_values.append(
                                     ParameterValue(
                                         category=ext_protocol.get_param('chromatography instrument'),
-                                        value=injection_mode.chromatography_instrument)
+                                        value=chromat_instr)
                                     )
-                                chromat_col = injection_mode.chromatography_column
+
                                 eproc.parameter_values.append(
                                     ParameterValue(
                                         category=ext_protocol.get_param('chromatography column'),
