@@ -682,26 +682,37 @@ def write_study_table_files(inv_obj, output_dir):
             if isinstance(node, Source):
                 olabel = "Source Name"
                 columns.append(olabel)
-                columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
-                columns += flatten(map(lambda x: get_comment_column(olabel, x), node.comments))
+                columns += flatten(
+                    map(lambda x: get_characteristic_columns(olabel, x),
+                        node.characteristics))
+                columns += flatten(
+                    map(lambda x: get_comment_column(olabel, x), node.comments))
             elif isinstance(node, Process):
                 olabel = "Protocol REF.{}".format(node.executes_protocol.name)
                 columns.append(olabel)
+                if node.executes_protocol.name not in protnames.keys():
+                    protnames[node.executes_protocol.name] = protrefcount
+                    protrefcount += 1
+                columns += flatten(map(lambda x: get_pv_columns(olabel, x),
+                                       node.parameter_values))
                 if node.date is not None:
                     columns.append(olabel + ".Date")
                 if node.performer is not None:
                     columns.append(olabel + ".Performer")
-                columns += flatten(map(lambda x: get_pv_columns(olabel, x), node.parameter_values))
-                if node.executes_protocol.name not in protnames.keys():
-                    protnames[node.executes_protocol.name] = protrefcount
-                    protrefcount += 1
+                columns += flatten(
+                    map(lambda x: get_comment_column(olabel, x), node.comments))
 
             elif isinstance(node, Sample):
                 olabel = "Sample Name.{}".format(sample_in_path_count)
                 columns.append(olabel)
                 sample_in_path_count += 1
-                columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
-                columns += flatten(map(lambda x: get_fv_columns(olabel, x), node.factor_values))
+                columns += flatten(
+                    map(lambda x: get_characteristic_columns(olabel, x),
+                        node.characteristics))
+                columns += flatten(
+                    map(lambda x: get_comment_column(olabel, x), node.comments))
+                columns += flatten(map(lambda x: get_fv_columns(olabel, x),
+                                       node.factor_values))
 
         omap = get_object_column_map(columns, columns)
         # load into dictionary
@@ -731,13 +742,16 @@ def write_study_table_files(inv_obj, output_dir):
                 elif isinstance(node, Process):
                     olabel = "Protocol REF.{}".format(node.executes_protocol.name)
                     df_dict[olabel][-1] = node.executes_protocol.name
+                    for pv in node.parameter_values:
+                        pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
+                        write_value_columns(df_dict, pvlabel, pv)
                     if node.date is not None:
                         df_dict[olabel + ".Date"][-1] = node.date
                     if node.performer is not None:
                         df_dict[olabel + ".Performer"][-1] = node.performer
-                    for pv in node.parameter_values:
-                        pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
-                        write_value_columns(df_dict, pvlabel, pv)
+                    for co in node.comments:
+                        colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                        df_dict[colabel][-1] = co.value
 
                 elif isinstance(node, Sample):
                     olabel = "Sample Name.{}".format(sample_in_path_count)
@@ -746,6 +760,9 @@ def write_study_table_files(inv_obj, output_dir):
                     for c in node.characteristics:
                         clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
                         write_value_columns(df_dict, clabel, c)
+                    for co in node.comments:
+                        colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                        df_dict[colabel][-1] = co.value
                     for fv in node.factor_values:
                         fvlabel = "{0}.Factor Value[{1}]".format(olabel, fv.factor_name.name)
                         write_value_columns(df_dict, fvlabel, fv)
@@ -840,18 +857,21 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                 if isinstance(node, Sample):
                     olabel = "Sample Name"
                     columns.append(olabel)
+                    columns += flatten(
+                        map(lambda x: get_comment_column(olabel, x),
+                            node.comments))
                     if write_factor_values:
                         columns += flatten(
                             map(lambda x: get_fv_columns(olabel, x),
                                 node.factor_values))
 
                 elif isinstance(node, Process):
-                    olabel = "Protocol REF.{}".format(node.executes_protocol.name)
+                    olabel = "Protocol REF.{}".format(
+                        node.executes_protocol.name)
                     columns.append(olabel)
-                    if node.date is not None:
-                        columns.append(olabel + ".Date")
-                    if node.performer is not None:
-                        columns.append(olabel + ".Performer")
+                    if node.executes_protocol.name not in protnames.keys():
+                        protnames[node.executes_protocol.name] = protrefcount
+                        protrefcount += 1
                     oname_label = None
                     if node.executes_protocol.protocol_type:
                         if node.executes_protocol.protocol_type.term == "nucleic acid sequencing":
@@ -872,20 +892,31 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             columns.append(oname_label)
                         elif node.executes_protocol.protocol_type.term == "nucleic acid hybridization":
                             columns.extend(["Hybridization Assay Name", "Array Design REF"])
-
-                    columns += flatten(map(lambda x: get_pv_columns(olabel, x), node.parameter_values))
-                    if node.executes_protocol.name not in protnames.keys():
-                        protnames[node.executes_protocol.name] = protrefcount
-                        protrefcount += 1
-
-                    for output in [x for x in node.outputs if isinstance(x, DataFile)]:
+                    columns += flatten(map(lambda x: get_pv_columns(olabel, x),
+                                           node.parameter_values))
+                    if node.date is not None:
+                        columns.append(olabel + ".Date")
+                    if node.performer is not None:
+                        columns.append(olabel + ".Performer")
+                    columns += flatten(
+                        map(lambda x: get_comment_column(olabel, x),
+                            node.comments))
+                    for output in [x for x in node.outputs if
+                                   isinstance(x, DataFile)]:
                         columns.append(output.label)
-                        columns += flatten(map(lambda x: get_comment_column(output.label, x), output.comments))
+                        columns += flatten(
+                            map(lambda x: get_comment_column(output.label, x),
+                                output.comments))
 
                 elif isinstance(node, Material):
                     olabel = node.type
                     columns.append(olabel)
-                    columns += flatten(map(lambda x: get_characteristic_columns(olabel, x), node.characteristics))
+                    columns += flatten(
+                        map(lambda x: get_characteristic_columns(olabel, x),
+                            node.characteristics))
+                    columns += flatten(
+                        map(lambda x: get_comment_column(olabel, x),
+                            node.comments))
 
                 elif isinstance(node, DataFile):
                     pass  # handled in process
@@ -910,13 +941,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     if isinstance(node, Process):
                         olabel = "Protocol REF.{}".format(node.executes_protocol.name)
                         df_dict[olabel][-1] = node.executes_protocol.name
-                        if node.date is not None:
-                            df_dict[olabel + ".Date"][-1] = node.date
-                        if node.performer is not None:
-                            df_dict[olabel + ".Performer"][-1] = node.performer
-                        for pv in node.parameter_values:
-                            pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
-                            write_value_columns(df_dict, pvlabel, pv)
                         oname_label = None
                         if node.executes_protocol.protocol_type:
                             if node.executes_protocol.protocol_type.term == "nucleic acid sequencing":
@@ -938,6 +962,16 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             elif node.executes_protocol.protocol_type.term == "nucleic acid hybridization":
                                 df_dict["Hybridization Assay Name"][-1] = node.name
                                 df_dict["Array Design REF"][-1] = node.array_design_ref
+                        if node.date is not None:
+                            df_dict[olabel + ".Date"][-1] = node.date
+                        if node.performer is not None:
+                            df_dict[olabel + ".Performer"][-1] = node.performer
+                        for pv in node.parameter_values:
+                            pvlabel = "{0}.Parameter Value[{1}]".format(olabel, pv.category.parameter_name.term)
+                            write_value_columns(df_dict, pvlabel, pv)
+                        for co in node.comments:
+                            colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                            df_dict[colabel][-1] = co.value
                         for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                             olabel = output.label
                             df_dict[olabel][-1] = output.filename
@@ -948,6 +982,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
                         df_dict[olabel][-1] = node.name
+                        for co in node.comments:
+                            colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                            df_dict[colabel][-1] = co.value
                         if write_factor_values:
                             for fv in node.factor_values:
                                 fvlabel = "{0}.Factor Value[{1}]".format(
@@ -960,6 +997,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         for c in node.characteristics:
                             clabel = "{0}.Characteristics[{1}]".format(olabel, c.category.term)
                             write_value_columns(df_dict, clabel, c)
+                        for co in node.comments:
+                            colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                            df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, DataFile):
                         pass  # handled in process
