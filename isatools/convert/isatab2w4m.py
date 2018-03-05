@@ -117,7 +117,7 @@ def read_args():
     args = vars(args)
 
     # Split comma separated list
-    for opt in ['samp_na_filering', 'var_na_filering']:
+    for opt in ['samp_na_filtering', 'var_na_filtering']:
         if opt in args and args[opt] is not None:
             args[opt] = args[opt].split(',')
 
@@ -290,15 +290,16 @@ def make_variable_names(assay_df):
     var_names = [''] * assay_df.shape[0]
 
     # Make variable names from data values
-    for col in ['mass_to_charge', 'retention_time']:
-        for i, v in enumerate(assay_df[col].values):
-            if type(v) == str or not numpy.isnan(v):
-                x = var_names[i]
-                if x == '':
-                    x = str(v)
-                else:
-                    x = '_'.join([x, str(v)])
-                var_names[i] = x
+    for col in ['mass_to_charge', 'retention_time', 'chemical_shift']:
+        if assay_df.keys().contains(col):
+            for i, v in enumerate(assay_df[col].values):
+                if type(v) == str or not numpy.isnan(v):
+                    x = var_names[i]
+                    if x == '':
+                        x = str(v)
+                    else:
+                        x = '_'.join([x, str(v)])
+                    var_names[i] = x
 
     # Normalize names
     var_names = ['X' + s for s in var_names]
@@ -540,17 +541,17 @@ def convert(input_dir, output_dir, sample_output, variable_output,
             all_assays=None, samp_na_filtering=None, var_na_filtering=None):
     
     # Convert assays to W4M format
-    assays = convert2w4m(input_dir=input_dir,
-                         study_filename=study_filename,
-                         assay_filename=assay_filename,
-                         all_assays=all_assays)
+    assays = convert2w4m(input_dir      = input_dir,
+                         study_filename = study_filename,
+                         assay_filename = assay_filename,
+                         all_assays     = all_assays)
 
     # Filter NA values
     filter_na_values(assays, samp_na_filtering, var_na_filtering)
 
     # Write assays into files
-    write_assays(assays, output_dir=output_dir, samp_file=sample_output,
-                 var_file=variable_output, mat_file=matrix_output)
+    write_assays(assays, output_dir = output_dir, samp_file = sample_output,
+                 var_file = variable_output, mat_file = matrix_output)
 
 # Main {{{1
 ################################################################
@@ -560,24 +561,18 @@ def main():
     # Parse command line arguments
     args_dict = read_args()
 
-    # Convert assays to W4M 3 tables format
-    assays = convert2w4m(input_dir=args_dict['input_dir'],
-                         study_filename=args_dict['study_filename'],
-                         assay_filename=args_dict['assay_filename'],
-                         all_assays=args_dict['all_assays'])
-
-    # Filter NA values
-    if args_dict['samp_na_filtering'] is not None:
-        filter_na_values(assays, table='samp',
-                         cols=args_dict['samp_na_filering'])
-    if args_dict['var_na_filtering'] is not None:
-        filter_na_values(assays, table='var', cols=args_dict['var_na_filering'])
-
-    # Write into files
-    write_assays(assays, output_dir=args_dict['output_dir'],
-                 samp_file=args_dict['sample_output'],
-                 var_file=args_dict['variable_output'],
-                 mat_file=args_dict['matrix_output'])
+    # Convert
+    convert(input_dir           = args_dict['input_dir'],
+            output_dir          = args_dict['output_dir'],
+            variable_output     = args_dict['variable_output'],
+            matrix_output       = args_dict['matrix_output'],
+            sample_output       = args_dict['sample_output'],
+            study_filename      = args_dict['study_filename'],
+            assay_filename      = args_dict['assay_filename'],
+            all_assays          = args_dict['all_assays'],
+            samp_na_filtering   = args_dict['samp_na_filtering'],
+            var_na_filtering    = args_dict['var_na_filtering']
+            )
 
 if __name__ == '__main__':
     main()
