@@ -62,8 +62,8 @@ class TestJson2IsaTab(unittest.TestCase):
                 self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
     def test_json2isatab_convert_bii_s_3_study_table(self):
-        json2isatab.convert(open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')), self._tmp_dir,
-                            validate_first=False)
+        with open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')) as json_fp:
+            json2isatab.convert(json_fp, self._tmp_dir, validate_first=False)
         with open(os.path.join(self._tmp_dir, 's_BII-S-3.txt')) as out_fp:
             with open(os.path.join(self._tab_data_dir, 'BII-S-3', 's_BII-S-3.txt')) as reference_fp:
                 self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
@@ -79,7 +79,7 @@ class TestJson2IsaTab(unittest.TestCase):
         with open(os.path.join(self._json_data_dir, 'BII-S-3', 'BII-S-3.json')) as json_fp:
             json2isatab.convert(json_fp, self._tmp_dir, validate_first=False)
         with open(os.path.join(self._tmp_dir, 'a_gilbert-assay-Gx.txt')) as out_fp:
-            with open(os.path.join(self._tab_data_dir, 'BII-S-3', 'a_gilbert-assay-Gx.txt')) as reference_fp:
+            with open(os.path.join(self._tab_data_dir, 'BII-S-3_written_by_isatab', 'a_gilbert-assay-Gx.txt')) as reference_fp:
                 self.assertTrue(assert_tab_content_equal(out_fp, reference_fp))
 
     def test_json2isatab_convert_bii_s_7_investigation(self):

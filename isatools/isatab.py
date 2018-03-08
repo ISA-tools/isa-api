@@ -872,6 +872,8 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     if node.executes_protocol.name not in protnames.keys():
                         protnames[node.executes_protocol.name] = protrefcount
                         protrefcount += 1
+                    columns += flatten(map(lambda x: get_pv_columns(olabel, x),
+                                           node.parameter_values))
                     oname_label = None
                     if node.executes_protocol.protocol_type:
                         if node.executes_protocol.protocol_type.term == "nucleic acid sequencing":
@@ -892,8 +894,6 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                             columns.append(oname_label)
                         elif node.executes_protocol.protocol_type.term == "nucleic acid hybridization":
                             columns.extend(["Hybridization Assay Name", "Array Design REF"])
-                    columns += flatten(map(lambda x: get_pv_columns(olabel, x),
-                                           node.parameter_values))
                     if node.date is not None:
                         columns.append(olabel + ".Date")
                     if node.performer is not None:
@@ -904,9 +904,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     for output in [x for x in node.outputs if
                                    isinstance(x, DataFile)]:
                         columns.append(output.label)
-                        columns += flatten(
-                            map(lambda x: get_comment_column(output.label, x),
-                                output.comments))
+                        # columns += flatten(
+                        #     map(lambda x: get_comment_column(output.label, x),
+                        #         output.comments))
 
                 elif isinstance(node, Material):
                     olabel = node.type
@@ -975,9 +975,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                             olabel = output.label
                             df_dict[olabel][-1] = output.filename
-                            for co in output.comments:
-                                colabel = "{0}.Comment[{1}]".format(olabel, co.name)
-                                df_dict[colabel][-1] = co.value
+                            # for co in output.comments:
+                            #     colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                            #     df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
