@@ -59,6 +59,26 @@ class TestMtblsIO(unittest.TestCase):
         self.assertEqual(len(results), 8)
         self.assertEqual(len(results[0]['data_files']), 1)
 
+    def test_get_datafiles_multiple_factors(self):
+        factor_selection = {"Gender": "Male",
+                            "Metabolic syndrome": "Control Group"}
+        results = MTBLS.get_data_files('MTBLS1', factor_selection)
+        self.assertEqual(len(results), 56)
+        self.assertEqual(len(results[0]['data_files']), 1)
+        self.assertLess(
+            len(
+                MTBLS.get_data_files('MTBLS1', {
+                    "Gender": "Male",
+                    "Metabolic syndrome": "Control Group"
+                })
+            ),
+            len(
+                MTBLS.get_data_files('MTBLS1', {
+                    "Gender": "Male"
+                })
+            )
+        )
+
     def test_get_factors_summary(self):  # Test for issue #221
         factors_summary = MTBLS.get_factors_summary('MTBLS26')
         self.assertIsInstance(factors_summary, list)

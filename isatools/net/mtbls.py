@@ -202,66 +202,58 @@ def slice_data_files(dir, factor_selection=None):
 
         with open(table_file, encoding='utf-8') as fp:
             df = isatab.load_table(fp)
-
+            df = df[[x for x in df.columns if
+                     'Factor Value' in x or 'Sample Name' in x]]
+            df.columns = ['sample' if 'Sample Name' in x else x for x in
+                          df.columns]
+            df.columns = [x[13:-1] if 'Factor Value' in x else x for x in
+                          df.columns]
+            df.columns = [x.replace(' ', '_') for x in df.columns]
+            # build query
+            sample_names_series = df['sample'].drop_duplicates()
             if factor_selection is None:
-                matches = df['Sample Name'].items()
-
-                for indx, match in matches:
-                    sample_name = match
-                    if len([r for r in results if r['sample'] ==
-                            sample_name]) == 1:
-                        continue
-                    else:
-                        results.append(
-                            {
-                                'sample': sample_name,
-                                'data_files': []
-                            }
-                        )
-
+                results = sample_names_series.apply(lambda x: {
+                                'sample': x,
+                                'data_files': [],
+                                'query_used': ''
+                            }).tolist()
             else:
+                factor_query = ''
                 for factor_name, factor_value in factor_selection.items():
-                    if 'Factor Value[{}]'.format(factor_name) in list(
-                            df.columns.values):
-                        matches = df.loc[df['Factor Value[{factor}]'.format(
-                            factor=factor_name)] == factor_value][
-                            'Sample Name'].items()
-
-                        for indx, match in matches:
-                            sample_name = match
-                            if len([r for r in results if r['sample'] ==
-                                    sample_name]) == 1:
-                                continue
-                            else:
-                                results.append(
-                                    {
-                                        'sample': sample_name,
-                                        'data_files': [],
-                                        'query_used': factor_selection
-                                    }
-                                )
+                    factor_name = factor_name.replace(' ', '_')
+                    factor_query += '{factor_name}=="{factor_value}" and '.format(
+                        factor_name=factor_name, factor_value=factor_value)
+                factor_query = factor_query[:-5]
+                try:
+                    query_results = df.query(factor_query)[
+                        'sample'].drop_duplicates()
+                    results = query_results.apply(lambda x: {
+                        'sample': x,
+                        'data_files': [],
+                        'query_used': factor_selection
+                    }).tolist()
+                except pd.core.computation.ops.UndefinedVariableError:
+                    pass
 
     # now collect the data files relating to the samples
-    for result in results:
-        sample_name = result['sample']
-
-        for table_file in glob.iglob(os.path.join(dir, 'a_*')):
-            with open(table_file, encoding='utf-8') as fp:
-                df = isatab.load_table(fp)
-
-                data_files = []
-
-                table_headers = list(df.columns.values)
-                sample_rows = df.loc[df['Sample Name'] == sample_name]
-
-                if 'Raw Spectral Data File' in table_headers:
+    for table_file in glob.iglob(os.path.join(dir, 'a_*.txt')):
+        with open(table_file, encoding='utf-8') as fp:
+            df = isatab.load_table(fp)
+            df = df[[x for x in df.columns if
+                     'File' in x or 'Sample Name' in x]]
+            df.columns = ['sample' if 'Sample Name' in x else x for x in
+                          df.columns]
+            for result in results:
+                sample_name = result['sample']
+                sample_rows = df.loc[df['sample'] == sample_name]
+                if 'Raw Spectral Data File' in sample_rows.columns:
                     data_files = sample_rows['Raw Spectral Data File']
-
-                elif 'Free Induction Decay Data File' in table_headers:
+                    result['data_files'] = [i for i in data_files if
+                                            str(i) != 'nan']
+                elif 'Free Induction Decay Data File' in sample_rows.columns:
                     data_files = sample_rows['Free Induction Decay Data File']
-
-                result['data_files'] = [i for i in list(data_files) if
-                                        str(i) != 'nan']
+                    result['data_files'] = [i for i in data_files if
+                                            str(i) != 'nan']
     return results
 
 
