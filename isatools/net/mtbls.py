@@ -246,12 +246,9 @@ def slice_data_files(dir, factor_selection=None):
             for result in results:
                 sample_name = result['sample']
                 sample_rows = df.loc[df['sample'] == sample_name]
-                if 'Raw Spectral Data File' in sample_rows.columns:
-                    data_files = sample_rows['Raw Spectral Data File']
-                    result['data_files'] = [i for i in data_files if
-                                            str(i) != 'nan']
-                elif 'Free Induction Decay Data File' in sample_rows.columns:
-                    data_files = sample_rows['Free Induction Decay Data File']
+
+                for data_col in [x for x in sample_rows.columns if 'File' in x]:
+                    data_files = sample_rows[data_col]
                     result['data_files'] = [i for i in data_files if
                                             str(i) != 'nan']
     return results
