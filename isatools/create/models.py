@@ -22,7 +22,8 @@ INTERVENTIONS = dict(CHEMICAL='chemical intervention',
                      BEHAVIOURAL='behavioural intervention',
                      SURGICAL='surgical intervention',
                      BIOLOGICAL='biological intervention',
-                     RADIOLOGICAL='radiological intervention')
+                     RADIOLOGICAL='radiological intervention',
+                     DIET='dietary intervention')
 
 FACTOR_TYPES = dict(AGENT_VALUES='agent values',
                     INTENSITY_VALUES='intensity values',
@@ -570,7 +571,8 @@ class MSInjectionMode(object):
     def __init__(self, injection_mode='DI',
                  chromatography_instrument='none reported',
                  chromatography_column='none reported',
-                 acquisition_modes=None, ms_instrument=None):
+                 acquisition_modes=None, ms_instrument=None,
+                 derivatizations=None):
         self.injection_mode = injection_mode
         self.__chromatography_instrument = chromatography_instrument
         self.__chromatography_column = chromatography_column
@@ -590,6 +592,10 @@ class MSInjectionMode(object):
             self.__ms_instrument = None
         else:
             self.__ms_instrument = ms_instrument
+        if injection_mode in ('GC') and derivatizations:
+            self.__derivatizations = derivatizations
+        else:
+            self.__derivatizations = set()
 
     @property
     def injection_mode(self):
@@ -649,18 +655,33 @@ class MSInjectionMode(object):
                              'MSAcquisitionMode')
         self.__acquisition_modes.add(val)
 
+    @property
+    def derivatizations(self):
+        return self.__derivatizations
+
+    @derivatizations.setter
+    def derivatizations(self, val):
+        if not isinstance(val, set):
+            raise TypeError('{0} is an invalid value for derivatizations. '
+                            'Please provide an set of string.')
+        if not all(isinstance(x, str) for x in val):
+            raise ValueError('All derivatizations  must be of string')
+        self.__derivatizations.add(val)
+
     def __repr__(self):
         return 'MSInjectionMode(' \
                'injection_mode={injection_mode}, ' \
                'ms_instrument={ms_instrument}, ' \
                'chromatography_instrument={chromatography_instrument}, ' \
                'chromatography_column={chromatography_column}, ' \
-               'acquisition_modes={acquisition_modes})'.format(
+               'acquisition_modes={acquisition_modes}, ' \
+               'derivatizations={derivatizations})'.format(
                 injection_mode=self.injection_mode,
                 ms_instrument=self.ms_instrument,
                 chromatography_instrument=self.chromatography_instrument,
                 chromatography_column=self.chromatography_column,
-                acquisition_modes=list(self.acquisition_modes)
+                acquisition_modes=list(self.acquisition_modes),
+                derivatizations=list(self.derivatizations)
         )
 
 class MSTopologyModifiers(object):
@@ -1533,7 +1554,6 @@ class IsaModelObjectFactory(object):
                         ParameterValue(category=nmr_prot.get_param(
                             'pulse sequence'), value=pulse_seq),
                     ]
-                    print(assay_type.topology_modifiers.magnet_power)
                     if assay_type.topology_modifiers.magnet_power is not None:
                         aproc.parameter_values.append(
                             ParameterValue(category=nmr_prot.get_param(
@@ -1559,6 +1579,8 @@ class IsaModelObjectFactory(object):
             if len(top_mods.sample_fractions) == 0:
                 # skip looping sample_fractions
                 for injection_mode in top_mods.injection_modes:
+                    if not injection_mode.derivatizations:
+                        injection_mode.derivatizations.add('none reported')
                     for acquisition_mode in injection_mode.acquisition_modes:
                         random.shuffle(self.__ops)
                         assay = Assay(
@@ -1584,6 +1606,13 @@ class IsaModelObjectFactory(object):
                                 ext_protocol.add_param('chromatography column')
                             except ISAModelAttributeError:
                                 pass
+                        if injection_mode.injection_mode == 'GC':
+                            try:
+                                study.add_prot(
+                                    protocol_name='derivatization',
+                                    protocol_type='derivatization')
+                            except ISAModelAttributeError:
+                                pass
                         mp_protocol_name = '{0}-{1} mass spectrometry'.format(
                             injection_mode.injection_mode,
                             acquisition_mode.acquisition_method)
@@ -1606,9 +1635,19 @@ class IsaModelObjectFactory(object):
                             ms_prot.add_param('scan polarity')
                         except ISAModelAttributeError:
                             pass
+                        der_protocol = study.get_prot('derivatization')
+                        if der_protocol is not None:
+                            try:
+                                der_protocol.add_param('derivatization agent')
+                            except:
+                                pass
                         num_samples_in_stype = len(samples)
                         technical_replicates = acquisition_mode.technical_repeats
-                        total_expected_runs = num_samples_in_stype * technical_replicates
+                        num_derivations_per_sample = len(injection_mode.derivatizations)
+                        if len(injection_mode.derivatizations) > 1:
+                            total_expected_runs = num_samples_in_stype * technical_replicates * num_derivations_per_sample
+                        else:
+                            total_expected_runs = num_samples_in_stype * technical_replicates
                         run_order = list(range(1, total_expected_runs+1))
                         # random.shuffle(run_order)  # does random shuffle inplace
                         run_counter = 0
@@ -1616,7 +1655,7 @@ class IsaModelObjectFactory(object):
                             biorepl = str(i+1).zfill(3)
                             # build assay path
                             assay.samples.append(samp)
-
+                            # add extraction process
                             extr = Extract(name='{0}.Extract-{1}'.format(
                                 samp.name, biorepl))
                             assay.other_material.append(extr)
@@ -1625,71 +1664,169 @@ class IsaModelObjectFactory(object):
                                             performer=self.ops[1],
                                             date_=datetime.date.isoformat(
                                                 datetime.date.today()))
-                            if injection_mode.injection_mode in ('LC', 'GC'):
-                                chromat_instr = injection_mode.chromatography_instrument
-                                chromat_col = injection_mode.chromatography_column
-                                eproc = Process(executes_protocol=ext_protocol,
-                                                inputs=[samp], outputs=[extr],
-                                                performer=self.ops[1],
-                                                date_=datetime.date.isoformat(
-                                                    datetime.date.today()))
-                                eproc.parameter_values.append(
-                                    ParameterValue(
-                                        category=ext_protocol.get_param('chromatography instrument'),
-                                        value=chromat_instr)
+                            assay.process_sequence.append(eproc)
+                            if injection_mode.injection_mode == 'GC':
+                                if not injection_mode.derivatizations:
+                                    injection_mode.derivatizations.add('none reported')
+                                for lcount, dervivatization in enumerate(injection_mode.derivatizations):
+                                    chromat_instr = injection_mode.chromatography_instrument
+                                    chromat_col = injection_mode.chromatography_column
+                                    # add GC-specific params to extraction process
+                                    eproc.parameter_values.append(
+                                        ParameterValue(
+                                            category=ext_protocol.get_param(
+                                                'chromatography instrument'),
+                                            value=chromat_instr)
                                     )
 
-                                eproc.parameter_values.append(
-                                    ParameterValue(
-                                        category=ext_protocol.get_param('chromatography column'),
-                                        value=chromat_col)
-                                )
-                            assay.process_sequence.append(eproc)
-                            for j in range(1, technical_replicates + 1):
-                                techrepl = str(j).zfill(3)
-                                ms_prot = study.get_prot(mp_protocol_name)
-                                aproc = Process(executes_protocol=ms_prot,
-                                                name='{extract_name}.MSASSAY-{run_count}'
-                                                .format(extract_name=extr.name, run_count=techrepl),
-                                                inputs=[extr],
-                                                performer=self.ops[2],
-                                                date_=datetime.date.isoformat(
-                                                    datetime.date.today()))
-                                aproc.parameter_values = [
-                                    ParameterValue(category=ms_prot.get_param(
-                                        'run order'),
-                                        value=str(run_order[run_counter])),
-                                    ParameterValue(category=ms_prot.get_param(
-                                        'injection mode'), value=injection_mode.injection_mode ),
-                                    ParameterValue(
-                                        category=ms_prot.get_param(
-                                            'instrument'),
-                                        value=injection_mode.ms_instrument
-                                    ),
-                                    ParameterValue(category=ms_prot.get_param(
-                                        'scan polarity'), value=acquisition_mode.acquisition_method),
-                                ]
-                                run_counter += 1
-                                plink(eproc, aproc)
-                                # Birmingham encoding
-                                assaycode = 'A100'  # unknown assay type; default as any LCMS
-                                if injection_mode.injection_mode  == 'LC':
-                                    if chromat_col == 'RF':
-                                        assaycode = 'A101'
-                                    elif chromat_col == 'HILIC':
-                                        assaycode = 'A102'
-                                    elif chromat_col == 'LIPIDS':
-                                        assaycode = 'A103'
-                                # London encoding
-                                # ...
-                                dfile = RawSpectralDataFile(
-                                    filename='{assaycode}_{inj_mode}_{acq_mode}_{biorepl}_{techrepl}.mzml'.format(
-                                        assaycode=assaycode, biorepl=biorepl,
-                                        inj_mode=injection_mode.injection_mode , acq_mode=acquisition_mode.acquisition_method,
-                                        techrepl=techrepl))
-                                assay.data_files.append(dfile)
-                                aproc.outputs = [dfile]
-                                assay.process_sequence.append(aproc)
+                                    eproc.parameter_values.append(
+                                        ParameterValue(
+                                            category=ext_protocol.get_param(
+                                                'chromatography column'),
+                                            value=chromat_col)
+                                    )
+                                    # add derivatization/labeling process
+                                    lextr = LabeledExtract(
+                                        name='{0}.LE-{1}'.format(extr.name,
+                                                                 lcount+1))
+                                    assay.other_material.append(lextr)
+                                    der_prot = study.get_prot('derivatization')
+                                    dproc = Process(executes_protocol=der_prot,
+                                        inputs=[extr], outputs=[lextr],
+                                        performer=self.ops[1],
+                                        date_=datetime.date.isoformat(
+                                            datetime.date.today()))
+                                    dproc.parameter_values.append(
+                                        ParameterValue(
+                                            category=der_prot.get_param(
+                                                'derivatization agent'),
+                                            value=dervivatization)
+                                    )
+                                    assay.process_sequence.append(dproc)
+                                    plink(eproc, dproc)
+                                    for j in range(1, technical_replicates + 1):
+                                        techrepl = str(j).zfill(3)
+                                        ms_prot = study.get_prot(
+                                            mp_protocol_name)
+                                        aproc = Process(
+                                            executes_protocol=ms_prot,
+                                            name='{extract_name}.MSASSAY-{run_count}'
+                                            .format(extract_name=lextr.name,
+                                                    run_count=techrepl),
+                                            inputs=[lextr],
+                                            performer=self.ops[2],
+                                            date_=datetime.date.isoformat(
+                                                datetime.date.today()))
+                                        aproc.parameter_values = [
+                                            ParameterValue(
+                                                category=ms_prot.get_param(
+                                                    'run order'),
+                                                value=str(
+                                                    run_order[run_counter])),
+                                            ParameterValue(
+                                                category=ms_prot.get_param(
+                                                    'injection mode'),
+                                                value=injection_mode.injection_mode),
+                                            ParameterValue(
+                                                category=ms_prot.get_param(
+                                                    'instrument'),
+                                                value=injection_mode.ms_instrument
+                                            ),
+                                            ParameterValue(
+                                                category=ms_prot.get_param(
+                                                    'scan polarity'),
+                                                value=acquisition_mode.acquisition_method),
+                                        ]
+                                        run_counter += 1
+                                        plink(dproc, aproc)
+                                        # Birmingham encoding
+                                        assaycode = 'A100'  # unknown assay type; default as any LCMS
+                                        if injection_mode.injection_mode == 'LC':
+                                            if chromat_col == 'RF':
+                                                assaycode = 'A101'
+                                            elif chromat_col == 'HILIC':
+                                                assaycode = 'A102'
+                                            elif chromat_col == 'LIPIDS':
+                                                assaycode = 'A103'
+                                        # London encoding
+                                        # ...
+                                        dfile = RawSpectralDataFile(
+                                            filename='{assaycode}_{inj_mode}_{acq_mode}_{biorepl}.{extcnt}_{techrepl}.mzml'.format(
+                                                assaycode=assaycode,
+                                                biorepl=biorepl,
+                                                extcnt=lcount+1,
+                                                inj_mode=injection_mode.injection_mode,
+                                                acq_mode=acquisition_mode.acquisition_method,
+                                                techrepl=techrepl))
+                                        assay.data_files.append(dfile)
+                                        aproc.outputs = [dfile]
+                                        assay.process_sequence.append(aproc)
+                            else:
+                                if injection_mode.injection_mode in ('LC', 'GC'):
+                                    chromat_instr = injection_mode.chromatography_instrument
+                                    chromat_col = injection_mode.chromatography_column
+                                    eproc = Process(executes_protocol=ext_protocol,
+                                                    inputs=[samp], outputs=[extr],
+                                                    performer=self.ops[1],
+                                                    date_=datetime.date.isoformat(
+                                                        datetime.date.today()))
+                                    eproc.parameter_values.append(
+                                        ParameterValue(
+                                            category=ext_protocol.get_param('chromatography instrument'),
+                                            value=chromat_instr)
+                                        )
+
+                                    eproc.parameter_values.append(
+                                        ParameterValue(
+                                            category=ext_protocol.get_param('chromatography column'),
+                                            value=chromat_col)
+                                    )
+                                assay.process_sequence.append(eproc)
+                                for j in range(1, technical_replicates + 1):
+                                    techrepl = str(j).zfill(3)
+                                    ms_prot = study.get_prot(mp_protocol_name)
+                                    aproc = Process(executes_protocol=ms_prot,
+                                                    name='{extract_name}.MSASSAY-{run_count}'
+                                                    .format(extract_name=extr.name, run_count=techrepl),
+                                                    inputs=[extr],
+                                                    performer=self.ops[2],
+                                                    date_=datetime.date.isoformat(
+                                                        datetime.date.today()))
+                                    aproc.parameter_values = [
+                                        ParameterValue(category=ms_prot.get_param(
+                                            'run order'),
+                                            value=str(run_order[run_counter])),
+                                        ParameterValue(category=ms_prot.get_param(
+                                            'injection mode'), value=injection_mode.injection_mode ),
+                                        ParameterValue(
+                                            category=ms_prot.get_param(
+                                                'instrument'),
+                                            value=injection_mode.ms_instrument
+                                        ),
+                                        ParameterValue(category=ms_prot.get_param(
+                                            'scan polarity'), value=acquisition_mode.acquisition_method),
+                                    ]
+                                    run_counter += 1
+                                    plink(eproc, aproc)
+                                    # Birmingham encoding
+                                    assaycode = 'A100'  # unknown assay type; default as any LCMS
+                                    if injection_mode.injection_mode  == 'LC':
+                                        if chromat_col == 'RF':
+                                            assaycode = 'A101'
+                                        elif chromat_col == 'HILIC':
+                                            assaycode = 'A102'
+                                        elif chromat_col == 'LIPIDS':
+                                            assaycode = 'A103'
+                                    # London encoding
+                                    # ...
+                                    dfile = RawSpectralDataFile(
+                                        filename='{assaycode}_{inj_mode}_{acq_mode}_{biorepl}_{techrepl}.mzml'.format(
+                                            assaycode=assaycode, biorepl=biorepl,
+                                            inj_mode=injection_mode.injection_mode , acq_mode=acquisition_mode.acquisition_method,
+                                            techrepl=techrepl))
+                                    assay.data_files.append(dfile)
+                                    aproc.outputs = [dfile]
+                                    assay.process_sequence.append(aproc)
                         if assay is not None:
                             study.assays.append(assay)
 

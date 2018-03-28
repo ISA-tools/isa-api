@@ -121,3 +121,6 @@ features/test_outputs
 
 # never commit test data directory, as it comes from ISA-tools/ISAdatasets!
 tests/data
+
+# ignore virtual environment in subdirectory
+venv/

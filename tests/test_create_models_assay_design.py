@@ -104,7 +104,8 @@ class AssayTopologyModifiersTest(unittest.TestCase):
                 MSInjectionMode(
                     acquisition_modes={
                         MSAcquisitionMode(
-                            acquisition_method='pos', technical_repeats=1)}
+                            acquisition_method='pos', technical_repeats=1)},
+                    derivatizations={'acetylation'}
                 )
             }
         )
@@ -192,7 +193,8 @@ class AssayTopologyModifiersTest(unittest.TestCase):
                          "ms_instrument=None, chromatography_instrument=None, "
                          "chromatography_column=None, acquisition_modes=["
                          "MSAcquisitionMode(acquisition_method=pos, "
-                         "technical_repeats=1)])])",
+                         "technical_repeats=1)], "
+                         "derivatizations=[])])",
                          repr(self.ms_assay_topology_modifiers))
 
     def test_ms_eq2(self):
