@@ -734,7 +734,7 @@ class ParameterValueTest(unittest.TestCase):
 
     def test_repr(self):
         self.assertEqual("isatools.model.ParameterValue(category=None, "
-                         "value=None, unit=None)",
+                         "value=None, unit=None, comments=[])",
                          repr(self.parameter_value_default))
         self.assertEqual("isatools.model.ParameterValue("
                          "category=isatools.model.ProtocolParameter("
@@ -743,7 +743,7 @@ class ParameterValueTest(unittest.TestCase):
                          "comments=[]), comments=[]), value=0, "
                          "unit=isatools.model.OntologyAnnotation("
                          "term='U', term_source=None, term_accession='', "
-                         "comments=[]))",
+                         "comments=[]), comments=[])",
                          repr(self.parameter_value))
 
     def test_str(self):
@@ -751,12 +751,14 @@ class ParameterValueTest(unittest.TestCase):
     category=
     value=None
     unit=
+    comments=0 Comment objects
 )""", str(self.parameter_value_default))
 
         self.assertEqual("""ParameterValue(
     category=P
     value=0
     unit=U
+    comments=0 Comment objects
 )""", str(self.parameter_value))
 
     def test_eq(self):

@@ -2339,7 +2339,7 @@ class ProtocolParameter(Commentable):
         return not self == other
 
 
-class ParameterValue(object):
+class ParameterValue(Commentable):
     """A ParameterValue represents the instance value of a ProtocolParameter,
     used in a Process.
 
@@ -2350,8 +2350,8 @@ class ParameterValue(object):
         unit: The qualifying unit classifier, if the value is numeric.
         comments: Comments associated with instances of this class.
     """
-    def __init__(self, category=None, value=None, unit=None):
-        super().__init__()
+    def __init__(self, category=None, value=None, unit=None, comments=None):
+        super().__init__(comments)
 
         self.__category = category
         self.__value = value
@@ -2405,19 +2405,21 @@ class ParameterValue(object):
 
     def __repr__(self):
         return 'isatools.model.ParameterValue(category={category}, ' \
-               'value={value}, unit={unit})'.format(
+               'value={value}, unit={unit}, comments={comments})'.format(
             category=repr(self.category), value=repr(self.value),
-            unit=repr(self.unit))
+            unit=repr(self.unit), comments=repr(self.comments))
 
     def __str__(self):
         return """ParameterValue(
     category={category}
     value={value}
     unit={unit}
+    comments={num_comments} Comment objects
 )""".format(category=self.category.parameter_name.term if self.category else '',
             value=self.value.term if isinstance(
             self.value, OntologyAnnotation) else repr(self.value),
-            unit=self.unit.term if self.unit else '')
+            unit=self.unit.term if self.unit else '',
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
@@ -2426,7 +2428,8 @@ class ParameterValue(object):
         return isinstance(other, ParameterValue) \
                and self.category == other.category \
                and self.value == other.value \
-               and self.unit == other.unit
+               and self.unit == other.unit \
+               and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
