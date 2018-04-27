@@ -780,7 +780,9 @@ def write_study_table_files(inv_obj, output_dir):
         DF.columns = columns  # reset columns after checking for dups
 
         for i, col in enumerate(columns):
-            if col.endswith("Term Source REF"):
+            if "Comment[" in col:
+                columns[i] = col[col.rindex(".") + 1:]
+            elif col.endswith("Term Source REF"):
                 columns[i] = "Term Source REF"
             elif col.endswith("Term Accession Number"):
                 columns[i] = "Term Accession Number"
@@ -803,8 +805,6 @@ def write_study_table_files(inv_obj, output_dir):
                 columns[i] = "Protocol REF"
             elif col.startswith("Sample Name."):
                 columns[i] = "Sample Name"
-            elif "Comment[" in col:
-                columns[i] = col[col.rindex(".") + 1:]
 
         log.info("Rendered {} paths".format(len(DF.index)))
 
