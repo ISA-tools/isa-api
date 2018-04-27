@@ -192,15 +192,16 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             if datafilehashes is not None:
                                 checksum = datafilehashes[datafile.filename]
                                 # raises AttributeError if file not found
-                            filetype = datafile.filename[
-                                       datafile.filename.index('.') + 1:]
-                            if filetype.endswith('.gz'):
-                                dot_indicies = [i for i, x in
-                                                enumerate(datafile.filename) if
-                                                x == '.']
+                            dot_indicies = [i for i, x in
+                                            enumerate(datafile.filename) if
+                                            x == '.']
+                            file_ext = datafile.filename[dot_indicies[-1] + 1:]
+                            if file_ext in ('.gz'):  # if is compressed, look for the actual filetype
                                 filetype = datafile.filename[
                                            dot_indicies[-2] + 1:dot_indicies[
                                                -1]]
+                            else:
+                                filetype = file_ext
                             assay_to_export['data_files'].append(
                                 {
                                     'filename': datafile.filename,
