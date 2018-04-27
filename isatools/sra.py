@@ -195,7 +195,12 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                             filetype = datafile.filename[
                                        datafile.filename.index('.') + 1:]
                             if filetype.endswith('.gz'):
-                                filetype = filetype[:filetype.index('.')]
+                                dot_indicies = [i for i, x in
+                                                enumerate(datafile.filename) if
+                                                x == '.']
+                                filetype = datafile.filename[
+                                           dot_indicies[-2] + 1:dot_indicies[
+                                               -1]]
                             assay_to_export['data_files'].append(
                                 {
                                     'filename': datafile.filename,
