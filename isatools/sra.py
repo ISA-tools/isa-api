@@ -197,9 +197,16 @@ def export(investigation, export_path, sra_settings=None, datafilehashes=None):
                                             x == '.']
                             file_ext = datafile.filename[dot_indicies[-1] + 1:]
                             if file_ext in ('.gz'):  # if is compressed, look for the actual filetype
-                                filetype = datafile.filename[
-                                           dot_indicies[-2] + 1:dot_indicies[
-                                               -1]]
+                                try:
+                                    filetype = datafile.filename[
+                                               dot_indicies[-2] + 1:dot_indicies[
+                                                   -1]]
+                                except IndexError:
+                                    log.warning(
+                                        "Could not infer SRA filetype for data "
+                                        "file {filename}; defaulting to 'other'"
+                                            .format(filename=datafile.filename))
+                                    filetype = 'other'
                             else:
                                 filetype = file_ext
                             assay_to_export['data_files'].append(
