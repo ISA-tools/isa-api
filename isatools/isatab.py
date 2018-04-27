@@ -3888,7 +3888,6 @@ class ProcessSequenceFactory:
                                 raise ValueError(
                                     'Could not resolve Study Factor from '
                                     'Factor Value ', category_key)
-
                             fv = FactorValue(factor_name=factor)
 
                             v, u = get_value(
@@ -3897,8 +3896,9 @@ class ProcessSequenceFactory:
 
                             fv.value = v
                             fv.unit = u
-
-                            material.factor_values.append(fv)
+                            fv_set = set(material.factor_values)
+                            fv_set.add(fv)
+                            material.factor_values = list(fv_set)
 
             elif object_label in _LABELS_DATA_NODES:
                 if isa_logging.show_pbars:
