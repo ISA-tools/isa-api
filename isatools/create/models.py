@@ -1775,7 +1775,6 @@ class IsaModelObjectFactory(object):
                                             category=ext_protocol.get_param('chromatography instrument'),
                                             value=chromat_instr)
                                         )
-
                                     eproc.parameter_values.append(
                                         ParameterValue(
                                             category=ext_protocol.get_param('chromatography column'),
@@ -1845,7 +1844,7 @@ class IsaModelObjectFactory(object):
                                     acquisition_method=acquisition_mode.acquisition_method))
                             study.add_prot(protocol_name='metabolite extraction', protocol_type='extraction')
                             ext_protocol = study.get_prot('metabolite extraction')
-                            if injection_mode in ('LC', 'GC'):
+                            if injection_mode.injection_mode in ('LC', 'GC'):
                                 ext_protocol.add_param('chromatography instrument')
                                 ext_protocol.add_param('chromatography column')
                                 ext_protocol.add_param('elution program')
