@@ -879,6 +879,11 @@ class SampleAssayPlan(object):
     def add_sample_type(self, sample_type):
         if isinstance(sample_type, Characteristic):
             self.__sample_types.add(sample_type)
+        elif isinstance(sample_type, OntologyAnnotation):
+            characteristic = Characteristic(
+                category=OntologyAnnotation(term='organism part'),
+                value=sample_type)
+            self.__sample_types.add(characteristic)
         elif isinstance(sample_type, str):
             characteristic = Characteristic(
                 category=OntologyAnnotation(term='organism part'),
@@ -938,7 +943,7 @@ class SampleAssayPlan(object):
 
     def add_sample_plan_record(self, sample_type, sampling_size=0):
         """
-        :param sample_type: (Characteristic/str) a sample type
+        :param sample_type: (Characteristic/OntologyAnnotation/str) a sample type
         :param sampling_size: (int/tuple of int) for the provided sample type
             how many sampling events happen for a single source/subject. This
             can be specified throughout the whole sequence with a single
@@ -952,6 +957,12 @@ class SampleAssayPlan(object):
                     'nonexistent sample type: {0}'.format(sample_type))
             sample_type = next(x for x in self.sample_types if x.value.term
                                == sample_type)
+        elif isinstance(sample_type, OntologyAnnotation):
+            if sample_type not in [x.value for x in self.sample_types]:
+                raise TypeError(
+                    'nonexistent sample type: {0}'.format(sample_type))
+            sample_type = next(x for x in self.sample_types if x.value.term
+                               == sample_type.term)
         elif sample_type not in self.sample_types:
             raise TypeError('nonexistent sample type: {0}'.format(sample_type))
         if not isinstance(sampling_size, int) \
@@ -1199,6 +1210,7 @@ class IsaModelObjectFactory(object):
         sample_qc_plan = self.sample_assay_plan
         prebatch = sample_qc_plan.pre_run_batch
         factors = set()
+        ontology_sources = set()
         if isinstance(prebatch, SampleQCBatch):
             for i, c in enumerate(prebatch.characteristic_values):
                 var_characteristic = c.category
@@ -1305,6 +1317,8 @@ class IsaModelObjectFactory(object):
                                 category=var_characteristic))
                 sources.append(source)
                 for sample_type, sampling_size in sample_plan.items():
+                    if sample_type.value.term_source:
+                        ontology_sources.add(sample_type.value.term_source)
                     sampc = 0
                     for rank in ranks:
                         for sampn in range(0, sampling_size):
@@ -1464,6 +1478,7 @@ class IsaModelObjectFactory(object):
         study.samples = samples
         study.process_sequence = process_sequence
         study.factors = list(factors)
+        study.ontology_source_references = list(ontology_sources)
         return study
 
     def create_nmr_assays_from_plan(self, study, samples, sample_type, assay_type):
