@@ -992,6 +992,12 @@ class SampleAssayPlan(object):
             sample_type = Characteristic(category=OntologyAnnotation(
                 term='organism part'), value=OntologyAnnotation(
                 term=sample_type))
+        elif isinstance(sample_type, OntologyAnnotation):
+            if sample_type not in [x.value for x in self.sample_types]:
+                raise TypeError(
+                    'nonexistent sample type: {0}'.format(sample_type))
+            sample_type = next(x for x in self.sample_types if x.value.term
+                               == sample_type.term)
         if sample_type not in self.sample_types:
             raise ValueError('nonexistent sample type: {0}. These are the '
                              'available sample types: {1}'
