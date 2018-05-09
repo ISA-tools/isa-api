@@ -903,6 +903,10 @@ class SampleAssayPlan(object):
             material_type = Characteristic(
                 category=OntologyAnnotation(term='Material Type'),
                 value=OntologyAnnotation(term=material_type))
+        elif isinstance(material_type, OntologyAnnotation):
+            material_type = Characteristic(
+                category=OntologyAnnotation(term='Material Type'),
+                value=material_type)
         elif not material_type.category.term == 'Material Type':
             raise TypeError('invalid characteristic for QC material type: {0}'
                             .format(material_type))
