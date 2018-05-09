@@ -1305,10 +1305,13 @@ class IsaModelObjectFactory(object):
             for factor in [x.factor_name for x in fvs]:
                 factors.add(factor)
             for subjn in (str(x).zfill(3) for x in range(1, group_size+1)):
+                obi = OntologySource(name='OBI')
+                ontology_sources.add(obi)
                 material_type = Characteristic(
-                    category=OntologyAnnotation(
-                        term='Material Type'),
-                    value=OntologyAnnotation(term='specimen'))
+                    category=OntologyAnnotation(term='Material Type'),
+                    value=OntologyAnnotation(term='specimen',
+                                             term_source=obi,
+                                             term_accession='0100051'))
                 source = Source(name=self._idgen(group_id, subjn))
                 source.characteristics = [material_type]
 
