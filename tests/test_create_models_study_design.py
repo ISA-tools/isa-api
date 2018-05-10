@@ -791,15 +791,15 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         study.filename = 's_study.txt'
         self.investigation.studies = [study]
         # 36 sources, 56 QC sources
-        self.assertEqual(85, len(study.sources))
-        self.assertEqual(36, len(
+        self.assertEqual(86, len(study.sources))
+        self.assertEqual(37, len(
             [x for x in study.sources
              if x.get_char('Material Type').value.term == 'solvent']))
         self.assertEqual(13, len(
             [x for x in study.sources
              if x.get_char('Material Type').value.term == 'blank']))
         # 288 samples plus 36 QC samples
-        self.assertEqual(324, len(study.samples))
+        self.assertEqual(335, len(study.samples))
 
     def test_study_from_2_level_factorial_plan(self):
         factor = StudyFactor(name='1')
