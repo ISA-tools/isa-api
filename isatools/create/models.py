@@ -1232,8 +1232,8 @@ class IsaModelObjectFactory(object):
                         Characteristic(
                             category=OntologyAnnotation(term='Material Type'),
                             value=prebatch.material),
-                            Characteristic(category=var_characteristic,
-                                           value=str(c.value+1).zfill(3))
+                        Characteristic(category=var_characteristic,
+                                       value=c.value)
                     ])
                 if var_characteristic not in study.characteristic_categories:
                     study.characteristic_categories.append(var_characteristic)
@@ -1400,7 +1400,7 @@ class IsaModelObjectFactory(object):
                                     term='Material Type'),
                                 value=prebatch.material),
                             Characteristic(category=var_characteristic,
-                                           value=str(c.value + 1).zfill(3))])
+                                           value=c.value)])
                     if var_characteristic not in study.characteristic_categories:
                         study.characteristic_categories.append(
                             var_characteristic)
