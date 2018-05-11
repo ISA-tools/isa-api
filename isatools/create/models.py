@@ -1226,13 +1226,15 @@ class IsaModelObjectFactory(object):
             for i, c in enumerate(prebatch.characteristic_values):
                 var_characteristic = c.category
                 qcsource = Source(
-                    name='QC.{}.{}'.format(
-                        prebatch.material, str(i+1).zfill(3)), characteristics=[
-                    Characteristic(
-                        category=OntologyAnnotation(term='Material Type'),
-                        value=OntologyAnnotation(term=prebatch.material)),
-                        Characteristic(category=var_characteristic,
-                                       value=str(c.value+1).zfill(3))])
+                    name='QC.{}.{}'.format(prebatch.material.term,
+                                           str(i + 1).zfill(3)),
+                    characteristics=[
+                        Characteristic(
+                            category=OntologyAnnotation(term='Material Type'),
+                            value=prebatch.material),
+                            Characteristic(category=var_characteristic,
+                                           value=str(c.value+1).zfill(3))
+                    ])
                 if var_characteristic not in study.characteristic_categories:
                     study.characteristic_categories.append(var_characteristic)
                 sources.append(qcsource)
@@ -1270,14 +1272,14 @@ class IsaModelObjectFactory(object):
                         samples.append(sample)
                         process_sequence.append(process)
             if not prebatch.parameter_values:
-                qcsource = Source(name='QC.{}'.format(prebatch.material), characteristics=[
+                qcsource = Source(name='QC.{}'.format(prebatch.material.term), characteristics=[
                     Characteristic(
                         category=OntologyAnnotation(term='Material Type'),
-                        value=OntologyAnnotation(term=prebatch.material))])
+                        value=prebatch.material)])
                 sources.append(qcsource)
                 for i, (p, v) in enumerate(prebatch.parameter_values):
                     qc_param_set.add(p)
-                    sample = Sample(name='QC.{}.{}'.format(prebatch.material, str(i+1).zfill(3)))
+                    sample = Sample(name='QC.{}.{}'.format(prebatch.material.term, str(i+1).zfill(3)))
                     qc_param = sample_collection.get_param(p)
                     if qc_param is None:
                         sample_collection.add_param(p)
@@ -1384,20 +1386,19 @@ class IsaModelObjectFactory(object):
                 qcsource = Source(name='source_QC', characteristics=[
                     Characteristic(
                         category=OntologyAnnotation(term='Material Type'),
-                        value=OntologyAnnotation(term=postbatch.material))])
+                        value=postbatch.material)])
                 sources.append(qcsource)
             else:
                 for i, c in enumerate(postbatch.characteristic_values):
                     var_characteristic = c.category
                     qcsource = Source(
                         name='QC.{}.{}'.format(
-                            prebatch.material, str(i + 1).zfill(3)),
+                            prebatch.material.term, str(i + 1).zfill(3)),
                         characteristics=[
                             Characteristic(
                                 category=OntologyAnnotation(
                                     term='Material Type'),
-                                value=OntologyAnnotation(
-                                    term=prebatch.material)),
+                                value=prebatch.material),
                             Characteristic(category=var_characteristic,
                                            value=str(c.value + 1).zfill(3))])
                     if var_characteristic not in study.characteristic_categories:
@@ -1405,7 +1406,7 @@ class IsaModelObjectFactory(object):
                             var_characteristic)
 
                     if not postbatch.parameter_values:
-                        sample = Sample(name='QC.{}.{}'.format(postbatch.material, str(i+1).zfill(3)))
+                        sample = Sample(name='QC.{}.{}'.format(postbatch.material.term, str(i+1).zfill(3)))
                         process = Process(executes_protocol=study.get_prot(
                             'sample collection'), inputs=[qcsource],
                             outputs=[sample], performer=self.ops[0], date_=
@@ -1420,7 +1421,7 @@ class IsaModelObjectFactory(object):
                     else:
                         for j, p in enumerate(postbatch.parameter_values):
                             qc_param_set.add(p)
-                            sample = Sample(name='QC.{}.{}'.format(postbatch.material, str(j+1).zfill(3)))
+                            sample = Sample(name='QC.{}.{}'.format(postbatch.material.term, str(j+1).zfill(3)))
                             qc_param = sample_collection.get_param(
                                 p.category.parameter_name.term)
                             if qc_param is None:
@@ -1444,11 +1445,13 @@ class IsaModelObjectFactory(object):
                 qcsource = Source(name='source_QC', characteristics=[
                     Characteristic(
                         category=OntologyAnnotation(term='Material Type'),
-                        value=OntologyAnnotation(term=prebatch.material))])
+                        value=prebatch.material)])
                 sources.append(qcsource)
                 for i, p in enumerate(postbatch.parameter_values):
                     qc_param_set.add(p)
-                    sample = Sample(name='QC.{}.{}'.format(postbatch.material, str(i+1).zfill(3)))
+                    sample = Sample(
+                        name='QC.{}.{}'.format(postbatch.material.term,
+                                               str(i + 1).zfill(3)))
                     qc_param = sample_collection.get_param(
                         p.category.parameter_name.term)
                     if qc_param is None:

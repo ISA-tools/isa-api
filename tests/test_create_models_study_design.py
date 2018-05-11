@@ -742,7 +742,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         plan.add_sample_type('solvent')
         plan.add_sample_qc_plan_record('solvent', 8)
         batch1 = SampleQCBatch()
-        batch1.material = 'blank'
+        batch1.material = OntologyAnnotation(term='blank')
         batch1.characteristic_values = [
             Characteristic(category=OntologyAnnotation(term='charac1'),
                            value=5),
@@ -769,7 +769,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         ]
         plan.pre_run_batch = batch1
         batch2 = SampleQCBatch()
-        batch2.material = 'solvent'
+        batch2.material = OntologyAnnotation(term='solvent')
         batch2.characteristic_values = [
             Characteristic(category=OntologyAnnotation(term='charac2'), value=x)
             for x in reversed([x.value for x in batch1.parameter_values])]
