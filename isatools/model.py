@@ -2546,7 +2546,7 @@ class Source(Commentable):
     def characteristics(self):
         """:obj:`list` of :obj:`Characteristic`: Container for source material
         characteristics"""
-        return self.__characteristics
+        return list(set(self.__characteristics))
 
     @characteristics.setter
     def characteristics(self, val):

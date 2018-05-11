@@ -1232,8 +1232,8 @@ class IsaModelObjectFactory(object):
                         Characteristic(
                             category=OntologyAnnotation(term='Material Type'),
                             value=prebatch.material),
-                        Characteristic(category=var_characteristic,
-                                       value=c.value)
+                            Characteristic(category=var_characteristic,
+                                           value=c.value)
                     ])
                 if var_characteristic not in study.characteristic_categories:
                     study.characteristic_categories.append(var_characteristic)
@@ -1402,8 +1402,7 @@ class IsaModelObjectFactory(object):
                             Characteristic(category=var_characteristic,
                                            value=c.value)])
                     if var_characteristic not in study.characteristic_categories:
-                        study.characteristic_categories.append(
-                            var_characteristic)
+                        study.characteristic_categories.append(var_characteristic)
 
                     if not postbatch.parameter_values:
                         sample = Sample(name='QC.{}.{}'.format(postbatch.material.term, str(i+1).zfill(3)))
@@ -1469,6 +1468,8 @@ class IsaModelObjectFactory(object):
                     samples.append(sample)
                     process_sequence.append(process)
         # normalize size of params across all processes
+        study.characteristic_categories = list(
+            set(study.characteristic_categories))
         for process in process_sequence:
             missing = qc_param_set - set(
                 [x.category.parameter_name.term for x in
