@@ -1127,13 +1127,8 @@ class IsaModelObjectFactory(object):
     A factory class to create ISA content given a SampleAssayPlan object and a TreatmentSequence object.
     """
 
-    def __init__(self, sample_assay_plan, treatment_sequence=None):
-        self.__sample_assay_plan = sample_assay_plan
-        if treatment_sequence is None:
-            self.__treatment_sequence = set()
-        else:
-            self.__treatment_sequence = treatment_sequence
-
+    def __init__(self, study_design, treatment_sequence=None):
+        self.__study_design = study_design
         self.__ops = ['Alice', 'Bob', 'Carol', 'Dan', 'Erin', 'Frank']
         random.shuffle(self.__ops)
 
@@ -1156,47 +1151,41 @@ class IsaModelObjectFactory(object):
         return self.__ops
 
     @property
-    def sample_assay_plan(self):
-        return self.__sample_assay_plan
+    def study_design(self):
+        return self.__study_design
 
-    @sample_assay_plan.setter
-    def sample_assay_plan(self, sample_assay_plan):
-        if not isinstance(sample_assay_plan, SampleAssayPlan):
-            raise ISAModelAttributeError('sample_assay_plan must be an object'
-                                         'of type SampleAssayPlan')
+    @study_design.setter
+    def study_design(self, study_design):
+        if not isinstance(study_design, StudyDesign):
+            raise ISAModelAttributeError(
+                'study_design must be an object of type StudyDesign')
         else:
-            self.__sample_assay_plan = sample_assay_plan
-
-    @property
-    def treatment_sequence(self):
-        return self.__treatment_sequence
-
-    @treatment_sequence.setter
-    def treatment_sequence(self, treatment_sequence):
-        if not isinstance(treatment_sequence, set):
-            raise ISAModelAttributeError('treatment_sequence must be a set '
-                                         'of tuples of type (Treatment, int)')
-        else:
-            self.__treatment_sequence = treatment_sequence
+            self.__study_design = study_design
 
     def create_study_from_plan(self):
-        if self.sample_assay_plan is None:
+        # support one study design first, always assumes is first in StudyDesign
+
+        treatment_sequence, sample_assay_plan = \
+            self.study_design.sequences_plan.popitem()
+        self.sample_assay_plan = sample_assay_plan
+
+        if sample_assay_plan is None:
             raise ISAModelAttributeError('sample_assay_plan must be set to '
                                          'create model objects in factory')
 
-        if self.sample_assay_plan.group_size < 1:
+        if sample_assay_plan.group_size < 1:
             raise ISAModelAttributeError('group_size cannot be less than 1')
-        group_size = self.sample_assay_plan.group_size
+        group_size = sample_assay_plan.group_size
 
-        if self.sample_assay_plan.sample_plan == {}:
+        if sample_assay_plan.sample_plan == {}:
             raise ISAModelAttributeError('sample_plan is not defined')
-        sample_plan = self.sample_assay_plan.sample_plan
+        sample_plan = sample_assay_plan.sample_plan
         ranked_treatment_set = set()
-        for x, _ in self.treatment_sequence.ranked_treatments:
+        for x, _ in treatment_sequence.ranked_treatments:
             ranked_treatment_set.add(x)
         groups_ids = [
             (str(i+1).zfill(3), x) for i, x in enumerate(ranked_treatment_set)]
-        ranks = set([y for _, y in self.treatment_sequence.ranked_treatments])
+        ranks = set([y for _, y in treatment_sequence.ranked_treatments])
 
         group_rank_map = dict()
         for group_id, rank in itertools.product(groups_ids, ranks):
@@ -1218,7 +1207,7 @@ class IsaModelObjectFactory(object):
         sample_count = 0
         qc_param_set = set()
 
-        sample_qc_plan = self.sample_assay_plan
+        sample_qc_plan = sample_assay_plan
         prebatch = sample_qc_plan.pre_run_batch
         factors = set()
         ontology_sources = set()
@@ -1333,9 +1322,9 @@ class IsaModelObjectFactory(object):
                     for rank in ranks:
                         for sampn in range(0, sampling_size):
                             sampc += 1
-                            for qc_material_type in self.sample_assay_plan \
+                            for qc_material_type in sample_assay_plan \
                                     .sample_qc_plan.keys():
-                                if sample_count % self.sample_assay_plan \
+                                if sample_count % sample_assay_plan \
                                         .sample_qc_plan[qc_material_type] == 0:
                                     # insert QC sample collection
                                     qcsource = Source(
