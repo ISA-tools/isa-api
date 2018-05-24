@@ -290,6 +290,7 @@ class TreatmentSequence:
         except StopIteration:
             log.error("StopIteration - shouldn't occur!")
 
+
 class AssayType(object):
     """
        A type of assay, determined by a measurement_type, a technology_type and a set of topology_modifiers (of type AssayTopologyModifiers).
@@ -683,6 +684,7 @@ class MSInjectionMode(object):
                 acquisition_modes=list(self.acquisition_modes),
                 derivatizations=list(self.derivatizations)
         )
+
 
 class MSTopologyModifiers(object):
 
@@ -1088,46 +1090,192 @@ class SampleQCBatch(object):
             self.characteristic_values = characteristic_values
 
 
-class StudyDesign(object):
-    """
-    A class representing a study design, which is composed of an
-    ordered dictionary of pairs of treatment sequences and samples plans.
-    """
+class StudyEpoch(object):
 
-    def __init__(self):
-        super().__init__()
-        self.__sequences_plan = {}
+    def __init__(self, name, rank=None, treatments=None, sample_collections=None):
+        self.__name = name
+        self.rank = rank
+        if treatments is None:
+            self.__treatments = set()
+        else:
+            self.treatments = treatments
+        if sample_collections is None:
+            self.__sample_collections = set()
+        else:
+            self.sample_collections = sample_collections
 
     @property
-    def sequences_plan(self):
-        return self.__sequences_plan if self.__sequences_plan else OrderedDict()
+    def name(self):
+        return self.__name
 
-    @sequences_plan.setter
-    def sequences_plan(self, sequences_plan):
-        if not isinstance(sequences_plan, dict):
-            raise TypeError('{0} is not a valid input. please provide a '
-                            'dictionary mapping Treatment Sequences to'
-                            'Sample Plans')
-        for treatment_sequence, sample_plan in sequences_plan.items():
-            self.add_single_sequence_plan(treatment_sequence, sample_plan)
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise ISAModelAttributeError('Epoch name must be a string')
+        self.__name = name
 
-    def add_single_sequence_plan(self, treatment_sequence, study_plan):
-        if not isinstance(treatment_sequence, TreatmentSequence):
-            raise TypeError('Please provide a valid TreatmentSequence. '
-                            '{0} not a valid Treatment Sequence.'
-                            .format([treatment_sequence]))
-        if not isinstance(study_plan, SampleAssayPlan):
-            raise TypeError('Please provide a valid SampleAssayPlan. {0} not a '
-                            'valid SampleAssayPlan.'.format(study_plan))
-        self.__sequences_plan[treatment_sequence] = study_plan
+    @property
+    def rank(self):
+        return self.__rank
+
+    @rank.setter
+    def rank(self, rank):
+        if not isinstance(rank, int):
+            raise ISAModelAttributeError('Epoch rank must be a string')
+        self.__rank = rank
+        
+    @property
+    def treatments(self):
+        return self.__treatments
+    
+    @treatments.setter
+    def treatments(self, x):
+        if not isinstance(x, Iterable):
+            raise AttributeError('treatments must be an Iterable')
+        self.__treatments = set(x)
+
+    @property
+    def sample_collections(self):
+        return self.__sample_collections
+
+    @sample_collections.setter
+    def sample_collections(self, x):
+        if not isinstance(x, Iterable):
+            raise AttributeError('sample_collections must be an Iterable')
+        self.__sample_collections = set(x)
+
+    def __repr__(self):
+        return 'isatools.create.models.StudyEpoch(' \
+               'name={study_epoch.name}, ' \
+               'rank={study_epoch.rank}, ' \
+               'treatments={num_treatments}, ' \
+               'sample_collections={num_sample_collections}' \
+               ')'.format(study_epoch=self, num_treatments=len(self.treatments),
+                          num_sample_collections=len(self.sample_collections))
+
+    def __eq__(self, other):
+        return hash(repr(self)) == hash(repr(other))
+
+    def __ne__(self, other):
+        return hash(repr(self)) != hash(repr(other))
+
+
+class StudyArm(object):
+
+    def __init__(self, name, epochs=None):
+        self.name = name
+        if epochs is None:
+            self.__epochs = set()
+        else:
+            self.epochs = epochs
+
+    @property
+    def epochs(self):
+        return sorted(self.epochs, key=lambda x: x.rank)  # get list order of epochs
+
+    @epochs.setter
+    def epochs(self, x):
+        if not isinstance(x, Iterable):
+            raise AttributeError('epochs must be an Iterable')
+        self.__epochs = set(x)
+
+    def __repr__(self):
+        return 'isatools.create.models.StudyArm(' \
+               'name={study_arm.name}, ' \
+               'epochs={list_of_epoch_names})'.format(
+            study_arm=self, list_of_epoch_names=[x.name for x in self.epochs])
+
+    def __eq__(self, other):
+        return hash(repr(self)) == hash(repr(other))
+
+    def __ne__(self, other):
+        return hash(repr(self)) != hash(repr(other))
+
+
+class StudyDesign(object):
+    """
+    A class representing a study design, which is composed of a collection of
+    study arms.
+    """
+
+    def __init__(self, study_arms=None):
+        if study_arms is None:
+            self.__study_arms = set()
+        else:
+            self.study_arms = study_arms
+
+    @property
+    def study_arms(self):
+        return self.__study_arms
+
+    @study_arms.setter
+    def study_arms(self, study_arms):
+        if not isinstance(study_arms, Iterable):
+            raise TypeError('study_arms must be an iterable')
+        self.study_arms = study_arms
+
+    def __repr__(self):
+        return 'isatools.create.models.StudyDesign(' \
+               'study_arms={list_of_arm_names}' \
+               ')'.format(list_of_arm_names=[x.name for x in self.study_arms])
+
+    def __eq__(self, other):
+        return hash(repr(self)) == hash(repr(other))
+
+    def __ne__(self, other):
+        return hash(repr(self)) != hash(repr(other))
+
+
+class StudyDesignFactory(object):
+    """
+      A factory class to build a set of study arms.
+     """
+
+    def __init__(self, treatments):
+        self.__treatments = treatments
+
+    @property
+    def treatments(self):
+        return self.__treatments
+
+    def compute_crossover_design(self):
+        """
+        Computes the crossover trial design on the basis of the set of
+        treatments and either a single sample plan uniformly applied at each
+        treatment or an ordered set of sample plans that matches the number of
+        treatments (otherwise raises an error).
+
+        :return: set - the crossover design as a set of StudyArms
+        """
+        if set() not in self.treatments:
+            return {
+            StudyArm(name='arm_{i}'.format(i=i),
+                     epochs=[StudyEpoch(name='epoch_{j}'.format(j=j), rank=j,
+                                        treatments=y) for j, y
+                             in enumerate(x)]) for i, x in
+            enumerate(itertools.product(*self.treatments))
+        }
+        else:
+            return set()
+
+    def compute_parallel_design(self):
+        if set() not in self.treatments:
+            return {
+                StudyArm(name='arm_{i}'.format(i=i), epochs=[
+                    StudyEpoch(name='epoch_{j}'.format(j=j), rank=j,
+                               treatments=y) for j, y in enumerate(x)]) for i, x
+            in enumerate(self.treatments)
+        }
+        else:
+            return set()
 
 
 class IsaModelObjectFactory(object):
     """
-    A factory class to create ISA content given a SampleAssayPlan object and a TreatmentSequence object.
+    A factory class to create ISA content given a StudyDesign object.
     """
 
-    def __init__(self, study_design, treatment_sequence=None):
+    def __init__(self, study_design):
         self.__study_design = study_design
         self.__ops = ['Alice', 'Bob', 'Carol', 'Dan', 'Erin', 'Frank']
         random.shuffle(self.__ops)
