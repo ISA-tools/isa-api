@@ -679,7 +679,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         factorial_design_treatments = \
             treatment_factory.compute_full_factorial_design()
         study_factory = \
-            StudyDesignFactory(treatments=factorial_design_treatments, sample_plan=plan)
+            StudyDesignFactory(treatments=factorial_design_treatments)
         study_design = study_factory.compute_single_arm_design()
         study = IsaModelObjectFactory(study_design).create_study_from_plan()
         return
