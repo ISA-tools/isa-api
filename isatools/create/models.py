@@ -1171,13 +1171,13 @@ class StudyArm(object):
 
     @property
     def epochs(self):
-        return sorted(self.epochs, key=lambda x: x.rank)  # get list order of epochs
+        return sorted(self.__epochs, key=lambda x: x.rank)  # get list order of epochs
 
     @epochs.setter
     def epochs(self, x):
         if not isinstance(x, Iterable):
             raise AttributeError('epochs must be an Iterable')
-        self.__epochs = set(x)
+        self.__epochs = x
 
     def __repr__(self):
         return 'isatools.create.models.StudyArm(' \
@@ -1229,7 +1229,9 @@ class StudyDesign(object):
 class StudyDesignFactory(object):
     """
       A factory class to build a set of study arms.
-     """
+    """
+
+    # TODO: Add sample collections to the factory
 
     def __init__(self, treatments):
         self.__treatments = treatments
@@ -1259,6 +1261,14 @@ class StudyDesignFactory(object):
             return set()
 
     def compute_parallel_design(self):
+        """
+        Computes the parallel trial design on the basis of the set of
+        treatments and either a single sample plan uniformly applied at each
+        treatment or an ordered set of sample plans that matches the number of
+        treatments (otherwise raises an error).
+
+        :return: set - the parallel design as a set of StudyArms
+        """
         if set() not in self.treatments:
             return {
                 StudyArm(name='arm_{i}'.format(i=i), epochs=[
@@ -1266,6 +1276,24 @@ class StudyDesignFactory(object):
                                treatments=y) for j, y in enumerate(x)]) for i, x
             in enumerate(self.treatments)
         }
+        else:
+            return set()
+
+    def compute_single_arm_design(self):
+        """
+        Computes the single arm design on the basis of the set of
+        treatments and either a single sample plan uniformly applied at each
+        treatment or an ordered set of sample plans that matches the number of
+        treatments (otherwise raises an error).
+
+        :return: set - the single arm design as a set of StudyArms
+        """
+        if set() not in self.treatments:
+            arm = StudyArm(name='arm_0')
+            arm.epochs = [
+                StudyEpoch(name='epoch_{i}'.format(i=i), rank=i, treatments=[x])
+                for i, x in enumerate(self.treatments)]
+            return [arm]
         else:
             return set()
 
@@ -1313,6 +1341,15 @@ class IsaModelObjectFactory(object):
     def create_study_from_plan(self):
         # support one study design first, always assumes is first in StudyDesign
 
+        study_arm = self.study_design[0]  # only get first arm
+        for epoch in study_arm.epochs:
+            treatments = epoch.treatments
+            sample_collections = epoch.sample_collections
+            rank = epoch.rank
+            print(treatments)
+            print(sample_collections)
+            print(rank)
+        return
         treatment_sequence, sample_assay_plan = \
             self.study_design.sequences_plan.popitem()
         self.sample_assay_plan = sample_assay_plan

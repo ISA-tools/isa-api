@@ -1,19 +1,8 @@
 import unittest
 from collections import OrderedDict
 
-from isatools.model import (Investigation, StudyFactor, FactorValue,
-                            OntologyAnnotation)
-from isatools.create.models import (StudyDesign, Treatment,
-                                    Characteristic, TreatmentFactory,
-                                    TreatmentSequence, AssayType,
-                                    SampleAssayPlan, INTERVENTIONS,
-                                    BASE_FACTORS_ as BASE_FACTORS,
-                                    IsaModelObjectFactory,
-                                    MSTopologyModifiers,
-                                    DNASeqAssayTopologyModifiers,
-                                    SampleQCBatch,
-                                    MSAcquisitionMode,
-                                    MSInjectionMode)
+from isatools.model import *
+from isatools.create.models import *
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitroglycerin'
@@ -631,9 +620,9 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
                               factor_type=OntologyAnnotation(term='intensity'))
         self.f3 = StudyFactor(name='DURATION',
                               factor_type=OntologyAnnotation(term='time'))
-        self.agent = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
-        self.intensity = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
-        self.duration = StudyFactor(name=BASE_FACTORS[2]['name'], factor_type=BASE_FACTORS[2]['type'])
+        self.agent = StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0]['type'])
+        self.intensity = StudyFactor(name=BASE_FACTORS_[1]['name'], factor_type=BASE_FACTORS_[1]['type'])
+        self.duration = StudyFactor(name=BASE_FACTORS_[2]['name'], factor_type=BASE_FACTORS_[2]['type'])
         self.first_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
             FactorValue(factor_name=self.agent, value='crack'),
             FactorValue(factor_name=self.intensity, value='low'),
@@ -689,13 +678,11 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         treatment_factory.add_factor_value(self.f3, {'short', 'long'})
         factorial_design_treatments = \
             treatment_factory.compute_full_factorial_design()
-        treatment_sequence = TreatmentSequence(
-            ranked_treatments={(x, 1) for x in factorial_design_treatments})
-        # makes each study group ranked in sequence
-        study_design = StudyDesign()
-        study_design.add_single_sequence_plan(
-            treatment_sequence=treatment_sequence, study_plan=plan)
+        study_factory = \
+            StudyDesignFactory(treatments=factorial_design_treatments)
+        study_design = study_factory.compute_single_arm_design()
         study = IsaModelObjectFactory(study_design).create_study_from_plan()
+        return
         study.filename = 's_study.txt'
         self.investigation.studies = [study]
         self.assertEqual(36, len(study.sources))
