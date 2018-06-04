@@ -1091,17 +1091,14 @@ class SampleQCBatch(object):
 
 class StudyEpoch(object):
 
-    def __init__(self, name, rank=None, treatments=None, sample_collections=None):
+    def __init__(self, name, rank=None, treatments=None, sample_plan=None):
         self.__name = name
         self.rank = rank
         if treatments is None:
             self.__treatments = set()
         else:
             self.treatments = treatments
-        if sample_collections is None:
-            self.__sample_collections = set()
-        else:
-            self.sample_collections = sample_collections
+        self.sample_plan = sample_plan
 
     @property
     def name(self):
@@ -1134,23 +1131,22 @@ class StudyEpoch(object):
         self.__treatments = set(x)
 
     @property
-    def sample_collections(self):
-        return self.__sample_collections
+    def sample_plan(self):
+        return self.__sample_plan
 
-    @sample_collections.setter
-    def sample_collections(self, x):
-        if not isinstance(x, Iterable):
-            raise AttributeError('sample_collections must be an Iterable')
-        self.__sample_collections = set(x)
+    @sample_plan.setter
+    def sample_plan(self, x):
+        if not isinstance(x, SampleAssayPlan):
+            raise AttributeError('sample_collections must be a SampleAssayPlan')
+        self.__sample_plan = x
 
     def __repr__(self):
         return 'isatools.create.models.StudyEpoch(' \
                'name={study_epoch.name}, ' \
                'rank={study_epoch.rank}, ' \
                'treatments={num_treatments}, ' \
-               'sample_collections={num_sample_collections}' \
-               ')'.format(study_epoch=self, num_treatments=len(self.treatments),
-                          num_sample_collections=len(self.sample_collections))
+               'sample_plan={study_epoch.sample_plan}' \
+               ')'.format(study_epoch=self, num_treatments=len(self.treatments))
 
     def __eq__(self, other):
         return hash(repr(self)) == hash(repr(other))
@@ -1177,6 +1173,13 @@ class StudyArm(object):
         if not isinstance(x, Iterable):
             raise AttributeError('epochs must be an Iterable')
         self.__epochs = x
+
+    @property
+    def treatments(self):
+        treatment_set = set()
+        for epoch in self.epochs:
+            treatment_set = treatment_set.union(epoch.treatments)
+        return treatment_set
 
     def __repr__(self):
         return 'isatools.create.models.StudyArm(' \
@@ -1213,6 +1216,13 @@ class StudyDesign(object):
             raise TypeError('study_arms must be an iterable')
         self.study_arms = study_arms
 
+    @property
+    def treatments(self):
+        treatment_set = set()
+        for arm in self.study_arms:
+            treatment_set = treatment_set.union(arm.treatments)
+        return treatment_set
+
     def __repr__(self):
         return 'isatools.create.models.StudyDesign(' \
                'study_arms={list_of_arm_names}' \
@@ -1231,15 +1241,23 @@ class StudyDesignFactory(object):
     """
 
     # TODO: Add sample collections to the factory
+    # TODO: Add screen epoch
+    # TODO: Add follow up epoch
+    # TODO: Add Rest/washout epochs?
 
-    def __init__(self, treatments):
+    def __init__(self, treatments, sample_plan):
         self.__treatments = treatments
+        self.__sample_plan = sample_plan
 
     @property
     def treatments(self):
         return self.__treatments
 
-    def compute_crossover_design(self):
+    @property
+    def sample_plan(self):
+        return self.__sample_plan
+
+    def compute_crossover_design(self, screen=False, follow_up=False):
         """
         Computes the crossover trial design on the basis of the set of
         treatments and either a single sample plan uniformly applied at each
@@ -1251,15 +1269,16 @@ class StudyDesignFactory(object):
         if set() not in self.treatments:
             return {
             StudyArm(name='arm_{i}'.format(i=i),
-                     epochs=[StudyEpoch(name='epoch_{j}'.format(j=j), rank=j,
-                                        treatments=y) for j, y
+                     epochs=[StudyEpoch(
+                         name='epoch_{j}'.format(j=j), rank=j, treatments=y,
+                         sample_plan=self.sample_plan) for j, y
                              in enumerate(x)]) for i, x in
-            enumerate(itertools.product(*self.treatments))
+                enumerate(itertools.product(*self.treatments))
         }
         else:
             return set()
 
-    def compute_parallel_design(self):
+    def compute_parallel_design(self, screen=False, follow_up=False):
         """
         Computes the parallel trial design on the basis of the set of
         treatments and either a single sample plan uniformly applied at each
@@ -1269,16 +1288,31 @@ class StudyDesignFactory(object):
         :return: set - the parallel design as a set of StudyArms
         """
         if set() not in self.treatments:
-            return {
+            study_arms = set()
+            study_arms = {
                 StudyArm(name='arm_{i}'.format(i=i), epochs=[
-                    StudyEpoch(name='epoch_{j}'.format(j=j), rank=j,
-                               treatments=y) for j, y in enumerate(x)]) for i, x
-            in enumerate(self.treatments)
-        }
+                    StudyEpoch(
+                        name='treatment_{j}'.format(j=j), rank=j, treatments=y,
+                        sample_plan=self.sample_plan) for j, y in
+                    enumerate(x)]) for i, x
+                in enumerate(self.treatments)
+            }
+            rank_before_tmin = min(x.rank for x in next(iter(study_arms))) - 1
+            rank_after_tmax = max(x.rank for x in next(iter(study_arms))) + 1
+            for arm in study_arms:
+                if screen:
+                    arm.add(StudyEpoch(name='screen',
+                                       rank=rank_before_tmin,
+                                       sample_plan=self.sample_plan))
+                if follow_up:
+                    arm.add(StudyEpoch(name='follow_up',
+                                       rank=rank_after_tmax,
+                                       sample_plan=self.sample_plan))
+            return study_arms
         else:
             return set()
 
-    def compute_single_arm_design(self):
+    def compute_single_arm_design(self, screen=False, follow_up=False):
         """
         Computes the single arm design on the basis of the set of
         treatments and either a single sample plan uniformly applied at each
@@ -1290,7 +1324,8 @@ class StudyDesignFactory(object):
         if set() not in self.treatments:
             arm = StudyArm(name='arm_0')
             arm.epochs = [
-                StudyEpoch(name='epoch_{i}'.format(i=i), rank=i, treatments=[x])
+                StudyEpoch(name='epoch_{i}'.format(i=i), rank=i, treatments=[x],
+                           sample_plan=self.sample_plan)
                 for i, x in enumerate(self.treatments)]
             return [arm]
         else:
@@ -1340,14 +1375,68 @@ class IsaModelObjectFactory(object):
     def create_study_from_plan(self):
         # support one study design first, always assumes is first in StudyDesign
 
-        study_arm = self.study_design[0]  # only get first arm
+        study_arm = self.study_design[0]  # only get first arm for now
+
+        study = Study(filename='s_study_arm01.txt')
+        # set default declarations in study
+        study.ontology_source_references  = [
+            OntologySource(name='OBI',
+                           file='https://raw.githubusercontent.com/obi-ontology'
+                                '/obi/v2018-02-12/obi.owl',
+                           version='v2018-02-12',
+                           description='Ontology for Biomedical Investigations')
+        ]
+        study.protocols = [
+            Protocol(name='sample collection', protocol_type=
+                OntologyAnnotation(term='sample collection'))
+        ]
+
+        sample_collection = study.get_prot('sample collection')
+        sample_collection.add_param('run order')
+        sample_collection.add_param('collection event rank')
+
+        source_prototype = Source(
+            characteristics=[
+                Characteristic(
+                    category=OntologyAnnotation(term='Material Type'),
+                    value=OntologyAnnotation(
+                        term='specimen',
+                        term_source=study.ontology_source_references[0],
+                        term_accession='0100051'))
+            ]
+        )
+        import copy
+
         for epoch in study_arm.epochs:
             treatments = epoch.treatments
-            sample_collections = epoch.sample_collections
+            sample_plan = epoch.sample_plan
             rank = epoch.rank
             print(treatments)
-            print(sample_collections)
+            print(sample_plan)
             print(rank)
+
+        def generate_sources(arms):
+            sources_map = dict()
+            for arm in arms:
+                sources = []
+                for subjn in (str(x).zfill(3) for x in
+                              range(1, sample_plan.group_size + 1)):
+                    source = copy.copy(source_prototype)
+                    source.name = self._idgen(arm.name, subjn)
+                    sources.append(source)
+                sources_map[arm.name] = sources
+            return sources_map
+        sources_map = generate_sources(self.study_design)
+        for x in sources_map.values():
+            for y in x:
+                study.sources.append(y)
+        print(study.sources)  # expecting 2
+
+        for arm in self.study_design:
+            sources = sources_map[arm.name]
+            for epoch in arm.epochs:
+                pass  # walk arms
+
         return
         treatment_sequence, sample_assay_plan = \
             self.study_design.sequences_plan.popitem()
