@@ -1570,7 +1570,7 @@ class IsaModelObjectFactory(object):
                     run_counter += 1
                     plink(eproc, aproc)
                     assaycode = 'A002'  # TODO: Find out what NMR assay codes they use, if any
-                    dfile = RawSpectralDataFile(
+                    dfile = FreeInductionDecayDataFile(
                         filename='{assaycode}_{pulse_seq}_{acq_mode}_{biorepl}_{techrepl}.nmrml'.format(
                             assaycode=assaycode, biorepl=biorepl,
                             pulse_seq=pulse_seq, acq_mode=acq_mode,
