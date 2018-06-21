@@ -1382,12 +1382,12 @@ class IsaModelObjectFactory(object):
                     var_characteristic = c.category
                     qcsource = Source(
                         name='QC.{}.{}'.format(
-                            prebatch.material.term, str(i + 1).zfill(3)),
+                            postbatch.material.term, str(i + 1).zfill(3)),
                         characteristics=[
                             Characteristic(
                                 category=OntologyAnnotation(
                                     term='Material Type'),
-                                value=prebatch.material),
+                                value=postbatch.material),
                             Characteristic(category=var_characteristic,
                                            value=c.value)])
                     if var_characteristic not in study.characteristic_categories:
@@ -1433,7 +1433,7 @@ class IsaModelObjectFactory(object):
                 qcsource = Source(name='source_QC', characteristics=[
                     Characteristic(
                         category=OntologyAnnotation(term='Material Type'),
-                        value=prebatch.material)])
+                        value=postbatch.material)])
                 sources.append(qcsource)
                 for i, p in enumerate(postbatch.parameter_values):
                     qc_param_set.add(p)
