@@ -239,7 +239,8 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 if len(contact.comments) > len(max_comment.comments):
                     max_comment = contact
             for comment in max_comment.comments:
-                contacts_df_cols.append('Comment[' + comment.name + ']')
+                if 'Comment[' + comment.name + ']' not in contacts_df_cols:
+                    contacts_df_cols.append('Comment[' + comment.name + ']')
         contacts_df = pd.DataFrame(columns=tuple(contacts_df_cols))
         for i, contact in enumerate(contacts):
             log.debug('%s iteration, item=%s', i, contact)
