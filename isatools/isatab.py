@@ -234,9 +234,12 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                             prefix + ' Person Roles Term Accession Number',
                             prefix + ' Person Roles Term Source REF']
         if len(contacts) > 0:
-            if contacts[0].comments:
-                for comment in contacts[0].comments:
-                    contacts_df_cols.append('Comment[' + comment.name + ']')
+            max_comment = Person()
+            for contact in contacts:
+                if len(contact.comments) > len(max_comment.comments):
+                    max_comment = contact
+            for comment in max_comment.comments:
+                contacts_df_cols.append('Comment[' + comment.name + ']')
         contacts_df = pd.DataFrame(columns=tuple(contacts_df_cols))
         for i, contact in enumerate(contacts):
             log.debug('%s iteration, item=%s', i, contact)
@@ -254,9 +257,12 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 roles_accession_numbers,
                 roles_source_refs
             ]
-            if contact.comments:
-                for comment in contact.comments:
-                    contacts_df_row.append(comment.value)
+            for j, _ in enumerate(max_comment.comments):
+                log.debug('%s iteration, item=%s', j, _)
+                try:
+                    contacts_df_row.append(contact.comments[j].value)
+                except IndexError:
+                    contacts_df_row.append('')
             log.debug('row=%s', contacts_df_row)
             contacts_df.loc[i] = contacts_df_row
         return contacts_df.set_index(prefix + ' Person Last Name').T
