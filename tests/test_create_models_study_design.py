@@ -79,13 +79,13 @@ class TreatmentTest(unittest.TestCase):
 
     def test_repr(self):
         self.assertEqual(repr(self.treatment),
-                         "Treatment(factor_type=chemical intervention, "
+                         "Treatment(treatment_type=chemical intervention, "
                          "factor_values=[isatools.model.FactorValue("
                          "factor_name='AGENT', value='nitroglycerin', "
                          "unit=None), isatools.model.FactorValue("
                          "factor_name='DURATION', value=100.0, unit='s'), "
                          "isatools.model.FactorValue(factor_name='INTENSITY', "
-                         "value=5, unit='kg/m^3')])")
+                         "value=5, unit='kg/m^3')], group_size=0)")
 
     def test_hash(self):
         self.assertEqual(hash(self.treatment), hash(repr(self.treatment)))
@@ -347,7 +347,7 @@ class TreatmentSequenceTest(unittest.TestCase):
             )), 2)
         ]
         new_sequence = TreatmentSequence(ranked_treatments=treatments)
-        self.assertEqual("TreatmentSequence([(Treatment(factor_type=chemical "
+        self.assertEqual("TreatmentSequence([(Treatment(treatment_type=chemical "
                          "intervention, factor_values=[isatools.model."
                          "FactorValue(factor_name=isatools.model.StudyFactor("
                          "name='AGENT', factor_type="
@@ -366,8 +366,9 @@ class TreatmentSequenceTest(unittest.TestCase):
                          "name='INTENSITY', factor_type="
                          "isatools.model.OntologyAnnotation(term='intensity', "
                          "term_source=None, term_accession='', comments=[]), "
-                         "comments=[]), value='low', unit=None)]), 2), ("
-                         "Treatment(factor_type=chemical intervention, "
+                         "comments=[]), value='low', unit=None)], group_size=0)"
+                         ", 2), ("
+                         "Treatment(treatment_type=chemical intervention, "
                          "factor_values=[isatools.model.FactorValue("
                          "factor_name=isatools.model.StudyFactor(name='AGENT', "
                          "factor_type=isatools.model.OntologyAnnotation("
@@ -384,7 +385,7 @@ class TreatmentSequenceTest(unittest.TestCase):
                          "name='INTENSITY', factor_type="
                          "isatools.model.OntologyAnnotation(term='intensity', "
                          "term_source=None, term_accession='', comments=[]), "
-                         "comments=[]), value='low', unit=None)]), 1)])",
+                         "comments=[]), value='low', unit=None)], group_size=0), 1)])",
                          repr(new_sequence))
 
     def test_eq(self):
@@ -680,7 +681,6 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         plan.add_sample_plan_record('liver', 5)
         plan.add_sample_type('blood')
         plan.add_sample_plan_record('blood', 3)
-        plan.group_size = 2
         treatment_factory = TreatmentFactory(
             factors=[self.f1, self.f2, self.f3])
         treatment_factory.add_factor_value(
@@ -689,6 +689,8 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         treatment_factory.add_factor_value(self.f3, {'short', 'long'})
         factorial_design_treatments = \
             treatment_factory.compute_full_factorial_design()
+        for treatment in factorial_design_treatments:
+            treatment.group_size = 2
         treatment_sequence = TreatmentSequence(
             ranked_treatments={(x, 1) for x in factorial_design_treatments})
         # makes each study group ranked in sequence
@@ -707,7 +709,6 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         plan.add_sample_plan_record('liver', 5)
         plan.add_sample_type('blood')
         plan.add_sample_plan_record('blood', 3)
-        plan.group_size = 2
         plan.add_sample_type('solvent')
         plan.add_sample_qc_plan_record('solvent', 8)
         treatment_factory = TreatmentFactory(
@@ -718,6 +719,8 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         treatment_factory.add_factor_value(self.f3, {'short', 'long'})
         ffactorial_design_treatments = \
             treatment_factory.compute_full_factorial_design()
+        for treatment in ffactorial_design_treatments:
+            treatment.group_size = 2
         treatment_sequence = TreatmentSequence(
             ranked_treatments={(x, 1) for x in ffactorial_design_treatments})
         # makes each study group ranked in sequence
@@ -741,7 +744,6 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         plan.add_sample_plan_record('liver', 5)
         plan.add_sample_type('blood')
         plan.add_sample_plan_record('blood', 3)
-        plan.group_size = 2
         plan.add_sample_type('solvent')
         plan.add_sample_qc_plan_record('solvent', 8)
         batch1 = SampleQCBatch()
@@ -786,6 +788,8 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         treatment_factory.add_factor_value(self.f3, {'short', 'long'})
         ffactorial_design_treatments = \
             treatment_factory.compute_full_factorial_design()
+        for treatment in ffactorial_design_treatments:
+            treatment.group_size = 2
         treatment_sequence = TreatmentSequence(
             ranked_treatments={(x, 1) for x in ffactorial_design_treatments})
         study_design = StudyDesign()
@@ -810,6 +814,8 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         treatment_factory.add_factor_value(factor, 'a')
         treatment_factory.add_factor_value(factor, 'b')
         treatments = treatment_factory.compute_full_factorial_design()
+        for treatment in treatments:
+            treatment.group_size = 5
         two_ranks_of_treatments = {(x, 1) for x in treatments}.union({(x, 2) for x in treatments})
         treatment_sequence = TreatmentSequence(ranked_treatments=two_ranks_of_treatments)
         self.assertEqual(len(treatments), 2)
@@ -817,7 +823,6 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         self.assertEqual(
             max((x for _, x in treatment_sequence.ranked_treatments)), 2)
         sample_assay_plan = SampleAssayPlan()
-        sample_assay_plan.group_size = 5
         sample_assay_plan.add_sample_type('liver')
         sample_assay_plan.add_sample_type('blood')
         sample_assay_plan.add_sample_type('urine')
@@ -880,13 +885,14 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         treatment_factory.add_factor_value(factor3, 'alpha')
         treatment_factory.add_factor_value(factor3, 'beta')
         treatments = treatment_factory.compute_full_factorial_design()
+        for treatment in treatments:
+            treatment.group_size = 3
         treatment_sequence = TreatmentSequence(ranked_treatments=treatments)
         self.assertEqual(len(treatments), 12)
         self.assertEqual(len(treatment_sequence.ranked_treatments), 12)
         self.assertEqual(
             max((x for _, x in treatment_sequence.ranked_treatments)), 1)
         sample_assay_plan = SampleAssayPlan()
-        sample_assay_plan.group_size = 3
         sample_assay_plan.add_sample_type('liver')
         sample_assay_plan.add_sample_type('blood')
         sample_assay_plan.add_sample_type('urine')
@@ -966,6 +972,8 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         treatment_factory.add_factor_value(factor3, 'alpha')
         treatment_factory.add_factor_value(factor3, 'beta')
         treatments = treatment_factory.compute_full_factorial_design()
+        for treatment in treatments:
+            treatment.group_size = 3
         treatment_sequence = TreatmentSequence()
         for treatment in treatments:
             treatment_sequence.add_treatment(treatment, 1)
@@ -975,7 +983,6 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         self.assertEqual(
             max((x for _, x in treatment_sequence.ranked_treatments)), 2)
         sample_assay_plan = SampleAssayPlan()
-        sample_assay_plan.group_size = 3
         sample_assay_plan.add_sample_type('liver')
         sample_assay_plan.add_sample_type('blood')
         sample_assay_plan.add_sample_type('urine')

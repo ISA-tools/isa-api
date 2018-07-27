@@ -63,10 +63,12 @@ class Treatment(object):
     model v1) and a treatment type
     """
     def __init__(self, treatment_type=INTERVENTIONS['CHEMICAL'],
-                 factor_values=None):
+                 factor_values=None, group_size=0):
         """
         Creates a new Treatment
+        :param treatment_type: treatment type
         :param factor_values: set of isatools.model.v1.FactorValue
+        :param group_size: number of subjects in this group
         """
 
         if treatment_type not in INTERVENTIONS.values():
@@ -78,11 +80,25 @@ class Treatment(object):
             self.__factor_values = set()
         else:
             self.factor_values = factor_values
+        self.__group_size = group_size
 
     def __repr__(self):
-        return 'Treatment(factor_type={0}, factor_values={1})'.format(
-            self.treatment_type, sorted(
-                self.factor_values, key=lambda x: repr(x)))
+        return 'Treatment(treatment_type={0}, factor_values={1}, ' \
+               'group_size={2})'.format(self.treatment_type, sorted(
+                self.factor_values, key=lambda x: repr(x)), self.group_size)
+
+    @property
+    def group_size(self):
+        return self.__group_size
+
+    @group_size.setter
+    def group_size(self, group_size):
+        if not isinstance(group_size, int):
+            raise TypeError('{} is not a valid value for group_size. Please '
+                            'provide an integer.'.format(group_size))
+        if group_size < 0:
+            raise ValueError('group_size must be greater than 0.')
+        self.__group_size = group_size
 
     def __hash__(self):
         return hash(repr(self))
@@ -90,7 +106,8 @@ class Treatment(object):
     def __eq__(self, other):
         return isinstance(other, Treatment) \
                and self.treatment_type == other.treatment_type \
-               and self.factor_values == other.factor_values
+               and self.factor_values == other.factor_values \
+               and self.group_size == other.group_size
 
     def __ne__(self, other):
         return not self == other
@@ -1173,9 +1190,9 @@ class IsaModelObjectFactory(object):
             raise ISAModelAttributeError('sample_assay_plan must be set to '
                                          'create model objects in factory')
 
-        if sample_assay_plan.group_size < 1:
-            raise ISAModelAttributeError('group_size cannot be less than 1')
-        group_size = sample_assay_plan.group_size
+        # if sample_assay_plan.group_size < 1:
+        #     raise ISAModelAttributeError('group_size cannot be less than 1')
+        # group_size = sample_assay_plan.group_size
 
         if sample_assay_plan.sample_plan == {}:
             raise ISAModelAttributeError('sample_plan is not defined')
@@ -1288,6 +1305,7 @@ class IsaModelObjectFactory(object):
         # Main batch
         for (group_id, treatment), ranks in group_rank_map.items():
             fvs = treatment.factor_values
+            group_size = treatment.group_size
             for factor in [x.factor_name for x in fvs]:
                 factors.add(factor)
             for subjn in (str(x).zfill(3) for x in range(1, group_size+1)):
