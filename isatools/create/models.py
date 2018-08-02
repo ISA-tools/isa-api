@@ -1791,22 +1791,19 @@ class IsaModelObjectFactory(object):
                                 if injection_mode.injection_mode in ('LC', 'GC'):
                                     chromat_instr = injection_mode.chromatography_instrument
                                     chromat_col = injection_mode.chromatography_column
-                                    eproc = Process(executes_protocol=ext_protocol,
-                                                    inputs=[samp], outputs=[extr],
-                                                    performer=self.ops[1],
-                                                    date_=datetime.date.isoformat(
-                                                        datetime.date.today()))
+                                    # add GC-specific params to extraction process
                                     eproc.parameter_values.append(
                                         ParameterValue(
-                                            category=ext_protocol.get_param('chromatography instrument'),
+                                            category=ext_protocol.get_param(
+                                                'chromatography instrument'),
                                             value=chromat_instr)
-                                        )
+                                    )
                                     eproc.parameter_values.append(
                                         ParameterValue(
-                                            category=ext_protocol.get_param('chromatography column'),
+                                            category=ext_protocol.get_param(
+                                                'chromatography column'),
                                             value=chromat_col)
                                     )
-                                assay.process_sequence.append(eproc)
                                 for j in range(1, technical_replicates + 1):
                                     techrepl = str(j).zfill(3)
                                     ms_prot = study.get_prot(mp_protocol_name)
@@ -1822,7 +1819,7 @@ class IsaModelObjectFactory(object):
                                             'run order'),
                                             value=str(run_order[run_counter])),
                                         ParameterValue(category=ms_prot.get_param(
-                                            'injection mode'), value=injection_mode.injection_mode ),
+                                            'injection mode'), value=injection_mode.injection_mode),
                                         ParameterValue(
                                             category=ms_prot.get_param(
                                                 'instrument'),
@@ -1832,7 +1829,8 @@ class IsaModelObjectFactory(object):
                                             'scan polarity'), value=acquisition_mode.acquisition_method),
                                     ]
                                     run_counter += 1
-                                    plink(eproc, aproc)
+                                    if eproc is not None:
+                                        plink(eproc, aproc)
                                     # Birmingham encoding
                                     assaycode = 'A100'  # unknown assay type; default as any LCMS
                                     if injection_mode.injection_mode  == 'LC':
@@ -1854,7 +1852,6 @@ class IsaModelObjectFactory(object):
                                     assay.process_sequence.append(aproc)
                         if assay is not None:
                             study.assays.append(assay)
-
             else:
                 for sample_fraction in top_mods.sample_fractions:
                     for injection_mode in top_mods.injection_modes:
