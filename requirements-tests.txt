@@ -17,5 +17,5 @@ mzml2isa
 biopython
 progressbar2
 tox
-nosetests
+nose
 certifi

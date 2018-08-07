@@ -9,7 +9,7 @@ install:
 script:
 - behave --no-capture --no-capture-stderr --format=progress features/isa-file-handler.feature
 - tox
-- coverage run --source isatools -m py.test
+- coverage run nose --with-coverage
 - coverage report -m
 branches:
   only:
