@@ -14,6 +14,7 @@ from string import Template
 
 
 from isatools import isatab as ISATAB
+from isatools.utils import utf8_text_file_open
 
 # original from https://github.com/workflow4metabolomics/mtbls-dwnld/blob/develop/isatab2w4m.py
 __author__ = 'pkrog (Pierrick Roger)'
@@ -334,7 +335,7 @@ def get_investigation_file(input_dir):
 ################################################################
 
 def load_investigation(investigation_file):
-    f = open(investigation_file, 'r')
+    f = utf8_text_file_open(investigation_file)
     investigation = ISATAB.load(f)
     return investigation
 
@@ -364,8 +365,10 @@ def get_sample_names(assay_df, measures_df):
 
 def make_sample_metadata(study_df, assay_df, sample_names, normalize=True):
     # Normalize column names
-    study_df.set_axis(axis=1, labels=make_names(study_df.axes[1].tolist()))
-    assay_df.set_axis(axis=1, labels=make_names(assay_df.axes[1].tolist()))
+    study_df.set_axis(
+        inplace=True, axis=1, labels=make_names(study_df.axes[1].tolist()))
+    assay_df.set_axis(
+        inplace=True, axis=1, labels=make_names(assay_df.axes[1].tolist()))
 
     # Merge data frames
     sample_metadata = assay_df.merge(study_df, on='Sample.Name', sort=False)
@@ -374,7 +377,7 @@ def make_sample_metadata(study_df, assay_df, sample_names, normalize=True):
     if normalize:
         norm_sample_names = make_names(sample_names, uniq=True)
         sample_metadata.insert(0, 'sample.name', norm_sample_names)
-        sample_metadata.set_axis(axis=1, labels=make_names(
+        sample_metadata.set_axis(inplace=True, axis=1, labels=make_names(
             sample_metadata.axes[1].tolist(), uniq=True))
 
     return sample_metadata
@@ -395,7 +398,7 @@ def make_variable_metadata(measures_df, sample_names, variable_names,
 
     # Normalize
     if normalize:
-        variable_metadata.set_axis(axis=1, labels=make_names(
+        variable_metadata.set_axis(inplace=True, axis=1, labels=make_names(
             variable_metadata.axes[1].tolist(), uniq=True))
 
     return variable_metadata
@@ -422,7 +425,8 @@ def make_matrix(measures_df, sample_names, variable_names, normalize=True):
     if normalize:
         norm_sample_names = make_names(sample_names, uniq=True)
         norm_sample_names.insert(0, 'variable.name')
-        sample_variable_matrix.set_axis(axis=1, labels=norm_sample_names)
+        sample_variable_matrix.set_axis(
+            inplace=True, axis=1, labels=norm_sample_names)
 
     return sample_variable_matrix
 
