@@ -150,7 +150,6 @@ class EncodeToJsonTests(unittest.TestCase):
                 json.dumps(top_mods, cls=SampleAssayPlanEncoder)
             )
         )
-        print(json.dumps(top_mods, cls=SampleAssayPlanEncoder, indent=4))
         self.assertTrue(expected == actual)
 
     @unittest.skip(

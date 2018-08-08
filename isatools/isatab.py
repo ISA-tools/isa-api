@@ -911,9 +911,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     for output in [x for x in node.outputs if
                                    isinstance(x, DataFile)]:
                         columns.append(output.label)
-                        # columns += flatten(
-                        #     map(lambda x: get_comment_column(output.label, x),
-                        #         output.comments))
+                        columns += flatten(
+                            map(lambda x: get_comment_column(output.label, x),
+                                output.comments))
 
                 elif isinstance(node, Material):
                     olabel = node.type
@@ -982,9 +982,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                             olabel = output.label
                             df_dict[olabel][-1] = output.filename
-                            # for co in output.comments:
-                            #     colabel = "{0}.Comment[{1}]".format(olabel, co.name)
-                            #     df_dict[colabel][-1] = co.value
+                            for co in output.comments:
+                                colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                                df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
@@ -3515,12 +3515,9 @@ def read_tfile(tfile_path, index_col=None, factor_filter=None):
         tfile_fp.seek(0)
         log.debug("Reading file into DataFrame")
         tfile_fp = strip_comments(tfile_fp)
-        tfile_df = pd.read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col,
-                        memory_map=True, encoding='utf-8').fillna('')
-        tfile_df.isatab_header = header
-        # tfile_df = IsaTabDataFrame(
-        #     pd.read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col,
-        #                 memory_map=True, encoding='utf-8').fillna(''))
+        tfile_df = IsaTabDataFrame(
+            pd.read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col,
+                        memory_map=True, encoding='utf-8').fillna(''))
     if factor_filter:
         log.debug("Filtering DataFrame contents on Factor Value %s", factor_filter)
         return tfile_df[tfile_df['Factor Value[{}]'.format(factor_filter[0])] == factor_filter[1]]

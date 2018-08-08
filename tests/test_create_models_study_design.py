@@ -867,9 +867,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         study = IsaModelObjectFactory(study_design).create_assays_from_plan()
         self.assertEqual(len(study.assays), 6)
         self.assertEqual(len(study.protocols), 4)
-        study.filename = 's_study.txt'
-        from isatools import isatab
-        print(isatab.dumps(Investigation(studies=[study])))
+
 
     def test_study_from_2_by_3_by_2_factorial_plan(self):
         factor1 = StudyFactor(name='1')
