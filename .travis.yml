@@ -2,10 +2,7 @@ sudo: false
 language: python
 cache: pip
 python:
-  - 3.4
-  - 3.5
   - 3.6
-  - 3.7
 before_install:
 - bash -x get_test_data.sh
 install:
