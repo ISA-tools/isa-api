@@ -13,6 +13,7 @@ from isatools.isatab import ProcessSequenceFactory
 from isatools.model import *
 from isatools.tests.utils import assert_tab_content_equal
 from isatools.tests import utils
+from isatools.isatab import IsaTabDataFrame
 
 
 def setUpModule():
@@ -911,8 +912,7 @@ class UnitTestIsaTabLoad(unittest.TestCase):
         factory = ProcessSequenceFactory(study_protocols=[Protocol(name="sample collection")])
         table_to_load = """Source Name\tProtocol REF\tSample Name
 source1\tsample collection\tsample1"""
-        DF = pd.read_csv(StringIO(table_to_load), sep='\t')
-        DF.isatab_header = ["Source Name", "Protocol REF", "Sample Name"]
+        DF = IsaTabDataFrame(pd.read_csv(StringIO(table_to_load), sep='\t'))
         so, sa, om, d, pr, _, __ = factory.create_from_df(DF)
         self.assertEqual(len(so), 1)
         self.assertEqual(len(sa), 1)
@@ -925,8 +925,7 @@ source1\tsample collection\tsample1"""
         table_to_load = """Source Name\tProtocol REF\tSample Name
 source1\tsample collection\tsample1
 source2\tsample collection\tsample2"""
-        DF = pd.read_csv(StringIO(table_to_load), sep='\t')
-        DF.isatab_header = ["Source Name", "Protocol REF", "Sample Name"]
+        DF = IsaTabDataFrame(pd.read_csv(StringIO(table_to_load), sep='\t'))
         so, sa, om, d, pr, _, __ = factory.create_from_df(DF)
         self.assertEqual(len(so), 2)
         self.assertEqual(len(sa), 2)
@@ -939,8 +938,7 @@ source2\tsample collection\tsample2"""
         table_to_load = """Source Name\tProtocol REF\tSample Name
 source1\tsample collection\tsample1
 source1\tsample collection\tsample2"""
-        DF = pd.read_csv(StringIO(table_to_load), sep='\t')
-        DF.isatab_header = ["Source Name", "Protocol REF", "Sample Name"]
+        DF = IsaTabDataFrame(pd.read_csv(StringIO(table_to_load), sep='\t'))
         so, sa, om, d, pr, _, __ = factory.create_from_df(DF)
         self.assertEqual(len(so), 1)
         self.assertEqual(len(sa), 2)
@@ -953,8 +951,7 @@ source1\tsample collection\tsample2"""
         table_to_load = """Source Name\tProtocol REF\tSample Name
 source1\tsample collection\tsample1
 source2\tsample collection\tsample1"""
-        DF = pd.read_csv(StringIO(table_to_load), sep='\t')
-        DF.isatab_header = ["Source Name", "Protocol REF", "Sample Name"]
+        DF = IsaTabDataFrame(pd.read_csv(StringIO(table_to_load), sep='\t'))
         so, sa, om, d, pr, _, __ = factory.create_from_df(DF)
         self.assertEqual(len(so), 2)
         self.assertEqual(len(sa), 1)
@@ -969,8 +966,7 @@ source2\tsample collection\tsample1"""
         table_to_load = """Sample Name\tProtocol REF\tExtract Name\tProtocol REF\tRaw Data File
 sample1\textraction\te1\tscanning\td1
 sample1\textraction\te2\tscanning\td2"""
-        DF = pd.read_csv(StringIO(table_to_load), sep='\t')
-        DF.isatab_header = ["Source Name", "Protocol REF", "Extract Name", "Protocol REF", "Raw Data File"]
+        DF = IsaTabDataFrame(pd.read_csv(StringIO(table_to_load), sep='\t'))
         so, sa, om, d, pr, _, __ = factory.create_from_df(DF)
         self.assertEqual(len(so), 0)
         self.assertEqual(len(sa), 1)

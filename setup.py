@@ -48,7 +48,7 @@ setup(
     install_requires=[
         'numpy',
         'jsonschema',
-        'pandas==0.20.*',
+        'pandas',
         'networkx',
         'lxml',
         'requests',
