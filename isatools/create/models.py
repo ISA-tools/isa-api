@@ -10,7 +10,7 @@ import random
 from collections import Iterable
 from collections import OrderedDict
 from numbers import Number
-
+import copy
 from isatools.model import *
 
 
@@ -1231,7 +1231,7 @@ class StudyDesign(object):
     def study_arms(self, study_arms):
         if not isinstance(study_arms, Iterable):
             raise TypeError('study_arms must be an iterable')
-        self.study_arms = study_arms
+        self.__study_arms = study_arms
 
     @property
     def treatments(self):
@@ -1338,6 +1338,10 @@ class StudyDesignFactory(object):
 
         :return: set - the single arm design as a set of StudyArms
         """
+        if len(set([x.group_size for x in self.treatments])) != 1:
+           raise ValueError('Group size for all treatments must be the same if '
+                            'computing a single-arm design. Found {}'.format(
+               set([x.group_size for x in self.treatments])))
         if set() not in self.treatments:
             arm = StudyArm(name='arm_0')
             arm.epochs = [
@@ -1392,7 +1396,7 @@ class IsaModelObjectFactory(object):
     def create_study_from_plan(self):
         # support one study design first, always assumes is first in StudyDesign
 
-        study_arm = self.study_design[0]  # only get first arm for now
+        study_arm = self.study_design.study_arms[0]  # only get first arm for now
 
         study = Study(filename='s_study_arm01.txt')
         # set default declarations in study
@@ -1422,15 +1426,6 @@ class IsaModelObjectFactory(object):
                         term_accession='0100051'))
             ]
         )
-        import copy
-
-        for epoch in study_arm.epochs:
-            treatments = epoch.treatments
-            sample_plan = epoch.sample_plan
-            rank = epoch.rank
-            print(treatments)
-            print(sample_plan)
-            print(rank)
 
         def generate_sources(arms):
             sources_map = dict()
@@ -1443,11 +1438,27 @@ class IsaModelObjectFactory(object):
                     sources.append(source)
                 sources_map[arm.name] = sources
             return sources_map
-        sources_map = generate_sources(self.study_design)
+        sources_map = generate_sources(self.study_design.study_arms)
         for x in sources_map.values():
             for y in x:
                 study.sources.append(y)
-        print(study.sources)  # expecting 2
+        print(study.sources)
+
+        for epoch in study_arm.epochs:
+            treatments = epoch.treatments
+            sample_plan = epoch.sample_plan
+            rank = epoch.rank
+            for source in sources_map[study_arm.name]:
+                for treatment in treatments:
+                    sample_collection_event = Process(
+                        executes_protocol=sample_collection
+                    )
+                    sample_collection_event.inputs = [source]
+                    for x in range(0, treatment.group_size):
+                        sample = Sample()
+                        sample_collection_event.outputs.append(
+
+                        )
 
         for arm in self.study_design:
             sources = sources_map[arm.name]

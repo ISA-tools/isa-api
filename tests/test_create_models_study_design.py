@@ -61,9 +61,9 @@ class TreatmentTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS[0][NAME], value=FACTORS_0_VALUE),
-            FactorValue(factor_name=BASE_FACTORS[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+            FactorValue(factor_name=BASE_FACTORS_[0][NAME], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS_[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS_[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
         ))
 
     def test_repr(self):
@@ -81,18 +81,18 @@ class TreatmentTest(unittest.TestCase):
 
     def test_eq(self):
         same_treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS[0][NAME], value=FACTORS_0_VALUE),
-            FactorValue(factor_name=BASE_FACTORS[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+            FactorValue(factor_name=BASE_FACTORS_[0][NAME], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS_[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS_[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
         ))
         self.assertEqual(self.treatment, same_treatment)
         self.assertEqual(hash(self.treatment), hash(same_treatment))
 
     def test_ne(self):
         other_treatment = Treatment(factor_values=(
-            FactorValue(factor_name=BASE_FACTORS[0][NAME], value=FACTORS_0_VALUE),
-            FactorValue(factor_name=BASE_FACTORS[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
-            FactorValue(factor_name=BASE_FACTORS[2][NAME], value=FACTORS_2_VALUE_ALT, unit=FACTORS_2_UNIT)
+            FactorValue(factor_name=BASE_FACTORS_[0][NAME], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS_[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS_[2][NAME], value=FACTORS_2_VALUE_ALT, unit=FACTORS_2_UNIT)
         ))
         self.assertNotEqual(self.treatment, other_treatment)
         self.assertNotEqual(hash(self.treatment), hash(other_treatment))
@@ -108,32 +108,32 @@ class TreatmentFactoryTest(unittest.TestCase):
         self.assertTrue(isinstance(self.factory.factors, OrderedDict))
 
     def test_add_factor_value_str(self):
-        factor = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
+        factor = StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0]['type'])
         self.factory.add_factor_value(factor, 'agent_orange')
         self.assertEqual(self.factory.factors.get(factor), {'agent_orange'})
 
     def test_add_factor_value_number(self):
-        factor = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
+        factor = StudyFactor(name=BASE_FACTORS_[1]['name'], factor_type=BASE_FACTORS_[1]['type'])
         self.factory.add_factor_value(factor, 1.05)
         self.assertEqual(self.factory.factors.get(factor), {1.05})
 
     def test_add_factor_value_list(self):
         values_to_add = ['agent_orange', 'crack, cocaine']
-        factor = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
+        factor = StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0]['type'])
         self.factory.add_factor_value(factor, values_to_add)
         self.assertEqual(self.factory.factors.get(factor), set(values_to_add))
 
     def test_add_factor_value_set(self):
         values_to_add = {'agent_orange', 'crack, cocaine'}
-        factor = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
+        factor = StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0]['type'])
         self.factory.add_factor_value(factor, values_to_add)
         self.assertEqual(self.factory.factors.get(factor), values_to_add)
 
     def test_compute_full_factorial_design(self):
 
-        agent = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
-        intensity = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
-        duration = StudyFactor(name=BASE_FACTORS[2]['name'], factor_type=BASE_FACTORS[2]['type'])
+        agent = StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0]['type'])
+        intensity = StudyFactor(name=BASE_FACTORS_[1]['name'], factor_type=BASE_FACTORS_[1]['type'])
+        duration = StudyFactor(name=BASE_FACTORS_[2]['name'], factor_type=BASE_FACTORS_[2]['type'])
 
         self.factory.add_factor_value(agent, {'cocaine', 'crack', 'aether'})
         self.factory.add_factor_value(intensity, {'low', 'medium', 'high'})
@@ -235,9 +235,9 @@ class TreatmentFactoryTest(unittest.TestCase):
 
     def test_compute_full_factorial_design_empty_agents(self):
 
-        agent = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
-        intensity = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
-        duration = StudyFactor(name=BASE_FACTORS[2]['name'], factor_type=BASE_FACTORS[2]['type'])
+        agent = StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0]['type'])
+        intensity = StudyFactor(name=BASE_FACTORS_[1]['name'], factor_type=BASE_FACTORS_[1]['type'])
+        duration = StudyFactor(name=BASE_FACTORS_[2]['name'], factor_type=BASE_FACTORS_[2]['type'])
 
         self.factory.add_factor_value(agent, set())
         self.factory.add_factor_value(intensity, {'low', 'medium', 'high'})
@@ -247,9 +247,9 @@ class TreatmentFactoryTest(unittest.TestCase):
         self.assertEqual(full_factorial, set())
 
     def test_compute_full_factorial_design_empty_intensities(self):
-        agent = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
-        intensity = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
-        duration = StudyFactor(name=BASE_FACTORS[2]['name'], factor_type=BASE_FACTORS[2]['type'])
+        agent = StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0]['type'])
+        intensity = StudyFactor(name=BASE_FACTORS_[1]['name'], factor_type=BASE_FACTORS_[1]['type'])
+        duration = StudyFactor(name=BASE_FACTORS_[2]['name'], factor_type=BASE_FACTORS_[2]['type'])
         self.factory.add_factor_value(agent, {'cocaine', 'crack', 'aether'})
         self.factory.add_factor_value(intensity, set())
         self.factory.add_factor_value(duration, {'short', 'long'})
@@ -263,9 +263,9 @@ class TreatmentSequenceTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.sequence = TreatmentSequence()
-        self.agent = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
-        self.intensity = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
-        self.duration = StudyFactor(name=BASE_FACTORS[2]['name'], factor_type=BASE_FACTORS[2]['type'])
+        self.agent = StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0]['type'])
+        self.intensity = StudyFactor(name=BASE_FACTORS_[1]['name'], factor_type=BASE_FACTORS_[1]['type'])
+        self.duration = StudyFactor(name=BASE_FACTORS_[2]['name'], factor_type=BASE_FACTORS_[2]['type'])
         self.test_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
             FactorValue(factor_name=self.agent, value='crack'),
             FactorValue(factor_name=self.intensity, value='low'),
@@ -563,9 +563,9 @@ class StudyDesignTest(unittest.TestCase):
 
     def setUp(self):
         self.design = StudyDesign()
-        self.agent = StudyFactor(name=BASE_FACTORS[0]['name'], factor_type=BASE_FACTORS[0]['type'])
-        self.intensity = StudyFactor(name=BASE_FACTORS[1]['name'], factor_type=BASE_FACTORS[1]['type'])
-        self.duration = StudyFactor(name=BASE_FACTORS[2]['name'], factor_type=BASE_FACTORS[2]['type'])
+        self.agent = StudyFactor(name=BASE_FACTORS_[0]['name'], factor_type=BASE_FACTORS_[0]['type'])
+        self.intensity = StudyFactor(name=BASE_FACTORS_[1]['name'], factor_type=BASE_FACTORS_[1]['type'])
+        self.duration = StudyFactor(name=BASE_FACTORS_[2]['name'], factor_type=BASE_FACTORS_[2]['type'])
         self.first_treatment = Treatment(treatment_type=INTERVENTIONS['CHEMICAL'], factor_values=(
             FactorValue(factor_name=self.agent, value='crack'),
             FactorValue(factor_name=self.intensity, value='low'),
@@ -579,20 +579,6 @@ class StudyDesignTest(unittest.TestCase):
         self.test_sequence = TreatmentSequence(ranked_treatments=[(self.first_treatment, 1), (self.second_treatment, 2)])
         self.sample_plan = SampleAssayPlan(group_size=10)
 
-    def test_add_single_sequence_plan(self):
-        self.design.add_single_sequence_plan(treatment_sequence=self.test_sequence, study_plan=self.sample_plan)
-        self.assertEqual(self.design.sequences_plan.get(self.test_sequence, None), self.sample_plan)
-
-    def test_add_single_sequence_error_sequence(self):
-        wrong_sequence = 'This is not a sequence'
-        self.assertRaises(TypeError, self.design.add_single_sequence_plan, treatment_sequence=wrong_sequence,
-                          sample_plan=self.sample_plan)
-
-    def test_add_single_sequence_error_sample_plan(self):
-        wrong_sample_plan = 'This is not a sample plan'
-        self.assertRaises(TypeError, self.design.add_single_sequence_plan, treatment_sequence=self.test_sequence,
-                          sample_plan=wrong_sample_plan)
-
     def test_sequences_plan_property(self):
         other_test_sequence = TreatmentSequence(ranked_treatments=[(self.first_treatment, 2), (self.second_treatment, 1)])
         other_sample_plan = SampleAssayPlan(group_size=12)
@@ -605,7 +591,7 @@ class StudyDesignTest(unittest.TestCase):
 
     def test_sequences_plan_properties(self):
         not_a_sequences_plan_object = [self.test_sequence, self.sample_plan]
-        self.assertRaises(TypeError, self.design.sequences_plan, not_a_sequences_plan_object)
+        self.assertRaises(TypeError, self.design.study_arms, not_a_sequences_plan_object)
 
     def test_sample_types_property(self):
         pass
@@ -687,6 +673,35 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         study_design = StudyDesign()
         study_design.add_single_sequence_plan(
             treatment_sequence=treatment_sequence, study_plan=plan)
+        study = IsaModelObjectFactory(study_design).create_study_from_plan()
+        study.filename = 's_study.txt'
+        self.investigation.studies = [study]
+        self.assertEqual(36, len(study.sources))
+        self.assertEqual(288, len(study.samples))
+
+    def test_create_study_from_planB(self):
+        plan = SampleAssayPlan()
+        plan.add_sample_type('liver')
+        plan.add_sample_plan_record('liver', 5)
+        plan.add_sample_type('blood')
+        plan.add_sample_plan_record('blood', 3)
+        plan.group_size = 2
+        treatment_factory = TreatmentFactory(
+            factors=[self.f1, self.f2, self.f3])
+        treatment_factory.add_factor_value(
+            self.f1, {'cocaine', 'crack', 'aether'})
+        treatment_factory.add_factor_value(self.f2, {'low', 'medium', 'high'})
+        treatment_factory.add_factor_value(self.f3, {'short', 'long'})
+        factorial_design_treatments = \
+            treatment_factory.compute_full_factorial_design()
+        for treatment in factorial_design_treatments:
+            treatment.group_size = 2
+
+        design_factory = StudyDesignFactory(
+            treatments=factorial_design_treatments, sample_plan=plan)
+        # makes each study group ranked in sequence
+        study_design = StudyDesign()
+        study_design.study_arms = design_factory.compute_single_arm_design()
         study = IsaModelObjectFactory(study_design).create_study_from_plan()
         study.filename = 's_study.txt'
         self.investigation.studies = [study]
