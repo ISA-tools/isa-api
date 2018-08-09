@@ -30,6 +30,7 @@ from progressbar import ETA
 from isatools import logging as isa_logging
 from isatools.io import isatab_configurator
 from isatools.model import *
+from isatools.utils import utf8_text_file_open
 
 
 log = logging.getLogger('isatools')
@@ -141,7 +142,7 @@ class TransposedTabParser(object):
 
     def parse(self, filename):
         try:
-            with open(filename, encoding='utf-8') as unicode_file:
+            with utf8_text_file_open(filename) as unicode_file:
                 ttable_reader = csv.reader(
                     filter(lambda r: r[0] != '#', unicode_file),
                     dialect='excel-tab')
@@ -234,8 +235,12 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                             prefix + ' Person Roles Term Accession Number',
                             prefix + ' Person Roles Term Source REF']
         if len(contacts) > 0:
-            if contacts[0].comments:
-                for comment in contacts[0].comments:
+            max_comment = Person()
+            for contact in contacts:
+                if len(contact.comments) > len(max_comment.comments):
+                    max_comment = contact
+            for comment in max_comment.comments:
+                if 'Comment[' + comment.name + ']' not in contacts_df_cols:
                     contacts_df_cols.append('Comment[' + comment.name + ']')
         contacts_df = pd.DataFrame(columns=tuple(contacts_df_cols))
         for i, contact in enumerate(contacts):
@@ -254,9 +259,12 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
                 roles_accession_numbers,
                 roles_source_refs
             ]
-            if contact.comments:
-                for comment in contact.comments:
-                    contacts_df_row.append(comment.value)
+            for j, _ in enumerate(max_comment.comments):
+                log.debug('%s iteration, item=%s', j, _)
+                try:
+                    contacts_df_row.append(contact.comments[j].value)
+                except IndexError:
+                    contacts_df_row.append('')
             log.debug('row=%s', contacts_df_row)
             contacts_df.loc[i] = contacts_df_row
         return contacts_df.set_index(prefix + ' Person Last Name').T
@@ -904,9 +912,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                     for output in [x for x in node.outputs if
                                    isinstance(x, DataFile)]:
                         columns.append(output.label)
-                        # columns += flatten(
-                        #     map(lambda x: get_comment_column(output.label, x),
-                        #         output.comments))
+                        columns += flatten(
+                            map(lambda x: get_comment_column(output.label, x),
+                                output.comments))
 
                 elif isinstance(node, Material):
                     olabel = node.type
@@ -975,9 +983,9 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
                         for output in [x for x in node.outputs if isinstance(x, DataFile)]:
                             olabel = output.label
                             df_dict[olabel][-1] = output.filename
-                            # for co in output.comments:
-                            #     colabel = "{0}.Comment[{1}]".format(olabel, co.name)
-                            #     df_dict[colabel][-1] = co.value
+                            for co in output.comments:
+                                colabel = "{0}.Comment[{1}]".format(olabel, co.name)
+                                df_dict[colabel][-1] = co.value
 
                     elif isinstance(node, Sample):
                         olabel = "Sample Name"
@@ -1239,7 +1247,7 @@ def read_investigation_file(fp):
 def check_utf8(fp):
     """Used for rule 0010"""
     import chardet
-    with open(fp.name, 'rb') as fp:
+    with utf8_text_file_open(fp.name) as fp:
         charset = chardet.detect(fp.read())
         if charset['encoding'] is not 'UTF-8' and charset['encoding'] is not 'ascii':
             validator_warnings.append({
@@ -1519,7 +1527,7 @@ def check_table_files_read(i_df, dir_context):
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8'):
+                with utf8_text_file_open(os.path.join(dir_context, study_filename)):
                     pass
             except FileNotFoundError:
                 validator_errors.append({
@@ -1531,7 +1539,7 @@ def check_table_files_read(i_df, dir_context):
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8'):
+                    with utf8_text_file_open(os.path.join(dir_context, assay_filename)):
                         pass
                 except FileNotFoundError:
                     validator_errors.append({
@@ -1548,14 +1556,14 @@ def check_table_files_load(i_df, dir_context):
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as fp:
+                with utf8_text_file_open(os.path.join(dir_context, study_filename)) as fp:
                     load_table_checks(fp)
             except FileNotFoundError:
                 pass
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as fp:
+                    with utf8_text_file_open(os.path.join(dir_context, assay_filename)) as fp:
                         load_table_checks(fp)
                 except FileNotFoundError:
                     pass
@@ -1566,7 +1574,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with utf8_text_file_open(os.path.join(dir_context, study_filename)) as s_fp:
                     study_df = load_table(s_fp)
                     study_samples = set(study_df['Sample Name'])
             except FileNotFoundError:
@@ -1574,7 +1582,7 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with utf8_text_file_open(os.path.join(dir_context, assay_filename)) as a_fp:
                         assay_df = load_table(a_fp)
                         assay_samples = set(assay_df['Sample Name'])
                         if not assay_samples.issubset(study_samples):
@@ -1592,7 +1600,7 @@ def check_protocol_usage(i_df, dir_context):
         if study_filename is not '':
             try:
                 protocol_refs_used = set()
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with utf8_text_file_open(os.path.join(dir_context, study_filename)) as s_fp:
                     study_df = load_table(s_fp)
                     for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
                         protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
@@ -1614,7 +1622,7 @@ def check_protocol_usage(i_df, dir_context):
             if assay_filename is not '':
                 try:
                     protocol_refs_used = set()
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with utf8_text_file_open(os.path.join(dir_context, assay_filename)) as a_fp:
                         assay_df = load_table(a_fp)
                         for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
                             protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
@@ -1635,7 +1643,7 @@ def check_protocol_usage(i_df, dir_context):
         protocol_refs_used = set()
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with utf8_text_file_open(os.path.join(dir_context, study_filename)) as s_fp:
                     study_df = load_table(s_fp)
                     for protocol_ref_col in [i for i in study_df.columns if i.startswith('Protocol REF')]:
                         protocol_refs_used = protocol_refs_used.union(study_df[protocol_ref_col])
@@ -1644,7 +1652,7 @@ def check_protocol_usage(i_df, dir_context):
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with utf8_text_file_open(os.path.join(dir_context, assay_filename)) as a_fp:
                         assay_df = load_table(a_fp)
                         for protocol_ref_col in [i for i in assay_df.columns if i.startswith('Protocol REF')]:
                             protocol_refs_used = protocol_refs_used.union(assay_df[protocol_ref_col])
@@ -1814,7 +1822,7 @@ def check_study_factor_usage(i_df, dir_context):
         if study_filename is not '':
             try:
                 study_factors_used = set()
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with utf8_text_file_open(os.path.join(dir_context, study_filename)) as s_fp:
                     study_df = load_table(s_fp)
                     study_factor_ref_cols = [i for i in study_df.columns if _RX_FACTOR_VALUE.match(i)]
                     for col in study_factor_ref_cols:
@@ -1830,7 +1838,7 @@ def check_study_factor_usage(i_df, dir_context):
             if assay_filename is not '':
                 try:
                     study_factors_used = set()
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with utf8_text_file_open(os.path.join(dir_context, assay_filename)) as a_fp:
                         assay_df = load_table(a_fp)
                         study_factor_ref_cols = set([i for i in assay_df.columns if _RX_FACTOR_VALUE.match(i)])
                         for col in study_factor_ref_cols:
@@ -1845,7 +1853,7 @@ def check_study_factor_usage(i_df, dir_context):
         study_factors_used = set()
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with utf8_text_file_open(os.path.join(dir_context, study_filename)) as s_fp:
                     study_df = load_table(s_fp)
                     study_factor_ref_cols = [i for i in study_df.columns if _RX_FACTOR_VALUE.match(i)]
                     for col in study_factor_ref_cols:
@@ -1856,7 +1864,7 @@ def check_study_factor_usage(i_df, dir_context):
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with utf8_text_file_open(os.path.join(dir_context, assay_filename)) as a_fp:
                         assay_df = load_table(a_fp)
                         study_factor_ref_cols = set([i for i in assay_df.columns if _RX_FACTOR_VALUE.match(i)])
                         for col in study_factor_ref_cols:
@@ -1883,7 +1891,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
         if study_filename is not '':
             try:
                 protocol_parameters_used = set()
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with utf8_text_file_open(os.path.join(dir_context, study_filename)) as s_fp:
                     study_df = load_table(s_fp)
                     parameter_value_cols = [i for i in study_df.columns if _RX_PARAMETER_VALUE.match(i)]
                     for col in parameter_value_cols:
@@ -1899,7 +1907,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
             if assay_filename is not '':
                 try:
                     protocol_parameters_used = set()
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with utf8_text_file_open(os.path.join(dir_context, assay_filename)) as a_fp:
                         assay_df = load_table(a_fp)
                         parameter_value_cols = [i for i in assay_df.columns if _RX_PARAMETER_VALUE.match(i)]
                         for col in parameter_value_cols:
@@ -1915,7 +1923,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
         protocol_parameters_used = set()
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with utf8_text_file_open(os.path.join(dir_context, study_filename)) as s_fp:
                     study_df = load_table(s_fp)
                     parameter_value_cols = [i for i in study_df.columns if _RX_PARAMETER_VALUE.match(i)]
                     for col in parameter_value_cols:
@@ -1926,7 +1934,7 @@ def check_protocol_parameter_usage(i_df, dir_context):
         for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
             if assay_filename is not '':
                 try:
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with utf8_text_file_open(os.path.join(dir_context, assay_filename)) as a_fp:
                         assay_df = load_table(a_fp)
                         parameter_value_cols = [i for i in assay_df.columns if _RX_PARAMETER_VALUE.match(i)]
                         for col in parameter_value_cols:
@@ -2009,7 +2017,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with utf8_text_file_open(os.path.join(dir_context, study_filename)) as s_fp:
                     df = load_table(s_fp)
                     columns = df.columns
                     object_index = [i for i, x in enumerate(columns) if x.startswith('Term Source REF')]
@@ -2056,7 +2064,7 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
             for j, assay_filename in enumerate(i_df['s_assays'][i]['Study Assay File Name'].tolist()):
                 if assay_filename is not '':
                     try:
-                        with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                        with utf8_text_file_open(os.path.join(dir_context, assay_filename)) as a_fp:
                             df = load_table(a_fp)
                             columns = df.columns
                             object_index = [i for i, x in enumerate(columns) if x.startswith('Term Source REF')]
@@ -2362,7 +2370,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
         protocol_names_and_types = dict(zip(protocol_names, protocol_types))
         if study_filename is not '':
             try:
-                with open(os.path.join(dir_context, study_filename), encoding='utf-8') as s_fp:
+                with utf8_text_file_open(os.path.join(dir_context, study_filename)) as s_fp:
                     df = load_table(s_fp)
                     config = configs[('[sample]', '')]
                     log.info("Checking study file {} against default study table configuration...".format(study_filename))
@@ -2375,7 +2383,7 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
             technology_type = assay_df['Study Assay Technology Type'].tolist()[0]
             if assay_filename is not '':
                 try:
-                    with open(os.path.join(dir_context, assay_filename), encoding='utf-8') as a_fp:
+                    with utf8_text_file_open(os.path.join(dir_context, assay_filename)) as a_fp:
                         df = load_table(a_fp)
                         lowered_mt = measurement_type.lower()
                         lowered_tt = technology_type.lower()
@@ -2812,7 +2820,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                 protocol_names_and_types = dict(zip(protocol_names, protocol_types))
                 try:
                     log.info("Loading... {}".format(study_filename))
-                    with open(os.path.join(os.path.dirname(fp.name), study_filename), encoding='utf-8') as s_fp:
+                    with utf8_text_file_open(os.path.join(os.path.dirname(fp.name), study_filename)) as s_fp:
                         study_sample_table = load_table(s_fp)
                         study_sample_table.filename = study_filename
                         config = configs[('[sample]', '')]
@@ -2868,7 +2876,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
                         else:
                             try:
                                 log.info("Loading... {}".format(assay_filename))
-                                with open(os.path.join(os.path.dirname(fp.name), assay_filename), encoding='utf-8') as a_fp:
+                                with utf8_text_file_open(os.path.join(os.path.dirname(fp.name), assay_filename)) as a_fp:
                                     assay_table = load_table(a_fp)
                                     assay_table.filename = assay_filename
                                     assay_tables.append(assay_table)
@@ -2981,7 +2989,7 @@ def batch_validate(tab_dir_list):
         if len(i_files) != 1:
             log.warning("Could not find an investigation file, skipping {}".format(tab_dir))
         else:
-            with open(i_files[0], encoding='utf-8') as fp:
+            with utf8_text_file_open(i_files[0]) as fp:
                 batch_report['batch_report'].append(
                     {
                         "filename": fp.name,
@@ -3000,16 +3008,16 @@ def dumps(isa_obj, skip_dump_tables=False,
         dump(isa_obj=isa_obj, output_path=tmp, skip_dump_tables=skip_dump_tables,
              write_factor_values_in_assay_table=
              write_factor_values_in_assay_table)
-        with open(os.path.join(tmp, 'i_investigation.txt'), encoding='utf-8') as i_fp:
+        with utf8_text_file_open(os.path.join(tmp, 'i_investigation.txt')) as i_fp:
             output += os.path.join(tmp, 'i_investigation.txt') + '\n'
             output += i_fp.read()
         for s_file in glob.iglob(os.path.join(tmp, 's_*')):
-            with open(s_file, encoding='utf-8') as s_fp:
+            with utf8_text_file_open(s_file) as s_fp:
                 output += "--------\n"
                 output += s_file + '\n'
                 output += s_fp.read()
         for a_file in glob.iglob(os.path.join(tmp, 'a_*')):
-            with open(a_file, encoding='utf-8') as a_fp:
+            with utf8_text_file_open(a_file) as a_fp:
                 output += "--------\n"
                 output += a_file + '\n'
                 output += a_fp.read()
@@ -3146,7 +3154,7 @@ def load(isatab_path_or_ifile, skip_load_tables=False):  # from DF of investigat
         if os.path.isdir(isatab_path_or_ifile):
             fnames = glob.glob(os.path.join(isatab_path_or_ifile, "i_*.txt"))
             assert len(fnames) == 1
-            FP = open(fnames[0], encoding='utf-8')
+            FP = utf8_text_file_open(fnames[0])
     elif hasattr(isatab_path_or_ifile, 'read'):
         FP = isatab_path_or_ifile
     else:
@@ -3501,19 +3509,16 @@ class IsaTabDataFrame(pd.DataFrame):
 
 def read_tfile(tfile_path, index_col=None, factor_filter=None):
     log.debug("Opening %s", tfile_path)
-    with open(tfile_path, encoding='utf-8') as tfile_fp:
+    with utf8_text_file_open(tfile_path) as tfile_fp:
         log.debug("Reading file header")
         reader = csv.reader(tfile_fp, dialect='excel-tab')
         header = list(next(reader))
         tfile_fp.seek(0)
         log.debug("Reading file into DataFrame")
         tfile_fp = strip_comments(tfile_fp)
-        tfile_df = pd.read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col,
-                        memory_map=True, encoding='utf-8').fillna('')
-        tfile_df.isatab_header = header
-        # tfile_df = IsaTabDataFrame(
-        #     pd.read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col,
-        #                 memory_map=True, encoding='utf-8').fillna(''))
+        tfile_df = IsaTabDataFrame(
+            pd.read_csv(tfile_fp, dtype=str, sep='\t', index_col=index_col,
+                        memory_map=True, encoding='utf-8').fillna(''))
     if factor_filter:
         log.debug("Filtering DataFrame contents on Factor Value %s", factor_filter)
         return tfile_df[tfile_df['Factor Value[{}]'.format(factor_filter[0])] == factor_filter[1]]
@@ -4225,7 +4230,7 @@ class IsaTabParser(object):
                     'studycontacts')
         isecdict = {}
         ssecdicts = []
-        with open(in_filename, encoding='utf-8') as in_file:
+        with utf8_text_file_open(in_filename) as in_file:
             tabreader = csv.reader(
                 filter(lambda r: r[0] != '#', in_file), dialect='excel-tab')
             current_section = ''

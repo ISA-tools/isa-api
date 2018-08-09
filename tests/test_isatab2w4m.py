@@ -8,6 +8,7 @@ import unittest
 from isatools.convert import isatab2w4m
 from isatools.tests import utils
 
+from nose.tools import nottest
 
 # Test presence of data folder
 def setUpModule():
@@ -29,7 +30,8 @@ class TestIsatab2w4m(unittest.TestCase):
     # Destroy resources
     def tearDown(self):
         shutil.rmtree(self._tmp_dir)
-        
+
+    @nottest
     def plain_test(self, study, test_dir):
         
         # Convert
@@ -65,6 +67,7 @@ class TestIsatab2w4m(unittest.TestCase):
         self.plain_test('MTBLS338', 'MTBLS338-w4m')
         
     # Test NA filtering
+    @nottest
     def na_filtering_test(self, study, test_dir, samp_na_filtering=None, 
                           var_na_filtering=None):
         

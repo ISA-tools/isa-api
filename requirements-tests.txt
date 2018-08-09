@@ -1,6 +1,6 @@
 numpy
 jsonschema
-pandas==0.20.*
+pandas
 networkx
 behave
 httpretty
@@ -17,5 +17,5 @@ mzml2isa
 biopython
 progressbar2
 tox
-pytest
+nose
 certifi

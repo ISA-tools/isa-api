@@ -30,8 +30,6 @@ class mw2ISATest(unittest.TestCase):
         if success and validate:
             log.info("conversion successful, invoking the validator for " + study_id)
             with open(os.path.join(self._tmp_dir, study_id, 'i_investigation.txt')) as fp:
-                # print(isatab.dumps(isatab.load(fp)))
-                # fp.seek(0)
                 report = isatab.validate(fp)
                 print(report)
                 if len(report['errors']) > 0:

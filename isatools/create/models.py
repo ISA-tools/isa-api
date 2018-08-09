@@ -63,10 +63,12 @@ class Treatment(object):
     model v1) and a treatment type
     """
     def __init__(self, treatment_type=INTERVENTIONS['CHEMICAL'],
-                 factor_values=None):
+                 factor_values=None, group_size=0):
         """
         Creates a new Treatment
+        :param treatment_type: treatment type
         :param factor_values: set of isatools.model.v1.FactorValue
+        :param group_size: number of subjects in this group
         """
 
         if treatment_type not in INTERVENTIONS.values():
@@ -78,11 +80,25 @@ class Treatment(object):
             self.__factor_values = set()
         else:
             self.factor_values = factor_values
+        self.__group_size = group_size
 
     def __repr__(self):
-        return 'Treatment(factor_type={0}, factor_values={1})'.format(
-            self.treatment_type, sorted(
-                self.factor_values, key=lambda x: repr(x)))
+        return 'Treatment(treatment_type={0}, factor_values={1}, ' \
+               'group_size={2})'.format(self.treatment_type, sorted(
+                self.factor_values, key=lambda x: repr(x)), self.group_size)
+
+    @property
+    def group_size(self):
+        return self.__group_size
+
+    @group_size.setter
+    def group_size(self, group_size):
+        if not isinstance(group_size, int):
+            raise TypeError('{} is not a valid value for group_size. Please '
+                            'provide an integer.'.format(group_size))
+        if group_size < 0:
+            raise ValueError('group_size must be greater than 0.')
+        self.__group_size = group_size
 
     def __hash__(self):
         return hash(repr(self))
@@ -90,7 +106,8 @@ class Treatment(object):
     def __eq__(self, other):
         return isinstance(other, Treatment) \
                and self.treatment_type == other.treatment_type \
-               and self.factor_values == other.factor_values
+               and self.factor_values == other.factor_values \
+               and self.group_size == other.group_size
 
     def __ne__(self, other):
         return not self == other
@@ -1446,9 +1463,9 @@ class IsaModelObjectFactory(object):
             raise ISAModelAttributeError('sample_assay_plan must be set to '
                                          'create model objects in factory')
 
-        if sample_assay_plan.group_size < 1:
-            raise ISAModelAttributeError('group_size cannot be less than 1')
-        group_size = sample_assay_plan.group_size
+        # if sample_assay_plan.group_size < 1:
+        #     raise ISAModelAttributeError('group_size cannot be less than 1')
+        # group_size = sample_assay_plan.group_size
 
         if sample_assay_plan.sample_plan == {}:
             raise ISAModelAttributeError('sample_plan is not defined')
@@ -1561,6 +1578,7 @@ class IsaModelObjectFactory(object):
         # Main batch
         for (group_id, treatment), ranks in group_rank_map.items():
             fvs = treatment.factor_values
+            group_size = treatment.group_size
             for factor in [x.factor_name for x in fvs]:
                 factors.add(factor)
             for subjn in (str(x).zfill(3) for x in range(1, group_size+1)):
@@ -1655,12 +1673,12 @@ class IsaModelObjectFactory(object):
                     var_characteristic = c.category
                     qcsource = Source(
                         name='QC.{}.{}'.format(
-                            prebatch.material.term, str(i + 1).zfill(3)),
+                            postbatch.material.term, str(i + 1).zfill(3)),
                         characteristics=[
                             Characteristic(
                                 category=OntologyAnnotation(
                                     term='Material Type'),
-                                value=prebatch.material),
+                                value=postbatch.material),
                             Characteristic(category=var_characteristic,
                                            value=c.value)])
                     if var_characteristic not in study.characteristic_categories:
@@ -1706,7 +1724,7 @@ class IsaModelObjectFactory(object):
                 qcsource = Source(name='source_QC', characteristics=[
                     Characteristic(
                         category=OntologyAnnotation(term='Material Type'),
-                        value=prebatch.material)])
+                        value=postbatch.material)])
                 sources.append(qcsource)
                 for i, p in enumerate(postbatch.parameter_values):
                     qc_param_set.add(p)
@@ -1843,7 +1861,7 @@ class IsaModelObjectFactory(object):
                     run_counter += 1
                     plink(eproc, aproc)
                     assaycode = 'A002'  # TODO: Find out what NMR assay codes they use, if any
-                    dfile = RawSpectralDataFile(
+                    dfile = FreeInductionDecayDataFile(
                         filename='{assaycode}_{pulse_seq}_{acq_mode}_{biorepl}_{techrepl}.nmrml'.format(
                             assaycode=assaycode, biorepl=biorepl,
                             pulse_seq=pulse_seq, acq_mode=acq_mode,
@@ -2046,22 +2064,19 @@ class IsaModelObjectFactory(object):
                                 if injection_mode.injection_mode in ('LC', 'GC'):
                                     chromat_instr = injection_mode.chromatography_instrument
                                     chromat_col = injection_mode.chromatography_column
-                                    eproc = Process(executes_protocol=ext_protocol,
-                                                    inputs=[samp], outputs=[extr],
-                                                    performer=self.ops[1],
-                                                    date_=datetime.date.isoformat(
-                                                        datetime.date.today()))
+                                    # add GC-specific params to extraction process
                                     eproc.parameter_values.append(
                                         ParameterValue(
-                                            category=ext_protocol.get_param('chromatography instrument'),
+                                            category=ext_protocol.get_param(
+                                                'chromatography instrument'),
                                             value=chromat_instr)
-                                        )
+                                    )
                                     eproc.parameter_values.append(
                                         ParameterValue(
-                                            category=ext_protocol.get_param('chromatography column'),
+                                            category=ext_protocol.get_param(
+                                                'chromatography column'),
                                             value=chromat_col)
                                     )
-                                assay.process_sequence.append(eproc)
                                 for j in range(1, technical_replicates + 1):
                                     techrepl = str(j).zfill(3)
                                     ms_prot = study.get_prot(mp_protocol_name)
@@ -2077,7 +2092,7 @@ class IsaModelObjectFactory(object):
                                             'run order'),
                                             value=str(run_order[run_counter])),
                                         ParameterValue(category=ms_prot.get_param(
-                                            'injection mode'), value=injection_mode.injection_mode ),
+                                            'injection mode'), value=injection_mode.injection_mode),
                                         ParameterValue(
                                             category=ms_prot.get_param(
                                                 'instrument'),
@@ -2087,7 +2102,8 @@ class IsaModelObjectFactory(object):
                                             'scan polarity'), value=acquisition_mode.acquisition_method),
                                     ]
                                     run_counter += 1
-                                    plink(eproc, aproc)
+                                    if eproc is not None:
+                                        plink(eproc, aproc)
                                     # Birmingham encoding
                                     assaycode = 'A100'  # unknown assay type; default as any LCMS
                                     if injection_mode.injection_mode  == 'LC':
@@ -2109,7 +2125,6 @@ class IsaModelObjectFactory(object):
                                     assay.process_sequence.append(aproc)
                         if assay is not None:
                             study.assays.append(assay)
-
             else:
                 for sample_fraction in top_mods.sample_fractions:
                     for injection_mode in top_mods.injection_modes:

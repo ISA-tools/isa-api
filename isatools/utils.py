@@ -8,6 +8,7 @@ import pandas as pd
 import uuid
 from functools import reduce
 from zipfile import ZipFile
+import sys
 
 
 from isatools import isatab
@@ -866,3 +867,11 @@ class IsaTabFixer(object):
             investigation, output_path=os.path.dirname(self.path),
             i_file_name='{filename}.fix'.format(
                 filename=os.path.basename(self.path)), skip_dump_tables=True)
+
+
+def utf8_text_file_open(path):
+    if sys.version_info[0] < 3:
+        fp = open(path, 'rb')
+    else:
+        fp = open(path, 'r', newline='', encoding='utf8')
+    return fp
