@@ -910,12 +910,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         treatments = treatment_factory.compute_full_factorial_design()
         for treatment in treatments:
             treatment.group_size = 5
-        two_ranks_of_treatments = {(x, 1) for x in treatments}.union({(x, 2) for x in treatments})
-        treatment_sequence = TreatmentSequence(ranked_treatments=two_ranks_of_treatments)
         self.assertEqual(len(treatments), 2)
-        self.assertEqual(len(treatment_sequence.ranked_treatments), 4)
-        self.assertEqual(
-            max((x for _, x in treatment_sequence.ranked_treatments)), 2)
         sample_assay_plan = SampleAssayPlan()
         sample_assay_plan.group_size = 5
         sample_assay_plan.add_sample_type('liver')
@@ -924,11 +919,13 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         sample_assay_plan.add_sample_plan_record('liver', 1)
         sample_assay_plan.add_sample_plan_record('blood', 4)
         sample_assay_plan.add_sample_plan_record('urine', 10)
+        design_factory = StudyDesignFactory(
+            treatments=treatments, sample_plan=sample_assay_plan)
         study_design = StudyDesign()
-        study_design.add_single_sequence_plan(treatment_sequence, sample_assay_plan)
+        study_design.study_arms = design_factory.compute_crossover_design()
         study = IsaModelObjectFactory(study_design).create_study_from_plan()
         self.assertEqual(len(study.sources), 10)  # number of subjects
-        self.assertEqual(len(study.samples), 300)
+        self.assertEqual(len(study.samples), 150)
 
         ms_assay_type = AssayType(measurement_type='metabolite profiling',
                                   technology_type='mass spectrometry')
@@ -957,12 +954,13 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         sample_assay_plan.add_assay_plan_record('liver', ngs_assay_type)
         sample_assay_plan.add_assay_plan_record('blood', ngs_assay_type)
         sample_assay_plan.add_assay_plan_record('urine', ngs_assay_type)
+        design_factory = StudyDesignFactory(
+            treatments=treatments, sample_plan=sample_assay_plan)
         study_design = StudyDesign()
-        study_design.add_single_sequence_plan(treatment_sequence, sample_assay_plan)
+        study_design.study_arms = design_factory.compute_crossover_design()
         study = IsaModelObjectFactory(study_design).create_assays_from_plan()
         self.assertEqual(len(study.assays), 6)
         self.assertEqual(len(study.protocols), 4)
-
 
     def test_study_from_2_by_3_by_2_factorial_plan(self):
         factor1 = StudyFactor(name='1')
@@ -980,11 +978,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         treatments = treatment_factory.compute_full_factorial_design()
         for treatment in treatments:
             treatment.group_size = 3
-        treatment_sequence = TreatmentSequence(ranked_treatments=treatments)
         self.assertEqual(len(treatments), 12)
-        self.assertEqual(len(treatment_sequence.ranked_treatments), 12)
-        self.assertEqual(
-            max((x for _, x in treatment_sequence.ranked_treatments)), 1)
         sample_assay_plan = SampleAssayPlan()
         sample_assay_plan.group_size = 3
         sample_assay_plan.add_sample_type('liver')
@@ -993,8 +987,10 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         sample_assay_plan.add_sample_plan_record('liver', 1)
         sample_assay_plan.add_sample_plan_record('blood', 1)
         sample_assay_plan.add_sample_plan_record('urine', 2)
+        design_factory = StudyDesignFactory(
+            treatments=treatments, sample_plan=sample_assay_plan)
         study_design = StudyDesign()
-        study_design.add_single_sequence_plan(treatment_sequence, sample_assay_plan)
+        study_design.study_arms = design_factory.compute_crossover_design()
         study = IsaModelObjectFactory(study_design).create_study_from_plan()
         self.assertEqual(len(study.sources), 36)  # number of subjects
         self.assertEqual(len(study.samples), 144)
@@ -1046,8 +1042,10 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         sample_assay_plan.add_assay_plan_record('urine', ms_assay_type1)
         sample_assay_plan.add_assay_plan_record('urine', ms_assay_type2)
         sample_assay_plan.add_assay_type(ngs_assay_type)
+        design_factory = StudyDesignFactory(
+            treatments=treatments, sample_plan=sample_assay_plan)
         study_design = StudyDesign()
-        study_design.add_single_sequence_plan(treatment_sequence, sample_assay_plan)
+        study_design.study_arms = design_factory.compute_crossover_design()
         study = IsaModelObjectFactory(study_design).create_assays_from_plan()
         self.assertEqual(len(study.assays), 3)
         self.assertEqual(len(study.protocols), 5)
@@ -1068,14 +1066,7 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         treatments = treatment_factory.compute_full_factorial_design()
         for treatment in treatments:
             treatment.group_size = 3
-        treatment_sequence = TreatmentSequence()
-        for treatment in treatments:
-            treatment_sequence.add_treatment(treatment, 1)
-            treatment_sequence.add_treatment(treatment, 2)
         self.assertEqual(len(treatments), 12)
-        self.assertEqual(len(treatment_sequence.ranked_treatments), 24)
-        self.assertEqual(
-            max((x for _, x in treatment_sequence.ranked_treatments)), 2)
         sample_assay_plan = SampleAssayPlan()
         sample_assay_plan.add_sample_type('liver')
         sample_assay_plan.add_sample_type('blood')
@@ -1083,8 +1074,10 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         sample_assay_plan.add_sample_plan_record('liver', 1)
         sample_assay_plan.add_sample_plan_record('blood', 1)
         sample_assay_plan.add_sample_plan_record('urine', 2)
+        design_factory = StudyDesignFactory(
+            treatments=treatments, sample_plan=sample_assay_plan)
         study_design = StudyDesign()
-        study_design.add_single_sequence_plan(treatment_sequence, sample_assay_plan)
+        study_design.study_arms = design_factory.compute_single_arm_design()
         study = IsaModelObjectFactory(study_design).create_study_from_plan()
         self.assertEqual(len(study.sources), 36)  # number of subjects
         self.assertEqual(len(study.samples), 288)
@@ -1154,8 +1147,10 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         sample_assay_plan.add_assay_plan_record('urine', ms_assay_type2)
 
         sample_assay_plan.add_assay_type(ngs_assay_type)
+        design_factory = StudyDesignFactory(
+            treatments=treatments, sample_plan=sample_assay_plan)
         study_design = StudyDesign()
-        study_design.add_single_sequence_plan(treatment_sequence, sample_assay_plan)
+        study_design.study_arms = design_factory.compute_crossover_design()
         study = IsaModelObjectFactory(study_design).create_assays_from_plan()
         self.assertEqual(len(study.assays), 11)
         self.assertEqual(len(study.protocols), 6)

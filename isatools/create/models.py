@@ -1415,9 +1415,8 @@ class IsaModelObjectFactory(object):
             self.__study_design = study_design
 
     def create_study_from_plan(self):
-        # support one study design first, always assumes is first in StudyDesign
 
-        study_arm = self.study_design.study_arms[0]  # only get first arm for now
+        study_arm = self.study_design.study_arms  # only get first arm for now
 
         study = Study(filename='s_study_arm01.txt')
         # set default declarations in study
@@ -1523,6 +1522,7 @@ class IsaModelObjectFactory(object):
         study.process_sequence = process_sequence
         study.factors = list(factors)
         study.ontology_source_references = list(ontology_sources)
+
         return study
         #  insert_qcs()
         treatment_sequence, sample_assay_plan = \
@@ -2492,9 +2492,8 @@ class IsaModelObjectFactory(object):
 
     def create_assays_from_plan(self):
         study = self.create_study_from_plan()
-        if self.sample_assay_plan.assay_plan == {}:
-            raise ISAModelAttributeError('assay_plan is not defined')
-
+        # TODO: Implement new assay writer
+        raise NotImplementedError
         for stype, atype in self.sample_assay_plan.assay_plan:
             # first get all samples of stype
             samples_stype = [x for x in study.samples if
