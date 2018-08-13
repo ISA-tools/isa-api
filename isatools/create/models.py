@@ -1257,7 +1257,6 @@ class StudyDesignFactory(object):
       A factory class to build a set of study arms.
     """
 
-    # TODO: Add sample collections to the factory
     # TODO: Add screen epoch
     # TODO: Add follow up epoch
     # TODO: Add Rest/washout epochs?
@@ -1352,6 +1351,32 @@ class StudyDesignFactory(object):
         else:
             return set()
 
+    def compute_single_epoch_design(self, screen=False, follow_up=False):
+        """
+        Computes the single arm design on the basis of the set of
+        treatments and either a single sample plan uniformly applied at each
+        treatment or an ordered set of sample plans that matches the number of
+        treatments (otherwise raises an error).
+
+        :return: set - the single arm design as a set of StudyArms
+        """
+        if len(set([x.group_size for x in self.treatments])) != 1:
+           raise ValueError('Group size for all treatments must be the same if '
+                            'computing a single-arm design. Found {}'.format(
+               set([x.group_size for x in self.treatments])))
+        if set() not in self.treatments:
+            arms = []
+            for i, treatment_group in enumerate(self.treatments):
+                arm = StudyArm(name='arm_{}'.format(i))
+                arm.epochs = [
+                    StudyEpoch(name='epoch_{i}'.format(i=0), rank=0,
+                               treatments=[treatment_group],
+                               sample_plan=self.sample_plan)]
+                arms.append(arm)
+            return arms
+        else:
+            return set()
+
 
 class IsaModelObjectFactory(object):
     """
@@ -1430,42 +1455,82 @@ class IsaModelObjectFactory(object):
         def generate_sources(arms):
             sources_map = dict()
             for arm in arms:
-                sources = []
-                for subjn in (str(x).zfill(3) for x in
-                              range(1, sample_plan.group_size + 1)):
-                    source = copy.copy(source_prototype)
-                    source.name = self._idgen(arm.name, subjn)
-                    sources.append(source)
-                sources_map[arm.name] = sources
+                sources = set()
+                for epoch in arm.epochs:
+                    for subjn in (str(x).zfill(3) for x in
+                                  range(1, epoch.sample_plan.group_size + 1)):
+                        source = copy.copy(source_prototype)
+                        source.name = self._idgen(arm.name, subjn)
+                        sources.add(source)
+                    sources_map[arm.name] = list(sources)
             return sources_map
+
         sources_map = generate_sources(self.study_design.study_arms)
         for x in sources_map.values():
             for y in x:
                 study.sources.append(y)
-        print(study.sources)
+        for source in study.sources:
+            print(source.name)
 
-        for epoch in study_arm.epochs:
-            treatments = epoch.treatments
-            sample_plan = epoch.sample_plan
-            rank = epoch.rank
-            for source in sources_map[study_arm.name]:
-                for treatment in treatments:
-                    sample_collection_event = Process(
-                        executes_protocol=sample_collection
-                    )
-                    sample_collection_event.inputs = [source]
-                    for x in range(0, treatment.group_size):
-                        sample = Sample()
-                        sample_collection_event.outputs.append(
-
-                        )
-
-        for arm in self.study_design:
-            sources = sources_map[arm.name]
-            for epoch in arm.epochs:
-                pass  # walk arms
-
-        return
+        # create the main batch first
+        factors = set()
+        ontology_sources = set()
+        samples = []
+        sample_count = 0
+        process_sequence = []
+        param_run_order = sample_collection.get_param('run order')
+        for arm in self.study_design.study_arms:  # each arm set Group
+            group_id = arm.name
+            group_sources = sources_map[arm.name]
+            for epoch in arm.epochs:  # each epoch is a rank in group
+                epoch_name = epoch.name
+                rank = epoch.rank
+                sample_plan = epoch.sample_plan
+                for treatment in epoch.treatments:
+                    fvs = treatment.factor_values
+                    for factor in [x.factor_name for x in fvs]:
+                        factors.add(factor)
+                    for source in group_sources:
+                        for sample_type, sampling_size in \
+                                sample_plan.sample_plan.items():
+                            if sample_type.value.term_source:
+                                ontology_sources.add(
+                                    sample_type.value.term_source)
+                            sampc = 0
+                            for sampn in range(0, sampling_size):
+                                sampc += 1
+                                # normal sample collection
+                                sample = Sample(name=self._idgen(
+                                    group_id, source.name, str(sampc),
+                                    sample_type.value.term),
+                                    factor_values=fvs)
+                                sample.characteristics = [sample_type]
+                                sample.derives_from = [source]
+                                samples.append(sample)
+                                sample_count += 1
+                                process = Process(
+                                    executes_protocol=sample_collection,
+                                    inputs=[source], outputs=[sample],
+                                    performer=self.ops[0], date_=
+                                    datetime.date.isoformat(
+                                        datetime.date.today()),
+                                    parameter_values=[ParameterValue(
+                                        category=param_run_order,
+                                        value=str(sample_count).zfill(3))])
+                                process.parameter_values.append(
+                                    ParameterValue(
+                                        category=sample_collection.get_param(
+                                            'collection event rank'),
+                                        value=str(rank)))
+                                process_sequence.append(process)
+        study.characteristic_categories = list(
+            set(study.characteristic_categories))
+        study.samples = samples
+        study.process_sequence = process_sequence
+        study.factors = list(factors)
+        study.ontology_source_references = list(ontology_sources)
+        return study
+        #  insert_qcs()
         treatment_sequence, sample_assay_plan = \
             self.study_design.sequences_plan.popitem()
         self.sample_assay_plan = sample_assay_plan
