@@ -708,6 +708,35 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         self.assertEqual(2, len(study.sources))
         self.assertEqual(288, len(study.samples))
 
+    def test_create_study_from_plan_parallel_design_3_arms(self):
+        plan = SampleAssayPlan()
+        plan.add_sample_type('liver')
+        plan.add_sample_plan_record('liver', 5)
+        plan.add_sample_type('blood')
+        plan.add_sample_plan_record('blood', 3)
+        plan.group_size = 2
+        treatment_factory = TreatmentFactory(
+            factors=[self.f1, self.f2, self.f3])
+        treatment_factory.add_factor_value(
+            self.f1, {'cocaine', 'crack', 'aether'})
+        treatment_factory.add_factor_value(self.f2, {'low', 'medium', 'high'})
+        treatment_factory.add_factor_value(self.f3, {'short', 'long'})
+        factorial_design_treatments = \
+            treatment_factory.compute_full_factorial_design()
+        for treatment in factorial_design_treatments:
+            treatment.group_size = 2
+
+        design_factory = StudyDesignFactory(
+            treatments=factorial_design_treatments, sample_plan=plan)
+        # makes each study group ranked in sequence
+        study_design = StudyDesign()
+        study_design.study_arms = design_factory.compute_parallel_design(3)
+        study = IsaModelObjectFactory(study_design).create_study_from_plan()
+        study.filename = 's_study.txt'
+        self.investigation.studies = [study]
+        self.assertEqual(6, len(study.sources))
+        self.assertEqual(288 * 3, len(study.samples))
+
     def test_create_study_from_plan_single_epoch_design(self):
         plan = SampleAssayPlan()
         plan.add_sample_type('liver')
@@ -731,6 +760,35 @@ class IsaModelObjectFactoryTest(unittest.TestCase):
         # makes each study group ranked in sequence
         study_design = StudyDesign()
         study_design.study_arms = design_factory.compute_single_epoch_design()
+        study = IsaModelObjectFactory(study_design).create_study_from_plan()
+        study.filename = 's_study.txt'
+        self.investigation.studies = [study]
+        self.assertEqual(36, len(study.sources))
+        self.assertEqual(288, len(study.samples))
+
+    def test_create_study_from_plan_crossover_design(self):
+        plan = SampleAssayPlan()
+        plan.add_sample_type('liver')
+        plan.add_sample_plan_record('liver', 5)
+        plan.add_sample_type('blood')
+        plan.add_sample_plan_record('blood', 3)
+        plan.group_size = 2
+        treatment_factory = TreatmentFactory(
+            factors=[self.f1, self.f2, self.f3])
+        treatment_factory.add_factor_value(
+            self.f1, {'cocaine', 'crack', 'aether'})
+        treatment_factory.add_factor_value(self.f2, {'low', 'medium', 'high'})
+        treatment_factory.add_factor_value(self.f3, {'short', 'long'})
+        factorial_design_treatments = \
+            treatment_factory.compute_full_factorial_design()
+        for treatment in factorial_design_treatments:
+            treatment.group_size = 2
+
+        design_factory = StudyDesignFactory(
+            treatments=factorial_design_treatments, sample_plan=plan)
+        # makes each study group ranked in sequence
+        study_design = StudyDesign()
+        study_design.study_arms = design_factory.compute_crossover_design()
         study = IsaModelObjectFactory(study_design).create_study_from_plan()
         study.filename = 's_study.txt'
         self.investigation.studies = [study]

@@ -1283,18 +1283,18 @@ class StudyDesignFactory(object):
         :return: set - the crossover design as a set of StudyArms
         """
         if set() not in self.treatments:
-            return {
+            return [
             StudyArm(name='arm_{i}'.format(i=i),
                      epochs=[StudyEpoch(
-                         name='epoch_{j}'.format(j=j), rank=j, treatments=y,
+                         name='epoch_{j}'.format(j=j), rank=j, treatments=[y],
                          sample_plan=self.sample_plan) for j, y
                              in enumerate(x)]) for i, x in
-                enumerate(itertools.product(*self.treatments))
-        }
+                enumerate(itertools.product(self.treatments))
+            ]
         else:
             return set()
 
-    def compute_parallel_design(self, screen=False, follow_up=False):
+    def compute_parallel_design(self, num_arms=2, screen=False, follow_up=False):
         """
         Computes the parallel trial design on the basis of the set of
         treatments and either a single sample plan uniformly applied at each
@@ -1304,26 +1304,22 @@ class StudyDesignFactory(object):
         :return: set - the parallel design as a set of StudyArms
         """
         if set() not in self.treatments:
-            study_arms = set()
-            study_arms = {
-                StudyArm(name='arm_{i}'.format(i=i), epochs=[
-                    StudyEpoch(
-                        name='treatment_{j}'.format(j=j), rank=j, treatments=y,
-                        sample_plan=self.sample_plan) for j, y in
-                    enumerate(x)]) for i, x
-                in enumerate(self.treatments)
-            }
-            rank_before_tmin = min(x.rank for x in next(iter(study_arms))) - 1
-            rank_after_tmax = max(x.rank for x in next(iter(study_arms))) + 1
-            for arm in study_arms:
-                if screen:
-                    arm.add(StudyEpoch(name='screen',
-                                       rank=rank_before_tmin,
-                                       sample_plan=self.sample_plan))
-                if follow_up:
-                    arm.add(StudyEpoch(name='follow_up',
-                                       rank=rank_after_tmax,
-                                       sample_plan=self.sample_plan))
+            study_arms = []
+            for _ in range(0, num_arms):
+                arm = self.compute_single_arm_design()[-1]
+                arm.name = 'arm_{}'.format(_)
+                study_arms.append(arm)
+            # rank_before_tmin = min(x.rank for x in next(iter(study_arms))) - 1
+            # rank_after_tmax = max(x.rank for x in next(iter(study_arms))) + 1
+            # for arm in study_arms:
+            #     if screen:
+            #         arm.add(StudyEpoch(name='screen',
+            #                            rank=rank_before_tmin,
+            #                            sample_plan=self.sample_plan))
+            #     if follow_up:
+            #         arm.add(StudyEpoch(name='follow_up',
+            #                            rank=rank_after_tmax,
+            #                            sample_plan=self.sample_plan))
             return study_arms
         else:
             return set()
@@ -1469,8 +1465,6 @@ class IsaModelObjectFactory(object):
         for x in sources_map.values():
             for y in x:
                 study.sources.append(y)
-        for source in study.sources:
-            print(source.name)
 
         # create the main batch first
         factors = set()
