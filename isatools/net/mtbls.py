@@ -13,7 +13,7 @@ import pandas as pd
 import tempfile
 import shutil
 import re
-
+import json
 
 from isatools import isatab
 from isatools.convert import isatab2json
@@ -647,3 +647,165 @@ def dl_all_mtbls_isatab(target_dir):
 
     print('Downloaded {count} ISA-Tab studies from MetaboLights'.format(
         count=download_count))
+    
+# mtblisa commands
+
+
+def get_study_command(isa_format, study_id, output):
+    if os.path.exists(output):
+        raise RuntimeError("Selected output path {} already exists!".format(
+            output))
+
+    if isa_format == "isa-tab":
+        tmp_data = None
+        try:
+            log.info("Downloading study %s", study_id)
+            tmp_data = get(study_id)
+            if tmp_data is None:
+                raise RuntimeError("Error downloading ISA study")
+
+            log.debug(
+                "Finished downloading data. Moving to final location %s",
+                output)
+            shutil.move(tmp_data, output)
+            log.info("ISA archive written to %s", output)
+        finally:
+            if tmp_data:
+                # try to clean up any temporary files left behind
+                log.debug("Deleting %s, if there's anything there", tmp_data)
+                shutil.rmtree(tmp_data, ignore_errors=True)
+    elif isa_format == "isa-json":
+        isajson = getj(study_id)
+        if isajson is None:
+            raise RuntimeError("Error downloading ISA study")
+        log.debug(
+            "Finished downloading data. Dumping json to final location %s",
+            output)
+        os.makedirs(output)
+        json_file = os.path.join(output, "{}.json".format(
+            isajson['identifier']))
+        with open(json_file, 'w') as fd:
+            json.dump(isajson, fd)
+        log.info("ISA-JSON written to %s", output)
+    else:
+        raise ValueError("BUG! Got an invalid isa format '{}'".format(
+            isa_format))
+
+
+def get_factors_command(study_id, output):
+    log.info("Getting factors for study %s. Writing to %s.",
+                study_id, output.name)
+    factor_names = get_factor_names(study_id)
+    if factor_names is not None:
+        json.dump(list(factor_names), output, indent=4)
+        log.debug("Factor names written")
+    else:
+        raise RuntimeError("Error downloading factors.")
+
+
+def get_factor_values_command(study_id, factor, output):
+    log.info("Getting values for factor {factor} in study {study_id}. Writing to {output_file}."
+        .format(factor=factor, study_id=study_id, output_file=output.name))
+    fvs = get_factor_values(study_id, factor)
+    if fvs is not None:
+        json.dump(list(fvs), output, indent=4)
+        log.debug("Factor values written to {}".format(output))
+    else:
+        raise RuntimeError("Error getting factor values")
+
+
+def get_data_files_command(
+        study_id, output, json_query=None, galaxy_parameters_file=None, ):
+    log.info("Getting data files for study %s. Writing to %s.",
+                study_id, output.name)
+    if json_query:
+        log.debug("This is the specified query:\n%s", json_query)
+        json_struct = json.loads(json_query)
+        data_files = get_data_files(study_id, json_struct)
+    elif galaxy_parameters_file:
+        log.debug("Using input Galaxy JSON parameters from:\n%s",
+                     galaxy_parameters_file)
+        with open(galaxy_parameters_file) as json_fp:
+            galaxy_json = json.load(json_fp)
+            json_struct = {}
+            for fv_item in galaxy_json['factor_value_series']:
+                json_struct[fv_item['factor_name']] = fv_item['factor_value']
+            data_files = get_data_files(study_id, json_struct)
+    else:
+        log.debug("No query was specified")
+        data_files = get_data_files(study_id)
+
+    log.debug("Result data files list: %s", data_files)
+    if data_files is None:
+        raise RuntimeError("Error getting data files with isatools")
+
+    log.debug("dumping data files to %s", output.name)
+    json.dump(list(data_files), output, indent=4)
+    log.info("Finished writing data files to {}".format(output))
+
+
+def build_html_data_files_list(data_files_list):
+    data_files_table = '<table>'
+    data_files_table += '<tr><th>Sample Name</th><th>Data File Names</th></tr>'
+    for data_file in data_files_list:
+        sample_name = data_file['sample']
+        data_files = ', '.join(data_file['data_files'])
+        data_files_table += '<tr><td>{sample_name}</td><td>{data_files}</td>' \
+            .format(sample_name=sample_name, data_files=data_files)
+    html_data_files_list = """
+    <html>
+    <head>
+    <title>ISA-Tab Factors Summary</title>
+    </head>
+    <body>
+    {summary_table}
+    </body>
+    </html>
+""".format(summary_table=data_files_table)
+    return html_data_files_list
+
+
+def build_html_summary(summary):
+    study_groups = {}
+    for item in summary:
+        sample_name = item['sample_name']
+        study_factors = []
+        for item in [x for x in item.items() if x[0] != "sample_name"]:
+            study_factors.append(': '.join([item[0], item[1]]))
+        study_group = ', '.join(study_factors)
+        if study_group not in study_groups.keys():
+            study_groups[study_group] = []
+        study_groups[study_group].append(sample_name)
+    summary_table = '<table>'
+    summary_table += '<tr><th>Study group</th><th>Number of samples</th></tr>'
+    for item in study_groups.items():
+        study_group = item[0]
+        num_samples = len(item[1])
+        summary_table += '<tr><td>{study_group}</td><td>{num_samples}</td>' \
+            .format(study_group=study_group, num_samples=num_samples)
+    summary_table += '</table>'
+    html_summary = """
+<html>
+<head>
+<title>ISA-Tab Factors Summary</title>
+</head>
+<body>
+{summary_table}
+</body>
+</html>
+""".format(summary_table=summary_table)
+    return html_summary
+
+
+def get_summary_command(study_id, json_output, html_output):
+    log.info("Getting summary for study %s. Writing to %s.",
+                study_id, json_output.name)
+    summary = get_study_variable_summary(study_id)
+    if summary is not None:
+        json.dump(summary, json_output, indent=4)
+        log.debug("Summary dumped to JSON")
+        html_summary = build_html_summary(summary)
+        with html_output as html_fp:
+            html_fp.write(html_summary)
+    else:
+        raise RuntimeError("Error getting study summary")
