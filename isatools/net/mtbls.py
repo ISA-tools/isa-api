@@ -809,3 +809,16 @@ def get_summary_command(study_id, json_output, html_output):
             html_fp.write(html_summary)
     else:
         raise RuntimeError("Error getting study summary")
+
+
+def datatype_get_summary_command(study_id, output):
+    log.info("Getting summary for study %s. Writing to %s.",
+                study_id, output.name)
+
+    summary = get_study_variable_summary(study_id)
+    print('summary: ', list(summary))
+    if summary is not None:
+        json.dump(summary, output, indent=4)
+        log.debug("Summary dumped")
+    else:
+        raise RuntimeError("Error getting study summary")
