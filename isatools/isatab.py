@@ -26,6 +26,7 @@ from progressbar import ProgressBar
 from progressbar import SimpleProgress
 from progressbar import Bar
 from progressbar import ETA
+import json
 
 from isatools import logging as isa_logging
 from isatools.io import isatab_configurator
@@ -4473,3 +4474,686 @@ def strip_comments(in_fp):
             out_fp.write(line)
     out_fp.seek(0)
     return out_fp
+
+
+# isaslicer commands
+
+def isatab_get_data_files_list_command(
+        input_path, output, json_query=None, galaxy_parameters_file=None):
+    log.info("Getting data files for study %s. Writing to %s.",
+                input_path, output.name)
+    if json_query:
+        log.debug("This is the specified query:\n%s", json_query)
+        json_struct = json.loads(json_query)
+    elif galaxy_parameters_file:
+        log.debug("Using input Galaxy JSON parameters from:\n%s",
+                     galaxy_parameters_file)
+        with open(galaxy_parameters_file) as json_fp:
+            galaxy_json = json.load(json_fp)
+            json_struct = {}
+            for fv_item in galaxy_json['factor_value_series']:
+                json_struct[fv_item['factor_name']] = fv_item['factor_value']
+    else:
+        log.debug("No query was specified")
+        json_struct = None
+    factor_selection = json_struct
+    result = slice_data_files(input_path, factor_selection=factor_selection)
+    data_files = result
+    log.debug("Result data files list: %s", data_files)
+    if data_files is None:
+        raise RuntimeError("Error getting data files with isatools")
+
+    log.debug("dumping data files to %s", output.name)
+    json.dump(list(data_files), output, indent=4)
+    log.info("Finished writing data files to {}".format(output))
+
+
+def isatab_get_data_files_collection_command(
+        input_path, output_path, json_query=None, galaxy_parameters_file=None):
+    log.info("Getting data files for study %s. Writing to %s.",
+                input_path, output_path)
+    if json_query:
+        log.debug("This is the specified query:\n%s", json_query)
+    else:
+        log.debug("No query was specified")
+    if json_query is not None:
+        json_struct = json.loads(json_query)
+    elif galaxy_parameters_file:
+        log.debug("Using input Galaxy JSON parameters from:\n%s",
+                     galaxy_parameters_file)
+        with open(galaxy_parameters_file) as json_fp:
+            galaxy_json = json.load(json_fp)
+            json_struct = {}
+            for fv_item in galaxy_json['factor_value_series']:
+                json_struct[fv_item['factor_name']] = fv_item['factor_value']
+    else:
+        log.debug("No query was specified")
+        json_struct = None
+    factor_selection = json_struct
+    result = slice_data_files(input_path, factor_selection=factor_selection)
+    data_files = result
+    log.debug("Result data files list: %s", data_files)
+    if data_files is None:
+        raise RuntimeError("Error getting data files with isatools")
+    output_path = next(iter(output_path))
+    log.debug("copying data files to %s", output_path)
+    for result in data_files:
+        for data_file_name in result['data_files']:
+            logging.info("Copying {}".format(data_file_name))
+            shutil.copy(os.path.join(input_path, data_file_name), output_path)
+    log.info("Finished writing data files to {}".format(output_path))
+
+
+def slice_data_files(dir, factor_selection=None):
+    results = []
+    # first collect matching samples
+    for table_file in glob.iglob(os.path.join(dir, '[a|s]_*')):
+        log.info('Loading {table_file}'.format(table_file=table_file))
+
+        with open(os.path.join(dir, table_file)) as fp:
+            df = load_table(fp)
+
+            if factor_selection is None:
+                matches = df['Sample Name'].items()
+
+                for indx, match in matches:
+                    sample_name = match
+                    if len([r for r in results if r['sample'] ==
+                            sample_name]) == 1:
+                        continue
+                    else:
+                        results.append(
+                            {
+                                'sample': sample_name,
+                                'data_files': []
+                            }
+                        )
+
+            else:
+                for factor_name, factor_value in factor_selection.items():
+                    if 'Factor Value[{}]'.format(factor_name) in list(
+                            df.columns.values):
+                        matches = df.loc[df['Factor Value[{factor}]'.format(
+                            factor=factor_name)] == factor_value][
+                            'Sample Name'].items()
+
+                        for indx, match in matches:
+                            sample_name = match
+                            if len([r for r in results if r['sample'] ==
+                                    sample_name]) == 1:
+                                continue
+                            else:
+                                results.append(
+                                    {
+                                        'sample': sample_name,
+                                        'data_files': [],
+                                        'query_used': factor_selection
+                                    }
+                                )
+
+    # now collect the data files relating to the samples
+    for result in results:
+        sample_name = result['sample']
+
+        for table_file in glob.iglob(os.path.join(dir, 'a_*')):
+            with open(table_file) as fp:
+                df = load_table(fp)
+
+                data_files = []
+
+                table_headers = list(df.columns.values)
+                sample_rows = df.loc[df['Sample Name'] == sample_name]
+
+                data_node_labels = ['Raw Data File', 'Raw Spectral Data File',
+                    'Derived Spectral Data File',
+                    'Derived Array Data File',
+                    'Array Data File',
+                    'Protein Assignment File',
+                    'Peptide Assignment File',
+                    'Post Translational Modification Assignment File',
+                    'Acquisition Parameter Data File',
+                    'Free Induction Decay Data File',
+                    'Derived Array Data Matrix File',
+                    'Image File',
+                    'Derived Data File',
+                    'Metabolite Assignment File']
+                for node_label in data_node_labels:
+                    if node_label in table_headers:
+                        data_files.extend(list(sample_rows[node_label]))
+
+                result['data_files'] = [i for i in list(data_files) if
+                                        str(i) != 'nan']
+    return results
+
+
+def isatab_get_factor_names_command(input_path, output):
+    log.info("Getting factors for study %s. Writing to %s.",
+                input_path, output.name)
+    _RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
+    factors = set()
+    for table_file in glob.iglob(os.path.join(input_path, '[a|s]_*')):
+        with open(os.path.join(input_path, table_file)) as fp:
+            df = load_table(fp)
+
+            factors_headers = [header for header in list(df.columns.values)
+                               if _RX_FACTOR_VALUE.match(header)]
+
+            for header in factors_headers:
+                factors.add(header[13:-1])
+    if factors is not None:
+        json.dump(list(factors), output, indent=4)
+        log.debug("Factor names written")
+    else:
+        raise RuntimeError("Error reading factors.")
+
+
+def isatab_get_factor_values_command(input_path, factor, output):
+    log.info("Getting values for factor {factor} in study {input_path}. "
+             "Writing to {output_file}."
+        .format(factor=factor, input_path=input_path, output_file=output.name))
+    fvs = set()
+    
+    factor_name = factor
+
+    for table_file in glob.iglob(os.path.join(input_path, '[a|s]_*')):
+        with open(os.path.join(input_path, table_file)) as fp:
+            df = load_table(fp)
+
+            if 'Factor Value[{factor}]'.format(factor=factor_name) in \
+                    list(df.columns.values):
+                for _, match in df[
+                    'Factor Value[{factor}]'.format(
+                        factor=factor_name)].iteritems():
+                    try:
+                        match = match.item()
+                    except AttributeError:
+                        pass
+
+                    if isinstance(match, (str, int, float)):
+                        if str(match) != 'nan':
+                            fvs.add(match)
+    if fvs is not None:
+        json.dump(list(fvs), output, indent=4)
+        log.debug("Factor values written to {}".format(output))
+    else:
+        raise RuntimeError("Error getting factor values")
+
+
+def isatab_get_factors_summary_command(input_path, output):
+    log.info("Getting summary for study %s. Writing to %s.",
+                input_path, output.name)
+    ISA = load(input_path)
+
+    all_samples = []
+    for study in ISA.studies:
+        all_samples.extend(study.samples)
+
+    samples_and_fvs = []
+
+    for sample in all_samples:
+        sample_and_fvs = {
+                'sample_name': sample.name,
+            }
+
+        for fv in sample.factor_values:
+            if isinstance(fv.value, (str, int, float)):
+                fv_value = fv.value
+                sample_and_fvs[fv.factor_name.name] = fv_value
+            elif isinstance(fv.value, OntologyAnnotation):
+                fv_value = fv.value.term
+                sample_and_fvs[fv.factor_name.name] = fv_value
+
+        samples_and_fvs.append(sample_and_fvs)
+
+    df = pd.DataFrame(samples_and_fvs)
+    nunique = df.apply(pd.Series.nunique)
+    cols_to_drop = nunique[nunique == 1].index
+
+    df = df.drop(cols_to_drop, axis=1)
+    summary = df.to_dict(orient='records')
+    if summary is not None:
+        json.dump(summary, output, indent=4)
+        log.debug("Summary dumped to JSON")
+    else:
+        raise RuntimeError("Error getting study summary")
+
+
+def get_study_groups(input_path):
+    factors_summary = isatab_get_factors_summary_command(input_path=input_path)
+    study_groups = {}
+
+    for factors_item in factors_summary:
+        fvs = tuple(factors_item[k] for k in factors_item.keys() if k != 'name')
+
+        if fvs in study_groups.keys():
+            study_groups[fvs].append(factors_item['name'])
+        else:
+            study_groups[fvs] = [factors_item['name']]
+    return study_groups
+
+
+def get_study_groups_samples_sizes(input_path):
+    study_groups = get_study_groups(input_path=input_path)
+    return list(map(lambda x: (x[0], len(x[1])), study_groups.items()))
+
+
+def get_sources_for_sample(input_path, sample_name):
+    ISA = load(input_path)
+    hits = []
+
+    for study in ISA.studies:
+        for sample in study.samples:
+            if sample.name == sample_name:
+                print('found a hit: {sample_name}'.format(
+                    sample_name=sample.name))
+
+                for source in sample.derives_from:
+                    hits.append(source.name)
+    return hits
+
+
+def get_data_for_sample(input_path, sample_name):
+    ISA = load(input_path)
+    hits = []
+    for study in ISA.studies:
+        for assay in study.assays:
+            for data in assay.data_files:
+                if sample_name in [x.name for x in data.generated_from]:
+                    log.info('found a hit: {filename}'.format(
+                        filename=data.filename))
+                    hits.append(data)
+    return hits
+
+
+def get_study_groups_data_sizes(input_path):
+    study_groups = get_study_groups(input_path=input_path)
+    return list(map(lambda x: (x[0], len(x[1])), study_groups.items()))
+
+
+def get_characteristics_summary(input_path):
+    """
+        This function generates a characteristics summary for a MetaboLights
+        study
+
+        :param input_path: Input path to ISA-tab
+        :return: A list of dicts summarising the set of characteristic names
+        and values associated with each sample
+
+        Note: it only returns a summary of characteristics with variable values.
+
+        Example usage:
+            characteristics_summary = get_characteristics_summary('/path/to/my/study/')
+            [
+                {
+                    "name": "6089if_9",
+                    "Variant": "Synechocystis sp. PCC 6803.sll0171.ko"
+                },
+                {
+                    "name": "6089if_43",
+                    "Variant": "Synechocystis sp. PCC 6803.WT.none"
+                },
+            ]
+
+
+        """
+    ISA = load(input_path)
+
+    all_samples = []
+    for study in ISA.studies:
+        all_samples.extend(study.samples)
+
+    samples_and_characs = []
+    for sample in all_samples:
+        sample_and_characs = {
+                'name': sample.name
+            }
+
+        for source in sample.derives_from:
+            for c in source.characteristics:
+                if isinstance(c.value, (str, int, float)):
+                    c_value = c.value
+                    sample_and_characs[c.category.term] = c_value
+                elif isinstance(c.value, OntologyAnnotation):
+                    c_value = c.value.term
+                    sample_and_characs[c.category.term] = c_value
+
+        samples_and_characs.append(sample_and_characs)
+
+    df = pd.DataFrame(samples_and_characs)
+    nunique = df.apply(pd.Series.nunique)
+    cols_to_drop = nunique[nunique == 1].index
+
+    df = df.drop(cols_to_drop, axis=1)
+    return df.to_dict(orient='records')
+
+
+def get_study_variable_summary(input_path):
+    ISA = load(input_path)
+
+    all_samples = []
+    for study in ISA.studies:
+        all_samples.extend(study.samples)
+
+    samples_and_variables = []
+    for sample in all_samples:
+        sample_and_vars = {
+            'sample_name': sample.name
+        }
+
+        for fv in sample.factor_values:
+            if isinstance(fv.value, (str, int, float)):
+                fv_value = fv.value
+                sample_and_vars[fv.factor_name.name] = fv_value
+            elif isinstance(fv.value, OntologyAnnotation):
+                fv_value = fv.value.term
+                sample_and_vars[fv.factor_name.name] = fv_value
+
+        for source in sample.derives_from:
+            sample_and_vars['source_name'] = source.name
+            for c in source.characteristics:
+                if isinstance(c.value, (str, int, float)):
+                    c_value = c.value
+                    sample_and_vars[c.category.term] = c_value
+                elif isinstance(c.value, OntologyAnnotation):
+                    c_value = c.value.term
+                    sample_and_vars[c.category.term] = c_value
+
+        samples_and_variables.append(sample_and_vars)
+
+    df = pd.DataFrame(samples_and_variables)
+    nunique = df.apply(pd.Series.nunique)
+    cols_to_drop = nunique[nunique == 1].index
+
+    df = df.drop(cols_to_drop, axis=1)
+    return df.to_dict(orient='records')
+
+
+def get_study_group_factors(input_path):
+    factors_list = []
+
+    for table_file in glob.iglob(os.path.join(input_path, '[a|s]_*')):
+        with open(os.path.join(input_path, table_file)) as fp:
+            df = load_table(fp)
+
+            factor_columns = [x for x in df.columns if x.startswith(
+                'Factor Value')]
+            if len(factor_columns) > 0:
+                factors_list = df[factor_columns].drop_duplicates()\
+                    .to_dict(orient='records')
+    return factors_list
+
+
+def get_filtered_df_on_factors_list(input_path):
+    factors_list = get_study_group_factors(input_path=input_path)
+    queries = []
+
+    for item in factors_list:
+        query_str = []
+
+        for k, v in item.items():
+            k = k.replace(' ', '_').replace('[', '_').replace(']', '_')
+            if isinstance(v, str):
+                v = v.replace(' ', '_').replace('[', '_').replace(']', '_')
+                query_str.append("{k} == '{v}' and ".format(k=k, v=v))
+
+        query_str = ''.join(query_str)[:-4]
+        queries.append(query_str)
+
+    for table_file in glob.iglob(os.path.join(input_path, '[a|s]_*')):
+        with open(os.path.join(input_path, table_file)) as fp:
+            df = load_table(fp)
+
+            cols = df.columns
+            cols = cols.map(
+                lambda x: x.replace(' ', '_') if isinstance(x, str) else x)
+            df.columns = cols
+
+            cols = df.columns
+            cols = cols.map(
+                lambda x: x.replace('[', '_') if isinstance(x, str) else x)
+            df.columns = cols
+
+            cols = df.columns
+            cols = cols.map(
+                lambda x: x.replace(']', '_') if isinstance(x, str) else x)
+            df.columns = cols
+
+        for query in queries:
+            df2 = df.query(query)  # query uses pandas.eval, which evaluates
+                                   # queries like pure Python notation
+            if 'Sample_Name' in df.columns:
+                print('Group: {query} / Sample_Name: {sample_name}'.format(
+                    query=query, sample_name=list(df2['Sample_Name'])))
+
+            if 'Source_Name' in df.columns:
+                print('Group: {} / Sources_Name: {}'.format(
+                    query, list(df2['Source_Name'])))
+
+            if 'Raw_Spectral_Data_File' in df.columns:
+                print('Group: {query} / Raw_Spectral_Data_File: {filename}'
+                    .format( query=query[13:-2],
+                             filename=list(df2['Raw_Spectral_Data_File'])))
+    return queries
+
+
+def filter_data(input_path, output_path, slice, filename_filter):
+    loglines = []
+    source_dir = input_path
+    if source_dir:
+        if not os.path.exists(source_dir):
+            raise IOError('Source path does not exist!')
+    data_files = []
+    slice_json = slice
+    for result in json.load(slice_json)['results']:
+        data_files.extend(result.get('data_files', []))
+    reduced_data_files = list(set(data_files))
+    filtered_files = glob.glob(os.path.join(source_dir, filename_filter))
+    to_copy = []
+    for filepath in filtered_files:
+        if os.path.basename(filepath) in reduced_data_files:
+            to_copy.append(filepath)
+    loglines.append("Using slice results from {}\n".format(slice_json))
+    for filepath in to_copy:
+        loglines.append("Copying {}\n".format(os.path.basename(filepath)))
+        # try:
+        #     shutil.copyfile(
+        #         filepath, os.path.join(output_path, os.path.basename(filepath)))
+        # except Exception as e:
+        #     print(e)
+        #     exit(1)
+        try:
+            os.symlink(
+                filepath, os.path.join(output_path, os.path.basename(filepath)))
+        except Exception as e:
+            print(e)
+            exit(1)
+    with open('cli.log', 'w') as fp:
+        fp.writelines(loglines)
+
+
+def query_isatab(source_dir, output, galaxy_parameters_file=None):
+    debug = True
+    if galaxy_parameters_file:
+        galaxy_parameters = json.load(galaxy_parameters_file)
+        print('Galaxy parameters:')
+        print(json.dumps(galaxy_parameters, indent=4))
+    else:
+        raise IOError('Could not load Galaxy parameters file!')
+    if source_dir:
+        if not os.path.exists(source_dir):
+            raise IOError('Source path does not exist!')
+    query = galaxy_parameters['query']
+    if debug:
+        print('Query is:')
+        print(json.dumps(query, indent=4))  # for debugging only
+    if source_dir:
+        investigation = load(source_dir)
+    else:
+        raise IOError("No source dir supplied")
+    # filter assays by mt/tt
+    matching_assays = []
+    mt = query.get('measurement_type').strip()
+    tt = query.get('technology_type').strip()
+    if mt and tt:
+        for study in investigation.studies:
+            matching_assays.extend(
+                [x for x in study.assays if x.measurement_type.term == mt
+                 and x.technology_type.term == tt])
+    elif mt and not tt:
+        for study in investigation.studies:
+            matching_assays.extend(
+                [x for x in study.assays if x.measurement_type.term == mt])
+    elif not mt and tt:
+        for study in investigation.studies:
+            matching_assays.extend(
+                [x for x in study.assays if x.technology_type.term == tt])
+    else:
+        for study in investigation.studies:
+            matching_assays.extend(study.assays)
+    assay_samples = []
+    for assay in matching_assays:
+        assay_samples.extend(assay.samples)
+    if debug:
+        print('Total samples: {}'.format(len(assay_samples)))
+
+    # filter samples by fv
+    factor_selection = {
+        x.get('factor_name').strip(): x.get('factor_value').strip() for x in
+        query.get('factor_selection', [])}
+
+    fv_samples = set()
+    if factor_selection:
+        samples_to_remove = set()
+        for f, v in factor_selection.items():
+            for sample in assay_samples:
+                for fv in [x for x in sample.factor_values if
+                           x.factor_name.name == f]:
+                    if isinstance(fv.value, OntologyAnnotation):
+                        if fv.value.term == v:
+                            fv_samples.add(sample)
+                    elif fv.value == v:
+                        fv_samples.add(sample)
+        for f, v in factor_selection.items():
+            for sample in fv_samples:
+                for fv in [x for x in sample.factor_values if
+                           x.factor_name.name == f]:
+                    if isinstance(fv.value, OntologyAnnotation):
+                        if fv.value.term != v:
+                            samples_to_remove.add(sample)
+                    elif fv.value != v:
+                        samples_to_remove.add(sample)
+        final_fv_samples = fv_samples.difference(samples_to_remove)
+    else:
+        final_fv_samples = assay_samples
+
+    # filter samples by characteristic
+    characteristics_selection = {
+        x.get('characteristic_name').strip():
+            x.get('characteristic_value').strip() for x in
+            query.get('characteristics_selection', [])}
+
+    cv_samples = set()
+    if characteristics_selection:
+        first_pass = True
+        samples_to_remove = set()
+        for c, v in characteristics_selection.items():
+            if first_pass:
+                for sample in final_fv_samples:
+                    for cv in [x for x in sample.characteristics if
+                               x.category.term == c]:
+                        if isinstance(cv.value, OntologyAnnotation):
+                            if cv.value.term == v:
+                                cv_samples.add(sample)
+                        elif cv.value == v:
+                            cv_samples.add(sample)
+                    for source in sample.derives_from:
+                        for cv in [x for x in source.characteristics if
+                                   x.category.term == c]:
+                            if isinstance(cv.value, OntologyAnnotation):
+                                if cv.value.term == v:
+                                    cv_samples.add(sample)
+                            elif cv.value == v:
+                                cv_samples.add(sample)
+                first_pass = False
+            else:
+                for sample in cv_samples:
+                    for cv in [x for x in sample.characteristics if
+                               x.category.term == c]:
+                        if isinstance(cv.value, OntologyAnnotation):
+                            if cv.value.term != v:
+                                samples_to_remove.add(sample)
+                        elif cv.value != v:
+                            samples_to_remove.add(sample)
+                    for source in sample.derives_from:
+                        for cv in [x for x in source.characteristics if
+                                   x.category.term == c]:
+                            if isinstance(cv.value, OntologyAnnotation):
+                                if cv.value.term != v:
+                                    samples_to_remove.add(sample)
+                            elif cv.value != v:
+                                samples_to_remove.add(sample)
+        final_cv_samples = cv_samples.difference(samples_to_remove)
+    else:
+        final_cv_samples = final_fv_samples
+
+    # filter samples by process parameter
+    parameters_selection = {
+        x.get('parameter_name').strip():
+            x.get('parameter_value').strip() for x in
+        query.get('parameter_selection', [])}
+
+    final_samples = final_cv_samples
+
+    if debug:
+        print('Final number of samples: {}'.format(len(final_samples)))
+    results = []
+    for sample in final_samples:
+        results.append({
+            'sample_name': sample.name,
+            'data_files': []
+        })
+    for result in results:
+        sample_name = result['sample_name']
+        if source_dir:
+            table_files = glob.iglob(os.path.join(source_dir, 'a_*'))
+        else:
+            raise IOError("No source dir supplied")
+        for table_file in table_files:
+            with open(table_file) as fp:
+                df = load_table(fp)
+                data_files = []
+                table_headers = list(df.columns.values)
+                sample_rows = df.loc[df['Sample Name'] == sample_name]
+                data_node_labels = [
+                    'Raw Data File', 'Raw Spectral Data File',
+                    'Derived Spectral Data File',
+                    'Derived Array Data File', 'Array Data File',
+                    'Protein Assignment File', 'Peptide Assignment File',
+                    'Post Translational Modification Assignment File',
+                    'Acquisition Parameter Data File',
+                    'Free Induction Decay Data File',
+                    'Derived Array Data Matrix File', 'Image File',
+                    'Derived Data File', 'Metabolite Assignment File']
+                if parameters_selection:
+                    for p, v in parameters_selection.items():
+                        sample_pv_rows = sample_rows.loc[
+                            sample_rows['Parameter Value[{}]'.format(p)] == v]
+                        for node_label in data_node_labels:
+                            if node_label in table_headers:
+                                data_files.extend(
+                                    list(sample_pv_rows[node_label]))
+                    result['data_files'].extend(list(set(
+                        i for i in list(data_files) if
+                        str(i) not in ('nan', ''))))
+                else:
+                    for node_label in data_node_labels:
+                        if node_label in table_headers:
+                            data_files.extend(list(sample_rows[node_label]))
+                    result['data_files'].extend(
+                        list(set(i for i in list(data_files) if
+                                 str(i) not in  ('nan', ''))))
+    results_json = {
+        'query': query,
+        'results': results
+    }
+    json.dump(results_json, output, indent=4)
