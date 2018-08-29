@@ -48,9 +48,9 @@ warnings = []
 info = []
 
 # REGEXES
-_RX_DOI = re.compile(r"(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%'#? ])\\S)+)")
-_RX_PMID = re.compile(r"[0-9]{8}")
-_RX_PMCID = re.compile(r"PMC[0-9]{8}")
+_RX_DOI = re.compile("(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%'#? ])\\S)+)")
+_RX_PMID = re.compile("[0-9]{8}")
+_RX_PMCID = re.compile("PMC[0-9]{8}")
 
 
 def load(fp):
