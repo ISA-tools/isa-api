@@ -237,7 +237,8 @@ class TreatmentSequence:
         # self.__subject_count = subject_count if isinstance(
         # subject_count, int) and subject_count >= 0 else 0
         # self.__sample_map = {}
-
+        if ranked_treatments is None:
+            ranked_treatments = []
         self.add_multiple_treatments(ranked_treatments)
 
     def __repr__(self):
