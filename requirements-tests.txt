@@ -19,4 +19,4 @@ progressbar2
 tox
 nose
 certifi
-pycodestyle
+flake8

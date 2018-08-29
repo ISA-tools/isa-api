@@ -9,7 +9,7 @@ install:
 - pip install --upgrade pip && pip install -r requirements-tests.txt
 - pip install tox-travis
 script:
-- pycodestyle --show-source --exclude=.svn,CVS,.bzr,.hg,.git,isatab_configurator.py,study_design_wizard.py isatools
+- flake8 --show-source --exclude=.svn,CVS,.bzr,.hg,.git,isatab_configurator.py,study_design_wizard.py isatools
 - behave --no-capture --no-capture-stderr --format=progress features/isa-file-handler.feature
 - tox
 - nosetests --with-coverage --cover-package=isatools
