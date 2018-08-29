@@ -6,6 +6,7 @@ from __future__ import absolute_import
 import re
 import uuid
 from .models import *
+import os
 
 import logging
 
@@ -34,12 +35,13 @@ def create_from_galaxy_parameters(galaxy_parameters_file, target_dir):
                     'multiple_interventions_selector']
         if single_or_multiple == 'multiple':
             raise NotImplementedError(
-                'Multiple treatments not yet implemented. Please select Single')
+                'Multiple treatments not yet implemented. '
+                'Please select Single')
 
         if study_type == 'full_factorial':
             intervention_type = \
-            treatment_plan['study_type']['multiple_interventions'][
-                'intervention_type']['intervention_type_selector']
+                treatment_plan['study_type']['multiple_interventions'][
+                    'intervention_type']['intervention_type_selector']
             if intervention_type == 'chemical intervention':
                 interventions = INTERVENTIONS['CHEMICAL']
             elif intervention_type == 'dietary intervention':
@@ -50,7 +52,8 @@ def create_from_galaxy_parameters(galaxy_parameters_file, target_dir):
                 interventions = INTERVENTIONS['BIOLOGICAL']
             elif intervention_type == 'surgical intervention':
                 interventions = INTERVENTIONS['SURGICAL']
-            elif intervention_type == 'radiological intervention':  # not in tool yet
+            elif intervention_type == 'radiological intervention':
+                # not in tool yet
                 interventions = INTERVENTIONS['RADIOLOGICAL']
             else:  # default to chemical
                 interventions = INTERVENTIONS['CHEMICAL']
@@ -59,14 +62,14 @@ def create_from_galaxy_parameters(galaxy_parameters_file, target_dir):
 
             # Treatment Sequence
             agent_levels = \
-            treatment_plan['study_type']['multiple_interventions'][
-                'intervention_type']['agent'].split(',')
+                treatment_plan['study_type']['multiple_interventions'][
+                    'intervention_type']['agent'].split(',')
             for agent_level in agent_levels:
                 treatment_factory.add_factor_value(BASE_FACTORS[0],
                                                    agent_level.strip())
             dose_levels = \
-            treatment_plan['study_type']['multiple_interventions'][
-                'intervention_type']['intensity'].split(',')
+                treatment_plan['study_type']['multiple_interventions'][
+                    'intervention_type']['intensity'].split(',')
             for dose_level in dose_levels:
                 treatment_factory.add_factor_value(BASE_FACTORS[1],
                                                    dose_level.strip())
@@ -78,7 +81,7 @@ def create_from_galaxy_parameters(galaxy_parameters_file, target_dir):
                     BASE_FACTORS[2], duration_of_exposure_level.strip())
             treatment_sequence = TreatmentSequence(
                 ranked_treatments=treatment_factory
-                    .compute_full_factorial_design())
+                .compute_full_factorial_design())
             group_size = int(
                 galaxy_parameters['treatment_plan']['study_type'][
                     'multiple_interventions']['group_size'])
@@ -106,16 +109,18 @@ def create_from_galaxy_parameters(galaxy_parameters_file, target_dir):
                     factor_value = FactorValue(factor_name=x, value=y)
                     factor_values = factor_values + (factor_value,)
                 if galaxy_parameters['treatment_plan']['study_type'][
-                    'balance']['balanced_groups']:
+                        'balance']['balanced_groups']:
                     group_size = int(
                         galaxy_parameters['treatment_plan']['study_type'][
                             'balance']['multiple_interventions']['group_size'])
                 else:
                     group_size = int(group['group_size'])
                 treatment = Treatment(treatment_type=intervention_type,
-                    factor_values=factor_values, group_size=group_size)
+                                      factor_values=factor_values,
+                                      group_size=group_size)
                 treatments.add(treatment)
-            treatment_sequence = TreatmentSequence(ranked_treatments=treatments)
+            treatment_sequence = TreatmentSequence(
+                ranked_treatments=treatments)
             return treatment_sequence
 
     def _create_sample_plan(sample_assay_plan, sample_plan_record):
@@ -163,8 +168,8 @@ def create_from_galaxy_parameters(galaxy_parameters_file, target_dir):
                             'injection_mode_selector'] in ('LC', 'GC'):
                         injection_mode.chromatography_instrument = inj_mod[
                             'injection_mode']['chromatography_instrument']
-                    if inj_mod[
-                        'injection_mode']['injection_mode_selector'] == 'LC':
+                    if inj_mod['injection_mode'][
+                            'injection_mode_selector'] == 'LC':
                         injection_mode.chromatography_column = inj_mod[
                             'injection_mode']['chromatography_column']
                     injection_modes.add(injection_mode)
@@ -177,18 +182,19 @@ def create_from_galaxy_parameters(galaxy_parameters_file, target_dir):
                             )
                         )
                         if inj_mod['injection_mode'][
-                            'injection_mode_selector'] == 'GC':
+                                'injection_mode_selector'] == 'GC':
                             for deriva in inj_mod['injection_mode'][
                                     'derivatizations']:
                                 derivatization = deriva['derivatization']
-                                if re.match('(.*?) \((.*?)\)', derivatization):
+                                if re.match(
+                                        r'(.*?) \((.*?)\)', derivatization):
                                     matches = next(iter(
-                                        re.findall('(.*?) \((.*?)\)',
+                                        re.findall(r'(.*?) \((.*?)\)',
                                                    derivatization)))
                                     term, ontoid = matches[0], matches[1]
                                     source_name, accession_id = \
-                                    ontoid.split(':')[0], \
-                                    ontoid.split(':')[1]
+                                        ontoid.split(':')[0], \
+                                        ontoid.split(':')[1]
                                     source = OntologySource(name=source_name)
                                     derivatization = OntologyAnnotation(
                                         term=term, term_source=source,
@@ -202,11 +208,12 @@ def create_from_galaxy_parameters(galaxy_parameters_file, target_dir):
             sample_type = sample_plan_record['material_type']['sample_type_ud']
         else:
             sample_type = sample_plan_record['material_type']
-            if re.match('(.*?) \((.*?)\)', sample_type):
-                matches = next(iter(re.findall('(.*?) \((.*?)\)', sample_type)))
+            if re.match(r'(.*?) \((.*?)\)', sample_type):
+                matches = next(iter(
+                    re.findall(r'(.*?) \((.*?)\)', sample_type)))
                 term, ontoid = matches[0], matches[1]
-                source_name, accession_id = ontoid.split(':')[0], \
-                                            ontoid.split(':')[1]
+                source_name, accession_id = \
+                    ontoid.split(':')[0], ontoid.split(':')[1]
                 source = OntologySource(name=source_name)
                 sample_type = OntologyAnnotation(term=term, term_source=source,
                                                  term_accession=accession_id)
@@ -229,12 +236,12 @@ def create_from_galaxy_parameters(galaxy_parameters_file, target_dir):
         qc_type = qcqa_record['qc_type']['qc_type_selector']
         if qc_type == 'interval_series':
             material_type = qcqa_record['material_type']
-            if re.match('(.*?) \((.*?)\)', material_type):
+            if re.match(r'(.*?) \((.*?)\)', material_type):
                 matches = next(iter(
-                    re.findall('(.*?) \((.*?)\)', material_type)))
+                    re.findall(r'(.*?) \((.*?)\)', material_type)))
                 term, ontoid = matches[0], matches[1]
-                source_name, accession_id = ontoid.split(':')[0], \
-                                            ontoid.split(':')[1]
+                source_name, accession_id = \
+                    ontoid.split(':')[0], ontoid.split(':')[1]
                 source = OntologySource(name=source_name)
                 material_type = OntologyAnnotation(
                     term=term, term_source=source, term_accession=accession_id)
@@ -246,12 +253,12 @@ def create_from_galaxy_parameters(galaxy_parameters_file, target_dir):
             values = [int(x) for x in qcqa_record[
                 'qc_type']['values'].split(',')]
             material_type = qcqa_record['material_type']
-            if re.match('(.*?) \((.*?)\)', material_type):
+            if re.match(r'(.*?) \((.*?)\)', material_type):
                 matches = next(iter(
-                    re.findall('(.*?) \((.*?)\)', material_type)))
+                    re.findall(r'(.*?) \((.*?)\)', material_type)))
                 term, ontoid = matches[0], matches[1]
-                source_name, accession_id = ontoid.split(':')[0], \
-                                            ontoid.split(':')[1]
+                source_name, accession_id = \
+                    ontoid.split(':')[0], ontoid.split(':')[1]
                 source = OntologySource(name=source_name)
                 material_type = OntologyAnnotation(
                     term=term, term_source=source, term_accession=accession_id)
@@ -280,7 +287,8 @@ def create_from_galaxy_parameters(galaxy_parameters_file, target_dir):
     if target_dir:
         if not os.path.exists(target_dir):
             raise IOError('Target path does not exist!')
-    if len(galaxy_parameters['sample_and_assay_planning']['sample_plans']) == 0:
+    if len(galaxy_parameters['sample_and_assay_planning'][
+               'sample_plans']) == 0:
         raise IOError('No Sampling plan specified')
 
     treatment_sequence = _create_treatment_sequence(galaxy_parameters)
@@ -293,12 +301,12 @@ def create_from_galaxy_parameters(galaxy_parameters_file, target_dir):
     try:
         sample_assay_plan.group_size = \
             int(galaxy_parameters['treatment_plan']['study_type'][
-                'multiple_interventions']['group_size'])
+                    'multiple_interventions']['group_size'])
     except KeyError:
         try:
             sample_assay_plan.group_size = \
                 int(galaxy_parameters['treatment_plan']['study_type'][
-                    'balance']['multiple_interventions']['group_size'])
+                        'balance']['multiple_interventions']['group_size'])
         except KeyError:
             log.debug(
                 'Group size not set for root plan as multiple intervention')
@@ -312,7 +320,8 @@ def create_from_galaxy_parameters(galaxy_parameters_file, target_dir):
         log.info('No assay plan defined')
 
     study_design = StudyDesign()
-    study_design.add_single_sequence_plan(treatment_sequence, sample_assay_plan)
+    study_design.add_single_sequence_plan(
+        treatment_sequence, sample_assay_plan)
     isa_object_factory = IsaModelObjectFactory(study_design)
     if len(sample_assay_plan.sample_plan) == 0:
         s = Study()

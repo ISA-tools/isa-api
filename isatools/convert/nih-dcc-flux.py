@@ -1,9 +1,6 @@
 from __future__ import absolute_import
 from isatools import isatab
 from isatools.model import *
-from isatools.model import Investigation, OntologySource, Person, Sample, Source, Assay, OntologyAnnotation, Protocol, \
-    Study, \
-    StudyFactor, Characteristic, Material, Process, DataFile, plink
 import json
 import os
 
@@ -69,7 +66,8 @@ def convert(json_path, output_path):
                           term=study_json['type'],
                           term_source=obi,
                           term_accession="http://purl.org/obo/OBI_1")],
-                      filename='s_{study_id}.txt'.format(study_id=study_json['id']))
+                      filename='s_{study_id}.txt'.format(
+                          study_id=study_json['id']))
 
         investigation.studies = [study]
 
@@ -96,9 +94,10 @@ def convert(json_path, output_path):
 
         for i, protocol_json in enumerate(dcc_json['protocol'].values()):
             oat_p = protocol_json['type']
-            oa_protocol_type = OntologyAnnotation(term=oat_p,
-                                                  term_source=obi,
-                                                  term_accession="http://purl.org/obo/OBI_1")
+            oa_protocol_type = OntologyAnnotation(
+                term=oat_p,
+                term_source=obi,
+                term_accession="http://purl.org/obo/OBI_1")
             study.protocols.append(
                 Protocol(name=protocol_json['id'],
                          protocol_type=oa_protocol_type,
@@ -134,15 +133,17 @@ def convert(json_path, output_path):
             # print(array['subject'][element])
             if "organism" in subject_json['type']:
 
-
                 source = Source(name=subject_json['id'])
 
-                ncbitaxon = OntologySource(name='NCBITaxon', description="NCBI Taxonomy")
+                ncbitaxon = OntologySource(name='NCBITaxon',
+                                           description="NCBI Taxonomy")
                 characteristic_organism = Characteristic(
                                category=OntologyAnnotation(term="Organism"),
-                               value=OntologyAnnotation(term=subject_json['species'],
-                                                        term_source=ncbitaxon,
-                                                        term_accession='http://purl.bioontology.org/ontology/NCBITAXON/9606'))
+                               value=OntologyAnnotation(
+                                   term=subject_json['species'],
+                                   term_source=ncbitaxon,
+                                   term_accession='http://purl.bioontology.org'
+                                                  '/ontology/NCBITAXON/9606'))
                 source.characteristics.append(characteristic_organism)
                 study.sources.append(source)
 
@@ -150,12 +151,15 @@ def convert(json_path, output_path):
                 # print(array['subject'][element]['type'])
                 source = Source(name=subject_json['id'])
                 study.sources.append(source)
-                ncbitaxon = OntologySource(name='NCBITaxon', description="NCBI Taxonomy")
+                ncbitaxon = OntologySource(name='NCBITaxon',
+                                           description="NCBI Taxonomy")
                 characteristic_organism = Characteristic(
                     category=OntologyAnnotation(term="Organism"),
-                    value=OntologyAnnotation(term=subject_json['species'],
-                                             term_source=ncbitaxon,
-                                             term_accession='http://purl.bioontology.org/ontology/NCBITAXON/9606'))
+                    value=OntologyAnnotation(
+                        term=subject_json['species'],
+                        term_source=ncbitaxon,
+                        term_accession='http://purl.bioontology.org/ontology/'
+                                       'NCBITAXON/9606'))
                 source.characteristics.append(characteristic_organism)
 
                 sample = Sample(
@@ -182,12 +186,15 @@ def convert(json_path, output_path):
             else:
                 source = Source(name=subject_json['id'])
 
-                ncbitaxon = OntologySource(name='NCBITaxon', description="NCBI Taxonomy")
+                ncbitaxon = OntologySource(name='NCBITaxon',
+                                           description="NCBI Taxonomy")
                 characteristic_organism = Characteristic(
                     category=OntologyAnnotation(term="Organism"),
-                    value=OntologyAnnotation(term=subject_json['species'],
-                                             term_source=ncbitaxon,
-                                             term_accession='http://purl.bioontology.org/ontology/NCBITAXON/9606'))
+                    value=OntologyAnnotation(
+                        term=subject_json['species'],
+                        term_source=ncbitaxon,
+                        term_accession='http://purl.bioontology.org/ontology/'
+                                       'NCBITAXON/9606'))
                 source.characteristics.append(characteristic_organism)
                 study.sources.append(source)
                 print(subject_json['id'])
@@ -200,25 +207,33 @@ def convert(json_path, output_path):
         for sample_json in dcc_json['sample'].values():
 
             if 'cells' in sample_json['type']:
-                material_separation_process = Process(executes_protocol=study.get_prot(sample_json['protocol.id']))
+                material_separation_process = Process(
+                    executes_protocol=study.get_prot(
+                        sample_json['protocol.id']))
                 material_separation_process.name = sample_json['id']
-                # dealing with input material, check that the parent material is already among known samples or sources
+                # dealing with input material, check that the parent material
+                # is already among known samples or sources
 
-                if len([x for x in study.samples if x.name == sample_json['parentID']]) == 0:
+                if len([x for x in study.samples
+                        if x.name == sample_json['parentID']]) == 0:
                     material_in = Sample(name=sample_json['parentID'])
                     material_separation_process.inputs.append(material_in)
                     study.assays[0].samples.append(material_in)
                 else:
-                    print([x for x in study.samples if x.name == sample_json['parentID']])
-                    material_separation_process.inputs.append([x for x in study.samples if x.name == sample_json['parentID']][0])
+                    print([x for x in study.samples if x.name ==
+                           sample_json['parentID']])
+                    material_separation_process.inputs.append(
+                        [x for x in study.samples if x.name ==
+                         sample_json['parentID']][0])
 
                 material_out = Sample(name=sample_json['id'])
                 material_type = Characteristic(
                     category=OntologyAnnotation(
                         term='material_type'),
-                    value=OntologyAnnotation(term=sample_json['type'],
-                                             term_source=obi,
-                                             term_accession="http://purl.org/obo/OBI_xxxxxxx"))
+                    value=OntologyAnnotation(
+                        term=sample_json['type'],
+                        term_source=obi,
+                        term_accession="http://purl.org/obo/OBI_xxxxxxx"))
                 material_out.characteristics.append(material_type)
                 material_separation_process.outputs.append(material_out)
                 study.assays[0].samples.append(material_out)
@@ -229,21 +244,26 @@ def convert(json_path, output_path):
                 if sample_collection_process is None:
                     sample_collection_process = Process(executes_protocol="")
                 else:
-                 # plink(protein_extraction_process, data_acq_process)
-                 # plink(material_separation_process, protein_extraction_process)
-
-                 plink(sample_collection_process, protein_extraction_process)
+                    # plink(protein_extraction_process, data_acq_process)
+                    # plink(material_separation_process,
+                    # protein_extraction_process)
+                    plink(sample_collection_process,
+                          protein_extraction_process)
 
             if 'protein_extract' in sample_json['type']:
-                protein_extraction_process = Process(executes_protocol=study.get_prot(sample_json['protocol.id']))
+                protein_extraction_process = Process(
+                    executes_protocol=study.get_prot(
+                        sample_json['protocol.id']))
                 protein_extraction_process.name = sample_json['id']
 
-                if len([x for x in study.samples if x.name == sample_json['parentID']]) == 0:
+                if len([x for x in study.samples
+                        if x.name == sample_json['parentID']]) == 0:
                     material_in = Sample(name=sample_json['parentID'])
                     protein_extraction_process.inputs.append(material_in)
                     study.assays[0].samples.append(material_in)
                 else:
-                    # print([x for x in study.samples if x.name == sample_json['parentID']])
+                    # print([x for x in study.samples
+                    # if x.name == sample_json['parentID']])
                     protein_extraction_process.inputs.append(material_in)
 
                 # for material_in in study.samples:
@@ -263,9 +283,10 @@ def convert(json_path, output_path):
                 material_type = Characteristic(
                     category=OntologyAnnotation(
                         term='material_type'),
-                    value=OntologyAnnotation(term=sample_json['type'],
-                                             term_source=obi,
-                                             term_accession="http://purl.org/obo/OBI_1"))
+                    value=OntologyAnnotation(
+                        term=sample_json['type'],
+                        term_source=obi,
+                        term_accession="http://purl.org/obo/OBI_1"))
                 material_out.characteristics.append(material_type)
 
                 study.assays[0].samples.append(material_in)
@@ -277,8 +298,9 @@ def convert(json_path, output_path):
                 if material_separation_process is None:
                     material_separation_process = Process(executes_protocol="")
                 else:
-                 # plink(protein_extraction_process, data_acq_process)
-                 plink(material_separation_process, protein_extraction_process)
+                    #  plink(protein_extraction_process, data_acq_process)
+                    plink(material_separation_process,
+                          protein_extraction_process)
 
             if 'polar' in sample_json['type']:
 
@@ -309,37 +331,44 @@ def convert(json_path, output_path):
                 except NameError:
                     protein_extraction_process = None
                 if protein_extraction_process is None:
-                   protein_extraction_process = Process(executes_protocol="")
+                    protein_extraction_process = Process(executes_protocol="")
                 else:
-                 plink(protein_extraction_process, data_acq_process)
+                    plink(protein_extraction_process, data_acq_process)
 
             # else:
             #     material_in = Material(name=sample_json['parentID'])
             #     material_out = Material(name=sample_json['id'])
             #     material_type = Characteristic(
             #         category=OntologyAnnotation(term="material_type"),
-            #         value=OntologyAnnotation(term=sample_json['type'],
-            #                                  term_source=obi,
-            #                                  term_accession="http://purl.org/obo/OBI_1"))
+            #         value=OntologyAnnotation(
+            # term=sample_json['type'],
+            # term_source=obi,
+            # term_accession="http://purl.org/obo/OBI_1"))
             #     material_out.characteristics.append(material_type)
-            #     process = Process(executes_protocol=sample_json['protocol.id'])
+            #     process = Process(
+            # executes_protocol=sample_json['protocol.id'])
             #     process.name = sample_json['id']
             #     process.inputs.append(material_in)
             #     process.outputs.append(material_out)
             #
-            #     study.assays[0].materials['other_material'].append(material_in)
-            #     study.assays[0].materials['other_material'].append(material_out)
+            #     study.assays[0].materials[
+            # 'other_material'].append(material_in)
+            #     study.assays[0].materials[
+            # 'other_material'].append(material_out)
 
             if 'bulk_tissue' in sample_json['type']:
-                bulk_process = Process(executes_protocol=study.get_prot(sample_json['protocol.id']))
+                bulk_process = Process(executes_protocol=study.get_prot(
+                    sample_json['protocol.id']))
                 bulk_process.name = sample_json['id']
 
-                if len([x for x in study.samples if x.name == sample_json['parentID']]) == 0:
+                if len([x for x in study.samples
+                        if x.name == sample_json['parentID']]) == 0:
                     material_in = Sample(name=sample_json['parentID'])
                     bulk_process.inputs.append(material_in)
                     study.assays[0].samples.append(material_in)
                 else:
-                    # print([x for x in study.samples if x.name == sample_json['parentID']])
+                    # print([x for x in study.samples if x.name ==
+                    # sample_json['parentID']])
                     bulk_process.inputs.append(material_in)
 
                     plink(sample_collection_process, bulk_process)
@@ -366,9 +395,12 @@ def convert(json_path, output_path):
     if not os.path.exists(output_path):
         os.makedirs(output_path)
         try:
-            with open('{output_path}/{study_id}-maf-data-nih-dcc-json.txt'.
-                    format(output_path=output_path, study_id=studyid), 'w') as fh:
-                print("'writing 'maf file document' to file from 'generate_maf_file' method:...")
+            with open(
+                    '{output_path}/{study_id}-maf-data-nih-dcc-json.txt'.
+                    format(
+                        output_path=output_path, study_id=studyid), 'w') as fh:
+                print("'writing 'maf file document' to file from "
+                      "'generate_maf_file' method:...")
                 fh.writelines(data_rec_header)
                 fh.writelines('\n')
                 for item in records:
@@ -398,6 +430,7 @@ if __name__ == '__main__':
     # args = vars(args)
     # convert(args['json_path'], args['output_path'])
     convert(
-        json_path='/Users/Philippe/Documents/git/isa-api/tests/nih-dcc-metadata4.json',
+        json_path='/Users/Philippe/Documents/git/isa-api/tests/'
+                  'nih-dcc-metadata4.json',
         output_path='/Users/Philippe/Documents/tmp/'
     )

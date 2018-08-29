@@ -638,7 +638,7 @@ source1\tsample collection\tsample1\tStudy group 1"""
         expected_assay_table = """Sample Name\tFactor Value[study group]\tProtocol REF
 sample1\tStudy group 1\textraction"""
         self.assertIn(expected_assay_table,
-                      isatab.dumps(i, write_factor_values_in_assay_table=True))
+                      isatab.dumps(i, write_fvs_in_assay_table=True))
 
     def test_source_protocol_ref_protocol_ref_sample(self):
         i = Investigation()

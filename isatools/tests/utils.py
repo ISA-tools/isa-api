@@ -46,19 +46,21 @@ SRA2016_XML_CONFIGS_DATA_DIR = os.path.join(
 JSON_DEFAULT_CONFIGS_DATA_DIR = os.path.join(
     DATA_DIR, CONFIGS_DATA_DIR, 'json_default')
 
-JSON_SRA_CONFIGS_DATA_DIR = os.path.join(DATA_DIR, CONFIGS_DATA_DIR, 'json_sra')
+JSON_SRA_CONFIGS_DATA_DIR = \
+    os.path.join(DATA_DIR, CONFIGS_DATA_DIR, 'json_sra')
 
 
-_RX_CHARACTERISTICS = re.compile('Characteristics\[(.*?)\]')
-_RX_PARAM_VALUE = re.compile('Parameter Value\[(.*?)\]')
-_RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
+_RX_CHARACTERISTICS = re.compile(r'Characteristics\[(.*?)\]')
+_RX_PARAM_VALUE = re.compile(r'Parameter Value\[(.*?)\]')
+_RX_FACTOR_VALUE = re.compile(r'Factor Value\[(.*?)\]')
 
 
 def assert_tab_content_equal(fp_x, fp_y):
     """
     Test for equality of tab files, only down to level of content -
     should not be taken as canonical equality, but ather that all the expected
-    content matches to both input files, but not the order in which they appear.
+    content matches to both input files, but not the order in which they
+    appear.
 
     For more precise equality, you will need to apply a configuration
         - use assert_tab_equal_by_config(fp_x, fp_y, config)
@@ -118,14 +120,14 @@ def assert_tab_content_equal(fp_x, fp_y):
 
             is_cols_equal = set(
                 [x.split('.', 1)[0] for x in df_x.columns]) == \
-                            set([x.split('.', 1)[0] for x in df_y.columns])
+                set([x.split('.', 1)[0] for x in df_y.columns])
             if not is_cols_equal:
                 log.debug('x: ' + str(df_x.columns))
                 log.debug('y: ' + str(df_y.columns))
                 log.debug(diff(df_x.columns, df_y.columns))
                 raise AssertionError('Columns in x do not match those in y')
 
-            # reindex to add contexts for duplicate named columns 
+            # reindex to add contexts for duplicate named columns
             # (i.e. Term Accession Number, Unit, etc.)
             import re
             newcolsx = list()
@@ -133,20 +135,21 @@ def assert_tab_content_equal(fp_x, fp_y):
                 newcolsx.append(col)
             for i, col in enumerate(df_x.columns):
                 if any(RX.match(col) for RX in (
-                        _RX_CHARACTERISTICS, _RX_PARAM_VALUE, 
+                        _RX_CHARACTERISTICS, _RX_PARAM_VALUE,
                         _RX_FACTOR_VALUE)):
                     try:
-                        if 'Unit' in df_x.columns[i+1]:
-                            newcolsx[i+1] = col + '/Unit'
-                            if 'Term Source REF' in df_x.columns[i+2]:
-                                newcolsx[i+2] = col + '/Unit/Term Source REF'
-                            if 'Term Accession Number' in df_x.columns[i+3]:
-                                newcolsx[i+3] = col + \
-                                                '/Unit/Term Accession Number'
-                        elif 'Term Source REF' in df_x.columns[i+1]:
-                            newcolsx[i+1] = col + '/Term Source REF'
-                            if 'Term Accession Number' in df_x.columns[i+2]:
-                                newcolsx[i+2] = col + '/Term Accession Number'
+                        if 'Unit' in df_x.columns[i + 1]:
+                            newcolsx[i + 1] = col + '/Unit'
+                            if 'Term Source REF' in df_x.columns[i + 2]:
+                                newcolsx[i + 2] = col + '/Unit/Term Source REF'
+                            if 'Term Accession Number' in df_x.columns[i + 3]:
+                                newcolsx[i + 3] = col + \
+                                    '/Unit/Term Accession Number'
+                        elif 'Term Source REF' in df_x.columns[i + 1]:
+                            newcolsx[i + 1] = col + '/Term Source REF'
+                            if 'Term Accession Number' in df_x.columns[i + 2]:
+                                newcolsx[i + 2] = col + \
+                                    '/Term Accession Number'
                     except IndexError:
                         pass
             df_x.columns = newcolsx
@@ -155,30 +158,31 @@ def assert_tab_content_equal(fp_x, fp_y):
                 newcolsy.append(col)
             for i, col in enumerate(df_y.columns):
                 if any(RX.match(col) for RX in (
-                        _RX_CHARACTERISTICS, _RX_PARAM_VALUE, 
+                        _RX_CHARACTERISTICS, _RX_PARAM_VALUE,
                         _RX_FACTOR_VALUE)):
                     try:
-                        if 'Unit' in df_y.columns[i+1]:
-                            newcolsy[i+1] = col + '/Unit'
-                            if 'Term Source REF' in df_y.columns[i+2]:
-                                newcolsy[i+2] = col + '/Unit/Term Source REF'
-                            if 'Term Accession Number' in df_y.columns[i+3]:
-                                newcolsy[i+3] = col + \
-                                                '/Unit/Term Accession Number'
-                        elif 'Term Source REF' in df_y.columns[i+1]:
-                            newcolsy[i+1] = col + '/Term Source REF'
-                            if 'Term Accession Number' in df_y.columns[i+2]:
-                                newcolsy[i+2] = col + '/Term Accession Number'
+                        if 'Unit' in df_y.columns[i + 1]:
+                            newcolsy[i + 1] = col + '/Unit'
+                            if 'Term Source REF' in df_y.columns[i + 2]:
+                                newcolsy[i + 2] = col + '/Unit/Term Source REF'
+                            if 'Term Accession Number' in df_y.columns[i + 3]:
+                                newcolsy[i + 3] = col + \
+                                    '/Unit/Term Accession Number'
+                        elif 'Term Source REF' in df_y.columns[i + 1]:
+                            newcolsy[i + 1] = col + '/Term Source REF'
+                            if 'Term Accession Number' in df_y.columns[i + 2]:
+                                newcolsy[i + 2] = col + \
+                                    '/Term Accession Number'
                     except IndexError:
                         pass
             df_y.columns = newcolsy
             for colx in df_x.columns:
-                for eachx, eachy in zip(df_x.sort_values(by=colx)[colx], 
+                for eachx, eachy in zip(df_x.sort_values(by=colx)[colx],
                                         df_y.sort_values(by=colx)[colx]):
                     if eachx != eachy:
                         log.debug(df_x[colx])
                         log.debug(df_y[colx])
-                        raise AssertionError('Value: ' + str(eachx) + 
+                        raise AssertionError('Value: ' + str(eachx) +
                                              ', does not match: ' + str(eachy))
             return True
         except AssertionError as e:

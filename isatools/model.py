@@ -24,6 +24,7 @@ from isatools.errors import ISAModelAttributeError
 
 log = logging.getLogger('isatools')
 
+
 def _build_assay_graph(process_sequence=None):
     """:obj:`networkx.DiGraph` Returns a directed graph object based on a
     given ISA process sequence."""
@@ -100,8 +101,8 @@ class Comment(object):
 
     def __eq__(self, other):
         return isinstance(other, Comment) \
-               and self.name == other.name \
-               and self.value == other.value
+            and self.name == other.name \
+            and self.value == other.value
 
     def __ne__(self, other):
         return not self == other
@@ -113,6 +114,7 @@ class Commentable(metaclass=abc.ABCMeta):
     Attributes:
         comments: Comments associated with the implementing ISA class.
     """
+
     def __init__(self, comments=None):
         if comments is None:
             self.__comments = []
@@ -235,7 +237,7 @@ class MetadataMixin(metaclass=abc.ABCMeta):
             self.contacts = []
         else:
             self.__contacts = contacts
-            
+
     @property
     def filename(self):
         """:obj:`str`: A filename"""
@@ -244,7 +246,7 @@ class MetadataMixin(metaclass=abc.ABCMeta):
     @filename.setter
     def filename(self, val):
         if val is not None and isinstance(val, str):
-                self.__filename = val
+            self.__filename = val
         else:
             raise ISAModelAttributeError('{0}.filename must be a string'
                                          .format(type(self).__name__))
@@ -257,7 +259,7 @@ class MetadataMixin(metaclass=abc.ABCMeta):
     @identifier.setter
     def identifier(self, val):
         if val is not None and isinstance(val, str):
-                self.__identifier = val
+            self.__identifier = val
         else:
             raise ISAModelAttributeError('{0}.identifier must be a string'
                                          .format(type(self).__name__))
@@ -408,9 +410,12 @@ class Investigation(Commentable, MetadataMixin, object):
                 'Investigation.ontology_source_references must be iterable '
                 'containing OntologySource objects')
 
-    def add_ontology_source_reference(self, name='', version='', description='',
+    def add_ontology_source_reference(self, name='', version='',
+                                      description='',
                                       file='', comments=None):
-        """Adds a new ontology_source_reference to the ontology_source_reference list.
+        """
+        Adds a new ontology_source_reference to the ontology_source_reference
+        list.
 
         Args:
             name: OntologySource name
@@ -509,13 +514,14 @@ class Investigation(Commentable, MetadataMixin, object):
     title={investigation.title}
     submission_date={investigation.submission_date}
     public_release_date={investigation.public_release_date}
-    ontology_source_references={num_ontology_source_references} OntologySource objects
+    ontology_source_references={num_ontology_source_references} OntologySources
     publications={num_publications} Publication objects
     contacts={num_contacts} Person objects
     studies={num_studies} Study objects
     comments={num_comments} Comment objects
 )""".format(investigation=self,
-            num_ontology_source_references=len(self.ontology_source_references),
+            num_ontology_source_references=len(
+                self.ontology_source_references),
             num_publications=len(self.publications),
             num_contacts=len(self.contacts),
             num_studies=len(self.studies),
@@ -583,7 +589,7 @@ class OntologySource(Commentable):
     def file(self):
         """:obj:`str`: file of the ontology source"""
         return self.__file
-    
+
     @file.setter
     def file(self, val):
         if val is not None and not isinstance(val, str):
@@ -605,7 +611,7 @@ class OntologySource(Commentable):
                 'OntologySource.version must be a str; got {0}:{1}'
                 .format(val, type(val)))
         else:
-            self.__version = val   
+            self.__version = val
 
     @property
     def description(self):
@@ -622,12 +628,12 @@ class OntologySource(Commentable):
             self.__description = val
 
     def __repr__(self):
-        return "isatools.model.OntologySource(name='{ontology_source.name}', " \
-               "file='{ontology_source.file}', " \
+        return "isatools.model.OntologySource(name='{ontology_source.name}'," \
+               " file='{ontology_source.file}', " \
                "version='{ontology_source.version}', " \
                "description='{ontology_source.description}', " \
                "comments={ontology_source.comments})" \
-                .format(ontology_source=self)
+            .format(ontology_source=self)
 
     def __str__(self):
         return """OntologySource(
@@ -721,8 +727,8 @@ class OntologyAnnotation(Commentable):
                "term_source={term_source}, " \
                "term_accession='{ontology_annotation.term_accession}', " \
                "comments={ontology_annotation.comments})" \
-                .format(ontology_annotation=self,
-                        term_source=repr(self.term_source))
+            .format(ontology_annotation=self,
+                    term_source=repr(self.term_source))
 
     def __str__(self):
         return """OntologyAnnotation(
@@ -763,7 +769,7 @@ class Publication(Commentable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, pubmed_id='', doi='', author_list='', title='', 
+    def __init__(self, pubmed_id='', doi='', author_list='', title='',
                  status=None, comments=None):
         super().__init__(comments)
 
@@ -786,7 +792,7 @@ class Publication(Commentable):
                 .format(val, type(val)))
         else:
             self.__pubmed_id = val
-            
+
     @property
     def doi(self):
         """:obj:`str`: the DOI of the publication"""
@@ -800,7 +806,7 @@ class Publication(Commentable):
                 .format(val, type(val)))
         else:
             self.__doi = val
-            
+
     @property
     def author_list(self):
         """:obj:`str`: the author list (comma separated) of the publication"""
@@ -814,7 +820,7 @@ class Publication(Commentable):
                 .format(val, type(val)))
         else:
             self.__author_list = val
-            
+
     @property
     def title(self):
         """:obj:`str`: the title of the publication"""
@@ -846,11 +852,12 @@ class Publication(Commentable):
 
     def __repr__(self):
         return "isatools.model.Publication(" \
-               "pubmed_id='{publication.pubmed_id}', doi='{publication.doi}', " \
+               "pubmed_id='{publication.pubmed_id}', " \
+               "doi='{publication.doi}', " \
                "author_list='{publication.author_list}', " \
                "title='{publication.title}', status={status}, " \
                "comments={publication.comments})".format(
-                publication=self, status=repr(self.status))
+                   publication=self, status=repr(self.status))
 
     def __str__(self):
         return """Publication(
@@ -863,19 +870,19 @@ class Publication(Commentable):
 )""".format(publication=self,
             status=self.status.term if self.status else '',
             num_comments=len(self.comments))
-    
+
     def __hash__(self):
         return hash(repr(self))
-    
+
     def __eq__(self, other):
         return isinstance(other, Publication) \
-               and self.pubmed_id == other.pubmed_id \
-               and self.doi == other.doi \
-               and self.author_list == other.author_list \
-               and self.title == other.title \
-               and self.status == other.status \
-               and self.comments == other.comments
-    
+            and self.pubmed_id == other.pubmed_id \
+            and self.doi == other.doi \
+            and self.author_list == other.author_list \
+            and self.title == other.title \
+            and self.status == other.status \
+            and self.comments == other.comments
+
     def __ne__(self, other):
         return not self == other
 
@@ -898,8 +905,8 @@ class Person(Commentable):
         comments: Comments associated with instances of this class.
     """
 
-    def __init__(self, last_name='', first_name='', mid_initials='', email='', 
-                 phone='', fax='', address='', affiliation='', roles=None, 
+    def __init__(self, last_name='', first_name='', mid_initials='', email='',
+                 phone='', fax='', address='', affiliation='', roles=None,
                  comments=None, id_=''):
         super().__init__(comments)
 
@@ -922,7 +929,7 @@ class Person(Commentable):
     def last_name(self):
         """:obj:`str`: the last_name of the person"""
         return self.__last_name
-    
+
     @last_name.setter
     def last_name(self, val):
         if val is not None and not isinstance(val, str):
@@ -1039,7 +1046,8 @@ class Person(Commentable):
     @roles.setter
     def roles(self, val):
         if val is not None and hasattr(val, '__iter__'):
-            if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
+            if val == [] or all(isinstance(x, OntologyAnnotation)
+                                for x in val):
                 self.__roles = list(val)
         else:
             raise ISAModelAttributeError(
@@ -1054,7 +1062,7 @@ class Person(Commentable):
                "fax='{person.fax}', address='{person.address}', " \
                "affiliation='{person.affiliation}', roles={person.roles}, " \
                "comments={person.comments})" \
-                .format(person=self)
+            .format(person=self)
 
     def __str__(self):
         return """Person(
@@ -1076,16 +1084,16 @@ class Person(Commentable):
 
     def __eq__(self, other):
         return isinstance(other, Person) \
-               and self.last_name == other.last_name \
-               and self.first_name == other.first_name \
-               and self.mid_initials == other.mid_initials \
-               and self.email == other.email \
-               and self.phone == other.phone \
-               and self.fax == other.fax \
-               and self.address == other.address \
-               and self.affiliation == other.affiliation \
-               and self.roles == other.roles \
-               and self.comments == other.comments
+            and self.last_name == other.last_name \
+            and self.first_name == other.first_name \
+            and self.mid_initials == other.mid_initials \
+            and self.email == other.email \
+            and self.phone == other.phone \
+            and self.fax == other.fax \
+            and self.address == other.address \
+            and self.affiliation == other.affiliation \
+            and self.roles == other.roles \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -1100,7 +1108,8 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
         materials: Materials associated with the Study or Assay.
         sources: Sources associated with the Study or Assay.
         samples: Samples associated with the Study or Assay.
-        other_material: Other Material types associated with the Study or Assay.
+        other_material: Other Material types associated with the Study or
+        Assay.
         units: A list of Units used in the annotation of materials.
         characteristic_categories-: A list of OntologyAnnotation used in
             the annotation of material characteristics.
@@ -1141,7 +1150,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
             self.__characteristic_categories = []
         else:
             self.__characteristic_categories = characteristic_categories
-            
+
     @property
     def filename(self):
         """:obj:`str`: the filename of the study or assay"""
@@ -1165,7 +1174,8 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
     @units.setter
     def units(self, val):
         if val is not None and hasattr(val, '__iter__'):
-            if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
+            if val == [] or all(isinstance(x, OntologyAnnotation)
+                                for x in val):
                 self.__units = list(val)
         else:
             raise ISAModelAttributeError(
@@ -1257,8 +1267,9 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                 found.
 
         """
-        slist = list(self.yield_sources_by_characteristic(characteristic=
-                                                          characteristic))
+        slist = list(
+            self.yield_sources_by_characteristic(
+                characteristic=characteristic))
         if len(slist) > 0:
             return slist[-1]
         else:
@@ -1288,7 +1299,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                 '{}.samples must be iterable containing Samples'
                 .format(type(self).__name__))
 
-    def add_sample(self, name='', characteristics=None, factor_values=None, 
+    def add_sample(self, name='', characteristics=None, factor_values=None,
                    derives_from=None, comments=None):
         """Adds a new sample to the sample materials list.
 
@@ -1297,7 +1308,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
             characteristics: Source characteristics
             comments: Source comments
         """
-        s = Sample(name=name, characteristics=characteristics, 
+        s = Sample(name=name, characteristics=characteristics,
                    factor_values=factor_values, derives_from=derives_from,
                    comments=comments)
         self.samples.append(s)
@@ -1360,8 +1371,9 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                 found.
 
         """
-        slist = list(self.yield_samples_by_characteristic(characteristic=
-                                                          characteristic))
+        slist = list(
+            self.yield_samples_by_characteristic(
+                characteristic=characteristic))
         if len(slist) > 0:
             return slist[-1]
         else:
@@ -1394,8 +1406,9 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                 found.
 
         """
-        slist = list(self.yield_samples_by_factor_value(factor_value=
-                                                        factor_value))
+        slist = list(
+            self.yield_samples_by_factor_value(
+                factor_value=factor_value))
         if len(slist) > 0:
             return slist[-1]
         else:
@@ -1443,7 +1456,8 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                           self.other_materials)
 
     def get_material_by_characteristic(self, characteristic):
-        """Gets the first matching material material for a given characteristic.
+        """Gets the first matching material material for a given
+        characteristic.
 
         Args:
             characteristic: Material characteristic
@@ -1453,8 +1467,9 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
                 found.
 
         """
-        mlist = list(self.yield_materials_by_characteristic(characteristic=
-                                                            characteristic))
+        mlist = list(
+            self.yield_materials_by_characteristic(
+                characteristic=characteristic))
         if len(mlist) > 0:
             return mlist[-1]
         else:
@@ -1495,7 +1510,8 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
     @characteristic_categories.setter
     def characteristic_categories(self, val):
         if val is not None and hasattr(val, '__iter__'):
-            if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
+            if val == [] or all(isinstance(x, OntologyAnnotation)
+                                for x in val):
                 self.__characteristic_categories = list(val)
         else:
             raise ISAModelAttributeError(
@@ -1504,7 +1520,7 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
 
     @property
     def graph(self):
-        """:obj:`networkx.DiGraph` A graph representation of the study's 
+        """:obj:`networkx.DiGraph` A graph representation of the study's
         process sequence"""
         if len(self.process_sequence) > 0:
             return _build_assay_graph(self.process_sequence)
@@ -1518,14 +1534,14 @@ class StudyAssayMixin(metaclass=abc.ABCMeta):
 
 
 class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
-    """Study is the central unit, containing information on the subject under 
+    """Study is the central unit, containing information on the subject under
     study, its characteristics and any treatments applied.
 
     Attributes:
-        identifier: A unique identifier: either a temporary identifier supplied 
-            by users or one generated by a repository or other database.
-        title: A concise phrase used to encapsulate the purpose and goal of the 
-            study.
+        identifier: A unique identifier: either a temporary identifier
+        supplied by users or one generated by a repository or other database.
+        title: A concise phrase used to encapsulate the purpose and goal of
+        the study.
         description: A textual description of the study, with components such
             as objective or goals.
         submission_date: The date on which the study was reported to the
@@ -1572,12 +1588,13 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                                submission_date=submission_date,
                                public_release_date=public_release_date,
                                publications=publications, contacts=contacts)
-        StudyAssayMixin.__init__(self, filename=filename, sources=sources,
-                                 samples=samples, other_material=other_material,
-                                 process_sequence=process_sequence,
-                                 characteristic_categories=
-                                 characteristic_categories,
-                                 units=units)
+        StudyAssayMixin.__init__(
+            self, filename=filename, sources=sources,
+            samples=samples,
+            other_material=other_material,
+            process_sequence=process_sequence,
+            characteristic_categories=characteristic_categories,
+            units=units)
         Commentable.__init__(self, comments=comments)
 
         self.id = id_
@@ -1611,13 +1628,14 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     @design_descriptors.setter
     def design_descriptors(self, val):
         if val is not None and hasattr(val, '__iter__'):
-            if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
+            if val == [] or all(isinstance(x, OntologyAnnotation)
+                                for x in val):
                 self.__design_descriptors = list(val)
         else:
             raise ISAModelAttributeError(
                 '{}.design_descriptors must be iterable containing '
                 'OntologyAnnotations'.format(type(self).__name__))
-        
+
     @property
     def protocols(self):
         """:obj:`list` of :obj:`Protocol`: Container for study protocols"""
@@ -1637,8 +1655,9 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     def __get_default_protocol(protocol_type):
         """Return default Protocol object based on protocol_type and from
         isaconfig_v2015-07-02"""
-        default_protocol = Protocol(protocol_type=
-                                    OntologyAnnotation(term=protocol_type))
+        default_protocol = Protocol(
+            protocol_type=OntologyAnnotation(
+                term=protocol_type))
         parameter_list = []
         if protocol_type == 'mass spectrometry':
             parameter_list = ['instrument',
@@ -1665,18 +1684,21 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         # TODO: Implement this for other defaults OR generate from config #51
         return default_protocol
 
-    def add_prot(self, protocol_name='', protocol_type=None, use_default_params=True):
+    def add_prot(self, protocol_name='', protocol_type=None,
+                 use_default_params=True):
         if self.get_prot(protocol_name=protocol_name) is not None:
-            log.warning('A protocol with name "{}" has already been declared in the study'.format(protocol_name))
+            log.warning('A protocol with name "{}" has already been declared '
+                        'in the study'.format(protocol_name))
         else:
             if isinstance(protocol_type, str) and use_default_params:
                 default_protocol = self.__get_default_protocol(protocol_type)
                 default_protocol.name = protocol_name
                 self.protocols.append(default_protocol)
             else:
-                self.protocols.append(Protocol(name=protocol_name,
-                                               protocol_type=OntologyAnnotation(
-                                                   term=protocol_type)))
+                self.protocols.append(Protocol(
+                    name=protocol_name,
+                    protocol_type=OntologyAnnotation(
+                        term=protocol_type)))
 
     def get_prot(self, protocol_name):
         prot = None
@@ -1688,9 +1710,8 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     def add_factor(self, name, factor_type):
         if self.get_factor(name=name) is not None:
-            log.warning(
-                'A factor with name "{}" has already been declared in the study'
-                    .format(name))
+            log.warning('A factor with name "{}" has already been declared '
+                        'in the study'.format(name))
         else:
             self.factors.append(StudyFactor(
                 name=name, factor_type=OntologyAnnotation(term=factor_type)))
@@ -1711,7 +1732,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
         except StopIteration:
             pass
         return factor
-        
+
     @property
     def assays(self):
         """:obj:`list` of :obj:`Assay`: Container for study Assays"""
@@ -1756,9 +1777,9 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
                "sources={study.sources}, samples={study.samples}, " \
                "process_sequence={study.process_sequence}, " \
                "other_material={study.other_material}, " \
-               "characteristic_categories={study.characteristic_categories}, " \
-               "comments={study.comments}, units={study.units})"\
-                .format(study=self)
+               "characteristic_categories={study.characteristic_categories}," \
+               " comments={study.comments}, units={study.units})"\
+            .format(study=self)
 
     def __str__(self):
         return """Study(
@@ -1778,7 +1799,7 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
     samples={num_samples} Sample objects
     process_sequence={num_processes} Process objects
     other_material={num_other_material} Material objects
-    characteristic_categories={num_characteristic_categories} OntologyAnnotation objects
+    characteristic_categories={num_characteristic_categories} OntologyAnnots
     comments={num_comments} Comment objects
     units={num_units} Unit objects
 )""".format(study=self, num_contacts=len(self.contacts),
@@ -1800,26 +1821,26 @@ class Study(Commentable, StudyAssayMixin, MetadataMixin, object):
 
     def __eq__(self, other):
         return isinstance(other, Study) \
-               and self.filename == other.filename \
-               and self.identifier == other.identifier \
-               and self.title == other.title \
-               and self.description == other.description \
-               and self.submission_date == other.submission_date \
-               and self.public_release_date == other.public_release_date \
-               and self.contacts == other.contacts \
-               and self.design_descriptors == other.design_descriptors \
-               and self.publications == other.publications \
-               and self.factors == other.factors \
-               and self.protocols == other.protocols \
-               and self.assays == other.assays \
-               and self.sources == other.sources \
-               and self.samples == other.samples \
-               and self.process_sequence == other.process_sequence \
-               and self.other_material == other.other_material \
-               and self.characteristic_categories \
-               == other.characteristic_categories \
-               and self.comments == other.comments \
-               and self.units == other.units
+            and self.filename == other.filename \
+            and self.identifier == other.identifier \
+            and self.title == other.title \
+            and self.description == other.description \
+            and self.submission_date == other.submission_date \
+            and self.public_release_date == other.public_release_date \
+            and self.contacts == other.contacts \
+            and self.design_descriptors == other.design_descriptors \
+            and self.publications == other.publications \
+            and self.factors == other.factors \
+            and self.protocols == other.protocols \
+            and self.assays == other.assays \
+            and self.sources == other.sources \
+            and self.samples == other.samples \
+            and self.process_sequence == other.process_sequence \
+            and self.other_material == other.other_material \
+            and self.characteristic_categories \
+            == other.characteristic_categories \
+            and self.comments == other.comments \
+            and self.units == other.units
 
     def __ne__(self, other):
         return not self == other
@@ -1835,6 +1856,7 @@ class StudyFactor(Commentable):
         factor_type: An ontology source reference of the study factor type
         comments: Comments associated with instances of this class.
     """
+
     def __init__(self, id_='', name='', factor_type=None, comments=None):
         super().__init__(comments)
 
@@ -1878,7 +1900,7 @@ class StudyFactor(Commentable):
     def __repr__(self):
         return "isatools.model.StudyFactor(name='{study_factor.name}', " \
                "factor_type={factor_type}, comments={study_factor.comments})" \
-                .format(study_factor=self, factor_type=repr(self.factor_type))
+            .format(study_factor=self, factor_type=repr(self.factor_type))
 
     def __str__(self):
         return """StudyFactor(
@@ -1894,9 +1916,9 @@ class StudyFactor(Commentable):
 
     def __eq__(self, other):
         return isinstance(other, StudyFactor) \
-               and self.name == other.name \
-               and self.factor_type == other.factor_type \
-               and self.comments == other.comments
+            and self.name == other.name \
+            and self.factor_type == other.factor_type \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -1904,7 +1926,8 @@ class StudyFactor(Commentable):
 
 class Assay(Commentable, StudyAssayMixin, object):
     """An Assay represents a test performed either on material taken from a
-    subject or on a whole initial subject, producing qualitative or quantitative
+    subject or on a whole initial subject, producing qualitative or
+    quantitative
     measurements. An Assay groups descriptions of provenance of sample
     processing for related tests. Each test typically follows the steps of one
     particular experimental workflow described by a particular protocol.
@@ -1915,7 +1938,8 @@ class Assay(Commentable, StudyAssayMixin, object):
             identification).
         technology_type: An Ontology Annotation to identify the technology
             used to perform the measurement.
-        technology_platform: Manufacturer and platform name, e.g. Bruker AVANCE.
+        technology_platform: Manufacturer and platform name,
+        e.g. Bruker AVANCE.
         filename: A field to specify the name of the Assay file for
             compatibility with ISA-Tab.
         materials: Materials associated with the Assay, lists of 'samples' and
@@ -1928,16 +1952,17 @@ class Assay(Commentable, StudyAssayMixin, object):
         comments: Comments associated with instances of this class.
         graph: A graph representation of the assay graph.
     """
+
     def __init__(self, measurement_type=None, technology_type=None,
                  technology_platform='', filename='', process_sequence=None,
                  data_files=None, samples=None, other_material=None,
                  characteristic_categories=None, units=None, comments=None):
         super().__init__(comments)
-        StudyAssayMixin.__init__(self, filename=filename, samples=samples,
-                                 other_material=other_material,
-                                 process_sequence=process_sequence,
-                                 characteristic_categories=
-                                 characteristic_categories, units=units)
+        StudyAssayMixin.__init__(
+            self, filename=filename, samples=samples,
+            other_material=other_material,
+            process_sequence=process_sequence,
+            characteristic_categories=characteristic_categories, units=units)
 
         if measurement_type is None:
             self.__measurement_type = OntologyAnnotation()
@@ -2023,11 +2048,11 @@ class Assay(Commentable, StudyAssayMixin, object):
                "samples={assay.samples}, " \
                "process_sequence={assay.process_sequence}, " \
                "other_material={assay.other_material}, " \
-               "characteristic_categories={assay.characteristic_categories}, " \
-               "comments={assay.comments}, units={assay.units})" \
-                .format(assay=self, 
-                        measurement_type=repr(self.measurement_type), 
-                        technology_type=repr(self.technology_type))
+               "characteristic_categories={assay.characteristic_categories}," \
+               " comments={assay.comments}, units={assay.units})" \
+            .format(assay=self,
+                    measurement_type=repr(self.measurement_type),
+                    technology_type=repr(self.technology_type))
 
     def __str__(self):
         return """Assay(
@@ -2039,7 +2064,7 @@ class Assay(Commentable, StudyAssayMixin, object):
     samples={num_samples} Sample objects
     process_sequence={num_processes} Process objects
     other_material={num_other_material} Material objects
-    characteristic_categories={num_characteristic_categories} OntologyAnnotation objects
+    characteristic_categories={num_characteristic_categories} OntologyAnnots
     comments={num_comments} Comment objects
     units={num_units} Unit objects
 )""".format(assay=self,
@@ -2058,18 +2083,18 @@ class Assay(Commentable, StudyAssayMixin, object):
 
     def __eq__(self, other):
         return isinstance(other, Assay) \
-               and self.measurement_type == other.measurement_type \
-               and self.technology_type == other.technology_type \
-               and self.technology_platform == other.technology_platform \
-               and self.filename == other.filename \
-               and self.data_files == other.data_files \
-               and self.samples == other.samples \
-               and self.process_sequence == other.process_sequence \
-               and self.other_material == other.other_material \
-               and self.characteristic_categories \
-               == other.characteristic_categories \
-               and self.comments == other.comments \
-               and self.units == other.units
+            and self.measurement_type == other.measurement_type \
+            and self.technology_type == other.technology_type \
+            and self.technology_platform == other.technology_platform \
+            and self.filename == other.filename \
+            and self.data_files == other.data_files \
+            and self.samples == other.samples \
+            and self.process_sequence == other.process_sequence \
+            and self.other_material == other.other_material \
+            and self.characteristic_categories \
+            == other.characteristic_categories \
+            and self.comments == other.comments \
+            and self.units == other.units
 
     def __ne__(self, other):
         return not self == other
@@ -2092,6 +2117,7 @@ class Protocol(Commentable):
             names.
         comments: Comments associated with instances of this class.
     """
+
     def __init__(self, id_='', name='', protocol_type=None, uri='',
                  description='', version='', parameters=None, components=None,
                  comments=None):
@@ -2202,8 +2228,9 @@ class Protocol(Commentable):
             if val == [] or all(isinstance(x, ProtocolParameter) for x in val):
                 self.__parameters = list(val)
         else:
-            raise ISAModelAttributeError('Protocol.parameters must be iterable '
-                                         'containing ProtocolParameters')
+            raise ISAModelAttributeError(
+                'Protocol.parameters must be iterable containing '
+                'ProtocolParameters')
 
     def add_param(self, parameter_name=''):
         if self.get_param(parameter_name=parameter_name) is not None:
@@ -2233,11 +2260,13 @@ class Protocol(Commentable):
     @components.setter
     def components(self, val):
         if val is not None and hasattr(val, '__iter__'):
-            if val == [] or all(isinstance(x, OntologyAnnotation) for x in val):
+            if val == [] or all(isinstance(x, OntologyAnnotation)
+                                for x in val):
                 self.__components = list(val)
         else:
-            raise ISAModelAttributeError('Protocol.components must be iterable '
-                                         'containing OntologyAnnotations')
+            raise ISAModelAttributeError(
+                'Protocol.components must be iterable containing '
+                'OntologyAnnotations')
 
     def __repr__(self):
         return "isatools.model.Protocol(name='{protocol.name}', " \
@@ -2246,7 +2275,7 @@ class Protocol(Commentable):
                "parameters={protocol.parameters}, " \
                "components={protocol.components}, " \
                "comments={protocol.comments})".format(
-            protocol=self, protocol_type=repr(self.protocol_type))
+                   protocol=self, protocol_type=repr(self.protocol_type))
 
     def __str__(self):
         return """Protocol(
@@ -2257,8 +2286,8 @@ class Protocol(Commentable):
     parameters={num_parameters} ProtocolParameter objects
     components={num_components} OntologyAnnotation objects
     comments={num_comments} Comment objects
-)""".format(protocol=self, protocol_type=
-            self.protocol_type.term if self.protocol_type else '',
+)""".format(protocol=self, protocol_type=self.protocol_type.term
+            if self.protocol_type else '',
             num_parameters=len(self.parameters),
             num_components=len(self.components),
             num_comments=len(self.comments))
@@ -2268,13 +2297,13 @@ class Protocol(Commentable):
 
     def __eq__(self, other):
         return isinstance(other, Protocol) \
-               and self.name == other.name \
-               and self.protocol_type == other.protocol_type \
-               and self.uri == other.uri \
-               and self.version == other.version \
-               and self.parameters == other.parameters \
-               and self.components == other.components \
-               and self.comments == other.comments
+            and self.name == other.name \
+            and self.protocol_type == other.protocol_type \
+            and self.uri == other.uri \
+            and self.version == other.version \
+            and self.parameters == other.parameters \
+            and self.components == other.components \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -2287,6 +2316,7 @@ class ProtocolParameter(Commentable):
         parameter_name: A parameter name as an ontology term
         comments: Comments associated with instances of this class.
     """
+
     def __init__(self, id_='', parameter_name=None, comments=None):
         super().__init__(comments)
 
@@ -2307,8 +2337,9 @@ class ProtocolParameter(Commentable):
     def parameter_name(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
             raise ISAModelAttributeError(
-                'ProtocolParameter.parameter_name must be a OntologyAnnotation '
-                'or None; got {0}:{1}'.format(val, type(val)))
+                'ProtocolParameter.parameter_name must be a '
+                'OntologyAnnotation or None; got {0}:{1}'.format(
+                    val, type(val)))
         else:
             self.__parameter_name = val
 
@@ -2316,22 +2347,22 @@ class ProtocolParameter(Commentable):
         return 'isatools.model.ProtocolParameter(' \
                'parameter_name={parameter_name}, ' \
                'comments={parameter.comments})'.format(
-                parameter=self, parameter_name=repr(self.parameter_name))
+                   parameter=self, parameter_name=repr(self.parameter_name))
 
     def __str__(self):
         return """ProtocolParameter(
     parameter_name={parameter_name}
     comments={num_comments} Comment objects
 )""".format(parameter_name=self.parameter_name.term if
-        self.parameter_name else '', num_comments=len(self.comments))
+            self.parameter_name else '', num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
         return isinstance(other, ProtocolParameter) \
-               and self.parameter_name == other.parameter_name \
-               and self.comments == other.comments
+            and self.parameter_name == other.parameter_name \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -2348,6 +2379,7 @@ class ParameterValue(Commentable):
         unit: The qualifying unit classifier, if the value is numeric.
         comments: Comments associated with instances of this class.
     """
+
     def __init__(self, category=None, value=None, unit=None, comments=None):
         super().__init__(comments)
 
@@ -2404,8 +2436,8 @@ class ParameterValue(Commentable):
     def __repr__(self):
         return 'isatools.model.ParameterValue(category={category}, ' \
                'value={value}, unit={unit}, comments={comments})'.format(
-            category=repr(self.category), value=repr(self.value),
-            unit=repr(self.unit), comments=repr(self.comments))
+                   category=repr(self.category), value=repr(self.value),
+                   unit=repr(self.unit), comments=repr(self.comments))
 
     def __str__(self):
         return """ParameterValue(
@@ -2413,9 +2445,10 @@ class ParameterValue(Commentable):
     value={value}
     unit={unit}
     comments={num_comments} Comment objects
-)""".format(category=self.category.parameter_name.term if self.category else '',
+)""".format(category=self.category.parameter_name.term
+            if self.category else '',
             value=self.value.term if isinstance(
-            self.value, OntologyAnnotation) else repr(self.value),
+                self.value, OntologyAnnotation) else repr(self.value),
             unit=self.unit.term if self.unit else '',
             num_comments=len(self.comments))
 
@@ -2424,10 +2457,10 @@ class ParameterValue(Commentable):
 
     def __eq__(self, other):
         return isinstance(other, ParameterValue) \
-               and self.category == other.category \
-               and self.value == other.value \
-               and self.unit == other.unit \
-               and self.comments == other.comments
+            and self.category == other.category \
+            and self.value == other.value \
+            and self.unit == other.unit \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -2441,6 +2474,7 @@ class ProtocolComponent(Commentable):
         component_type: The classifier as a term for the component.
         comments: Comments associated with instances of this class.
     """
+
     def __init__(self, id_='', name='', component_type=None, comments=None):
         super().__init__(comments)
 
@@ -2476,8 +2510,9 @@ class ProtocolComponent(Commentable):
     def component_type(self, val):
         if val is not None and not isinstance(val, OntologyAnnotation):
             raise ISAModelAttributeError(
-                'ProtocolComponent.component_type must be a OntologyAnnotation,'
-                ' or None; got {0}:{1}'.format(val, type(val)))
+                'ProtocolComponent.component_type must be a '
+                'OntologyAnnotation, or None; got {0}:{1}'.format(
+                    val, type(val)))
         else:
             self.__component_type = val
 
@@ -2485,7 +2520,7 @@ class ProtocolComponent(Commentable):
         return "isatools.model.ProtocolComponent(name='{component.name}', " \
                "category={component_type}, " \
                "comments={component.comments})".format(
-                component=self, component_type=repr(self.component_type))
+                   component=self, component_type=repr(self.component_type))
 
     def __str__(self):
         return """ProtocolComponent(
@@ -2493,16 +2528,16 @@ class ProtocolComponent(Commentable):
     category={component_type}
     comments={num_comments} Comment objects
 )""".format(component=self, component_type=self.component_type.term if
-    self.component_type else '', num_comments=len(self.comments))
+            self.component_type else '', num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
         return isinstance(other, ProtocolComponent) \
-               and self.name == other.name \
-               and self.component_type == other.component_type \
-               and self.comments == other.comments
+            and self.name == other.name \
+            and self.component_type == other.component_type \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -2517,6 +2552,7 @@ class Source(Commentable):
             properties.
         comments: Comments associated with instances of this class.
     """
+
     def __init__(self, name='', id_='', characteristics=None, comments=None):
         super().__init__(comments)
 
@@ -2590,9 +2626,9 @@ class Source(Commentable):
 
     def __eq__(self, other):
         return isinstance(other, Source) \
-               and self.name == other.name \
-               and self.characteristics == other.characteristics \
-               and self.comments == other.comments
+            and self.name == other.name \
+            and self.characteristics == other.characteristics \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -2608,6 +2644,7 @@ class Characteristic(Commentable):
         unit: If applicable, a unit qualifier for the value (if the value is
             numeric).
         """
+
     def __init__(self, category=None, value=None, unit=None, comments=None):
         super().__init__(comments)
 
@@ -2673,8 +2710,8 @@ class Characteristic(Commentable):
         return 'isatools.model.Characteristic(' \
                'category={category}, value={value}, ' \
                'unit={unit}, comments={characteristic.comments})'.format(
-                characteristic=self, category=repr(self.category),
-                value=repr(self.value), unit=repr(self.unit))
+                   characteristic=self, category=repr(self.category),
+                   value=repr(self.value), unit=repr(self.unit))
 
     def __str__(self):
         return """Characteristic(
@@ -2683,21 +2720,21 @@ class Characteristic(Commentable):
     unit={unit}
     comments={num_comments} Comment objects
 )""".format(characteristic=self,
-           category=self.category.term if self.category else '',
-           value=self.value.term if isinstance(
+            category=self.category.term if self.category else '',
+            value=self.value.term if isinstance(
                self.value, OntologyAnnotation) else self.value,
-           unit=self.unit.term if self.unit else '',
-           num_comments=len(self.comments))
+            unit=self.unit.term if self.unit else '',
+            num_comments=len(self.comments))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
         return isinstance(other, Characteristic) \
-               and self.category == other.category \
-               and self.value == other.value \
-               and self.unit == other.unit \
-               and self.comments == other.comments
+            and self.category == other.category \
+            and self.value == other.value \
+            and self.unit == other.unit \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -2716,6 +2753,7 @@ class Sample(Commentable):
             from.
         comments: Comments associated with instances of this class.
     """
+
     def __init__(self, name='', id_='', factor_values=None,
                  characteristics=None, derives_from=None, comments=None):
         super().__init__(comments)
@@ -2837,11 +2875,11 @@ class Sample(Commentable):
 
     def __eq__(self, other):
         return isinstance(other, Sample) \
-               and self.name == other.name \
-               and self.characteristics == other.characteristics \
-               and self.factor_values == other.factor_values \
-               and self.derives_from == other.derives_from \
-               and self.comments == other.comments
+            and self.name == other.name \
+            and self.characteristics == other.characteristics \
+            and self.factor_values == other.factor_values \
+            and self.derives_from == other.derives_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -2850,6 +2888,7 @@ class Sample(Commentable):
 class Material(Commentable, metaclass=abc.ABCMeta):
     """Represents a generic material in an experimental graph.
     """
+
     def __init__(self, name='', id_='', type_='', characteristics=None,
                  comments=None):
         super().__init__(comments)
@@ -2912,6 +2951,7 @@ class Material(Commentable, metaclass=abc.ABCMeta):
 
 class Extract(Material):
     """Represents a extract material in an experimental graph."""
+
     def __init__(self, name='', id_='', characteristics=None, comments=None):
         super().__init__(name=name, id_=id_, characteristics=characteristics,
                          comments=comments)
@@ -2938,10 +2978,10 @@ class Extract(Material):
 
     def __eq__(self, other):
         return isinstance(other, Extract) \
-               and self.name == other.name \
-               and self.characteristics == other.characteristics \
-               and self.type == other.type \
-               and self.comments == other.comments
+            and self.name == other.name \
+            and self.characteristics == other.characteristics \
+            and self.type == other.type \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -2949,6 +2989,7 @@ class Extract(Material):
 
 class LabeledExtract(Material):
     """Represents a labeled extract material in an experimental graph."""
+
     def __init__(self, name='', id_='', characteristics=None, comments=None):
         super().__init__(name=name, id_=id_, characteristics=characteristics,
                          comments=comments)
@@ -2956,11 +2997,11 @@ class LabeledExtract(Material):
         self.type = 'Labeled Extract Name'
 
     def __repr__(self):
-        return "isatools.model.LabeledExtract(name='{labeled_extract.name}', " \
-               "type='Labeled Extract Name', " \
+        return "isatools.model.LabeledExtract(name='{labeled_extract.name}'," \
+               " type='Labeled Extract Name', " \
                "characteristics={labeled_extract.characteristics}, " \
                "comments={labeled_extract.comments})"\
-                .format(labeled_extract=self)
+            .format(labeled_extract=self)
 
     def __str__(self):
         return """LabeledExtract(
@@ -2968,7 +3009,8 @@ class LabeledExtract(Material):
     type=LabeledExtract Name
     characteristics={num_characteristics} Characteristic objects
     comments={num_comments} Comment objects
-)""".format(labeled_extract=self, num_characteristics=len(self.characteristics),
+)""".format(labeled_extract=self,
+            num_characteristics=len(self.characteristics),
             num_comments=len(self.comments))
 
     def __hash__(self):
@@ -2976,10 +3018,10 @@ class LabeledExtract(Material):
 
     def __eq__(self, other):
         return isinstance(other, LabeledExtract) \
-               and self.name == other.name \
-               and self.characteristics == other.characteristics \
-               and self.type == other.type \
-               and self.comments == other.comments
+            and self.name == other.name \
+            and self.characteristics == other.characteristics \
+            and self.type == other.type \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -2994,6 +3036,7 @@ class FactorValue(Commentable):
         unit: If numeric, the unit qualifier for the value.
         comments: Comments associated with instances of this class.
     """
+
     def __init__(self, factor_name=None, value=None, unit=None, comments=None):
         super().__init__(comments)
         self.__factor_name = factor_name
@@ -3017,7 +3060,7 @@ class FactorValue(Commentable):
 
     @property
     def value(self):
-        """:obj:`str` or :obj:`int` or :obj:`float` 
+        """:obj:`str` or :obj:`int` or :obj:`float`
         or :obj:`OntologyAnnotation`: a parameter value"""
         return self.__value
 
@@ -3049,8 +3092,8 @@ class FactorValue(Commentable):
     def __repr__(self):
         return "isatools.model.FactorValue(factor_name={factor_name}, " \
                "value={value}, unit={unit})" \
-                .format(factor_name=repr(self.factor_name), 
-                        value=repr(self.value), unit=repr(self.unit))
+            .format(factor_name=repr(self.factor_name),
+                    value=repr(self.value), unit=repr(self.unit))
 
     def __str__(self):
         return """FactorValue(
@@ -3067,9 +3110,9 @@ class FactorValue(Commentable):
 
     def __eq__(self, other):
         return isinstance(other, FactorValue) \
-               and self.factor_name == other.factor_name \
-               and self.value == other.value \
-               and self.unit == other.unit
+            and self.factor_name == other.factor_name \
+            and self.value == other.value \
+            and self.unit == other.unit
 
     def __ne__(self, other):
         return not self == other
@@ -3097,6 +3140,7 @@ class Process(Commentable):
         comments: Comments associated with instances of this class.
     """
     # TODO: replace with above but need to debug where behaviour starts varying
+
     def __init__(self, id_='', name='', executes_protocol=None, date_=None,
                  performer=None, parameter_values=None, inputs=None,
                  outputs=None, comments=None):
@@ -3112,12 +3156,12 @@ class Process(Commentable):
 
         self.__date = date_
         self.__performer = performer
-        
+
         if parameter_values is None:
             self.__parameter_values = []
         else:
             self.__parameter_values = parameter_values
-            
+
         if inputs is None:
             self.__inputs = []
         else:
@@ -3276,12 +3320,12 @@ class Process(Commentable):
 
     def __eq__(self, other):
         return isinstance(other, Process) \
-               and self.name == other.name \
-               and self.executes_protocol == other.executes_protocol \
-               and self.date == other.date \
-               and self.performer == other.performer \
-               and self.inputs == other.inputs \
-               and self.outputs == other.outputs
+            and self.name == other.name \
+            and self.executes_protocol == other.executes_protocol \
+            and self.date == other.date \
+            and self.performer == other.performer \
+            and self.inputs == other.inputs \
+            and self.outputs == other.outputs
 
     def __ne__(self, other):
         return not self == other
@@ -3292,24 +3336,25 @@ class DataFile(Commentable):
 
     Attributes:
         filename : A name/reference for the data file.
-        label: The data file type, as indicated by a label such as 
+        label: The data file type, as indicated by a label such as
             'Array Data File' or 'Raw Data File'
         generated_from: Reference to Sample(s) the DataFile is generated from
         comments: Comments associated with instances of this class.
     """
-    def __init__(self, filename='', id_='', label='', generated_from=None, 
+
+    def __init__(self, filename='', id_='', label='', generated_from=None,
                  comments=None):
         super().__init__(comments)
-        
+
         self.id = id_
         self.__filename = filename
         self.__label = label
-        
+
         if generated_from is None:
             self.__generated_from = []
         else:
             self.__generated_from = generated_from
-            
+
     @property
     def filename(self):
         """:obj:`str`: the filename of the data file"""
@@ -3337,7 +3382,7 @@ class DataFile(Commentable):
                 .format(type(self).__name__, val, type(val)))
         else:
             self.__label = val
-            
+
     @property
     def generated_from(self):
         """:obj:`list` of :obj:`Sample`: a list of references from this data
@@ -3375,18 +3420,20 @@ class DataFile(Commentable):
 
     def __eq__(self, other):
         return isinstance(other, DataFile) \
-               and self.filename == other.filename \
-               and self.label == other.label \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.label == other.label \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
-            
+
 
 class RawDataFile(DataFile):
     """Represents a raw data file in an experimental graph."""
-    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+
+    def __init__(self, filename='', id_='',
+                 generated_from=None, comments=None):
         super().__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
@@ -3410,9 +3457,9 @@ class RawDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, RawDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -3420,7 +3467,9 @@ class RawDataFile(DataFile):
 
 class DerivedDataFile(DataFile):
     """Represents a derived data file in an experimental graph."""
-    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+
+    def __init__(self, filename='', id_='',
+                 generated_from=None, comments=None):
         super().__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
@@ -3445,9 +3494,9 @@ class DerivedDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, DerivedDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -3455,7 +3504,9 @@ class DerivedDataFile(DataFile):
 
 class RawSpectralDataFile(DataFile):
     """Represents a raw spectral data file in an experimental graph."""
-    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+
+    def __init__(self, filename='', id_='',
+                 generated_from=None, comments=None):
         super().__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
@@ -3479,9 +3530,9 @@ class RawSpectralDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, RawSpectralDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -3489,7 +3540,9 @@ class RawSpectralDataFile(DataFile):
 
 class DerivedArrayDataFile(DataFile):
     """Represents a derived array data file in an experimental graph."""
-    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+
+    def __init__(self, filename='', id_='',
+                 generated_from=None, comments=None):
         super().__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
@@ -3514,9 +3567,9 @@ class DerivedArrayDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, DerivedArrayDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -3524,7 +3577,9 @@ class DerivedArrayDataFile(DataFile):
 
 class ArrayDataFile(DataFile):
     """Represents a array data file in an experimental graph."""
-    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+
+    def __init__(self, filename='', id_='',
+                 generated_from=None, comments=None):
         super().__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
@@ -3549,9 +3604,9 @@ class ArrayDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, ArrayDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -3559,7 +3614,9 @@ class ArrayDataFile(DataFile):
 
 class DerivedSpectralDataFile(DataFile):
     """Represents a derived spectral data file in an experimental graph."""
-    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+
+    def __init__(self, filename='', id_='',
+                 generated_from=None, comments=None):
         super().__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
@@ -3584,9 +3641,9 @@ class DerivedSpectralDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, DerivedSpectralDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -3594,7 +3651,9 @@ class DerivedSpectralDataFile(DataFile):
 
 class ProteinAssignmentFile(DataFile):
     """Represents a protein assignment file in an experimental graph."""
-    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+
+    def __init__(self, filename='', id_='',
+                 generated_from=None, comments=None):
         super().__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
@@ -3619,9 +3678,9 @@ class ProteinAssignmentFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, ProteinAssignmentFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -3629,7 +3688,9 @@ class ProteinAssignmentFile(DataFile):
 
 class PeptideAssignmentFile(DataFile):
     """Represents a peptide assignment file in an experimental graph."""
-    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+
+    def __init__(self, filename='', id_='',
+                 generated_from=None, comments=None):
         super().__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
@@ -3654,9 +3715,9 @@ class PeptideAssignmentFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, PeptideAssignmentFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -3664,7 +3725,9 @@ class PeptideAssignmentFile(DataFile):
 
 class DerivedArrayDataMatrixFile(DataFile):
     """Represents a derived array data matrix file in an experimental graph."""
-    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+
+    def __init__(self, filename='', id_='',
+                 generated_from=None, comments=None):
         super().__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
@@ -3689,9 +3752,9 @@ class DerivedArrayDataMatrixFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, DerivedArrayDataMatrixFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -3700,7 +3763,9 @@ class DerivedArrayDataMatrixFile(DataFile):
 class PostTranslationalModificationAssignmentFile(DataFile):
     """Represents a post translational modification assignment file in an
     experimental graph."""
-    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+
+    def __init__(self, filename='', id_='',
+                 generated_from=None, comments=None):
         super().__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
@@ -3725,17 +3790,20 @@ class PostTranslationalModificationAssignmentFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, PostTranslationalModificationAssignmentFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
 
 
 class AcquisitionParameterDataFile(DataFile):
-    """Represents a acquisition parameter data file in an experimental graph."""
-    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+    """Represents a acquisition parameter data file in an experimental
+    graph."""
+
+    def __init__(self, filename='', id_='',
+                 generated_from=None, comments=None):
         super().__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
@@ -3760,9 +3828,9 @@ class AcquisitionParameterDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, AcquisitionParameterDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -3770,7 +3838,9 @@ class AcquisitionParameterDataFile(DataFile):
 
 class FreeInductionDecayDataFile(DataFile):
     """Represents a free induction decay data file in an experimental graph."""
-    def __init__(self, filename='', id_='', generated_from=None, comments=None):
+
+    def __init__(self, filename='', id_='',
+                 generated_from=None, comments=None):
         super().__init__(filename=filename, id_=id_,
                          generated_from=generated_from, comments=comments)
 
@@ -3795,9 +3865,9 @@ class FreeInductionDecayDataFile(DataFile):
 
     def __eq__(self, other):
         return isinstance(other, FreeInductionDecayDataFile) \
-               and self.filename == other.filename \
-               and self.generated_from == other.generated_from \
-               and self.comments == other.comments
+            and self.filename == other.filename \
+            and self.generated_from == other.generated_from \
+            and self.comments == other.comments
 
     def __ne__(self, other):
         return not self == other
@@ -3887,15 +3957,17 @@ def batch_create_assays(*args, n=1):
                         materialA = deepcopy(arg)
                         y = 0
                         for material in materialA:
-                            material.name = material.name + '-' + str(x) + '-' \
-                                            + str(y)
+                            material.name = \
+                                material.name + '-' + str(x) + '-' \
+                                + str(y)
                             y += 1
                     else:
                         materialB = deepcopy(arg)
                         y = 0
                         for material in materialB:
-                            material.name = material.name + '-' + str(x) + '-' \
-                                            + str(y)
+                            material.name = \
+                                material.name + '-' + str(x) + '-' \
+                                + str(y)
                             y += 1
                 elif isinstance(arg[0], Process):
                     process = deepcopy(arg)
@@ -3948,7 +4020,6 @@ def batch_create_assays(*args, n=1):
 
 
 class ISADocument:
-
 
     valid_isajson = False
 

@@ -4,9 +4,11 @@ import re
 
 
 def main():
-    fixer = IsaTabFixer('/Users/Philippe/Downloads/ftp.ebi.ac.uk/pub/databases/metabolights/studies/public/MTBLS81/s_Study id.txt')
+    fixer = IsaTabFixer('/Users/Philippe/Downloads/ftp.ebi.ac.uk/pub/'
+                        'databases/metabolights/studies/public/MTBLS81/'
+                        's_Study id.txt')
 
-    this_factor="Age at sacrifice"
+    this_factor = "Age at sacrifice"
 
     fixer.fix_factor(this_factor)  # fixes by moving factor to charac
 

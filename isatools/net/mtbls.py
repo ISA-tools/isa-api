@@ -27,7 +27,7 @@ MTBLS_BASE_DIR = '/pub/databases/metabolights/studies/public'
 log = logging.getLogger('isatools')
 
 # REGEXES
-_RX_FACTOR_VALUE = re.compile('Factor Value\[(.*?)\]')
+_RX_FACTOR_VALUE = re.compile(r'Factor Value\[(.*?)\]')
 
 
 def get(mtbls_study_id, target_dir=None):
@@ -66,9 +66,10 @@ def get(mtbls_study_id, target_dir=None):
             try:
                 investigation_filename = next(
                     filter(lambda x: x.startswith('i_') and
-                                     x.endswith('.txt'), files))
+                           x.endswith('.txt'), files))
             except StopIteration:
-                log.fatal('Could not find an investigation file for this study')
+                log.fatal(
+                    'Could not find an investigation file for this study')
 
             if investigation_filename is not None:
                 with open(os.path.join(
@@ -121,8 +122,8 @@ def get(mtbls_study_id, target_dir=None):
     else:
         ftp.close()
         raise ConnectionError(
-            'There was a problem connecting to MetaboLights: {response}'.format(
-            response=response))
+            'There was a problem connecting to MetaboLights: {response}'
+            .format(response=response))
 
 
 def getj(mtbls_study_id):
@@ -221,8 +222,9 @@ def slice_data_files(dir, factor_selection=None):
                 factor_query = ''
                 for factor_name, factor_value in factor_selection.items():
                     factor_name = factor_name.replace(' ', '_')
-                    factor_query += '{factor_name}=="{factor_value}" and '.format(
-                        factor_name=factor_name, factor_value=factor_value)
+                    factor_query += '{factor_name}=="{factor_value}" and '\
+                        .format(factor_name=factor_name,
+                                factor_value=factor_value)
                 factor_query = factor_query[:-5]
                 try:
                     query_results = df.query(factor_query)[
@@ -247,7 +249,8 @@ def slice_data_files(dir, factor_selection=None):
                 sample_name = result['sample']
                 sample_rows = df.loc[df['sample'] == sample_name]
 
-                for data_col in [x for x in sample_rows.columns if 'File' in x]:
+                for data_col in [x for x in sample_rows.columns
+                                 if 'File' in x]:
                     data_files = sample_rows[data_col]
                     result['data_files'] = [i for i in data_files if
                                             str(i) != 'nan']
@@ -346,18 +349,16 @@ def get_factors_summary(mtbls_study_id):
         factor_summary = get_factors_summary('MTBLS1')
         [
             {
-                "name": "ADG19007u_357", 
-                "Metabolic syndrome": "Control Group", 
+                "name": "ADG19007u_357",
+                "Metabolic syndrome": "Control Group",
                 "Gender": "Female"
-            }, 
+            },
             {
-                "name": "ADG10003u_162", 
+                "name": "ADG10003u_162",
                 "Metabolic syndrome": "diabetes mellitus",
                 "Gender": "Female"
             },
         ]
-
-
     """
     ISA = load(mtbls_study_id=mtbls_study_id)
 
@@ -396,7 +397,8 @@ def get_study_groups(mtbls_study_id):
     study_groups = {}
 
     for factors_item in factors_summary:
-        fvs = tuple(factors_item[k] for k in factors_item.keys() if k != 'name')
+        fvs = tuple(
+            factors_item[k] for k in factors_item.keys() if k != 'name')
 
         if fvs in study_groups.keys():
             study_groups[fvs].append(factors_item['name'])
@@ -452,7 +454,8 @@ def get_characteristics_summary(mtbls_study_id):
         :return: A list of dicts summarising the set of characteristic names
         and values associated with each sample
 
-        Note: it only returns a summary of characteristics with variable values.
+        Note: it only returns a summary of characteristics with variable
+        values.
 
         Example usage:
             characteristics_summary = get_characteristics_summary('MTBLS5')
@@ -594,8 +597,8 @@ def get_filtered_df_on_factors_list(mtbls_study_id):
             df.columns = cols
 
         for query in queries:
-            df2 = df.query(query)  # query uses pandas.eval, which evaluates 
-                                   # queries like pure Python notation
+            df2 = df.query(query)  # query uses pandas.eval, which evaluates
+            # queries like pure Python notation
             if 'Sample_Name' in df.columns:
                 print('Group: {query} / Sample_Name: {sample_name}'.format(
                     query=query, sample_name=list(df2['Sample_Name'])))
@@ -606,8 +609,8 @@ def get_filtered_df_on_factors_list(mtbls_study_id):
 
             if 'Raw_Spectral_Data_File' in df.columns:
                 print('Group: {query} / Raw_Spectral_Data_File: {filename}'
-                    .format( query=query[13:-2],
-                             filename=list(df2['Raw_Spectral_Data_File'])))
+                      .format(query=query[13:-2],
+                              filename=list(df2['Raw_Spectral_Data_File'])))
     return queries
 
 
@@ -629,7 +632,7 @@ def get_mtbls_list():
         except ftplib.error_perm as ftperr:
             log.error(
                 'Could not get MTBLS directory list. Error: {err}'
-                    .format(err=ftperr))
+                .format(err=ftperr))
     return mtbls_list
 
 
@@ -647,7 +650,7 @@ def dl_all_mtbls_isatab(target_dir):
 
     print('Downloaded {count} ISA-Tab studies from MetaboLights'.format(
         count=download_count))
-    
+
 # mtblisa commands
 
 
@@ -694,7 +697,7 @@ def get_study_command(isa_format, study_id, output):
 
 def get_factors_command(study_id, output):
     log.info("Getting factors for study %s. Writing to %s.",
-                study_id, output.name)
+             study_id, output.name)
     factor_names = get_factor_names(study_id)
     if factor_names is not None:
         json.dump(list(factor_names), output, indent=4)
@@ -704,8 +707,9 @@ def get_factors_command(study_id, output):
 
 
 def get_factor_values_command(study_id, factor, output):
-    log.info("Getting values for factor {factor} in study {study_id}. Writing to {output_file}."
-        .format(factor=factor, study_id=study_id, output_file=output.name))
+    log.info("Getting values for factor {factor} in study {study_id}. "
+             "Writing to {output_file}.".format(
+                  factor=factor, study_id=study_id, output_file=output.name))
     fvs = get_factor_values(study_id, factor)
     if fvs is not None:
         json.dump(list(fvs), output, indent=4)
@@ -715,16 +719,16 @@ def get_factor_values_command(study_id, factor, output):
 
 
 def get_data_files_command(
-        study_id, output, json_query=None, galaxy_parameters_file=None, ):
+        study_id, output, json_query=None, galaxy_parameters_file=None):
     log.info("Getting data files for study %s. Writing to %s.",
-                study_id, output.name)
+             study_id, output.name)
     if json_query:
         log.debug("This is the specified query:\n%s", json_query)
         json_struct = json.loads(json_query)
         data_files = get_data_files(study_id, json_struct)
     elif galaxy_parameters_file:
         log.debug("Using input Galaxy JSON parameters from:\n%s",
-                     galaxy_parameters_file)
+                  galaxy_parameters_file)
         with open(galaxy_parameters_file) as json_fp:
             galaxy_json = json.load(json_fp)
             json_struct = {}
@@ -799,7 +803,7 @@ def build_html_summary(summary):
 
 def get_summary_command(study_id, json_output, html_output):
     log.info("Getting summary for study %s. Writing to %s.",
-                study_id, json_output.name)
+             study_id, json_output.name)
     summary = get_study_variable_summary(study_id)
     if summary is not None:
         json.dump(summary, json_output, indent=4)
@@ -813,7 +817,7 @@ def get_summary_command(study_id, json_output, html_output):
 
 def datatype_get_summary_command(study_id, output):
     log.info("Getting summary for study %s. Writing to %s.",
-                study_id, output.name)
+             study_id, output.name)
 
     summary = get_study_variable_summary(study_id)
     print('summary: ', list(summary))

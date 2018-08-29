@@ -10,15 +10,22 @@ import io
 def main():
     blocks = []
     write_dir = "/Users/Philippe/Documents/git/isa-api/isatools/create/"
-    data_header = str.join("\t", ("Accession Number", "calculated factor combinations", "counted factor combinations",
-                                    "design automatic annotation", "number of sources", "number of samples",
-                                    "curation warnings", "spurious factors"))
+    data_header = str.join("\t", ("Accession Number",
+                                  "calculated factor combinations",
+                                  "counted factor combinations",
+                                  "design automatic annotation",
+                                  "number of sources",
+                                  "number of samples",
+                                  "curation warnings",
+                                  "spurious factors"))
 
-    fh = open(write_dir + "/" + str(date.today()) + "-MTBLS-ISA-curation-report.txt", "w")
+    fh = open(write_dir + "/" + str(date.today())
+              + "-MTBLS-ISA-curation-report.txt", "w")
     fh.writelines(data_header)
     fh.writelines("\n")
 
-    with open('/Users/Philippe/Documents/PhenoMenal/Metabolights-metadata-Testing/out.txt') as fp:
+    with open('/Users/Philippe/Documents/PhenoMenal/'
+              'Metabolights-metadata-Testing/out.txt') as fp:
 
         for line in fp:
 
@@ -66,7 +73,7 @@ def main():
         calc_nb_sg = -1
 
         for x in e:
-            bits=[]
+            bits = []
             if "load OK" in x:
                 bits = x.split(" ")
                 acc_num = bits[0]
@@ -104,7 +111,8 @@ def main():
                 if count_mat["source"] == count_mat["sample"]:
                     sampling_event = "single sampling"
                 else:
-                    # print("sample size: ", count_mat["source"], "| number of samples: ", count_mat["sample"])
+                    # print("sample size: ", count_mat["source"], "|
+                    # number of samples: ", count_mat["sample"])
                     sampling_event = "multiple/repeated samping"
 
             elif x.startswith("factor: "):
@@ -134,7 +142,8 @@ def main():
 
         if count_mat["source"] == 1 and calc_nb_sg > 1:
             sampling_event = "ERROR LIKELY: check source declaration"
-            # print(count_mat["source"], ":::", count_mat["sample"], "///",  calc_nb_sg)
+            # print(count_mat["source"],
+            # ":::", count_mat["sample"], "///",  calc_nb_sg)
             # print(sampling_event)
 
         if max_nb_study_group == calc_nb_sg:
@@ -154,18 +163,25 @@ def main():
             print("problem with study group declaration, please review study!")
 
         non_factors_as_string = ';'.join(non_factors)
-        print(acc_num, " \t ", max_nb_study_group, " \t ", calc_nb_sg, " \t ", design, " \t ", count_mat["source"], " \t ", count_mat["sample"], " \t ", sampling_event, " \t ", non_factors_as_string)
+        print(acc_num, " \t ", max_nb_study_group, " \t ", calc_nb_sg,
+              " \t ", design, " \t ", count_mat["source"], " \t ",
+              count_mat["sample"], " \t ", sampling_event, " \t ",
+              non_factors_as_string)
 
         data_element = {"study_key": acc_num,
-                    "total_study_groups": max_nb_study_group,
-                    "sources" : count_mat["source"],
-                    "samples" : count_mat["sample"],
-                    "inferred_study_design" :  design,
-                    "sampling" : sampling_event,
-                    "spurious_factors": non_factors_as_string}
+                        "total_study_groups": max_nb_study_group,
+                        "sources": count_mat["source"],
+                        "samples": count_mat["sample"],
+                        "inferred_study_design": design,
+                        "sampling": sampling_event,
+                        "spurious_factors": non_factors_as_string}
         data.append(data_element)
 
-        fh.writelines(str.join('\t', (acc_num, str(max_nb_study_group), str(calc_nb_sg), design, str(count_mat["source"]), str(count_mat["sample"]), sampling_event, non_factors_as_string)))
+        fh.writelines(str.join('\t', (acc_num, str(max_nb_study_group),
+                                      str(calc_nb_sg), design,
+                                      str(count_mat["source"]),
+                                      str(count_mat["sample"]),
+                                      sampling_event, non_factors_as_string)))
         fh.writelines("\n")
 
         try:

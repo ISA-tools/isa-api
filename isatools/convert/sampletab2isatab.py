@@ -15,5 +15,3 @@ def convert(source_sampletab_fp, target_dir):
     """
     ISA = sampletab.load(source_sampletab_fp)
     isatab.dump(ISA, target_dir)
-
-

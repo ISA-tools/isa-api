@@ -36,5 +36,6 @@ def create_descriptor():
     investigation.studies = [study]
     print(isatab.dumps(investigation))
 
+
 if __name__ == '__main__':
     create_descriptor()

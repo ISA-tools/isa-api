@@ -19,7 +19,8 @@ def get_pubmed_article(pubmed_id):
     # http://biopython.org/DIST/docs/tutorial/Tutorial.html#htoc126
     response = {}
     Entrez.email = "isatools@googlegroups.com"
-    handle = Entrez.efetch(db="pubmed", id=pubmed_id.strip(), rettype="medline", retmode="text")
+    handle = Entrez.efetch(db="pubmed", id=pubmed_id.strip(),
+                           rettype="medline", retmode="text")
     records = Medline.parse(handle)
     for record in records:
         response["pubmedid"] = pubmed_id
@@ -48,7 +49,8 @@ def get_pubmed_article(pubmed_id):
 
 def set_pubmed_article(publication):
     """
-        Given a Publication object with pubmed_id set to some value, set the rest of the values from information
+        Given a Publication object with pubmed_id set to some value, set the
+        rest of the values from information
         collected via Entrez webservice from PubMed
     """
     if isinstance(publication, Publication):
@@ -56,6 +58,7 @@ def set_pubmed_article(publication):
         publication.doi = response["doi"]
         publication.author_list = ", ".join(response["authors"])
         publication.title = response["title"]
-        publication.comments = [Comment(name="Journal", value=response["journal"])]
+        publication.comments = [Comment(name="Journal",
+                                        value=response["journal"])]
     else:
         raise TypeError("Can only set PubMed details on a Publication object")

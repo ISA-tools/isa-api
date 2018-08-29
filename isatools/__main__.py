@@ -11,19 +11,26 @@ def main(argv=None):
         argv (list, optional): the list of arguments to run isatools
             with (if None, then sys.argv is used) [default: None]
     """
-    p = argparse.ArgumentParser(prog=__name__,
-                                formatter_class=argparse.RawDescriptionHelpFormatter,
-                                description='''Create, convert, and manipulate ISA-formatted metadata''',
-                                usage='isatools -c COMMAND [options]',
-                                )
+    p = argparse.ArgumentParser(
+        prog=__name__, formatter_class=argparse.RawDescriptionHelpFormatter,
+        description='''Create, convert, and manipulate ISA-formatted
+        metadata''', usage='isatools -c COMMAND [options]',)
 
-    p.add_argument('-c', dest='cmd', help='isatools API command to run', required=True,
-                   choices=['isatab2json', 'json2isatab', 'sampletab2isatab', 'sampletab2json'])
-    p.add_argument('-i', dest='in_path', help='in  (files or directory will be read from here)', required=True)
-    p.add_argument('-o', dest='out_path', help='out (file will be written out here or written to directory if ISA-Tab '
-                                               'archive out)', required=True)
-    p.add_argument('--version', action='version', version='isatools {}'.format("0.7"))
-    p.add_argument('-v', dest='verbose', help="show more output", action='store_true', default=False)
+    p.add_argument('-c', dest='cmd', help='isatools API command to run',
+                   required=True,
+                   choices=['isatab2json', 'json2isatab', 'sampletab2isatab',
+                            'sampletab2json'])
+    p.add_argument('-i', dest='in_path',
+                   help='in  (files or directory will be read from here)',
+                   required=True)
+    p.add_argument('-o', dest='out_path',
+                   help='out (file will be written out here or written to '
+                        'directory if ISA-Tab archive out)', required=True)
+    p.add_argument(
+        '--version', action='version', version='isatools {}'.format(
+            "0.10"))
+    p.add_argument('-v', dest='verbose', help="show more output",
+                   action='store_true', default=False)
 
     args = p.parse_args(argv or sys.argv[1:])
 
@@ -52,6 +59,7 @@ def main(argv=None):
         with open(args.in_path) as in_fp:
             with open(args.out_path, 'w') as out_fp:
                 sampletab2json.convert(in_fp, out_fp)
+
 
 if __name__ == '__main__':
     main()

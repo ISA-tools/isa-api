@@ -22,7 +22,7 @@ from isatools.net import ols as ols_module
 from isatools.net import pubmed as pubmed_module
 from isatools.net import sra2isatab as sra2isatab_module
 
-#isatools.convert packages
+# isatools.convert packages
 isatab2cedar = isatab2cedar_module
 isatab2json = isatab2json_module
 isatab2sampletab = isatab2sampletab_module
