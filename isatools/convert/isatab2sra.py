@@ -1,13 +1,10 @@
-import os
-from io import BytesIO
-from zipfile import ZipFile
-import logging
 import json
-from io import StringIO
+import logging
+import os
+from io import BytesIO, StringIO
+from zipfile import ZipFile
 
-
-from isatools.convert import isatab2json
-from isatools.convert import json2sra
+from isatools.convert import isatab2json, json2sra
 
 
 log = logging.getLogger('isatools')

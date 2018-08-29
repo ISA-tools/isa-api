@@ -3,17 +3,29 @@ from __future__ import absolute_import
 import copy
 import csv
 import logging
-import tempfile
-import numpy as np
 import os
-import pandas as pd
 import re
+import tempfile
 from io import StringIO
 from itertools import zip_longest
 
+import numpy as np
+import pandas as pd
 
 from isatools import isatab
-from isatools.model import *
+from isatools.model import (
+    Assay,
+    Comment,
+    Investigation,
+    OntologyAnnotation,
+    OntologySource,
+    Person,
+    Protocol,
+    ProtocolParameter,
+    Publication,
+    Study,
+    StudyFactor,
+)
 
 
 log = logging.getLogger('isatools')
@@ -744,15 +756,15 @@ class MageTabParser(object):
                 defaultassay = self._get_measurement_and_tech(comment.value)
             # (2) if there is no identifier set, try use ArrayExpressAccession
             if commentkey == 'arrayexpressaccession':
-                if I.identifier == '':
-                    I.identifier = comment.value
+                if self.ISA.identifier == '':
+                    self.ISA.identifier = comment.value
                 if S.identifier == '':
                     S.identifier = comment.value
             # (3) if there is no submission date set, try use
             # ArrayExpressSubmissionDate
             if commentkey == 'arrayexpresssubmissiondate':
-                if I.submission_date == '':
-                    I.submission_date = comment.value
+                if self.ISA.submission_date == '':
+                    self.ISA.submission_date = comment.value
                 if S.submission_date == '':
                     S.submission_date = comment.value
 
@@ -770,8 +782,9 @@ class MageTabParser(object):
             defaultassay = Assay()
 
         # set file names if identifiers are available
-        I.filename = 'i_{0}investigation.txt'.format(
-            I.identifier + '_' if I.identifier != '' else I.identifier)
+        self.ISA.filename = 'i_{0}investigation.txt'.format(
+            self.ISA.identifier + '_'
+            if self.ISA.identifier != '' else self.ISA.identifier)
         S.filename = 's_{0}study.txt'.format(
             S.identifier + '_' if S.identifier != '' else S.identifier)
         defaultassay.filename = 'a_{0}assay.txt'.format(

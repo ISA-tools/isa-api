@@ -1,10 +1,10 @@
 
-from datetime import date
-import json
-import os
-import shutil
-# Make it work for Python 2+3 and with Unicode
 import io
+import json
+from datetime import date
+
+
+# Make it work for Python 2+3 and with Unicode
 
 
 def main():

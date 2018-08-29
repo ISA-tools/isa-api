@@ -10,6 +10,7 @@ from io import StringIO
 
 from isatools import isatab
 
+
 """Parse ISA-Tab structured metadata describing experimental data.
 Works with ISA-Tab (http://isatab.sourceforge.net), which provides a structured
 format for describing experimental metdata.
@@ -332,7 +333,7 @@ class StudyAssayParser:
             node_assay_indices = [i for i, x in enumerate(htypes)
                                   if x == "node_assay"]
             line_number = 0
-            max_number = 0
+            # max_number = 0
             process_counters = {}
             assay_name_map = {}
             input_process_map = {}
@@ -373,16 +374,16 @@ class StudyAssayParser:
                     processing_header = headers[
                         hgroups[processing_index][0]]
 
-                    qualifier_headers = [
-                        headers[x] for i, x in enumerate(
-                            qualifier_indices)]
+                    # qualifier_headers = [
+                    #     headers[x] for i, x in enumerate(
+                    #         qualifier_indices)]
                     qualifier_values = [
                         line[x]
                         for i, x in enumerate(qualifier_indices)]
 
-                    parameters_values = [
-                        line[x]
-                        for i, x in enumerate(parameters_indices)]
+                    # parameters_values = [
+                    #     line[x]
+                    #     for i, x in enumerate(parameters_indices)]
 
                     input_values = [line[
                         hgroups[x][0]]
@@ -404,7 +405,7 @@ class StudyAssayParser:
                         "-".join(input_node_indices)
                     output_node_indices_string = \
                         "-".join(output_node_indices)
-                    parameters_indices_string = '-'.join(parameters_values)
+                    # parameters_indices_string = '-'.join(parameters_values)
 
                     assay_name = ""
                     if assay_name_indices:

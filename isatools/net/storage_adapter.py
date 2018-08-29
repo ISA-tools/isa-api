@@ -1,15 +1,16 @@
-from abc import ABCMeta, abstractmethod
-from urllib.parse import urljoin
-from lxml import etree
-from jsonschema import RefResolver, Draft4Validator
-from io import BytesIO, StringIO
-from zipfile import ZipFile
-import requests
+import base64
 import json
+import logging
 import os
 import pathlib
-import base64
-import logging
+from abc import ABCMeta, abstractmethod
+from io import BytesIO, StringIO
+from urllib.parse import urljoin
+from zipfile import ZipFile
+
+import requests
+from jsonschema import Draft4Validator, RefResolver
+from lxml import etree
 
 
 log = logging.getLogger('isatools')

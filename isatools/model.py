@@ -15,9 +15,9 @@ Todo:
 from __future__ import absolute_import
 import abc
 import logging
-import networkx as nx
 import warnings
 
+import networkx as nx
 
 from isatools.errors import ISAModelAttributeError
 

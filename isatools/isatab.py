@@ -7,30 +7,48 @@ from __future__ import absolute_import
 import csv
 import glob
 import io
-import iso8601
+import json
 import logging
 import math
-import numpy as np
 import os
-import pandas as pd
 import re
 import shutil
 import tempfile
-from bisect import bisect_left
-from bisect import bisect_right
+from bisect import bisect_left, bisect_right
 from io import StringIO
-from itertools import tee
-from itertools import zip_longest
+from itertools import tee, zip_longest
+
+import iso8601
+import networkx as nx
+import numpy as np
+import pandas as pd
 from pandas.io.parsers import ParserError
-from progressbar import ProgressBar
-from progressbar import SimpleProgress
-from progressbar import Bar
-from progressbar import ETA
-import json
+from progressbar import ETA, Bar, ProgressBar, SimpleProgress
 
 from isatools import logging as isa_logging
 from isatools.io import isatab_configurator
-from isatools.model import *
+from isatools.model import (
+    Assay,
+    Characteristic,
+    Comment,
+    DataFile,
+    FactorValue,
+    Investigation,
+    Material,
+    OntologyAnnotation,
+    OntologySource,
+    ParameterValue,
+    Person,
+    Process,
+    Protocol,
+    ProtocolParameter,
+    Publication,
+    Sample,
+    Source,
+    Study,
+    StudyFactor,
+    plink,
+)
 from isatools.utils import utf8_text_file_open
 
 
@@ -2879,7 +2897,6 @@ def check_assay_table_with_config(
 
     # Check if protocol ref column values are consistently structured
     protocol_ref_index = [i for i in columns if 'protocol ref' in i.lower()]
-    prots_ok = True
     for each in protocol_ref_index:
         prots_found = set()
         for cell in df[each]:
@@ -2898,7 +2915,6 @@ def check_assay_table_with_config(
             log.warning(
                 "(W) Only one protocol reference should be used in a "
                 "Protocol REF column.")
-            prots_ok = False
 
 
 def check_study_assay_tables_against_config(i_df, dir_context, configs):
@@ -4319,8 +4335,6 @@ def read_tfile(tfile_path, index_col=None, factor_filter=None):
     log.debug("Opening %s", tfile_path)
     with utf8_text_file_open(tfile_path) as tfile_fp:
         log.debug("Reading file header")
-        reader = csv.reader(tfile_fp, dialect='excel-tab')
-        header = list(next(reader))
         tfile_fp.seek(0)
         log.debug("Reading file into DataFrame")
         tfile_fp = strip_comments(tfile_fp)

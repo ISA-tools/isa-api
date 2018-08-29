@@ -1,7 +1,8 @@
 from __future__ import absolute_import
-from configparser import ConfigParser
 import logging
 import os
+from configparser import ConfigParser
+
 
 show_pbars = False
 

@@ -1,15 +1,29 @@
-from urllib.request import urlopen
-from bs4 import BeautifulSoup
-from isatools import isatab
-from isatools.model import *
-from datetime import date
-from collections import defaultdict
-import urllib
-import json
 import ftplib
+import json
+import logging
 import os.path
 import re
-import logging
+import urllib
+from collections import defaultdict
+from datetime import date
+from urllib.request import urlopen
+
+from bs4 import BeautifulSoup
+
+from isatools import isatab
+from isatools.model import (
+    Assay,
+    Comment,
+    Investigation,
+    OntologyAnnotation,
+    OntologySource,
+    Person,
+    Protocol,
+    ProtocolParameter,
+    Publication,
+    Study,
+    StudyFactor,
+)
 
 
 __author__ = 'proccaserra@gmail.com'
@@ -473,8 +487,8 @@ def create_nmr_assay_records(lol, study_id, analysis_id, fv_records):
         pv_nmr_excluded_range = "not reported"
         nmr_rawdata_qt = "NA"
         nmr_maf_qt = "NA"
-        assayrecords = []
-        assay_wf_record = []
+        # assayrecords = []
+        # assay_wf_record = []
 
         raw_data_file = ""
         assay_wf_header = [
@@ -1092,10 +1106,10 @@ def mw2isa_convert(**kwargs):
             soup = BeautifulSoup(page, "html.parser")
             AnalysisParamTable = soup.findAll("table", {'class': "datatable2"})
 
-            analysisid = ""
-            assay_types = []
-            isa_assay_names = []
-            isa_assay_names_with_dlurl = {}
+            # analysisid = ""
+            # assay_types = []
+            # isa_assay_names = []
+            # isa_assay_names_with_dlurl = {}
 
             downLoadURI = "http://www.metabolomicsworkbench.org/data/" \
                           "study_textformat_view.php?STUDY_ID=" + studyid \
@@ -1103,8 +1117,8 @@ def mw2isa_convert(**kwargs):
 
             study_assays_dict = {"study_id": studyid, "assays": []}
             for table in AnalysisParamTable:
-                ltab = len(table)
-                index = 0
+                # ltab = len(table)
+                # index = 0
                 for index, obj in enumerate(table):
                     if "Analysis ID:" in str(obj):
                         tds = obj.find_all('td')
@@ -1129,17 +1143,17 @@ def mw2isa_convert(**kwargs):
             study_title = ""
             study_desc = ""
             study_design = ""
-            study_subdate = ""
-            study_releasedate = ""
-            study_accnum = ""
+            # study_subdate = ""
+            # study_releasedate = ""
+            # study_accnum = ""
             study_funder = ""
 
-            ms_protocol = ""
+            # ms_protocol = ""
             treat_protocol = ""
-            plant_treatment_protocol = ""
+            # plant_treatment_protocol = ""
             plant_plot_design = ""
             plant_light_period = ""
-            plant_humidity = ""
+            # plant_humidity = ""
             plant_temperature = ""
             plant_nutriregime = ""
             plant_harvest_method = ""
@@ -1154,18 +1168,18 @@ def mw2isa_convert(**kwargs):
             chromatography_protocol_params = []
             ms_protocol_params = []
             nmr_protocol_params = []
-            ms_analysis_params = []
-            nmr_analysis_params = []
+            # ms_analysis_params = []
+            # nmr_analysis_params = []
             ident_protocol_params = []
 
-            mt = "metabolite profiling"
+            # mt = "metabolite profiling"
 
-            protocol_names = ["", "", "", "", "", "", "", "", ""]
-            protocol_types = ["sample collection", "treatment",
-                              "metabolite extraction", "sample preparation",
-                              "chromatography",
-                              "mass spectrometry", "nmr spectroscopy",
-                              "identification", "annotation"]
+            # protocol_names = ["", "", "", "", "", "", "", "", ""]
+            # protocol_types = ["sample collection", "treatment",
+            #                   "metabolite extraction", "sample preparation",
+            #                   "chromatography",
+            #                   "mass spectrometry", "nmr spectroscopy",
+            #                   "identification", "annotation"]
             protocol_descriptions = ["", "", "", "", "", "", "", "", ""]
             protocol_parameters = {"sample collection": [""],
                                    "treatment": [""],
@@ -1183,22 +1197,22 @@ def mw2isa_convert(**kwargs):
             study_person_email = ""
             study_person_affiliation = ""
             study_person_address = ""
-            study_person_phone = ""
+            # study_person_phone = ""
             study_person_fax = ""
             study_createdon = ""
             study_submittedon = ""
-            study_convertedon = ""
-            study_num_group = ""
-            study_total_subj = ""
-            study_version = ""
+            # study_convertedon = ""
+            # study_num_group = ""
+            # study_total_subj = ""
+            # study_version = ""
 
-            material_type = ""
-            sample_type = ""
-            organism = ""
+            # material_type = ""
+            # sample_type = ""
+            # organism = ""
 
-            study_factor_records = []
-            study_factors = {}
-            fv_record_header = []
+            # study_factor_records = []
+            # study_factors = {}
+            # fv_record_header = []
 
             basestudysamplerecordheader = [
                 "Source Name", "Material Type", "Characteristics[Organism]",
@@ -1249,7 +1263,7 @@ def mw2isa_convert(**kwargs):
             for row in thisFileContent:
 
                 if str(row[0]).startswith('VERSIO'):
-                    study_version = row[1]
+                    # study_version = row[1]
                     study1.comments.append(Comment(
                         name="Version", value=row[1]))
 
@@ -1264,12 +1278,12 @@ def mw2isa_convert(**kwargs):
                         name="MW submission date", value=row[1]))
 
                 if row[0].find('ST:NUM_GROUPS') != -1:
-                    study_num_group = row[1]
+                    # study_num_group = row[1]
                     study1.comments.append(Comment(
                         name="number of study groups", value=row[1]))
 
                 if row[0].find('ST:TOTAL_SUBJECTS') != -1:
-                    study_total_subj = row[1]
+                    # study_total_subj = row[1]
                     study1.comments.append(Comment(
                         name="total number of subjects", value=row[1]))
 
@@ -1291,11 +1305,11 @@ def mw2isa_convert(**kwargs):
                 if row[0].find('ST:EMAIL') != -1:
                     study_person_email = row[1]
 
-                if row[0].find('ST:PHONE') != -1:
-                    study_person_phone = row[1]
+                # if row[0].find('ST:PHONE') != -1:
+                #     study_person_phone = row[1]
 
-                if row[0].find('ST:SUBMIT_DATE') != -1:
-                    study_subdate = row[1]
+                # if row[0].find('ST:SUBMIT_DATE') != -1:
+                #     study_subdate = row[1]
 
                 if row[0].find('ST:INSTITUTE') != -1:
                     study_person_affiliation = row[1]
@@ -1947,9 +1961,9 @@ def mw2isa_convert(**kwargs):
                 if row[0].find('CO:COLLECTION_PROTOCOL_FILENAME') != -1:
                     protocol_files[3] = row[1]
 
-                if row[0].find('TR:PLANT_GROWTH_SUPPORT') != -1:
-                    plant_treatment_prtcl = \
-                        plant_treatment_prtcl + " " + row[1]
+                # if row[0].find('TR:PLANT_GROWTH_SUPPORT') != -1:
+                #     plant_treatment_prtcl = \
+                #         plant_treatment_prtcl + " " + row[1]
 
                 if row[0].find('TR:PLANT_HARVEST_SUPPORT') != -1:
                     plant_harvest_method = plant_harvest_method + " " + row[1]
@@ -2249,7 +2263,7 @@ def mw2isa_convert(**kwargs):
             study1.contacts.append(person1)
 
             # Building Investigation Study Factor Section:
-            factor_keys = study_factors.keys()
+            # factor_keys = study_factors.keys()
             for key in study_factors.keys():
                 oref = OntologySource(
                     name="OBI",

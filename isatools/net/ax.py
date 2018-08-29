@@ -12,9 +12,8 @@ import os
 import shutil
 import tempfile
 
+from isatools.convert import magetab2isatab, magetab2json
 
-from isatools.convert import magetab2isatab
-from isatools.convert import magetab2json
 
 EBI_FTP_SERVER = 'ftp.ebi.ac.uk'
 AX_EXPERIMENT_BASE_DIR = '/pub/databases/arrayexpress/data/experiment'

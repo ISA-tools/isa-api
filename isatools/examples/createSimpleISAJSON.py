@@ -1,6 +1,23 @@
 #!/usr/bin/env python
 
-from isatools.model import *
+from isatools.model import (
+    Assay,
+    Characteristic,
+    DataFile,
+    Investigation,
+    Material,
+    OntologyAnnotation,
+    OntologySource,
+    Person,
+    Process,
+    Protocol,
+    Publication,
+    Sample,
+    Source,
+    Study,
+    batch_create_materials,
+    plink,
+)
 
 
 def create_descriptor():

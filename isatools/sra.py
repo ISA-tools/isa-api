@@ -2,18 +2,16 @@
 import datetime
 import hashlib
 import html
-import iso8601
-import jinja2
 import logging
 import os
 import xml.dom.minidom
 from functools import partial
+
+import iso8601
+import jinja2
 from lxml import etree
 
-
-from isatools.model import DataFile
-from isatools.model import OntologyAnnotation
-from isatools.model import Sample
+from isatools.model import DataFile, OntologyAnnotation, Sample
 
 
 log = logging.getLogger('isatools')

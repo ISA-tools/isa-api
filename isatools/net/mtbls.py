@@ -7,13 +7,14 @@ it's working at http://www.ebi.ac.uk/metabolights/
 from __future__ import absolute_import
 import ftplib
 import glob
+import json
 import logging
 import os
-import pandas as pd
-import tempfile
-import shutil
 import re
-import json
+import shutil
+import tempfile
+
+import pandas as pd
 
 from isatools import isatab
 from isatools.convert import isatab2json

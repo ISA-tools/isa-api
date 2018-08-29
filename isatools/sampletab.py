@@ -1,16 +1,28 @@
 """Functions for reading and writing SampleTab."""
 import io
 import logging
+from io import StringIO
+
 import numpy as np
 import pandas as pd
-from io import StringIO
-from progressbar import Bar
-from progressbar import ETA
-from progressbar import ProgressBar
-from progressbar import SimpleProgress
+from progressbar import ETA, Bar, ProgressBar, SimpleProgress
 
 from isatools import logging as isa_logging
-from isatools.model import *
+from isatools.model import (
+    Characteristic,
+    Comment,
+    FactorValue,
+    Investigation,
+    OntologyAnnotation,
+    OntologySource,
+    Person,
+    Process,
+    Protocol,
+    Sample,
+    Source,
+    Study,
+    StudyFactor,
+)
 
 
 log = logging.getLogger('isatools')

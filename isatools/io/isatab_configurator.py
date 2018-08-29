@@ -7,17 +7,16 @@
 # Updated with 2to3 for Python 3 compatibility
 #
 
-import sys
-import re as re_
 import base64
 import datetime as datetime_
-import warnings as warnings_
-from lxml import etree as etree_
-import os
 import glob
 import logging
+import os
+import re as re_
+import sys
+import warnings as warnings_
 
-
+from lxml import etree as etree_
 
 
 log = logging.getLogger('isatools')

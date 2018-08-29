@@ -1,25 +1,23 @@
-from bs4 import BeautifulSoup
-from collections import defaultdict
-import subprocess
-import os
-import re
-from io import BytesIO, StringIO
-from zipfile import ZipFile
-from shutil import rmtree
-import logging
-import pdb
 import glob
-import uuid
+import logging
 import os
+import subprocess
 import sys
+import uuid
+from collections import defaultdict
+from io import BytesIO
+from shutil import rmtree
+from zipfile import ZipFile
+
 import bs4
+from bs4 import BeautifulSoup
 
 
 sys.modules['BeautifulSoup'] = bs4
 
-__author__ = 'philippe.rocca-serra@oerc.ox.ac.uk'
-__author__ = 'massi@oerc.ox.ac.uk'
-__author__ = 'alfie'
+__author__ = ['philippe.rocca-serra@oerc.ox.ac.uk',
+              'massi@oerc.ox.ac.uk',
+              'alfie']
 
 DESTINATION_DIR = 'output'
 DEFAULT_SAXON_EXECUTABLE = os.path.join(

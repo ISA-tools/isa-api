@@ -1,10 +1,8 @@
+import logging
 import os
 import shutil
-import logging
 
-
-from isatools import isajson
-from isatools import isatab
+from isatools import isajson, isatab
 
 
 log = logging.getLogger('isatools')

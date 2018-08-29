@@ -2,9 +2,10 @@
 
 # Inspired by validateSBML.py example from libSBML Python API
 
-from isatools import isajson
-import sys
 import os
+import sys
+
+from isatools import isajson
 
 
 def main(args):

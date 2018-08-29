@@ -1,6 +1,4 @@
 from isatools.utils import IsaTabFixer
-import os
-import re
 
 
 def main():

@@ -3,12 +3,41 @@ Functions for creating ISA content from study design create model, found in
 isatools.create.models
 """
 from __future__ import absolute_import
+import json
+import logging
+import os
 import re
 import uuid
-from .models import *
-import os
 
-import logging
+from isatools.model import (
+    Characteristic,
+    Comment,
+    FactorValue,
+    Investigation,
+    OntologyAnnotation,
+    OntologySource,
+    Person,
+    Study,
+    StudyFactor,
+)
+
+from .models import (
+    BASE_FACTORS,
+    INTERVENTIONS,
+    AssayType,
+    IsaModelObjectFactory,
+    MSAcquisitionMode,
+    MSInjectionMode,
+    MSTopologyModifiers,
+    NMRTopologyModifiers,
+    SampleAssayPlan,
+    SampleQCBatch,
+    StudyDesign,
+    Treatment,
+    TreatmentFactory,
+    TreatmentSequence,
+)
+
 
 log = logging.getLogger('isatools')
 
@@ -288,25 +317,25 @@ def create_from_galaxy_parameters(galaxy_parameters_file, target_dir):
         if not os.path.exists(target_dir):
             raise IOError('Target path does not exist!')
     if len(galaxy_parameters['sample_and_assay_planning'][
-               'sample_plans']) == 0:
+            'sample_plans']) == 0:
         raise IOError('No Sampling plan specified')
 
     treatment_sequence = _create_treatment_sequence(galaxy_parameters)
     sample_assay_plan = SampleAssayPlan()
     for sample_plan_record in galaxy_parameters['sample_and_assay_planning'][
             'sample_plans']:
-        _ = _create_sample_plan(sample_assay_plan, sample_plan_record)
+        _create_sample_plan(sample_assay_plan, sample_plan_record)
     for qcqa_record in galaxy_parameters['qc_planning']['qc_plans']:
-        _ = _inject_qcqa_plan(sample_assay_plan, qcqa_record)
+        _inject_qcqa_plan(sample_assay_plan, qcqa_record)
     try:
         sample_assay_plan.group_size = \
             int(galaxy_parameters['treatment_plan']['study_type'][
-                    'multiple_interventions']['group_size'])
+                'multiple_interventions']['group_size'])
     except KeyError:
         try:
             sample_assay_plan.group_size = \
                 int(galaxy_parameters['treatment_plan']['study_type'][
-                        'balance']['multiple_interventions']['group_size'])
+                    'balance']['multiple_interventions']['group_size'])
         except KeyError:
             log.debug(
                 'Group size not set for root plan as multiple intervention')

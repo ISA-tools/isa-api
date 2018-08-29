@@ -11,11 +11,12 @@ __author__ = 'philippe.rocca-serra@oerc.ox.ac.uk'
 # Important: Remember to up the memory available to python
 
 
-from bs4 import BeautifulSoup
-
 import os
 import sys
+
 import bs4
+from bs4 import BeautifulSoup
+
 
 sys.modules['BeautifulSoup'] = bs4
 
@@ -34,9 +35,9 @@ def merge():
 
         if i.endswith(".xml"):
 
-            f = open('/Users/Philippe/Documents/git/xslt2isa/biocrates/'
-                     'Biocrates-TUM/input-Biocrates-XML-files/'
-                     'all-biocrates-xml-files/' + i)
+            # f = open('/Users/Philippe/Documents/git/xslt2isa/biocrates/'
+            #          'Biocrates-TUM/input-Biocrates-XML-files/'
+            #          'all-biocrates-xml-files/' + i)
 
             # note the "xml" argument: this is to ensure that BeautifulSoup
             # does not lowercase attribute elements (without, the resulting

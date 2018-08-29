@@ -1,8 +1,6 @@
 import logging
 
-
-from isatools import isatab
-from isatools import sampletab
+from isatools import isatab, sampletab
 
 
 logger = logging.getLogger('isatools')

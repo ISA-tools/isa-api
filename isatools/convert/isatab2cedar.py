@@ -2,13 +2,15 @@ from __future__ import absolute_import
 import json
 import logging
 import os
-from uuid import uuid4
 from os import listdir
 from os.path import isdir, join
-from jsonschema import RefResolver, Draft4Validator
+from uuid import uuid4
+
+from jsonschema import Draft4Validator, RefResolver
 from jsonschema.exceptions import ValidationError
 
 from isatools.io import isatab_parser
+
 
 __author__ = 'agbeltran'
 
@@ -161,7 +163,7 @@ class ISATab2CEDAR(object):
         for study in studies:
             source_dict = self.createSources(study.nodes)
             sample_dict = self.createSamples(study.nodes)
-            data_dict = self.createDataFiles(study.nodes)
+            # data_dict = self.createDataFiles(study.nodes)
             json_item = dict([
                 ("@id", "https://repo.metadatacenter.org/UUID"+str(uuid4())),
                 ("@type", "https://repo.metadatacenter.org/model/Study"),

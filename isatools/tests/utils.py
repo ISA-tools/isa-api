@@ -1,13 +1,13 @@
 """The contents of this module are used solely for testing purposes in the
 isatools test suite that is not packaged with the PyPI distribution"""
 from __future__ import absolute_import
-
 import logging
 import os
-import pandas as pd
 import re
-from pandas.util.testing import assert_frame_equal
+from os.path import basename
 
+import pandas as pd
+from pandas.util.testing import assert_frame_equal
 
 from isatools.isatab import read_investigation_file
 
@@ -79,7 +79,6 @@ def assert_tab_content_equal(fp_x, fp_y):
             log.error(e)
             return False
 
-    from os.path import basename
     if basename(fp_x.name).startswith('i_'):
         df_dict_x = read_investigation_file(fp_x)
         df_dict_y = read_investigation_file(fp_y)
@@ -129,7 +128,6 @@ def assert_tab_content_equal(fp_x, fp_y):
 
             # reindex to add contexts for duplicate named columns
             # (i.e. Term Accession Number, Unit, etc.)
-            import re
             newcolsx = list()
             for col in df_x.columns:
                 newcolsx.append(col)

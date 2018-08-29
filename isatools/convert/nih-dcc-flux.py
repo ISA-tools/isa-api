@@ -1,8 +1,25 @@
 from __future__ import absolute_import
-from isatools import isatab
-from isatools.model import *
 import json
 import os
+
+from isatools import isatab
+from isatools.model import (
+    Assay,
+    Characteristic,
+    DataFile,
+    Investigation,
+    Material,
+    OntologyAnnotation,
+    OntologySource,
+    Person,
+    Process,
+    Protocol,
+    Sample,
+    Source,
+    Study,
+    StudyFactor,
+    plink,
+)
 
 
 def convert(json_path, output_path):
@@ -247,6 +264,7 @@ def convert(json_path, output_path):
                     # plink(protein_extraction_process, data_acq_process)
                     # plink(material_separation_process,
                     # protein_extraction_process)
+                    protein_extraction_process = None
                     plink(sample_collection_process,
                           protein_extraction_process)
 

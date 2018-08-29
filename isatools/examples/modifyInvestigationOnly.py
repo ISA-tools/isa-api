@@ -1,7 +1,22 @@
 #!/usr/bin/env python
 
-from isatools.isatab import load, dumps
-from isatools.model import *
+from isatools.isatab import dumps, load
+from isatools.model import (
+    Assay,
+    Characteristic,
+    DataFile,
+    Material,
+    OntologyAnnotation,
+    OntologySource,
+    Person,
+    Process,
+    Protocol,
+    Publication,
+    Sample,
+    Source,
+    Study,
+    batch_create_materials,
+)
 
 
 def modify_investigation(fp):

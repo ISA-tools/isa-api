@@ -3,18 +3,19 @@
 
 import argparse
 import collections
+import csv
 import glob
 import logging
 import os.path
 import re
 import sys
-import csv
-import numpy
 from string import Template
 
+import numpy
 
 from isatools import isatab as ISATAB
 from isatools.utils import utf8_text_file_open
+
 
 """
 original from

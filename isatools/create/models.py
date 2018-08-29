@@ -6,12 +6,33 @@ from __future__ import absolute_import
 import datetime
 import itertools
 import json
+import logging
 import random
-from collections import Iterable
-from collections import OrderedDict
+from collections import Iterable, OrderedDict
 from numbers import Number
 
-from isatools.model import *
+from isatools.model import (
+    ArrayDataFile,
+    Assay,
+    Characteristic,
+    Extract,
+    FactorValue,
+    FreeInductionDecayDataFile,
+    ISAModelAttributeError,
+    LabeledExtract,
+    OntologyAnnotation,
+    OntologySource,
+    ParameterValue,
+    Process,
+    Protocol,
+    RawDataFile,
+    RawSpectralDataFile,
+    Sample,
+    Source,
+    Study,
+    StudyFactor,
+    plink,
+)
 
 
 log = logging.getLogger('isatools')
@@ -1563,12 +1584,12 @@ class IsaModelObjectFactory(object):
                 nmr_prot.add_param('magnetic field strength')
             except ISAModelAttributeError:
                 pass
-            num_samples_in_stype = len(samples)
+            # num_samples_in_stype = len(samples)
             technical_replicates = \
                 assay_type.topology_modifiers.technical_replicates
-            total_expected_runs = \
-                num_samples_in_stype * technical_replicates
-            run_order = list(range(1, total_expected_runs + 1))
+            # total_expected_runs = \
+            #     num_samples_in_stype * technical_replicates
+            # run_order = list(range(1, total_expected_runs + 1))
             # random.shuffle(run_order)  # does random shuffle inplace
             run_counter = 0
 
@@ -2101,7 +2122,7 @@ class IsaModelObjectFactory(object):
             samples_filtered_on_stype = [x for x in study.samples if
                                          stype in x.characteristics]
 
-            lowered_tt = atype.technology_type.term.lower()
+            # lowered_tt = atype.technology_type.term.lower()
             if atype.technology_type.term == 'DNA microarray':
                 assay = Assay(measurement_type=atype.measurement_type,
                               technology_type=atype.technology_type)
@@ -2189,7 +2210,7 @@ class IsaModelObjectFactory(object):
             samples_filtered_on_stype = [x for x in study.samples if
                                          stype in x.characteristics]
 
-            lowered_tt = atype.technology_type.term.lower()
+            # lowered_tt = atype.technology_type.term.lower()
             if atype.technology_type.term == 'nucleotide sequencing':
                 assay = Assay(measurement_type=atype.measurement_type,
                               technology_type=atype.technology_type)

@@ -11,9 +11,32 @@ import os
 import re
 from io import StringIO
 from json import JSONEncoder
+
 from jsonschema import Draft4Validator, RefResolver, ValidationError
 
-from isatools.model import *
+from isatools.model import (
+    Assay,
+    Characteristic,
+    Comment,
+    DataFile,
+    FactorValue,
+    Investigation,
+    Material,
+    OntologyAnnotation,
+    OntologySource,
+    ParameterValue,
+    Person,
+    Process,
+    Protocol,
+    ProtocolComponent,
+    ProtocolParameter,
+    Publication,
+    Sample,
+    Source,
+    Study,
+    StudyFactor,
+)
+
 
 __author__ = 'djcomlab@gmail.com (David Johnson)'
 

@@ -1,14 +1,15 @@
-from itertools import product
-from itertools import permutations
-from isatools.model import *
-from isatools import isatab
-from isatools.isatab import dump
-from isatools.isatab import write_study_table_files
-# from random import sample
-import uuid
 import datetime
 import json
 import random
+import uuid
+from itertools import permutations, product
+
+from isatools import isatab
+from isatools.isatab import dump, write_study_table_files
+from isatools.model import *
+
+
+# from random import sample
 
 __author__ = 'proccaserra@gmail.com'
 

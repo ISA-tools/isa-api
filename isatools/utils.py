@@ -1,22 +1,30 @@
 """Various utility functions."""
 from __future__ import absolute_import
-
 import csv
-import pandas as pd
+import json
+import logging
+import os
+import shutil
+import sys
+import tempfile
 import uuid
 from functools import reduce
 from zipfile import ZipFile
-from isatools.create import create_from_galaxy_parameters
-from mzml2isa.mzml import mzMLmeta
-import tempfile
-import shutil
-import sys
-import json
-import os
 
+import pandas as pd
+from mzml2isa.mzml import mzMLmeta
 
 from isatools import isatab
-from isatools.model import *
+from isatools.create import create_from_galaxy_parameters
+from isatools.model import (
+    DerivedSpectralDataFile,
+    ISAModelAttributeError,
+    OntologyAnnotation,
+    ParameterValue,
+    Process,
+    Protocol,
+    plink,
+)
 
 
 log = logging.getLogger('isatools')
@@ -888,7 +896,7 @@ def create_and_merge_mzml(
             try:  # add parameter values to MS process
                 ms_process = [x for x in ms_processes if
                               k in [y.filename for y in x.outputs]][0]
-                pvs = ms_process.parameter_values
+                # pvs = ms_process.parameter_values
                 for item in ms_prot_meta:
                     if not ms_process.executes_protocol.get_param(item):
                         ms_process.executes_protocol.add_param(item)

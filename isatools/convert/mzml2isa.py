@@ -1,7 +1,7 @@
 import logging
 import os
-from mzml2isa.parsing import convert as mzml_convert
 
+from mzml2isa.parsing import convert as mzml_convert
 
 from isatools import isatab
 

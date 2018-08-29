@@ -2,11 +2,10 @@ from __future__ import absolute_import
 import functools
 import logging
 import os
-import re
 import pdb
+import re
 import subprocess
 import tempfile
-import uuid
 import warnings
 from io import BytesIO
 from shutil import rmtree
@@ -94,21 +93,20 @@ def create_isatab_xslt(sra_acc_numbers, saxon_jar_path=None):
         'create_isatab_xslt() is deprecated, please use '
         'sra_to_isatab_batch_convert() instead')
 
-    cmd_map = dict(posix='batch_sra2isatab.sh', nt=None, java=None, ce=None)
+    # cmd_map = dict(posix='batch_sra2isatab.sh', nt=None, java=None, ce=None)
 
-    formatted_sra_acc_numbers = format_acc_numbers(sra_acc_numbers)
+    # formatted_sra_acc_numbers = format_acc_numbers(sra_acc_numbers)
 
     # convert the list back to a comma-separated string to be fed to the script
-    sra_acc_numbers_str = ",".join(formatted_sra_acc_numbers)
+    # sra_acc_numbers_str = ",".join(formatted_sra_acc_numbers)
 
-    cmd_path = os.path.join(
-        os.path.dirname(__file__), 'isa_line_commands', 'bin',
-        cmd_map[os.name])
+    # cmd_path = os.path.join(
+    #     os.path.dirname(__file__), 'isa_line_commands', 'bin',
+    #     cmd_map[os.name])
     pdb.set_trace()
 
     try:
-        res = subprocess.check_output([cmd_path, sra_acc_numbers_str])
-
+        # res = subprocess.check_output([cmd_path, sra_acc_numbers_str])
         # put all files within a zip file and return the file handler
         file_like_obj = BytesIO()
 

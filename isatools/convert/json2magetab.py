@@ -1,8 +1,6 @@
 import logging
 
-
-from isatools import isajson
-from isatools import magetab
+from isatools import isajson, magetab
 
 
 log = logging.getLogger('isatools')

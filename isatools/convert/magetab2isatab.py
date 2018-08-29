@@ -1,6 +1,5 @@
-import os
 import logging
-
+import os
 
 from isatools import isatab
 from isatools.magetab import MageTabParser

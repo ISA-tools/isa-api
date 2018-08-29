@@ -1,8 +1,13 @@
 from __future__ import absolute_import
 
-from isatools.create.models import *
-from isatools.model import *
 from isatools import isatab
+from isatools.create.models import (
+    IsaModelObjectFactory,
+    SampleAssayPlan,
+    TreatmentFactory,
+    TreatmentSequence,
+)
+from isatools.model import Investigation, OntologyAnnotation, StudyFactor
 
 
 def create_descriptor():

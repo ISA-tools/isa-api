@@ -1,16 +1,16 @@
-import json
-import os
-from os.path import join
-from isatools.io.isatab_parser import parse
-from jsonschema import RefResolver, Draft4Validator
-from uuid import uuid4
-from enum import Enum
-import re
 import glob
+import json
 import logging
+import os
+import re
+from enum import Enum
+from os.path import join
+from uuid import uuid4
 
+from jsonschema import Draft4Validator, RefResolver
 
 from isatools import isatab
+from isatools.io.isatab_parser import parse
 from isatools.isajson import ISAJSONEncoder
 
 

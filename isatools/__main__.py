@@ -1,7 +1,7 @@
 import argparse
-import sys
-import os
 import json
+import os
+import sys
 
 
 def main(argv=None):

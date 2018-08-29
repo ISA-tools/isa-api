@@ -1,7 +1,9 @@
-import sys
 import os
-from bs4 import BeautifulSoup as Soup
+import sys
 from collections import defaultdict
+
+from bs4 import BeautifulSoup as Soup
+
 
 __author__ = 'alfie'
 

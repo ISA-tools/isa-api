@@ -1,8 +1,6 @@
 import logging
 
-
-from isatools import isajson
-from isatools import sra
+from isatools import isajson, sra
 
 
 log = logging.getLogger('isatools')

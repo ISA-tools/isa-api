@@ -1,7 +1,6 @@
 import json
 import logging
 
-
 from isatools import sampletab
 from isatools.isajson import ISAJSONEncoder
 
