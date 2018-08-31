@@ -6,7 +6,7 @@ original from
 https://github.com/workflow4metabolomics/mtbls-dwnld/blob/develop/isatab2w4m.py
 """
 
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 # vi: fdm=marker
 
 import argparse
