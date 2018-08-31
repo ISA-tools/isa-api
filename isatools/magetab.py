@@ -1,4 +1,10 @@
-"""Functions for reading and writing MAGE-TAB."""
+# -*- coding: utf-8 -*-
+"""Functions for reading and writing MAGE-TAB.
+
+Functions for reading and writing MAGE-TAB. MAGE-TAB content is loaded into an
+in-memory representation using the ISA Data Model implemented in the
+isatools.model package.
+"""
 from __future__ import absolute_import
 import copy
 import csv
@@ -323,6 +329,12 @@ def _build_normalizations_df(ISA):
 
 
 def write_idf_file(inv_obj, output_path):
+    """Writes IDF file out from ISA objects
+
+    :param inv_obj: ISA Investigation object
+    :param output_path: Output path to write IDF to
+    :return: None
+    """
     investigation = inv_obj
     metadata_df = _build_metadata_df(investigation)
     exp_designs_df = _build_exp_designs_df(investigation)
@@ -364,6 +376,12 @@ def write_idf_file(inv_obj, output_path):
 
 
 def write_sdrf_table_files(i, output_path):
+    """Writes out SDRF table files
+
+    :param i: ISA Investigation object
+    :param output_path: Output path to write SDRFs to
+    :return: None
+    """
     tmp = tempfile.mkdtemp()
     isatab.write_study_table_files(inv_obj=i, output_dir=tmp)
     isatab.write_assay_table_files(inv_obj=i, output_dir=tmp)
@@ -385,6 +403,12 @@ def write_sdrf_table_files(i, output_path):
 
 
 def dump(inv_obj, output_path):
+    """Dumps out MAGE-TAB files
+
+    :param inv_obj: An Investigation object
+    :param output_path: Target path to write IDF and SDRF MAGE-TAB files to
+    :return: the origin inv_obj
+    """
     num_microarray_assays = 0
     for study in inv_obj.studies:
         num_microarray_assays += len(
@@ -477,6 +501,8 @@ class MageTabParserException(Exception):
 
 
 def squashstr(string):
+    """Squashes a string by removing the spaces and lowering it"""
+
     nospaces = "".join(string.split())
     return nospaces.lower()
 
@@ -507,6 +533,11 @@ class MageTabParser(object):
         self._ts_dict = {}
 
     def parse_idf(self, in_filename):
+        """Parse the MAGE-TAB IDF file
+
+        :param in_filename: Path to the IDF file
+        :return: An Investigation object with ISA content
+        """
         self.load_into_idfdict(in_filename=in_filename)
         # Parse the ontology sources first, as we need to reference these later
         self.parse_ontology_sources(self._idfdict.get('termsourcename', []),
@@ -716,6 +747,11 @@ class MageTabParser(object):
                 self.ISA.studies[-1].protocols.append(protocol)
 
     def parse_sdrf_file(self, sdrffiles):
+        """Parses a list of MAGE-TAB SDRF files
+
+        :param sdrffiles:  List of SDRF files to parse
+        :return: None
+        """
         sdrffiles_no_empty = [x for x in sdrffiles if x != '']
         if len(sdrffiles_no_empty) > 0:
             if len(sdrffiles_no_empty) > 1:
@@ -1117,6 +1153,12 @@ class MageTabParser(object):
 
 
 def strip_comments(in_fp):
+    """Strip out comment lines indicated by a # at start of line from a given
+    file
+
+    :param in_fp: A file-like buffer object
+    :return: A memory file buffer object with comments stripped out
+    """
     out_fp = StringIO()
     if not isinstance(in_fp, StringIO):
         out_fp.name = in_fp.name
