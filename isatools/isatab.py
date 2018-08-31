@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
 """Functions for reading, writing and validating ISA-Tab.
 
-Don't forget to read the ISA-Tab spec:
-http://isa-specs.readthedocs.io/en/latest/isatab.html
+Functions for reading and writing ISA-Tab. ISA content is loaded into an
+in-memory representation using the ISA Data Model implemented in the
+isatools.model package.
 """
 from __future__ import absolute_import
 import csv
@@ -56,6 +58,11 @@ log = logging.getLogger('isatools')
 
 
 def xml_config_contents(filename):
+    """Gets the contents of a ISA Configuration XML file
+
+    :param filename: ISA Configuration XML filename
+    :return: String content of the configuration file
+    """
     config_filepath = os.path.join(
         os.path.dirname(__file__),
         'resources',
@@ -72,6 +79,7 @@ NUMBER_OF_STUDY_GROUPS = 'Comment[Number of Study Groups]'
 
 
 class _Defaults(object):
+    """An internal object to hold defaults for ISA-Tab features"""
 
     def __init__(self):
         self._tab_options = {
@@ -112,16 +120,24 @@ defaults = _Defaults()
 
 
 def set_defaults(show_progressbar=None, log_level=None):
-    """
-    Set the default IsaTab options.
+    """Set the default ISA-Tab options
+
+    :param show_progressbar: Boolean flag on whether to show progressbar in
+    standard outputs
+    :param log_level: Logging level (INFO, WARN, DEBUG) as standard Python
+    logging levels.
+    :return: None
     """
     defaults.set_defaults(show_progressbar, log_level)
 
 
 def set_tab_option(optname, optvalue):
-    """
-    Set the default value for one of the options that gets passed into the
+    """Set the default value for one of the options that gets passed into the
     IsaTabParser or IsaTabWriter constructor.
+
+    :param optname: Option name as a string
+    :param optvalue:  Option value
+    :return: None
     """
     defaults.tab_options[optname] = optvalue
 
@@ -164,6 +180,13 @@ class TransposedTabParser(object):
         self._ttable_dict = dict(header=list(), table=dict())
 
     def parse(self, filename):
+        """Parse a transposed table into a dictionary for further processing
+        downstream
+
+        :param filename: Path to a table file to parse
+        :return: A dictionary with the table contents indexed with keys
+        corresponding to the column headers
+        """
         try:
             with utf8_text_file_open(filename) as unicode_file:
                 ttable_reader = csv.reader(
@@ -223,8 +246,24 @@ _LABELS_ASSAY_NODES = ['Assay Name', 'MS Assay Name',
 
 def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
          skip_dump_tables=False, write_factor_values_in_assay_table=False):
+    """Serializes ISA objects to ISA-Tab
 
+    :param isa_obj: An ISA Investigation object
+    :param output_path: Path to write the ISA-Tab files to
+    :param i_file_name: Overrides the default name for the investigation file
+    :param skip_dump_tables: Boolean flag on whether or not to write the
+    study sample table files and assay table files
+    :param write_factor_values_in_assay_table: Boolean flag indicating whether
+    or not to write Factor Values in the assay table files
+    :return: None
+    """
     def _build_roles_str(roles):
+        """Build roles strings if multiple roles
+
+        :param roles: A list of OntologyAnnotation objects describing the roles
+        :return: Lists of strings corresponding to the list of role names,
+        accession numbers and term source references.
+        """
         log.debug('building roles from: %s', roles)
         if roles is None:
             roles = list()
@@ -247,6 +286,13 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
         return roles_names, roles_accession_numbers, roles_source_refs
 
     def _build_contacts_section_df(prefix='Investigation', contacts=list()):
+        """Build contacts section DataFrame
+
+        :param prefix: Section prefix - Investigation or Study
+        :param contacts: List of Person objects describing the section's
+        contacts
+        :return: DataFrame corresponding to the CONTACTS section
+        """
         log.debug('building contacts from: %s', contacts)
         contacts_df_cols = [prefix + ' Person Last Name',
                             prefix + ' Person First Name',
@@ -297,6 +343,13 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
 
     def _build_publications_section_df(
             prefix='Investigation', publications=list()):
+        """Build contacts section DataFrame
+
+        :param prefix: Section prefix - Investigation or Study
+        :param publications: List of Publications objects describing the
+        section's publications
+        :return: DataFrame corresponding to the PUBLICATIONS section
+        """
         log.debug('building contacts from: %s', publications)
         publications_df_cols = [
             prefix + ' PubMed ID',
@@ -659,6 +712,11 @@ def dump(isa_obj, output_path, i_file_name='i_investigation.txt',
 
 
 def _get_start_end_nodes(G):
+    """Find the start and end nodes of the graphs
+
+    :param G: A DiGraph of process sequences
+    :return: start nodes (Materials) and end nodes (Processes)
+    """
     start_nodes = list()
     end_nodes = list()
     for process in [n for n in G.nodes() if isinstance(n, Process)]:
@@ -678,6 +736,14 @@ def _get_start_end_nodes(G):
 
 
 def _longest_path_and_attrs(paths):
+    """Function to find the longest paths and attributes to determine the
+    most appropriate ISA-Tab header. This is calculated by adding up the length
+    of each path with the number of attributes needed to describe each node in
+    the graph.
+
+    :param paths: List of end-to-end paths in the graphs
+    :return: The longest path and attributes
+    """
     longest = (0, None)
     for path in paths:
         length = len(path)
@@ -705,6 +771,13 @@ def _longest_path_and_attrs(paths):
 
 
 def _all_end_to_end_paths(G, start_nodes):
+    """Find all the end-to-end complete paths using a networkx algorithm that
+    uses a modified depth-first search to generate the paths
+
+    :param G: A DiGraph of all the assay graphs from the process sequences
+    :param start_nodes: A list of start nodes
+    :return: A list of paths from the start nodes
+    """
     # we know graphs start with Source or Sample and end with Process
     paths = []
     num_start_nodes = len(start_nodes)
@@ -742,18 +815,19 @@ def _all_end_to_end_paths(G, start_nodes):
 
 
 def write_study_table_files(inv_obj, output_dir):
+    """Writes out study table files according to pattern defined by
+
+    Source Name, [ Characteristics[], ... ],
+    Protocol Ref*: 'sample collection', [ ParameterValue[], ... ],
+    Sample Name, [ Characteristics[], ... ]
+    [ FactorValue[], ... ]
+
+    which should be equivalent to studySample.xml in default config
+
+    :param inv_obj: An Investigation object containing ISA content
+    :param output_dir: A path to a directory to write the ISA-Tab study files
+    :return: None
     """
-        Writes out study table files according to pattern defined by
-
-        Source Name, [ Characteristics[], ... ],
-        Protocol Ref*: 'sample collection', [ ParameterValue[], ... ],
-        Sample Name, [ Characteristics[], ... ]
-        [ FactorValue[], ... ]
-
-        which should be equivalent to studySample.xml in default config
-
-    """
-
     if not isinstance(inv_obj, Investigation):
         raise NotImplementedError
     for study_obj in inv_obj.studies:
@@ -931,15 +1005,18 @@ def write_study_table_files(inv_obj, output_dir):
 
 
 def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
-    """
-        Writes out assay table files according to pattern defined by
+    """Writes out assay table files according to pattern defined by
 
-        Sample Name,
-        Protocol Ref: 'sample collection', [ ParameterValue[], ... ],
-        Material Name, [ Characteristics[], ... ]
-        [ FactorValue[], ... ]
+    Sample Name,
+    Protocol Ref: 'sample collection', [ ParameterValue[], ... ],
+    Material Name, [ Characteristics[], ... ]
+    [ FactorValue[], ... ]
 
-
+    :param inv_obj: An Investigation object containing ISA content
+    :param output_dir: A path to a directory to write the ISA-Tab assay files
+    :param write_factor_values: Flag to indicate whether or not to write out
+    the Factor Value columns in the assay tables
+    :return: None
     """
 
     if not isinstance(inv_obj, Investigation):
@@ -1210,6 +1287,16 @@ def write_assay_table_files(inv_obj, output_dir, write_factor_values=False):
 
 
 def get_value_columns(label, x):
+    """Generates the appropriate columns based on the value of the object.
+    For example, if the object's .value value is an OntologyAnnotation,
+    the ISA-Tab requires extra columns Term Source REF and
+    Term Accession Number
+
+    :param label: Header label needed for the object type, e.g. "Sample Name"
+    :param x: The object of interest, e.g. a Sample() object
+    :return: List of column labels, e.g. ["Sample Name.Term Source REF",
+    "Sample Name.Term Accession Number"]
+    """
     if isinstance(x.value, (int, float)) and x.unit:
         if isinstance(x.unit, OntologyAnnotation):
             return map(lambda x: "{0}.{1}".format(label, x),
@@ -1225,23 +1312,50 @@ def get_value_columns(label, x):
 
 
 def get_characteristic_columns(label, c):
+    """Generates Characteristics columns for a given material
+
+    :param label: Header label needed for the material type,
+    e.g. "Extract Name"
+    :param c: The Characteristic object of interest
+    :return: List of column labels
+    """
     columns = ["{0}.Characteristics[{1}]".format(label, c.category.term)]
     columns.extend(get_value_columns(columns[0], c))
     return columns
 
 
 def get_fv_columns(label, fv):
+    """Generates Factor Value columns for a given material
+
+    :param label: Header label needed for the material type,
+    e.g. "Sample Name"
+    :param c: The Factor Value object of interest
+    :return: List of column labels
+    """
     columns = ["{0}.Factor Value[{1}]".format(label, fv.factor_name.name)]
     columns.extend(get_value_columns(columns[0], fv))
     return columns
 
 
 def get_comment_column(label, c):
+    """Generates Comment columns for a given object
+
+    :param label: Header label needed for the object
+    :param c: The object of interest
+    :return: List of column labels
+    """
     columns = ["{0}.Comment[{1}]".format(label, c.name)]
     return columns
 
 
 def write_value_columns(df_dict, label, x):
+    """Adds values to the DataFrame dictionary when building the tables
+
+    :param df_dict: The DataFrame dictionary to insert the relevant values
+    :param label: Header label needed for the object
+    :param x: Object of interest
+    :return: None
+    """
     if isinstance(x.value, (int, float)) and x.unit:
         if isinstance(x.unit, OntologyAnnotation):
             df_dict[label][-1] = x.value
@@ -1264,6 +1378,12 @@ def write_value_columns(df_dict, label, x):
 
 
 def get_pv_columns(label, pv):
+    """Generates Parameter Value columns for a given process
+
+    :param label: Header label needed for the process
+    :param c: The Parameter Value object of interest
+    :return: List of column labels
+    """
     columns = None
     try:
         columns = ["{0}.Parameter Value[{1}]".format(
@@ -1275,14 +1395,36 @@ def get_pv_columns(label, pv):
 
 
 def read_investigation_file(fp):
+    """Reads an investigatin file into a dictionary of DataFrames, each
+    DataFrame being each section of the investigation file. e.g. One DataFrame
+    for the INVESTIGATION PUBLICATIONS section
+
+    :param fp: A file-like buffer object of the investigation file
+    :return: A dictionary holding a set of DataFrames for each section of the
+    investigation file. See below implementation for detail
+    """
 
     def _peek(f):
+        """Peek at the next line without moving to the next line. This function
+        get the position of the next line, reads the next line, then resets the
+        file pointer to the original position
+
+        :param f: A file-like buffer object
+        :return: The next line past the current line
+        """
         position = f.tell()
         line = f.readline()
         f.seek(position)
         return line
 
     def _read_tab_section(f, sec_key, next_sec_key=None):
+        """Slices a file by section delimited by section keys
+
+        :param f: A file-like buffer object
+        :param sec_key: Delimiter key of beginning of section
+        :param next_sec_key: Delimiter key of end of section
+        :return: A memory file of the section slice, as a string buffer object
+        """
         line = f.readline()
         normed_line = line.rstrip()
         if normed_line[0] == '"':
@@ -1302,6 +1444,11 @@ def read_investigation_file(fp):
         return memf
 
     def _build_section_df(f):
+        """Reads a file section into a DataFrame
+
+        :param f: A file-like buffer object
+        :return: A DataFrame corresponding to the file section
+        """
         df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python',
                          encoding='utf-8', comment='#').dropna(
             axis=1, how='all')
@@ -1396,7 +1543,11 @@ def read_investigation_file(fp):
 
 
 def check_utf8(fp):
-    """Used for rule 0010"""
+    """Used for rule 0010
+
+    :param fp: A file-like buffer object
+    :return: None
+    """
     import chardet
     with utf8_text_file_open(fp.name) as fp:
         charset = chardet.detect(fp.read())
@@ -1415,9 +1566,21 @@ def check_utf8(fp):
 
 
 def load_investigation(fp):
-    """Used for rules 0005"""
+    """Used for rules 0005
+
+    :param fp: A file-like buffer object pointing to an investigation file
+    :return: Dictionary of DataFrames for each section
+    """
 
     def check_labels(section, labels_expected, df):
+        """Checks each section is syntactically structured correctly
+
+        :param section: The section of interest
+        :param labels_expected: The list of expected labels in the section
+        :param df: The DataFrame slice of the investigation file we are
+        checking
+        :return: None
+        """
         labels_found = set([x for x in df.columns if isinstance(x, str)])
 
         if not labels_expected.issubset(labels_found):
@@ -1565,7 +1728,11 @@ def load_investigation(fp):
 
 
 def check_filenames_present(i_df):
-    """Used for rule 3005"""
+    """Used for rule 3005
+
+    :param i_df: An investigation DataFrame
+    :return: None
+    """
     for s_pos, study_df in enumerate(i_df['studies']):
         if study_df.iloc[0]['Study File Name'] is '':
             validator_warnings.append({
@@ -1590,8 +1757,17 @@ def check_filenames_present(i_df):
 
 
 def check_date_formats(i_df):
-    """Used for rule 3001"""
+    """Used for rule 3001
+
+    :param i_df: An investigation DataFrame
+    :return: None
+    """
     def check_iso8601_date(date_str):
+        """Checks if a string conforms to ISO8601 dates
+
+        :param date_str: The string to check, expecting a date
+        :return: None
+        """
         if date_str is not '':
             try:
                 iso8601.parse_date(date_str)
@@ -1624,8 +1800,17 @@ def check_date_formats(i_df):
 
 
 def check_dois(i_df):
-    """Used for rule 3002"""
+    """Used for rule 3002
+
+    :param i_df: An investigation DataFrame
+    :return: None
+    """
     def check_doi(doi_str):
+        """Check if a string is a valid DOI
+
+        :param doi_str: A string, expecting a DOI
+        :return: None
+        """
         if doi_str is not '':
             if not _RX_DOI.match(doi_str):
                 validator_warnings.append({
@@ -1644,8 +1829,17 @@ def check_dois(i_df):
 
 
 def check_pubmed_ids_format(i_df):
-    """Used for rule 3003"""
+    """Used for rule 3003
+
+    :param i_df: An investigation DataFrame
+    :return: None
+    """
     def check_pubmed_id(pubmed_id_str):
+        """Checks if a string is a valid PubMed ID
+
+        :param pubmed_id_str: String to check, expecting a PubMed ID
+        :return: None
+        """
         if pubmed_id_str is not '':
             if (_RX_PMID.match(pubmed_id_str) is None) \
                     and (_RX_PMCID.match(pubmed_id_str) is None):
@@ -1664,7 +1858,11 @@ def check_pubmed_ids_format(i_df):
 
 
 def check_protocol_names(i_df):
-    """Used for rule 1010"""
+    """Used for rule 1010
+
+    :param i_df: An investigation DataFrame
+    :return: None
+    """
     for study_protocols_df in i_df['s_protocols']:
         for i, protocol_name in enumerate(study_protocols_df[
                 'Study Protocol Name'].tolist()):
@@ -1681,7 +1879,11 @@ def check_protocol_names(i_df):
 
 
 def check_protocol_parameter_names(i_df):
-    """Used for rule 1011"""
+    """Used for rule 1011
+
+    :param i_df: An investigation DataFrame
+    :return: None
+    """
     for study_protocols_df in i_df['s_protocols']:
         for i, protocol_parameters_names in enumerate(
                 study_protocols_df['Study Protocol Parameters Name'].tolist()):
@@ -1704,7 +1906,11 @@ def check_protocol_parameter_names(i_df):
 
 
 def check_study_factor_names(i_df):
-    """Used for rule 1012"""
+    """Used for rule 1012
+
+    :param i_df: An investigation DataFrame
+    :return: None
+    """
     for study_protocols_df in i_df['s_factors']:
         for i, protocol_name in enumerate(study_protocols_df[
                 'Study Factor Name'].tolist()):
@@ -1721,7 +1927,11 @@ def check_study_factor_names(i_df):
 
 
 def check_ontology_sources(i_df):
-    """Used for rule 3008"""
+    """Used for rule 3008
+
+    :param i_df: An investigation DataFrame
+    :return: None
+    """
     term_source_refs = []
     for i, ontology_source_name in enumerate(
             i_df['ontology_sources']['Term Source Name'].tolist()):
@@ -1740,7 +1950,12 @@ def check_ontology_sources(i_df):
 
 
 def check_table_files_read(i_df, dir_context):
-    """Used for rules 0006 and 0008"""
+    """Used for rules 0006 and 0008
+
+    :param i_df: An investigation DataFrame
+    :param dir_context: Path to where the investigation file is found
+    :return: None
+    """
     for i, study_df in enumerate(i_df['studies']):
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename is not '':
@@ -1777,7 +1992,12 @@ def check_table_files_read(i_df, dir_context):
 
 
 def check_table_files_load(i_df, dir_context):
-    """Used for rules 0007 and 0009"""
+    """Used for rules 0007 and 0009
+
+    :param i_df: An investigation DataFrame
+    :param dir_context: Path to where the investigation file is found
+    :return: None
+    """
     for i, study_df in enumerate(i_df['studies']):
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename is not '':
@@ -1799,6 +2019,13 @@ def check_table_files_load(i_df, dir_context):
 
 
 def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
+    """Checks if samples found in assay tables are found in the study-sample
+    table
+
+    :param i_df: An investigation DataFrame
+    :param dir_context: Path to where the investigation file is found
+    :return: None
+    """
     for i, study_df in enumerate(i_df['studies']):
         study_filename = study_df.iloc[0]['Study File Name']
         if study_filename is not '':
@@ -1829,7 +2056,12 @@ def check_samples_not_declared_in_study_used_in_assay(i_df, dir_context):
 
 
 def check_protocol_usage(i_df, dir_context):
-    """Used for rules 1007 and 1019"""
+    """Used for rules 1007 and 1019
+
+    :param i_df: An investigation DataFrame
+    :param dir_context: Path to where the investigation file is found
+    :return: None
+    """
     for i, study_df in enumerate(i_df['studies']):
         protocols_declared = set(i_df['s_protocols'][i][
             'Study Protocol Name'].tolist())
@@ -1940,6 +2172,11 @@ def check_protocol_usage(i_df, dir_context):
 
 
 def load_table(fp):
+    """Loads a ISA table file into a DataFrame
+
+    :param fp: A file-like buffer object
+    :return: DataFrame of the study or assay table
+    """
     try:
         fp = strip_comments(fp)
         df = pd.read_csv(
@@ -1972,7 +2209,12 @@ def load_table(fp):
 
 
 def load_table_checks(fp):
+    """Checks that a table can be loaded and returns the loaded table, if
+    successful
 
+    :param fp: A file-like buffer object
+    :return: DataFrame of the study or assay table
+    """
     df = load_table(fp)
     columns = df.columns
     for x, column in enumerate(columns):  # check if columns have valid labels
@@ -2137,7 +2379,12 @@ def load_table_checks(fp):
 
 
 def check_study_factor_usage(i_df, dir_context):
-    """Used for rules 1008 and 1021"""
+    """Used for rules 1008 and 1021
+
+    :param i_df: An investigation DataFrame
+    :param dir_context: Path to where the investigation file is found
+    :return: None
+    """
     for i, study_df in enumerate(i_df['studies']):
         study_factors_declared = set(
             i_df['s_factors'][i]['Study Factor Name'].tolist())
@@ -2223,7 +2470,12 @@ def check_study_factor_usage(i_df, dir_context):
 
 
 def check_protocol_parameter_usage(i_df, dir_context):
-    """Used for rules 1009 and 1020"""
+    """Used for rules 1009 and 1020
+
+    :param i_df: An investigation DataFrame
+    :param dir_context: Path to where the investigation file is found
+    :return: None
+    """
     for i, study_df in enumerate(i_df['studies']):
         protocol_parameters_declared = set()
         protocol_parameters_per_protocol = set(
@@ -2327,11 +2579,20 @@ def check_protocol_parameter_usage(i_df, dir_context):
 
 
 def get_ontology_source_refs(i_df):
+    """Gets the Term Source REFs of the declared Ontology Sources
+
+    :param i_df: An investigation DataFrame
+    :return: None
+    """
     return i_df['ontology_sources']['Term Source Name'].tolist()
 
 
 def check_term_source_refs_in_investigation(i_df):
-    """Used for rules 3007 and 3009"""
+    """Used for rules 3007 and 3009
+
+    :param i_df: An investigation DataFrame
+    :return: None
+    """
     ontology_sources_list = get_ontology_source_refs(i_df)
 
     def check_study_term_sources_in_secton_field(
@@ -2415,7 +2676,12 @@ def check_term_source_refs_in_investigation(i_df):
 
 
 def check_term_source_refs_in_assay_tables(i_df, dir_context):
-    """Used for rules 3007 and 3009"""
+    """Used for rules 3007 and 3009
+
+    :param i_df: An investigation DataFrame
+    :return: None
+    """
+
     import math
     ontology_sources_list = set(get_ontology_source_refs(i_df))
     for i, study_df in enumerate(i_df['studies']):
@@ -2586,12 +2852,22 @@ def check_term_source_refs_in_assay_tables(i_df, dir_context):
 
 
 def check_term_source_refs_usage(i_df, dir_context):
+    """Checks Term Source REF linkages in investigation, study and assay files
+
+    :param i_df: An investigation DataFrame
+    :param dir_context: Path to where the investigation file is found
+    :return: None
+    """
     check_term_source_refs_in_investigation(i_df)
     check_term_source_refs_in_assay_tables(i_df, dir_context)
 
 
 def load_config(config_dir):
-    """Rule 4001"""
+    """Rule 4001
+
+    :param config_dir: Path to a directory containing ISA Configuration XMLs
+    :return: A dictionary of ISA Configuration objects
+    """
     configs = None
     try:
         configs = isatab_configurator.load(config_dir)
@@ -2623,7 +2899,12 @@ def load_config(config_dir):
 
 
 def check_measurement_technology_types(i_df, configs):
-    """Rule 4002"""
+    """Rule 4002
+
+    :param i_df: An investigation DataFrame
+    :param configs: A dictionary of ISA Configuration objects
+    :return: None
+    """
     for i, assay_df in enumerate(i_df['s_assays']):
         measurement_types = assay_df['Study Assay Measurement Type'].tolist()
         technology_types = assay_df['Study Assay Technology Type'].tolist()
@@ -2647,7 +2928,12 @@ def check_measurement_technology_types(i_df, configs):
 
 
 def check_investigation_against_config(i_df, configs):
+    """Checks investigation file against the loaded configurations
 
+    :param i_df: An investigation DataFrame
+    :param configs: A dictionary of ISA Configuration objects
+    :return: None
+    """
     def check_section_against_required_fields_one_value(
             section, required, i=0):
         fields_required = [i for i in section.columns if i in required]
@@ -2753,6 +3039,13 @@ def check_investigation_against_config(i_df, configs):
 
 
 def check_study_table_against_config(s_df, protocols_declared, config):
+    """Checks a study-sample table against a given configuration
+
+    :param s_df: A study-sample table DataFrame
+    :param protocols_declared: List of protocols declared
+    :param config: An ISA Configuration object
+    :return: None
+    """
     # We are assuming the table load validation earlier passed
 
     # First check column order is correct against the configuration
@@ -2799,6 +3092,12 @@ def check_study_table_against_config(s_df, protocols_declared, config):
 
 
 def check_assay_table_against_config(s_df, config):
+    """Checks a assay table against a given configuration
+
+    :param s_df: An assay table DataFrame
+    :param config: An ISA Configuration object
+    :return: None
+    """
     import itertools
     # We are assuming the table load validation earlier passed
     # First check column order is correct against the configuration
@@ -2848,6 +3147,13 @@ def check_assay_table_against_config(s_df, config):
 
 
 def cell_has_value(cell):
+    """Checks if a cell has any value. This is because Pandas DataFrames
+    sometimes renders empty cells with default null values such as 'Unnamed: '
+    or other strings
+
+    :param cell: A value of a give cell
+    :return: True if it has a value, False if it does not
+    """
     if isinstance(cell, float):
         if math.isnan(cell):
             return True
@@ -2864,6 +3170,14 @@ def cell_has_value(cell):
 
 def check_assay_table_with_config(
         df, config, filename, protocol_names_and_types):
+    """Checks a assay table against a given configuration
+
+    :param df: A table DataFrame
+    :param config: An ISA Configuration object
+    :param filename: The filename of the table
+    :param protocol_names_and_types: List of protocol names and types
+    :return: None
+    """
     columns = list(df.columns)
     # Get required headers from config and check if they are present in the
     # table; Rule 4010
@@ -2918,7 +3232,15 @@ def check_assay_table_with_config(
 
 
 def check_study_assay_tables_against_config(i_df, dir_context, configs):
-    """Used for rules 4003-4008"""
+    """Used for rules 4003-4008. Checks all study and assay tables against
+    the configurations, for a given ISA-Tab. It looks first at the
+    study and assay tables that are referenced by the investigation.
+
+    :param i_df: An investigation DataFrame dictionary
+    :param dir_context: The path in which the ISA-Tab files are sourced
+    :param configs: The loaded set of ISA Configuration XMLs as config objects
+    :return: None
+    """
     for i, study_df in enumerate(i_df['studies']):
         study_filename = study_df.iloc[0]['Study File Name']
         protocol_names = i_df['s_protocols'][i]['Study Protocol Name'].tolist()
@@ -2967,6 +3289,11 @@ def check_study_assay_tables_against_config(i_df, dir_context, configs):
 
 
 def check_factor_value_presence(table):
+    """Checks if a Factor Value cell is empty
+
+    :param table: Table as a DataFrame
+    :return: None
+    """
     factor_fields = [
         i for i in table.columns if i.lower().startswith('factor value')]
     for factor_field in factor_fields:
@@ -2984,6 +3311,12 @@ def check_factor_value_presence(table):
 
 
 def check_required_fields(table, cfg):
+    """Checks if the required fields by a configuration have empty cells
+
+    :param table: Table as a DataFrame
+    :param cfg: A ISA Configuration object
+    :return: None
+    """
     for fheader in [i.header for i in cfg.get_isatab_configuration()[
             0].get_field() if i.is_required]:
         found_field = [i for i in table.columns if i.lower() ==
@@ -3012,6 +3345,13 @@ def check_required_fields(table, cfg):
 
 
 def check_sample_names(study_sample_table, assay_tables=[]):
+    """Checks that samples in the assay tables also appear in the study-sample
+    table
+
+    :param study_sample_table: Study table DataFrame
+    :param assay_tables: A list of Assay table DataFrames
+    :return: None
+    """
     if len(assay_tables) > 0:
         study_samples = set(study_sample_table['Sample Name'])
         for assay_table in assay_tables:
@@ -3034,7 +3374,19 @@ def check_sample_names(study_sample_table, assay_tables=[]):
 
 
 def check_field_values(table, cfg):
+    """Checks table fields against configuration
+
+    :param table: Table DataFrame
+    :param cfg: A ISA Configuration object
+    :return: None
+    """
     def check_single_field(cell_value, cfg_field):
+        """Checks a single cell against the configuration field required
+
+        :param cell_value: Value taken from a table cell
+        :param cfg_field: Field configuration
+        :return: Returns True if OK, False if not OK
+        """
         # First check if the value is required by config
         if isinstance(cell_value, float):
             if math.isnan(cell_value):
@@ -3140,7 +3492,22 @@ def check_field_values(table, cfg):
 
 
 def check_unit_field(table, cfg):
+    """Checks if unit columns are valid against a configuration
+
+    :param table: Table DataFrame
+    :param cfg: An ISA Configuration object
+    :return: True if all unit columns in table are OK, False if not OK
+    """
     def check_unit_value(cell_value, unit_value, cfield, filename):
+        """Checks if a value cell that has a unit has correct unit columns
+        according to the configuration
+
+        :param cell_value: The cell value
+        :param unit_value: The unit value
+        :param cfield: Configuration field from the ISA Config
+        :param filename: Filename of the table
+        :return: True if the unit cells are OK, False if not
+        """
         if cell_has_value(cell_value) or cell_has_value(unit_value):
             validator_warnings.append({
                 "message": "Cell found has unit but no value",
@@ -3196,7 +3563,14 @@ def check_unit_field(table, cfg):
 def check_protocol_fields(table, cfg, proto_map):
     from itertools import tee
 
-    def pairwise(iterable):  # A lovely pairwise iterator
+    def pairwise(iterable):
+        """A lovely pairwise iterator, e.g.
+
+        [a, b, c, d] -> [(a, b), (b, c), (c, d)]
+
+        :param iterable: A Python iterable
+        :return: A pairwise generator
+        """
         a, b = tee(iterable)
         next(b, None)
         return zip(a, b)
@@ -3298,7 +3672,26 @@ def check_protocol_fields(table, cfg, proto_map):
 
 
 def check_ontology_fields(table, cfg, tsrs):
+    """Checks ontology annotation columns are correct for a given configuration
+    in a table
+
+    :param table: Table DataFrame
+    :param cfg: An ISA Configuration object
+    :param tsrs: List of Term Source References from the Ontology Source
+    Reference section
+    :return: True if OK, False if not OK
+    """
     def check_single_field(cell_value, source, acc, cfield, filename):
+        """Checks ontology annotation columns are correct for a given
+        configuration for a given cell value
+
+        :param cell_value: Cell value
+        :param source: Term Source REF value
+        :param acc: Term Accession Number value
+        :param cfield: The configuration specification from the ISA Config
+        :param filename: Filename of the table
+        :return: True if OK, False if not OK
+        """
         if (cell_has_value(cell_value) and not cell_has_value(
                 source) and cell_has_value(acc)) or not cell_has_value(
                 cell_value):
@@ -3373,6 +3766,13 @@ default_config_dir = os.path.join(BASE_DIR, 'resources', 'config', 'xml')
 
 
 def get_num_study_groups(study_sample_table, study_filename):
+    """Gets the number of study groups based on Factor Value combinations
+    found in the study-sample table
+
+    :param study_sample_table: The study-sample table as a DataFrame
+    :param study_filename: The filename of the file
+    :return: The computed number of study groups
+    """
     num_study_groups = -1
     factor_columns = [
         x for x in study_sample_table.columns if x.startswith('Factor Value')]
@@ -3385,6 +3785,14 @@ def get_num_study_groups(study_sample_table, study_filename):
 
 
 def check_study_groups(table, filename, study_group_size_in_comment):
+    """Checks the number of study groups against an expected group size
+
+    :param table: Table as a DataFrame
+    :param filename: Filename of the table
+    :param study_group_size_in_comment: Expected group size
+    :return: True if computed group size matches expected group size, False if
+    not
+    """
     num_study_groups = get_num_study_groups(table, filename)
     log.info('Found {} study groups in {}'.format(
         num_study_groups, filename))
@@ -3413,6 +3821,16 @@ def check_study_groups(table, filename, study_group_size_in_comment):
 
 
 def validate(fp, config_dir=default_config_dir, log_level=None):
+    """Runs the ISA-Tab validator and builds a validation report. Note that
+    this function uses global variables to collect validation messages
+
+    :param fp: A file-like buffer object pointing to the investigation file
+    :param config_dir: Full path to the ISA XML configuration directory
+    :param log_level: Logging level as defined by the logging module. e.g.
+    logging.WARN, logging.DEBUG etc.
+    :return: A JSON report containing validation messages of different levels,
+    e.g. errors, warnings, info.
+    """
     global validator_errors
     global validator_warnings
     global validator_info
@@ -3721,7 +4139,7 @@ def validate(fp, config_dir=default_config_dir, log_level=None):
 
 
 def batch_validate(tab_dir_list):
-    """ Validate a batch of ISA-Tab archives
+    """Validate a batch of ISA-Tab archives
     :param tab_dir_list: List of file paths to the ISA-Tab archives to validate
     :return: batch report as JSON
 
@@ -3756,6 +4174,14 @@ def batch_validate(tab_dir_list):
 
 def dumps(isa_obj, skip_dump_tables=False,
           write_fvs_in_assay_table=False):
+    """Serializes ISA objects to ISA-Tab to standard output
+
+    :param isa_obj: An ISA Investigation object
+    :param skip_dump_tables: Boolean flag on whether or not to write the
+    :param write_factor_values_in_assay_table: Boolean flag indicating whether
+        or not to write Factor Values in the assay table files
+    :return: String output of the ISA-Tab files
+    """
     tmp = None
     output = str()
     try:
@@ -3784,6 +4210,12 @@ def dumps(isa_obj, skip_dump_tables=False,
 
 
 def dump_tables_to_dataframes(isa_obj):
+    """Serialize the table files only, to DataFrames
+
+    :param isa_obj: An ISA Investigation object
+    :return: A dictionary containing ISA table filenames as keys and the
+    corresponding tables as DataFrames as the values
+    """
     tmp = None
     output = dict()
     try:
@@ -3800,6 +4232,13 @@ def dump_tables_to_dataframes(isa_obj):
 
 
 def load(isatab_path_or_ifile, skip_load_tables=False):
+    """Load an ISA-Tab into ISA Data Model objects
+
+    :param isatab_path_or_ifile: Full path to an ISA-Tab directory or file-like
+    buffer object pointing to an investigation file
+    :param skip_load_tables: Whether or not to skip loading the table files
+    :return: Investigation objects
+    """
     # from DF of investigation file
 
     def get_ontology_source(term_source_ref):
@@ -3810,6 +4249,14 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
         return os
 
     def get_oa(val, accession, ts_ref):
+        """Gets a OntologyAnnotation for a give value, accession and
+        term source REF
+
+        :param val: Value of the OA
+        :param accession: Term Accession Number of the OA
+        :param ts_ref: Term Source REF of the OA
+        :return: An OntologyAnnotation object
+        """
         if val == '' and accession == '':
             return None
         else:
@@ -3820,6 +4267,13 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
             )
 
     def get_oa_list_from_semi_c_list(vals, accessions, ts_refs):
+        """Gets a list of OntologyAnnotations from semi-colon delimited lists
+
+        :param vals: A list of values, separated by semi-colons
+        :param accessions: A list of accessions, separated by semi-colons
+        :param ts_refs: A list of term source REFs, separated by semi-colons
+        :return: A list of OntologyAnnotation objects
+        """
         oa_list = []
         accession_split = accessions.split(';')
         ts_refs_split = ts_refs.split(';')
@@ -3836,6 +4290,12 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
         return oa_list
 
     def get_publications(section_df):
+        """Get a list of Publications from the relevant investigation file
+        section
+
+        :param section_df: A PUBLICATIONS section DataFrame
+        :return: A list of Publication objects
+        """
         if 'Investigation PubMed ID' in section_df.columns:
             prefix = 'Investigation '
         elif 'Study PubMed ID' in section_df.columns:
@@ -3862,6 +4322,12 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
         return publications
 
     def get_contacts(section_df):
+        """Get a list of Person objects from the relevant investigation file
+        section
+
+        :param section_df: A CONTACTS section DataFrame
+        :return: A list of Person objects
+        """
         if 'Investigation Person Last Name' in section_df.columns:
             prefix = 'Investigation '
         elif 'Study Person Last Name' in section_df.columns:
@@ -3891,7 +4357,11 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
         return contacts
 
     def get_comments(section_df):
+        """Get Comments from a section DataFrame
 
+        :param section_df: A section DataFrame
+        :return: A list of Comment objects as found in the section
+        """
         comments = []
         for col in [
                 x for x in section_df.columns if _RX_COMMENT.match(str(x))]:
@@ -3902,6 +4372,12 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
         return comments
 
     def get_comments_row(cols, row):
+        """Get Comments in a given DataFrame row
+
+        :param cols: List of DataFrame columns
+        :param row: DataFrame row as a Series object
+        :return: A list of Comment objects
+        """
         comments = []
         for col in [x for x in cols if _RX_COMMENT.match(str(x))]:
             comment = Comment(
@@ -4127,6 +4603,27 @@ def load(isatab_path_or_ifile, skip_load_tables=False):
 
 def process_keygen(protocol_ref, column_group,
                    object_label_index, all_columns, series, series_index, DF):
+    """Generate the process key.
+
+    This works by trying to find the relevant Name column, if available, that
+    the data indicates the disambiguation.
+
+    If not available, we look at the Parameter Values and use their uniqueness
+    to disambiguate the Processes.
+
+    If PVs not available we look at the left-most inputs or right-most outputs
+    to use as the disambiguation.
+
+    :param protocol_ref: The Protocol REF value
+    :param column_group: List of column headers for the object in context, e.g.
+    [Sample Name, Characteristics[Material Type], Comment[My Comment]]
+    :param object_label_index: Index of the main object label, e.g. Sample Name
+    :param all_columns: List of all column headers
+    :param series: A DataFrame Series object of the row we are processing
+    :param series_index: Row index of the Series
+    :param DF: The whole table's DataFrame
+    :return: The process key to disambiguate Processes
+    """
     name_column_hits = [n for n in column_group if n in _LABELS_ASSAY_NODES]
     if len(name_column_hits) == 1:
         return series[name_column_hits[0]]
@@ -4190,7 +4687,17 @@ def process_keygen(protocol_ref, column_group,
 
 def get_value(object_column, column_group, object_series,
               ontology_source_map, unit_categories):
+    """Gets the appropriate value for a give column group
 
+    :param object_column: The object's column header name, e.g. Sample Name
+    :param column_group: The column group that includes the object's qualifiers
+    :param object_series: Pandas DataFrame Series for the row
+    :param ontology_source_map: A mapping to the OntologySource objects
+    created after parsing the investigation file
+    :param unit_categories: A map of unit categories to reference
+    :return: The appropriate value and unit according to the columns parsed,
+    e.g. (str, None) (float, Unit), (OntologyAnnotation, None)
+    """
     cell_value = object_series[object_column]
 
     if cell_value == '':
@@ -4265,19 +4772,30 @@ def get_value(object_column, column_group, object_series,
 
 
 def pairwise(iterable):
-    """Pairwise iterator"""
+    """A lovely pairwise iterator, e.g.
+
+    [a, b, c, d] -> [(a, b), (b, c), (c, d)]
+
+    :param iterable: A Python iterable
+    :return: A pairwise generator
+    """
     a, b = tee(iterable)
     next(b, None)
     return zip(a, b)
 
 
 class IsaTabSeries(pd.Series):
+    """A wrapper for Pandas Series to use in IsaTabDataFrame"""
     @property
     def _consutrctor(self):
         return IsaTabSeries
 
 
 class IsaTabDataFrame(pd.DataFrame):
+    """The IsaTabDataFrame is used to allow access to the cleaned-up ISA-Tab
+    header as Pandas does not allow duplicate labels in the header but ISA-Tab
+    needs them
+    """
 
     DATA_FILE_LABELS = [
         'Raw Data File', 'Derived Spectral Data File',
@@ -4310,6 +4828,11 @@ class IsaTabDataFrame(pd.DataFrame):
 
     @staticmethod
     def _clean_label(label):
+        """Clean up a column header label
+
+        :param label: A string corresponding to a column header
+        :return: A cleaned up ISA-Tab header label
+        """
         for clean_label in IsaTabDataFrame.ALL_LABELS:
             if clean_label.lower() in label.strip().lower():
                 return clean_label
@@ -4328,10 +4851,22 @@ class IsaTabDataFrame(pd.DataFrame):
 
     @property
     def isatab_header(self):
+        """Get the ISA-Tab header
+
+        :return: A list of cleaned-up column headings
+        """
         return list(map(lambda x: self._clean_label(x), self.columns))
 
 
 def read_tfile(tfile_path, index_col=None, factor_filter=None):
+    """Read a table file into a DataFrame
+
+    :param tfile_path: Path to a table file to load
+    :param index_col: The column to use as index
+    :param factor_filter: Factor filter tuple, e.g. ('Gender', 'Male') will
+    filter on FactorValue[Gender] == Male
+    :return: A table file DataFrame
+    """
     log.debug("Opening %s", tfile_path)
     with utf8_text_file_open(tfile_path) as tfile_fp:
         log.debug("Reading file header")
@@ -4356,9 +4891,7 @@ def get_multiple_index(file_index, key):
 
 
 def find_lt(a, x):
-
     i = bisect_left(a, x)
-
     if i:
         return a[i - 1]
     else:
@@ -4366,9 +4899,7 @@ def find_lt(a, x):
 
 
 def find_gt(a, x):
-
     i = bisect_right(a, x)
-
     if i != len(a):
         return a[i]
     else:
@@ -4376,7 +4907,11 @@ def find_gt(a, x):
 
 
 def preprocess(DF):
-    """Check headers, and insert Protocol REF if needed"""
+    """Check headers, and insert Protocol REF if needed
+
+    :param DF: Table DataFrame
+    :return: Processed DataFrame
+    """
     columns = DF.columns
     process_node_name_indices = [
         x for x, y in enumerate(columns) if y in _LABELS_ASSAY_NODES]
@@ -4446,6 +4981,13 @@ def preprocess(DF):
 
 
 def get_object_column_map(isatab_header, df_columns):
+    """Builds a mapping of headers to objects
+
+    :param isatab_header: The list of ISA-Tab column names
+    :param df_columns: The list of columns from the DataFrame
+    :return: A list of column groups (also lists) splitting the header
+    according to object type
+    """
     if set(isatab_header) == set(df_columns):
         object_index = [
             i for i, x in enumerate(
@@ -4476,6 +5018,8 @@ def get_object_column_map(isatab_header, df_columns):
 
 
 class ProcessSequenceFactory:
+    """The ProcessSequenceFactory is used to parse the tables and build the
+    process sequences representing the experimental graphs"""
 
     def __init__(self, ontology_sources=None, study_samples=None,
                  study_protocols=None, study_factors=None):
@@ -4484,8 +5028,14 @@ class ProcessSequenceFactory:
         self.protocols = study_protocols
         self.factors = study_factors
 
-    def create_from_df(self, DF):  # from DF of a table file
+    def create_from_df(self, DF):
+        """Create the process sequences from the table DataFrame
 
+        :param DF: Table DataFrame
+        :return: List of Processes coressponding to the process sequences. The
+        Processes are linked appropriately to all other ISA content objects,
+        such as Samples, DataFiles, and to each other.
+        """
         DF = preprocess(DF=DF)
 
         if self.ontology_sources is not None:
@@ -5021,6 +5571,7 @@ def merge_study_with_assay_tables(study_file_path, assay_file_path,
 
 
 def squashstr(string):
+
     nospaces = "".join(string.split())
     return nospaces.lower()
 

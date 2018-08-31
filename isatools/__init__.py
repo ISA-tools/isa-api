@@ -1,3 +1,20 @@
+# -*- coding: utf-8 -*-
+"""isatools meta-module for importing various submodules.
+
+This module allows users to import submodules without having to use fully
+qualified import indices by exposing all submodules on the same level
+entry point.
+
+Example:
+
+    Instead of importing the isatab2json converter directly::
+
+        $ from isatools.convert import isatab2json
+
+    We can import the same module without specifying the .convert package::
+
+        $ from isatools import isatab2json
+"""
 from __future__ import absolute_import
 
 from isatools.convert import (

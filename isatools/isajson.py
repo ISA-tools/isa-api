@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
 """Functions for reading, writing and validating ISA-JSON.
 
-Don't forget to read the ISA-JSON spec:
-http://isa-specs.readthedocs.io/en/latest/isajson.html
+Functions for reading and writing ISA-JSON. ISA content is loaded into an
+in-memory representation using the ISA Data Model implemented in the
+isatools.model package.
 """
 from __future__ import absolute_import
 import glob
@@ -54,8 +56,23 @@ _RX_PMCID = re.compile("PMC[0-9]{8}")
 
 
 def load(fp):
+    """Load ISA-JSON from a file-like buffer.
+
+        Args:
+            fp (file or string buffer): An open file pointer or string buffer.
+
+        Returns:
+            A combination of ISA Data Model objects as defined in the
+            isatools.model module. The root object should always be a
+            Investigation object.
+    """
 
     def get_comments(j):
+        """Get a Comment object from a ISA-JSON fragment
+
+        :param j: JSON fragment representing a list of comments
+        :return: A list of Comment objects
+        """
         comments = []
         if "comments" in j.keys():
             for comment_json in j["comments"]:
@@ -66,6 +83,11 @@ def load(fp):
         return comments
 
     def get_roles(j):
+        """Get a roles as OntologyAnnotations from a ISA-JSON fragment
+
+        :param j: JSON fragment representing a list of roles
+        :return: A list of OntologyAnnotation objects
+        """
         roles = None
         if "roles" in j.keys():
             roles = list()
@@ -76,12 +98,6 @@ def load(fp):
                 role = OntologyAnnotation(term, term_source, term_accession)
                 roles.append(role)
         return roles
-
-    def get_jvalue(dict, key):
-        if key in dict.keys():
-            return dict[key]
-        else:
-            return None
 
     investigation_json = json.load(fp)
     investigation = Investigation(
@@ -359,8 +375,8 @@ def load(fp):
                 value = characteristic_json["value"]
                 unit = None
                 characteristic = Characteristic(
-                        category=categories_dict[characteristic_json[
-                            "category"]["@id"]])
+                    category=categories_dict[characteristic_json[
+                        "category"]["@id"]])
                 if isinstance(value, dict):
                     try:
                         value = OntologyAnnotation(
@@ -391,13 +407,13 @@ def load(fp):
                 if isinstance(value, dict):
                     try:
                         value = OntologyAnnotation(
-                                    term=factor_value_json[
-                                        "value"]["annotationValue"],
-                                    term_accession=factor_value_json[
-                                        "value"]["termAccession"],
-                                    term_source=term_source_dict[
-                                        factor_value_json[
-                                            "value"]["termSource"]])
+                            term=factor_value_json[
+                                "value"]["annotationValue"],
+                            term_accession=factor_value_json[
+                                "value"]["termAccession"],
+                            term_source=term_source_dict[
+                                factor_value_json[
+                                    "value"]["termSource"]])
                     except KeyError:
                         raise IOError("Can't create value as annotation")
                 elif isinstance(value, (int, float)):
@@ -450,7 +466,7 @@ def load(fp):
                     parameter_value = ParameterValue(
                         category=parameters_dict[
                             parameter_value_json["category"]["@id"]],
-                        )
+                    )
                     try:
                         parameter_value.value = OntologyAnnotation(
                             term=parameter_value_json[
@@ -667,10 +683,10 @@ def load(fp):
                         except KeyError:
                             pass
                         finally:
-                                try:
-                                    output = data_dict[output_json["@id"]]
-                                except KeyError:
-                                    pass
+                            try:
+                                output = data_dict[output_json["@id"]]
+                            except KeyError:
+                                pass
                     if output is None:
                         raise IOError(
                             "Could not find output node in samples or "
@@ -700,7 +716,7 @@ def load(fp):
                             parameter_value = ParameterValue(
                                 category=parameters_dict[
                                     parameter_value_json["category"]["@id"]],
-                                )
+                            )
                             try:
                                 parameter_value.value = OntologyAnnotation(
                                     term=parameter_value_json[
@@ -748,17 +764,29 @@ def load(fp):
 
 
 def get_source_ids(study_json):
-    """Used for rule 1002"""
+    """Used for rule 1002
+
+    :param study_json: Study JSON fragment
+    :return: List of source IDs
+    """
     return [source["@id"] for source in study_json["materials"]["sources"]]
 
 
 def get_sample_ids(study_json):
-    """Used for rule 1003"""
+    """Used for rule 1003
+
+    :param study_json: Study JSON fragment
+    :return: List of sample IDs
+    """
     return [sample["@id"] for sample in study_json["materials"]["samples"]]
 
 
 def get_material_ids(study_json):
-    """Used for rule 1005"""
+    """Used for rule 1005
+
+    :param study_json: Study JSON fragment
+    :return: List of material IDs
+    """
     material_ids = list()
     for assay_json in study_json["assays"]:
         material_ids.extend([material["@id"] for material in assay_json[
@@ -767,7 +795,11 @@ def get_material_ids(study_json):
 
 
 def get_data_file_ids(study_json):
-    """Used for rule 1004"""
+    """Used for rule 1004
+
+    :param study_json: Study JSON fragment
+    :return: List of data file IDs
+    """
     data_file_ids = list()
     for assay_json in study_json["assays"]:
         data_file_ids.extend([data_file["@id"] for data_file in assay_json[
@@ -776,7 +808,11 @@ def get_data_file_ids(study_json):
 
 
 def get_io_ids_in_process_sequence(study_json):
-    """Used for rules 1001-1005"""
+    """Used for rules 1001-1005
+
+    :param study_json: Study JSON fragment
+    :return: List of IDs for all inputs and outputs in all process sequences
+    """
     all_process_sequences = list(study_json["processSequence"])
     for assay_json in study_json["assays"]:
         all_process_sequences.extend(assay_json["processSequence"])
@@ -788,7 +824,12 @@ def get_io_ids_in_process_sequence(study_json):
 
 
 def check_material_ids_declared_used(study_json, id_collector_func):
-    """Used for rules 1015-1018"""
+    """Used for rules 1015-1018
+
+    :param study_json: Study JSON fragment
+    :param id_collector_func: An ID-collector function (e.g. see above)
+    :return: None
+    """
     node_ids = id_collector_func(study_json)
     io_ids_in_process_sequence = get_io_ids_in_process_sequence(study_json)
     is_node_ids_used = set(node_ids).issubset(set(io_ids_in_process_sequence))
@@ -804,7 +845,11 @@ def check_material_ids_declared_used(study_json, id_collector_func):
 
 
 def check_material_ids_not_declared_used(study_json):
-    """Used for rules 1002-1005"""
+    """Used for rules 1002-1005
+
+    :param study_json: Study JSON fragment
+    :return: None
+    """
     node_ids = get_source_ids(study_json) + get_sample_ids(study_json) + \
         get_material_ids(study_json) + get_data_file_ids(study_json)
     io_ids_in_process_sequence = get_io_ids_in_process_sequence(study_json)
@@ -823,7 +868,11 @@ def check_material_ids_not_declared_used(study_json):
 
 
 def check_process_sequence_links(process_sequence_json):
-    """Used for rule 1006"""
+    """Used for rule 1006
+
+    :param process_sequence_json: Process sequence JSON fragment
+    :return: None
+    """
     process_ids = [process["@id"] for process in process_sequence_json]
     for process in process_sequence_json:
         try:
@@ -838,7 +887,8 @@ def check_process_sequence_links(process_sequence_json):
                 })
                 log.error("(E) previousProcess link {} in process {} does not "
                           "refer to another process in sequence".format(
-                            process["previousProcess"]["@id"], process["@id"]))
+                              process["previousProcess"]["@id"],
+                              process["@id"]))
         except KeyError:
             pass
         try:
@@ -853,18 +903,26 @@ def check_process_sequence_links(process_sequence_json):
                 })
                 log.error("(E) nextProcess {} in process {} does not refer to "
                           "another process in sequence".format(
-                            process["nextProcess"]["@id"], process["@id"]))
+                              process["nextProcess"]["@id"], process["@id"]))
         except KeyError:
             pass
 
 
 def get_study_protocol_ids(study_json):
-    """Used for rule 1007"""
+    """Used for rule 1007
+
+    :param study_json: Study JSON fragment
+    :return: List of protocol IDs
+    """
     return [protocol["@id"] for protocol in study_json["protocols"]]
 
 
 def check_process_protocol_ids_usage(study_json):
-    """Used for rules 1007 and 1019"""
+    """Used for rules 1007 and 1019
+
+    :param study_json: Study JSON fragment
+    :return: None
+    """
     protocol_ids_declared = get_study_protocol_ids(study_json)
     process_sequence = study_json["processSequence"]
     protocol_ids_used = list()
@@ -902,7 +960,11 @@ def check_process_protocol_ids_usage(study_json):
 
 
 def get_study_protocols_parameter_ids(study_json):
-    """Used for rule 1009"""
+    """Used for rule 1009
+
+    :param study_json: Study JSON fragment
+    :return: List of protocol parameter IDs
+    """
     return [elem for iterabl in
             [[param["@id"] for param in protocol["parameters"]] for protocol in
              study_json["protocols"]] for elem in iterabl]
@@ -921,13 +983,17 @@ def get_parameter_value_parameter_ids(study_json):
             [elem for iterabl in
              [[parameter_value["category"]["@id"] for parameter_value in
                process["parameterValues"]] for process in assay[
-               "processSequence"]] for elem in iterabl]
-                                      )
+                 "processSequence"]] for elem in iterabl]
+        )
     return study_pv_parameter_ids
 
 
 def check_protocol_parameter_ids_usage(study_json):
-    """Used for rule 1009 and 1020"""
+    """Used for rule 1009 and 1020
+
+    :param study_json: Study JSON fragment
+    :return: None
+    """
     protocols_declared = get_study_protocols_parameter_ids(study_json) + \
         ["#parameter/Array_Design_REF"]  # + special case
     protocols_used = get_parameter_value_parameter_ids(study_json)
@@ -940,7 +1006,7 @@ def check_protocol_parameter_ids_usage(study_json):
         })
         log.error("(E) There are protocol parameters {} used in a study or "
                   "assay process not declared in any protocol".format(
-                    list(diff)))
+                      list(diff)))
     elif len(set(protocols_declared) - set(protocols_used)) > 0:
         diff = set(protocols_declared) - set(protocols_used)
         warnings.append({
@@ -955,13 +1021,21 @@ def check_protocol_parameter_ids_usage(study_json):
 
 
 def get_characteristic_category_ids(study_or_assay_json):
-    """Used for rule 1013"""
+    """Used for rule 1013
+
+    :param study_or_assay_json: Study or assay JSON fragment
+    :return: List of characteristic category IDs
+    """
     return [category["@id"] for category in study_or_assay_json[
         "characteristicCategories"]]
 
 
 def get_characteristic_category_ids_in_study_materials(study_json):
-    """Used for rule 1013"""
+    """Used for rule 1013
+
+    :param study_json: Study JSON fragement
+    :return: List of characteristic category IDs for study materials only
+    """
     return [elem for iterabl in
             [[characteristic["category"]["@id"]
               for characteristic in material["characteristics"]]
@@ -971,7 +1045,11 @@ def get_characteristic_category_ids_in_study_materials(study_json):
 
 
 def get_characteristic_category_ids_in_assay_materials(assay_json):
-    """Used for rule 1013"""
+    """Used for rule 1013
+
+    :param assay_json: Assay JSON fragment
+    :return: List of characteristic category IDs for assay materials only
+    """
     return [elem for iterabl in [[characteristic["category"]["@id"]
                                   for characteristic in material[
                                       "characteristics"]]
@@ -983,7 +1061,11 @@ def get_characteristic_category_ids_in_assay_materials(assay_json):
 
 
 def check_characteristic_category_ids_usage(studies_json):
-    """Used for rule 1013"""
+    """Used for rule 1013
+
+    :param studies_json: List of study JSON fragments
+    :return: None
+    """
     characteristic_categories_declared = list()
     characteristic_categories_used = list()
     for study_json in studies_json:
@@ -1004,20 +1086,20 @@ def check_characteristic_category_ids_usage(studies_json):
     if len(set(characteristic_categories_used) -
            set(characteristic_categories_declared)) > 0:
         diff = set(characteristic_categories_used) - \
-               set(characteristic_categories_declared)
+            set(characteristic_categories_declared)
         errors.append({
-                "message": "Missing Characteristic Category declaration",
-                "supplemental": "Characteristic Categories {} used not "
-                                "declared".format(list(diff)),
-                "code": 1013
-            })
+            "message": "Missing Characteristic Category declaration",
+            "supplemental": "Characteristic Categories {} used not "
+            "declared".format(list(diff)),
+            "code": 1013
+        })
         log.error("(E) There are characteristic categories {} used in a "
                   "source or sample characteristic that have not been not "
                   "declared".format(list(diff)))
     elif len(set(characteristic_categories_declared) -
              set(characteristic_categories_used)) > 0:
         diff = set(characteristic_categories_declared) - \
-               set(characteristic_categories_used)
+            set(characteristic_categories_used)
         warnings.append({
             "message": "Characteristic Category not used",
             "supplemental": "Characteristic Categories {} declared".format(
@@ -1030,12 +1112,20 @@ def check_characteristic_category_ids_usage(studies_json):
 
 
 def get_study_factor_ids(study_json):
-    """Used for rule 1008 and 1021"""
+    """Used for rule 1008 and 1021
+
+    :param study_json: Study JSON fragment
+    :return: List of study factor IDs
+    """
     return [factor["@id"] for factor in study_json["factors"]]
 
 
 def get_study_factor_ids_in_sample_factor_values(study_json):
-    """Used for rule 1008 and 1021"""
+    """Used for rule 1008 and 1021
+
+    :param study_json: Study JSON fragment
+    :return: List of study factor IDs found in sample factor values
+    """
     return [elem for iterabl in [[factor["category"]["@id"]
                                   for factor in sample["factorValues"]]
                                  for sample in
@@ -1044,7 +1134,11 @@ def get_study_factor_ids_in_sample_factor_values(study_json):
 
 
 def check_study_factor_usage(study_json):
-    """Used for rules 1008 and 1021"""
+    """Used for rules 1008 and 1021
+
+    :param study_json: Study JSON fragment
+    :return: None
+    """
     factors_declared = get_study_factor_ids(study_json)
     factors_used = get_study_factor_ids_in_sample_factor_values(study_json)
     if len(set(factors_used) - set(factors_declared)) > 0:
@@ -1069,13 +1163,21 @@ def check_study_factor_usage(study_json):
 
 
 def get_unit_category_ids(study_or_assay_json):
-    """Used for rule 1014"""
+    """Used for rule 1014
+
+    :param study_or_assay_json: Study or assay JSON fragment
+    :return: List of unit category IDs
+    """
     return [category["@id"] for category in study_or_assay_json[
         "unitCategories"]]
 
 
 def get_study_unit_category_ids_in_materials_and_processes(study_json):
-    """Used for rule 1014"""
+    """Used for rule 1014
+
+    :param study_json: Study JSON fragment
+    :return: List of unit category IDs for study materials and processes only
+    """
     study_characteristics_units_used = [
         elem for iterabl in [[characteristic["unit"]["@id"]
                               if "unit" in characteristic.keys() else None
@@ -1103,7 +1205,11 @@ def get_study_unit_category_ids_in_materials_and_processes(study_json):
 
 
 def get_assay_unit_category_ids_in_materials_and_processes(assay_json):
-    """Used for rule 1014"""
+    """Used for rule 1014
+
+    :param assay_json: Assay JSON fragment
+    :return: List of unit category IDs for assay materials and processes only
+    """
     assay_characteristics_units_used = [
         elem for iterabl in [[characteristic["unit"]["@id"]
                               if "unit" in characteristic.keys() else None
@@ -1125,7 +1231,11 @@ def get_assay_unit_category_ids_in_materials_and_processes(assay_json):
 
 
 def check_unit_category_ids_usage(study_json):
-    """Used for rules 1014 and 1022"""
+    """Used for rules 1014 and 1022
+
+    :param study_json: Study JSON fragment
+    :return: None
+    """
     log.info("Getting units declared...")
     units_declared = get_unit_category_ids(study_json)
     for assay in study_json["assays"]:
@@ -1155,7 +1265,11 @@ def check_unit_category_ids_usage(study_json):
 
 
 def check_utf8(fp):
-    """Used for rule 0010"""
+    """Used for rule 0010
+
+    :param fp: File-like buffer object
+    :return: None
+    """
     import chardet
     with open(fp.name, "rb") as fp:
         charset = chardet.detect(fp.read())
@@ -1175,7 +1289,12 @@ def check_utf8(fp):
 
 
 def check_isa_schemas(isa_json, investigation_schema_path):
-    """Used for rule 0003 and 4003"""
+    """Used for rule 0003 and 4003
+
+    :param isa_json: An ISA-JSON
+    :param investigation_schema_path: Path to the investigation JSON schema
+    :return: None
+    """
     try:
         with open(investigation_schema_path) as fp:
             investigation_schema = json.load(fp)
@@ -1198,7 +1317,11 @@ def check_isa_schemas(isa_json, investigation_schema_path):
 
 
 def check_date_formats(isa_json):
-    """Used for rule 3001"""
+    """Used for rule 3001
+
+    :param isa_json: An ISA-JSON
+    :return: None
+    """
     def check_iso8601_date(date_str):
         if date_str is not "":
             try:
@@ -1237,7 +1360,11 @@ def check_date_formats(isa_json):
 
 
 def check_dois(isa_json):
-    """Used for rule 3002"""
+    """Used for rule 3002
+
+    :param isa_json: An ISA-JSON
+    :return: None
+    """
     def check_doi(doi_str):
         if doi_str is not "":
             if not _RX_DOI.match(doi_str):
@@ -1262,7 +1389,11 @@ def check_dois(isa_json):
 
 
 def check_filenames_present(isa_json):
-    """Used for rule 3005"""
+    """Used for rule 3005
+
+    :param isa_json: An ISA-JSON
+    :return: None
+    """
     for s_pos, study in enumerate(isa_json["studies"]):
         if study["filename"] is "":
             warnings.append({
@@ -1283,7 +1414,11 @@ def check_filenames_present(isa_json):
 
 
 def check_pubmed_ids_format(isa_json):
-    """Used for rule 3003"""
+    """Used for rule 3003
+
+    :param isa_json: An ISA-JSON
+    :return: None
+    """
     def check_pubmed_id(pubmed_id_str):
         if pubmed_id_str is not "":
             if (_RX_PMID.match(pubmed_id_str) is None) and (
@@ -1303,7 +1438,11 @@ def check_pubmed_ids_format(isa_json):
 
 
 def check_protocol_names(isa_json):
-    """Used for rule 1010"""
+    """Used for rule 1010
+
+    :param isa_json: An ISA-JSON
+    :return: None
+    """
     for study in isa_json["studies"]:
         for protocol in study["protocols"]:
             if protocol["name"] is "":
@@ -1318,7 +1457,11 @@ def check_protocol_names(isa_json):
 
 
 def check_protocol_parameter_names(isa_json):
-    """Used for rule 1011"""
+    """Used for rule 1011
+
+    :param isa_json: An ISA-JSON
+    :return: None
+    """
     for study in isa_json["studies"]:
         for protocol in study["protocols"]:
             for parameter in protocol["parameters"]:
@@ -1335,7 +1478,11 @@ def check_protocol_parameter_names(isa_json):
 
 
 def check_study_factor_names(isa_json):
-    """Used for rule 1012"""
+    """Used for rule 1012
+
+    :param isa_json: An ISA-JSON
+    :return: None
+    """
     for study in isa_json["studies"]:
         for factor in study["factors"]:
             if factor["factorName"] is "":
@@ -1350,7 +1497,11 @@ def check_study_factor_names(isa_json):
 
 
 def check_ontology_sources(isa_json):
-    """Used for rule 3008"""
+    """Used for rule 3008
+
+    :param isa_json: An ISA-JSON
+    :return: None
+    """
     for ontology_source in isa_json["ontologySourceReferences"]:
         if ontology_source["name"] is "":
             warnings.append({
@@ -1363,7 +1514,11 @@ def check_ontology_sources(isa_json):
 
 
 def get_ontology_source_refs(isa_json):
-    """Used for rules 3007 and 3009"""
+    """Used for rules 3007 and 3009
+
+    :param isa_json: An ISA-JSON
+    :return: None
+    """
     return [ontology_source_ref["name"] for ontology_source_ref in
             isa_json["ontologySourceReferences"]]
 
@@ -1374,15 +1529,20 @@ def walk_and_get_annotations(isa_json, collector):
     Usage:
       collector = list()
       walk_and_get_annotations(isa_json, collector)
-      # and then like magic all your annotations from the JSON should be
-      in the collector list
+
+    and then like magic all your annotations from the JSON should be
+    in the collector list
+
+    :param isa_json: An ISA-JSON
+    :param collector: A list in which to collect the ontology annotations
+    :return: None
     """
     #  Walk JSON tree looking for ontology annotation structures in the JSON
     if isinstance(isa_json, dict):
         if set(isa_json.keys()) == {"annotationValue", "termAccession",
                                     "termSource"} or set(isa_json.keys()) == {
-                                    "@id", "annotationValue", "termAccession",
-                                    "termSource"}:
+            "@id", "annotationValue", "termAccession",
+                "termSource"}:
             collector.append(isa_json)
         for i in isa_json.keys():
             walk_and_get_annotations(isa_json[i], collector)
@@ -1392,7 +1552,11 @@ def walk_and_get_annotations(isa_json, collector):
 
 
 def check_term_source_refs(isa_json):
-    """Used for rules 3007 and 3009"""
+    """Used for rules 3007 and 3009
+
+    :param isa_json: An ISA-JSON
+    :return: None
+    """
     term_sources_declared = get_ontology_source_refs(isa_json)
     collector = list()
     walk_and_get_annotations(isa_json, collector)
@@ -1408,7 +1572,7 @@ def check_term_source_refs(isa_json):
         })
         log.error("(E) There are ontology sources {} referenced in an "
                   "annotation that have not been not declared".format(
-                    list(diff)))
+                      list(diff)))
     elif len(set(term_sources_declared) - set(term_sources_used)) > 0:
         diff = set(term_sources_declared) - set(term_sources_used)
         warnings.append({
@@ -1421,7 +1585,11 @@ def check_term_source_refs(isa_json):
 
 
 def check_term_accession_used_no_source_ref(isa_json):
-    """Used for rule 3010"""
+    """Used for rule 3010
+
+    :param isa_json: An ISA-JSON
+    :return: None
+    """
     collector = list()
     walk_and_get_annotations(isa_json, collector)
     terms_using_accession_no_source_ref = [
@@ -1442,7 +1610,11 @@ def check_term_accession_used_no_source_ref(isa_json):
 
 
 def load_config(config_dir):
-    import json
+    """Loads ISA-JSON configurations and for rule 4001
+
+    :param config_dir: Path to directory containing JSON configurations
+    :return: Configurations in a dictionary
+    """
     configs = dict()
     for file in glob.iglob(os.path.join(config_dir, "*.json")):
         try:
@@ -1467,6 +1639,12 @@ def load_config(config_dir):
 
 
 def check_measurement_technology_types(assay_json, configs):
+    """Used for rule 4002
+
+    :param assay_json: Assay JSON fragment
+    :param configs: ISA-JSON configs dictionary
+    :return: None
+    """
     try:
         measurement_type = assay_json["measurementType"]["annotationValue"]
         technology_type = assay_json["technologyType"]["annotationValue"]
@@ -1482,12 +1660,25 @@ def check_measurement_technology_types(assay_json, configs):
         })
         log.error("(E) Could not load configuration for measurement type '{}' "
                   "and technology type '{}'".format(
-                    measurement_type, technology_type))
+                      measurement_type, technology_type))
 
 
 def check_study_and_assay_graphs(study_json, configs):
+    """Used for rule 4004
+
+    :param study_json: Study JSON fragment
+    :param configs: ISA-JSON configs dictionary
+    :return: None
+    """
 
     def check_assay_graph(process_sequence_json, config):
+        """Checks a single set of process sequences against an
+        ISA-JSON configuration
+
+        :param process_sequence_json: List of process sequence JSONs
+        :param config: An ISA-JSON configuration
+        :return: None
+        """
         list_of_last_processes_in_sequence = [
             i for i in process_sequence_json if "nextProcess" not in i.keys()]
         log.info("Checking against assay protocol sequence configuration "
@@ -1578,6 +1769,11 @@ def check_study_and_assay_graphs(study_json, configs):
 
 
 def check_study_groups(study_or_assay):
+    """Used for rules 5001 and 5002
+
+    :param study_or_assay: Study or assay ISA-JSON fragments
+    :return: None
+    """
     samples = study_or_assay.samples
     study_groups = set()
     for sample in samples:
@@ -1618,6 +1814,17 @@ default_config_dir = os.path.join(
 
 def validate(fp, config_dir=default_config_dir, log_level=None,
              base_schemas_dir="isa_model_version_1_0_schemas"):
+    """Validates an ISA-JSON, outputting validation messages to the logging
+    output (e.g. stderr or stdout) and returns JSON reporting on the
+    validation results
+
+    :param fp: A file-like buffer object containing the ISA-JSON to validate
+    :param config_dir: Path to ISA-JSON configurations
+    :param log_level: Logging level for console output (standard Python
+    logging, e.g. logging.WARN, logging.DEBUG etc.)
+    :param base_schemas_dir: Path to the ISA-JSON JSON schemas
+    :return: A validation report in JSON format
+    """
     if config_dir is None:
         config_dir = default_config_dir
     if log_level in (
@@ -1763,19 +1970,19 @@ def validate(fp, config_dir=default_config_dir, log_level=None,
 
 
 def batch_validate(json_file_list):
-    """ Validate a batch of ISA-JSON files
-        :param json_file_list: List of file paths to the ISA-JSON files to
-        validate
-        :return: Dict of reports
+    """Validate a batch of ISA-JSON files
 
-        Example:
-            from isatools import isajson
-            my_jsons = [
-                "/path/to/study1.json",
-                "/path/to/study2.json"
-            ]
-            my_reports = isajson.batch_validate(my_jsons)
-        """
+    Example:
+        from isatools import isajson
+        my_jsons = [
+            "/path/to/study1.json",
+            "/path/to/study2.json"
+        ]
+        my_reports = isajson.batch_validate(my_jsons)
+
+    :param json_file_list: List of file paths to the ISA-JSON files to validate
+    :return: Dict of reports
+    """
     batch_report = {
         "batch_report": []
     }
@@ -1796,14 +2003,34 @@ def batch_validate(json_file_list):
 
 
 class ISAJSONEncoder(JSONEncoder):
+    """The JSON Encoder class for encoding ISA-JSON.
+
+    This class implements a custom JSON Encoder extending the json.JSONEncoder
+    class for writing objects to JSON. This class should be passed to the
+    json.dump() function in order to write out ISA content as ISA-JSON.
+    """
 
     def default(self, o):
+        """
+        :param o: ISA Data Model object to encode into JSON
+        :return: ISA-JSON representation of o
+        """
 
         def remove_nulls(d):
+            """Remove null values from JSON
+
+            :param d: dict representation of the JSON
+            :return: Processed dict with nulls removed
+            """
             return {k: v for k, v in d.items()
                     if v or isinstance(v, list) or v == ''}
 
         def nulls_to_str(d):
+            """Replaces nulls with empty strings
+
+            :param d: dict representation of the JSON
+            :return: Processed dict with the nulls replaced as empty strings
+            """
             to_del = []
             for k, v in d.items():
                 if not isinstance(v, list) and v is None:
@@ -1824,6 +2051,11 @@ class ISAJSONEncoder(JSONEncoder):
         # null or empty strings but breaks reader
 
         def get_comment(o):
+            """Get ISA-JSON representing a Comment
+
+            :param o: Comment object
+            :return: ISA-JSON representation of the Comment object
+            """
             return clean_nulls(
                 {
                     "name": o.name,
@@ -1832,9 +2064,19 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_comments(o):
+            """Get list of ISA-JSON Comments
+
+            :param o: A list of Comment objects
+            :return: A list of ISA-JSON Comments
+            """
             return list(map(lambda x: get_comment(x), o if o else []))
 
         def get_ontology_source(o):
+            """Get ISA-JSON representation an OntologySource
+
+            :param o: OntologySource object
+            :return: ISA-JSON representation of the OntologySource object
+            """
             return clean_nulls(
                 {
                     "name": o.name,
@@ -1845,6 +2087,11 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_ontology_annotation(o):
+            """Get ISA-JSON representation of an OntologyAnnotation
+
+            :param o: OntologyAnnotation object
+            :return: ISA-JSON representation of the OntologyAnnotation object
+            """
             if o is not None:
                 return clean_nulls(
                     {
@@ -1859,9 +2106,19 @@ class ISAJSONEncoder(JSONEncoder):
                 return None
 
         def get_ontology_annotations(o):
+            """Get list of ISA-JSON Ontology Annotations
+
+            :param o: A list of OntologyAnnotation objects
+            :return: A list of ISA-JSON Ontology Annotations
+            """
             return list(map(lambda x: get_ontology_annotation(x), o))
 
         def get_person(o):
+            """Get ISA-JSON representation of a Person object
+
+            :param o: Person object
+            :return: ISA-JSON representation of the Person object
+            """
             return clean_nulls(
                 {
                     "address": o.address,
@@ -1878,9 +2135,19 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_people(o):
+            """Get list of ISA-JSON people
+
+            :param o: A list of Person objects
+            :return: A list of ISA-JSON Persons
+            """
             return list(map(lambda x: get_person(x), o))
 
         def get_publication(o):
+            """Get ISA-JSON representation of a Publication object
+
+            :param o: Publication object
+            :return: ISA-JSON representation of the Publication object
+            """
             return clean_nulls(
                 {
                     "authorList": o.author_list,
@@ -1893,9 +2160,19 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_publications(o):
+            """Get list of ISA-JSON Publications
+
+            :param o: A list of Publication objects
+            :return: A list of ISA-JSON Publications
+            """
             return list(map(lambda x: get_publication(x), o))
 
         def get_protocol(o):
+            """Get ISA-JSON representation of a Protocol object
+
+            :param o: Protocol object
+            :return: ISA-JSON representation of the Protocol object
+            """
             return clean_nulls(
                 {
                     "@id": id_gen(o),
@@ -1915,6 +2192,11 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_source(o):
+            """Get ISA-JSON representation of a Source object
+
+            :param o: Source object
+            :return: ISA-JSON representation of the Source object
+            """
             return clean_nulls(
                 {
                     "@id": id_gen(o),
@@ -1924,6 +2206,12 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_characteristic(o):
+            """Get ISA-JSON representation of a Characteristic object
+
+            :param o: Characteristic object
+            :return: ISA-JSON representation of the Characteristic object
+            """
+
             return clean_nulls(
                 {
                     "category": {"@id": id_gen(o.category)}
@@ -1934,6 +2222,11 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_characteristics(o):
+            """Get list of ISA-JSON Characteristics
+
+            :param o: A list of Characteristic objects
+            :return: A list of ISA-JSON Characteristics
+            """
             return list(map(lambda x: get_characteristic(x), o))
 
         def get_value(o):
@@ -1945,6 +2238,12 @@ class ISAJSONEncoder(JSONEncoder):
                 raise ValueError("Unexpected value type found: " + type(o))
 
         def get_characteristic_category(o):  # TODO: Deal with Material Type
+            """Get ISA-JSON representation of a characteristic category, which
+            is an OntologyAnnotation
+
+            :param o: OntologyAnnotation object
+            :return: ISA-JSON representation of the OntologyAnnotation
+            """
             return clean_nulls(
                 {
                     "@id": id_gen(o),
@@ -1953,6 +2252,11 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_sample(o):
+            """Get ISA-JSON representation of a Sample
+
+            :param o: Sample object
+            :return: ISA-JSON representation of the Sample
+            """
             return clean_nulls(
                 {
                     "@id": id_gen(o),
@@ -1969,6 +2273,11 @@ class ISAJSONEncoder(JSONEncoder):
                 })
 
         def get_factor(o):
+            """Get ISA-JSON representation of a Study Factor
+
+            :param o: StudyFactor object
+            :return: ISA-JSON representation of the Study Factor
+            """
             return clean_nulls(
                 {
                     "@id": id_gen(o),
@@ -1978,6 +2287,11 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_other_material(o):
+            """Get ISA-JSON representation of a Material
+
+            :param o: Material object
+            :return: ISA-JSON representation of the Material
+            """
             return clean_nulls(
                 {
                     "@id": id_gen(o),
@@ -1988,9 +2302,19 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def sqeezstr(s):
+            """Removes spaces from a string
+
+            :param s: A string
+            :return: A squeezed string
+            """
             return s.replace(' ', '').lower()
 
         def id_gen(o):
+            """Generate ID for ISA-JSON objects
+
+            :param o: A ISA Data Model object
+            :return: Generated ID based on ISA Data Model object
+            """
             if o is not None:
                 o_id = str(id(o))
                 if isinstance(o, Source):
@@ -2006,7 +2330,7 @@ class ISAJSONEncoder(JSONEncoder):
                         raise TypeError(
                             "Could not resolve data type labeled: " + o.type)
                 elif isinstance(o, DataFile):
-                        return '#data/{}-'.format(sqeezstr(o.label)) + o_id
+                    return '#data/{}-'.format(sqeezstr(o.label)) + o_id
                 elif isinstance(o, Process):
                     return '#process/' + o_id
                     # TODO: Implement ID gen on different kinds of processes?
@@ -2016,6 +2340,11 @@ class ISAJSONEncoder(JSONEncoder):
                 return None
 
         def get_process(o):
+            """Get ISA-JSON representation of a Process object
+
+            :param o: Process object
+            :return: ISA-JSON representation of the Process
+            """
             return clean_nulls(
                 {
                     "@id": id_gen(o),
@@ -2040,6 +2369,11 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_parameter_value(o):
+            """Get ISA-JSON representation of a Parameter Value object
+
+            :param o: Parameter Value object
+            :return: ISA-JSON representation of the Parameter Value
+            """
             return clean_nulls(
                 {
                     "category": {
@@ -2049,48 +2383,82 @@ class ISAJSONEncoder(JSONEncoder):
                 }
             )
 
-        def get_study(o): return clean_nulls(
-            {
-                "filename": o.filename,
-                "identifier": o.identifier,
-                "title": o.title,
-                "description": o.description,
-                "submissionDate": o.submission_date,
-                "publicReleaseDate": o.public_release_date,
-                "publications": get_publications(o.publications),
-                "people": get_people(o.contacts),
-                "studyDesignDescriptors": get_ontology_annotations(
-                    o.design_descriptors),
-                "protocols": list(map(lambda x: get_protocol(x), o.protocols)),
-                "materials": {
-                    "sources": list(map(lambda x: get_source(x), o.sources)),
-                    "samples": get_samples(o.samples),
-                    "otherMaterials": get_other_materials(o.other_material)
-                },
-                "processSequence": list(map(
-                    lambda x: get_process(x), o.process_sequence)),
-                "factors": list(map(lambda x: get_factor(x), o.factors)),
-                "characteristicCategories": get_characteristic_categories(
-                    o.characteristic_categories),
-                "unitCategories": get_ontology_annotations(o.units),
-                "comments": get_comments(o.comments),
-                "assays": list(map(lambda x: get_assay(x), o.assays))
-            }
-        )
+        def get_study(o):
+            """Get ISA-JSON representation of a Study
+
+            :param o: Study object
+            :return: ISA-JSON representation of the Study
+            """
+            return clean_nulls(
+                {
+                    "filename": o.filename,
+                    "identifier": o.identifier,
+                    "title": o.title,
+                    "description": o.description,
+                    "submissionDate": o.submission_date,
+                    "publicReleaseDate": o.public_release_date,
+                    "publications": get_publications(o.publications),
+                    "people": get_people(o.contacts),
+                    "studyDesignDescriptors": get_ontology_annotations(
+                        o.design_descriptors),
+                    "protocols": list(map(
+                        lambda x: get_protocol(x), o.protocols)),
+                    "materials": {
+                        "sources": list(map(
+                            lambda x: get_source(x), o.sources)),
+                        "samples": get_samples(o.samples),
+                        "otherMaterials": get_other_materials(o.other_material)
+                    },
+                    "processSequence": list(map(
+                        lambda x: get_process(x), o.process_sequence)),
+                    "factors": list(map(lambda x: get_factor(x), o.factors)),
+                    "characteristicCategories": get_characteristic_categories(
+                        o.characteristic_categories),
+                    "unitCategories": get_ontology_annotations(o.units),
+                    "comments": get_comments(o.comments),
+                    "assays": list(map(lambda x: get_assay(x), o.assays))
+                }
+            )
 
         def get_characteristic_categories(o):
+            """Get ISA-JSON representation of a list of Characteristic
+            Categories
+
+            :param o: List of OntologyAnnotation objects
+            :return: ISA-JSON representation of the Characteristic Categories
+            """
             return list(map(lambda x: get_characteristic_category(x), o))
 
         def get_samples(o):
+            """Get ISA-JSON representation of a list of Samples
+
+            :param o: List of Sample objects
+            :return: ISA-JSON representation of the Samples
+            """
             return list(map(lambda x: get_sample(x), o))
 
         def get_other_materials(o):
+            """Get ISA-JSON representation of a list of Materials
+
+            :param o: List of Material objects
+            :return: ISA-JSON representation of the Materials
+            """
             return list(map(lambda x: get_other_material(x), o))
 
         def get_processes(o):
+            """Get ISA-JSON representation of a list of Processes
+
+            :param o: List of Process objects
+            :return: ISA-JSON representation of the Processes
+            """
             return list(map(lambda x: get_process(x), o))
 
         def get_assay(o):
+            """Get ISA-JSON representation of an Assay
+
+            :param o: Assau object
+            :return: ISA-JSON representation of the Assay
+            """
             return clean_nulls(
                 {
                     "measurementType": get_ontology_annotation(
@@ -2114,6 +2482,11 @@ class ISAJSONEncoder(JSONEncoder):
             )
 
         def get_data_file(o):
+            """Get ISA-JSON representation of a Data File
+
+            :param o: DataFile object
+            :return: ISA-JSON representation of the Data file
+            """
             return clean_nulls(
                 {
                     "@id": id_gen(o),

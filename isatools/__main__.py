@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""Main entry point for running from the command-line.
+
+This module provides the main entry point for running ISA-API functions from
+the command-line. Commands must be run with a Python 3 interpreter.
+
+Todo:
+    * Implement hooks to all features of the ISA-API.
+"""
 import argparse
 import json
 import os
@@ -7,9 +16,14 @@ import sys
 def main(argv=None):
     """Run **isatools** from the command line
 
-    Arguments
+    Args:
         argv (list, optional): the list of arguments to run isatools
-            with (if None, then sys.argv is used) [default: None]
+        functions.
+
+    Returns:
+        None: Does not explicitly return anything apart from having the
+        desired effect of the function that was called (usually output to
+        file).
     """
     p = argparse.ArgumentParser(
         prog=__name__, formatter_class=argparse.RawDescriptionHelpFormatter,
