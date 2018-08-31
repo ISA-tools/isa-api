@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""Utilities for logging in the ISA-API."""
 from __future__ import absolute_import
 import logging
 import os
@@ -7,8 +9,13 @@ from configparser import ConfigParser
 show_pbars = False
 
 
-# Read a .ini config to set up some global defaults
 def read(path):
+    """Read a .ini config to set up some global defaults
+
+    :param path: Path to logging settings ini file. Defaults to
+    resources/isatools.ini
+    :return: None
+    """
     global log_level
     global show_pbars
     cparser = ConfigParser()
@@ -37,11 +44,15 @@ def read(path):
 
 
 def set_level(log_level):
+    """Set the logging level
+
+    :param log_level: Based on Python logging module
+    :return: None
+    """
     if log_level in (logging.NOTSET, logging.DEBUG, logging.INFO,
                      logging.WARNING, logging.ERROR, logging.CRITICAL):
         logging.getLogger('isatools').setLevel(log_level)
 
 
-# Load default config from resources/isatools.ini
 read(os.path.join(os.path.dirname(
     os.path.abspath(__file__)), 'resources', 'isatools.ini'))
