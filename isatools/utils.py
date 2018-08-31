@@ -1,4 +1,5 @@
-"""Various utility functions."""
+# -*- coding: utf-8 -*-
+"""Various utility functions for ISA-API."""
 from __future__ import absolute_import
 import csv
 import json
@@ -52,6 +53,12 @@ def format_report_csv(report):
 
 
 def detect_graph_process_pooling(G):
+    """Computes whether there is pooling in an experimental graph. This is
+    unexpected in some cases so this function is used to flag these cases.
+
+    :param G: DiGraph of the experimental graph
+    :return: List of process IDs on which processes are pooling
+    """
     report = []
 
     for process in [n for n in G.nodes() if isinstance(n, Process)]:
@@ -65,6 +72,12 @@ def detect_graph_process_pooling(G):
 
 
 def detect_isatab_process_pooling(fp):
+    """Runs the graph process pooling checks on an ISA-Tab
+
+    :param fp: A file-like buffer object pointing to an investigation file
+    :return: Report on which files containing process pooling and the
+    process IDs inside those tables
+    """
     report = []
 
     ISA = isatab.load(fp)
@@ -90,6 +103,13 @@ def detect_isatab_process_pooling(fp):
 
 
 def insert_distinct_parameter(table_fp, protocol_ref_to_unpool):
+    """A curation function to fix pooling problems
+
+    :param table_fp: A file-like buffer object pointing to a table file
+    :param protocol_ref_to_unpool: Reference to which protocol REF column to
+    'unpool'
+    :return: None
+    """
     reader = csv.reader(table_fp, dialect='excel-tab')
     headers = next(reader)  # get column headings
     table_fp.seek(0)
@@ -128,10 +148,15 @@ def insert_distinct_parameter(table_fp, protocol_ref_to_unpool):
             df.to_csv(table_fp, index=None, header=headers, sep='\t')
     else:
         print('Could not find appropriate column to fill with hashes')
-    # return df
 
 
 def contains(small_list, big_list):
+    """Checks if a list is contained in another list
+
+    :param small_list: The smaller list
+    :param big_list: The bigger list in which to find the smaller list
+    :return: True if the small list is found inside the big list
+    """
     if len(small_list) == 0:
         return False
 
@@ -148,6 +173,11 @@ def create_isatab_archive(inv_fp, target_filename=None,
                           filter_by_measurement=None):
     """Function to create an ISArchive; option to select by assay
     measurement type
+
+    :param inv_fp: A file-like buffer object pointing to an investigation file
+    :param target_filename: Target ZIP file name
+    :param filter_by_measurement: Select by measurement type
+    :return: List of files zipped if successful, None if not successful
     """
     if target_filename is None:
         target_filename = os.path.join(
@@ -202,11 +232,18 @@ def create_isatab_archive(inv_fp, target_filename=None,
 
 
 def squashstr(string):
+    """Squashes a string by removing the spaces and lowering it"""
+
     nospaces = "".join(string.split())
     return nospaces.lower()
 
 
 def pyvar(string):
+    """Transform a string into a valid Python variable
+
+    :param string: Input string
+    :return: Python variable-compatible string
+    """
     for ch in string:
         if ch.isalpha() or ch.isdigit():
             pass
@@ -216,6 +253,11 @@ def pyvar(string):
 
 
 def recast_columns(columns):
+    """Cast columns to Characteristics and Parameter Values
+
+    :param columns: String list of columns to cast
+    :return: The casted columns as a list
+    """
     casting_map = {
         'Material Type': 'Characteristics[Material Type]',
         'Date': 'Parameter Value[Date]',
@@ -227,6 +269,11 @@ def recast_columns(columns):
 
 
 def pyisatabify(dataframe):
+    """Processes a DataFrame into a dict
+
+    :param dataframe: Input DataFrame
+    :return: A dict of columns
+    """
     columns = dataframe.columns
 
     pycolumns = []
@@ -267,7 +314,8 @@ def pyisatabify(dataframe):
 
 
 def factor_query_isatab(df, q):
-    """
+    """Query a ISA-Tab DataFrame using the Pandas query functions
+
     :param df: A Pandas DataFrame
     :param q: Query, like "rate is 0.2 and limiting nutrient is sulphur"
     :return: DataFrame sliced on the query
@@ -296,51 +344,13 @@ def factor_query_isatab(df, q):
     return df.query(fmt_query)
 
 
-def compute_factor_values_summary(df):
-    # get all factors combinations
-    factor_columns = [x for x in df.columns if x.startswith('Factor Value')]
-    if len(factor_columns) > 0:  # add branch to get all if no FVs
-        study_group_factors_df = df[factor_columns].drop_duplicates()
-        factors_list = [x[13:-1] for x in study_group_factors_df.columns]
-        queries = []
-        factors_and_levels = {}
-        for i, row in study_group_factors_df.iterrows():
-            fvs = []
-            for x, y in zip(factors_list, row):
-                fvs.append(' == '.join([x, str(y)]))
-                try:
-                    factor_and_levels = factors_and_levels[x]
-                except KeyError:
-                    factors_and_levels[x] = set()
-                    factor_and_levels = factors_and_levels[x]
-                factor_and_levels.add(str(y))
-            queries.append(' and '.join(fvs))
-        groups_and_samples = []
-        print('Calculated {} study groups'.format(len(queries)))
-        for k, v in factors_and_levels.items():
-            print('factor: {0} | levels={1} | {2}'.format(k, len(v), tuple(v)))
-        for query in queries:
-            try:
-                df2 = factor_query_isatab(df, query)
-                data_column = [x for x in df.columns if x.startswith(
-                    ('Raw', 'Array', 'Free Induction Decay'))
-                    and x.endswith('Data File')][0]
-                groups_and_samples.append(
-                    (query,
-                     'sources = {}'.format(
-                         len(list(df2['Source Name'].drop_duplicates()))),
-                     'samples = {}'.format(
-                         len(list(df2['Sample Name'].drop_duplicates()))),
-                     'raw files = {}'.format(
-                         len(list(df2[data_column].drop_duplicates()))))
-                )
-            except Exception as e:
-                print('error in query, {}'.format(e))
-        for gs in groups_and_samples:
-            print(gs)
-
-
 def check_loadable(tab_dir_root):
+    """Checks if each study in a directory full of MetaboLights ISA-Tabs can
+    be loaded
+
+    :param tab_dir_root: Root of the MTBLS directories
+    :return: None
+    """
     for mtbls_dir in [x for x in os.listdir(tab_dir_root) if
                       x.startswith('MTBLS')]:
         try:
@@ -351,8 +361,7 @@ def check_loadable(tab_dir_root):
 
 
 def compute_study_factors_on_mtbls(tab_dir_root):
-    """
-    Produces study factors report
+    """Produces study factors report
 
     :param tab_dir_root: Directory containing MTBLS prefixed ISA-Tab
     directories
@@ -380,6 +389,7 @@ def compute_study_factors_on_mtbls(tab_dir_root):
 
 
 class IsaTabAnalyzer(object):
+    """A utility to analyze ISA-Tabs"""
 
     def __init__(self, path):
         self.path = path
@@ -387,6 +397,9 @@ class IsaTabAnalyzer(object):
     def generate_study_design_report(self, get_num_study_groups=True,
                                      get_factors=True, get_num_levels=True,
                                      get_levels=True, get_study_groups=True):
+        """Generates a study design report
+        :return: JSON report
+        """
         isa = isatab.load(self.path, skip_load_tables=False)
         study_design_report = []
         raw_data_file_prefix = ('Raw', 'Array', 'Free Induction Decay')
@@ -493,10 +506,12 @@ class IsaTabAnalyzer(object):
         return study_design_report
 
     def pprint_study_design_report(self):
+        """Pretty prints the study design report"""
         print(json.dumps(self.generate_study_design_report(), indent=4,
                          sort_keys=True))
 
     def compute_stats(self):
+        """Computes some statistics about the ISA-Tab study"""
         isa = isatab.load(self.path, skip_load_tables=False)
         print('-------------------------------------------')
         print('Investigation stats')
@@ -531,7 +546,10 @@ class IsaTabAnalyzer(object):
 
 
 def batch_fix_isatabs(settings):
-    """
+    """Batch fix some ISA-Tabs based on some predefined settings
+
+    :param settings: JSON describing what to fix
+
     settings = {
         "/path/to/MTBLS1/s_MTBLS1.txt": [
             {
@@ -550,6 +568,8 @@ def batch_fix_isatabs(settings):
             }
         ]
     }
+
+    :return: None
     """
     for table_file_path in settings.keys():
         print('Fixing {table_file_path}...'.format(
@@ -561,12 +581,19 @@ def batch_fix_isatabs(settings):
 
 
 class IsaTabFixer(object):
+    """Utilities to fix ISA-Tabs"""
 
     def __init__(self, table_file_path):
         self.path = table_file_path
 
     @staticmethod
     def clean_isatab_field_names(field_names):
+        """Fixes ISA-Tab header names. Sometimes Pandas adds suffixes to them
+        uneccessarily or other junk
+
+        :param field_names: List of field header names
+        :return: Fixed field names
+        """
         # iterates field names and drops the postfix enums that pandas adds
         for i, field_name in enumerate(field_names):
             if field_name.startswith('Term Source REF'):
@@ -605,6 +632,13 @@ class IsaTabFixer(object):
         return field_names
 
     def fix_factor(self, factor_name, protocol_ref=None):
+        """Fixes a factor if it's supposed to be something else
+
+        :param factor_name: The factor that's incorrect
+        :param protocol_ref: The protocol REF to add the Parameter Value
+        corresponding to the wrong factor as above
+        :return: None
+        """
         if protocol_ref is None:
             self.replace_factor_with_source_characteristic(
                 factor_name=factor_name)
@@ -613,6 +647,12 @@ class IsaTabFixer(object):
                 factor_name=factor_name, protocol_ref=protocol_ref)
 
     def replace_factor_with_source_characteristic(self, factor_name):
+        """Fixes a factor if it's supposed to be a source characteristic
+        attached
+
+        :param factor_name: The factor that's incorrect
+        :return: None
+        """
         table_file_df = isatab.read_tfile(self.path)
 
         field_names = list(table_file_df.columns)
@@ -698,6 +738,12 @@ class IsaTabFixer(object):
 
     def replace_factor_with_protocol_parameter_value(
             self, factor_name, protocol_ref):
+        """Fixes a factor if it's supposed to be a Parameter Value
+
+        :param factor_name: The factor that's incorrect
+        :param protocol_ref: Protocol REF for the new Parameter Value
+        :return: None
+        """
         table_file_df = isatab.read_tfile(self.path)
 
         field_names = list(table_file_df.columns)
@@ -814,6 +860,10 @@ class IsaTabFixer(object):
                                  encoding='utf-8')
 
     def remove_unused_protocols(self):
+        """Removes usused protocols
+
+        :return: None
+        """
         investigation = isatab.load(os.path.dirname(self.path))
         for study in investigation.studies:
             unused_protocol_names = set(x.name for x in study.protocols)
@@ -844,6 +894,11 @@ class IsaTabFixer(object):
 
 
 def utf8_text_file_open(path):
+    """A function to correctly open utf-8 files in Python 2 and Python 3
+
+    :param path: Path to a file
+    :return: A file-like buffer object opened with utf-8 encoding
+    """
     if sys.version_info[0] < 3:
         fp = open(path, 'rb')
     else:
@@ -853,6 +908,15 @@ def utf8_text_file_open(path):
 
 def create_and_merge_mzml(
         galaxy_prameters_file, mapping_file, data_dir, output_dir):
+    """Runs the create mode and merges mzML input  files for the CUDDEL
+    merger
+
+    :param galaxy_prameters_file: Galaxy inputs JSON
+    :param mapping_file: a mapping JSON
+    :param data_dir: Input data directory containing the mzMLs
+    :param output_dir: output for the merged outputs
+    :return: None
+    """
     tmp = tempfile.mkdtemp()
     create_from_galaxy_parameters(
         galaxy_parameters_file=galaxy_prameters_file, target_dir=tmp)
