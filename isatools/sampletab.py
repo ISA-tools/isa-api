@@ -1,4 +1,10 @@
-"""Functions for reading and writing SampleTab."""
+# -*- coding: utf-8 -*-
+"""Functions for reading and writing SampleTab.
+
+Functions for reading and writing SampleTab. SampleTab content is loaded into
+an in-memory representation using the ISA Data Model implemented in the
+isatools.model package.
+"""
 import io
 import logging
 from io import StringIO
@@ -29,6 +35,13 @@ log = logging.getLogger('isatools')
 
 
 def _peek(f):
+    """Peek at the next line without moving to the next line. This function
+    get the position of the next line, reads the next line, then resets the
+    file pointer to the original position
+
+    :param f: A file-like buffer object
+    :return: The next line past the current line
+    """
     position = f.tell()
     line = f.readline()
     f.seek(position)
@@ -36,6 +49,13 @@ def _peek(f):
 
 
 def _read_tab_section(f, sec_key, next_sec_key=None):
+    """Slices a file by section delimited by section keys
+
+    :param f: A file-like buffer object
+    :param sec_key: Delimiter key of beginning of section
+    :param next_sec_key: Delimiter key of end of section
+    :return: A memory file of the section slice, as a string buffer object
+    """
     line = f.readline()
     normed_line = line.rstrip()
     if normed_line[0] == '"':
@@ -56,8 +76,18 @@ def _read_tab_section(f, sec_key, next_sec_key=None):
 
 
 def read_sampletab_msi(fp):
+    """Read in a SampleTab and return a DataFrame of the MSI section
+
+    :param fp: A file-like buffer object pointing to the sample tab file
+    :return: A DataFrame with the MSI section
+    """
 
     def _build_msi_df(f):
+        """Builds the DataFrame from the MSI buffer
+
+        :param f: A file-like buffer of the MSI section
+        :return: DataFrame of the MSI section
+        """
         f = strip_comments(f)
         df = pd.read_csv(f, names=range(0, 128), sep='\t', engine='python',
                          encoding='utf-8').dropna(axis=1, how='all')
@@ -84,7 +114,17 @@ def read_sampletab_msi(fp):
 
 def get_value(object_column, column_group, object_series,
               ontology_source_map, unit_categories):
+    """Gets the appropriate value for a give column group
 
+   :param object_column: The object's column header name, e.g. Sample Name
+   :param column_group: The column group that includes the object's qualifiers
+   :param object_series: Pandas DataFrame Series for the row
+   :param ontology_source_map: A mapping to the OntologySource objects
+   created after parsing the investigation file
+   :param unit_categories: A map of unit categories to reference
+   :return: The appropriate value and unit according to the columns parsed,
+   e.g. (str, None) (float, Unit), (OntologyAnnotation, None)
+   """
     cell_value = object_series[object_column]
 
     column_index = list(column_group).index(object_column)
@@ -156,6 +196,11 @@ def get_value(object_column, column_group, object_series,
 
 
 def load(FP):
+    """Load a SampleTab into ISA Data Model objects
+
+    :param FP: A file-like buffer object pointing to the SampleTab
+    :return: An Investigation object
+    """
 
     msi_df = read_sampletab_msi(FP)
 
@@ -267,13 +312,22 @@ def load(FP):
 
 
 class GenericSampleTabProcessSequenceFactory:
+    """The GenericSampleTabProcessSequenceFactory is used to parse the
+    tables and build the process sequences representing the
+    experimental graphs"""
 
     def __init__(self, ontology_sources=None, study_factors=None):
         self.ontology_sources = ontology_sources
         self.factors = study_factors
 
     def create_from_df(self, DF):
+        """Create the process sequences from the table DataFrame
 
+        :param DF: Table DataFrame
+        :return: List of Processes coressponding to the process sequences. The
+        Processes are linked appropriately to all other ISA content objects,
+        such as Samples, DataFiles, and to each other.
+        """
         if self.ontology_sources is not None:
             ontology_source_map = dict(map(lambda x: (x.name, x),
                                            self.ontology_sources))
@@ -461,6 +515,11 @@ class GenericSampleTabProcessSequenceFactory:
 
 
 def dumps(investigation):
+    """Dumps out an ISA Investigation to a SampleTab string
+
+    :param investigation: An Investigation object
+    :return: String of the SampleTab
+    """
 
     # build MSI section
 
@@ -732,11 +791,27 @@ def dumps(investigation):
 
 
 def dump(investigation, out_fp):
+    """Dump out an Investigation to a SampleTab file
+
+    :param investigation: An Investigation file
+    :param out_fp: A file-like buffer object to write to
+    :return: None
+    """
     sampletab_str = dumps(investigation)
     out_fp.write(sampletab_str)
 
 
 def get_value_columns(label, x):
+    """Generates the appropriate columns based on the value of the object.
+    For example, if the object's .value value is an OntologyAnnotation,
+    the ISA-Tab requires extra columns Term Source REF and
+    Term Accession Number
+
+    :param label: Header label needed for the object type, e.g. "Sample Name"
+    :param x: The object of interest, e.g. a Sample() object
+    :return: List of column labels, e.g. ["Sample Name.Term Source REF",
+    "Sample Name.Term Accession Number"]
+    """
     if isinstance(x.value, (int, float)) and x.unit:
         if isinstance(x.unit, OntologyAnnotation):
             return map(lambda x: "{0}.{1}".format(label, x),
@@ -752,6 +827,12 @@ def get_value_columns(label, x):
 
 
 def strip_comments(in_fp):
+    """Strip out comment lines indicated by a # at start of line from a given
+    file
+
+    :param in_fp: A file-like buffer object
+    :return: A memory file buffer object with comments stripped out
+    """
     out_fp = StringIO()
     if not isinstance(in_fp, StringIO):
         out_fp.name = in_fp.name
