@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """The contents of this module are used solely for testing purposes in the
 isatools test suite that is not packaged with the PyPI distribution"""
 from __future__ import absolute_import
@@ -189,6 +190,11 @@ def assert_tab_content_equal(fp_x, fp_y):
 
 
 def sortlistsj(J):
+    """Sorts lists in a JSON. It sorts in-place.
+
+    :param J: Some JSON
+    :return: None
+    """
     if isinstance(J, dict):
         for k in J.keys():
             sortlistsj(J[k])
@@ -205,6 +211,12 @@ def sortlistsx(X):
 
 
 def assert_json_equal(jx, jy):
+    """Checks if two JSONs are equal
+
+    :param jx: First JSON for comparison
+    :param jy: Second JSON for comparison
+    :return: True is equal, False if not
+    """
     import json
     jx = json.loads(json.dumps(jx, sort_keys=True))
     jy = json.loads(json.dumps(jy, sort_keys=True))
@@ -219,6 +231,12 @@ def assert_json_equal(jx, jy):
 
 
 def assert_xml_equal(x1, x2):
+    """Checks if two XMLs are equal
+
+    :param x1: First XML for comparison
+    :param x2: Second XML for comparison
+    :return: True is equal, False if not
+    """
     # Only counts tags of x1 and x2 to check if the right number appear in each
 
     def collect_tags(X):
@@ -244,6 +262,11 @@ def assert_xml_equal(x1, x2):
 
 
 def strip_ids(J):
+    """Strips out @ids from some ISA-JSON
+
+    :param J: Some JSON
+    :return: None
+    """
     for k, v in J.items():
         if isinstance(v, dict):
             strip_ids(v)
