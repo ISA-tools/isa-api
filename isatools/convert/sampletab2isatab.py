@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*
+"""Convert SampleTab to ISA-Tab"""
 import logging
 
 from isatools import isatab, sampletab

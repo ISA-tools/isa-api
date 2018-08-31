@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*
+"""Convert ISA-Tab to ISA-JSON"""
 import glob
 import json
 import logging

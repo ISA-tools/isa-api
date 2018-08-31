@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""Functions for importing from BioCrates"""
 import glob
 import logging
 import os

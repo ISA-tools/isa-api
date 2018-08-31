@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*
+"""Convert mzML to ISA-Tab"""
 import logging
 import os
 

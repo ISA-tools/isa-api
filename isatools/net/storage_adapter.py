@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""Storage Adapter for accessing ISA content in Github"""
 import base64
 import json
 import logging

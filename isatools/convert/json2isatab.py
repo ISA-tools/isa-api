@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*
+"""Convert ISA-JSON to ISA-Tab"""
 import logging
 import os
 import shutil

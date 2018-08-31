@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*
 """
 Model objects for storing study design settings, for consumption by
 function or factory to create ISA model objects.

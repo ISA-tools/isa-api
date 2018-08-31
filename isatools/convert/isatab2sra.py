@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*
+"""Convert ISA-Tab to SRA-XML"""
 import json
 import logging
 import os

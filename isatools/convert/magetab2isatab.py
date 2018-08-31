@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*
+"""Convert MAGE-TAB to ISA-Tab"""
 import logging
 import os
 

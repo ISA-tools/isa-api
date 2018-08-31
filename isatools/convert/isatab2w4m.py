@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*
+"""
+Convert ISA-Tab to W4M tables
+
+original from
+https://github.com/workflow4metabolomics/mtbls-dwnld/blob/develop/isatab2w4m.py
+"""
+
 #!/usr/bin/env python3
 # vi: fdm=marker
 
@@ -16,11 +24,6 @@ import numpy
 from isatools import isatab as ISATAB
 from isatools.utils import utf8_text_file_open
 
-
-"""
-original from
-https://github.com/workflow4metabolomics/mtbls-dwnld/blob/develop/isatab2w4m.py
-"""
 __author__ = 'pkrog (Pierrick Roger)'
 
 

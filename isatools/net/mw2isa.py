@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""Functions for importing from MetabolomicsWorkbench"""
 import ftplib
 import json
 import logging

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Functions for connecting the Ontology Lookup Service.
 
 This module connects to the European Bioinformatics Institute's OLS.

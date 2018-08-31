@@ -1,16 +1,4 @@
-from __future__ import with_statement
-import bisect
-import collections
-import csv
-import glob
-import os
-import pprint
-import re
-from io import StringIO
-
-from isatools import isatab
-
-
+# -*- coding: utf-8 -*-
 """Parse ISA-Tab structured metadata describing experimental data.
 Works with ISA-Tab (http://isatab.sourceforge.net), which provides a structured
 format for describing experimental metdata.
@@ -37,6 +25,18 @@ the Assay file; in assays the keys are raw data files.
 This is a biased representation of the Study and Assay files which focuses on
 collapsing the data across the samples and raw data.
 """
+from __future__ import with_statement
+import bisect
+import collections
+import csv
+import glob
+import os
+import pprint
+import re
+from io import StringIO
+
+from isatools import isatab
+
 
 __author__ = 'brad chapman, agbeltran, djcomlab'
 

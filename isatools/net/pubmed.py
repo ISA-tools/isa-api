@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Functions for querying PubMed.
 
 This module connects to the PubMed API via Entrez.

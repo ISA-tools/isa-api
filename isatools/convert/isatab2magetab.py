@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*
+"""Convert ISA-Tab to MAGE-TAB"""
 import logging
 
 from isatools import isatab, magetab

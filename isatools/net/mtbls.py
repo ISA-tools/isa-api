@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Functions for retrieving metadata from MetaboLights.
 
 This module connects to the European Bioinformatics Institute's

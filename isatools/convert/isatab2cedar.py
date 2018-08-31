@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*
+"""Convert ISA-Tab to CEDAR JSON"""
 from __future__ import absolute_import
 import json
 import logging

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*
+"""Convert ISA-JSON to SRA-XML"""
 import logging
 
 from isatools import isajson, sra
