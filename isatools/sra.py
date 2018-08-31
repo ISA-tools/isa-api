@@ -1,4 +1,10 @@
-"""Functions for reading and writing SRA-XML."""
+# -*- coding: utf-8 -*-
+"""Functions for reading and writing SRA-XML.
+
+Functions for reading and writing SRA-XML. SRA-XML content is loaded into
+an in-memory representation using the ISA Data Model implemented in the
+isatools.model package.
+"""
 import datetime
 import hashlib
 import html
@@ -31,6 +37,18 @@ sra_center_prj_name = None
 
 
 def export(investigation, export_path, sra_settings=None, datafilehashes=None):
+    """Exports ISA Data model objects to SRA-XML files
+
+    The exporter uses the jinja2 templating engine. The SRA templates can be
+    found in isatools/resources/sra_templates
+
+    :param investigation: An Investigation object
+    :param export_path: Path to write SRA-XML files to
+    :param sra_settings: Some universal settings to apply to the SRA export
+    :param datafilehashes: A list of data file hashes to apply to the exported
+    files
+    :return: None
+    """
 
     def get_comment(assay, name):
         hits = [c for c in assay.comments if c.name.lower() == name.lower()]
