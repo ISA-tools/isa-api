@@ -5571,12 +5571,14 @@ def merge_study_with_assay_tables(study_file_path, assay_file_path,
 
 
 def squashstr(string):
+    """Squashes a string by removing the spaces and lowering it"""
 
     nospaces = "".join(string.split())
     return nospaces.lower()
 
 
 def get_squashed(key):
+    """Squashes an ISA-Tab header string for use as key elsewhere"""
     try:
         if '[' in key and ']' in key:
             return squashstr(key[0:key.index('[')]) + key[key.index('['):]
@@ -5849,6 +5851,12 @@ def parse_in(in_filename, in_format='isa-tab'):
 
 
 def strip_comments(in_fp):
+    """Strip out comment lines indicated by a # at start of line from a given
+    file
+
+    :param in_fp: A file-like buffer object
+    :return: A memory file buffer object with comments stripped out
+    """
     out_fp = StringIO()
     if not isinstance(in_fp, StringIO):
         out_fp.name = in_fp.name
@@ -5866,6 +5874,14 @@ def strip_comments(in_fp):
 
 def isatab_get_data_files_list_command(
         input_path, output, json_query=None, galaxy_parameters_file=None):
+    """Get a data files list  based on a slicer query
+
+    :param input_path: Path to an ISA-Tab
+    :param json_query: JSON query to slice
+    :param galaxy_parameters_file: Galaxy input parameters JSON if not
+    json_query
+    :return: None
+    """
     log.info("Getting data files for study %s. Writing to %s.",
              input_path, output.name)
     if json_query:
@@ -5896,6 +5912,16 @@ def isatab_get_data_files_list_command(
 
 def isatab_get_data_files_collection_command(
         input_path, output_path, json_query=None, galaxy_parameters_file=None):
+    """Creates a data files collection at a target path based on a
+    slicer query
+
+    :param input_path: Path to an ISA-Tab
+    :param output_path: Path to write out the sliced files
+    :param json_query: JSON query to slice
+    :param galaxy_parameters_file: Galaxy input parameters JSON if not
+    json_query
+    :return: None
+    """
     log.info("Getting data files for study %s. Writing to %s.",
              input_path, output_path)
     if json_query:
@@ -5931,6 +5957,13 @@ def isatab_get_data_files_collection_command(
 
 
 def slice_data_files(dir, factor_selection=None):
+    """Slices ISA-Tab tables based on a factor selection
+
+    :param dir: Path to the ISA-Tab table files (study-sample and assay files)
+    :param factor_selection: Factor selection as JSON, given by k:v as
+    factor name as keys and factor values as values
+    :return: Slice results as a JSON
+    """
     results = []
     # first collect matching samples
     for table_file in glob.iglob(os.path.join(dir, '[a|s]_*')):
@@ -6014,6 +6047,12 @@ def slice_data_files(dir, factor_selection=None):
 
 
 def isatab_get_factor_names_command(input_path, output):
+    """Get the list of factors for an ISA-Tab study
+
+    :param input_path: Path to an ISA-Tab
+    :param output: File-like buffer object to write JSON results to
+    :return: None
+    """
     log.info("Getting factors for study %s. Writing to %s.",
              input_path, output.name)
     _RX_FACTOR_VALUE = re.compile(r'Factor Value\[(.*?)\]')
@@ -6035,6 +6074,13 @@ def isatab_get_factor_names_command(input_path, output):
 
 
 def isatab_get_factor_values_command(input_path, factor, output):
+    """Get the list of factor values for a given factor in an ISA-Tab study
+
+        :param input_path: Path to an ISA-Tab
+        :param factor: A string of the factor of interest
+        :param output: File-like buffer object to write JSON results to
+        :return: None
+        """
     log.info("Getting values for factor {factor} in study {input_path}. "
              "Writing to {output_file}."
              .format(factor=factor, input_path=input_path,
@@ -6068,6 +6114,12 @@ def isatab_get_factor_values_command(input_path, factor, output):
 
 
 def isatab_get_factors_summary_command(input_path, output):
+    """Get the summary of factors for an ISA-Tab study
+
+    :param input_path: Path to an ISA-Tab
+    :param output: File-like buffer object to write JSON result table
+    :return: None
+    """
     log.info("Getting summary for study %s. Writing to %s.",
              input_path, output.name)
     ISA = load(input_path)
@@ -6107,6 +6159,11 @@ def isatab_get_factors_summary_command(input_path, output):
 
 
 def get_study_groups(input_path):
+    """Gets the study groups
+
+    :param input_path: Input path to ISA-tab
+    :return: List of study groups
+    """
     factors_summary = isatab_get_factors_summary_command(input_path=input_path)
     study_groups = {}
 
@@ -6122,11 +6179,22 @@ def get_study_groups(input_path):
 
 
 def get_study_groups_samples_sizes(input_path):
+    """Computes the sizes of the study groups based on number of samples
+
+    :param input_path: Input path to ISA-tab
+    :return: List of tuples of study group and study group sizes
+    """
     study_groups = get_study_groups(input_path=input_path)
     return list(map(lambda x: (x[0], len(x[1])), study_groups.items()))
 
 
 def get_sources_for_sample(input_path, sample_name):
+    """Get the sources for a given sample
+
+    :param input_path: Input path to ISA-tab
+    :param sample_name: A sample name
+    :return: A list of source names
+    """
     ISA = load(input_path)
     hits = []
 
@@ -6142,6 +6210,12 @@ def get_sources_for_sample(input_path, sample_name):
 
 
 def get_data_for_sample(input_path, sample_name):
+    """Get the data filenames for a given sample
+
+    :param input_path: Input path to ISA-tab
+    :param sample_name: A sample name
+    :return: A list of data filenames
+    """
     ISA = load(input_path)
     hits = []
     for study in ISA.studies:
@@ -6155,6 +6229,11 @@ def get_data_for_sample(input_path, sample_name):
 
 
 def get_study_groups_data_sizes(input_path):
+    """Computes the sizes of the study groups based on number of data files
+
+    :param input_path: Input path to ISA-tab
+    :return: List of tuples of study group and study group sizes
+    """
     study_groups = get_study_groups(input_path=input_path)
     return list(map(lambda x: (x[0], len(x[1])), study_groups.items()))
 
@@ -6219,6 +6298,13 @@ def get_characteristics_summary(input_path):
 
 
 def get_study_variable_summary(input_path):
+    """Computes the list of variable factors and characteristics found in
+    an ISA-Tab
+
+    :param input_path: Path to the ISA-Tab directory or investigation file
+    file-like buffer object
+    :return: A dictionary representation of the table
+    """
     ISA = load(input_path)
 
     all_samples = []
@@ -6260,6 +6346,12 @@ def get_study_variable_summary(input_path):
 
 
 def get_study_group_factors(input_path):
+    """Computes the study groups
+
+    :param input_path: Path to the ISA-Tab directory or investigation file
+    file-like buffer object
+    :return: List of Factor Value combinations representing the study groups
+    """
     factors_list = []
 
     for table_file in glob.iglob(os.path.join(input_path, '[a|s]_*')):
@@ -6275,6 +6367,12 @@ def get_study_group_factors(input_path):
 
 
 def get_filtered_df_on_factors_list(input_path):
+    """Computes the study groups and then prints the groups and sample lists
+
+    :param input_path: Path to the ISA-Tab directory or investigation file
+    file-like buffer object
+    :return: The queries used to generate the summary
+    """
     factors_list = get_study_group_factors(input_path=input_path)
     queries = []
 
@@ -6328,6 +6426,19 @@ def get_filtered_df_on_factors_list(input_path):
 
 
 def filter_data(input_path, output_path, slice, filename_filter):
+    """Filters and extracts the data files based on a slice query and
+    filename filter
+
+    :param input_path: Path to the ISA-Tab directory or investigation file
+    file-like buffer object
+    :param output_path: Path to an output directory in which to copy the files
+    :param slice: Sliced list of data files to copy over
+    :param filename_filter: A filename filter using file wildcards, e.g. *.mzml
+    :return: None
+
+    Note that this function also writes out a log of what files were copied
+    etc. to the file cli.log
+    """
     loglines = []
     source_dir = input_path
     if source_dir:
@@ -6365,6 +6476,14 @@ def filter_data(input_path, output_path, slice, filename_filter):
 
 
 def query_isatab(source_dir, output, galaxy_parameters_file=None):
+    """Query over an ISA-Tab
+
+    :param source_dir: Input path to ISA-Tab
+    :param output: Output file-like buffer object to write output JSON results
+    :param galaxy_parameters_file: ISA Slicer 2 inputs as Galaxy tool JSON
+    :return: JSON containing the original query and the list of samples and
+    data files
+    """
     debug = True
     if galaxy_parameters_file:
         galaxy_parameters = json.load(galaxy_parameters_file)
