@@ -198,116 +198,6 @@ class TreatmentFactory(object):
             return set()
 
 
-class TreatmentSequence:
-    """
-    A treatment sequence is an ordered (graph-like) combination of treatments (as a list), each with an associated rank.
-    """
-
-    def __init__(self, ranked_treatments=[], subject_count=10):
-        """
-        :param ranked_treatments: Treatment or list of Treatments of list of
-               tuples (Treatment, int) where the second term represents the
-               epoch
-        """
-        self.__ranked_treatments = set()
-        # self.__subject_count = subject_count if isinstance(
-        # subject_count, int) and subject_count >= 0 else 0
-        # self.__sample_map = {}
-
-        self.add_multiple_treatments(ranked_treatments)
-
-    def __repr__(self):
-        return 'TreatmentSequence({0})'.format(sorted(self.ranked_treatments, key=lambda x: repr(x)))
-
-    def __hash__(self):
-        return hash(repr(self))
-
-    def __eq__(self, other):
-        return isinstance(other, TreatmentSequence) \
-               and self.ranked_treatments == other.ranked_treatments
-
-    def __ne__(self, other):
-        return not self == other
-
-    @property
-    def ranked_treatments(self):
-        return self.__ranked_treatments
-
-    @ranked_treatments.setter
-    def ranked_treatments(self, ranked_treatments):
-        self.add_multiple_treatments(ranked_treatments)
-
-    """
-    @property
-    def subject_count(self):
-        return self.__subject_count if isinstance(self.__subject_count, int) and self.__subject_count >= 0 else 0
-
-    @subject_count.setter
-    def subject_count(self, subject_count):
-        self.__subject_count = subject_count if isinstance(subject_count, int) and subject_count >= 0 else 0
-
-    @property
-    def sample_map(self):
-        return self.__sample_map
-    """
-
-    def add_multiple_treatments(self, elements_to_add):
-        """
-        Adds multiple treatments to the sequence. To satisfy the epoch criteria,
-        the treatments need to be added according to the order/rank determined by the epoch
-        number.
-        :param elements_to_add:
-        :return:
-        """
-        if isinstance(elements_to_add, Treatment):
-            self.add_treatment(elements_to_add)
-        elif isinstance(elements_to_add, Iterable):
-            if any(True for _ in elements_to_add):
-                elems_copy = elements_to_add
-                if (isinstance(next(iter(elements_to_add)), tuple)):
-                    elements_to_add = sorted(elems_copy, key=lambda x: x[1])
-            for elem in elements_to_add:
-                if isinstance(elem, Treatment):
-                    self.add_treatment(elem)
-                elif isinstance(elem, tuple):
-                    self.add_treatment(*elem)
-                else:
-                    raise TypeError('The argument {0} is not of the correct type.'.format(elem))
-        else:
-            raise TypeError('The argument {0} is not of the correct type.'.format(elements_to_add))
-
-    def add_treatment(self, treatment, epoch=1):
-        if isinstance(treatment, Treatment):
-            if isinstance(epoch, int):
-                if self.check_epochs(epoch):
-                    self.__ranked_treatments.add((treatment, epoch))
-                else:
-                    raise TypeError('The epoch number {0} is either not greater than 1 or it does not complete the sequence of epochs, which should start in 1 and have no values missing up to the highest epoch value '.format(epoch))
-            else:
-                raise TypeError('The arguemnt {0} is not an integer'.format(epoch))
-        else:
-            raise TypeError('The argument {0} is not a treatment'.format(treatment))
-
-
-
-    def check_epochs(self, new_epoch):
-        """
-        Checks that the list of epochs in the __ranked_treatments have 1 as the lowest value and no value is missing from the lowest to the highest value
-        :return: true if the list of epochs satisfies the criteria above, false otherwise
-        """
-        epoch_list = [x[1] for x in self.__ranked_treatments]
-        epoch_list.append(new_epoch)
-        if epoch_list.__len__() == 1:
-            return (1 in epoch_list)
-        try:
-            epoch_list = sorted(list(set(epoch_list)))
-            it = (x for x in epoch_list)
-            first = next(it)
-            return any(i == 1 for i in epoch_list) and all(i >= 1 for i in epoch_list) and all(a == b for a, b in enumerate(it, first + 1))
-        except StopIteration:
-            log.error("StopIteration - shouldn't occur!")
-
-
 class AssayType(object):
     """
        A type of assay, determined by a measurement_type, a technology_type and a set of topology_modifiers (of type AssayTopologyModifiers).
@@ -1134,7 +1024,7 @@ class StudyEpoch(object):
     @rank.setter
     def rank(self, rank):
         if not isinstance(rank, int):
-            raise ISAModelAttributeError('Epoch rank must be a string')
+            raise ISAModelAttributeError('Epoch rank must be a integer')
         self.__rank = rank
 
     @property
@@ -1165,6 +1055,9 @@ class StudyEpoch(object):
                'sample_plan={study_epoch.sample_plan}' \
                ')'.format(study_epoch=self, num_treatments=len(self.treatments))
 
+    def __hash__(self):
+        return hash(repr(self))
+
     def __eq__(self, other):
         return hash(repr(self)) == hash(repr(other))
 
@@ -1173,14 +1066,34 @@ class StudyEpoch(object):
 
 
 class StudyArm(object):
+    """
+    Each study Arm is constituted by a mapping (ordered dict?) StudyEpoch -> SampleAssayPlan
+    """
 
-    def __init__(self, name, epochs=None):
+    def __init__(self, name, epoch2sample_assay_plan_map):
         self.name = name
-        if epochs is None:
-            self.__epochs = set()
+        if epoch2sample_assay_plan_map is None:
+            self.__epoch2sample_assay_plan_map = OrderedDict()
         else:
-            self.epochs = epochs
+            self.epochs = epoch2sample_assay_plan_map
 
+    @property
+    def epoch2sample_assay_plan_map(self):
+        return self.__epoch2sample_assay_plan_map or OrderedDict()
+
+    @epoch2sample_assay_plan_map.setter
+    def epoch2sample_assay_plan_map(self, map):
+        if not isinstance(map, OrderedDict):
+            raise AttributeError('epoch2sample_assay_plan_map must be an OrderedDict')
+        pass
+
+    def add_epoch2sample_assay_plan_mapping(self, epoch, sample_assay_plan):
+        if not isinstance(epoch, StudyEpoch):
+            raise AttributeError('{0} is not a StudyEpoch object'.format(epoch))
+        if not isinstance(sample_assay_plan, SampleAssayPlan):
+            raise AttributeError('{0} is not a SampleAssayPlan object'.format(sample_assay_plan))
+        self.__epoch2sample_assay_plan_map[epoch] = sample_assay_plan
+    """
     @property
     def epochs(self):
         return sorted(self.__epochs, key=lambda x: x.rank)  # get list order of epochs
@@ -1190,11 +1103,12 @@ class StudyArm(object):
         if not isinstance(x, Iterable):
             raise AttributeError('epochs must be an Iterable')
         self.__epochs = x
+    """
 
     @property
     def treatments(self):
         treatment_set = set()
-        for epoch in self.epochs:
+        for epoch in self.epoch2sample_assay_plan_map.keys():
             treatment_set = treatment_set.union(epoch.treatments)
         return treatment_set
 
@@ -1231,7 +1145,14 @@ class StudyDesign(object):
     def study_arms(self, study_arms):
         if not isinstance(study_arms, Iterable):
             raise TypeError('study_arms must be an iterable')
-        self.__study_arms = study_arms
+        for arm in study_arms:
+            self.add_study_arm(arm)
+
+    def add_study_arm(self, study_arm):
+        if isinstance(study_arm, StudyArm):
+            self.__study_arms.add(study_arm)
+        else:
+            raise TypeError('Not a valid study arm: {0}'.format(study_arm))
 
     @property
     def treatments(self):
@@ -1415,6 +1336,8 @@ class IsaModelObjectFactory(object):
             self.__study_design = study_design
 
     def create_study_from_plan(self):
+        # FIXME remove all the refernces to a TreatmentSequence.
+        # FIXME This method will need refactoring anyway (massi 17/10/2018)
 
         study_arm = self.study_design.study_arms  # only get first arm for now
 
@@ -1525,6 +1448,7 @@ class IsaModelObjectFactory(object):
 
         return study
         #  insert_qcs()
+        # FIXME
         treatment_sequence, sample_assay_plan = \
             self.study_design.sequences_plan.popitem()
         self.sample_assay_plan = sample_assay_plan
@@ -1541,11 +1465,11 @@ class IsaModelObjectFactory(object):
             raise ISAModelAttributeError('sample_plan is not defined')
         sample_plan = sample_assay_plan.sample_plan
         ranked_treatment_set = set()
-        for x, _ in treatment_sequence.ranked_treatments:
+        for x, _ in treatment_sequence.ranked_treatments: #FIXME
             ranked_treatment_set.add(x)
         groups_ids = [
             (str(i+1).zfill(3), x) for i, x in enumerate(ranked_treatment_set)]
-        ranks = set([y for _, y in treatment_sequence.ranked_treatments])
+        ranks = set([y for _, y in treatment_sequence.ranked_treatments]) #FIXME
 
         group_rank_map = dict()
         for group_id, rank in itertools.product(groups_ids, ranks):
@@ -2939,6 +2863,19 @@ class SampleAssayPlanDecoder(object):
         return sample_assay_plan
 
 
+class StudyEpochEncoder(json.JSONEncoder):
+
+    def default(self, o):
+        if isinstance(o, StudyEpoch):
+            return {}
+
+
+class StudyEpochDecoder(object):
+
+    pass
+
+
+"""
 class TreatmentSequenceEncoder(json.JSONEncoder):
 
     def get_ontology_annotation(self, ontology_annotation):
@@ -3049,3 +2986,4 @@ def make_summary_from_treatment_sequence(treatment_sequence):
         'number_of_treatment': len(treatments)
     }
     return report
+"""
