@@ -1005,7 +1005,7 @@ class StudyEpoch(object):
             self.__treatments = set()
         else:
             self.treatments = treatments
-        self.sample_plan = sample_plan
+        # self.sample_plan = sample_plan
 
     @property
     def name(self):
@@ -1023,7 +1023,7 @@ class StudyEpoch(object):
 
     @rank.setter
     def rank(self, rank):
-        if not isinstance(rank, int):
+        if not isinstance(rank, int): # FIXME rank must be a natural number (>= 0) ?
             raise ISAModelAttributeError('Epoch rank must be a integer')
         self.__rank = rank
 
@@ -1037,6 +1037,7 @@ class StudyEpoch(object):
             raise AttributeError('treatments must be an Iterable')
         self.__treatments = set(x)
 
+    """
     @property
     def sample_plan(self):
         return self.__sample_plan
@@ -1046,6 +1047,7 @@ class StudyEpoch(object):
         if not isinstance(x, SampleAssayPlan):
             raise AttributeError('sample_collections must be a SampleAssayPlan')
         self.__sample_plan = x
+    """
 
     def __repr__(self):
         return 'isatools.create.models.StudyEpoch(' \

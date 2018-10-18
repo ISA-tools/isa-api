@@ -12,6 +12,13 @@ FACTORS_2_VALUE = 100.0
 FACTORS_2_VALUE_ALT = 50.0
 FACTORS_2_UNIT = 's'
 
+TEST_EPOCH_0_NAME = 'test epoch 0'
+TEST_EPOCH_1_NAME = 'test epoch 1'
+TEST_EPOCH_2_NAME = 'test epoch 2'
+TEST_STUDY_ARM_NAME = 'test arm'
+
+TEST_EPOCH_0_RANK = 0
+
 
 # class SamplePlanTest(unittest.TestCase):
 #
@@ -558,6 +565,28 @@ class SampleAssayPlanTest(unittest.TestCase):
         self.assertRaises(ValueError, self.plan.add_assay_plan_record,
                           blood_sample_type, ngs_assay_type)
 
+
+class StudyEpochTest(unittest.TestCase):
+
+    def setUp(self):
+        self.epoch = StudyEpoch(name=TEST_EPOCH_0_NAME)
+
+    def test__init__(self):
+        self.assertEqual(self.epoch.name, TEST_EPOCH_0_NAME)
+        self.assertEqual(self.epoch.rank, TEST_EPOCH_0_RANK)
+
+class StudyArmTest(unittest.TestCase):
+
+    def setUp(self):
+        self.arm = StudyArm(name=TEST_STUDY_ARM_NAME)
+        self.epoch = StudyEpoch()
+        self.sample_assay_plan = SampleAssayPlan()
+
+    def test__init__(self):
+        self.assertEqual(self.arm.name, TEST_STUDY_ARM_NAME)
+
+    def test_add_epoch2sample_assay_plan_mapping(self):
+        pass
 
 class StudyDesignTest(unittest.TestCase):
 
