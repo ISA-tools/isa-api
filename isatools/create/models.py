@@ -996,7 +996,7 @@ class SampleQCBatch(object):
             self.characteristic_values = characteristic_values
 
 
-class StudyEpoch(object):
+class StudyCell(object):
 
     def __init__(self, name, rank=None, treatments=None, sample_plan=None):
         self.__name = name
@@ -1050,7 +1050,7 @@ class StudyEpoch(object):
     """
 
     def __repr__(self):
-        return 'isatools.create.models.StudyEpoch(' \
+        return 'isatools.create.models.StudyCell(' \
                'name={study_epoch.name}, ' \
                'rank={study_epoch.rank}, ' \
                'treatments={num_treatments}, ' \
@@ -1069,7 +1069,7 @@ class StudyEpoch(object):
 
 class StudyArm(object):
     """
-    Each study Arm is constituted by a mapping (ordered dict?) StudyEpoch -> SampleAssayPlan
+    Each study Arm is constituted by a mapping (ordered dict?) StudyCell -> SampleAssayPlan
     """
 
     def __init__(self, name, epoch2sample_assay_plan_map):
@@ -1090,8 +1090,8 @@ class StudyArm(object):
         pass
 
     def add_epoch2sample_assay_plan_mapping(self, epoch, sample_assay_plan):
-        if not isinstance(epoch, StudyEpoch):
-            raise AttributeError('{0} is not a StudyEpoch object'.format(epoch))
+        if not isinstance(epoch, StudyCell):
+            raise AttributeError('{0} is not a StudyCell object'.format(epoch))
         if not isinstance(sample_assay_plan, SampleAssayPlan):
             raise AttributeError('{0} is not a SampleAssayPlan object'.format(sample_assay_plan))
         self.__epoch2sample_assay_plan_map[epoch] = sample_assay_plan
@@ -1208,7 +1208,7 @@ class StudyDesignFactory(object):
         if set() not in self.treatments:
             return [
             StudyArm(name='arm_{i}'.format(i=i),
-                     epochs=[StudyEpoch(
+                     epochs=[StudyCell(
                          name='epoch_{j}'.format(j=j), rank=j, treatments=[y],
                          sample_plan=self.sample_plan) for j, y
                              in enumerate(x)]) for i, x in
@@ -1236,11 +1236,11 @@ class StudyDesignFactory(object):
             # rank_after_tmax = max(x.rank for x in next(iter(study_arms))) + 1
             # for arm in study_arms:
             #     if screen:
-            #         arm.add(StudyEpoch(name='screen',
+            #         arm.add(StudyCell(name='screen',
             #                            rank=rank_before_tmin,
             #                            sample_plan=self.sample_plan))
             #     if follow_up:
-            #         arm.add(StudyEpoch(name='follow_up',
+            #         arm.add(StudyCell(name='follow_up',
             #                            rank=rank_after_tmax,
             #                            sample_plan=self.sample_plan))
             return study_arms
@@ -1263,8 +1263,8 @@ class StudyDesignFactory(object):
         if set() not in self.treatments:
             arm = StudyArm(name='arm_0')
             arm.epochs = [
-                StudyEpoch(name='epoch_{i}'.format(i=i), rank=i, treatments=[x],
-                           sample_plan=self.sample_plan)
+                StudyCell(name='epoch_{i}'.format(i=i), rank=i, treatments=[x],
+                          sample_plan=self.sample_plan)
                 for i, x in enumerate(self.treatments)]
             return [arm]
         else:
@@ -1288,9 +1288,9 @@ class StudyDesignFactory(object):
             for i, treatment_group in enumerate(self.treatments):
                 arm = StudyArm(name='arm_{}'.format(i))
                 arm.epochs = [
-                    StudyEpoch(name='epoch_{i}'.format(i=0), rank=0,
-                               treatments=[treatment_group],
-                               sample_plan=self.sample_plan)]
+                    StudyCell(name='epoch_{i}'.format(i=0), rank=0,
+                              treatments=[treatment_group],
+                              sample_plan=self.sample_plan)]
                 arms.append(arm)
             return arms
         else:
@@ -2868,7 +2868,7 @@ class SampleAssayPlanDecoder(object):
 class StudyEpochEncoder(json.JSONEncoder):
 
     def default(self, o):
-        if isinstance(o, StudyEpoch):
+        if isinstance(o, StudyCell):
             return {}
 
 

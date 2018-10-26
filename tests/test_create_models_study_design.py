@@ -569,7 +569,7 @@ class SampleAssayPlanTest(unittest.TestCase):
 class StudyEpochTest(unittest.TestCase):
 
     def setUp(self):
-        self.epoch = StudyEpoch(name=TEST_EPOCH_0_NAME)
+        self.epoch = StudyCell(name=TEST_EPOCH_0_NAME)
 
     def test__init__(self):
         self.assertEqual(self.epoch.name, TEST_EPOCH_0_NAME)
@@ -579,7 +579,7 @@ class StudyArmTest(unittest.TestCase):
 
     def setUp(self):
         self.arm = StudyArm(name=TEST_STUDY_ARM_NAME)
-        self.epoch = StudyEpoch()
+        self.epoch = StudyCell()
         self.sample_assay_plan = SampleAssayPlan()
 
     def test__init__(self):
