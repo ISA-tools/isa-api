@@ -12,11 +12,14 @@ from collections import OrderedDict
 from numbers import Number
 import copy
 from isatools.model import *
+from abc import ABC, abstractmethod
 
 
 log = logging.getLogger('isatools')
 
 __author__ = 'massi'
+
+ELEMENT_TYPES = dict(SCREEN='screen', WHASHOUT='washout', FOLLOW_UP='follow-up')
 
 INTERVENTIONS = dict(CHEMICAL='chemical intervention',
                      BEHAVIOURAL='behavioural intervention',
@@ -57,7 +60,56 @@ BASE_FACTORS = [
 ]
 
 
-class Treatment(object):
+class Element(ABC):
+
+    def __init__(self, element_type):
+        self.__type = element_type
+
+    @abstractmethod
+    @property
+    def type(self):
+        return self.__type
+
+    @abstractmethod
+    @type.setter
+    def type(self, element_type):
+        self.__type = element_type
+
+
+class NonTreatment(Element):
+
+    def __init__(self, element_type=ELEMENT_TYPES['SCREEN']):
+        super(NonTreatment, self).__init__()
+        if element_type not in ELEMENT_TYPES.values():
+            raise ValueError('element treatment type provided: ')
+        self.__type = element_type
+
+    def __repr__(self):
+        return 'NonTreatment(type={0})'.format(self.type)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, NonTreatment) \
+               and self.type == other.type
+
+    def __ne__(self, other):
+        return not self == other
+
+    @property
+    def type(self):
+        return self.__type
+
+    @type.setter
+    def type(self, element_type):
+        if element_type in INTERVENTIONS.values():
+            self.__type = element_type
+        else:
+            raise ValueError('invalid treatment type provided: ')
+
+
+class Treatment(Element):
     """
     A Treatment is defined as a tuple of factor values (as defined in the ISA
     model v1) and a treatment type
@@ -70,11 +122,11 @@ class Treatment(object):
         :param factor_values: set of isatools.model.v1.FactorValue
         :param group_size: number of subjects in this group
         """
-
+        super(Treatment, self).__init__()
         if treatment_type not in INTERVENTIONS.values():
             raise ValueError('invalid treatment type provided: ')
 
-        self.__treatment_type = treatment_type
+        self.__type = treatment_type
 
         if factor_values is None:
             self.__factor_values = set()
@@ -82,11 +134,7 @@ class Treatment(object):
             self.factor_values = factor_values
         self.__group_size = group_size
 
-    def __repr__(self):
-        return 'Treatment(treatment_type={0}, factor_values={1}, ' \
-               'group_size={2})'.format(self.treatment_type, sorted(
-                self.factor_values, key=lambda x: repr(x)), self.group_size)
-
+    # TODO move group_size to StudyArm
     @property
     def group_size(self):
         return self.__group_size
@@ -100,12 +148,17 @@ class Treatment(object):
             raise ValueError('group_size must be greater than 0.')
         self.__group_size = group_size
 
+    def __repr__(self):
+        return 'Treatment(treatment_type={0}, factor_values={1}, ' \
+               'group_size={2})'.format(self.type, sorted(
+                self.factor_values, key=lambda x: repr(x)), self.group_size)
+
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
         return isinstance(other, Treatment) \
-               and self.treatment_type == other.treatment_type \
+               and self.type == other.type \
                and self.factor_values == other.factor_values \
                and self.group_size == other.group_size
 
@@ -113,13 +166,13 @@ class Treatment(object):
         return not self == other
 
     @property
-    def treatment_type(self):
-        return self.__treatment_type
+    def type(self):
+        return self.__type
 
-    @treatment_type.setter
-    def treatment_type(self, treatment_type):
+    @type.setter
+    def type(self, treatment_type):
         if treatment_type in INTERVENTIONS.values():
-            self.__treatment_type = treatment_type
+            self.__type = treatment_type
         else:
             raise ValueError('invalid treatment type provided: ')
 
@@ -1017,6 +1070,7 @@ class StudyCell(object):
             raise ISAModelAttributeError('Epoch name must be a string')
         self.__name = name
 
+    """
     @property
     def rank(self):
         return self.__rank
@@ -1026,6 +1080,7 @@ class StudyCell(object):
         if not isinstance(rank, int): # FIXME rank must be a natural number (>= 0) ?
             raise ISAModelAttributeError('Epoch rank must be a integer')
         self.__rank = rank
+    """
 
     @property
     def treatments(self):
