@@ -63,6 +63,44 @@ TEST_EPOCH_0_RANK = 0
 #     def test_sample_types_property_empty(self):
 #         self.assertEqual(self.sample_plan.sample_types, set())
 
+class NonTreatmentTest(unittest.TestCase):
+
+    DURATION_VALUE = 10.0
+    DURATION_UNIT = OntologyAnnotation(term='day')
+    OTHER_DURATION_VALUE = 12.0
+
+    def setUp(self):
+        self.non_treatment = NonTreatment(duration_value=self.DURATION_VALUE, duration_unit=self.DURATION_UNIT)
+
+    def test_init_and_propeties(self):
+        self.assertEqual(self.non_treatment.type, ELEMENT_TYPES['SCREEN'])
+        self.assertEqual(self.non_treatment.duration, FactorValue(factor_name=DURATION_FACTOR,
+                                                                  value=self.DURATION_VALUE,
+                                                                  unit=self.DURATION_UNIT))
+
+    def test_repr(self):
+        print(self.non_treatment.duration)
+        self.assertEqual(repr(self.non_treatment),
+                         "NonTreatment(type='screen', duration=isatools.model.FactorValue("
+                         "factor_name=isatools.model.StudyFactor(name='DURATION', "
+                         "factor_type=isatools.model.OntologyAnnotation(term='time', term_source=None, "
+                         "term_accession='', comments=[]), comments=[]), value=10.0, "
+                         "unit=isatools.model.OntologyAnnotation(term='day', term_source=None, term_accession='', "
+                         "comments=[])))")
+
+    def test_hash(self):
+        self.assertEqual(hash(self.non_treatment), hash(repr(self.non_treatment)))
+
+    def test_eq(self):
+        same_non_treatment = NonTreatment(duration_value=self.DURATION_VALUE, duration_unit=self.DURATION_UNIT)
+        self.assertEqual(self.non_treatment, same_non_treatment)
+
+    def test_ne(self):
+        other_non_treatment = NonTreatment(duration_value=self.OTHER_DURATION_VALUE,
+                                           duration_unit=self.DURATION_UNIT)
+        self.assertNotEqual(self.non_treatment, other_non_treatment)
+
+
 class TreatmentTest(unittest.TestCase):
 
     def setUp(self):
@@ -75,7 +113,7 @@ class TreatmentTest(unittest.TestCase):
 
     def test_repr(self):
         self.assertEqual(repr(self.treatment),
-                         "Treatment(treatment_type=chemical intervention, "
+                         "Treatment(type=chemical intervention, "
                          "factor_values=[isatools.model.FactorValue("
                          "factor_name='AGENT', value='nitroglycerin', "
                          "unit=None), isatools.model.FactorValue("
@@ -343,7 +381,7 @@ class TreatmentSequenceTest(unittest.TestCase):
             )), 2)
         ]
         new_sequence = TreatmentSequence(ranked_treatments=treatments)
-        self.assertEqual("TreatmentSequence([(Treatment(treatment_type=chemical "
+        self.assertEqual("TreatmentSequence([(Treatment(type=chemical "
                          "intervention, factor_values=[isatools.model."
                          "FactorValue(factor_name=isatools.model.StudyFactor("
                          "name='AGENT', factor_type="
@@ -364,7 +402,7 @@ class TreatmentSequenceTest(unittest.TestCase):
                          "term_source=None, term_accession='', comments=[]), "
                          "comments=[]), value='low', unit=None)], group_size=0)"
                          ", 2), ("
-                         "Treatment(treatment_type=chemical intervention, "
+                         "Treatment(type=chemical intervention, "
                          "factor_values=[isatools.model.FactorValue("
                          "factor_name=isatools.model.StudyFactor(name='AGENT', "
                          "factor_type=isatools.model.OntologyAnnotation("

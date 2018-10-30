@@ -32,6 +32,12 @@ FACTOR_TYPES = dict(AGENT_VALUES='agent values',
                     INTENSITY_VALUES='intensity values',
                     DURATION_VALUES='duration values')
 
+DURATION_FACTOR_ = dict(name='DURATION', type=OntologyAnnotation(term="time"),
+                        display_singular='DURATION VALUE',
+                        display_plural='DURATION VALUES', values=set())
+
+DURATION_FACTOR = StudyFactor(name=DURATION_FACTOR_['name'], factor_type=DURATION_FACTOR_.get('type', None))
+
 BASE_FACTORS_ = [
     dict(
         name='AGENT', type=OntologyAnnotation(term="perturbation agent"),
@@ -43,11 +49,7 @@ BASE_FACTORS_ = [
         display_singular='INTENSITY VALUE',
         display_plural='INTENSITY VALUES', values=set()
     ),
-    dict(
-        name='DURATION', type=OntologyAnnotation(term="time"),
-        display_singular='DURATION VALUE',
-        display_plural='DURATION VALUES', values=set()
-    )
+    DURATION_FACTOR_
 ]
 
 BASE_FACTORS = [
@@ -55,22 +57,37 @@ BASE_FACTORS = [
                 factor_type=BASE_FACTORS_[0].get('type', None)),
     StudyFactor(name=BASE_FACTORS_[1]['name'],
                 factor_type=BASE_FACTORS_[1].get('type', None)),
-    StudyFactor(name=BASE_FACTORS_[2]['name'],
-                factor_type=BASE_FACTORS_[2].get('type', None)),
+    DURATION_FACTOR,
 ]
 
 
 class Element(ABC):
+    """
+    Element is the building block of a study design
+    The Element class is abstract and has two implementations:
+        - NonTreatment
+        - Treatment
+    """
 
-    def __init__(self, element_type):
-        self.__type = element_type
+    def __init__(self):
+        self.__type = None
 
-    @abstractmethod
+    def __repr__(self):
+        return 'Element(type={0})'.format(self.type)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return isinstance(other, Element) and self.type == other.type
+
+    def __ne__(self, other):
+        return not self == other
+
     @property
     def type(self):
         return self.__type
 
-    @abstractmethod
     @type.setter
     def type(self, element_type):
         self.__type = element_type
@@ -78,21 +95,23 @@ class Element(ABC):
 
 class NonTreatment(Element):
 
-    def __init__(self, element_type=ELEMENT_TYPES['SCREEN']):
+    def __init__(self, element_type=ELEMENT_TYPES['SCREEN'], duration_value=0.0, duration_unit=None):
         super(NonTreatment, self).__init__()
         if element_type not in ELEMENT_TYPES.values():
             raise ValueError('element treatment type provided: ')
         self.__type = element_type
+        if not isinstance(duration_value, Number):
+            raise ValueError('duration_value must be a Number. Value provided is {0}'.format(duration_value))
+        self.__duration = FactorValue(factor_name=DURATION_FACTOR, value=duration_value, unit=duration_unit)
 
     def __repr__(self):
-        return 'NonTreatment(type={0})'.format(self.type)
+        return 'NonTreatment(type={0}, duration={1})'.format(repr(self.type), repr(self.duration))
 
     def __hash__(self):
         return hash(repr(self))
 
     def __eq__(self, other):
-        return isinstance(other, NonTreatment) \
-               and self.type == other.type
+        return isinstance(other, NonTreatment) and self.type == other.type and self.duration == other.duration
 
     def __ne__(self, other):
         return not self == other
@@ -108,11 +127,22 @@ class NonTreatment(Element):
         else:
             raise ValueError('invalid treatment type provided: ')
 
+    @property
+    def duration(self):
+        return self.__duration
+
+    def update_duration(self, duration_value, duration_unit=None):
+        if not isinstance(duration_value, Number):
+            raise ValueError('duration_value must be a Number. Value provided is {0}'.format(duration_value))
+        self.__duration.value = duration_value
+        self.__duration.unit = duration_unit
+
 
 class Treatment(Element):
     """
     A Treatment is defined as a tuple of factor values (as defined in the ISA
     model v1) and a treatment type
+    A Treatment is an extension of the basic Element
     """
     def __init__(self, treatment_type=INTERVENTIONS['CHEMICAL'],
                  factor_values=None, group_size=0):
@@ -149,7 +179,7 @@ class Treatment(Element):
         self.__group_size = group_size
 
     def __repr__(self):
-        return 'Treatment(treatment_type={0}, factor_values={1}, ' \
+        return 'Treatment(type={0}, factor_values={1}, ' \
                'group_size={2})'.format(self.type, sorted(
                 self.factor_values, key=lambda x: repr(x)), self.group_size)
 
