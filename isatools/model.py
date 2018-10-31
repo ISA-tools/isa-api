@@ -2996,9 +2996,12 @@ class FactorValue(Commentable):
     """
     def __init__(self, factor_name=None, value=None, unit=None, comments=None):
         super().__init__(comments)
-        self.__factor_name = factor_name
-        self.__value = value
-        self.__unit = unit
+        self.__factor_name = None
+        self.__value = None
+        self.__unit = None
+        self.factor_name = factor_name
+        self.value = value
+        self.unit = unit
 
     @property
     def factor_name(self):
