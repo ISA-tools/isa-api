@@ -314,7 +314,7 @@ class StudyArm(object):
     @property
     def group_size(self):
         return self.__group_size
-    
+
     @group_size.setter
     def group_size(self, group_size):
         if isinstance(group_size, int):

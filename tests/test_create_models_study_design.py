@@ -6,11 +6,12 @@ from isatools.create.models import *
 
 NAME = 'name'
 FACTORS_0_VALUE = 'nitroglycerin'
+FACTORS_0_VALUE_ALT = 'alchohol'
 FACTORS_1_VALUE = 5
-FACTORS_1_UNIT = 'kg/m^3'
+FACTORS_1_UNIT = OntologyAnnotation(term='kg/m^3')
 FACTORS_2_VALUE = 100.0
 FACTORS_2_VALUE_ALT = 50.0
-FACTORS_2_UNIT = 's'
+FACTORS_2_UNIT = OntologyAnnotation(term='s')
 
 TEST_EPOCH_0_NAME = 'test epoch 0'
 TEST_EPOCH_1_NAME = 'test epoch 1'
@@ -141,6 +142,54 @@ class TreatmentTest(unittest.TestCase):
         ))
         self.assertNotEqual(self.treatment, other_treatment)
         self.assertNotEqual(hash(self.treatment), hash(other_treatment))
+
+
+class StudyCellTest(unittest.TestCase):
+
+    SCREEN_DURATION_VALUE = 100
+    FOLLOW_UP_DURATION_VALUE = 5*366
+    DURATION_UNIT = OntologyAnnotation(term='day')
+
+    def setUp(self):
+        self.cell = StudyCell(name=TEST_EPOCH_0_NAME)
+        self.first_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS_[0][NAME], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS_[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS_[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.second_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS_[0][NAME], value=FACTORS_0_VALUE_ALT),
+            FactorValue(factor_name=BASE_FACTORS_[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS_[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+
+    def test__init__(self):
+        self.assertEqual(self.cell.name, TEST_EPOCH_0_NAME)
+
+    def test_elements_property(self):
+        elements = (self.first_treatment, self.second_treatment)
+
+
+
+class StudyArmTest(unittest.TestCase):
+
+    def setUp(self):
+        self.arm = StudyArm(name=TEST_STUDY_ARM_NAME)
+        self.cell = StudyCell()
+        self.test_treatment = Treatment(factor_values=(
+            FactorValue(factor_name=BASE_FACTORS_[0][NAME], value=FACTORS_0_VALUE),
+            FactorValue(factor_name=BASE_FACTORS_[1][NAME], value=FACTORS_1_VALUE, unit=FACTORS_1_UNIT),
+            FactorValue(factor_name=BASE_FACTORS_[2][NAME], value=FACTORS_2_VALUE, unit=FACTORS_2_UNIT)
+        ))
+        self.test_screen = NonTreatment(duration_value=self.SCREEN_DURATION_VALUE, duration_unit=self.DURATION_UNIT)
+        self.test_follow_up = NonTreatment()
+        self.sample_assay_plan = SampleAssayPlan()
+
+    def test__init__(self):
+        self.assertEqual(self.arm.name, TEST_STUDY_ARM_NAME)
+
+    def test_add_epoch2sample_assay_plan_mapping(self):
+        pass
 
 
 class TreatmentFactoryTest(unittest.TestCase):
@@ -603,28 +652,6 @@ class SampleAssayPlanTest(unittest.TestCase):
         self.assertRaises(ValueError, self.plan.add_assay_plan_record,
                           blood_sample_type, ngs_assay_type)
 
-
-class StudyEpochTest(unittest.TestCase):
-
-    def setUp(self):
-        self.epoch = StudyCell(name=TEST_EPOCH_0_NAME)
-
-    def test__init__(self):
-        self.assertEqual(self.epoch.name, TEST_EPOCH_0_NAME)
-        self.assertEqual(self.epoch.rank, TEST_EPOCH_0_RANK)
-
-class StudyArmTest(unittest.TestCase):
-
-    def setUp(self):
-        self.arm = StudyArm(name=TEST_STUDY_ARM_NAME)
-        self.epoch = StudyCell()
-        self.sample_assay_plan = SampleAssayPlan()
-
-    def test__init__(self):
-        self.assertEqual(self.arm.name, TEST_STUDY_ARM_NAME)
-
-    def test_add_epoch2sample_assay_plan_mapping(self):
-        pass
 
 class StudyDesignTest(unittest.TestCase):
 
