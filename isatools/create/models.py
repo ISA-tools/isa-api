@@ -92,6 +92,10 @@ class Element(ABC):
     def type(self, element_type):
         self.__type = element_type
 
+    @property
+    def duration(self):
+        return 0
+
 
 class NonTreatment(Element):
 
@@ -105,7 +109,7 @@ class NonTreatment(Element):
         self.__duration = FactorValue(factor_name=DURATION_FACTOR, value=duration_value, unit=duration_unit)
 
     def __repr__(self):
-        return 'NonTreatment(type={0}, duration={1})'.format(repr(self.type), repr(self.duration))
+        return 'isatools.create.models.NonTreatment(type={0}, duration={1})'.format(repr(self.type), repr(self.duration))
 
     def __hash__(self):
         return hash(repr(self))
@@ -163,23 +167,9 @@ class Treatment(Element):
         else:
             self.factor_values = factor_values
         self.__group_size = group_size
-
-    # TODO move group_size to StudyArm
-    @property
-    def group_size(self):
-        return self.__group_size
-
-    @group_size.setter
-    def group_size(self, group_size):
-        if not isinstance(group_size, int):
-            raise TypeError('{} is not a valid value for group_size. Please '
-                            'provide an integer.'.format(group_size))
-        if group_size < 0:
-            raise ValueError('group_size must be greater than 0.')
-        self.__group_size = group_size
-
+    
     def __repr__(self):
-        return 'Treatment(type={0}, factor_values={1}, ' \
+        return 'isatools.create.models.Treatment(type={0}, factor_values={1}, ' \
                'group_size={2})'.format(self.type, sorted(
                 self.factor_values, key=lambda x: repr(x)), self.group_size)
 
@@ -194,6 +184,20 @@ class Treatment(Element):
 
     def __ne__(self, other):
         return not self == other
+
+    # TODO move group_size to StudyArm
+    @property
+    def group_size(self):
+        return self.__group_size
+
+    @group_size.setter
+    def group_size(self, group_size):
+        if not isinstance(group_size, int):
+            raise TypeError('{} is not a valid value for group_size. Please '
+                            'provide an integer.'.format(group_size))
+        if group_size < 0:
+            raise ValueError('group_size must be greater than 0.')
+        self.__group_size = group_size
 
     @property
     def type(self):
@@ -219,6 +223,192 @@ class Treatment(Element):
         else:
             raise TypeError('Data supplied is not correctly formatted for '
                             'Treatment')
+
+    @property
+    def duration(self):
+        return next(factor_value for factor_value in self.factor_values
+                    if factor_value.factor_name == DURATION_FACTOR)
+
+
+class StudyCell(object):
+    """
+    A StudyCell consists of a set of Elements who can be Treatment or NonTreatment Elements
+    Under the current design all elements in a a cell are intended to be concomitant
+    PROBLEM: what if different elements within a cell have different durations?
+    ANSWER: this must not be allowed
+    """
+
+    def __init__(self, name, elements=None):
+        self.__name = name if isinstance(name, str) else None # FIXME can we allow name to be none?
+        self.__elements = set()
+        if elements is not None:
+            self.elements = elements
+
+    def __repr__(self):
+        return 'isatools.create.models.StudyCell(' \
+               'name={study_epoch.name}, ' \
+               'rank={study_epoch.rank}, ' \
+               'treatments={num_treatments}, ' \
+               'sample_plan={study_epoch.sample_plan}' \
+               ')'.format(study_epoch=self, num_treatments=len(self.elements))
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return hash(repr(self)) == hash(repr(other))
+
+    def __ne__(self, other):
+        return hash(repr(self)) != hash(repr(other))
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        if not isinstance(name, str):
+            raise ISAModelAttributeError('Epoch name must be a string')
+        self.__name = name
+
+    @property
+    def elements(self):
+        return self.__elements
+
+    @elements.setter
+    def elements(self, x):
+        if not isinstance(x, Iterable):
+            raise AttributeError('elements must be an Iterable')
+        self.__elements.clear()
+        for element in x:
+            self.add_element(element)
+
+    def add_element(self, element):
+        new_element_duration_factor = next(factor_value for factor_value in element.factor_values
+                                           if factor_value.factor_name == DURATION_FACTOR)
+        if new_element_duration_factor == self.duration:
+            self.__elements.update(element)
+        else:
+            raise ValueError('New element {0} duration does not match cell duration'.format(element))
+
+    @property
+    def duration(self):
+        element = next(iter(self.elements))
+        return next(factor_value for factor_value in element.factor_values
+                    if factor_value.factor_name == DURATION_FACTOR)
+
+
+class StudyArm(object):
+    """
+    Each study Arm is constituted by a mapping (ordered dict?) StudyCell -> SampleAssayPlan
+    We call this mapping arm_map
+    """
+
+    def __init__(self, name, arm_map, group_size=0):
+        self.name = name
+        self.__group_size = group_size if isinstance(group_size, int) else 0
+        self.__arm_map = OrderedDict()
+        if arm_map is not None:
+            self.arm_map = arm_map
+
+    @property
+    def group_size(self):
+        return self.__group_size
+    
+    @group_size.setter
+    def group_size(self, group_size):
+        if isinstance(group_size, int):
+            self.__group_size = group_size
+        else:
+            raise TypeError('group_size must be an integer; {0} provided'.format(group_size))
+
+    @property
+    def arm_map(self):
+        return self.__arm_map or OrderedDict()
+
+    @arm_map.setter
+    def arm_map(self, arm_map):
+        if not isinstance(arm_map, OrderedDict):
+            raise TypeError('arm_map must be an OrderedDict')
+        self.__arm_map.clear()
+        for cell, sample_assay_plan in arm_map.items():
+            self.add_item_to_arm_map(cell, sample_assay_plan)
+
+    def add_item_to_arm_map(self, cell, sample_assay_plan):
+        if not isinstance(cell, StudyCell):
+            raise TypeError('{0} is not a StudyCell object'.format(cell))
+        if not isinstance(sample_assay_plan, SampleAssayPlan):
+            raise TypeError('{0} is not a SampleAssayPlan object'.format(sample_assay_plan))
+        self.__arm_map[cell] = sample_assay_plan
+
+    @property
+    def treatments(self):
+        treatment_set = set()
+        for cell in self.arm_map.keys():
+            treatment_set = treatment_set.union([elem for elem in cell.elements if isinstance(elem, Treatment)])
+        return treatment_set
+
+    def __repr__(self):
+        return 'isatools.create.models.StudyArm(' \
+               'name={study_arm.name}, ' \
+               'cells={list_of_epoch_names})'.format(study_arm=self, list_of_epoch_names=[x.name for x in self.epochs])
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __eq__(self, other):
+        return hash(repr(self)) == hash(repr(other))
+
+    def __ne__(self, other):
+        return hash(repr(self)) != hash(repr(other))
+
+
+class StudyDesign(object):
+    """
+    A class representing a study design, which is composed of a collection of
+    study arms.
+    """
+
+    def __init__(self, study_arms=None):
+        if study_arms is None:
+            self.__study_arms = set()
+        else:
+            self.study_arms = study_arms
+
+    @property
+    def study_arms(self):
+        return self.__study_arms
+
+    @study_arms.setter
+    def study_arms(self, study_arms):
+        if not isinstance(study_arms, Iterable):
+            raise TypeError('study_arms must be an iterable')
+        for arm in study_arms:
+            self.add_study_arm(arm)
+
+    def add_study_arm(self, study_arm):
+        if isinstance(study_arm, StudyArm):
+            self.__study_arms.add(study_arm)
+        else:
+            raise TypeError('Not a valid study arm: {0}'.format(study_arm))
+
+    @property
+    def treatments(self):
+        treatment_set = set()
+        for arm in self.study_arms:
+            treatment_set = treatment_set.union(arm.elements)
+        return treatment_set
+
+    def __repr__(self):
+        return 'isatools.create.models.StudyDesign(' \
+               'study_arms={list_of_arm_names}' \
+               ')'.format(list_of_arm_names=[x.name for x in self.study_arms])
+
+    def __eq__(self, other):
+        return hash(repr(self)) == hash(repr(other))
+
+    def __ne__(self, other):
+        return hash(repr(self)) != hash(repr(other))
 
 
 class TreatmentFactory(object):
@@ -1079,187 +1269,6 @@ class SampleQCBatch(object):
             self.characteristic_values = characteristic_values
 
 
-class StudyCell(object):
-
-    def __init__(self, name, rank=None, treatments=None, sample_plan=None):
-        self.__name = name
-        self.rank = rank
-        if treatments is None:
-            self.__treatments = set()
-        else:
-            self.treatments = treatments
-        # self.sample_plan = sample_plan
-
-    @property
-    def name(self):
-        return self.__name
-
-    @name.setter
-    def name(self, name):
-        if not isinstance(name, str):
-            raise ISAModelAttributeError('Epoch name must be a string')
-        self.__name = name
-
-    """
-    @property
-    def rank(self):
-        return self.__rank
-
-    @rank.setter
-    def rank(self, rank):
-        if not isinstance(rank, int): # FIXME rank must be a natural number (>= 0) ?
-            raise ISAModelAttributeError('Epoch rank must be a integer')
-        self.__rank = rank
-    """
-
-    @property
-    def treatments(self):
-        return self.__treatments
-
-    @treatments.setter
-    def treatments(self, x):
-        if not isinstance(x, Iterable):
-            raise AttributeError('treatments must be an Iterable')
-        self.__treatments = set(x)
-
-    """
-    @property
-    def sample_plan(self):
-        return self.__sample_plan
-
-    @sample_plan.setter
-    def sample_plan(self, x):
-        if not isinstance(x, SampleAssayPlan):
-            raise AttributeError('sample_collections must be a SampleAssayPlan')
-        self.__sample_plan = x
-    """
-
-    def __repr__(self):
-        return 'isatools.create.models.StudyCell(' \
-               'name={study_epoch.name}, ' \
-               'rank={study_epoch.rank}, ' \
-               'treatments={num_treatments}, ' \
-               'sample_plan={study_epoch.sample_plan}' \
-               ')'.format(study_epoch=self, num_treatments=len(self.treatments))
-
-    def __hash__(self):
-        return hash(repr(self))
-
-    def __eq__(self, other):
-        return hash(repr(self)) == hash(repr(other))
-
-    def __ne__(self, other):
-        return hash(repr(self)) != hash(repr(other))
-
-
-class StudyArm(object):
-    """
-    Each study Arm is constituted by a mapping (ordered dict?) StudyCell -> SampleAssayPlan
-    """
-
-    def __init__(self, name, epoch2sample_assay_plan_map):
-        self.name = name
-        if epoch2sample_assay_plan_map is None:
-            self.__epoch2sample_assay_plan_map = OrderedDict()
-        else:
-            self.epochs = epoch2sample_assay_plan_map
-
-    @property
-    def epoch2sample_assay_plan_map(self):
-        return self.__epoch2sample_assay_plan_map or OrderedDict()
-
-    @epoch2sample_assay_plan_map.setter
-    def epoch2sample_assay_plan_map(self, map):
-        if not isinstance(map, OrderedDict):
-            raise AttributeError('epoch2sample_assay_plan_map must be an OrderedDict')
-        pass
-
-    def add_epoch2sample_assay_plan_mapping(self, epoch, sample_assay_plan):
-        if not isinstance(epoch, StudyCell):
-            raise AttributeError('{0} is not a StudyCell object'.format(epoch))
-        if not isinstance(sample_assay_plan, SampleAssayPlan):
-            raise AttributeError('{0} is not a SampleAssayPlan object'.format(sample_assay_plan))
-        self.__epoch2sample_assay_plan_map[epoch] = sample_assay_plan
-    """
-    @property
-    def epochs(self):
-        return sorted(self.__epochs, key=lambda x: x.rank)  # get list order of epochs
-
-    @epochs.setter
-    def epochs(self, x):
-        if not isinstance(x, Iterable):
-            raise AttributeError('epochs must be an Iterable')
-        self.__epochs = x
-    """
-
-    @property
-    def treatments(self):
-        treatment_set = set()
-        for epoch in self.epoch2sample_assay_plan_map.keys():
-            treatment_set = treatment_set.union(epoch.treatments)
-        return treatment_set
-
-    def __repr__(self):
-        return 'isatools.create.models.StudyArm(' \
-               'name={study_arm.name}, ' \
-               'epochs={list_of_epoch_names})'.format(
-            study_arm=self, list_of_epoch_names=[x.name for x in self.epochs])
-
-    def __eq__(self, other):
-        return hash(repr(self)) == hash(repr(other))
-
-    def __ne__(self, other):
-        return hash(repr(self)) != hash(repr(other))
-
-
-class StudyDesign(object):
-    """
-    A class representing a study design, which is composed of a collection of
-    study arms.
-    """
-
-    def __init__(self, study_arms=None):
-        if study_arms is None:
-            self.__study_arms = set()
-        else:
-            self.study_arms = study_arms
-
-    @property
-    def study_arms(self):
-        return self.__study_arms
-
-    @study_arms.setter
-    def study_arms(self, study_arms):
-        if not isinstance(study_arms, Iterable):
-            raise TypeError('study_arms must be an iterable')
-        for arm in study_arms:
-            self.add_study_arm(arm)
-
-    def add_study_arm(self, study_arm):
-        if isinstance(study_arm, StudyArm):
-            self.__study_arms.add(study_arm)
-        else:
-            raise TypeError('Not a valid study arm: {0}'.format(study_arm))
-
-    @property
-    def treatments(self):
-        treatment_set = set()
-        for arm in self.study_arms:
-            treatment_set = treatment_set.union(arm.treatments)
-        return treatment_set
-
-    def __repr__(self):
-        return 'isatools.create.models.StudyDesign(' \
-               'study_arms={list_of_arm_names}' \
-               ')'.format(list_of_arm_names=[x.name for x in self.study_arms])
-
-    def __eq__(self, other):
-        return hash(repr(self)) == hash(repr(other))
-
-    def __ne__(self, other):
-        return hash(repr(self)) != hash(repr(other))
-
-
 class StudyDesignFactory(object):
     """
       A factory class to build a set of study arms.
@@ -1294,7 +1303,7 @@ class StudyDesignFactory(object):
             return [
             StudyArm(name='arm_{i}'.format(i=i),
                      epochs=[StudyCell(
-                         name='epoch_{j}'.format(j=j), rank=j, treatments=[y],
+                         name='epoch_{j}'.format(j=j), rank=j, elements=[y],
                          sample_plan=self.sample_plan) for j, y
                              in enumerate(x)]) for i, x in
                 enumerate(itertools.product(self.treatments))
@@ -1348,7 +1357,7 @@ class StudyDesignFactory(object):
         if set() not in self.treatments:
             arm = StudyArm(name='arm_0')
             arm.epochs = [
-                StudyCell(name='epoch_{i}'.format(i=i), rank=i, treatments=[x],
+                StudyCell(name='epoch_{i}'.format(i=i), rank=i, elements=[x],
                           sample_plan=self.sample_plan)
                 for i, x in enumerate(self.treatments)]
             return [arm]
@@ -1374,7 +1383,7 @@ class StudyDesignFactory(object):
                 arm = StudyArm(name='arm_{}'.format(i))
                 arm.epochs = [
                     StudyCell(name='epoch_{i}'.format(i=0), rank=0,
-                              treatments=[treatment_group],
+                              elements=[treatment_group],
                               sample_plan=self.sample_plan)]
                 arms.append(arm)
             return arms
@@ -1489,7 +1498,7 @@ class IsaModelObjectFactory(object):
                 epoch_name = epoch.name
                 rank = epoch.rank
                 sample_plan = epoch.sample_plan
-                for treatment in epoch.treatments:
+                for treatment in epoch.elements:
                     fvs = treatment.factor_values
                     for factor in [x.factor_name for x in fvs]:
                         factors.add(factor)
